@@ -1,0 +1,82 @@
+{
+  "format": 1,
+  "restore": {
+    "c:\\DAF\\DAFProject\\dafct2.0\\BusinessServices\\dotnet\\businessservices\\businessservices\\test\\components\\net.atos.daf.ct2.account.test\\net.atos.daf.ct2.account.test.csproj": {}
+  },
+  "projects": {
+    "c:\\DAF\\DAFProject\\dafct2.0\\BusinessServices\\dotnet\\businessservices\\businessservices\\test\\components\\net.atos.daf.ct2.account.test\\net.atos.daf.ct2.account.test.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "c:\\DAF\\DAFProject\\dafct2.0\\BusinessServices\\dotnet\\businessservices\\businessservices\\test\\components\\net.atos.daf.ct2.account.test\\net.atos.daf.ct2.account.test.csproj",
+        "projectName": "net.atos.daf.ct2.account.test",
+        "projectPath": "c:\\DAF\\DAFProject\\dafct2.0\\BusinessServices\\dotnet\\businessservices\\businessservices\\test\\components\\net.atos.daf.ct2.account.test\\net.atos.daf.ct2.account.test.csproj",
+        "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
+        "outputPath": "c:\\DAF\\DAFProject\\dafct2.0\\BusinessServices\\dotnet\\businessservices\\businessservices\\test\\components\\net.atos.daf.ct2.account.test\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\a433867\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.0": {
+          "dependencies": {
+            "MSTest.TestAdapter": {
+              "target": "Package",
+              "version": "[2.1.0, )"
+            },
+            "MSTest.TestFramework": {
+              "target": "Package",
+              "version": "[2.1.0, )"
+            },
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[16.5.0, )"
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            },
+            "coverlet.collector": {
+              "target": "Package",
+              "version": "[1.2.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.109\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
