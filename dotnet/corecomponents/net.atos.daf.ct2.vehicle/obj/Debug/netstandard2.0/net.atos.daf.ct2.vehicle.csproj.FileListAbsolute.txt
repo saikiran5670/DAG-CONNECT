@@ -28,3 +28,13 @@ C:\atos.daf.ct2.0\dotnet\corecomponents\vehicle\net.atos.daf.ct2.vehicle\obj\Deb
 c:\atos.daf.ct2.0\dotnet\corecomponents\vehicle\net.atos.daf.ct2.vehicle\obj\Debug\netstandard2.0\net.atos.daf.ct2.vehicle.csproj.CopyComplete
 C:\atos.daf.ct2.0\dotnet\corecomponents\vehicle\net.atos.daf.ct2.vehicle\obj\Debug\netstandard2.0\net.atos.daf.ct2.vehicle.dll
 C:\atos.daf.ct2.0\dotnet\corecomponents\vehicle\net.atos.daf.ct2.vehicle\obj\Debug\netstandard2.0\net.atos.daf.ct2.vehicle.pdb
+c:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.vehicle\bin\Debug\netstandard2.0\net.atos.daf.ct2.vehicle.deps.json
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.vehicle\bin\Debug\netstandard2.0\net.atos.daf.ct2.vehicle.dll
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.vehicle\bin\Debug\netstandard2.0\net.atos.daf.ct2.vehicle.pdb
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.vehicle\bin\Debug\netstandard2.0\net.atos.daf.ct2.data.dll
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.vehicle\obj\Debug\netstandard2.0\net.atos.daf.ct2.vehicle.csprojAssemblyReference.cache
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.vehicle\obj\Debug\netstandard2.0\net.atos.daf.ct2.vehicle.AssemblyInfoInputs.cache
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.vehicle\obj\Debug\netstandard2.0\net.atos.daf.ct2.vehicle.AssemblyInfo.cs
+c:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.vehicle\obj\Debug\netstandard2.0\net.atos.daf.ct2.vehicle.csproj.CopyComplete
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.vehicle\obj\Debug\netstandard2.0\net.atos.daf.ct2.vehicle.dll
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.vehicle\obj\Debug\netstandard2.0\net.atos.daf.ct2.vehicle.pdb

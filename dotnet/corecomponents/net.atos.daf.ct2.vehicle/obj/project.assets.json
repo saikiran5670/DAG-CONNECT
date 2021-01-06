@@ -624,11 +624,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\atos.daf.ct2.0\\dotnet\\corecomponents\\vehicle\\net.atos.daf.ct2.vehicle\\net.atos.daf.ct2.vehicle.csproj",
+      "projectUniqueName": "c:\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.vehicle\\net.atos.daf.ct2.vehicle.csproj",
       "projectName": "net.atos.daf.ct2.vehicle",
-      "projectPath": "c:\\atos.daf.ct2.0\\dotnet\\corecomponents\\vehicle\\net.atos.daf.ct2.vehicle\\net.atos.daf.ct2.vehicle.csproj",
+      "projectPath": "c:\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.vehicle\\net.atos.daf.ct2.vehicle.csproj",
       "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
-      "outputPath": "c:\\atos.daf.ct2.0\\dotnet\\corecomponents\\vehicle\\net.atos.daf.ct2.vehicle\\obj\\",
+      "outputPath": "c:\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.vehicle\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

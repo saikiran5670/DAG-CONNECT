@@ -18,3 +18,14 @@ C:\atos.daf.ct2.0\dotnet\corecomponents\role\net.atos.daf.ct2.role\obj\Debug\net
 C:\atos.daf.ct2.0\dotnet\corecomponents\role\net.atos.daf.ct2.role\obj\Debug\netstandard2.0\net.atos.daf.ct2.role.pdb
 C:\atos.daf.ct2.0\dotnet\corecomponents\role\net.atos.daf.ct2.role\bin\Debug\netstandard2.0\net.atos.daf.ct2.data.dll
 c:\atos.daf.ct2.0\dotnet\corecomponents\role\net.atos.daf.ct2.role\obj\Debug\netstandard2.0\net.atos.daf.ct2.role.csproj.CopyComplete
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.role\obj\Debug\netstandard2.0\net.atos.daf.ct2.role.csprojAssemblyReference.cache
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.role\obj\Debug\netstandard2.0\net.atos.daf.ct2.role.AssemblyInfoInputs.cache
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.role\obj\Debug\netstandard2.0\net.atos.daf.ct2.role.AssemblyInfo.cs
+c:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.role\bin\Debug\netstandard2.0\net.atos.daf.ct2.role.deps.json
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.role\bin\Debug\netstandard2.0\net.atos.daf.ct2.role.dll
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.role\bin\Debug\netstandard2.0\net.atos.daf.ct2.role.pdb
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.role\bin\Debug\netstandard2.0\net.atos.daf.ct2.audit.dll
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.role\bin\Debug\netstandard2.0\net.atos.daf.ct2.data.dll
+c:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.role\obj\Debug\netstandard2.0\net.atos.daf.ct2.role.csproj.CopyComplete
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.role\obj\Debug\netstandard2.0\net.atos.daf.ct2.role.dll
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.role\obj\Debug\netstandard2.0\net.atos.daf.ct2.role.pdb

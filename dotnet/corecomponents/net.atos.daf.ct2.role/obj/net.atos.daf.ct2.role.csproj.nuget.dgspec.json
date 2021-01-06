@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\atos.daf.ct2.0\\dotnet\\corecomponents\\role\\net.atos.daf.ct2.role\\net.atos.daf.ct2.role.csproj": {}
+    "c:\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.role\\net.atos.daf.ct2.role.csproj": {}
   },
   "projects": {
-    "c:\\atos.daf.ct2.0\\dotnet\\corecomponents\\role\\net.atos.daf.ct2.role\\net.atos.daf.ct2.role.csproj": {
+    "c:\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.role\\net.atos.daf.ct2.role.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\atos.daf.ct2.0\\dotnet\\corecomponents\\role\\net.atos.daf.ct2.role\\net.atos.daf.ct2.role.csproj",
+        "projectUniqueName": "c:\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.role\\net.atos.daf.ct2.role.csproj",
         "projectName": "net.atos.daf.ct2.role",
-        "projectPath": "c:\\atos.daf.ct2.0\\dotnet\\corecomponents\\role\\net.atos.daf.ct2.role\\net.atos.daf.ct2.role.csproj",
+        "projectPath": "c:\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.role\\net.atos.daf.ct2.role.csproj",
         "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
-        "outputPath": "c:\\atos.daf.ct2.0\\dotnet\\corecomponents\\role\\net.atos.daf.ct2.role\\obj\\",
+        "outputPath": "c:\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.role\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
