@@ -80,3 +80,10 @@ C:\DAF\DAFProject\dafct2.0\BusinessServices\dotnet\businessservices\businessserv
 C:\DAF\DAFProject\dafct2.0\BusinessServices\dotnet\businessservices\businessservices\services\net.atos.daf.ct2.roleservice\obj\Debug\netcoreapp3.1\staticwebassets\net.atos.daf.ct2.roleservice.StaticWebAssets.xml
 C:\DAF\DAFProject\dafct2.0\BusinessServices\dotnet\businessservices\businessservices\services\net.atos.daf.ct2.roleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.roleservice.dll
 C:\DAF\DAFProject\dafct2.0\BusinessServices\dotnet\businessservices\businessservices\services\net.atos.daf.ct2.roleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.roleservice.pdb
+c:\atos.daf.ct2.0\dotnet\businessservices\roles\net.atos.daf.ct2.roleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.roleservice.csprojAssemblyReference.cache
+c:\atos.daf.ct2.0\dotnet\businessservices\roles\net.atos.daf.ct2.roleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.roleservice.MvcApplicationPartsAssemblyInfo.cs
+c:\atos.daf.ct2.0\dotnet\businessservices\roles\net.atos.daf.ct2.roleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.roleservice.MvcApplicationPartsAssemblyInfo.cache
+c:\atos.daf.ct2.0\dotnet\businessservices\roles\net.atos.daf.ct2.roleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.roleservice.AssemblyInfoInputs.cache
+c:\atos.daf.ct2.0\dotnet\businessservices\roles\net.atos.daf.ct2.roleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.roleservice.AssemblyInfo.cs
+c:\atos.daf.ct2.0\dotnet\businessservices\roles\net.atos.daf.ct2.roleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.roleservice.dll
+c:\atos.daf.ct2.0\dotnet\businessservices\roles\net.atos.daf.ct2.roleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.roleservice.pdb

@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.role.entity;
-using net.atos.daf.ct2.rolerepository;
+//using net.atos.daf.ct2.rolerepository;
+using net.atos.daf.ct2.role.repository;
 namespace net.atos.daf.ct2.roleservice.Controllers
 {
      [ApiController]

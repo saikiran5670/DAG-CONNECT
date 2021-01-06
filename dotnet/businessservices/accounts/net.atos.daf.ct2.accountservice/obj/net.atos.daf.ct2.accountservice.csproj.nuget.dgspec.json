@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\DAF\\DAFProject\\dafct2.0\\BusinessServices\\dotnet\\businessservices\\businessservices\\services\\net.atos.daf.ct2.accountservice\\net.atos.daf.ct2.accountservice.csproj": {}
+    "c:\\atos.daf.ct2.0\\dotnet\\businessservices\\accounts\\net.atos.daf.ct2.accountservice\\net.atos.daf.ct2.accountservice.csproj": {}
   },
   "projects": {
-    "c:\\DAF\\DAFProject\\dafct2.0\\BusinessServices\\dotnet\\businessservices\\businessservices\\services\\net.atos.daf.ct2.accountservice\\net.atos.daf.ct2.accountservice.csproj": {
+    "c:\\atos.daf.ct2.0\\dotnet\\businessservices\\accounts\\net.atos.daf.ct2.accountservice\\net.atos.daf.ct2.accountservice.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\DAF\\DAFProject\\dafct2.0\\BusinessServices\\dotnet\\businessservices\\businessservices\\services\\net.atos.daf.ct2.accountservice\\net.atos.daf.ct2.accountservice.csproj",
+        "projectUniqueName": "c:\\atos.daf.ct2.0\\dotnet\\businessservices\\accounts\\net.atos.daf.ct2.accountservice\\net.atos.daf.ct2.accountservice.csproj",
         "projectName": "net.atos.daf.ct2.accountservice",
-        "projectPath": "c:\\DAF\\DAFProject\\dafct2.0\\BusinessServices\\dotnet\\businessservices\\businessservices\\services\\net.atos.daf.ct2.accountservice\\net.atos.daf.ct2.accountservice.csproj",
+        "projectPath": "c:\\atos.daf.ct2.0\\dotnet\\businessservices\\accounts\\net.atos.daf.ct2.accountservice\\net.atos.daf.ct2.accountservice.csproj",
         "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
-        "outputPath": "c:\\DAF\\DAFProject\\dafct2.0\\BusinessServices\\dotnet\\businessservices\\businessservices\\services\\net.atos.daf.ct2.accountservice\\obj\\",
+        "outputPath": "c:\\atos.daf.ct2.0\\dotnet\\businessservices\\accounts\\net.atos.daf.ct2.accountservice\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

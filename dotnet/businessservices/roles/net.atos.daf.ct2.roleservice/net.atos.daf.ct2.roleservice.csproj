@@ -12,11 +12,13 @@
     <Reference Include="net.atos.daf.ct2.audit">
       <HintPath>..\..\dlls\net.atos.daf.ct2.audit.dll</HintPath>
     </Reference>
+      <Reference Include="net.atos.daf.ct2.role">
+      <HintPath>..\..\dlls\net.atos.daf.ct2.role.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\components\net.atos.daf.ct2.role\net.atos.daf.ct2.role.csproj" />
-    <ProjectReference Include="..\..\repository\net.atos.daf.ct2.rolerepository\net.atos.daf.ct2.rolerepository.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -434,11 +434,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\DAF\\DAFProject\\dafct2.0\\BusinessServices\\dotnet\\businessservices\\businessservices\\test\\services\\net.atos.daf.ct2.accountservice.test\\net.atos.daf.ct2.accountservice.test.csproj",
+      "projectUniqueName": "c:\\atos.daf.ct2.0\\dotnet\\businessservices\\vehicle\\test\\services\\net.atos.daf.ct2.accountservice.test\\net.atos.daf.ct2.accountservice.test.csproj",
       "projectName": "net.atos.daf.ct2.accountservice.test",
-      "projectPath": "c:\\DAF\\DAFProject\\dafct2.0\\BusinessServices\\dotnet\\businessservices\\businessservices\\test\\services\\net.atos.daf.ct2.accountservice.test\\net.atos.daf.ct2.accountservice.test.csproj",
+      "projectPath": "c:\\atos.daf.ct2.0\\dotnet\\businessservices\\vehicle\\test\\services\\net.atos.daf.ct2.accountservice.test\\net.atos.daf.ct2.accountservice.test.csproj",
       "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
-      "outputPath": "c:\\DAF\\DAFProject\\dafct2.0\\BusinessServices\\dotnet\\businessservices\\businessservices\\test\\services\\net.atos.daf.ct2.accountservice.test\\obj\\",
+      "outputPath": "c:\\atos.daf.ct2.0\\dotnet\\businessservices\\vehicle\\test\\services\\net.atos.daf.ct2.accountservice.test\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

@@ -20,3 +20,14 @@ C:\DAF\DAFProject\dafct2.0\BusinessServices\dotnet\businessservices\businessserv
 C:\DAF\DAFProject\dafct2.0\BusinessServices\dotnet\businessservices\businessservices\test\services\net.atos.daf.ct2.accountservice.test\obj\Debug\netstandard2.0\net.atos.daf.ct2.accountservice.test.AssemblyInfo.cs
 C:\DAF\DAFProject\dafct2.0\BusinessServices\dotnet\businessservices\businessservices\test\services\net.atos.daf.ct2.accountservice.test\obj\Debug\netstandard2.0\net.atos.daf.ct2.accountservice.test.dll
 C:\DAF\DAFProject\dafct2.0\BusinessServices\dotnet\businessservices\businessservices\test\services\net.atos.daf.ct2.accountservice.test\obj\Debug\netstandard2.0\net.atos.daf.ct2.accountservice.test.pdb
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\test\services\net.atos.daf.ct2.accountservice.test\bin\Debug\netstandard2.0\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\test\services\net.atos.daf.ct2.accountservice.test\bin\Debug\netstandard2.0\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\test\services\net.atos.daf.ct2.accountservice.test\bin\Debug\netstandard2.0\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\test\services\net.atos.daf.ct2.accountservice.test\bin\Debug\netstandard2.0\net.atos.daf.ct2.accountservice.test.deps.json
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\test\services\net.atos.daf.ct2.accountservice.test\bin\Debug\netstandard2.0\net.atos.daf.ct2.accountservice.test.dll
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\test\services\net.atos.daf.ct2.accountservice.test\bin\Debug\netstandard2.0\net.atos.daf.ct2.accountservice.test.pdb
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\test\services\net.atos.daf.ct2.accountservice.test\obj\Debug\netstandard2.0\net.atos.daf.ct2.accountservice.test.csprojAssemblyReference.cache
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\test\services\net.atos.daf.ct2.accountservice.test\obj\Debug\netstandard2.0\net.atos.daf.ct2.accountservice.test.AssemblyInfoInputs.cache
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\test\services\net.atos.daf.ct2.accountservice.test\obj\Debug\netstandard2.0\net.atos.daf.ct2.accountservice.test.AssemblyInfo.cs
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\test\services\net.atos.daf.ct2.accountservice.test\obj\Debug\netstandard2.0\net.atos.daf.ct2.accountservice.test.dll
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\test\services\net.atos.daf.ct2.accountservice.test\obj\Debug\netstandard2.0\net.atos.daf.ct2.accountservice.test.pdb

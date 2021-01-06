@@ -78,3 +78,10 @@ C:\DAF\DAFProject\dafct2.0\BusinessServices\dotnet\businessservices\businessserv
 C:\DAF\DAFProject\dafct2.0\BusinessServices\dotnet\businessservices\businessservices\services\net.atos.daf.ct2.vehicleservice\obj\Debug\netcoreapp3.1\staticwebassets\net.atos.daf.ct2.vehicleservice.StaticWebAssets.xml
 C:\DAF\DAFProject\dafct2.0\BusinessServices\dotnet\businessservices\businessservices\services\net.atos.daf.ct2.vehicleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.vehicleservice.dll
 C:\DAF\DAFProject\dafct2.0\BusinessServices\dotnet\businessservices\businessservices\services\net.atos.daf.ct2.vehicleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.vehicleservice.pdb
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\net.atos.daf.ct2.vehicleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.vehicleservice.csprojAssemblyReference.cache
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\net.atos.daf.ct2.vehicleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.vehicleservice.MvcApplicationPartsAssemblyInfo.cs
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\net.atos.daf.ct2.vehicleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.vehicleservice.MvcApplicationPartsAssemblyInfo.cache
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\net.atos.daf.ct2.vehicleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.vehicleservice.AssemblyInfoInputs.cache
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\net.atos.daf.ct2.vehicleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.vehicleservice.AssemblyInfo.cs
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\net.atos.daf.ct2.vehicleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.vehicleservice.dll
+c:\atos.daf.ct2.0\dotnet\businessservices\vehicle\net.atos.daf.ct2.vehicleservice\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.vehicleservice.pdb
