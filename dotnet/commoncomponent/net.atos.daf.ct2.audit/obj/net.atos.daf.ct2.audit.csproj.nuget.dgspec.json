@@ -30,8 +30,8 @@
         "frameworks": {
           "netstandard2.0": {
             "projectReferences": {
-              "C:\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj": {
-                "projectPath": "C:\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj"
+              "c:\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj": {
+                "projectPath": "c:\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj"
               }
             }
           }
@@ -74,14 +74,14 @@
         }
       }
     },
-    "C:\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj": {
+    "c:\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj",
+        "projectUniqueName": "c:\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj",
         "projectName": "net.atos.daf.ct2.data",
-        "projectPath": "C:\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj",
+        "projectPath": "c:\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj",
         "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
-        "outputPath": "C:\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\obj\\",
+        "outputPath": "c:\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

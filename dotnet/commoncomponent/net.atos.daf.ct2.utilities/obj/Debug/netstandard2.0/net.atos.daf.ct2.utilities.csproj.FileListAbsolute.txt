@@ -1,8 +1,8 @@
 c:\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.utilities\bin\Debug\netstandard2.0\net.atos.daf.ct2.utilities.deps.json
-C:\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.utilities\bin\Debug\netstandard2.0\net.atos.daf.ct2.utilities.dll
-C:\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.utilities\bin\Debug\netstandard2.0\net.atos.daf.ct2.utilities.pdb
-C:\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.utilities\obj\Debug\netstandard2.0\net.atos.daf.ct2.utilities.csprojAssemblyReference.cache
-C:\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.utilities\obj\Debug\netstandard2.0\net.atos.daf.ct2.utilities.AssemblyInfoInputs.cache
-C:\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.utilities\obj\Debug\netstandard2.0\net.atos.daf.ct2.utilities.AssemblyInfo.cs
-C:\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.utilities\obj\Debug\netstandard2.0\net.atos.daf.ct2.utilities.dll
-C:\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.utilities\obj\Debug\netstandard2.0\net.atos.daf.ct2.utilities.pdb
+c:\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.utilities\bin\Debug\netstandard2.0\net.atos.daf.ct2.utilities.dll
+c:\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.utilities\bin\Debug\netstandard2.0\net.atos.daf.ct2.utilities.pdb
+c:\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.utilities\obj\Debug\netstandard2.0\net.atos.daf.ct2.utilities.csprojAssemblyReference.cache
+c:\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.utilities\obj\Debug\netstandard2.0\net.atos.daf.ct2.utilities.AssemblyInfoInputs.cache
+c:\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.utilities\obj\Debug\netstandard2.0\net.atos.daf.ct2.utilities.AssemblyInfo.cs
+c:\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.utilities\obj\Debug\netstandard2.0\net.atos.daf.ct2.utilities.dll
+c:\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.utilities\obj\Debug\netstandard2.0\net.atos.daf.ct2.utilities.pdb

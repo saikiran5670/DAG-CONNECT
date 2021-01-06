@@ -950,8 +950,8 @@
       "frameworks": {
         "netstandard2.0": {
           "projectReferences": {
-            "C:\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj": {
-              "projectPath": "C:\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj"
+            "c:\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj": {
+              "projectPath": "c:\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj"
             }
           }
         }
