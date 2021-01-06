@@ -1,0 +1,10 @@
+c:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.driver\bin\Debug\netstandard2.0\net.atos.daf.ct2.driver.deps.json
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.driver\bin\Debug\netstandard2.0\net.atos.daf.ct2.driver.dll
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.driver\bin\Debug\netstandard2.0\net.atos.daf.ct2.driver.pdb
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.driver\bin\Debug\netstandard2.0\net.atos.daf.ct2.data.dll
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.driver\obj\Debug\netstandard2.0\net.atos.daf.ct2.driver.csprojAssemblyReference.cache
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.driver\obj\Debug\netstandard2.0\net.atos.daf.ct2.driver.AssemblyInfoInputs.cache
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.driver\obj\Debug\netstandard2.0\net.atos.daf.ct2.driver.AssemblyInfo.cs
+c:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.driver\obj\Debug\netstandard2.0\net.atos.daf.ct2.driver.csproj.CopyComplete
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.driver\obj\Debug\netstandard2.0\net.atos.daf.ct2.driver.dll
+C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.driver\obj\Debug\netstandard2.0\net.atos.daf.ct2.driver.pdb
