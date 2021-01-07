@@ -17,7 +17,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.visibility
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.group", "net.atos.daf.ct2.group\net.atos.daf.ct2.group.csproj", "{DC410437-CB74-4D7D-A892-48F53FC7197A}"
 EndProject
-
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{002461F9-4715-4584-BE28-00718FFA7CA4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "net.atos.daf.ct2.vehicletest", "net.atos.daf.ct2.vehicletest", "{947204D2-4A88-46E4-89FD-47E1E571D5A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vehicletest.Tests", "test\net.atos.daf.ct2.vehicletest\vehicletest.Tests\vehicletest.Tests.csproj", "{39097E56-4279-4E5E-A1A4-9C678FB63557}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -115,5 +120,21 @@ Global
 		{DC410437-CB74-4D7D-A892-48F53FC7197A}.Release|x64.Build.0 = Release|Any CPU
 		{DC410437-CB74-4D7D-A892-48F53FC7197A}.Release|x86.ActiveCfg = Release|Any CPU
 		{DC410437-CB74-4D7D-A892-48F53FC7197A}.Release|x86.Build.0 = Release|Any CPU
+		{39097E56-4279-4E5E-A1A4-9C678FB63557}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39097E56-4279-4E5E-A1A4-9C678FB63557}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39097E56-4279-4E5E-A1A4-9C678FB63557}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{39097E56-4279-4E5E-A1A4-9C678FB63557}.Debug|x64.Build.0 = Debug|Any CPU
+		{39097E56-4279-4E5E-A1A4-9C678FB63557}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{39097E56-4279-4E5E-A1A4-9C678FB63557}.Debug|x86.Build.0 = Debug|Any CPU
+		{39097E56-4279-4E5E-A1A4-9C678FB63557}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39097E56-4279-4E5E-A1A4-9C678FB63557}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39097E56-4279-4E5E-A1A4-9C678FB63557}.Release|x64.ActiveCfg = Release|Any CPU
+		{39097E56-4279-4E5E-A1A4-9C678FB63557}.Release|x64.Build.0 = Release|Any CPU
+		{39097E56-4279-4E5E-A1A4-9C678FB63557}.Release|x86.ActiveCfg = Release|Any CPU
+		{39097E56-4279-4E5E-A1A4-9C678FB63557}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{947204D2-4A88-46E4-89FD-47E1E571D5A3} = {002461F9-4715-4584-BE28-00718FFA7CA4}
+		{39097E56-4279-4E5E-A1A4-9C678FB63557} = {947204D2-4A88-46E4-89FD-47E1E571D5A3}
 	EndGlobalSection
 EndGlobal
