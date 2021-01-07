@@ -1,3 +1,0 @@
-C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.user\obj\Debug\netstandard2.0\net.atos.daf.ct2.user.csprojAssemblyReference.cache
-C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.user\obj\Debug\netstandard2.0\net.atos.daf.ct2.user.AssemblyInfoInputs.cache
-C:\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.user\obj\Debug\netstandard2.0\net.atos.daf.ct2.user.AssemblyInfo.cs
