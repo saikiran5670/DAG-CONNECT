@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj": {}
+    "c:\\DAF\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj": {}
   },
   "projects": {
-    "C:\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj": {
+    "c:\\DAF\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj",
+        "projectUniqueName": "c:\\DAF\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj",
         "projectName": "net.atos.daf.ct2.account",
-        "projectPath": "C:\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj",
-        "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
-        "outputPath": "C:\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\obj\\",
+        "projectPath": "c:\\DAF\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj",
+        "packagesPath": "C:\\Users\\A735948\\.nuget\\packages\\",
+        "outputPath": "c:\\DAF\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\a433867\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\A735948\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -70,7 +70,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.109\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"
         }
       }
     }

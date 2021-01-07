@@ -8,23 +8,23 @@
     ".NETCoreApp,Version=v3.1": []
   },
   "packageFolders": {
-    "C:\\Users\\a433867\\.nuget\\packages\\": {},
+    "C:\\Users\\A735948\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\atos.daf.ct2.0\\dotnet\\businessservices\\net.atos.daf.ct2.identityservice\\net.atos.daf.ct2.identityservice.csproj",
+      "projectUniqueName": "c:\\DAF\\atos.daf.ct2.0\\dotnet\\businessservices\\net.atos.daf.ct2.identityservice\\net.atos.daf.ct2.identityservice.csproj",
       "projectName": "net.atos.daf.ct2.identityservice",
-      "projectPath": "C:\\atos.daf.ct2.0\\dotnet\\businessservices\\net.atos.daf.ct2.identityservice\\net.atos.daf.ct2.identityservice.csproj",
-      "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
-      "outputPath": "C:\\atos.daf.ct2.0\\dotnet\\businessservices\\net.atos.daf.ct2.identityservice\\obj\\",
+      "projectPath": "c:\\DAF\\atos.daf.ct2.0\\dotnet\\businessservices\\net.atos.daf.ct2.identityservice\\net.atos.daf.ct2.identityservice.csproj",
+      "packagesPath": "C:\\Users\\A735948\\.nuget\\packages\\",
+      "outputPath": "c:\\DAF\\atos.daf.ct2.0\\dotnet\\businessservices\\net.atos.daf.ct2.identityservice\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\a433867\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\A735948\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -65,7 +65,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.109\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"
       }
     }
   }
