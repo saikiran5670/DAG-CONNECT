@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.identity
         /// </summary>
         /// <param name="user"> User model that will having username and password as an input</param>
         /// <returns>Httpstatuscode along with Authentication token as a JSON or error message if any</returns>
-        public async Task<Response> AccessToken(Account user)
+        public async Task<Response> AccessToken(Identity user)
         {
             Response response= new Response();
             try
@@ -53,7 +53,7 @@ namespace net.atos.daf.ct2.identity
         /// </summary>
         /// <param name="user"> User model that will have username and password as an input</param>
         /// <returns>check server link and password</returns>
-        public string getURL(Account user)
+        public string getURL(Identity user)
         {
             try
             {
