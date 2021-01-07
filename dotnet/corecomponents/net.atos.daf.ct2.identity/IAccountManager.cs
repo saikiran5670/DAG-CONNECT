@@ -3,7 +3,7 @@ using net.atos.daf.ct2.identity.entity;
 using net.atos.daf.ct2.account.entity;
 namespace net.atos.daf.ct2.identity
 {
-    public interface IUserManagement
+    public interface IAccountManager
     {
         Task<Response> CreateUser(Account user);
         Task<Response> UpdateUser(Account user);

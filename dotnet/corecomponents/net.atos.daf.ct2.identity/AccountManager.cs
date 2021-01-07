@@ -10,13 +10,13 @@ using net.atos.daf.ct2.account.entity;
 
 namespace net.atos.daf.ct2.identity
 {
-    public class UserManagement: IUserManagement
+    public class AccountManager: IAccountManager
     {
      private string baseUrl,authUrl,userMgmUrl,AuthClientId,
      AuthClientSecret,UserMgmClientId,UserMgmClientSecret,realm=string.Empty;  
      private HttpClient client = new HttpClient();
 
-       public UserManagement()
+       public AccountManager()
        {
             var setting = ConfigHelper.GetConfig();
             baseUrl=setting["KeycloakStrings:baseUrl"];

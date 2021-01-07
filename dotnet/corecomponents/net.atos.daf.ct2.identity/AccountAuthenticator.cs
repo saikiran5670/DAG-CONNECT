@@ -8,12 +8,12 @@ using net.atos.daf.ct2.account.entity;
 
 namespace net.atos.daf.ct2.identity
 {
-    public class Autheticator:IAutheticator
+    public class AccountAuthenticator:IAccountAuthenticator
     {
        private string baseUrl,authUrl,AuthClientId,AuthClientSecret=string.Empty;
        private string realm=string.Empty;
         private HttpClient client = new HttpClient();
-       public Autheticator()
+       public AccountAuthenticator()
        {
             var setting = ConfigHelper.GetConfig();
             baseUrl=setting["KeycloakStrings:baseUrl"];
