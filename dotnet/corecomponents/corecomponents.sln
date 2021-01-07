@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.group", "n
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{002461F9-4715-4584-BE28-00718FFA7CA4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.vehicle.test", "test\net.atos.daf.ct2.vehicle.test\net.atos.daf.ct2.vehicle.test.csproj", "{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -116,7 +118,20 @@ Global
 		{DC410437-CB74-4D7D-A892-48F53FC7197A}.Release|x64.Build.0 = Release|Any CPU
 		{DC410437-CB74-4D7D-A892-48F53FC7197A}.Release|x86.ActiveCfg = Release|Any CPU
 		{DC410437-CB74-4D7D-A892-48F53FC7197A}.Release|x86.Build.0 = Release|Any CPU
+		{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}.Debug|x64.Build.0 = Debug|Any CPU
+		{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}.Debug|x86.Build.0 = Debug|Any CPU
+		{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}.Release|x64.ActiveCfg = Release|Any CPU
+		{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}.Release|x64.Build.0 = Release|Any CPU
+		{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}.Release|x86.ActiveCfg = Release|Any CPU
+		{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{785C356A-7557-4BD0-ABCB-EB2064C4FF9C} = {002461F9-4715-4584-BE28-00718FFA7CA4}
 	EndGlobalSection
 EndGlobal
