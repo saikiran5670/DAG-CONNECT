@@ -4,16 +4,15 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using net.atos.daf.ct2.identity.entity;
-using net.atos.daf.ct2.account.entity;
 
 namespace net.atos.daf.ct2.identity
 {
-    public class Autheticator:IAutheticator
+    public class AccountAuthenticator:IAccountAuthenticator
     {
        private string baseUrl,authUrl,AuthClientId,AuthClientSecret=string.Empty;
        private string realm=string.Empty;
         private HttpClient client = new HttpClient();
-       public Autheticator()
+       public AccountAuthenticator()
        {
             var setting = ConfigHelper.GetConfig();
             baseUrl=setting["KeycloakStrings:baseUrl"];
@@ -27,7 +26,7 @@ namespace net.atos.daf.ct2.identity
         /// </summary>
         /// <param name="user"> User model that will having username and password as an input</param>
         /// <returns>Httpstatuscode along with Authentication token as a JSON or error message if any</returns>
-        public async Task<Response> AccessToken(Account user)
+        public async Task<Response> AccessToken(Identity user)
         {
             Response response= new Response();
             try
@@ -53,7 +52,7 @@ namespace net.atos.daf.ct2.identity
         /// </summary>
         /// <param name="user"> User model that will have username and password as an input</param>
         /// <returns>check server link and password</returns>
-        public string getURL(Account user)
+        public string getURL(Identity user)
         {
             try
             {

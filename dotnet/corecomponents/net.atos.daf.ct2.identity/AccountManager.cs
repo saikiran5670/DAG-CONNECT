@@ -6,17 +6,16 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using net.atos.daf.ct2.identity.entity;
-using net.atos.daf.ct2.account.entity;
 
 namespace net.atos.daf.ct2.identity
 {
-    public class UserManagement: IUserManagement
+    public class AccountManager: IAccountManager
     {
      private string baseUrl,authUrl,userMgmUrl,AuthClientId,
      AuthClientSecret,UserMgmClientId,UserMgmClientSecret,realm=string.Empty;  
      private HttpClient client = new HttpClient();
 
-       public UserManagement()
+       public AccountManager()
        {
             var setting = ConfigHelper.GetConfig();
             baseUrl=setting["KeycloakStrings:baseUrl"];
@@ -33,7 +32,7 @@ namespace net.atos.daf.ct2.identity
         /// </summary>
         /// <param name="user"> User model that will having information of user creation</param>
         /// <returns>Httpstatuscode along with success or failed message if any</returns>
-        public async Task<Response> CreateUser(Account user)
+        public async Task<Response> CreateUser(Identity user)
         {
             Token token = new Token();
             String accessToekn= string.Empty;
@@ -78,19 +77,19 @@ namespace net.atos.daf.ct2.identity
                 throw;
             }
         }
-        public async Task<Response> UpdateUser(Account user)
+        public async Task<Response> UpdateUser(Identity user)
         {
             return await UpdateOrDeleteUser(user,"UPDATE");
         }
-        public async Task<Response> DeleteUser(Account user)
+        public async Task<Response> DeleteUser(Identity user)
         {
             return await UpdateOrDeleteUser(user,"DELETE");
         }
-        public async Task<Response> ChangeUserPassword(Account user)
+        public async Task<Response> ChangeUserPassword(Identity user)
         {
             return await UpdateOrDeleteUser(user,"CHANGEPASSWORD");
         }
-        private async Task<Response> UpdateOrDeleteUser(Account user,string actionType)
+        private async Task<Response> UpdateOrDeleteUser(Identity user,string actionType)
         {
             Token token = new Token();
             String accessToekn= string.Empty;
@@ -177,14 +176,14 @@ namespace net.atos.daf.ct2.identity
             return client;
         }
         
-        private async Task<HttpResponseMessage> GetUserIdByEmail(string baseUrl,string accesstoken, Account user)
+        private async Task<HttpResponseMessage> GetUserIdByEmail(string baseUrl,string accesstoken, Identity user)
         {
             string strUserId=string.Empty;
             client = new HttpClient();
             client = PrepareClientHeader(baseUrl,accesstoken);            
             return await client.GetAsync(userMgmUrl.Replace("{{realm}}",realm) + "?username=" + user.UserName);
         }
-        private string GetUserBody(Account user, string keycloakUserid = null, string actiontype="")
+        private string GetUserBody(Identity user, string keycloakUserid = null, string actiontype="")
         {
             StringBuilder stringData = new StringBuilder();
             stringData.Append("{");

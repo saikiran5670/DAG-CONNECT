@@ -1,0 +1,1 @@
+This repository will contain poc for authentication by using keycloak Admin REST API
