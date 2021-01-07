@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using net.atos.daf.ct2.identity.entity;
-using net.atos.daf.ct2.account.entity;
 
 namespace net.atos.daf.ct2.identity
 {
