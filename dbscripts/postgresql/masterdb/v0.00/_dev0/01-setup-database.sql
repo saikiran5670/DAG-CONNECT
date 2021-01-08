@@ -1,3 +1,4 @@
+\set AUTOCOMMIT ON;
 CREATE DATABASE dafconnectmasterdatabase
 WITH
    OWNER =  pgadmin
@@ -9,4 +10,4 @@ WITH
    --[ALLOW_CONNECTIONS = true]
    CONNECTION LIMIT = -1
    --[IS_TEMPLATE = true | false ]
-
+;
