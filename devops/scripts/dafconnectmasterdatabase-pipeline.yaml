@@ -29,6 +29,10 @@ jobs:
   - checkout: self
   - task: UseYuniqlCLI@1
     displayName: Use Yuniql
+    
+  - task: CmdLine@2
+    inputs:
+     script: 'psql -c ''\set AUTOCOMMIT on'''
   
   - task: RunYuniqlCLI@1
     displayName: Run Yuniql
