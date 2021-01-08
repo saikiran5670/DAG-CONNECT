@@ -32,7 +32,7 @@ jobs:
     
   - task: CmdLine@2
     inputs:
-     script: 'export PGPASSWORD=$(PGDBPASSWORD2);psql -h dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com -p 5432 -d Test -U pgadmin@dafct-dev0-dta-cdp-pgsql -c ''\set AUTOCOMMIT on'''
+     script: 'export PGPASSWORD=W%PQ1AI}Y\97;psql -h dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com -p 5432 -d Test -U pgadmin@dafct-dev0-dta-cdp-pgsql -c ''\set AUTOCOMMIT on'''
   
   - task: RunYuniqlCLI@1
     displayName: Run Yuniql
