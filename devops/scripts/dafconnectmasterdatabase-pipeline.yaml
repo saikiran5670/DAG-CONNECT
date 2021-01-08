@@ -33,7 +33,7 @@ jobs:
   - task: RunYuniqlCLI@1
     displayName: Run Yuniql
     inputs:
-      connectionString: $(PGTESTDBCONNECTIONSTRING)
+      connectionString: $(PGDAFCONNECTMASTERDATABASECONNECTIONSTRING)
       workspacePath: $(PGMASTERDBSCRIPTS)
       targetPlatform: postgresql
       additionalArguments: --debug --environment $(ENVIRONMENT)
