@@ -16,10 +16,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\net.atos.daf.ct2.group\net.atos.daf.ct2.group.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-   
-  </ItemGroup>
-
-     
 </Project>
