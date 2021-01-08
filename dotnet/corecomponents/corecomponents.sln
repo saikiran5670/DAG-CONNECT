@@ -1,25 +1,27 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.account", "net.atos.daf.ct2.account\net.atos.daf.ct2.account.csproj", "{2D985DEE-D438-4385-88C1-3BD026BC041F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.account", "net.atos.daf.ct2.account\net.atos.daf.ct2.account.csproj", "{2D985DEE-D438-4385-88C1-3BD026BC041F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.role", "net.atos.daf.ct2.role\net.atos.daf.ct2.role.csproj", "{D9B31664-7EF5-46B0-AE8A-6B9EB880D8F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.role", "net.atos.daf.ct2.role\net.atos.daf.ct2.role.csproj", "{D9B31664-7EF5-46B0-AE8A-6B9EB880D8F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.vehicle", "net.atos.daf.ct2.vehicle\net.atos.daf.ct2.vehicle.csproj", "{3C68DC46-24B3-4AA1-BDEE-C0660E91F729}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.vehicle", "net.atos.daf.ct2.vehicle\net.atos.daf.ct2.vehicle.csproj", "{3C68DC46-24B3-4AA1-BDEE-C0660E91F729}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.identity", "net.atos.daf.ct2.identity\net.atos.daf.ct2.identity.csproj", "{3CFDCF20-FA1A-458B-B735-43D0A7CF5618}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.identity", "net.atos.daf.ct2.identity\net.atos.daf.ct2.identity.csproj", "{3CFDCF20-FA1A-458B-B735-43D0A7CF5618}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.driver", "net.atos.daf.ct2.driver\net.atos.daf.ct2.driver.csproj", "{2476945E-BCB5-4B1C-BB86-D7025ABE14DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.driver", "net.atos.daf.ct2.driver\net.atos.daf.ct2.driver.csproj", "{2476945E-BCB5-4B1C-BB86-D7025ABE14DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.visibility", "net.atos.daf.ct2.visibility\net.atos.daf.ct2.visibility.csproj", "{C476731B-76EB-47AC-B50C-8097A3A0F638}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.visibility", "net.atos.daf.ct2.visibility\net.atos.daf.ct2.visibility.csproj", "{C476731B-76EB-47AC-B50C-8097A3A0F638}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.group", "net.atos.daf.ct2.group\net.atos.daf.ct2.group.csproj", "{DC410437-CB74-4D7D-A892-48F53FC7197A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.group", "net.atos.daf.ct2.group\net.atos.daf.ct2.group.csproj", "{DC410437-CB74-4D7D-A892-48F53FC7197A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{002461F9-4715-4584-BE28-00718FFA7CA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.vehicle.test", "test\net.atos.daf.ct2.vehicle.test\net.atos.daf.ct2.vehicle.test.csproj", "{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.vehicle.test", "test\net.atos.daf.ct2.vehicle.test\net.atos.daf.ct2.vehicle.test.csproj", "{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.group.test", "test\net.atos.daf.ct2.group.test\net.atos.daf.ct2.group.test.csproj", "{B2B742C4-1F87-45A3-A4DF-CF34D9F996D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,9 +31,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{2D985DEE-D438-4385-88C1-3BD026BC041F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -130,8 +129,27 @@ Global
 		{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}.Release|x64.Build.0 = Release|Any CPU
 		{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}.Release|x86.ActiveCfg = Release|Any CPU
 		{785C356A-7557-4BD0-ABCB-EB2064C4FF9C}.Release|x86.Build.0 = Release|Any CPU
+		{B2B742C4-1F87-45A3-A4DF-CF34D9F996D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2B742C4-1F87-45A3-A4DF-CF34D9F996D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2B742C4-1F87-45A3-A4DF-CF34D9F996D9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B2B742C4-1F87-45A3-A4DF-CF34D9F996D9}.Debug|x64.Build.0 = Debug|Any CPU
+		{B2B742C4-1F87-45A3-A4DF-CF34D9F996D9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B2B742C4-1F87-45A3-A4DF-CF34D9F996D9}.Debug|x86.Build.0 = Debug|Any CPU
+		{B2B742C4-1F87-45A3-A4DF-CF34D9F996D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2B742C4-1F87-45A3-A4DF-CF34D9F996D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2B742C4-1F87-45A3-A4DF-CF34D9F996D9}.Release|x64.ActiveCfg = Release|Any CPU
+		{B2B742C4-1F87-45A3-A4DF-CF34D9F996D9}.Release|x64.Build.0 = Release|Any CPU
+		{B2B742C4-1F87-45A3-A4DF-CF34D9F996D9}.Release|x86.ActiveCfg = Release|Any CPU
+		{B2B742C4-1F87-45A3-A4DF-CF34D9F996D9}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{785C356A-7557-4BD0-ABCB-EB2064C4FF9C} = {002461F9-4715-4584-BE28-00718FFA7CA4}
+		{B2B742C4-1F87-45A3-A4DF-CF34D9F996D9} = {002461F9-4715-4584-BE28-00718FFA7CA4}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7A73F63C-82DC-400E-BCA0-2C49196C9FC2}
 	EndGlobalSection
 EndGlobal
