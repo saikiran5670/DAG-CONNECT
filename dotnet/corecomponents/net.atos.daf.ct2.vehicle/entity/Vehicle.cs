@@ -13,12 +13,12 @@ namespace net.atos.daf.ct2.vehicle.entity
         public string RegistrationNo { get; set; }
         public DateTime ManufactureDate { get; set; }
         public string ChassisNo { get; set; } 
-        public String Status { get; set; }
+        public VehicleStatusType Status { get; set; }
         public DateTime StatusDate { get; set; }
         public DateTime TerminationDate { get; set; } 
         public bool  IsActive { get; set; }
         public int Account_Id { get; set; }
-        public int Type { get; set; } 
+        public OptInOptOutType Type { get; set; } 
         public VehicleProperty vehicleProperty { get; set; }
         public List<VehicleOptInOptOut> vehicleOptInOptOut { get; set; }
         

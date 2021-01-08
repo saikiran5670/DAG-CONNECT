@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.group.test
     {
         private readonly IDataAccess _dataAccess;
         private readonly IConfiguration _config;
-         readonly IGroupRepository _groupRepository;        
+        readonly IGroupRepository _groupRepository;        
         private readonly IAuditLog _auditlog;
         public GroupRepositoryTest()
         {
@@ -30,8 +30,8 @@ namespace net.atos.daf.ct2.group.test
             group.FunctionEnum = FunctionEnum.None;
             group.OrganizationId = 1;
             group.RefId = null;
-            group.Name = "Account Group10";
-            group.Description = "Account Group Test10 ";
+            group.Name = "Account Group12";
+            group.Description = "Account Group Test12 ";
             var result = _groupRepository.Create(group).Result;
             Assert.IsTrue(result != null && result.Id > 0);
         }
