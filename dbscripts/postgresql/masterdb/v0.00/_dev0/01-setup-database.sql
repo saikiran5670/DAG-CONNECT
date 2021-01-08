@@ -1,3 +1,4 @@
+\set AUTOCOMMIT ON;
 CREATE DATABASE dafconnectmasterdatabase
 WITH
    OWNER =  pgadmin
