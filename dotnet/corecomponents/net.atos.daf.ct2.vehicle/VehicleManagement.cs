@@ -12,120 +12,155 @@ namespace net.atos.daf.ct2.vehiclerepository
         {
             vehicleRepository = _vehicleRepository;
         }
-        public async Task<int> AddVehicle(Vehicle vehicle)
-        {
-            try
-            {
-                return await vehicleRepository.AddVehicle(vehicle);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-         public async Task<int> UpdateVehicle(Vehicle vehicle)
-        {
-            try
-            {
-                return await vehicleRepository.UpdateVehicle(vehicle);
-            }
-            catch (Exception ex)
-            {
-                string err=ex.Message;
-                throw ex;
+    //     public async Task<int> AddVehicle(Vehicle vehicle)
+    //     {
+    //         try
+    //         {
+    //             return await vehicleRepository.AddVehicle(vehicle);
+    //         }
+    //         catch (Exception ex)
+    //         {
+    //             throw ex;
+    //         }
+    //     }
+    //      public async Task<int> UpdateVehicle(Vehicle vehicle)
+    //     {
+    //         try
+    //         {
+    //             return await vehicleRepository.UpdateVehicle(vehicle);
+    //         }
+    //         catch (Exception ex)
+    //         {
+    //             string err=ex.Message;
+    //             throw ex;
 
-            }
-        }
+    //         }
+    //     }
 
-        public async Task<int> DeleteVehicle(int vehicleID, int userId)
-        {
-            try
-            {
-                return await vehicleRepository.DeleteVehicle(vehicleID, userId);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+    //     public async Task<int> DeleteVehicle(int vehicleID, int userId)
+    //     {
+    //         try
+    //         {
+    //             return await vehicleRepository.DeleteVehicle(vehicleID, userId);
+    //         }
+    //         catch (Exception ex)
+    //         {
+    //             throw ex;
+    //         }
+    //     }
 
-        public async Task<IEnumerable<Vehicle>> GetVehicleByID(int vehicleID,int orgid)
-        {
-            try
-            {
-                return await vehicleRepository.GetVehicleByID(vehicleID,orgid);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+    //     public async Task<IEnumerable<Vehicle>> GetVehicleByID(int vehicleID,int orgid)
+    //     {
+    //         try
+    //         {
+    //             return await vehicleRepository.GetVehicleByID(vehicleID,orgid);
+    //         }
+    //         catch (Exception ex)
+    //         {
+    //             throw ex;
+    //         }
+    //     }
 
-         public async Task<int> AddVehicleGroup(VehicleGroup vehicleGroup)
-        {
-            try
-            {
-                return await vehicleRepository.AddVehicleGroup(vehicleGroup);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+    //      public async Task<int> AddVehicleGroup(VehicleGroup vehicleGroup)
+    //     {
+    //         try
+    //         {
+    //             return await vehicleRepository.AddVehicleGroup(vehicleGroup);
+    //         }
+    //         catch (Exception ex)
+    //         {
+    //             throw ex;
+    //         }
+    //     }
 
-         public async Task<int> UpdateVehicleGroup(VehicleGroup vehicleGroup)
-        {
-            try
-            {
-                return await vehicleRepository.UpdateVehicleGroup(vehicleGroup);
-            }
-            catch (Exception ex)            
-            {
-                throw ex;
-            }
-        }
-         public async Task<int> DeleteVehicleGroup(int vehicleGroupID, int userId)
-        {
-            try
-            {
-                return await vehicleRepository.DeleteVehicleGroup(vehicleGroupID, userId);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+    //      public async Task<int> UpdateVehicleGroup(VehicleGroup vehicleGroup)
+    //     {
+    //         try
+    //         {
+    //             return await vehicleRepository.UpdateVehicleGroup(vehicleGroup);
+    //         }
+    //         catch (Exception ex)            
+    //         {
+    //             throw ex;
+    //         }
+    //     }
+    //      public async Task<int> DeleteVehicleGroup(int vehicleGroupID, int userId)
+    //     {
+    //         try
+    //         {
+    //             return await vehicleRepository.DeleteVehicleGroup(vehicleGroupID, userId);
+    //         }
+    //         catch (Exception ex)
+    //         {
+    //             throw ex;
+    //         }
+    //     }
 
-       public async Task<IEnumerable<VehicleGroup>> GetVehicleGroupByID(int vehicleGroupID,int orgid)
-        {
-            try
-            {
-                return await vehicleRepository.GetVehicleGroupByID(vehicleGroupID,orgid);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+    //    public async Task<IEnumerable<VehicleGroup>> GetVehicleGroupByID(int vehicleGroupID,int orgid)
+    //     {
+    //         try
+    //         {
+    //             return await vehicleRepository.GetVehicleGroupByID(vehicleGroupID,orgid);
+    //         }
+    //         catch (Exception ex)
+    //         {
+    //             throw ex;
+    //         }
+    //     }
     
-       public async Task<IEnumerable<VehicleGroup>> GetVehicleGroupByOrgID(int vehOrgID)
+    //    public async Task<IEnumerable<VehicleGroup>> GetVehicleGroupByOrgID(int vehOrgID)
+    //     {
+    //         try
+    //         {
+    //             return  await vehicleRepository.GetVehicleGroupByOrgID(vehOrgID);
+    //         }
+    //         catch (Exception ex)
+    //         {
+    //             throw ex;
+    //         }
+    //     }
+        
+        
+    //     public async Task<IEnumerable<Vehicle>> GetVehiclesByOrgID(int vehOrgID)
+    //     {
+    //         try
+    //         {
+    //             return await vehicleRepository.GetVehiclesByOrgID(vehOrgID);
+    //         }
+    //         catch (Exception ex)
+    //         {
+    //             throw ex;
+    //         }
+    //     }
+
+    //     public async Task<IEnumerable<ServiceSubscribers>> GetServiceSubscribersByOrgID(int orgid)
+    //     {
+    //         try
+    //         {
+    //             return await vehicleRepository.GetServiceSubscribersByOrgID(orgid);
+    //         }
+    //         catch (Exception ex)
+    //         {
+    //             throw ex;
+    //         }
+    //     }
+    //     // public async Task<IEnumerable<User>> GetUsersDetailsByGroupID(int orgid,int usergroupid)
+    //     // {
+    //     //     try
+    //     //     {
+    //     //         return await vehicleRepository.GetUsersDetailsByGroupID(orgid, usergroupid);
+    //     //     }
+    //     //     catch (Exception ex)
+    //     //     {
+    //     //         throw ex;
+    //     //     }
+    //     // }
+
+        public async Task<Vehicle> Create(Vehicle vehicle)
         {
             try
             {
-                return  await vehicleRepository.GetVehicleGroupByOrgID(vehOrgID);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        
-        
-        public async Task<IEnumerable<Vehicle>> GetVehiclesByOrgID(int vehOrgID)
-        {
-            try
-            {
-                return await vehicleRepository.GetVehiclesByOrgID(vehOrgID);
+                return await vehicleRepository.Create(vehicle);
             }
             catch (Exception ex)
             {
@@ -133,27 +168,64 @@ namespace net.atos.daf.ct2.vehiclerepository
             }
         }
 
-        public async Task<IEnumerable<ServiceSubscribers>> GetServiceSubscribersByOrgID(int orgid)
+        public async Task<Vehicle> Update(Vehicle vehicle)
         {
             try
             {
-                return await vehicleRepository.GetServiceSubscribersByOrgID(orgid);
+                return await vehicleRepository.Update(vehicle);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        // public async Task<IEnumerable<User>> GetUsersDetailsByGroupID(int orgid,int usergroupid)
-        // {
-        //     try
-        //     {
-        //         return await vehicleRepository.GetUsersDetailsByGroupID(orgid, usergroupid);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         throw ex;
-        //     }
-        // }
+
+        public async Task<VehicleProperty> CreateProperty(VehicleProperty vehicleproperty)
+        {
+            try
+            {
+                return await vehicleRepository.CreateProperty(vehicleproperty);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<VehicleProperty> UpdateProperty(VehicleProperty vehicleproperty)
+        {
+            try
+            {
+                return await vehicleRepository.UpdateProperty(vehicleproperty);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<Vehicle> UpdateStatus(Vehicle vehicle)
+        {
+            try
+            {
+                return await vehicleRepository.UpdateStatus(vehicle);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<List<Vehicle>> Get(VehicleFilter vehiclefilter)
+        {
+            try
+            {
+                return await vehicleRepository.Get(vehiclefilter);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }
