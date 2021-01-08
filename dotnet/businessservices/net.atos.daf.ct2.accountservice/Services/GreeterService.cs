@@ -17,10 +17,19 @@ namespace net.atos.daf.ct2.accountservice
 
         public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)
         {
+            try {
             return Task.FromResult(new HelloReply
             {
                 Message = "Hello " + request.Name
             });
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(new HelloReply
+            {
+                Message = "Hello " + ex.Message
+            });
+            }
         }
     }
 }
