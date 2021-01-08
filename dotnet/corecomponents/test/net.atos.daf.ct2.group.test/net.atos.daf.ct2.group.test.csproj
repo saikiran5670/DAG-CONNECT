@@ -17,4 +17,15 @@
     <ProjectReference Include="..\..\net.atos.daf.ct2.group\net.atos.daf.ct2.group.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="dlls\" />
+    <Reference Include="net.atos.daf.ct2.data">
+      <HintPath>..\..\dlls\net.atos.daf.ct2.data.dll</HintPath>
+    </Reference>
+     <Reference Include="net.atos.daf.ct2.audit">
+      <HintPath>..\..\dlls\net.atos.daf.ct2.audit.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+     
 </Project>

@@ -17,8 +17,8 @@ namespace net.atos.daf.ct2.group
         {
             dataAccess = _dataAccess;
         }
-    #region public methods
-    public async Task<Group> Create(Group group)
+        #region public methods
+        public async Task<Group> Create(Group group)
        
         {
             try
@@ -164,7 +164,7 @@ namespace net.atos.daf.ct2.group
                 throw ex;
             }            
         }
-         public async Task<bool> AddRef(Group group)
+        public async Task<bool> AddRef(Group group)
         {
             try
             {
@@ -199,7 +199,9 @@ namespace net.atos.daf.ct2.group
                 throw ex;
             }
         }
+        
         #endregion
+
         #region private methods
          private async Task<List<GroupRef>> GetRef(int groupid)
         {
