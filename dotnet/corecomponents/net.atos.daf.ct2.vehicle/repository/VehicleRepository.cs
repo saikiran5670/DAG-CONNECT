@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.data;
 using Dapper;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.vehicle.repository
 {
@@ -43,9 +44,9 @@ namespace net.atos.daf.ct2.vehicle.repository
                      parameter.Add("@name", vehicle.Name);
                      parameter.Add("@vin", vehicle.VIN);
                      parameter.Add("@license_plate_number", vehicle.RegistrationNo);
-                     parameter.Add("@status", vehicle.Status);
-                     parameter.Add("@status_changed_date", vehicle.StatusDate);
-                     parameter.Add("@termination_date", vehicle.TerminationDate);
+                     parameter.Add("@status", (char)vehicle.Status);
+                     parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(vehicle.StatusDate.ToString()));
+                     parameter.Add("@termination_date", UTCHandling.GetUTCFromDateTime(vehicle.TerminationDate.ToString()));
            
                      parameter.Add("@id",dbType:DbType.Int32 ,direction: ParameterDirection.InputOutput);
                      int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
