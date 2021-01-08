@@ -13,4 +13,8 @@
     <PackageReference Include="coverlet.collector" Version="1.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\net.atos.daf.ct2.group\net.atos.daf.ct2.group.csproj" />
+  </ItemGroup>
+
 </Project>
