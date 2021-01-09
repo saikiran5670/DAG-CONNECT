@@ -44,9 +44,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                      parameter.Add("@name", vehicle.Name);
                      parameter.Add("@vin", vehicle.VIN);
                      parameter.Add("@license_plate_number", vehicle.RegistrationNo);
+                     //parameter.Add("@status", ((char)vehicle.Status).ToString() != null ? (char)vehicle.Status:'P');
                      parameter.Add("@status", (char)vehicle.Status);
-                     parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(vehicle.StatusDate.ToString()));
-                     parameter.Add("@termination_date", UTCHandling.GetUTCFromDateTime(vehicle.TerminationDate.ToString()));
+                     parameter.Add("@status_changed_date", vehicle.StatusDate !=null? UTCHandling.GetUTCFromDateTime(vehicle.StatusDate.ToString()) : 0);
+                     parameter.Add("@termination_date", vehicle.TerminationDate !=null? UTCHandling.GetUTCFromDateTime(vehicle.TerminationDate.ToString()):0);
            
                      parameter.Add("@id",dbType:DbType.Int32 ,direction: ParameterDirection.InputOutput);
                      int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
