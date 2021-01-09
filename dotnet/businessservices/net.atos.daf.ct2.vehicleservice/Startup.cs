@@ -47,6 +47,7 @@ namespace net.atos.daf.ct2.vehicleservice
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapGrpcService<GreeterService>();
                 endpoints.MapGrpcService<VehicleManagementService>();
 
                 endpoints.MapGet("/", async context =>
