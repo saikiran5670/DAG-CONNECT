@@ -1,6 +1,6 @@
 using System;
 
-namespace net.atos.daf.ct2.accountpreference.entity
+namespace net.atos.daf.ct2.accountpreference
 {
 public enum PreferenceType
     {
