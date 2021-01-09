@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using net.atos.daf.ct2.identity.entity;
 
@@ -9,18 +10,12 @@ namespace net.atos.daf.ct2.identity
 {
     public class AccountAuthenticator:IAccountAuthenticator
     {
-       private string baseUrl,authUrl,AuthClientId,AuthClientSecret=string.Empty;
-       private string realm=string.Empty;
         private HttpClient client = new HttpClient();
-       public AccountAuthenticator()
-       {
-            var setting = ConfigHelper.GetConfig();
-            baseUrl=setting["KeycloakStrings:baseUrl"];
-            authUrl=setting["KeycloakStrings:authUrl"];
-            AuthClientId=setting["KeycloakStrings:AuthClientId"];
-            AuthClientSecret=setting["KeycloakStrings:AuthClientSecret"];
-            realm=setting["KeycloakStrings:realm"];
-       }  
+        private readonly IdentityJsonConfiguration _settings;
+        public AccountAuthenticator(IOptions<IdentityJsonConfiguration> setting)
+        {
+            _settings = setting.Value;
+        }  
         /// <summary>
         ///  This method will be used to obtain the access token for a user
         /// </summary>
@@ -31,9 +26,9 @@ namespace net.atos.daf.ct2.identity
             Response response= new Response();
             try
             {
-                var querystring = new StringContent("username="+user.UserName+"&password="+user.Password+"&grant_type=password&client_id="+AuthClientId, Encoding.UTF8, "application/x-www-form-urlencoded");
-                var url = baseUrl + authUrl;
-                url=url.Replace("{{realm}}",realm);
+                var querystring = new StringContent("username="+user.UserName+"&password="+user.Password+"&grant_type=password&client_id="+_settings.AuthClientId, Encoding.UTF8, "application/x-www-form-urlencoded");
+                var url = _settings.BaseUrl + _settings.AuthUrl;
+                url=url.Replace("{{realm}}",_settings.Realm);
 
                 var httpResponse = await client.PostAsync(url, querystring);
                 string result = httpResponse.Content.ReadAsStringAsync().Result;
@@ -56,9 +51,9 @@ namespace net.atos.daf.ct2.identity
         {
             try
             {
-                var querystring = new StringContent("username="+user.UserName+"&password="+user.Password+"&grant_type=password&client_id="+AuthClientId, Encoding.UTF8, "application/x-www-form-urlencoded");
-                var url = baseUrl + authUrl;
-                url=url.Replace("{{realm}}",realm);
+                var querystring = new StringContent("username="+user.UserName+"&password="+user.Password+"&grant_type=password&client_id="+_settings.AuthClientId, Encoding.UTF8, "application/x-www-form-urlencoded");
+                var url = _settings.BaseUrl + _settings.AuthUrl;
+                url=url.Replace("{{realm}}",_settings.Realm);
                 return url + ";    "+ user.UserName +": "+user.Password;      
             }   
             catch(System.Exception)

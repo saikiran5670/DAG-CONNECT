@@ -5,28 +5,19 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Options;
 using net.atos.daf.ct2.identity.entity;
 
 namespace net.atos.daf.ct2.identity
 {
     public class AccountManager: IAccountManager
     {
-     private string baseUrl,authUrl,userMgmUrl,AuthClientId,
-     AuthClientSecret,UserMgmClientId,UserMgmClientSecret,realm=string.Empty;  
-     private HttpClient client = new HttpClient();
-
-       public AccountManager()
-       {
-            var setting = ConfigHelper.GetConfig();
-            baseUrl=setting["KeycloakStrings:baseUrl"];
-            authUrl=setting["KeycloakStrings:authUrl"];
-            userMgmUrl=setting["KeycloakStrings:userMgmUrl"];
-            AuthClientId=setting["KeycloakStrings:AuthClientId"];
-            AuthClientSecret=setting["KeycloakStrings:AuthClientSecret"];
-            UserMgmClientId=setting["KeycloakStrings:UserMgmClientId"];
-            UserMgmClientSecret=setting["KeycloakStrings:UserMgmClientSecret"];
-            realm=setting["KeycloakStrings:realm"];
-       }
+        private HttpClient client = new HttpClient();
+        private readonly IdentityJsonConfiguration _settings;
+        public AccountManager(IOptions<IdentityJsonConfiguration> setting)
+        {
+            _settings = setting.Value;
+        }
         /// <summary>
         ///  This method will be used to insert user onto keycloak server
         /// </summary>
@@ -34,26 +25,26 @@ namespace net.atos.daf.ct2.identity
         /// <returns>Httpstatuscode along with success or failed message if any</returns>
         public async Task<Response> CreateUser(Identity user)
         {
-            Token token = new Token();
+            IDPToken token = new IDPToken();
             String accessToekn= string.Empty;
             Response objResponse= new Response();
             try
             {
-                var querystringSAT = new StringContent("client_id="+UserMgmClientId+"&client_secret="+UserMgmClientSecret+"&grant_type=client_credentials", Encoding.UTF8, "application/x-www-form-urlencoded");
-                var urlSAT = baseUrl + authUrl.Replace("{{realm}}",realm);
+                var querystringSAT = new StringContent("client_id="+_settings.UserMgmClientId+"&client_secret="+_settings.UserMgmClientSecret+"&grant_type=client_credentials", Encoding.UTF8, "application/x-www-form-urlencoded");
+                var urlSAT = _settings.BaseUrl + _settings.AuthUrl.Replace("{{realm}}",_settings.Realm);
                 // url=url.Replace("{{realm}}",realm);
 
                 var httpResponseSAT = await client.PostAsync(urlSAT, querystringSAT);
                 string resultSAT = httpResponseSAT.Content.ReadAsStringAsync().Result;
                 if(httpResponseSAT.StatusCode==System.Net.HttpStatusCode.OK)
                 {
-                    token = JsonConvert.DeserializeObject<Token>(resultSAT);
+                    token = JsonConvert.DeserializeObject<IDPToken>(resultSAT);
                     accessToekn=token.access_token;
                     client = new HttpClient();
-                    client = PrepareClientHeader(baseUrl,token.access_token);
+                    client = PrepareClientHeader(token.access_token);
 
                     var contentData = new StringContent(GetUserBody(user,"","INSERT"),System.Text.Encoding.UTF8, "application/json");
-                    HttpResponseMessage httpResponse = client.PostAsync(userMgmUrl.Replace("{{realm}}",realm),contentData).Result;
+                    HttpResponseMessage httpResponse = client.PostAsync(_settings.UserMgmUrl.Replace("{{realm}}",_settings.Realm),contentData).Result;
                     if(httpResponse.IsSuccessStatusCode && httpResponse.StatusCode == System.Net.HttpStatusCode.Created)
                     {
                         objResponse.StatusCode=httpResponse .StatusCode;
@@ -91,20 +82,20 @@ namespace net.atos.daf.ct2.identity
         }
         private async Task<Response> UpdateOrDeleteUser(Identity user,string actionType)
         {
-            Token token = new Token();
+            IDPToken token = new IDPToken();
             String accessToekn= string.Empty;
             Response objResponse= new Response();
             try
             {
-                var querystringSAT = new StringContent("client_id="+UserMgmClientId+"&client_secret="+UserMgmClientSecret+"&grant_type=client_credentials", Encoding.UTF8, "application/x-www-form-urlencoded");
-                var urlSAT = baseUrl + authUrl.Replace("{{realm}}",realm);
+                var querystringSAT = new StringContent("client_id="+_settings.UserMgmClientId+"&client_secret="+_settings.UserMgmClientSecret+"&grant_type=client_credentials", Encoding.UTF8, "application/x-www-form-urlencoded");
+                var urlSAT = _settings.BaseUrl + _settings.AuthUrl.Replace("{{realm}}",_settings.Realm);
 
                 var httpResponseSAT = await client.PostAsync(urlSAT, querystringSAT);
                 string resultSAT = httpResponseSAT.Content.ReadAsStringAsync().Result;
                 if(httpResponseSAT.StatusCode==System.Net.HttpStatusCode.OK)
                 {
-                    token = JsonConvert.DeserializeObject<Token>(resultSAT);
-                    HttpResponseMessage httpResponseUser = await GetUserIdByEmail(baseUrl,token.access_token,user);
+                    token = JsonConvert.DeserializeObject<IDPToken>(resultSAT);
+                    HttpResponseMessage httpResponseUser = await GetUserIdByEmail(token.access_token,user);
                     if(httpResponseUser.StatusCode==System.Net.HttpStatusCode.OK)
                     {
                         JArray userJSON = JsonConvert.DeserializeObject<JArray>(httpResponseUser.Content.ReadAsStringAsync().Result);
@@ -117,9 +108,9 @@ namespace net.atos.daf.ct2.identity
                                 break;
                             }
                             client = new HttpClient();
-                            client = PrepareClientHeader(baseUrl,token.access_token);
+                            client = PrepareClientHeader(token.access_token);
                             var contentData = new StringContent(GetUserBody(user,keycloakUserId,actionType),System.Text.Encoding.UTF8, "application/json");
-                            HttpResponseMessage httpResponse = client.PutAsync(userMgmUrl.Replace("{{realm}}",realm) +"/"+keycloakUserId,contentData).Result;
+                            HttpResponseMessage httpResponse = client.PutAsync(_settings.UserMgmUrl.Replace("{{realm}}",_settings.Realm) +"/"+keycloakUserId,contentData).Result;
                             if(httpResponse.IsSuccessStatusCode && httpResponse.StatusCode == System.Net.HttpStatusCode.NoContent)
                             {
                                 objResponse.StatusCode=httpResponse .StatusCode;
@@ -166,22 +157,22 @@ namespace net.atos.daf.ct2.identity
                 throw;
             }
         }
-        private HttpClient PrepareClientHeader(string baseUrl,string accesstoken)
+        private HttpClient PrepareClientHeader(string accesstoken)
         {
             client = new HttpClient();
-            client.BaseAddress = new Uri(baseUrl);
+            client.BaseAddress = new Uri(_settings.BaseUrl);
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
             client.DefaultRequestHeaders.Authorization =new AuthenticationHeaderValue("Bearer", accesstoken);                    
             return client;
         }
         
-        private async Task<HttpResponseMessage> GetUserIdByEmail(string baseUrl,string accesstoken, Identity user)
+        private async Task<HttpResponseMessage> GetUserIdByEmail(string accesstoken, Identity user)
         {
             string strUserId=string.Empty;
             client = new HttpClient();
-            client = PrepareClientHeader(baseUrl,accesstoken);            
-            return await client.GetAsync(userMgmUrl.Replace("{{realm}}",realm) + "?username=" + user.UserName);
+            client = PrepareClientHeader(accesstoken);            
+            return await client.GetAsync(_settings.UserMgmUrl.Replace("{{realm}}",_settings.Realm) + "?username=" + user.UserName);
         }
         private string GetUserBody(Identity user, string keycloakUserid = null, string actiontype="")
         {
