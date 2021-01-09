@@ -10,6 +10,7 @@ package vehicle;
 service VehicleService {
   // Sends a greeting
   rpc CreateVehicle (VehicleRequest) returns (VehicleResponce);
+  //rpc Get (VehicleRequest) returns (VehicleResponce);
 }
 
 // The request message containing the user's name.
