@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.group.test
              .AddJsonFile("appsettings.Test.json")
             .Build();
             //Get connection string
-            var connectionString = _config.GetConnectionString("Dev");
+            var connectionString = _config.GetConnectionString("DevAzure");
             //string connectionString = "Server = 127.0.0.1; Port = 5432; Database = DAFCT; User Id = postgres; Password = Admin@1978; CommandTimeout = 90; ";
             _dataAccess = new PgSQLDataAccess(connectionString);
             _groupRepository = new GroupRepository(_dataAccess);

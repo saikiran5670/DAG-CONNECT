@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.accountservice
             {
                 return Task.FromResult(new HelloReply
             {
-                Message = "Hello " + ex.Message
+                Message = "Exception " + ex.Message
             });
             }
         }
