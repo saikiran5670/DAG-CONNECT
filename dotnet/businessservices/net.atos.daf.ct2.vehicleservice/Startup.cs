@@ -7,16 +7,32 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.vehicle.repository;
+using net.atos.daf.ct2.vehiclerepository;
+using net.atos.daf.ct2.vehicleservice.Services;
+using Microsoft.Extensions.Configuration;
 
 namespace net.atos.daf.ct2.vehicleservice
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
+
+            var connectionString = Configuration.GetConnectionString("Dev");
+            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
+            services.AddSingleton(dataAccess); 
+            services.AddTransient<IVehicleManagement,VehicleManagement>();
+            services.AddTransient<IVehicleRepository, VehicleRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -31,7 +47,7 @@ namespace net.atos.daf.ct2.vehicleservice
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>();
+                endpoints.MapGrpcService<VehicleManagementService>();
 
                 endpoints.MapGet("/", async context =>
                 {
