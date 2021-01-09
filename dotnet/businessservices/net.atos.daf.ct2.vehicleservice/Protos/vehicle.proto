@@ -9,8 +9,9 @@ package vehicle;
 // The greeting service definition.
 service VehicleService {
   // Sends a greeting
-  rpc CreateVehicle (VehicleRequest) returns (VehicleResponce);
-  //rpc Get (VehicleRequest) returns (VehicleResponce);
+  rpc Create (VehicleRequest) returns (VehicleResponce);
+  rpc Update (VehicleRequest) returns (VehicleResponce);
+  rpc Get (VehicleFilterRequest) returns (VehicleList);
 }
 
 // The request message containing the user's name.
@@ -39,16 +40,33 @@ message VehicleResponce {
   int32 Organizationid=2;
   string Name = 3;
   string VIN=4;
-//   string RegistrationNo=5;
-//   enum VehicleStatusType
-//   {
-//       OptIn = 0;
-//       OptOut = 1;
-//       Terminate = 2;
-//       OTA = 3;
-//   }
-//  VehicleStatusType Status=6;
+  string RegistrationNo=5;
+  enum VehicleStatusType
+  {
+      OptIn = 0;
+      OptOut = 1;
+      Terminate = 2;
+      OTA = 3;
+  }
+ VehicleStatusType Status=6;
 //  google.protobuf.Timestamp StatusDate=7;
 //  google.protobuf.Timestamp TerminationDate=8;
 
 }
+
+
+message VehicleFilterRequest {
+  int32 VehicleId = 1;
+  int32 OrganizationId = 2;
+  int32 AccountId = 3;
+  int32 VehicleGroupId = 4;
+  int32 AccountGroupId = 5;
+  int32 FeatureId = 6;
+  string VehicleIdList = 7;
+  string VIN = 8;
+}
+
+message VehicleList {
+  repeated VehicleResponce vehicles = 1;
+}
+
