@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.audit.repository
 {
     public interface IAuditLogRepository
     {
-        int AddLogs(AuditLogEntity auditLog);
-         IEnumerable<AuditLogEntity> GetAuditLogs(int Userorgid);
+        int AddLogs(AuditTrail auditLog);
+         IEnumerable<AuditTrail> GetAuditLogs(int Userorgid);
     }
 }
