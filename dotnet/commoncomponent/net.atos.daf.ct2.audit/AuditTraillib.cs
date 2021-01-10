@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using net.atos.daf.ct2.audit.entity;
 using net.atos.daf.ct2.audit.Enum;
 using  net.atos.daf.ct2.audit.repository;
@@ -14,12 +15,12 @@ namespace net.atos.daf.ct2.audit
         {
             repository = _repository;
         }
-        public int AddLogs(AuditTrail auditTrail)
+        public async Task<int> AddLogs(AuditTrail auditTrail)
         {
-            return repository.AddLogs(auditTrail);
+            return await repository.AddLogs(auditTrail);
         }
 
-        public int AddLogs(DateTime Created_at,DateTime Performed_at,int Performed_by, string Component_name,string Service_name,AuditTrailEnum.Event_type Event_type,AuditTrailEnum.Event_status Event_status,string Message,int Sourceobject_id,int Targetobject_id,string Updated_data)
+        public async Task<int> AddLogs(DateTime Created_at,DateTime Performed_at,int Performed_by, string Component_name,string Service_name,AuditTrailEnum.Event_type Event_type,AuditTrailEnum.Event_status Event_status,string Message,int Sourceobject_id,int Targetobject_id,string Updated_data)
         {
             try
             {
@@ -35,7 +36,7 @@ namespace net.atos.daf.ct2.audit
                 logs.Sourceobject_id = Sourceobject_id;  
                 logs.Targetobject_id = Targetobject_id;  
                 logs.Updated_data = Updated_data;                
-                return AddLogs(logs);
+                return await AddLogs(logs);
                
             }
             catch 

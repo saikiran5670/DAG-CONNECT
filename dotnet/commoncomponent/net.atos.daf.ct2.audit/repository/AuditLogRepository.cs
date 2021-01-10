@@ -12,6 +12,7 @@ using Dapper;
 using static Dapper.SqlMapper;
 using Npgsql;
 using NpgsqlTypes;
+using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.audit.repository
 {
@@ -36,7 +37,7 @@ namespace net.atos.daf.ct2.audit.repository
         {
             dataAccess = _dataAccess;
         }
-       public int AddLogs(AuditTrail auditTrail)
+       public  async Task<int> AddLogs(AuditTrail auditTrail)
        {
            try
            {
@@ -54,7 +55,7 @@ namespace net.atos.daf.ct2.audit.repository
              parameter.Add("@updated_data",  auditTrail.Updated_data);
              
             // return dataAccess.QuerySingle<int>("INSERT INTO dafconnectmaster.auditlog (userorgid, eventid, eventperformed, activitydescription, component, eventtime, eventstatus, createddate, createdby) VALUES(@userorgid, @eventid, @eventperformed, @activitydescription, @component, @eventtime, @eventstatus, @createddate, @createdby) RETURNING auditlogid",parameter);
-            return dataAccess.QuerySingle<int>("INSERT INTO logs.audittrail(created_at, performed_at, performed_by, component_name, service_name, event_type, event_status, message, sourceobject_id, targetobject_id, updated_data) VALUES (@created_at, @performed_at, @performed_by, @component_name, @service_name, @event_type, @event_status, @message, @sourceobject_id, @targetobject_id, @updated_data) RETURNING id",parameter);
+            return await dataAccess.QuerySingleAsync<int>("INSERT INTO logs.audittrail(created_at, performed_at, performed_by, component_name, service_name, event_type, event_status, message, sourceobject_id, targetobject_id, updated_data) VALUES (@created_at, @performed_at, @performed_by, @component_name, @service_name, @event_type, @event_status, @message, @sourceobject_id, @targetobject_id, @updated_data) RETURNING id",parameter);
            }
            catch(Exception ex)
            {
