@@ -1,4 +1,3 @@
-\connect dafconnectmasterdatabase
 CREATE SCHEMA  master 
     AUTHORIZATION pgadmin;
 CREATE SCHEMA  logs 

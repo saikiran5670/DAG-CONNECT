@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.0" />
     <PackageReference Include="MSTest.TestFramework" Version="2.1.0" />
@@ -16,10 +17,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\net.atos.daf.ct2.group\net.atos.daf.ct2.group.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-   
-  </ItemGroup>
-
-     
 </Project>

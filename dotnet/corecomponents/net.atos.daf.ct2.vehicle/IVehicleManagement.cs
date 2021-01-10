@@ -22,8 +22,8 @@ namespace net.atos.daf.ct2.vehiclerepository
 
             Task<Vehicle> Create(Vehicle vehicle);
             Task<Vehicle> Update(Vehicle Vehicle);
-            Task<List<Vehicle>> Get(VehicleFilter vehiclefilter);   
-            Task<Vehicle> UpdateStatus(Vehicle vehicle);
+            Task<IEnumerable<Vehicle>> Get(VehicleFilter vehiclefilter);   
+            Task<VehicleOptInOptOut> UpdateStatus(VehicleOptInOptOut vehicleOptInOptOut);
             Task<VehicleProperty> CreateProperty(VehicleProperty vehicleproperty);
             Task<VehicleProperty> UpdateProperty(VehicleProperty vehicleproperty);
             

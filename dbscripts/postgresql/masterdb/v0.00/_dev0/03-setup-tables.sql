@@ -1,4 +1,3 @@
-\connect dafconnectmasterdatabase
 --organization (Master data (Org for DAF Admin) is also required)
 CREATE TABLE if not exists master.organization 
 (

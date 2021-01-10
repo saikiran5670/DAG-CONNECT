@@ -204,11 +204,11 @@ namespace net.atos.daf.ct2.vehiclerepository
             }
         }
 
-        public async Task<Vehicle> UpdateStatus(Vehicle vehicle)
+        public async Task<VehicleOptInOptOut> UpdateStatus(VehicleOptInOptOut vehicleOptInOptOut)
         {
             try
             {
-                return await vehicleRepository.UpdateStatus(vehicle);
+                return await vehicleRepository.UpdateStatus(vehicleOptInOptOut);
             }
             catch (Exception ex)
             {
@@ -216,7 +216,7 @@ namespace net.atos.daf.ct2.vehiclerepository
             }
         }
 
-        public async Task<List<Vehicle>> Get(VehicleFilter vehiclefilter)
+        public async Task<IEnumerable<Vehicle>> Get(VehicleFilter vehiclefilter)
         {
             try
             {
