@@ -1,6 +1,6 @@
 namespace net.atos.daf.ct2.identity.entity
 {
-    public class Token
+    public class IDPToken
     {
         public string access_token { get; set; }
         public int expires_in { get; set; }

@@ -5094,4 +5094,9 @@ dotnet/corecomponents/net.atos.daf.ct2.account/obj/Debug/netstandard2.0/net.atos
 dotnet/corecomponents/net.atos.daf.ct2.account/obj/Debug/netstandard2.0/net.atos.daf.ct2.account.csproj.FileListAbsolute.txt
 dotnet/corecomponents/net.atos.daf.ct2.account/obj/Debug/netstandard2.0/net.atos.daf.ct2.account.dll
 dotnet/corecomponents/net.atos.daf.ct2.account/obj/Debug/netstandard2.0/net.atos.daf.ct2.account.pdb
+<<<<<<< HEAD
+dotnet/businessservices/net.atos.daf.ct2.accountservice/obj/net.atos.daf.ct2.accountservice.csproj.nuget.g.targets
+.gitignore
+=======
 dotnet/.vscode/launch.json
+>>>>>>> 4a212768276374e272c529410f43348a7335a782

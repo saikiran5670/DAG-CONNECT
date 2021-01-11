@@ -29,7 +29,7 @@ namespace DAF.IdentityService
             try 
             {
                 var response = await _autheticator.AccessToken(user);                
-                Token token = JsonConvert.DeserializeObject<Token>(Convert.ToString(response.Result));
+                IDPToken token = JsonConvert.DeserializeObject<IDPToken>(Convert.ToString(response.Result));
                 if(!string.IsNullOrEmpty(token.Error))
                 {
                     grpcresponse.Error=token.Error;
