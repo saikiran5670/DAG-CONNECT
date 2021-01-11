@@ -1,8 +1,8 @@
 using System;
 
-namespace net.atos.daf.ct2.accountpreference.entity
+namespace net.atos.daf.ct2.accountpreference
 {
-public enum AccountPreferenceType
+public enum PreferenceType
     {
         None = 'N',
         Account = 'A',

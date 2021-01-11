@@ -1,23 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using net.atos.daf.ct2.account.entity;
 
-namespace net.atos.daf.ct2.account.repository
+namespace net.atos.daf.ct2.account
 {
     public interface IAccountRepository
     {
-        
-         Task<int> AddUser(AccountDetails account);
-        //  IEnumerable<AuditLogEntity> GetAuditLogs(int Userorgid);
-         Task<int> DeleteUser(int accountid,int loggeduser,bool IsActive);
-         Task<IEnumerable<Account>> GetUserDetails(int accountid);
-         Task<int> UpdateUser(string firstname,string lastname,int updatedby,int accountid);
-         Task<IEnumerable<Account>> GetUsers(int AccounttypeID,bool IsActive);
-         Task<int> AddUserRoles(AccountRoleMapping accountRoleMapping);
-         Task<bool> CheckEmailExist(string emailid);
-       //  Task<IEnumerable<AccountRoleMapping>> GeUserRoles(int Accountorgid,bool IsActive);
-         Task<int> DeleteUserRole(int accountorgrolemappingid,int UpdatedBy,bool IsActive);
+        Task<Account> Create(Account account);
+        Task<Account> Update(Account account);
+        Task<bool> Delete(int accountId, int organizationId);
+        Task<List<Account>> Get(AccountFilter filter);      
     }
 }
   
