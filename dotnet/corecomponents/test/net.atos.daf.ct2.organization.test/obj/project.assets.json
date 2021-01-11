@@ -5910,11 +5910,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\DAFProjects\\atos.daf.ct2.0\\dotnet\\corecomponents\\test\\net.atos.daf.ct2.organization.test\\net.atos.daf.ct2.organization.test.csproj",
+      "projectUniqueName": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\test\\net.atos.daf.ct2.organization.test\\net.atos.daf.ct2.organization.test.csproj",
       "projectName": "net.atos.daf.ct2.organization.test",
-      "projectPath": "c:\\DAFProjects\\atos.daf.ct2.0\\dotnet\\corecomponents\\test\\net.atos.daf.ct2.organization.test\\net.atos.daf.ct2.organization.test.csproj",
+      "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\test\\net.atos.daf.ct2.organization.test\\net.atos.daf.ct2.organization.test.csproj",
       "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
-      "outputPath": "c:\\DAFProjects\\atos.daf.ct2.0\\dotnet\\corecomponents\\test\\net.atos.daf.ct2.organization.test\\obj\\",
+      "outputPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\test\\net.atos.daf.ct2.organization.test\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -5933,11 +5933,11 @@
       "frameworks": {
         "netcoreapp3.1": {
           "projectReferences": {
-            "c:\\DAFProjects\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj": {
-              "projectPath": "c:\\DAFProjects\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj"
+            "C:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj": {
+              "projectPath": "C:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj"
             },
-            "c:\\DAFProjects\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.organization\\net.atos.daf.ct2.organization.csproj": {
-              "projectPath": "c:\\DAFProjects\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.organization\\net.atos.daf.ct2.organization.csproj"
+            "C:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.organization\\net.atos.daf.ct2.organization.csproj": {
+              "projectPath": "C:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.organization\\net.atos.daf.ct2.organization.csproj"
             }
           }
         }

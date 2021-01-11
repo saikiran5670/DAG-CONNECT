@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj": {}
+    "C:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj": {}
   },
   "projects": {
-    "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj": {
+    "C:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj",
+        "projectUniqueName": "C:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj",
         "projectName": "net.atos.daf.ct2.utilities",
-        "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj",
+        "projectPath": "C:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj",
         "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
-        "outputPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\obj\\",
+        "outputPath": "C:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

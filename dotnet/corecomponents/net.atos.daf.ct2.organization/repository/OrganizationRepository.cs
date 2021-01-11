@@ -98,5 +98,22 @@ namespace net.atos.daf.ct2.organization.repository
             }
             return organization;
         }
+
+        public async Task<IEnumerable<Organization>> Get(string organizationId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date, optout_status, optout_status_changed_date, is_active
+	                        FROM master.organization where org_id=@organizationId";
+                parameter.Add("@organizationId", organizationId);
+                var organization = await dataAccess.QueryAsync<Organization>(query, parameter);
+                return organization.ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

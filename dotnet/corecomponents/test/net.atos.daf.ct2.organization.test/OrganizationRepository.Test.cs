@@ -25,13 +25,7 @@ namespace net.atos.daf.ct2.organization.test
             string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y\\97;Ssl Mode=Require;";
             //string connectionString = "Server = 127.0.0.1; Port = 5432; Database = DAFCT; User Id = postgres; Password = Admin@1978; CommandTimeout = 90; ";
             _dataAccess = new PgSQLDataAccess(connectionString);
-            _organizationRepository = new OrganizationRepository(_dataAccess);
-
- 
-            // _dataAccess = new PgSQLDataAccess(connectionString);
-            // _IAuditLogRepository = new AuditLogRepository(_dataAccess);
-            //  _logs = new AuditTraillib(_IAuditLogRepository);
-
+            _organizationRepository = new OrganizationRepository(_dataAccess); 
         }
 
         [TestMethod]
@@ -82,6 +76,13 @@ namespace net.atos.daf.ct2.organization.test
         {
              var result = _organizationRepository.Delete("Test").Result;
             Assert.IsTrue(result == true);
+        }
+        
+        [TestMethod]
+        public void GetOrganization()
+        {          
+            var result = _organizationRepository.Get("Test").Result;
+            Assert.IsTrue(result != null);
         }
     }
 }
