@@ -1,0 +1,170 @@
+{
+  "format": 1,
+  "restore": {
+    "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\test\\net.atos.daf.ct2.identity.test\\net.atos.daf.ct2.identity.test.csproj": {}
+  },
+  "projects": {
+    "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\net.atos.daf.ct2.identity.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\net.atos.daf.ct2.identity.csproj",
+        "projectName": "net.atos.daf.ct2.identity",
+        "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\net.atos.daf.ct2.identity.csproj",
+        "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
+        "outputPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\a433867\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "dependencies": {
+            "Microsoft.Extensions.Options": {
+              "target": "Package",
+              "version": "[3.1.8, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[12.0.3, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[6.8.0, )"
+            },
+            "System.Net.Http": {
+              "target": "Package",
+              "version": "[4.3.4, )"
+            },
+            "System.text.encoding": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.109\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\test\\net.atos.daf.ct2.identity.test\\net.atos.daf.ct2.identity.test.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\test\\net.atos.daf.ct2.identity.test\\net.atos.daf.ct2.identity.test.csproj",
+        "projectName": "net.atos.daf.ct2.identity.test",
+        "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\test\\net.atos.daf.ct2.identity.test\\net.atos.daf.ct2.identity.test.csproj",
+        "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
+        "outputPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\test\\net.atos.daf.ct2.identity.test\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\a433867\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {
+              "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\net.atos.daf.ct2.identity.csproj": {
+                "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\net.atos.daf.ct2.identity.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "dependencies": {
+            "MSTest.TestAdapter": {
+              "target": "Package",
+              "version": "[2.1.0, )"
+            },
+            "MSTest.TestFramework": {
+              "target": "Package",
+              "version": "[2.1.0, )"
+            },
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[3.1.8, )"
+            },
+            "Microsoft.Extensions.Options": {
+              "target": "Package",
+              "version": "[3.1.8, )"
+            },
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[16.5.0, )"
+            },
+            "coverlet.collector": {
+              "target": "Package",
+              "version": "[1.2.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.109\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

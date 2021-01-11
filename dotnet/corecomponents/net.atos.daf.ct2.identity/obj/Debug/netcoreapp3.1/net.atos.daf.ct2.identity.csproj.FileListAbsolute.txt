@@ -1,0 +1,8 @@
+c:\project\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.identity\bin\Debug\netcoreapp3.1\net.atos.daf.ct2.identity.deps.json
+c:\project\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.identity\bin\Debug\netcoreapp3.1\net.atos.daf.ct2.identity.dll
+c:\project\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.identity\bin\Debug\netcoreapp3.1\net.atos.daf.ct2.identity.pdb
+c:\project\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.identity\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.identity.csprojAssemblyReference.cache
+c:\project\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.identity\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.identity.AssemblyInfoInputs.cache
+c:\project\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.identity\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.identity.AssemblyInfo.cs
+c:\project\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.identity\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.identity.dll
+c:\project\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.identity\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.identity.pdb

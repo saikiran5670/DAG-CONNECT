@@ -1,0 +1,3 @@
+obj\Debug\netcoreapp3.1/Vehicle.cs \
+obj\Debug\netcoreapp3.1/VehicleGrpc.cs: C:/Users/a433867/.nuget/packages/grpc.tools/2.27.0/build/native/include/google/protobuf/timestamp.proto\
+ Protos/vehicle.proto
