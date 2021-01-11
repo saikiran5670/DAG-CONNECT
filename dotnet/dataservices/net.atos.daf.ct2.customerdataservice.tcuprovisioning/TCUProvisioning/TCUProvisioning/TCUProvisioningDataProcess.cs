@@ -12,19 +12,21 @@ namespace TCUProvisioning
 {
     class TCUProvisioningDataProcess : ITCUProvisioningData,ITCUProvisioningDataReceiver
     {
-       
+        private static String kafkaEndpoint = ConfigurationManager.AppSetting["BootstrapServers"];
+        private static String topicname = ConfigurationManager.AppSetting["TCUProvisioningTopic"];
+        private static String groupID = ConfigurationManager.AppSetting["GroupId"];
 
         public void subscribeTCUProvisioningTopic() {
 
             var config = new ConsumerConfig
             {
-                GroupId = "TCUProvisioning-consumers",
-                BootstrapServers = "localhost:9092"
+                GroupId = groupID,
+                BootstrapServers = kafkaEndpoint
             };
 
             using (var consumer = new ConsumerBuilder<Null, string>(config).Build())
             {
-                consumer.Subscribe("tcutopic");
+                consumer.Subscribe(topicname);
                 while (true)
                 {
                     var cr = consumer.Consume();
@@ -32,10 +34,7 @@ namespace TCUProvisioning
                     var TCUDataReceive = JsonConvert.DeserializeObject<TCUDataReceive>(TCUDataFromTopic);
                     var TCUDataSend = createTCUDataInDAFFormat(TCUDataReceive);
                     Console.WriteLine(TCUDataSend);
-                    //Console.WriteLine(TCUDataReceive.Vin) ;
-                    //JObject TCUDataJson = JObject.Parse(TCUData);
-                    //TCUDataJson.Value();
-                    //Console.WriteLine(TCUDataFromTopic.ToString());
+             
                 }
 
             }
@@ -60,8 +59,8 @@ namespace TCUProvisioning
 
 
         public void postTCUProvisioningMessageToDAF(String TCUDataDAF) { 
-        
-        
+            
+           
         
         
         }
