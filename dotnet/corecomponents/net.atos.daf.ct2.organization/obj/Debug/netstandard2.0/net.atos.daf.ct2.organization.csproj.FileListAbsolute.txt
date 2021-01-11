@@ -1,0 +1,17 @@
+c:\DAFProjects\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.organization\bin\Debug\netstandard2.0\appsettings.json
+c:\DAFProjects\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.organization\bin\Debug\netstandard2.0\appsettings.test.json
+C:\DAFProjects\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.organization\bin\Debug\netstandard2.0\net.atos.daf.ct2.organization.deps.json
+c:\DAFProjects\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.organization\bin\Debug\netstandard2.0\net.atos.daf.ct2.organization.dll
+c:\DAFProjects\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.organization\bin\Debug\netstandard2.0\net.atos.daf.ct2.organization.pdb
+c:\DAFProjects\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.organization\bin\Debug\netstandard2.0\net.atos.daf.ct2.audit.dll
+c:\DAFProjects\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.organization\bin\Debug\netstandard2.0\net.atos.daf.ct2.data.dll
+c:\DAFProjects\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.organization\bin\Debug\netstandard2.0\net.atos.daf.ct2.utilities.dll
+c:\DAFProjects\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.organization\bin\Debug\netstandard2.0\net.atos.daf.ct2.data.pdb
+c:\DAFProjects\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.organization\bin\Debug\netstandard2.0\net.atos.daf.ct2.audit.pdb
+c:\DAFProjects\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.organization\bin\Debug\netstandard2.0\net.atos.daf.ct2.utilities.pdb
+c:\DAFProjects\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.organization\obj\Debug\netstandard2.0\net.atos.daf.ct2.organization.csprojAssemblyReference.cache
+c:\DAFProjects\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.organization\obj\Debug\netstandard2.0\net.atos.daf.ct2.organization.AssemblyInfoInputs.cache
+c:\DAFProjects\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.organization\obj\Debug\netstandard2.0\net.atos.daf.ct2.organization.AssemblyInfo.cs
+C:\DAFProjects\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.organization\obj\Debug\netstandard2.0\net.atos.daf.ct2.organization.csproj.CopyComplete
+c:\DAFProjects\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.organization\obj\Debug\netstandard2.0\net.atos.daf.ct2.organization.dll
+c:\DAFProjects\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.organization\obj\Debug\netstandard2.0\net.atos.daf.ct2.organization.pdb
