@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Dapper;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.utilities;
 namespace net.atos.daf.ct2.account
 {
@@ -16,7 +15,7 @@ namespace net.atos.daf.ct2.account
         public AccountRepository(IDataAccess _dataAccess)
         {
             dataAccess = _dataAccess;
-            SqlMapper.AddTypeHandler(new StringEnumTypeHandler<AccountType>());
+            //SqlMapper.AddTypeHandler(new StringEnumTypeHandler<AccountType>());
         }
         public async Task<Account> Create(Account account)       
         {
@@ -110,8 +109,8 @@ namespace net.atos.daf.ct2.account
             {
                 var parameter = new DynamicParameters();
                 //List<Account> accounts = new List<Account>();
-                IEnumerable<Account> accounts = null;
-                var query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.type as accounttype,ag.organization_id as Organization_Id from master.account a join master.accountorg ag on a.id = ag.account_id where 1=1 ";
+                List<Account> accounts = new List<Account>();
+                var query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.dob,a.type as accounttype,ag.organization_id as Organization_Id from master.account a join master.accountorg ag on a.id = ag.account_id where 1=1 ";
                 if(filter != null)
                 {
                     // id filter
@@ -133,24 +132,50 @@ namespace net.atos.daf.ct2.account
                         query = query + " and a.type = @type";                        
                     }
                     
-                   accounts = await dataAccess.QueryAsync<Account>(query, parameter);
-                    // Account account;
-                    // foreach (dynamic record in result)
-                    // {
-                    //      account = new Account();
-                    //      account.Id = record.id;
-                    //      account.AccountType = Enum.Parse(typeof(AccountType), record.accounttype);
-                    //      accounts.Add(account);
-                    // }
+                  dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                   Account account;
+                    foreach (dynamic record in result)
+                    {
+                         account = new Account();
+                         account.Id = record.id;
+                         account.EmailId = record.email;
+                         account.Salutation = record.salutation;
+                         account.FirstName = record.first_name;
+                         account.LastName = record.last_name;
+                         account.Dob = record.dob;
+                         account.Organization_Id = record.organization_id;
+                         account.AccountType = GetAccountType(Convert.ToChar(record.accounttype));                         
+                         accounts.Add(account);
+                    }
                     
                 }                
-                return accounts.ToList();
+                return accounts;
 
             }
             catch (Exception ex)
             {
                 throw ex;
             }   
+        }
+
+        private AccountType GetAccountType(char type)
+        {
+            switch(type) 
+            {
+                    case 'N':
+                    return AccountType.None;
+                    break;
+                    case 'S':
+                    return AccountType.SystemAccount;
+                    break;
+                    case 'P':
+                    return AccountType.PortalAccount;
+                    break;
+                    default:
+                    return AccountType.None;
+                    break;
+            }
+
         }
 
     }

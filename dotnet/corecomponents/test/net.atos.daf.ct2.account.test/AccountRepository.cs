@@ -11,10 +11,10 @@ namespace net.atos.daf.ct2.account.test
     [TestClass]
     public class AccountRepositoryTest
     {
-         private readonly IDataAccess dataAccess;
+        private readonly IDataAccess dataAccess;
         private readonly IConfiguration config;
         readonly IAccountRepository repository;        
-        private readonly IAuditLog auditlog;
+        
         public AccountRepositoryTest()
         {
             config = new ConfigurationBuilder()
@@ -85,39 +85,39 @@ namespace net.atos.daf.ct2.account.test
             var result = repository.Get(filter).Result;
             Assert.IsTrue(result != null);
         }
-        // [TestMethod]
-        // public void GetAccountByOrganization()
-        // {
-        //     AccountFilter filter = new AccountFilter();     
+        [TestMethod]
+        public void GetAccountByOrganization()
+        {
+            AccountFilter filter = new AccountFilter();     
             
-        //     filter.Id=0;
-        //     filter.OrganizationId =1;
-        //     filter.AccountType = AccountType.None;            
-        //     var result = repository.Get(filter).Result;
-        //     Assert.IsTrue(result != null );
-        // }
-        // [TestMethod]
-        // public void GetAccountByType()
-        // {
-        //     AccountFilter filter = new AccountFilter();     
+            filter.Id=0;
+            filter.OrganizationId =1;
+            filter.AccountType = AccountType.None;            
+            var result = repository.Get(filter).Result;
+            Assert.IsTrue(result != null );
+        }
+        [TestMethod]
+        public void GetAccountByType()
+        {
+            AccountFilter filter = new AccountFilter();     
             
-        //     filter.Id=0;
-        //     filter.OrganizationId = 0;
-        //     filter.AccountType = AccountType.SystemAccount;            
-        //     var result = repository.Get(filter).Result;
-        //     Assert.IsTrue(result != null );
-        // }
+            filter.Id=0;
+            filter.OrganizationId = 0;
+            filter.AccountType = AccountType.SystemAccount;            
+            var result = repository.Get(filter).Result;
+            Assert.IsTrue(result != null );
+        }
 
-        // [TestMethod]
-        // public void GetAccountByAccountAndOrganization()
-        // {
-        //     AccountFilter filter = new AccountFilter();     
+        [TestMethod]
+        public void GetAccountByAccountAndOrganization()
+        {
+            AccountFilter filter = new AccountFilter();     
             
-        //     filter.Id=2;
-        //     filter.OrganizationId=1;
-        //     filter.AccountType = AccountType.None;            
-        //     var result = repository.Get(filter).Result;
-        //     Assert.IsTrue(result != null);
-        // }
+            filter.Id=2;
+            filter.OrganizationId=1;
+            filter.AccountType = AccountType.None;            
+            var result = repository.Get(filter).Result;
+            Assert.IsTrue(result != null);
+        }
     }
 }

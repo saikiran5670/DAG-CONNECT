@@ -3,14 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using  net.atos.daf.ct2.audit.Enum;
 
 namespace net.atos.daf.ct2.account
 {
     public class AccountManager : IAccountManager
     {
         IAccountRepository repository;
-        IAuditLog auditlog;
-        public AccountManager(IAccountRepository _repository, IAuditLog _auditlog)
+        IAuditTraillib auditlog;
+        public AccountManager(IAccountRepository _repository, IAuditTraillib _auditlog)
         {
             repository = _repository;
             auditlog = _auditlog;
