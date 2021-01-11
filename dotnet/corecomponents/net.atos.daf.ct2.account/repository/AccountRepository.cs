@@ -7,6 +7,7 @@ using Dapper;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.utilities;
+
 namespace net.atos.daf.ct2.account
 {
     public class AccountRepository : IAccountRepository
@@ -110,7 +111,8 @@ namespace net.atos.daf.ct2.account
                 var parameter = new DynamicParameters();
                 //List<Account> accounts = new List<Account>();
                 List<Account> accounts = new List<Account>();
-                var query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.dob,a.type as accounttype,ag.organization_id as Organization_Id from master.account a join master.accountorg ag on a.id = ag.account_id where 1=1 ";
+                string query = string.Empty;
+                query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.dob,a.type as accounttype,ag.organization_id as Organization_Id from master.account a join master.accountorg ag on a.id = ag.account_id where 1=1 ";
                 if(filter != null)
                 {
                     // id filter
@@ -133,21 +135,11 @@ namespace net.atos.daf.ct2.account
                     }
                     
                   dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
-                   Account account;
+                   //Account account;
                     foreach (dynamic record in result)
                     {
-                         account = new Account();
-                         account.Id = record.id;
-                         account.EmailId = record.email;
-                         account.Salutation = record.salutation;
-                         account.FirstName = record.first_name;
-                         account.LastName = record.last_name;
-                         account.Dob = record.dob;
-                         account.Organization_Id = record.organization_id;
-                         account.AccountType = GetAccountType(Convert.ToChar(record.accounttype));                         
-                         accounts.Add(account);
-                    }
-                    
+                         accounts.Add(Map(record));
+                    }                    
                 }                
                 return accounts;
 
@@ -157,48 +149,20 @@ namespace net.atos.daf.ct2.account
                 throw ex;
             }   
         }
-
-        private AccountType GetAccountType(char type)
+        private Account Map(dynamic record)
         {
-            switch(type) 
-            {
-                    case 'N':
-                    return AccountType.None;
-                    break;
-                    case 'S':
-                    return AccountType.SystemAccount;
-                    break;
-                    case 'P':
-                    return AccountType.PortalAccount;
-                    break;
-                    default:
-                    return AccountType.None;
-                    break;
-            }
-
+            Account account = new Account();
+            account.Id = record.id;
+            account.EmailId = record.email;
+            account.Salutation = record.salutation;
+            account.FirstName = record.first_name;
+            account.LastName = record.last_name;
+            account.Dob = record.dob;
+            account.Organization_Id = record.organization_id;                         
+            account.AccountType = (AccountType) Convert.ToChar(record.accounttype); 
+            return account;
         }
 
     }
-
-    public class StringEnumTypeHandler<T> : SqlMapper.TypeHandler<T> where T : struct, IConvertible
-    {
-    static StringEnumTypeHandler()
-    {
-        if (!typeof(T).IsEnum)
-        {
-            throw new ArgumentException("T must be an enumeration type");
-        }
-    }
-
-    public override T Parse(object value)
-    {
-        return (T)Enum.Parse(typeof(T), Convert.ToString(value));
-    }
-
-    public override void SetValue(IDbDataParameter parameter, T value)
-    {
-        parameter.Value = value.ToString();
-        parameter.DbType = DbType.AnsiString;
-    }
-    }
+    
 }
