@@ -1,25 +1,21 @@
 using System;
 
-namespace net.atos.daf.ct2.account.entity
+namespace net.atos.daf.ct2.account
 {
-    public class Account:TableLog
+    public class Account
     {
-        public int UserID { get; set; }
-        public int OrganizationId { get; set; }
-        public string UserName   { get; set; }
-        public string Password { get; set; }
+        public int Id { get; set; }        
         public string EmailId { get; set; }
+        public string Salutation { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public DateTime dob { get; set; }
-        public string Salutation { get; set; }
-        public DateTime LastPasswordChangedDate { get; set; }
-        public DateTime LastLoginDate { get; set; }
-        public int LoginAttempt { get; set; }
-        public int IsLocked{ get; set; }
-        public int ParentUserId { get; set; }
-        public int UserTypeid { get; set; }
-        public int Updatedby { get; set; }
-        public int CreateBy { get; set; }
+        public DateTime Dob { get; set; }
+        public AccountType AccountType { get; set; }
+        public int Organization_Id { get; set; } 
+        public int Account_OrgId { get; set; } 
+        public DateTime StartDate { get; set; }   
+        public DateTime ? EndDate { get; set; }  
+        public bool Active { get; set; }    
+        
     }
 }
