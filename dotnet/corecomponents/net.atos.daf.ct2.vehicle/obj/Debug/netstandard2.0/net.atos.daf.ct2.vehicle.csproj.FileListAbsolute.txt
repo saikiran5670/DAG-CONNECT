@@ -14,3 +14,4 @@ c:\project\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.vehicle\obj\Deb
 c:\project\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.vehicle\obj\Debug\netstandard2.0\net.atos.daf.ct2.vehicle.csproj.CopyComplete
 c:\project\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.vehicle\obj\Debug\netstandard2.0\net.atos.daf.ct2.vehicle.dll
 c:\project\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.vehicle\obj\Debug\netstandard2.0\net.atos.daf.ct2.vehicle.pdb
+c:\project\atos.daf.ct2.0\dotnet\corecomponents\net.atos.daf.ct2.vehicle\obj\Debug\netstandard2.0\net.atos.daf.ct2.vehicle.csprojAssemblyReference.cache
