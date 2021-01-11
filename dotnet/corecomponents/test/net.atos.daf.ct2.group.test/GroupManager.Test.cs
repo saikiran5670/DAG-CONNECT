@@ -16,7 +16,7 @@ namespace net.atos.daf.ct2.group.test
         private readonly IConfiguration _config;
         readonly IGroupRepository _groupRepository;        
         private readonly IGroupManager _groupManager;
-        private readonly IAuditLog _auditlog;
+        private readonly IAuditTraillib _auditlog;
          private readonly IAuditLogRepository _auditLogRepository;
         public GroupManagerTest()
         {
@@ -24,11 +24,11 @@ namespace net.atos.daf.ct2.group.test
              .AddJsonFile("appsettings.Test.json")
             .Build();
             //Get connection string
-            var connectionString = _config.GetConnectionString("Dev");
+            var connectionString = _config.GetConnectionString("DevAzure");
             //string connectionString = "Server = 127.0.0.1; Port = 5432; Database = DAFCT; User Id = postgres; Password = Admin@1978; CommandTimeout = 90; ";
             _dataAccess = new PgSQLDataAccess(connectionString);
              _auditLogRepository=new AuditLogRepository(_dataAccess);
-            _auditlog= new AuditLog(_auditLogRepository);
+            _auditlog= new AuditTraillib(_auditLogRepository);
             _groupRepository = new GroupRepository(_dataAccess);
             _groupManager = new GroupManager(_groupRepository,_auditlog);
 
@@ -47,6 +47,20 @@ namespace net.atos.daf.ct2.group.test
             group.Description = "AccountGroup Manager UTC";
             var result = _groupManager.Create(group).Result;
             Assert.IsTrue(result != null && result.Id > 0);
+        }
+
+        [TestMethod]
+        public void GetVehicleGroupByOrganization()
+        {
+            Group group = new Group();
+            // filter by organization
+            GroupFilter filter = new GroupFilter();
+            filter.OrganizationId = 1;
+            filter.FunctionEnum = FunctionEnum.None;
+            filter.ObjectType = ObjectType.None;
+            filter.GroupType = GroupType.None;
+            var result = _groupManager.Get(filter).Result;
+            Assert.IsTrue(result != null);
         }
     }
 }

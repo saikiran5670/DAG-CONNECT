@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.group.test
         private readonly IDataAccess _dataAccess;
         private readonly IConfiguration _config;
         readonly IGroupRepository _groupRepository;        
-        private readonly IAuditLog _auditlog;
+        private readonly IAuditTraillib _auditlog;
         public GroupRepositoryTest()
         {
             _config = new ConfigurationBuilder()
