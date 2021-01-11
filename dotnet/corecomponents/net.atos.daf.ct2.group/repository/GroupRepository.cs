@@ -65,8 +65,8 @@ namespace net.atos.daf.ct2.group
                                      organization_id = @organization_id,
                                      ref_id = @ref_id,
                                      name = @name,description = @description
-	                                WHERE id = @id
-                                    RETURNING id;";
+	                                 WHERE id = @id
+                                     RETURNING id;";
                 var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);              
             }
             catch (Exception ex)

@@ -27,24 +27,24 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             Vehicle Objvehicle = new Vehicle();
             Vehicle ObjvehicleResponse = new Vehicle();
 
-            Objvehicle.OrganizationId = request.Organizationid;
+            Objvehicle.Organization_Id = request.Organizationid;
             Objvehicle.Name = request.Name;
             Objvehicle.VIN = request.Vin;
-            Objvehicle.RegistrationNo = request.Registrationno;
+            Objvehicle.License_Plate_Number = request.Registrationno;
             //Objvehicle.ManufactureDate = request.ManufactureDate;
             //Objvehicle.ChassisNo = request.ChassisNo;
-            Objvehicle.StatusDate = DateTime.Now;
+            Objvehicle.Status_Changed_Date = DateTime.Now;
             Objvehicle.Status = VehicleStatusType.OptIn;
-            Objvehicle.TerminationDate = DateTime.Now;
+            Objvehicle.Termination_Date = DateTime.Now;
 
             ObjvehicleResponse = _vehicelManagement.Create(Objvehicle).Result;
             return Task.FromResult(new VehicleResponce
             {
                 Id = ObjvehicleResponse.ID,
-                Organizationid = ObjvehicleResponse.OrganizationId,
+                Organizationid = ObjvehicleResponse.Organization_Id,
                 Name = ObjvehicleResponse.Name,
                 VIN = ObjvehicleResponse.VIN,
-                RegistrationNo = ObjvehicleResponse.RegistrationNo
+                RegistrationNo = ObjvehicleResponse.License_Plate_Number
             });
         }
 
