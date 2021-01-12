@@ -4,10 +4,10 @@ namespace net.atos.daf.ct2.vehicle
 {
     public enum VehicleStatusType
     {
-        None='N',
-        OptIn ='I',
-        OptOut ='U',
-        Terminate ='T',
+        NONE='N',
+        OPTIN ='I',
+        OPTOUT ='U',
+        TERMINATE ='T',
         OTA ='O'
     }
 }

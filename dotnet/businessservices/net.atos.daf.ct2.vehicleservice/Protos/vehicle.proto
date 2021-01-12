@@ -11,8 +11,28 @@ service VehicleService {
   // Sends a greeting
   rpc Create (VehicleRequest) returns (VehicleResponce);
   rpc Update (VehicleRequest) returns (VehicleResponce);
-  rpc Get (VehicleFilterRequest) returns (VehicleList);
+  rpc Get (VehicleFilterRequest) returns (VehicleListResponce);
   rpc UpdateStatus (VehicleOptInOptOutRequest) returns (VehicleOptInOptOutResponce);
+}
+
+enum VehicleStatusType
+{
+    None = 0;
+    OptIn = 1;
+    OptOut = 2;
+    Terminate = 3;
+    OTA = 4;
+}
+
+enum Type
+{
+  VehicleLevel = 0;
+  OrganizationLevel = 1;
+}
+
+enum Responcecode{
+  Success = 0;
+  Failed = 1;
 }
 
 // The request message containing the vehicle details.
@@ -22,13 +42,6 @@ message VehicleRequest {
   string Name = 3;
   string Vin=4;
   string LicensePlateNumber=5;
-  enum VehicleStatusType
-  {
-    OptIn = 0;
-    OptOut = 1;
-    Terminate = 2;
-    OTA = 3;
-  }
 VehicleStatusType Status=6;
 google.protobuf.Timestamp StatusDate=7;
 google.protobuf.Timestamp TerminationDate=8;
@@ -37,22 +50,8 @@ google.protobuf.Timestamp TerminationDate=8;
 
 // The response message containing the greetings.
 message VehicleResponce {
-  int32 Id=1;
-  int32 Organizationid=2;
-  string Name = 3;
-  string VIN=4;
-  string LicensePlateNumber=5;
-  enum VehicleStatusType
-  {
-      OptIn = 0;
-      OptOut = 1;
-      Terminate = 2;
-      OTA = 3;
-  }
- VehicleStatusType Status=6;
-//  google.protobuf.Timestamp StatusDate=7;
-//  google.protobuf.Timestamp TerminationDate=8;
-
+  Responcecode code=1;
+  string message = 2;
 }
 
 
@@ -67,31 +66,23 @@ message VehicleFilterRequest {
   string VIN = 8;
 }
 
-message VehicleList {
-  repeated VehicleResponce vehicles = 1;
+message VehicleListResponce {
+  Responcecode code=1;
+  string message = 2;
+  repeated VehicleRequest vehicles = 3;
 }
 
 message VehicleOptInOptOutRequest{
   int32 Refid=1;
   int32 Accountid=2;
-  enum VehicleStatusType
-  {
-      OptIn = 0;
-      OptOut = 1;
-      Terminate = 2;
-      OTA = 3;
-  }
   VehicleStatusType Status=3;
   google.protobuf.Timestamp StatusDate=4;
-  enum Type
-  {
-    VehicleLevel = 0;
-    OrganizationLevel = 1;
-  }
   Type OptInOptOutType=5;
 }
 
 message VehicleOptInOptOutResponce{
-  int32 Refid=1;
-  int32 Accountid=2;
+  Responcecode code=1;
+  string message = 2;
 }
+
+

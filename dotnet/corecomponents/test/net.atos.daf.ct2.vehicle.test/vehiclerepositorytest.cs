@@ -50,8 +50,8 @@ namespace net.atos.daf.ct2.vehicle.test
             VehicleFilter ObjFilter=new VehicleFilter ();
             //ObjFilter.OrganizationId=1;
             //ObjFilter.VehicleId=5;
-            ObjFilter.VIN="V1";
-            //ObjFilter.VehicleIdList="5,6,7";
+            //ObjFilter.VIN="H";
+            ObjFilter.VehicleIdList="7,8";
             
             var resultvehicleList = _vehicleRepository.Get(ObjFilter).Result;
             Assert.IsNotNull(resultvehicleList);
@@ -78,8 +78,8 @@ namespace net.atos.daf.ct2.vehicle.test
             VehicleOptInOptOut ObjvehicleOptInOptOut = new VehicleOptInOptOut();            
             ObjvehicleOptInOptOut.RefId = 5;
             ObjvehicleOptInOptOut.AccountId = 4;
-            ObjvehicleOptInOptOut.Status=(char)VehicleStatusType.OptOut;
-            ObjvehicleOptInOptOut.Type=(char)OptInOptOutType.VehicleLevel;
+            ObjvehicleOptInOptOut.Status=VehicleStatusType.OptOut;
+            ObjvehicleOptInOptOut.Type=OptInOptOutType.VehicleLevel;
             ObjvehicleOptInOptOut.Date=DateTime.Now;
             var resultUpdateOptInOptOutvehicle = _vehicleRepository.UpdateStatus(ObjvehicleOptInOptOut).Result;
             Assert.IsNotNull(resultUpdateOptInOptOutvehicle);
