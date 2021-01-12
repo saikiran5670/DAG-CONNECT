@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+
+option csharp_namespace = "net.atos.daf.ct2.auditservice";
+option go_package ="enumpb";
+
+package audittrail;
+
+service AuditService {
+    rpc Addlogs(AuditRecord) returns (AuditResponce);
+}
+
+enum Event_type
+        {
+            LOGIN = 0;
+            CREATE = 1;
+            UPDATE = 2;
+            DELETE = 3;
+            Get = 4;
+        };
+
+enum Event_status
+    {
+        SUCCESS = 0;
+        FAILED = 1;
+        PENDING = 2;
+        ABORTED = 3;
+    };
+    
+message AuditRecord {
+    int32 Audittrailid =1;
+    google.protobuf.Timestamp Performed_at=2;     
+    int32 Performed_by =3;
+    string Component_name =4;
+    string Service_name =5;
+    Event_type Type =6;
+    Event_Status Status=7;
+    string Message =8;
+    int32 Sourceobject_id =9;
+    int32 Targetobject_id =10;
+    string Updated_data=11;    
+}
+
+message AuditResponce {
+	string statuscode = 1;
+	string message = 2;
+}
+
+message AuditRequest {
+	string componentname = 1;
+	string eventtype = 2;
+	google.protobuf.Timestamp starttime = 3;
+	google.protobuf.Timestamp endtime = 4;
+}
