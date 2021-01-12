@@ -9,4 +9,11 @@ namespace net.atos.daf.ct2.account
         public string Name { get; set; }
         public AccountType AccountType { get; set; }
     }
+
+    public class AccessRelationshipFilter
+    {
+         public int AccountId { get; set; }
+        public int AccountGroupId { get; set; }        
+        
+    }
 }
