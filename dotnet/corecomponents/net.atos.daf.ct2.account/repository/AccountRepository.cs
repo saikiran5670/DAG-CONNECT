@@ -164,6 +164,53 @@ namespace net.atos.daf.ct2.account
                 throw ex;
             }
         }
+
+        // public async Task<AccessRelationship> GetAccountRelationship(AccessRelationshipFilter filter)
+        // {
+        //    try
+        //     {
+        //         var parameter = new DynamicParameters();
+        //         //List<Account> accounts = new List<Account>();
+        //         List<Account> accounts = new List<Account>();
+        //         string query = string.Empty;
+        //         query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.dob,a.type as accounttype,ag.organization_id as Organization_Id from master.account a join master.accountorg ag on a.id = ag.account_id where 1=1 ";
+        //         if (filter != null)
+        //         {
+        //             // id filter
+        //             if (filter.Id > 0)
+        //             {
+        //                 parameter.Add("@id", filter.Id);
+        //                 query = query + " and a.id = @id ";
+        //             }
+        //             // organization id filter
+        //             if (filter.OrganizationId > 0)
+        //             {
+        //                 parameter.Add("@organization_id", filter.OrganizationId);
+        //                 query = query + " and ag.organization_id = @organization_id ";
+        //             }
+        //             // account type filter 
+        //             if (((char)filter.AccountType) != ((char)AccountType.None))
+        //             {
+        //                 parameter.Add("@type", (char)filter.AccountType);
+        //                 query = query + " and a.type = @type";
+        //             }
+
+        //             dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+        //             //Account account;
+        //             foreach (dynamic record in result)
+        //             {
+        //                 accounts.Add(Map(record));
+        //             }
+        //         }
+        //         return accounts;
+
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         throw ex;
+        //     }
+        // }
+
         private Account Map(dynamic record)
         {
             Account account = new Account();

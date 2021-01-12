@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using  net.atos.daf.ct2.audit.Enum;
+//using net.atos.daf.ct2.identity;
 
 namespace net.atos.daf.ct2.account
 {
@@ -18,7 +19,10 @@ namespace net.atos.daf.ct2.account
         }
         public async Task<Account> Create(Account account)  
         {
-            return await repository.Create(account);
+            
+            await repository.Create(account);
+
+             return null;
         }
         public async Task<Account> Update(Account account)  
         {

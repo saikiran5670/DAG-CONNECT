@@ -90,7 +90,6 @@ namespace net.atos.daf.ct2.identity
                 ValidAudience = _settings.Audience,
                 IssuerSigningKey = new RsaSecurityKey(rsa)
             };
-
             try
             {
                 var handler = new JwtSecurityTokenHandler();
@@ -100,51 +99,72 @@ namespace net.atos.daf.ct2.identity
             {
                 return false;
             }
-
             return true;
         }
         public AccountIDPClaim DecodeToken(string jwtInput)
         {
-
-            // var handler = new JwtSecurityTokenHandler();
-            // var decodedValue = handler.ReadJwtToken(token);
-            string JwtOut;
-            var jwtHandler = new JwtSecurityTokenHandler();
-
-            //Check if readable token (string is in a JWT format)
-            var readableToken = jwtHandler.CanReadToken(jwtInput);
-
-            if(readableToken != true)
+            AccountIDPClaim customclaims = new AccountIDPClaim();
+            List<AccountAssertion> assertionList=new List<AccountAssertion>();
+            AccountAssertion assertion;
+            var handler = new JwtSecurityTokenHandler();
+            var readable = handler.CanReadToken(jwtInput);
+            
+            if(readable == true)
             {
-            JwtOut = "The token doesn't seem to be in a proper JWT format.";
+				var jwtToken = handler.ReadJwtToken(jwtInput);
+				var headers = jwtToken.Header;
+				foreach(var h in headers)
+				{
+                    switch(h.Key.ToString())
+                    {
+                        case "alg": customclaims.Algorithm=h.Value.ToString();
+                                    break;
+                        case "typ": customclaims.AlgoType=h.Value.ToString();
+                                    break;
+                        case "sid": customclaims.Sid=h.Value.ToString();
+                                    break;
+                    }
+					// jwtHeader += '"' + h.Key + "\":\"" + h.Value + "\",";
+				}
+				var claims = jwtToken.Claims;
+				foreach(Claim c in claims)
+				{
+                    switch(c.Type)
+                    {
+                        /*Jwt Registered ClaimNames */
+                        case "exp": customclaims.ValidTo=c.Value;
+                                    break;
+                        case "iat": customclaims.IssuedAt=c.Value;
+                                    break;
+                        case "jti": customclaims.Id=c.Value;
+                                    break;
+                        case "iss": customclaims.Issuer=c.Value;
+                                    break;
+                        case "sub": customclaims.Subject=c.Value;
+                                    break;
+                        case "aud": customclaims.Audience=c.Value;
+                                    break;
+                        case "typ": customclaims.TokenType=c.Value;
+                                    break;
+                        /*User defined account specific ClaimNames */
+                        default:   
+                                    assertion=new AccountAssertion();
+                                    assertion.Key=c.Type;
+                                    assertion.Value=c.Type;
+                                    assertion.SessionState="";
+                                    assertion.AccountId="";
+                                    assertion.CreatedAt="";
+                                    assertionList.Add(assertion);
+                                    break;
+                    }
+					// jwtPayload += '"' + c.Type + "\":\"" + c.Value + "\",";
+				}
+                customclaims.assertions=assertionList;
             }
-            if(readableToken == true)
+            else 
             {
-            var token = jwtHandler.ReadJwtToken(jwtInput);
-                
-            //Extract the headers of the JWT
-            var headers = token.Header;
-            var jwtHeader = "{";
-            foreach(var h in headers)
-            {
-                jwtHeader += '"' + h.Key + "\":\"" + h.Value + "\",";
+              customclaims=new AccountIDPClaim();
             }
-            jwtHeader += "}";
-            JwtOut = "Header:\r\n" + JToken.Parse(jwtHeader).ToString(Formatting.Indented);
-
-            //Extract the payload of the JWT
-            var claims = token.Claims;
-            var jwtPayload = "{";
-            foreach(Claim c in claims)
-            {
-                jwtPayload += '"' + c.Type + "\":\"" + c.Value + "\",";
-            }
-            jwtPayload += "}";
-            JwtOut += "\r\nPayload:\r\n" + JToken.Parse(jwtPayload).ToString(Formatting.Indented);  
-            }
-
-            AccountIDPClaim customclaims=new AccountIDPClaim();
-            AccountAssertion assertion=new AccountAssertion(); 
             // code to extract token and bind claim & assestoin object
             // claim.
             //return decodedValue.ToString();
@@ -159,7 +179,13 @@ namespace net.atos.daf.ct2.identity
             //         new Claim(JwtRegisteredClaimNames.Sid, customclaims.Sid),
             //         new Claim(JwtRegisteredClaimNames.Azp, customclaims.AuthorizedParty)
             // };
-
+            return customclaims;
+        }
+         public AccountIDPClaim DecodeOLD(string jwtInput)
+        {
+            AccountIDPClaim customclaims = new AccountIDPClaim();
+            List<AccountAssertion> assertionList=new List<AccountAssertion>();
+            
             return customclaims;
         }
     }

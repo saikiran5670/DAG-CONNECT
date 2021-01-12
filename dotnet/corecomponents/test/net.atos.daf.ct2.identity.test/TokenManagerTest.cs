@@ -8,7 +8,7 @@ using net.atos.daf.ct2.identity.entity;
 
 namespace net.atos.daf.ct2.identity.test
 {
- [TestClass]
+    [TestClass]
     public class TokenManagerTest
     {
         private readonly ITokenManager _tokenManager;
