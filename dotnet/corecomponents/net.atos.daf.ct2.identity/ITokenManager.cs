@@ -4,8 +4,8 @@ namespace net.atos.daf.ct2.identity
 {
     public interface ITokenManager
     {
-        AccountToken CreateToken(AccountCustomClaims claims);
+        AccountToken CreateToken(AccountIDPClaim customclaims);
         bool ValidateToken(string token);
-        string DecodeToken(string token);
+        AccountIDPClaim DecodeToken(string token);
     }
 }

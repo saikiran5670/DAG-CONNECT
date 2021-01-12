@@ -8,8 +8,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using net.atos.daf.ct2.identity.entity;
-
 namespace net.atos.daf.ct2.identity
 {
     public class TokenManager:ITokenManager
@@ -19,7 +20,7 @@ namespace net.atos.daf.ct2.identity
         {
             _settings = setting.Value;
         }  
-        public AccountToken CreateToken(AccountCustomClaims claims)
+        public AccountToken CreateToken(AccountIDPClaim customclaims)
         {
             var privateKey = _settings.RsaPrivateKey.ToByteArray();
 
@@ -34,15 +35,28 @@ namespace net.atos.daf.ct2.identity
             var now = DateTime.Now;
             var unixTimeSeconds = new DateTimeOffset(now).ToUnixTimeSeconds();
 
+            // customclaims.
+            // customclaims.
+            // customclaims.
+            // customclaims.
+
             var jwt = new JwtSecurityToken(
-                audience: _settings.Audience,
-                issuer: _settings.Issuer,
+                audience: customclaims.Audience,/*aud*/
+                issuer: customclaims.Issuer,/*iss*/
+                // validto:customclaims.ValidTo,/*exp*/
+                // IssuedAt:customclaims.IssuedAt,/*iat*/
+                // id=customclaims.Id,/*jti*/
+                // subject:customclaims.Subject,/*sub*/
                 claims: new Claim[] {
+                    new Claim(JwtRegisteredClaimNames.Exp, customclaims.ValidTo),
                     new Claim(JwtRegisteredClaimNames.Iat, unixTimeSeconds.ToString(), ClaimValueTypes.Integer64),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(nameof(claims.FirstName), claims.FirstName),
-                    new Claim(nameof(claims.LastName), claims.LastName),
-                    new Claim(nameof(claims.Email), claims.Email)
+                    new Claim(JwtRegisteredClaimNames.Jti, customclaims.Id),
+                    new Claim(JwtRegisteredClaimNames.Iss, customclaims.Issuer),
+                    new Claim(JwtRegisteredClaimNames.Sub, customclaims.Subject),
+                    new Claim(JwtRegisteredClaimNames.Aud, customclaims.Audience),
+                    new Claim(JwtRegisteredClaimNames.Typ, customclaims.TokenType),
+                    new Claim(JwtRegisteredClaimNames.Sid, customclaims.Sid),
+                    new Claim(JwtRegisteredClaimNames.Azp, customclaims.AuthorizedParty)
                 },
                 notBefore: now,
                 expires: now.AddSeconds(60),
@@ -89,13 +103,64 @@ namespace net.atos.daf.ct2.identity
 
             return true;
         }
-        public string DecodeToken(string token)
+        public AccountIDPClaim DecodeToken(string jwtInput)
         {
 
-            var handler = new JwtSecurityTokenHandler();
-            var decodedValue = handler.ReadJwtToken(token);
-            
-            return decodedValue.ToString();
+            // var handler = new JwtSecurityTokenHandler();
+            // var decodedValue = handler.ReadJwtToken(token);
+            string JwtOut;
+            var jwtHandler = new JwtSecurityTokenHandler();
+
+            //Check if readable token (string is in a JWT format)
+            var readableToken = jwtHandler.CanReadToken(jwtInput);
+
+            if(readableToken != true)
+            {
+            JwtOut = "The token doesn't seem to be in a proper JWT format.";
+            }
+            if(readableToken == true)
+            {
+            var token = jwtHandler.ReadJwtToken(jwtInput);
+                
+            //Extract the headers of the JWT
+            var headers = token.Header;
+            var jwtHeader = "{";
+            foreach(var h in headers)
+            {
+                jwtHeader += '"' + h.Key + "\":\"" + h.Value + "\",";
+            }
+            jwtHeader += "}";
+            JwtOut = "Header:\r\n" + JToken.Parse(jwtHeader).ToString(Formatting.Indented);
+
+            //Extract the payload of the JWT
+            var claims = token.Claims;
+            var jwtPayload = "{";
+            foreach(Claim c in claims)
+            {
+                jwtPayload += '"' + c.Type + "\":\"" + c.Value + "\",";
+            }
+            jwtPayload += "}";
+            JwtOut += "\r\nPayload:\r\n" + JToken.Parse(jwtPayload).ToString(Formatting.Indented);  
+            }
+
+            AccountIDPClaim customclaims=new AccountIDPClaim();
+            AccountAssertion assertion=new AccountAssertion(); 
+            // code to extract token and bind claim & assestoin object
+            // claim.
+            //return decodedValue.ToString();
+            // var claims= new Claim[] {
+            //         new Claim(JwtRegisteredClaimNames.Exp, customclaims.ValidTo),
+            //         new Claim(JwtRegisteredClaimNames.Iat, "unixTimeSeconds.ToString()", ClaimValueTypes.Integer64),
+            //         new Claim(JwtRegisteredClaimNames.Jti, customclaims.Id),
+            //         new Claim(JwtRegisteredClaimNames.Iss, customclaims.Issuer),
+            //         new Claim(JwtRegisteredClaimNames.Sub, customclaims.Subject),
+            //         new Claim(JwtRegisteredClaimNames.Aud, customclaims.Audience),
+            //         new Claim(JwtRegisteredClaimNames.Typ, customclaims.TokenType),
+            //         new Claim(JwtRegisteredClaimNames.Sid, customclaims.Sid),
+            //         new Claim(JwtRegisteredClaimNames.Azp, customclaims.AuthorizedParty)
+            // };
+
+            return customclaims;
         }
     }
     public static class TypeConverterExtension
