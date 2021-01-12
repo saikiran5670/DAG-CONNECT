@@ -1,3 +1,0 @@
-net.atos.daf.ct2.vehicle.test.UnitTest1.TestMethod1
-net.atos.daf.ct2.vehicle.test.vehiclerepositorytest.CreateVehicle
-net.atos.daf.ct2.vehicle.test.vehiclerepositorytest.GetVehicle
