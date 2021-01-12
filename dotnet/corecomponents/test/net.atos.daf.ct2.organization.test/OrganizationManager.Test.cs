@@ -22,8 +22,8 @@ namespace net.atos.daf.ct2.organization.test
              .AddJsonFile("appsettings.Test.json")
             .Build();
             //Get connection string
-            var connectionString = _config.GetConnectionString("Dev");
-            //string connectionString = "Server = 127.0.0.1; Port = 5432; Database = DAFCT; User Id = postgres; Password = Admin@1978; CommandTimeout = 90; ";
+           // var connectionString = _config.GetConnectionString("Dev");
+            string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y\\97;Ssl Mode=Require;";
             _dataAccess = new PgSQLDataAccess(connectionString);
             _auditLogRepository=new AuditLogRepository(_dataAccess);
             _auditlog= new AuditTraillib(_auditLogRepository);
