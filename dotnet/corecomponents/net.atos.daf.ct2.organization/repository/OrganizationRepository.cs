@@ -85,11 +85,11 @@ namespace net.atos.daf.ct2.organization.repository
                 parameter.Add("@OptOutStatusChangedDate", organization.OptOutStatusChangedDate);
                 parameter.Add("@IsActive", organization.IsActive);  
 
-                var query = @"update master.organization set type=OrganizationType, name=@Name,
-                 address_type=AddressType, street=@AddressStreet, street_number=@AddressStreetNumber,
+                var query = @"update master.organization set type=@OrganizationType, name=@Name,
+                 address_type=@AddressType, street=@AddressStreet, street_number=@AddressStreetNumber,
                   postal_code=@PostalCode, city=@City,country_code=@CountryCode,reference_date=@ReferencedDate,
                   optout_status=@OptOutStatus,optout_status_changed_date=@OptOutStatusChangedDate,is_active=@IsActive
-	                                 WHERE org_id = OrganizationId RETURNING id;";
+	                                 WHERE org_id = @OrganizationId RETURNING id;";
                 var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);              
             }
             catch (Exception ex)

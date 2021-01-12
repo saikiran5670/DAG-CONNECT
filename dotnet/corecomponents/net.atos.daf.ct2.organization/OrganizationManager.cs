@@ -24,5 +24,17 @@ namespace net.atos.daf.ct2.organization
         {
             return await organizationRepository.Create(organization);
         }
+         public async Task<Organization> Update(Organization organization)
+        {
+            return await organizationRepository.Update(organization);
+        }
+        public async Task<bool> Delete(string organizationId)
+        {
+            return await organizationRepository.Delete(organizationId);
+        }
+        public async Task<IEnumerable<Organization>> Get(string organizationId)
+        {
+            return await organizationRepository.Get(organizationId);
+        }
     }
 }
