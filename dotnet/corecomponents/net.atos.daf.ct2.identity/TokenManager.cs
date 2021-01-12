@@ -73,9 +73,8 @@ namespace net.atos.daf.ct2.identity
         }
         public bool ValidateToken(string token)
         {
-
             var publicKey = _settings.RsaPublicKey.ToByteArray();
-
+         //   AccountIDPClaim customclaims = DecodeToken(token);
             using RSA rsa = RSA.Create();
             rsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(_settings.RsaPublicKey), out _);
             //rsa.ImportRSAPublicKey(publicKey, out _);
