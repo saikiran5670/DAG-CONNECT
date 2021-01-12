@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.account
         public string Salutation { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public DateTime Dob { get; set; }
+        public DateTime ? Dob { get; set; }
         public AccountType AccountType { get; set; }
         public int Organization_Id { get; set; } 
         public int Account_OrgId { get; set; } 

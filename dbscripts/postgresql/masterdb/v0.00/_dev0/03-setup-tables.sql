@@ -137,7 +137,7 @@ CREATE TABLE if not exists  master.account
 	salutation varchar(5) not null,
 	first_name varchar(30) not null,
 	last_name varchar(20),
-	dob timestamp,
+	dob bigint,
 	type char(1) not null ----------------
 )
 TABLESPACE pg_default;
@@ -247,9 +247,9 @@ CREATE TABLE if not exists  master.role
 	organization_id int not null,
 	name varchar(50) not null,
 	is_active boolean not null default true, ----------
-	created_date timestamp,
+	created_date bigint,
 	created_by int,
-	updated_date timestamp,
+	updated_date bigint,
 	updated_by int
 )
 TABLESPACE pg_default;
@@ -295,8 +295,8 @@ CREATE TABLE if not exists  master.accountrole
 	account_id int not null,
 	organization_id  int not null,
 	role_id  int not null,
-	start_date timestamp not null,
-	end_date timestamp
+	start_date bigint not null,
+	end_date bigint
 )
 TABLESPACE pg_default;
 
