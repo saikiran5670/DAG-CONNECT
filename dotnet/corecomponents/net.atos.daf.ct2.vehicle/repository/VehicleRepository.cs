@@ -205,17 +205,18 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
 
             // VIN Id Filter
-            if (vehiclefilter.VIN != null)
+            if (Convert.ToInt32(vehiclefilter.VIN.Length) > 0)
             {
-                QueryStatement = QueryStatement + " and vin LIKE '%@vin%'";
-                parameter.Add("@vin", vehiclefilter.VIN);
+                parameter.Add("@vin", "%" + vehiclefilter.VIN + "%");
+                QueryStatement = QueryStatement + " and vin LIKE @vin";
+
             }
-            
+
             // Vehicle Id list Filter
-            if (vehiclefilter.VehicleIdList != null)
+            if (Convert.ToInt32(vehiclefilter.VehicleIdList.Length) > 0)
             {
                 List<int> VehicleIds = vehiclefilter.VehicleIdList.Split(',').Select(int.Parse).ToList();
-                QueryStatement = QueryStatement + "and id  = ANY(@VehicleIds)";
+                QueryStatement = QueryStatement + " and id  = ANY(@VehicleIds)";
                 parameter.Add("@VehicleIds", VehicleIds);
             }
 
