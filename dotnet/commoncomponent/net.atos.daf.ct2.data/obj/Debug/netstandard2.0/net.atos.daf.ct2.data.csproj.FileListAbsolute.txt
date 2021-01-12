@@ -8,3 +8,14 @@ c:\project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.data\obj\Debug
 c:\project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.data\obj\Debug\netstandard2.0\net.atos.daf.ct2.data.AssemblyInfo.cs
 c:\project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.data\obj\Debug\netstandard2.0\net.atos.daf.ct2.data.dll
 c:\project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.data\obj\Debug\netstandard2.0\net.atos.daf.ct2.data.pdb
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.data\obj\Debug\netstandard2.0\net.atos.daf.ct2.data.dll
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.data\obj\Debug\netstandard2.0\net.atos.daf.ct2.data.pdb
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.data\bin\Debug\netstandard2.0\appsettings.json
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.data\bin\Debug\netstandard2.0\appsettings.test.json
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.data\bin\Debug\netstandard2.0\net.atos.daf.ct2.data.deps.json
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.data\bin\Debug\netstandard2.0\net.atos.daf.ct2.data.dll
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.data\bin\Debug\netstandard2.0\net.atos.daf.ct2.data.pdb
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.data\obj\Debug\netstandard2.0\net.atos.daf.ct2.data.csprojAssemblyReference.cache
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.data\obj\Debug\netstandard2.0\net.atos.daf.ct2.data.AssemblyInfoInputs.cache
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.data\obj\Debug\netstandard2.0\net.atos.daf.ct2.data.AssemblyInfo.cs
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.data\obj\Debug\netstandard2.0\net.atos.daf.ct2.data.csproj.CoreCompileInputs.cache

@@ -12,6 +12,7 @@ using net.atos.daf.ct2.vehicle.repository;
 using net.atos.daf.ct2.vehiclerepository;
 using net.atos.daf.ct2.vehicleservice.Services;
 using Microsoft.Extensions.Configuration;
+using net.atos.daf.ct2.vehicle;
 
 namespace net.atos.daf.ct2.vehicleservice
 {
@@ -31,7 +32,7 @@ namespace net.atos.daf.ct2.vehicleservice
             var connectionString = Configuration.GetConnectionString("DevAzure");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             services.AddSingleton(dataAccess); 
-            services.AddTransient<IVehicleManagement,VehicleManagement>();
+            services.AddTransient<IVehicleManager,VehicleManager>();
             services.AddTransient<IVehicleRepository, VehicleRepository>();
         }
 

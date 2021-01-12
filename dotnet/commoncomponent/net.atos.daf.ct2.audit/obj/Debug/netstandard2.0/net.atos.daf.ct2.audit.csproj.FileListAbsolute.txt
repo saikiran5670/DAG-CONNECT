@@ -13,3 +13,19 @@ c:\project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\obj\Debu
 c:\project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\obj\Debug\netstandard2.0\net.atos.daf.ct2.audit.csproj.CopyComplete
 c:\project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\obj\Debug\netstandard2.0\net.atos.daf.ct2.audit.dll
 c:\project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\obj\Debug\netstandard2.0\net.atos.daf.ct2.audit.pdb
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\obj\Debug\netstandard2.0\net.atos.daf.ct2.audit.dll
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\obj\Debug\netstandard2.0\net.atos.daf.ct2.audit.pdb
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\bin\Debug\netstandard2.0\appsettings.json
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\bin\Debug\netstandard2.0\appsettings.test.json
+C:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\bin\Debug\netstandard2.0\net.atos.daf.ct2.audit.deps.json
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\bin\Debug\netstandard2.0\net.atos.daf.ct2.audit.dll
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\bin\Debug\netstandard2.0\net.atos.daf.ct2.audit.pdb
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\bin\Debug\netstandard2.0\net.atos.daf.ct2.data.dll
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\bin\Debug\netstandard2.0\net.atos.daf.ct2.utilities.dll
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\bin\Debug\netstandard2.0\net.atos.daf.ct2.data.pdb
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\bin\Debug\netstandard2.0\net.atos.daf.ct2.utilities.pdb
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\obj\Debug\netstandard2.0\net.atos.daf.ct2.audit.csprojAssemblyReference.cache
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\obj\Debug\netstandard2.0\net.atos.daf.ct2.audit.AssemblyInfoInputs.cache
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\obj\Debug\netstandard2.0\net.atos.daf.ct2.audit.AssemblyInfo.cs
+c:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\obj\Debug\netstandard2.0\net.atos.daf.ct2.audit.csproj.CoreCompileInputs.cache
+C:\Saurabh\DAF Project\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.audit\obj\Debug\netstandard2.0\net.atos.daf.ct2.audit.csproj.CopyComplete

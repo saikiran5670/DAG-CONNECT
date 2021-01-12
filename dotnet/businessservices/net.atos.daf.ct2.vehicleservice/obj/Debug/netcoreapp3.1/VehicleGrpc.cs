@@ -19,6 +19,8 @@ namespace net.atos.daf.ct2.vehicleservice {
     static readonly grpc::Marshaller<global::net.atos.daf.ct2.vehicleservice.VehicleResponce> __Marshaller_vehicle_VehicleResponce = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::net.atos.daf.ct2.vehicleservice.VehicleResponce.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::net.atos.daf.ct2.vehicleservice.VehicleFilterRequest> __Marshaller_vehicle_VehicleFilterRequest = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::net.atos.daf.ct2.vehicleservice.VehicleFilterRequest.Parser.ParseFrom);
     static readonly grpc::Marshaller<global::net.atos.daf.ct2.vehicleservice.VehicleList> __Marshaller_vehicle_VehicleList = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::net.atos.daf.ct2.vehicleservice.VehicleList.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest> __Marshaller_vehicle_VehicleOptInOptOutRequest = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Parser.ParseFrom);
+    static readonly grpc::Marshaller<global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutResponce> __Marshaller_vehicle_VehicleOptInOptOutResponce = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutResponce.Parser.ParseFrom);
 
     static readonly grpc::Method<global::net.atos.daf.ct2.vehicleservice.VehicleRequest, global::net.atos.daf.ct2.vehicleservice.VehicleResponce> __Method_Create = new grpc::Method<global::net.atos.daf.ct2.vehicleservice.VehicleRequest, global::net.atos.daf.ct2.vehicleservice.VehicleResponce>(
         grpc::MethodType.Unary,
@@ -40,6 +42,13 @@ namespace net.atos.daf.ct2.vehicleservice {
         "Get",
         __Marshaller_vehicle_VehicleFilterRequest,
         __Marshaller_vehicle_VehicleList);
+
+    static readonly grpc::Method<global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest, global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutResponce> __Method_UpdateStatus = new grpc::Method<global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest, global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutResponce>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "UpdateStatus",
+        __Marshaller_vehicle_VehicleOptInOptOutRequest,
+        __Marshaller_vehicle_VehicleOptInOptOutResponce);
 
     /// <summary>Service descriptor</summary>
     public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
@@ -72,6 +81,11 @@ namespace net.atos.daf.ct2.vehicleservice {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
 
+      public virtual global::System.Threading.Tasks.Task<global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutResponce> UpdateStatus(global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest request, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
     }
 
     /// <summary>Creates service definition that can be registered with a server</summary>
@@ -81,7 +95,8 @@ namespace net.atos.daf.ct2.vehicleservice {
       return grpc::ServerServiceDefinition.CreateBuilder()
           .AddMethod(__Method_Create, serviceImpl.Create)
           .AddMethod(__Method_Update, serviceImpl.Update)
-          .AddMethod(__Method_Get, serviceImpl.Get).Build();
+          .AddMethod(__Method_Get, serviceImpl.Get)
+          .AddMethod(__Method_UpdateStatus, serviceImpl.UpdateStatus).Build();
     }
 
     /// <summary>Register service method with a service binder with or without implementation. Useful when customizing the  service binding logic.
@@ -93,6 +108,7 @@ namespace net.atos.daf.ct2.vehicleservice {
       serviceBinder.AddMethod(__Method_Create, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::net.atos.daf.ct2.vehicleservice.VehicleRequest, global::net.atos.daf.ct2.vehicleservice.VehicleResponce>(serviceImpl.Create));
       serviceBinder.AddMethod(__Method_Update, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::net.atos.daf.ct2.vehicleservice.VehicleRequest, global::net.atos.daf.ct2.vehicleservice.VehicleResponce>(serviceImpl.Update));
       serviceBinder.AddMethod(__Method_Get, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::net.atos.daf.ct2.vehicleservice.VehicleFilterRequest, global::net.atos.daf.ct2.vehicleservice.VehicleList>(serviceImpl.Get));
+      serviceBinder.AddMethod(__Method_UpdateStatus, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest, global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutResponce>(serviceImpl.UpdateStatus));
     }
 
   }

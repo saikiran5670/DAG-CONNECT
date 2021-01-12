@@ -1,46 +1,44 @@
 {
   "format": 1,
   "restore": {
-    "c:\\project\\atos.daf.ct2.0\\dotnet\\businessservices\\net.atos.daf.ct2.accountservice\\net.atos.daf.ct2.accountservice.csproj": {}
+    "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\businessservices\\net.atos.daf.ct2.accountservice\\net.atos.daf.ct2.accountservice.csproj": {}
   },
   "projects": {
-    "c:\\project\\atos.daf.ct2.0\\dotnet\\businessservices\\net.atos.daf.ct2.accountservice\\net.atos.daf.ct2.accountservice.csproj": {
+    "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\businessservices\\net.atos.daf.ct2.accountservice\\net.atos.daf.ct2.accountservice.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\project\\atos.daf.ct2.0\\dotnet\\businessservices\\net.atos.daf.ct2.accountservice\\net.atos.daf.ct2.accountservice.csproj",
+        "projectUniqueName": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\businessservices\\net.atos.daf.ct2.accountservice\\net.atos.daf.ct2.accountservice.csproj",
         "projectName": "net.atos.daf.ct2.accountservice",
-        "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\businessservices\\net.atos.daf.ct2.accountservice\\net.atos.daf.ct2.accountservice.csproj",
-        "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
-        "outputPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\businessservices\\net.atos.daf.ct2.accountservice\\obj\\",
+        "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\businessservices\\net.atos.daf.ct2.accountservice\\net.atos.daf.ct2.accountservice.csproj",
+        "packagesPath": "C:\\Users\\A739634\\.nuget\\packages\\",
+        "outputPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\businessservices\\net.atos.daf.ct2.accountservice\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\a433867\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\A739634\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netcoreapp3.1": {
             "projectReferences": {
-              "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.accountpreference\\net.atos.daf.ct2.accountpreference.csproj": {
-                "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.accountpreference\\net.atos.daf.ct2.accountpreference.csproj"
+              "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj": {
+                "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj"
               },
-              "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj": {
-                "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj"
+              "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.accountpreference\\net.atos.daf.ct2.accountpreference.csproj": {
+                "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.accountpreference\\net.atos.daf.ct2.accountpreference.csproj"
               },
-              "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.group\\net.atos.daf.ct2.group.csproj": {
-                "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.group\\net.atos.daf.ct2.group.csproj"
+              "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj": {
+                "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj"
               },
-              "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\net.atos.daf.ct2.identity.csproj": {
-                "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\net.atos.daf.ct2.identity.csproj"
+              "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.group\\net.atos.daf.ct2.group.csproj": {
+                "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.group\\net.atos.daf.ct2.group.csproj"
+              },
+              "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\net.atos.daf.ct2.identity.csproj": {
+                "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\net.atos.daf.ct2.identity.csproj"
               }
             }
           }
@@ -77,41 +75,36 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.109\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.302\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj": {
+    "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj",
+        "projectUniqueName": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj",
         "projectName": "net.atos.daf.ct2.audit",
-        "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj",
-        "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
-        "outputPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\obj\\",
+        "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj",
+        "packagesPath": "C:\\Users\\A739634\\.nuget\\packages\\",
+        "outputPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\a433867\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\A739634\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netstandard2.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netstandard2.0": {
             "projectReferences": {
-              "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj": {
-                "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj"
+              "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj": {
+                "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj"
               },
-              "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj": {
-                "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj"
+              "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj": {
+                "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj"
               }
             }
           }
@@ -154,31 +147,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.109\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.302\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj": {
+    "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj",
+        "projectUniqueName": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj",
         "projectName": "net.atos.daf.ct2.data",
-        "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj",
-        "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
-        "outputPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\obj\\",
+        "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj",
+        "packagesPath": "C:\\Users\\A739634\\.nuget\\packages\\",
+        "outputPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\a433867\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\A739634\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netstandard2.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -220,31 +208,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.109\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.302\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj": {
+    "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj",
+        "projectUniqueName": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj",
         "projectName": "net.atos.daf.ct2.utilities",
-        "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj",
-        "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
-        "outputPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\obj\\",
+        "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj",
+        "packagesPath": "C:\\Users\\A739634\\.nuget\\packages\\",
+        "outputPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\a433867\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\A739634\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netstandard2.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -278,41 +261,36 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.109\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.302\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.accountpreference\\net.atos.daf.ct2.accountpreference.csproj": {
+    "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.accountpreference\\net.atos.daf.ct2.accountpreference.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.accountpreference\\net.atos.daf.ct2.accountpreference.csproj",
+        "projectUniqueName": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.accountpreference\\net.atos.daf.ct2.accountpreference.csproj",
         "projectName": "net.atos.daf.ct2.accountpreference",
-        "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.accountpreference\\net.atos.daf.ct2.accountpreference.csproj",
-        "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
-        "outputPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.accountpreference\\obj\\",
+        "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.accountpreference\\net.atos.daf.ct2.accountpreference.csproj",
+        "packagesPath": "C:\\Users\\A739634\\.nuget\\packages\\",
+        "outputPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.accountpreference\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\a433867\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\A739634\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netstandard2.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netstandard2.0": {
             "projectReferences": {
-              "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj": {
-                "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj"
+              "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj": {
+                "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj"
               },
-              "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj": {
-                "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj"
+              "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj": {
+                "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj"
               }
             }
           }
@@ -343,44 +321,39 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.109\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.302\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj": {
+    "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj",
+        "projectUniqueName": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj",
         "projectName": "net.atos.daf.ct2.account",
-        "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj",
-        "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
-        "outputPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\obj\\",
+        "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\net.atos.daf.ct2.account.csproj",
+        "packagesPath": "C:\\Users\\A739634\\.nuget\\packages\\",
+        "outputPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.account\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\a433867\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\A739634\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netstandard2.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netstandard2.0": {
             "projectReferences": {
-              "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj": {
-                "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj"
+              "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj": {
+                "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj"
               },
-              "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj": {
-                "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj"
+              "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj": {
+                "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj"
               },
-              "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj": {
-                "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj"
+              "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj": {
+                "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.utilities\\net.atos.daf.ct2.utilities.csproj"
               }
             }
           }
@@ -427,41 +400,36 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.109\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.302\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.group\\net.atos.daf.ct2.group.csproj": {
+    "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.group\\net.atos.daf.ct2.group.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.group\\net.atos.daf.ct2.group.csproj",
+        "projectUniqueName": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.group\\net.atos.daf.ct2.group.csproj",
         "projectName": "net.atos.daf.ct2.group",
-        "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.group\\net.atos.daf.ct2.group.csproj",
-        "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
-        "outputPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.group\\obj\\",
+        "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.group\\net.atos.daf.ct2.group.csproj",
+        "packagesPath": "C:\\Users\\A739634\\.nuget\\packages\\",
+        "outputPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.group\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\a433867\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\A739634\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netstandard2.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netstandard2.0": {
             "projectReferences": {
-              "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj": {
-                "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj"
+              "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj": {
+                "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.audit\\net.atos.daf.ct2.audit.csproj"
               },
-              "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj": {
-                "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj"
+              "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj": {
+                "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\commoncomponent\\net.atos.daf.ct2.data\\net.atos.daf.ct2.data.csproj"
               }
             }
           }
@@ -496,31 +464,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.109\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.302\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\net.atos.daf.ct2.identity.csproj": {
+    "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\net.atos.daf.ct2.identity.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\net.atos.daf.ct2.identity.csproj",
+        "projectUniqueName": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\net.atos.daf.ct2.identity.csproj",
         "projectName": "net.atos.daf.ct2.identity",
-        "projectPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\net.atos.daf.ct2.identity.csproj",
-        "packagesPath": "C:\\Users\\a433867\\.nuget\\packages\\",
-        "outputPath": "c:\\project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\obj\\",
+        "projectPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\net.atos.daf.ct2.identity.csproj",
+        "packagesPath": "C:\\Users\\A739634\\.nuget\\packages\\",
+        "outputPath": "c:\\Saurabh\\DAF Project\\atos.daf.ct2.0\\dotnet\\corecomponents\\net.atos.daf.ct2.identity\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\a433867\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\A739634\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -573,7 +536,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.109\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.302\\RuntimeIdentifierGraph.json"
         }
       }
     }

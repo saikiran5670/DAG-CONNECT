@@ -179,68 +179,87 @@ namespace net.atos.daf.ct2.vehicle.repository
         public async Task<IEnumerable<Vehicle>> Get(VehicleFilter vehiclefilter)
         {
 
-            var QueryStatement = @"select organization_id
+            var QueryStatement = @"select id
+                                            ,organization_id
                                             ,name
                                             ,vin
                                             ,license_plate_number
-                                            ,Status
+                                            ,status
                                      from master.vehicle
                                      where 1=1";
             var parameter = new DynamicParameters();
 
+            // Vehicle Id Filter
             if (vehiclefilter.VehicleId > 0)
             {
-                 parameter.Add("@id", vehiclefilter.VehicleId);
+                parameter.Add("@id", vehiclefilter.VehicleId);
                 QueryStatement = QueryStatement + " and id  = @id";
-               
+
             }
             // organization id filter
             if (vehiclefilter.OrganizationId > 0)
             {
-                 parameter.Add("@organization_id", vehiclefilter.OrganizationId);
+                parameter.Add("@organization_id", vehiclefilter.OrganizationId);
                 QueryStatement = QueryStatement + " and organization_id  = @organization_id";
-               
+
             }
 
-            // if (vehiclefilter.VIN != null)
-            // {
-            //     QueryStatement = QueryStatement + " and vin  = ANY(@vin)";
-            //     parameter.Add("@vin", vehiclefilter.VIN);
-            // }
+            // VIN Id Filter
+            if (vehiclefilter.VIN != null)
+            {
+                QueryStatement = QueryStatement + " and vin LIKE '%@vin%'";
+                parameter.Add("@vin", vehiclefilter.VIN);
+            }
+            
+            // Vehicle Id list Filter
+            if (vehiclefilter.VehicleIdList != null)
+            {
+                List<int> VehicleIds = vehiclefilter.VehicleIdList.Split(',').Select(int.Parse).ToList();
+                QueryStatement = QueryStatement + "and id  = ANY(@VehicleIds)";
+                parameter.Add("@VehicleIds", VehicleIds);
+            }
 
-            // if (vehiclefilter.VehicleIdList <> null)
-            // {
-            //     QueryStatement = QueryStatement + "vin  = ANY(@vin)";
-            //     parameter.Add("@vin", vehiclefilter.VehicleIdList);
-            // }
-           IEnumerable<Vehicle> VehicleDetails = await dataAccess.QueryAsync<Vehicle>(QueryStatement, parameter);
-           // IEnumerable<Vehicle> VehicleDetails =new List<Vehicle>();
-            return VehicleDetails;
+            List<Vehicle> vehicles = new List<Vehicle>();
+            dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            foreach (dynamic record in result)
+            {
+                vehicles.Add(Map(record));
+            }
+            return vehicles.AsEnumerable();
+        }
+
+        private Vehicle Map(dynamic record)
+        {
+            Vehicle vehicle = new Vehicle();
+            vehicle.ID = record.id;
+            vehicle.Organization_Id = record.organization_id;
+            vehicle.Name = record.name;
+            vehicle.VIN = record.vin;
+            vehicle.License_Plate_Number = record.license_plate_number;
+            vehicle.Status = (VehicleStatusType)(Convert.ToChar(record.status));
+            // vehicle.Status_Changed_Date = record.Status_Changed_Date;
+            // vehicle.Termination_Date = record.Termination_Date;
+            return vehicle;
         }
 
         public async Task<Vehicle> Update(Vehicle vehicle)
         {
             var QueryStatement = @" UPDATE master.vehicle
                                         SET 
-                                        organization_id=@organization_id
-                                        ,name=@name
-                                        ,vin=@vin
+                                         name=@name                                        
         	                            ,license_plate_number=@license_plate_number
-                                    	,status=@status
-                                    	,status_changed_date=@status_changed_date
-        	                            ,termination_date=@termination_date
-                                        WHERE id = @id;";
+                                        WHERE id = @id
+                                         RETURNING id;";
 
             var parameter = new DynamicParameters();
             parameter.Add("@id", vehicle.ID);
-            parameter.Add("@organization_id", vehicle.Organization_Id);
+            // parameter.Add("@organization_id", vehicle.Organization_Id);
             parameter.Add("@name", vehicle.Name);
-            parameter.Add("@vin", vehicle.VIN);
+            // parameter.Add("@vin", vehicle.VIN);
             parameter.Add("@license_plate_number", vehicle.License_Plate_Number);
-            parameter.Add("@status", (char)vehicle.Status);
-            parameter.Add("@status_changed_date", vehicle.Status_Changed_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Status_Changed_Date.ToString()) : 0);
-            parameter.Add("@termination_date", vehicle.Termination_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Termination_Date.ToString()) : 0);
-
+            // parameter.Add("@status", (char)vehicle.Status);
+            // parameter.Add("@status_changed_date", vehicle.Status_Changed_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Status_Changed_Date.ToString()) : 0);
+            // parameter.Add("@termination_date", vehicle.Termination_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Termination_Date.ToString()) : 0);
             int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
             return vehicle;
         }
@@ -300,7 +319,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@height", vehicleproperty.Dimensions_Size_Height);
             parameter.Add("@weight", vehicleproperty.Dimensions_Size_Weight);
             parameter.Add("@engine_id", vehicleproperty.Engine_ID);
-            parameter.Add("@engine_type", vehicleproperty.Engine_Type);
+            parameter.Add("@engine_type", (char)vehicleproperty.Engine_Type);
             parameter.Add("@engine_power", vehicleproperty.Engine_Power);
             parameter.Add("@engine_coolant", vehicleproperty.Engine_Coolant);
             parameter.Add("@engine_emission_level", vehicleproperty.Engine_EmissionLevel);
@@ -319,7 +338,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@driveline_rear_axle_load", vehicleproperty.DriverLine_RearAxle_Load);
             parameter.Add("@driveline_rear_axle_ratio", vehicleproperty.DriverLine_RearAxle_Ratio);
             parameter.Add("@transmission_gearbox_id", vehicleproperty.GearBox_Id);
-            parameter.Add("@transmission_gearbox_type", vehicleproperty.GearBox_Type);
+            parameter.Add("@transmission_gearbox_type", (char)vehicleproperty.GearBox_Type);
             parameter.Add("@cabin_id", vehicleproperty.DriverLine_Cabin_ID);
             parameter.Add("@cabin_color_id", vehicleproperty.DriverLine_Cabin_Color_ID);
             parameter.Add("@cabin_color_value", vehicleproperty.DriverLine_Cabin_Color_Value);
@@ -331,7 +350,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         public async Task<VehicleOptInOptOut> UpdateStatus(VehicleOptInOptOut vehicleOptInOptOut)
         {
             var parameter = new DynamicParameters();
-            var QueryStatement=string.Empty;
+            var QueryStatement = string.Empty;
 
             if ((char)vehicleOptInOptOut.Type == 'V')
             {
@@ -339,7 +358,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                                 SET
                                                 status=@status
                                                 ,status_changed_date=@status_changed_date
-                                                WHERE id = @id;";
+                                                WHERE id = @id
+                                                RETURNING id;";
 
                 parameter.Add("@id", vehicleOptInOptOut.RefId);
             }
@@ -350,17 +370,18 @@ namespace net.atos.daf.ct2.vehicle.repository
                                                 SET
                                                 status=@status
                                                 ,status_changed_date=@status_changed_date
-                                                WHERE organization_id = @id;";
+                                                WHERE organization_id = @id
+                                                RETURNING id;";
 
                 parameter.Add("@id", vehicleOptInOptOut.RefId);
             }
 
-            //parameter.Add("@id", vehicleOptInOptOut.RefId);
             parameter.Add("@status", (char)vehicleOptInOptOut.Status);
             parameter.Add("@status_changed_date", vehicleOptInOptOut.Date != null ? UTCHandling.GetUTCFromDateTime(vehicleOptInOptOut.Date) : 0);
             int vehiclepropertyId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
-
-            var InsertQueryStatement = @"INSERT INTO master.vehicleoptinoptout
+            if (vehiclepropertyId > 0)
+            {
+                var InsertQueryStatement = @"INSERT INTO master.vehicleoptinoptout
                                       (
                                        ref_id
                                       ,account_id
@@ -374,15 +395,15 @@ namespace net.atos.daf.ct2.vehicle.repository
                                       ,@status_changed_date
                                       ,@type) RETURNING id";
 
-            var OptInOptOutparameter = new DynamicParameters();
-            OptInOptOutparameter.Add("@ref_id", vehicleOptInOptOut.RefId);
-            OptInOptOutparameter.Add("@account_id", vehicleOptInOptOut.AccountId);
-            OptInOptOutparameter.Add("@status", (char)vehicleOptInOptOut.Status);
-            OptInOptOutparameter.Add("@status_changed_date", vehicleOptInOptOut.Date != null ? UTCHandling.GetUTCFromDateTime(vehicleOptInOptOut.Date) : 0);
-            OptInOptOutparameter.Add("@type", (char)vehicleOptInOptOut.Type);
+                var OptInOptOutparameter = new DynamicParameters();
+                OptInOptOutparameter.Add("@ref_id", vehicleOptInOptOut.RefId);
+                OptInOptOutparameter.Add("@account_id", vehicleOptInOptOut.AccountId);
+                OptInOptOutparameter.Add("@status", (char)vehicleOptInOptOut.Status);
+                OptInOptOutparameter.Add("@status_changed_date", vehicleOptInOptOut.Date != null ? UTCHandling.GetUTCFromDateTime(vehicleOptInOptOut.Date) : 0);
+                OptInOptOutparameter.Add("@type", (char)vehicleOptInOptOut.Type);
 
-            int Id = await dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, OptInOptOutparameter);
-
+                int Id = await dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, OptInOptOutparameter);
+            }
             return vehicleOptInOptOut;
         }
 

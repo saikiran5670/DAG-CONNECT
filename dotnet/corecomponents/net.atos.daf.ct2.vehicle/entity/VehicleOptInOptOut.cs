@@ -6,8 +6,8 @@ namespace net.atos.daf.ct2.vehicle.entity
     {
         public int RefId { get; set; }
         public int AccountId { get; set; }
-        public int Status { get; set; }
+        public VehicleStatusType Status { get; set; }
         public DateTime Date { get; set; }
-        public int Type { get; set; }
+        public OptInOptOutType Type { get; set; }
     }
 }

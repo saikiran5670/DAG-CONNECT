@@ -25,38 +25,51 @@ namespace net.atos.daf.ct2.vehicleservice {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChRQcm90b3MvdmVoaWNsZS5wcm90bxIHdmVoaWNsZRofZ29vZ2xlL3Byb3Rv",
-            "YnVmL3RpbWVzdGFtcC5wcm90byLLAgoOVmVoaWNsZVJlcXVlc3QSCgoCSWQY",
+            "YnVmL3RpbWVzdGFtcC5wcm90byLPAgoOVmVoaWNsZVJlcXVlc3QSCgoCSWQY",
             "ASABKAUSFgoOT3JnYW5pemF0aW9uaWQYAiABKAUSDAoETmFtZRgDIAEoCRIL",
-            "CgNWaW4YBCABKAkSFgoOUmVnaXN0cmF0aW9ubm8YBSABKAkSOQoGU3RhdHVz",
-            "GAYgASgOMikudmVoaWNsZS5WZWhpY2xlUmVxdWVzdC5WZWhpY2xlU3RhdHVz",
-            "VHlwZRIuCgpTdGF0dXNEYXRlGAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRp",
-            "bWVzdGFtcBIzCg9UZXJtaW5hdGlvbkRhdGUYCCABKAsyGi5nb29nbGUucHJv",
-            "dG9idWYuVGltZXN0YW1wIkIKEVZlaGljbGVTdGF0dXNUeXBlEgkKBU9wdElu",
-            "EAASCgoGT3B0T3V0EAESDQoJVGVybWluYXRlEAISBwoDT1RBEAMi6AEKD1Zl",
-            "aGljbGVSZXNwb25jZRIKCgJJZBgBIAEoBRIWCg5Pcmdhbml6YXRpb25pZBgC",
-            "IAEoBRIMCgROYW1lGAMgASgJEgsKA1ZJThgEIAEoCRIWCg5SZWdpc3RyYXRp",
-            "b25ObxgFIAEoCRI6CgZTdGF0dXMYBiABKA4yKi52ZWhpY2xlLlZlaGljbGVS",
-            "ZXNwb25jZS5WZWhpY2xlU3RhdHVzVHlwZSJCChFWZWhpY2xlU3RhdHVzVHlw",
-            "ZRIJCgVPcHRJbhAAEgoKBk9wdE91dBABEg0KCVRlcm1pbmF0ZRACEgcKA09U",
-            "QRADIrsBChRWZWhpY2xlRmlsdGVyUmVxdWVzdBIRCglWZWhpY2xlSWQYASAB",
-            "KAUSFgoOT3JnYW5pemF0aW9uSWQYAiABKAUSEQoJQWNjb3VudElkGAMgASgF",
-            "EhYKDlZlaGljbGVHcm91cElkGAQgASgFEhYKDkFjY291bnRHcm91cElkGAUg",
-            "ASgFEhEKCUZlYXR1cmVJZBgGIAEoBRIVCg1WZWhpY2xlSWRMaXN0GAcgASgJ",
-            "EgsKA1ZJThgIIAEoCSI5CgtWZWhpY2xlTGlzdBIqCgh2ZWhpY2xlcxgBIAMo",
-            "CzIYLnZlaGljbGUuVmVoaWNsZVJlc3BvbmNlMsYBCg5WZWhpY2xlU2Vydmlj",
-            "ZRI7CgZDcmVhdGUSFy52ZWhpY2xlLlZlaGljbGVSZXF1ZXN0GhgudmVoaWNs",
-            "ZS5WZWhpY2xlUmVzcG9uY2USOwoGVXBkYXRlEhcudmVoaWNsZS5WZWhpY2xl",
-            "UmVxdWVzdBoYLnZlaGljbGUuVmVoaWNsZVJlc3BvbmNlEjoKA0dldBIdLnZl",
-            "aGljbGUuVmVoaWNsZUZpbHRlclJlcXVlc3QaFC52ZWhpY2xlLlZlaGljbGVM",
-            "aXN0QiKqAh9uZXQuYXRvcy5kYWYuY3QyLnZlaGljbGVzZXJ2aWNlYgZwcm90",
-            "bzM="));
+            "CgNWaW4YBCABKAkSGgoSTGljZW5zZVBsYXRlTnVtYmVyGAUgASgJEjkKBlN0",
+            "YXR1cxgGIAEoDjIpLnZlaGljbGUuVmVoaWNsZVJlcXVlc3QuVmVoaWNsZVN0",
+            "YXR1c1R5cGUSLgoKU3RhdHVzRGF0ZRgHIAEoCzIaLmdvb2dsZS5wcm90b2J1",
+            "Zi5UaW1lc3RhbXASMwoPVGVybWluYXRpb25EYXRlGAggASgLMhouZ29vZ2xl",
+            "LnByb3RvYnVmLlRpbWVzdGFtcCJCChFWZWhpY2xlU3RhdHVzVHlwZRIJCgVP",
+            "cHRJbhAAEgoKBk9wdE91dBABEg0KCVRlcm1pbmF0ZRACEgcKA09UQRADIuwB",
+            "Cg9WZWhpY2xlUmVzcG9uY2USCgoCSWQYASABKAUSFgoOT3JnYW5pemF0aW9u",
+            "aWQYAiABKAUSDAoETmFtZRgDIAEoCRILCgNWSU4YBCABKAkSGgoSTGljZW5z",
+            "ZVBsYXRlTnVtYmVyGAUgASgJEjoKBlN0YXR1cxgGIAEoDjIqLnZlaGljbGUu",
+            "VmVoaWNsZVJlc3BvbmNlLlZlaGljbGVTdGF0dXNUeXBlIkIKEVZlaGljbGVT",
+            "dGF0dXNUeXBlEgkKBU9wdEluEAASCgoGT3B0T3V0EAESDQoJVGVybWluYXRl",
+            "EAISBwoDT1RBEAMiuwEKFFZlaGljbGVGaWx0ZXJSZXF1ZXN0EhEKCVZlaGlj",
+            "bGVJZBgBIAEoBRIWCg5Pcmdhbml6YXRpb25JZBgCIAEoBRIRCglBY2NvdW50",
+            "SWQYAyABKAUSFgoOVmVoaWNsZUdyb3VwSWQYBCABKAUSFgoOQWNjb3VudEdy",
+            "b3VwSWQYBSABKAUSEQoJRmVhdHVyZUlkGAYgASgFEhUKDVZlaGljbGVJZExp",
+            "c3QYByABKAkSCwoDVklOGAggASgJIjkKC1ZlaGljbGVMaXN0EioKCHZlaGlj",
+            "bGVzGAEgAygLMhgudmVoaWNsZS5WZWhpY2xlUmVzcG9uY2Ui6gIKGVZlaGlj",
+            "bGVPcHRJbk9wdE91dFJlcXVlc3QSDQoFUmVmaWQYASABKAUSEQoJQWNjb3Vu",
+            "dGlkGAIgASgFEkQKBlN0YXR1cxgDIAEoDjI0LnZlaGljbGUuVmVoaWNsZU9w",
+            "dEluT3B0T3V0UmVxdWVzdC5WZWhpY2xlU3RhdHVzVHlwZRIuCgpTdGF0dXNE",
+            "YXRlGAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBJACg9PcHRJ",
+            "bk9wdE91dFR5cGUYBSABKA4yJy52ZWhpY2xlLlZlaGljbGVPcHRJbk9wdE91",
+            "dFJlcXVlc3QuVHlwZSJCChFWZWhpY2xlU3RhdHVzVHlwZRIJCgVPcHRJbhAA",
+            "EgoKBk9wdE91dBABEg0KCVRlcm1pbmF0ZRACEgcKA09UQRADIi8KBFR5cGUS",
+            "EAoMVmVoaWNsZUxldmVsEAASFQoRT3JnYW5pemF0aW9uTGV2ZWwQASI+ChpW",
+            "ZWhpY2xlT3B0SW5PcHRPdXRSZXNwb25jZRINCgVSZWZpZBgBIAEoBRIRCglB",
+            "Y2NvdW50aWQYAiABKAUynwIKDlZlaGljbGVTZXJ2aWNlEjsKBkNyZWF0ZRIX",
+            "LnZlaGljbGUuVmVoaWNsZVJlcXVlc3QaGC52ZWhpY2xlLlZlaGljbGVSZXNw",
+            "b25jZRI7CgZVcGRhdGUSFy52ZWhpY2xlLlZlaGljbGVSZXF1ZXN0GhgudmVo",
+            "aWNsZS5WZWhpY2xlUmVzcG9uY2USOgoDR2V0Eh0udmVoaWNsZS5WZWhpY2xl",
+            "RmlsdGVyUmVxdWVzdBoULnZlaGljbGUuVmVoaWNsZUxpc3QSVwoMVXBkYXRl",
+            "U3RhdHVzEiIudmVoaWNsZS5WZWhpY2xlT3B0SW5PcHRPdXRSZXF1ZXN0GiMu",
+            "dmVoaWNsZS5WZWhpY2xlT3B0SW5PcHRPdXRSZXNwb25jZUIiqgIfbmV0LmF0",
+            "b3MuZGFmLmN0Mi52ZWhpY2xlc2VydmljZWIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.TimestampReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::net.atos.daf.ct2.vehicleservice.VehicleRequest), global::net.atos.daf.ct2.vehicleservice.VehicleRequest.Parser, new[]{ "Id", "Organizationid", "Name", "Vin", "Registrationno", "Status", "StatusDate", "TerminationDate" }, null, new[]{ typeof(global::net.atos.daf.ct2.vehicleservice.VehicleRequest.Types.VehicleStatusType) }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::net.atos.daf.ct2.vehicleservice.VehicleResponce), global::net.atos.daf.ct2.vehicleservice.VehicleResponce.Parser, new[]{ "Id", "Organizationid", "Name", "VIN", "RegistrationNo", "Status" }, null, new[]{ typeof(global::net.atos.daf.ct2.vehicleservice.VehicleResponce.Types.VehicleStatusType) }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::net.atos.daf.ct2.vehicleservice.VehicleRequest), global::net.atos.daf.ct2.vehicleservice.VehicleRequest.Parser, new[]{ "Id", "Organizationid", "Name", "Vin", "LicensePlateNumber", "Status", "StatusDate", "TerminationDate" }, null, new[]{ typeof(global::net.atos.daf.ct2.vehicleservice.VehicleRequest.Types.VehicleStatusType) }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::net.atos.daf.ct2.vehicleservice.VehicleResponce), global::net.atos.daf.ct2.vehicleservice.VehicleResponce.Parser, new[]{ "Id", "Organizationid", "Name", "VIN", "LicensePlateNumber", "Status" }, null, new[]{ typeof(global::net.atos.daf.ct2.vehicleservice.VehicleResponce.Types.VehicleStatusType) }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::net.atos.daf.ct2.vehicleservice.VehicleFilterRequest), global::net.atos.daf.ct2.vehicleservice.VehicleFilterRequest.Parser, new[]{ "VehicleId", "OrganizationId", "AccountId", "VehicleGroupId", "AccountGroupId", "FeatureId", "VehicleIdList", "VIN" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::net.atos.daf.ct2.vehicleservice.VehicleList), global::net.atos.daf.ct2.vehicleservice.VehicleList.Parser, new[]{ "Vehicles" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::net.atos.daf.ct2.vehicleservice.VehicleList), global::net.atos.daf.ct2.vehicleservice.VehicleList.Parser, new[]{ "Vehicles" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest), global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Parser, new[]{ "Refid", "Accountid", "Status", "StatusDate", "OptInOptOutType" }, null, new[]{ typeof(global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.VehicleStatusType), typeof(global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.Type) }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutResponce), global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutResponce.Parser, new[]{ "Refid", "Accountid" }, null, null, null, null)
           }));
     }
     #endregion
@@ -64,7 +77,7 @@ namespace net.atos.daf.ct2.vehicleservice {
   }
   #region Messages
   /// <summary>
-  /// The request message containing the user's name.
+  /// The request message containing the vehicle details.
   /// </summary>
   public sealed partial class VehicleRequest : pb::IMessage<VehicleRequest> {
     private static readonly pb::MessageParser<VehicleRequest> _parser = new pb::MessageParser<VehicleRequest>(() => new VehicleRequest());
@@ -95,7 +108,7 @@ namespace net.atos.daf.ct2.vehicleservice {
       organizationid_ = other.organizationid_;
       name_ = other.name_;
       vin_ = other.vin_;
-      registrationno_ = other.registrationno_;
+      licensePlateNumber_ = other.licensePlateNumber_;
       status_ = other.status_;
       statusDate_ = other.statusDate_ != null ? other.statusDate_.Clone() : null;
       terminationDate_ = other.terminationDate_ != null ? other.terminationDate_.Clone() : null;
@@ -151,14 +164,14 @@ namespace net.atos.daf.ct2.vehicleservice {
       }
     }
 
-    /// <summary>Field number for the "Registrationno" field.</summary>
-    public const int RegistrationnoFieldNumber = 5;
-    private string registrationno_ = "";
+    /// <summary>Field number for the "LicensePlateNumber" field.</summary>
+    public const int LicensePlateNumberFieldNumber = 5;
+    private string licensePlateNumber_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Registrationno {
-      get { return registrationno_; }
+    public string LicensePlateNumber {
+      get { return licensePlateNumber_; }
       set {
-        registrationno_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        licensePlateNumber_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -212,7 +225,7 @@ namespace net.atos.daf.ct2.vehicleservice {
       if (Organizationid != other.Organizationid) return false;
       if (Name != other.Name) return false;
       if (Vin != other.Vin) return false;
-      if (Registrationno != other.Registrationno) return false;
+      if (LicensePlateNumber != other.LicensePlateNumber) return false;
       if (Status != other.Status) return false;
       if (!object.Equals(StatusDate, other.StatusDate)) return false;
       if (!object.Equals(TerminationDate, other.TerminationDate)) return false;
@@ -226,7 +239,7 @@ namespace net.atos.daf.ct2.vehicleservice {
       if (Organizationid != 0) hash ^= Organizationid.GetHashCode();
       if (Name.Length != 0) hash ^= Name.GetHashCode();
       if (Vin.Length != 0) hash ^= Vin.GetHashCode();
-      if (Registrationno.Length != 0) hash ^= Registrationno.GetHashCode();
+      if (LicensePlateNumber.Length != 0) hash ^= LicensePlateNumber.GetHashCode();
       if (Status != global::net.atos.daf.ct2.vehicleservice.VehicleRequest.Types.VehicleStatusType.OptIn) hash ^= Status.GetHashCode();
       if (statusDate_ != null) hash ^= StatusDate.GetHashCode();
       if (terminationDate_ != null) hash ^= TerminationDate.GetHashCode();
@@ -259,9 +272,9 @@ namespace net.atos.daf.ct2.vehicleservice {
         output.WriteRawTag(34);
         output.WriteString(Vin);
       }
-      if (Registrationno.Length != 0) {
+      if (LicensePlateNumber.Length != 0) {
         output.WriteRawTag(42);
-        output.WriteString(Registrationno);
+        output.WriteString(LicensePlateNumber);
       }
       if (Status != global::net.atos.daf.ct2.vehicleservice.VehicleRequest.Types.VehicleStatusType.OptIn) {
         output.WriteRawTag(48);
@@ -295,8 +308,8 @@ namespace net.atos.daf.ct2.vehicleservice {
       if (Vin.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Vin);
       }
-      if (Registrationno.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Registrationno);
+      if (LicensePlateNumber.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(LicensePlateNumber);
       }
       if (Status != global::net.atos.daf.ct2.vehicleservice.VehicleRequest.Types.VehicleStatusType.OptIn) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Status);
@@ -330,8 +343,8 @@ namespace net.atos.daf.ct2.vehicleservice {
       if (other.Vin.Length != 0) {
         Vin = other.Vin;
       }
-      if (other.Registrationno.Length != 0) {
-        Registrationno = other.Registrationno;
+      if (other.LicensePlateNumber.Length != 0) {
+        LicensePlateNumber = other.LicensePlateNumber;
       }
       if (other.Status != global::net.atos.daf.ct2.vehicleservice.VehicleRequest.Types.VehicleStatusType.OptIn) {
         Status = other.Status;
@@ -376,7 +389,7 @@ namespace net.atos.daf.ct2.vehicleservice {
             break;
           }
           case 42: {
-            Registrationno = input.ReadString();
+            LicensePlateNumber = input.ReadString();
             break;
           }
           case 48: {
@@ -449,7 +462,7 @@ namespace net.atos.daf.ct2.vehicleservice {
       organizationid_ = other.organizationid_;
       name_ = other.name_;
       vIN_ = other.vIN_;
-      registrationNo_ = other.registrationNo_;
+      licensePlateNumber_ = other.licensePlateNumber_;
       status_ = other.status_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -503,14 +516,14 @@ namespace net.atos.daf.ct2.vehicleservice {
       }
     }
 
-    /// <summary>Field number for the "RegistrationNo" field.</summary>
-    public const int RegistrationNoFieldNumber = 5;
-    private string registrationNo_ = "";
+    /// <summary>Field number for the "LicensePlateNumber" field.</summary>
+    public const int LicensePlateNumberFieldNumber = 5;
+    private string licensePlateNumber_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string RegistrationNo {
-      get { return registrationNo_; }
+    public string LicensePlateNumber {
+      get { return licensePlateNumber_; }
       set {
-        registrationNo_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        licensePlateNumber_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -546,7 +559,7 @@ namespace net.atos.daf.ct2.vehicleservice {
       if (Organizationid != other.Organizationid) return false;
       if (Name != other.Name) return false;
       if (VIN != other.VIN) return false;
-      if (RegistrationNo != other.RegistrationNo) return false;
+      if (LicensePlateNumber != other.LicensePlateNumber) return false;
       if (Status != other.Status) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -558,7 +571,7 @@ namespace net.atos.daf.ct2.vehicleservice {
       if (Organizationid != 0) hash ^= Organizationid.GetHashCode();
       if (Name.Length != 0) hash ^= Name.GetHashCode();
       if (VIN.Length != 0) hash ^= VIN.GetHashCode();
-      if (RegistrationNo.Length != 0) hash ^= RegistrationNo.GetHashCode();
+      if (LicensePlateNumber.Length != 0) hash ^= LicensePlateNumber.GetHashCode();
       if (Status != global::net.atos.daf.ct2.vehicleservice.VehicleResponce.Types.VehicleStatusType.OptIn) hash ^= Status.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -589,9 +602,9 @@ namespace net.atos.daf.ct2.vehicleservice {
         output.WriteRawTag(34);
         output.WriteString(VIN);
       }
-      if (RegistrationNo.Length != 0) {
+      if (LicensePlateNumber.Length != 0) {
         output.WriteRawTag(42);
-        output.WriteString(RegistrationNo);
+        output.WriteString(LicensePlateNumber);
       }
       if (Status != global::net.atos.daf.ct2.vehicleservice.VehicleResponce.Types.VehicleStatusType.OptIn) {
         output.WriteRawTag(48);
@@ -617,8 +630,8 @@ namespace net.atos.daf.ct2.vehicleservice {
       if (VIN.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(VIN);
       }
-      if (RegistrationNo.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(RegistrationNo);
+      if (LicensePlateNumber.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(LicensePlateNumber);
       }
       if (Status != global::net.atos.daf.ct2.vehicleservice.VehicleResponce.Types.VehicleStatusType.OptIn) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Status);
@@ -646,8 +659,8 @@ namespace net.atos.daf.ct2.vehicleservice {
       if (other.VIN.Length != 0) {
         VIN = other.VIN;
       }
-      if (other.RegistrationNo.Length != 0) {
-        RegistrationNo = other.RegistrationNo;
+      if (other.LicensePlateNumber.Length != 0) {
+        LicensePlateNumber = other.LicensePlateNumber;
       }
       if (other.Status != global::net.atos.daf.ct2.vehicleservice.VehicleResponce.Types.VehicleStatusType.OptIn) {
         Status = other.Status;
@@ -680,7 +693,7 @@ namespace net.atos.daf.ct2.vehicleservice {
             break;
           }
           case 42: {
-            RegistrationNo = input.ReadString();
+            LicensePlateNumber = input.ReadString();
             break;
           }
           case 48: {
@@ -1145,6 +1158,429 @@ namespace net.atos.daf.ct2.vehicleservice {
             break;
           case 10: {
             vehicles_.AddEntriesFrom(input, _repeated_vehicles_codec);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  public sealed partial class VehicleOptInOptOutRequest : pb::IMessage<VehicleOptInOptOutRequest> {
+    private static readonly pb::MessageParser<VehicleOptInOptOutRequest> _parser = new pb::MessageParser<VehicleOptInOptOutRequest>(() => new VehicleOptInOptOutRequest());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<VehicleOptInOptOutRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::net.atos.daf.ct2.vehicleservice.VehicleReflection.Descriptor.MessageTypes[4]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public VehicleOptInOptOutRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public VehicleOptInOptOutRequest(VehicleOptInOptOutRequest other) : this() {
+      refid_ = other.refid_;
+      accountid_ = other.accountid_;
+      status_ = other.status_;
+      statusDate_ = other.statusDate_ != null ? other.statusDate_.Clone() : null;
+      optInOptOutType_ = other.optInOptOutType_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public VehicleOptInOptOutRequest Clone() {
+      return new VehicleOptInOptOutRequest(this);
+    }
+
+    /// <summary>Field number for the "Refid" field.</summary>
+    public const int RefidFieldNumber = 1;
+    private int refid_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Refid {
+      get { return refid_; }
+      set {
+        refid_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "Accountid" field.</summary>
+    public const int AccountidFieldNumber = 2;
+    private int accountid_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Accountid {
+      get { return accountid_; }
+      set {
+        accountid_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "Status" field.</summary>
+    public const int StatusFieldNumber = 3;
+    private global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.VehicleStatusType status_ = global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.VehicleStatusType.OptIn;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.VehicleStatusType Status {
+      get { return status_; }
+      set {
+        status_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "StatusDate" field.</summary>
+    public const int StatusDateFieldNumber = 4;
+    private global::Google.Protobuf.WellKnownTypes.Timestamp statusDate_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Google.Protobuf.WellKnownTypes.Timestamp StatusDate {
+      get { return statusDate_; }
+      set {
+        statusDate_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "OptInOptOutType" field.</summary>
+    public const int OptInOptOutTypeFieldNumber = 5;
+    private global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.Type optInOptOutType_ = global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.Type.VehicleLevel;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.Type OptInOptOutType {
+      get { return optInOptOutType_; }
+      set {
+        optInOptOutType_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as VehicleOptInOptOutRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(VehicleOptInOptOutRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Refid != other.Refid) return false;
+      if (Accountid != other.Accountid) return false;
+      if (Status != other.Status) return false;
+      if (!object.Equals(StatusDate, other.StatusDate)) return false;
+      if (OptInOptOutType != other.OptInOptOutType) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Refid != 0) hash ^= Refid.GetHashCode();
+      if (Accountid != 0) hash ^= Accountid.GetHashCode();
+      if (Status != global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.VehicleStatusType.OptIn) hash ^= Status.GetHashCode();
+      if (statusDate_ != null) hash ^= StatusDate.GetHashCode();
+      if (OptInOptOutType != global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.Type.VehicleLevel) hash ^= OptInOptOutType.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Refid != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(Refid);
+      }
+      if (Accountid != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(Accountid);
+      }
+      if (Status != global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.VehicleStatusType.OptIn) {
+        output.WriteRawTag(24);
+        output.WriteEnum((int) Status);
+      }
+      if (statusDate_ != null) {
+        output.WriteRawTag(34);
+        output.WriteMessage(StatusDate);
+      }
+      if (OptInOptOutType != global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.Type.VehicleLevel) {
+        output.WriteRawTag(40);
+        output.WriteEnum((int) OptInOptOutType);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Refid != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Refid);
+      }
+      if (Accountid != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Accountid);
+      }
+      if (Status != global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.VehicleStatusType.OptIn) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Status);
+      }
+      if (statusDate_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(StatusDate);
+      }
+      if (OptInOptOutType != global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.Type.VehicleLevel) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) OptInOptOutType);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(VehicleOptInOptOutRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Refid != 0) {
+        Refid = other.Refid;
+      }
+      if (other.Accountid != 0) {
+        Accountid = other.Accountid;
+      }
+      if (other.Status != global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.VehicleStatusType.OptIn) {
+        Status = other.Status;
+      }
+      if (other.statusDate_ != null) {
+        if (statusDate_ == null) {
+          StatusDate = new global::Google.Protobuf.WellKnownTypes.Timestamp();
+        }
+        StatusDate.MergeFrom(other.StatusDate);
+      }
+      if (other.OptInOptOutType != global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.Type.VehicleLevel) {
+        OptInOptOutType = other.OptInOptOutType;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            Refid = input.ReadInt32();
+            break;
+          }
+          case 16: {
+            Accountid = input.ReadInt32();
+            break;
+          }
+          case 24: {
+            Status = (global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.VehicleStatusType) input.ReadEnum();
+            break;
+          }
+          case 34: {
+            if (statusDate_ == null) {
+              StatusDate = new global::Google.Protobuf.WellKnownTypes.Timestamp();
+            }
+            input.ReadMessage(StatusDate);
+            break;
+          }
+          case 40: {
+            OptInOptOutType = (global::net.atos.daf.ct2.vehicleservice.VehicleOptInOptOutRequest.Types.Type) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    }
+
+    #region Nested types
+    /// <summary>Container for nested types declared in the VehicleOptInOptOutRequest message type.</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static partial class Types {
+      public enum VehicleStatusType {
+        [pbr::OriginalName("OptIn")] OptIn = 0,
+        [pbr::OriginalName("OptOut")] OptOut = 1,
+        [pbr::OriginalName("Terminate")] Terminate = 2,
+        [pbr::OriginalName("OTA")] Ota = 3,
+      }
+
+      public enum Type {
+        [pbr::OriginalName("VehicleLevel")] VehicleLevel = 0,
+        [pbr::OriginalName("OrganizationLevel")] OrganizationLevel = 1,
+      }
+
+    }
+    #endregion
+
+  }
+
+  public sealed partial class VehicleOptInOptOutResponce : pb::IMessage<VehicleOptInOptOutResponce> {
+    private static readonly pb::MessageParser<VehicleOptInOptOutResponce> _parser = new pb::MessageParser<VehicleOptInOptOutResponce>(() => new VehicleOptInOptOutResponce());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<VehicleOptInOptOutResponce> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::net.atos.daf.ct2.vehicleservice.VehicleReflection.Descriptor.MessageTypes[5]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public VehicleOptInOptOutResponce() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public VehicleOptInOptOutResponce(VehicleOptInOptOutResponce other) : this() {
+      refid_ = other.refid_;
+      accountid_ = other.accountid_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public VehicleOptInOptOutResponce Clone() {
+      return new VehicleOptInOptOutResponce(this);
+    }
+
+    /// <summary>Field number for the "Refid" field.</summary>
+    public const int RefidFieldNumber = 1;
+    private int refid_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Refid {
+      get { return refid_; }
+      set {
+        refid_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "Accountid" field.</summary>
+    public const int AccountidFieldNumber = 2;
+    private int accountid_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Accountid {
+      get { return accountid_; }
+      set {
+        accountid_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as VehicleOptInOptOutResponce);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(VehicleOptInOptOutResponce other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Refid != other.Refid) return false;
+      if (Accountid != other.Accountid) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Refid != 0) hash ^= Refid.GetHashCode();
+      if (Accountid != 0) hash ^= Accountid.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Refid != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(Refid);
+      }
+      if (Accountid != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(Accountid);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Refid != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Refid);
+      }
+      if (Accountid != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Accountid);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(VehicleOptInOptOutResponce other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Refid != 0) {
+        Refid = other.Refid;
+      }
+      if (other.Accountid != 0) {
+        Accountid = other.Accountid;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            Refid = input.ReadInt32();
+            break;
+          }
+          case 16: {
+            Accountid = input.ReadInt32();
             break;
           }
         }

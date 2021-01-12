@@ -18,12 +18,12 @@ namespace net.atos.daf.ct2.vehicle.entity
         public bool SideCollars { get; set; }
         public int RearOverhang { get; set; }
         public string Engine_ID { get; set; }
-        public string Engine_Type { get; set; }
+        public EngineType Engine_Type { get; set; }
         public int Engine_Power { get; set; }
         public string Engine_Coolant { get; set; }
         public string Engine_EmissionLevel { get; set; }
         public string GearBox_Id { get; set; }
-        public string GearBox_Type { get; set; }
+        public GearBoxType GearBox_Type { get; set; }
         public string DriverLine_AxleConfiguration { get; set; }
         public decimal DriverLine_Wheelbase { get; set; }
         public string DriverLine_Tire_Size { get; set; }
