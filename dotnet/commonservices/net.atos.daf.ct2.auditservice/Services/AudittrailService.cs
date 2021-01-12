@@ -47,7 +47,6 @@ namespace net.atos.daf.ct2.auditservice.Services
                 logs.Updated_data = null;     
                 var result = _AuditTrail.AddLogs(logs).Result;
 
-                // var result = _logs.AddLogs(DateTime.Now,DateTime.Now,2,"Test2","Test",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"Test",1,2,null).Result;
                  return Task.FromResult(new AuditResponce
                 {
                     Statuscode = "Success",
