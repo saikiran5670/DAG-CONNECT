@@ -7,6 +7,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.group;
+using net.atos.daf.ct2.account;
+using net.atos.daf.ct2.accountpreference;
+using net.atos.daf.ct2.accountservice;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.repository;
 
 namespace net.atos.daf.ct2.accountservice
 {
@@ -14,9 +22,25 @@ namespace net.atos.daf.ct2.accountservice
     {
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public IConfiguration Configuration { get; }
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
+            var connectionString = Configuration.GetConnectionString("DevAzure");
+            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
+            services.AddSingleton(dataAccess);
+
+            services.AddTransient<IAuditLogRepository,AuditLogRepository>();
+            services.AddTransient<IAuditTraillib,AuditTraillib>();
+            
+            services.AddTransient<IAccountRepository,AccountRepository>();
+            services.AddTransient<IAccountManager,AccountManager>();
+            //services.AddTransient<IGroupManager, GroupManager>();
+            //services.AddTransient<IPreferenceManager, PreferenceManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -32,7 +56,7 @@ namespace net.atos.daf.ct2.accountservice
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<GreeterService>();
-
+                endpoints.MapGrpcService<AccountManagementService>();
                 endpoints.MapGet("/", async context =>
                 {
                     await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");

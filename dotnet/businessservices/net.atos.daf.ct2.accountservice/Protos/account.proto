@@ -1,0 +1,48 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "net.atos.daf.ct2.accountservice";
+
+package account;
+
+// The greeting service definition.
+service AccountService {
+  // Sends a greeting
+  rpc Create (AccountRequest) returns (AccountResponse);
+}
+enum AccountType
+    {
+        None = 0;
+        SystemAccount = 1;
+        PortalAccount = 2;        
+    }  
+
+// The request request.
+message AccountRequest {
+    int32 Id= 1;
+    string EmailId=2;
+    string Salutation=3;
+    string FirstName=4;
+    string LastName=5;
+    google.protobuf.Timestamp Dob=6; 
+    AccountType Type=7;    
+    int32 Organization_Id=8;
+    //int32 Account_OrgId =9;
+    //google.protobuf.Timestamp StartDate=10;
+    //google.protobuf.Timestamp EndDate=11;
+    //bool Active =12;
+    bool Active =10;
+  }
+
+// // The account filter
+message AccountFilter {
+  int32 AccountId= 1;
+  int32 OrganizationId= 2;
+  AccountType AccountType=3;
+}
+
+// The response message containing the greetings.
+message AccountResponse {
+  string Message = 1;
+
+}
