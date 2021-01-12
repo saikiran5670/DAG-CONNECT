@@ -39,15 +39,15 @@ namespace net.atos.daf.ct2.identity.test
         public async Task CreateUserTest()
         {
           Identity user =new Identity();
-          user.UserName="testuser11@atos.net";
+          user.UserName="testuser14@atos.net";
           user.FirstName="test";
-          user.LastName  ="user11";
+          user.LastName  ="user14";
           user.Password ="123456";
-          user.EmailId="testuser11@atos.net";
+          user.EmailId="testuser14@atos.net";
           
           Response result= await _accountManager.CreateUser(user);
           Assert.IsNotNull(result);
-          Assert.IsTrue(result.StatusCode == System.Net.HttpStatusCode.OK);
+          Assert.IsTrue(result.StatusCode == System.Net.HttpStatusCode.Created);
         }
         
         [TestCategory("Unit-Test-Case")]
@@ -63,7 +63,7 @@ namespace net.atos.daf.ct2.identity.test
           
           Response result= await _accountManager.CreateUser(user);
           Assert.IsNotNull(result);
-          Assert.IsTrue(result.StatusCode == System.Net.HttpStatusCode.Unauthorized);
+          Assert.IsTrue(result.StatusCode == System.Net.HttpStatusCode.Unauthorized || result.StatusCode == System.Net.HttpStatusCode.Conflict);
           string message=Convert.ToString(result.Result);
           Assert.IsTrue(message.Contains("error"));
         }

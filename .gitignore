@@ -5100,3 +5100,4 @@ dotnet/businessservices/net.atos.daf.ct2.accountservice/obj/net.atos.daf.ct2.acc
 =======
 dotnet/.vscode/launch.json
 >>>>>>> 4a212768276374e272c529410f43348a7335a782
+dotnet/corecomponents/net.atos.daf.ct2.identity/ITokenManager.cs

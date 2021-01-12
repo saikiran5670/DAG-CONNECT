@@ -6,6 +6,8 @@ using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.audit.entity;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
+using net.atos.daf.ct2.audit.Enum;
+
 namespace net.atos.daf.ct2.Audittrail.test
 {
     [TestClass]
@@ -35,13 +37,13 @@ namespace net.atos.daf.ct2.Audittrail.test
                 logs.Performed_by=1;
                 logs.Component_name= "Test Component";
                 logs.Service_name = "Audit Test";                
-                logs.Event_type= "L";
-                logs.Event_status = "S";  
+                logs.Event_type= AuditTrailEnum.Event_type.CREATE;
+                logs.Event_status = AuditTrailEnum.Event_status.SUCCESS;  
                 logs.Message = "Test unit test message";  
                 logs.Sourceobject_id = 1;  
                 logs.Targetobject_id = 2;  
                 // logs.Updated_data =  @"{'FirstName':'Jignesh','LastName':'Trivedi'}";     
-                 var result = _logs.AddLogs(logs);
+                 var result = _logs.AddLogs(logs).Result;
                 Assert.IsTrue(result > 0);
         }
 
@@ -49,7 +51,7 @@ namespace net.atos.daf.ct2.Audittrail.test
         public void AddLogsParam()
         {
               
-                 var result = _logs.AddLogs(DateTime.Now,DateTime.Now,2,"Test","Test","L","S","Test",1,2,null);
+                 var result = _logs.AddLogs(DateTime.Now,DateTime.Now,2,"Test2","Test",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"Test",1,2,null).Result;
                 Assert.IsTrue(result > 0);
         }
 

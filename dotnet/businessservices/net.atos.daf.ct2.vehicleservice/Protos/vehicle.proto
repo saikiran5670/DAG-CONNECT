@@ -12,15 +12,16 @@ service VehicleService {
   rpc Create (VehicleRequest) returns (VehicleResponce);
   rpc Update (VehicleRequest) returns (VehicleResponce);
   rpc Get (VehicleFilterRequest) returns (VehicleList);
+  rpc UpdateStatus (VehicleOptInOptOutRequest) returns (VehicleOptInOptOutResponce);
 }
 
-// The request message containing the user's name.
+// The request message containing the vehicle details.
 message VehicleRequest {
   int32 Id=1;
   int32 Organizationid=2;
   string Name = 3;
   string Vin=4;
-  string Registrationno=5;
+  string LicensePlateNumber=5;
   enum VehicleStatusType
   {
     OptIn = 0;
@@ -40,7 +41,7 @@ message VehicleResponce {
   int32 Organizationid=2;
   string Name = 3;
   string VIN=4;
-  string RegistrationNo=5;
+  string LicensePlateNumber=5;
   enum VehicleStatusType
   {
       OptIn = 0;
@@ -70,3 +71,27 @@ message VehicleList {
   repeated VehicleResponce vehicles = 1;
 }
 
+message VehicleOptInOptOutRequest{
+  int32 Refid=1;
+  int32 Accountid=2;
+  enum VehicleStatusType
+  {
+      OptIn = 0;
+      OptOut = 1;
+      Terminate = 2;
+      OTA = 3;
+  }
+  VehicleStatusType Status=3;
+  google.protobuf.Timestamp StatusDate=4;
+  enum Type
+  {
+    VehicleLevel = 0;
+    OrganizationLevel = 1;
+  }
+  Type OptInOptOutType=5;
+}
+
+message VehicleOptInOptOutResponce{
+  int32 Refid=1;
+  int32 Accountid=2;
+}
