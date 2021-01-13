@@ -189,7 +189,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 ObjVehicleGroup.Argument = request.Argument;
                 ObjVehicleGroup.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
                 ObjVehicleGroup.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
-                ObjVehicleGroup.ObjType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjType.ToString());
+                ObjVehicleGroup.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
                 ObjVehicleGroup.OrganizationId = request.OrganizationId;
 
                 ObjVehicleGroup.GroupRef = new List<GroupRef>();
@@ -232,7 +232,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 ObjVehicleGroup.Argument = request.Argument;
                 ObjVehicleGroup.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
                 ObjVehicleGroup.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
-                ObjVehicleGroup.ObjType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjType.ToString());
+                ObjVehicleGroup.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
                 ObjVehicleGroup.OrganizationId = request.OrganizationId;
                 Group VehicleGroupResponce = _groupManager.Update(ObjVehicleGroup).Result;
 
@@ -300,7 +300,7 @@ public async override Task<VehicleGroupResponce> GetGroupDetails(GroupFilterRequ
                 ObjGroupFilter.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
                 ObjGroupFilter.GroupRef = request.GroupRef;
                 ObjGroupFilter.GroupRefCount = request.GroupRefCount;
-                ObjGroupFilter.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjType.ToString());
+                ObjGroupFilter.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
                 ObjGroupFilter.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
 
                 IEnumerable<Group> ObjRetrieveGroupList = _groupManager.Get(ObjGroupFilter).Result;

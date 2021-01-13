@@ -15,7 +15,26 @@ enum AccountType
         None = 0;
         SystemAccount = 1;
         PortalAccount = 2;        
-    }  
+    }
+    // response code  
+    enum Responcecode{
+      Success = 0;
+      Failed = 1;
+    }
+// common response 
+message AccountResponse {
+  Responcecode code=1;
+  string message = 2;
+  AccountRequest account = 3;
+}
+// common response 
+message AccountListResponse {
+  Responcecode code=1;
+  string message = 2;
+  repeated AccountRequest accounts = 3;
+}
+
+
 
 // The request request.
 message AccountRequest {
@@ -41,8 +60,4 @@ message AccountFilter {
   AccountType AccountType=3;
 }
 
-// The response message containing the greetings.
-message AccountResponse {
-  string Message = 1;
 
-}
