@@ -107,7 +107,7 @@ message VehicleOptInOptOutResponce{
 message VehicleGroupRequest{
   int32 Id=1;
   string Name= 2; 
-  ObjectType ObjType = 3;
+  ObjectType ObjectType = 3;
   GroupType GroupType = 4;
   string Argument = 5;
   FunctionEnum FunctionEnum = 6;
@@ -137,7 +137,7 @@ message VehicleGroupResponce{
 
 message GroupFilterRequest{
   int32 Id=1;
-  ObjectType ObjType = 2;
+  ObjectType ObjectType = 2;
   GroupType GroupType = 3;
   bool GroupRef = 4;
   bool GroupRefCount = 5;
