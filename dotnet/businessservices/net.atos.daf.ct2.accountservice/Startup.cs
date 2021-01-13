@@ -15,6 +15,7 @@ using net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.accountservice;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
+using Identity = net.atos.daf.ct2.identity;
 
 namespace net.atos.daf.ct2.accountservice
 {
@@ -36,9 +37,11 @@ namespace net.atos.daf.ct2.accountservice
 
             services.AddTransient<IAuditLogRepository,AuditLogRepository>();
             services.AddTransient<IAuditTraillib,AuditTraillib>();
-            
+            services.AddTransient<Identity.IAccountManager,Identity.AccountManager>();
+
             services.AddTransient<IAccountRepository,AccountRepository>();
             services.AddTransient<IAccountManager,AccountManager>();
+
             //services.AddTransient<IGroupManager, GroupManager>();
             //services.AddTransient<IPreferenceManager, PreferenceManager>();
         }
