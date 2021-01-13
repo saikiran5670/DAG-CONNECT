@@ -2,9 +2,13 @@ using System;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using AccountComponent = net.atos.daf.ct2.account;
 //using net.atos.daf.ct2.accountpreference;
 //using net.atos.daf.ct2.accountservice;
+
+
 
 namespace net.atos.daf.ct2.accountservice
 {
