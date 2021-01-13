@@ -23,48 +23,36 @@ namespace net.atos.daf.ct2.identity
         public AccountToken CreateToken(AccountIDPClaim customclaims)
         {
             var privateKey = _settings.RsaPrivateKey.ToByteArray();
-
             using RSA rsa = RSA.Create();
             rsa.ImportRSAPrivateKey(privateKey, out _);
-
             var signingCredentials = new SigningCredentials(new RsaSecurityKey(rsa), SecurityAlgorithms.RsaSha256)
             {
                 CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false }
             };
-
             var now = DateTime.Now;
             var unixTimeSeconds = new DateTimeOffset(now).ToUnixTimeSeconds();
-
-            // customclaims.
-            // customclaims.
-            // customclaims.
-            // customclaims.
-
+            List<Claim> claimList = new List<Claim>() {
+                new Claim(JwtRegisteredClaimNames.Exp, customclaims.ValidTo),
+                new Claim(JwtRegisteredClaimNames.Iat, customclaims.IssuedAt, ClaimValueTypes.Integer64),
+                new Claim(JwtRegisteredClaimNames.Jti, customclaims.Id),
+                new Claim(JwtRegisteredClaimNames.Iss, customclaims.Issuer),
+                new Claim(JwtRegisteredClaimNames.Sub, customclaims.Subject),
+                new Claim(JwtRegisteredClaimNames.Aud, customclaims.Audience),
+                new Claim(JwtRegisteredClaimNames.Typ, customclaims.TokenType),
+                new Claim(JwtRegisteredClaimNames.Sid, customclaims.Sid),
+                new Claim(JwtRegisteredClaimNames.Azp, customclaims.AuthorizedParty)
+            };
+            foreach(var assertion in customclaims.Assertions)
+            {
+                claimList.Add(new Claim(assertion.Key, assertion.Value));
+            }
             var jwt = new JwtSecurityToken(
-                audience: customclaims.Audience,/*aud*/
-                issuer: customclaims.Issuer,/*iss*/
-                // validto:customclaims.ValidTo,/*exp*/
-                // IssuedAt:customclaims.IssuedAt,/*iat*/
-                // id=customclaims.Id,/*jti*/
-                // subject:customclaims.Subject,/*sub*/
-                claims: new Claim[] {
-                    new Claim(JwtRegisteredClaimNames.Exp, customclaims.ValidTo),
-                    new Claim(JwtRegisteredClaimNames.Iat, unixTimeSeconds.ToString(), ClaimValueTypes.Integer64),
-                    new Claim(JwtRegisteredClaimNames.Jti, customclaims.Id),
-                    new Claim(JwtRegisteredClaimNames.Iss, customclaims.Issuer),
-                    new Claim(JwtRegisteredClaimNames.Sub, customclaims.Subject),
-                    new Claim(JwtRegisteredClaimNames.Aud, customclaims.Audience),
-                    new Claim(JwtRegisteredClaimNames.Typ, customclaims.TokenType),
-                    new Claim(JwtRegisteredClaimNames.Sid, customclaims.Sid),
-                    new Claim(JwtRegisteredClaimNames.Azp, customclaims.AuthorizedParty)
-                },
+                claims: claimList.ToArray(),
                 notBefore: now,
                 expires: now.AddSeconds(60),
                 signingCredentials: signingCredentials
             );
-
             string token = new JwtSecurityTokenHandler().WriteToken(jwt);
-
             return new AccountToken
             {
                 AccessToken = token,
@@ -145,6 +133,8 @@ namespace net.atos.daf.ct2.identity
                                     break;
                         case "typ": customclaims.TokenType=c.Value;
                                     break;
+                        case "azp": customclaims.AuthorizedParty=c.Value;
+                                    break;
                         /*User defined account specific ClaimNames */
                         default:   
                                     assertion=new AccountAssertion();
@@ -158,7 +148,7 @@ namespace net.atos.daf.ct2.identity
                     }
 					// jwtPayload += '"' + c.Type + "\":\"" + c.Value + "\",";
 				}
-                customclaims.assertions=assertionList;
+                customclaims.Assertions=assertionList;
             }
             else 
             {
