@@ -5288,3 +5288,5 @@ dotnet/.vscode/launch.json
 /dotnet/corecomponents/net.atos.daf.ct2.vehicle/obj
 /dotnet/businessservices/net.atos.daf.ct2.roleservice/obj
 /dotnet/businessservices/net.atos.daf.ct2.vehicleservice/obj
+/dotnet/businessservices/net.atos.daf.ct2.organizationservice/obj/Debug/netcoreapp3.1
+/dotnet/businessservices/net.atos.daf.ct2.organizationservice/obj
