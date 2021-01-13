@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.auditservice.Services
     
     public class AudittrailService : AuditService.AuditServiceBase
     {
-        private readonly ILogger<AudittrailService> _logger;
+        private readonly ILogger _logger;
         
         private readonly IAuditLogRepository _IAuditLogRepository;
         
@@ -37,24 +37,26 @@ namespace net.atos.daf.ct2.auditservice.Services
                 logs.Performed_by=request.PerformedBy;
                 logs.Component_name=request.ComponentName;
                 logs.Service_name = request.ServiceName;                
-                // logs.Event_type=  (AuditTrailEnum.Event_type)request.Type;
-                // logs.Event_status =  (AuditTrailEnum.Event_status)request.Status;  
-                logs.Event_type=  AuditTrailEnum.Event_type.CREATE;
-                logs.Event_status =  AuditTrailEnum.Event_status.SUCCESS; 
+                logs.Event_type=  (AuditTrailEnum.Event_type)Enum.Parse(typeof(AuditTrailEnum.Event_type), request.Type.ToString().ToUpper());
+                logs.Event_status =   (AuditTrailEnum.Event_status)Enum.Parse(typeof(AuditTrailEnum.Event_status), request.Status.ToString().ToUpper());  
+                // logs.Event_type=  AuditTrailEnum.Event_type.CREATE;
+                // logs.Event_status =  AuditTrailEnum.Event_status.SUCCESS; 
                 logs.Message = request.Message;  
                 logs.Sourceobject_id = request.SourceobjectId;  
                 logs.Targetobject_id = request.TargetobjectId;  
                 logs.Updated_data = null;     
+                _logger.LogError("Logs running fine");
                 var result = _AuditTrail.AddLogs(logs).Result;
-
+               
                  return Task.FromResult(new AuditResponce
                 {
-                    Statuscode = "Success",
+                    Statuscode = "Success" + request.SourceobjectId,
                     Message = "Log Added " 
                 });
             }
             catch (Exception ex)
             {
+                 _logger.LogError("test logs logs");
                  return Task.FromResult(new AuditResponce
                 {
                     Statuscode = "Error",

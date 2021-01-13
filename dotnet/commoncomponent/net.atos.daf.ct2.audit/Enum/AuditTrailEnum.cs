@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.audit.Enum
             CREATE = 'C',
             UPDATE = 'U',
             DELETE = 'D',
-            Get = 'G'
+            GET = 'G'
         }
 
        public enum Event_status
