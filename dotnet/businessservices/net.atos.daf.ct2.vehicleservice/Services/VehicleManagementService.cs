@@ -111,6 +111,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 ObjVehicleFilter.FeatureId = request.FeatureId;
                 ObjVehicleFilter.VehicleIdList = request.VehicleIdList;
                 ObjVehicleFilter.VIN = request.VIN;
+                ObjVehicleFilter.Status = (vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), request.Status.ToString().ToUpper());
 
                 IEnumerable<Vehicle> ObjRetrieveVehicleList = _vehicelManager.Get(ObjVehicleFilter).Result;
                 foreach (var item in ObjRetrieveVehicleList)
@@ -121,11 +122,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     ObjResponce.Name = item.Name;
                     ObjResponce.Vin = item.VIN;
                     ObjResponce.LicensePlateNumber = item.License_Plate_Number;
-                    ObjResponce.Status = (VehicleStatusType)item.Status;
+                    ObjResponce.Status = (VehicleStatusType)(char)item.Status;
 
                     ObjVehicleList.Vehicles.Add(ObjResponce);
                 }
-                ObjVehicleList.Message = "Vehicles data retrieve";
+                ObjVehicleList.Message = "Vehicles data retrieved";
                 ObjVehicleList.Code = Responcecode.Success;
                 return await Task.FromResult(ObjVehicleList);
             }

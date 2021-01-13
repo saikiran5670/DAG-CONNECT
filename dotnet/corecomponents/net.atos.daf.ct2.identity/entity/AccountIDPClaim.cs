@@ -16,7 +16,7 @@ namespace net.atos.daf.ct2.identity.entity
         public string Algorithm { get; set; }
         public string AlgoType { get; set; }
         public string Sid { get; set; }
-        public List<AccountAssertion> assertions;
+        public List<AccountAssertion> Assertions;
         
         // validto:/*exp*/
         // IssuedAt:/*iat*/

@@ -64,6 +64,7 @@ message VehicleFilterRequest {
   int32 FeatureId = 6;
   string VehicleIdList = 7;
   string VIN = 8;
+  VehicleStatusType Status=9;
 }
 
 message VehicleListResponce {
