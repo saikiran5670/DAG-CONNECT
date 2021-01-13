@@ -23,24 +23,23 @@ namespace net.atos.daf.ct2.account
         public async Task<Account> Create(Account account)  
         {
             // create user in identity
-            // IdentityEntity.Identity identityEntity = new IdentityEntity.Identity();
-            // identityEntity.UserName = account.EmailId;
-            // identityEntity.FirstName = account.FirstName;
-            // identityEntity.LastName = account.LastName;
-            // var identityresult = await identity.CreateUser(identityEntity);
-            // if(identityresult.StatusCode == System.Net.HttpStatusCode.Created)
-            // {
-            //    account = await repository.Create(account);
-            // }
-            // else // there is issues delete user from IDP. 
-            // {
-            //   identityresult  = await identity.DeleteUser(identityEntity);
-            //  if(identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
-            //     {
-            //         // check to handle message
-            //     }
-            // }
-            account = await repository.Create(account);
+            IdentityEntity.Identity identityEntity = new IdentityEntity.Identity();
+            identityEntity.UserName = account.EmailId;
+            identityEntity.FirstName = account.FirstName;
+            identityEntity.LastName = account.LastName;
+            var identityresult = await identity.CreateUser(identityEntity);
+            if(identityresult.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+               account = await repository.Create(account);
+            }
+            else // there is issues delete user from IDP. 
+            {
+              identityresult  = await identity.DeleteUser(identityEntity);
+             if(identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    // check to handle message
+                }
+            }            
             return account;
         }
         public async Task<Account> Update(Account account)  
