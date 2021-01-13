@@ -52,7 +52,8 @@ namespace net.atos.daf.ct2.organization.test
         [TestMethod]
         public void UpdateOrganization()
         {
-            Organization organization = new Organization();            
+            Organization organization = new Organization();  
+            organization.Id = 1;          
             organization.OrganizationId = "Test";
             organization.Type = "";
             organization.Name = "TestOrg-Updated";
@@ -74,14 +75,14 @@ namespace net.atos.daf.ct2.organization.test
         [TestMethod]
         public void DeleteOrganization()
         {
-             var result = _organizationRepository.Delete("Test").Result;
+             var result = _organizationRepository.Delete(1).Result;
             Assert.IsTrue(result == true);
         }
         
         [TestMethod]
         public void GetOrganization()
         {          
-            var result = _organizationRepository.Get("Test").Result;
+            var result = _organizationRepository.Get(1).Result;
             Assert.IsTrue(result != null);
         }
     }

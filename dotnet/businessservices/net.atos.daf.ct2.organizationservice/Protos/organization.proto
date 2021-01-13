@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+option csharp_namespace = "net.atos.daf.ct2.organizationservice";
+
+package organization;
+
+// The greeting service definition.
+service OrganizationService {
+  // Sends a greeting
+  rpc Create (OrganizationRequest) returns (OrganizationResponse);
+  rpc Update (OrganizationRequest) returns (OrganizationResponse);
+  rpc Delete (OrganizationDeleteRequest) returns (OrganizationResponse);
+  rpc Get (GetOrganizationRequest) returns (GetOrganizationResponce);    
+}
+
+// The request request.
+message OrganizationRequest {
+    int32 Id=1;
+    string OrganizationId= 2;
+    string Type=3;
+    string Name=4;
+    string AddressType=5;
+    string AddressStreet=6;
+    string AddressStreetNumber=7; 
+    string PostalCode=8;    
+    string City=9;
+    string CountryCode=10;
+    int64 ReferencedDate=11;
+    bool OptOutStatus=12;
+    int64 OptOutStatusChangedDate=13;
+    bool IsActive=14;
+    int32 Ref_Id=15;
+    int32 PreferenceType=16;
+    int32 Language_Id=17;
+    int32 Timezone_Id=18;
+    int32 Currency_Type=19;
+    int32 Unit_Type=20;
+    int32 VehicleDisplay_Type=21;
+    int32 DateFormat_Type=22;
+    string DriverId=23;
+  }
+
+  message OrganizationDeleteRequest {
+  int32 Id = 1;  
+}
+
+// The response message containing the greetings.
+message OrganizationResponse {
+  string Message = 1;
+}
+
+message GetOrganizationResponce {
+    int32 Id=1;
+    string OrganizationId= 2;
+    string Type=3;
+    string Name=4;
+    string AddressType=5;
+    string AddressStreet=6;
+    string AddressStreetNumber=7; 
+    string PostalCode=8;    
+    string City=9;
+    string CountryCode=10;
+    int64 ReferencedDate=11;
+    bool OptOutStatus=12;
+    int64 OptOutStatusChangedDate=13;
+    bool IsActive=14;
+}
+  message GetOrganizationRequest {
+  int32 Id = 1;  
+}

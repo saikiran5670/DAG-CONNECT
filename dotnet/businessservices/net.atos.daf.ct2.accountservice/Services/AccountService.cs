@@ -2,9 +2,13 @@ using System;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using AccountComponent = net.atos.daf.ct2.account;
 //using net.atos.daf.ct2.accountpreference;
 //using net.atos.daf.ct2.accountservice;
+
+
 
 namespace net.atos.daf.ct2.accountservice
 {
@@ -29,24 +33,21 @@ namespace net.atos.daf.ct2.accountservice
                 account.FirstName = request.FirstName;
                 account.LastName = request.LastName;                
                 account.Dob = request.Dob.ToDateTime();
-                //account.AccountType =  AccountComponent.AccountType.PortalAccount;
                 account.AccountType = GetEnum((int) request.Type);
                 account.Organization_Id = request.OrganizationId;
-
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
                 account = accountmanager.Create(account).Result;
-
                 return Task.FromResult(new AccountResponse
                 {
-                    Message = "Account Created " + account.Id
+                    Message = "Account Created:" + account.Id
                 });
             }
             catch (Exception ex)
             {
                 return Task.FromResult(new AccountResponse
                 {
-                    Message = "Exception " + ex.Message
+                    Message = "Account Creation Faile due to - " + ex.Message
                 });
             }
         }
