@@ -4,20 +4,33 @@ using System.Threading.Tasks;
 using net.atos.daf.ct2.audit.entity;
 using net.atos.daf.ct2.audit.Enum;
 using  net.atos.daf.ct2.audit.repository;
-
+using System.Web;
 namespace net.atos.daf.ct2.audit
 {
     public class AuditTraillib:IAuditTraillib
     {
          private readonly IAuditLogRepository repository; // = new TranslationRepository();
-
+        private static readonly log4net.ILog log =
+        log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public AuditTraillib(IAuditLogRepository _repository)
         {
             repository = _repository;
         }
         public async Task<int> AddLogs(AuditTrail auditTrail)
         {
-            return await repository.AddLogs(auditTrail);
+            try
+            {
+                log.Info("Audit log add method called");
+                             
+                return await repository.AddLogs(auditTrail);
+            }
+            catch(Exception ex)
+            {
+                log.Info("Audit Log Add failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(auditTrail));
+                log.Error(ex.ToString());
+                return 0;
+            }
+                         
         }
 
         public async Task<int> AddLogs(DateTime Created_at,DateTime Performed_at,int Performed_by, string Component_name,string Service_name,AuditTrailEnum.Event_type Event_type,AuditTrailEnum.Event_status Event_status,string Message,int Sourceobject_id,int Targetobject_id,string Updated_data)
