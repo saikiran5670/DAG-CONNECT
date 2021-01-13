@@ -29,8 +29,8 @@ steps:
   inputs:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
-    dockerFile: BusinessServices/IdentityService_Dockerfile
-    imageName: identityservice
+    dockerFile: BusinessServices/AuditService_Dockerfile
+    imageName: auditservice
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -38,4 +38,4 @@ steps:
     azureSubscription: $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
-    imageName: identityservice
+    imageName: auditservice
