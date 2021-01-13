@@ -7,7 +7,11 @@
             "type": "process",
             "args": [
                 "build",
+<<<<<<< HEAD
+                "${workspaceFolder}/businessservices/net.atos.daf.ct2.organizationservice/net.atos.daf.ct2.organizationservice.csproj",
+=======
                 "${workspaceFolder}/businessservices/net.atos.daf.ct2.accountservice/net.atos.daf.ct2.accountservice.csproj",
+>>>>>>> 243d841ffe14ec33e12835b39f795a282f68d401
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +23,11 @@
             "type": "process",
             "args": [
                 "publish",
+<<<<<<< HEAD
+                "${workspaceFolder}/businessservices/net.atos.daf.ct2.organizationservice/net.atos.daf.ct2.organizationservice.csproj",
+=======
                 "${workspaceFolder}/businessservices/net.atos.daf.ct2.accountservice/net.atos.daf.ct2.accountservice.csproj",
+>>>>>>> 243d841ffe14ec33e12835b39f795a282f68d401
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -32,6 +40,9 @@
             "args": [
                 "watch",
                 "run",
+<<<<<<< HEAD
+                "${workspaceFolder}/businessservices/net.atos.daf.ct2.organizationservice/net.atos.daf.ct2.organizationservice.csproj",
+=======
                 "${workspaceFolder}/businessservices/net.atos.daf.ct2.accountservice/net.atos.daf.ct2.accountservice.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
@@ -70,6 +81,7 @@
                 "watch",
                 "run",
                 "${workspaceFolder}/commonservices/net.atos.daf.ct2.auditservice/net.atos.daf.ct2.auditservice.csproj",
+>>>>>>> 243d841ffe14ec33e12835b39f795a282f68d401
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

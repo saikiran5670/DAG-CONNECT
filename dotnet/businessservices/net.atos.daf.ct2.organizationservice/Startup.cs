@@ -8,41 +8,38 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.vehicle.repository;
-using net.atos.daf.ct2.vehiclerepository;
-using net.atos.daf.ct2.vehicleservice.Services;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.vehicle;
-using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.audit;
-using net.atos.daf.ct2.audit.repository;
-
-namespace net.atos.daf.ct2.vehicleservice
+using net.atos.daf.ct2.organization.repository;
+using net.atos.daf.ct2.organizationservice.Services;
+using Microsoft.Extensions.Configuration;
+using net.atos.daf.ct2.organization;
+using net.atos.daf.ct2.audit.repository;  
+using net.atos.daf.ct2.accountpreference;
+namespace net.atos.daf.ct2.organizationservice
 {
     public class Startup
     {
+        // This method gets called by the runtime. Use this method to add services to the container.
+        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+       
         public IConfiguration Configuration { get; }
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
 
             var connectionString = Configuration.GetConnectionString("DevAzure");
-            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
+            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);           
             services.AddSingleton(dataAccess); 
-            services.AddTransient<IVehicleManager,VehicleManager>();
-            services.AddTransient<IVehicleRepository, VehicleRepository>();
-
-            services.AddTransient<IAuditLogRepository,AuditLogRepository>();
-            services.AddTransient<IAuditTraillib,AuditTraillib>();
-            
-            services.AddTransient<IGroupManager,GroupManager>();
-            services.AddTransient<IGroupRepository, GroupRepository>();
+             services.AddTransient<IAuditTraillib,AuditTraillib>(); 
+             services.AddTransient<IAuditLogRepository, AuditLogRepository>(); 
+            services.AddTransient<IOrganizationManager,OrganizationManager>();
+            services.AddTransient<IOrganizationRepository, OrganizationRepository>();
+            services.AddTransient<IPreferenceManager,PreferenceManager>();
+            services.AddTransient<IAccountPreferenceRepository, AccountPreferenceRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,7 +55,7 @@ namespace net.atos.daf.ct2.vehicleservice
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<GreeterService>();
-                endpoints.MapGrpcService<VehicleManagementService>();
+                endpoints.MapGrpcService<OrganizationManagementService>();             
 
                 endpoints.MapGet("/", async context =>
                 {

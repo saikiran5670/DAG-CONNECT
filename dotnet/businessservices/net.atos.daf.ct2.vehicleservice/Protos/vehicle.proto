@@ -13,10 +13,13 @@ service VehicleService {
   rpc Update (VehicleRequest) returns (VehicleResponce);
   rpc Get (VehicleFilterRequest) returns (VehicleListResponce);
   rpc UpdateStatus (VehicleOptInOptOutRequest) returns (VehicleOptInOptOutResponce);
+  rpc CreateGroup (VehicleGroupRequest) returns (VehicleGroupResponce);
+  rpc UpdateGroup (VehicleGroupRequest) returns (VehicleGroupResponce);
+  rpc DeleteGroup (DeleteVehicleGroupRequest) returns (VehicleGroupResponce);
+  rpc GetGroupDetails (GroupFilterRequest) returns (VehicleGroupResponce);
 }
 
-enum VehicleStatusType
-{
+enum VehicleStatusType{
     None = 0;
     OptIn = 1;
     OptOut = 2;
@@ -24,8 +27,7 @@ enum VehicleStatusType
     OTA = 4;
 }
 
-enum Type
-{
+enum Type{
   VehicleLevel = 0;
   OrganizationLevel = 1;
 }
@@ -34,6 +36,22 @@ enum Responcecode{
   Success = 0;
   Failed = 1;
 }
+
+enum ObjectType{
+        VehicleGroup = 0;
+        AccountGroup = 1;
+    }
+
+enum GroupType{
+        Single = 0;
+        Group = 1;
+        Dynamic = 2;
+    }
+
+enum FunctionEnum{
+        All = 0;
+    }
+
 
 // The request message containing the vehicle details.
 message VehicleRequest {
@@ -86,4 +104,44 @@ message VehicleOptInOptOutResponce{
   string message = 2;
 }
 
+message VehicleGroupRequest{
+  int32 Id=1;
+  string Name= 2; 
+  ObjectType ObjType = 3;
+  GroupType GroupType = 4;
+  string Argument = 5;
+  FunctionEnum FunctionEnum = 6;
+  int32 OrganizationId = 7;
+  int32 RefId = 8;
+  string Description= 9;
+  repeated VehicleListResquest GroupRef = 10;
+}
+
+message VehicleListResquest{
+  
+  int32 Group_Id = 1;
+  int32 Ref_Id = 2;
+}
+
+message DeleteVehicleGroupRequest{
+  int32 Group_Id = 1;
+}
+
+message VehicleGroupResponce{
+  int32 Id = 1;
+  Responcecode code=2;
+  string message = 3;
+  int32 GroupRefCount=4;
+  repeated VehicleGroupRequest GroupRef = 5;
+}
+
+message GroupFilterRequest{
+  int32 Id=1;
+  ObjectType ObjType = 2;
+  GroupType GroupType = 3;
+  bool GroupRef = 4;
+  bool GroupRefCount = 5;
+  FunctionEnum FunctionEnum = 6;
+  int32 OrganizationId = 7;
+}
 
