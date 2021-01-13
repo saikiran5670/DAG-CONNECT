@@ -215,13 +215,19 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 ObjVehicleGroup.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
                 ObjVehicleGroup.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
                 ObjVehicleGroup.OrganizationId = request.OrganizationId;
+
+                ObjVehicleGroup.GroupRef = new List<GroupRef>();
+                foreach (var item in request.GroupRef)
+                {
+                    ObjVehicleGroup.GroupRef.Add(new GroupRef() { Ref_Id = item.RefId });
+                }
                 Group VehicleGroupResponce = _groupManager.Create(ObjVehicleGroup).Result;
 
                 if (VehicleGroupResponce.Id > 0)
                 {
                     bool AddvehicleGroupRef = _groupManager.UpdateRef(ObjVehicleGroup).Result;
                 }
-
+                _logger.LogInformation("Create group method in vehicle service called.");
                 return Task.FromResult(new VehicleGroupResponce
                 {
                     Message = "Vehicle group created with id:- " + VehicleGroupResponce.Id,
@@ -230,6 +236,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in vehicle service create group method.");
                 return Task.FromResult(new VehicleGroupResponce
                 {
                     Message = "Exception :-" + ex.Message,
@@ -237,6 +244,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 });
             }
         }
+
         public override Task<VehicleGroupResponce> UpdateGroup(VehicleGroupRequest request, ServerCallContext context)
         {
             try
@@ -252,11 +260,17 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 ObjVehicleGroup.OrganizationId = request.OrganizationId;
                 Group VehicleGroupResponce = _groupManager.Update(ObjVehicleGroup).Result;
 
+                ObjVehicleGroup.GroupRef = new List<GroupRef>();
+                foreach (var item in request.GroupRef)
+                {
+                    ObjVehicleGroup.GroupRef.Add(new GroupRef() { Ref_Id = item.RefId });
+                }
+
                 if (VehicleGroupResponce.Id > 0)
                 {
                     bool AddvehicleGroupRef = _groupManager.UpdateRef(ObjVehicleGroup).Result;
                 }
-
+                _logger.LogInformation("Update group method in vehicle service called.");
                 return Task.FromResult(new VehicleGroupResponce
                 {
                     Message = "Vehicle group updated with id:- " + VehicleGroupResponce.Id,
@@ -265,6 +279,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in vehicle service update group method.");
                 return Task.FromResult(new VehicleGroupResponce
                 {
                     Message = "Exception :-" + ex.Message,
@@ -272,12 +287,15 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 });
             }
         }
+        
         public override Task<VehicleGroupResponce> DeleteGroup(DeleteVehicleGroupRequest request, ServerCallContext context)
         {
             try
             {
                 bool IsVehicleGroupDeleted = _groupManager.Delete(request.GroupId).Result;
-
+                
+                _logger.LogInformation("Delete group method in vehicle service called.");
+                
                 return Task.FromResult(new VehicleGroupResponce
                 {
                     Message = "Vehicle group deleted with id:- " + request.GroupId,
@@ -286,6 +304,8 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in vehicle service delete group method.");
+
                 return Task.FromResult(new VehicleGroupResponce
                 {
                     Message = "Exception :-" + ex.Message,
