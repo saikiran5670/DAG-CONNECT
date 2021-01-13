@@ -29,7 +29,7 @@ steps:
   inputs:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
-    dockerFile: dotnet/commonservices/AuditService_Dockerfile
+    dockerFile: dotnet/AuditService_Dockerfile
     imageName: auditservice
 
 - task: Docker@0
