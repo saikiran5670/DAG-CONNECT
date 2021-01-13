@@ -14,7 +14,7 @@ using net.atos.daf.ct2.organizationservice.Services;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.organization;
 using net.atos.daf.ct2.audit.repository;  
-
+using net.atos.daf.ct2.accountpreference;
 namespace net.atos.daf.ct2.organizationservice
 {
     public class Startup
@@ -38,6 +38,8 @@ namespace net.atos.daf.ct2.organizationservice
              services.AddTransient<IAuditLogRepository, AuditLogRepository>(); 
             services.AddTransient<IOrganizationManager,OrganizationManager>();
             services.AddTransient<IOrganizationRepository, OrganizationRepository>();
+            services.AddTransient<IPreferenceManager,PreferenceManager>();
+            services.AddTransient<IAccountPreferenceRepository, AccountPreferenceRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

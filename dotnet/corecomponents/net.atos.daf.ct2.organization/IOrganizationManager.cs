@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.organization
     {
          Task<Organization> Create(Organization organization);
          Task<Organization> Update(Organization group);
-         Task<bool> Delete(string organizationId);
-         Task<IEnumerable<Organization>> Get(string organizationId);       
+         Task<bool> Delete(int organizationId);
+         Task<IEnumerable<Organization>> Get(int organizationId);       
     }
 }
