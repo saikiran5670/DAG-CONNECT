@@ -213,6 +213,23 @@ end if;
 end;
 $$;
 
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='uk_tripstatistics_tripid' AND table_name='trip_statistics'
+		and constraint_type='UNIQUE')
+then	
+	begin
+		ALTER TABLE  tripdetail.trip_statistics 
+			ADD CONSTRAINT uk_tripstatistics_tripid UNIQUE  (trip_id)
+			USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
 Do $$
 begin
 if not exists(
