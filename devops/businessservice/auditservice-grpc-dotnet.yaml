@@ -23,32 +23,7 @@ variables:
 - ${{ if eq(parameters.ENV, 'DEV01') }}:
   - group: DEV01-Build-Variables
 
-
 steps:
-- task: replacetokens@3
-  inputs:
-    targetFiles: 'BusinessServices/DAF.Services/DAF.IdentityService/appsettings.json'
-    encoding: 'auto'
-    writeBOM: true
-    actionOnMissing: 'warn'
-    keepToken: false
-    tokenPrefix: '#{'
-    tokenSuffix: '}#'
-    useLegacyPattern: false
-    enableTelemetry: true
-
-- task: replacetokens@3
-  inputs:
-    targetFiles: 'BusinessServices/DAF.Services/DAF.IdentityService/nlog.config'
-    encoding: 'auto'
-    writeBOM: true
-    actionOnMissing: 'warn'
-    keepToken: false
-    tokenPrefix: '#{'
-    tokenSuffix: '}#'
-    useLegacyPattern: false
-    enableTelemetry: true
-
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
