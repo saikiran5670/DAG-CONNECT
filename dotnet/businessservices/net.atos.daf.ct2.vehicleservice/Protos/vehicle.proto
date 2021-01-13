@@ -24,7 +24,7 @@ enum VehicleStatusType{
     OptIn = 1;
     OptOut = 2;
     Terminate = 3;
-    OTA = 4;
+    Ota = 4;
 }
 
 enum Type{
