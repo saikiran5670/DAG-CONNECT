@@ -5,8 +5,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using AccountComponent = net.atos.daf.ct2.account;
-//using net.atos.daf.ct2.accountpreference;
-//using net.atos.daf.ct2.accountservice;
+using net.atos.daf.ct2.accountpreference;
+using net.atos.daf.ct2.accountservice;
 
 
 
@@ -38,9 +38,17 @@ namespace net.atos.daf.ct2.accountservice
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
                 account = accountmanager.Create(account).Result;
+
+                // response 
+                AccountResponse response = new AccountResponse();
+                //response.code = 
+
                 return Task.FromResult(new AccountResponse
                 {
-                    Message = "Account Created:" + account.Id
+                    code = Responcecode.Success,
+                    account = request,
+                    Message = "Account Created:" + account.Id,
+
                 });
             }
             catch (Exception ex)

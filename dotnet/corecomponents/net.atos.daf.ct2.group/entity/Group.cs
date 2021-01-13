@@ -7,7 +7,7 @@ namespace net.atos.daf.ct2.group
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public ObjectType ObjType { get; set; }
+        public ObjectType ObjectType { get; set; }
         public GroupType GroupType { get; set; }
         public string Argument { get; set; }
         public FunctionEnum FunctionEnum { get; set; }        

@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.group.test
         public void CreateGroup_Manager()
         {
              Group group = new Group();     
-            group.ObjType = ObjectType.VehicleGroup;
+            group.ObjectType = ObjectType.VehicleGroup;
             group.GroupType = GroupType.Group;
             group.Argument = "Truck";
             group.FunctionEnum = FunctionEnum.None;
