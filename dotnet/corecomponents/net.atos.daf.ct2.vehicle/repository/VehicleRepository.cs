@@ -39,13 +39,14 @@ namespace net.atos.daf.ct2.vehicle.repository
                                       ,@status_changed_date
                                       ,@termination_date) RETURNING id";
 
+            bool QrgOptStatus = await dataAccess.QuerySingleAsync<bool>("SELECT optout_status FROM master.organization where id=@id", new { id = vehicle.Organization_Id });
             var parameter = new DynamicParameters();
             parameter.Add("@organization_id", vehicle.Organization_Id);
             parameter.Add("@name", vehicle.Name);
             parameter.Add("@vin", vehicle.VIN);
             parameter.Add("@license_plate_number", vehicle.License_Plate_Number);
             //parameter.Add("@status", ((char)vehicle.Status).ToString() != null ? (char)vehicle.Status:'P');
-            parameter.Add("@status", (char)vehicle.Status);
+            parameter.Add("@status", QrgOptStatus == false ? (char)VehicleStatusType.OPTIN : (char)VehicleStatusType.OPTOUT);
             parameter.Add("@status_changed_date", vehicle.Status_Changed_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Status_Changed_Date.ToString()) : 0);
             parameter.Add("@termination_date", vehicle.Termination_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Termination_Date.ToString()) : 0);
 
@@ -77,8 +78,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                       ,engine_coolant
                                       ,engine_emission_level
                                       ,chasis_id
-                                      ,chasis_side_skirts
-                                      ,chasis_side_collar
+                                      ,is_chasis_side_skirts
+                                      ,is_chasis_side_collar
                                       ,chasis_rear_overhang
                                       ,chasis_fuel_tank_number
                                       ,chasis_fuel_tank_volume
@@ -114,8 +115,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                       ,@engine_coolant
                                       ,@engine_emission_level
                                       ,@chasis_id
-                                      ,@chasis_side_skirts
-                                      ,@chasis_side_collar
+                                      ,@is_chasis_side_skirts
+                                      ,@is_chasis_side_collar
                                       ,@chasis_rear_overhang
                                       ,@chasis_fuel_tank_number
                                       ,@chasis_fuel_tank_volume
@@ -135,25 +136,25 @@ namespace net.atos.daf.ct2.vehicle.repository
 
             var parameter = new DynamicParameters();
             parameter.Add("@vehicle_id", vehicleproperty.VehicleId);
-            parameter.Add("@manufacture_date", vehicleproperty.ManufactureDate);
-            parameter.Add("@registration_date", vehicleproperty.RegistrationDateTime);
-            parameter.Add("@delivery_date", vehicleproperty.DeliveryDate);
+            parameter.Add("@manufacture_date",  UTCHandling.GetUTCFromDateTime(vehicleproperty.ManufactureDate));
+            parameter.Add("@registration_date", UTCHandling.GetUTCFromDateTime(vehicleproperty.RegistrationDateTime));
+            parameter.Add("@delivery_date", UTCHandling.GetUTCFromDateTime(vehicleproperty.DeliveryDate));
             parameter.Add("@make", vehicleproperty.Classification_Make);
             parameter.Add("@model", vehicleproperty.Classification_Model);
             parameter.Add("@series", vehicleproperty.Classification_Series);
-            parameter.Add("@type", vehicleproperty.Classification_Type);
+            parameter.Add("@type", (char)VehicleType.ARTICULATED_TRUCK);
             parameter.Add("@length", vehicleproperty.Dimensions_Size_Length);
             parameter.Add("@widht", vehicleproperty.Dimensions_Size_Width);
             parameter.Add("@height", vehicleproperty.Dimensions_Size_Height);
             parameter.Add("@weight", vehicleproperty.Dimensions_Size_Weight);
             parameter.Add("@engine_id", vehicleproperty.Engine_ID);
-            parameter.Add("@engine_type", vehicleproperty.Engine_Type);
+            parameter.Add("@engine_type", (char)EngineType.Heavy);
             parameter.Add("@engine_power", vehicleproperty.Engine_Power);
-            parameter.Add("@engine_coolant", vehicleproperty.Engine_Coolant);
-            parameter.Add("@engine_emission_level", vehicleproperty.Engine_EmissionLevel);
+            parameter.Add("@engine_coolant", (char)EngineCoolantType.Coolant1);
+            parameter.Add("@engine_emission_level", (char)EngineEmissionLevelType.EURO_III_EEV);
             parameter.Add("@chasis_id", vehicleproperty.Chasis_Id);
-            parameter.Add("@chasis_side_skirts", vehicleproperty.SideSkirts);
-            parameter.Add("@chasis_side_collar", vehicleproperty.SideCollars);
+            parameter.Add("@is_chasis_side_skirts", vehicleproperty.SideSkirts);
+            parameter.Add("@is_chasis_side_collar", vehicleproperty.SideCollars);
             parameter.Add("@chasis_rear_overhang", vehicleproperty.RearOverhang);
             parameter.Add("@chasis_fuel_tank_number", vehicleproperty.Tank_Nr);
             parameter.Add("@chasis_fuel_tank_volume", vehicleproperty.Tank_Volume);
@@ -166,7 +167,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@driveline_rear_axle_load", vehicleproperty.DriverLine_RearAxle_Load);
             parameter.Add("@driveline_rear_axle_ratio", vehicleproperty.DriverLine_RearAxle_Ratio);
             parameter.Add("@transmission_gearbox_id", vehicleproperty.GearBox_Id);
-            parameter.Add("@transmission_gearbox_type", vehicleproperty.GearBox_Type);
+            parameter.Add("@transmission_gearbox_type", (char)GearBoxType.GrearBox1);
             parameter.Add("@cabin_id", vehicleproperty.DriverLine_Cabin_ID);
             parameter.Add("@cabin_color_id", vehicleproperty.DriverLine_Cabin_Color_ID);
             parameter.Add("@cabin_color_value", vehicleproperty.DriverLine_Cabin_Color_Value);
@@ -205,18 +206,26 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
 
             // VIN Id Filter
-            if (vehiclefilter.VIN != null)
+            if (vehiclefilter.VIN !=null && Convert.ToInt32(vehiclefilter.VIN.Length)>0)
             {
-                QueryStatement = QueryStatement + " and vin LIKE '%@vin%'";
-                parameter.Add("@vin", vehiclefilter.VIN);
+                parameter.Add("@vin", "%" + vehiclefilter.VIN + "%");
+                QueryStatement = QueryStatement + " and vin LIKE @vin";
+
             }
-            
+
             // Vehicle Id list Filter
-            if (vehiclefilter.VehicleIdList != null)
+            if (vehiclefilter.VehicleIdList != null && Convert.ToInt32(vehiclefilter.VehicleIdList.Length)>0)
             {
                 List<int> VehicleIds = vehiclefilter.VehicleIdList.Split(',').Select(int.Parse).ToList();
-                QueryStatement = QueryStatement + "and id  = ANY(@VehicleIds)";
+                QueryStatement = QueryStatement + " and id  = ANY(@VehicleIds)";
                 parameter.Add("@VehicleIds", VehicleIds);
+            }
+
+            if (vehiclefilter.Status!=VehicleStatusType.NONE)
+            {
+                parameter.Add("@status", (char)vehiclefilter.Status);
+                QueryStatement = QueryStatement + " and status  = @status";
+
             }
 
             List<Vehicle> vehicles = new List<Vehicle>();

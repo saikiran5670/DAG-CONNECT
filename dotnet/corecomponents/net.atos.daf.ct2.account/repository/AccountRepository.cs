@@ -34,11 +34,11 @@ namespace net.atos.daf.ct2.account
                 {
                     parameter.Add("@dob", UTCHandling.GetUTCFromDateTime(account.Dob.ToString()));
                 }
-                else 
+                else
                 {
                     parameter.Add("@dob", DBNull.Value);
                 }
-                
+
 
                 parameter.Add("@type", (char)account.AccountType);
 
@@ -50,11 +50,11 @@ namespace net.atos.daf.ct2.account
                 if (account.Organization_Id > 0)
                 {
                     parameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(account.StartDate.ToString()));
-                    if(account.EndDate.HasValue)
+                    if (account.EndDate.HasValue)
                     {
                         parameter.Add("@end_date", UTCHandling.GetUTCFromDateTime(account.EndDate.ToString()));
                     }
-                    else 
+                    else
                     {
                         parameter.Add("@end_date", null);
                     }
@@ -149,8 +149,15 @@ namespace net.atos.daf.ct2.account
                         query = query + " and a.type = @type";
                     }
 
+                    // account ids filter                    
+                    if (Convert.ToInt32(filter.AccountIds.Count) > 0)
+                    {
+                        string ids = string.Join<int>(",", filter.AccountIds);
+                        parameter.Add("@ids", ids);
+                        query = query + " and a.id in ( @id ) ";
+                    }
                     dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
-                    //Account account;
+
                     foreach (dynamic record in result)
                     {
                         accounts.Add(Map(record));
@@ -164,6 +171,49 @@ namespace net.atos.daf.ct2.account
                 throw ex;
             }
         }
+
+        public async Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                List<AccessRelationship> entity = new List<AccessRelationship>();
+                string query = string.Empty;
+
+                //and gr.ref_id=1 ";
+                if (filter != null)
+                {
+                    // id filter
+                    if (filter.AccountId > 0)
+                    {
+                        query = @"select id,access_type,account_group_id,vehicle_group_id  
+                        from master.accessRelationship ac
+                        inner join master.groupref gr on ac.account_group_id = gr.group_id where 1= 1";
+                        parameter.Add("@ref_id", filter.AccountId);
+                        query = query + " and gr.ref_id = @ref_id ";
+                    }
+                    // organization id filter
+                    else if (filter.AccountGroupId > 0)
+                    {
+                        query = @"select id,access_type,account_group_id,vehicle_group_id 
+                                    from master.accessRelationship where ac.account_group_id=@account_group_id";
+                        parameter.Add("@account_group_id", filter.AccountGroupId);
+                    }
+                    dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                    //Account account;
+                    foreach (dynamic record in result)
+                    {
+                        entity.Add(MapAccessRelationship(record));
+                    }
+                }
+                return entity;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         private Account Map(dynamic record)
         {
             Account account = new Account();
@@ -176,6 +226,15 @@ namespace net.atos.daf.ct2.account
             account.Organization_Id = record.organization_id;
             account.AccountType = (AccountType)Convert.ToChar(record.accounttype);
             return account;
+        }
+        private AccessRelationship MapAccessRelationship(dynamic record)
+        {
+            AccessRelationship entity = new AccessRelationship();
+            entity.Id = record.id;
+            entity.AccessType = (AccessType)Convert.ToChar(record.access_type);
+            entity.AccountGroupId = record.account_group_id;
+            entity.VehicleGroupId = record.vehicle_group_id;
+            return entity;
         }
 
     }

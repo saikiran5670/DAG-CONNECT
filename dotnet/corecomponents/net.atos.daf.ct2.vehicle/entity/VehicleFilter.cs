@@ -12,6 +12,7 @@ namespace net.atos.daf.ct2.vehicle.entity
         public int FeatureId { get; set; }
         public string VehicleIdList { get; set; }
         public string VIN { get; set; }
+        public VehicleStatusType Status { get; set; }
         
         
         

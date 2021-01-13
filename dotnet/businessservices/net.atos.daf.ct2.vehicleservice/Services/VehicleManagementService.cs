@@ -25,100 +25,150 @@ namespace net.atos.daf.ct2.vehicleservice.Services
 
         public override Task<VehicleResponce> Create(VehicleRequest request, ServerCallContext context)
         {
-            Vehicle Objvehicle = new Vehicle();
-            Vehicle ObjvehicleResponse = new Vehicle();
-
-            Objvehicle.Organization_Id = request.Organizationid;
-            Objvehicle.Name = request.Name;
-            Objvehicle.VIN = request.Vin;
-            Objvehicle.License_Plate_Number = request.LicensePlateNumber;
-            //Objvehicle.ManufactureDate = request.ManufactureDate;
-            //Objvehicle.ChassisNo = request.ChassisNo;
-            Objvehicle.Status_Changed_Date = DateTime.Now;
-            Objvehicle.Status = VehicleStatusType.OptIn;
-            Objvehicle.Termination_Date = DateTime.Now;
-
-            ObjvehicleResponse = _vehicelManager.Create(Objvehicle).Result;
-            return Task.FromResult(new VehicleResponce
+            try
             {
-                Id = ObjvehicleResponse.ID,
-                Organizationid = ObjvehicleResponse.Organization_Id,
-                Name = ObjvehicleResponse.Name,
-                VIN = ObjvehicleResponse.VIN,
-                LicensePlateNumber = ObjvehicleResponse.License_Plate_Number
-            });
+                Vehicle Objvehicle = new Vehicle();
+                Vehicle ObjvehicleResponse = new Vehicle();
+
+                Objvehicle.Organization_Id = request.Organizationid;
+                Objvehicle.Name = request.Name;
+                Objvehicle.VIN = request.Vin;
+                Objvehicle.License_Plate_Number = request.LicensePlateNumber;
+                //Objvehicle.ManufactureDate = request.ManufactureDate;
+                //Objvehicle.ChassisNo = request.ChassisNo;
+                Objvehicle.Status_Changed_Date = DateTime.Now;
+                Objvehicle.Status = (vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), request.Status.ToString().ToUpper()); //GetVehicleStatusEnum((int)request.Status);
+                Objvehicle.Termination_Date = DateTime.Now;
+
+                ObjvehicleResponse = _vehicelManager.Create(Objvehicle).Result;
+
+                return Task.FromResult(new VehicleResponce
+                {
+                    Message = "Vehicle created with id:- " + ObjvehicleResponse.ID,
+                    Code = Responcecode.Success
+
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(new VehicleResponce
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+
         }
 
         public override Task<VehicleResponce> Update(VehicleRequest request, ServerCallContext context)
         {
-            Vehicle Objvehicle = new Vehicle();
-            Vehicle ObjvehicleResponse = new Vehicle();
-            Objvehicle.ID = request.Id;
-            Objvehicle.Name = request.Name;
-            //Objvehicle.VIN = request.Vin;
-            Objvehicle.License_Plate_Number = request.LicensePlateNumber;
-            //Objvehicle.ManufactureDate = request.ManufactureDate;
-            //Objvehicle.ChassisNo = request.ChassisNo;
-            //Objvehicle.Status_Changed_Date = DateTime.Now;
-            //Objvehicle.Status = VehicleStatusType.OptIn;
-            //Objvehicle.Termination_Date = DateTime.Now;
-
-            ObjvehicleResponse = _vehicelManager.Update(Objvehicle).Result;
-            return Task.FromResult(new VehicleResponce
+            try
             {
-                Id = request.Id,
-                Organizationid = request.Organizationid,
-                Name = ObjvehicleResponse.Name,
-                VIN = request.Vin,
-                LicensePlateNumber = ObjvehicleResponse.License_Plate_Number
-            });
-        }
+                Vehicle Objvehicle = new Vehicle();
+                Vehicle ObjvehicleResponse = new Vehicle();
+                Objvehicle.ID = request.Id;
+                Objvehicle.Name = request.Name;
+                //Objvehicle.VIN = request.Vin;
+                Objvehicle.License_Plate_Number = request.LicensePlateNumber;
+                //Objvehicle.ManufactureDate = request.ManufactureDate;
+                //Objvehicle.ChassisNo = request.ChassisNo;
+                //Objvehicle.Status_Changed_Date = DateTime.Now;
+                //Objvehicle.Status = VehicleStatusType.OptIn;
+                //Objvehicle.Termination_Date = DateTime.Now;
 
-        public override Task<VehicleList> Get(VehicleFilterRequest request, ServerCallContext context)
-        {
-            VehicleFilter ObjVehicleFilter = new VehicleFilter();
-            VehicleList ObjList = new VehicleList();
+                ObjvehicleResponse = _vehicelManager.Update(Objvehicle).Result;
+                return Task.FromResult(new VehicleResponce
+                {
+                    Message = "Vehicle updated for id:- " + ObjvehicleResponse.ID,
+                    Code = Responcecode.Success
+                });
 
-            ObjVehicleFilter.VehicleId = request.VehicleId;
-            ObjVehicleFilter.OrganizationId = request.OrganizationId;
-            ObjVehicleFilter.AccountId = request.AccountId;
-            ObjVehicleFilter.VehicleGroupId = request.VehicleGroupId;
-            ObjVehicleFilter.AccountGroupId = request.AccountGroupId;
-            ObjVehicleFilter.FeatureId = request.FeatureId;
-            ObjVehicleFilter.VehicleIdList = request.VehicleIdList;
-            ObjVehicleFilter.VIN = request.VIN;
-
-            IEnumerable<Vehicle> ObjRetrieveVehicleList = _vehicelManager.Get(ObjVehicleFilter).Result;
-            foreach (var item in ObjRetrieveVehicleList)
-            {
-                VehicleResponce ObjResponce=new VehicleResponce();
-                ObjResponce.Id=item.ID;
-                ObjResponce.Organizationid=item.Organization_Id;
-                ObjResponce.Name=item.Name;
-
-                ObjList.Vehicles.Add(ObjResponce);
             }
-            //return Task.FromResult(JsonConvert.DeserializeObject<VehicleList>(Convert.ToString(ObjList)));
-            return Task.FromResult(ObjList);
-
-        }
-
-          public override Task<VehicleOptInOptOutResponce> UpdateStatus(VehicleOptInOptOutRequest request, ServerCallContext context)
-        {
-            VehicleOptInOptOut ObjvehicleOptInOptOut = new VehicleOptInOptOut();
-            VehicleOptInOptOut ObjvehicleOptInOptOutResponce = new VehicleOptInOptOut();
-            ObjvehicleOptInOptOutResponce.RefId = request.Refid;
-            ObjvehicleOptInOptOutResponce.AccountId = request.Accountid;
-            ObjvehicleOptInOptOutResponce.Status = VehicleStatusType.OptIn;
-            ObjvehicleOptInOptOutResponce.Date=DateTime.Now;
-            ObjvehicleOptInOptOutResponce.Type=OptInOptOutType.VehicleLevel;
-            ObjvehicleOptInOptOutResponce = _vehicelManager.UpdateStatus(ObjvehicleOptInOptOutResponce).Result;
-            return Task.FromResult(new VehicleOptInOptOutResponce
+            catch (Exception ex)
             {
-                Refid = ObjvehicleOptInOptOutResponce.RefId,
-                Accountid = ObjvehicleOptInOptOutResponce.AccountId
-            });
+                return Task.FromResult(new VehicleResponce
+                {
+                    Message = "Exception " + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+
         }
 
+        public async override Task<VehicleListResponce> Get(VehicleFilterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                VehicleFilter ObjVehicleFilter = new VehicleFilter();
+                VehicleListResponce ObjVehicleList = new VehicleListResponce();
+
+                ObjVehicleFilter.VehicleId = request.VehicleId;
+                ObjVehicleFilter.OrganizationId = request.OrganizationId;
+                ObjVehicleFilter.AccountId = request.AccountId;
+                ObjVehicleFilter.VehicleGroupId = request.VehicleGroupId;
+                ObjVehicleFilter.AccountGroupId = request.AccountGroupId;
+                ObjVehicleFilter.FeatureId = request.FeatureId;
+                ObjVehicleFilter.VehicleIdList = request.VehicleIdList;
+                ObjVehicleFilter.VIN = request.VIN;
+                ObjVehicleFilter.Status = (vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), request.Status.ToString().ToUpper());
+
+                IEnumerable<Vehicle> ObjRetrieveVehicleList = _vehicelManager.Get(ObjVehicleFilter).Result;
+                foreach (var item in ObjRetrieveVehicleList)
+                {
+                    VehicleRequest ObjResponce = new VehicleRequest();
+                    ObjResponce.Id = item.ID;
+                    ObjResponce.Organizationid = item.Organization_Id;
+                    ObjResponce.Name = item.Name;
+                    ObjResponce.Vin = item.VIN;
+                    ObjResponce.LicensePlateNumber = item.License_Plate_Number;
+                    ObjResponce.Status = (VehicleStatusType)(char)item.Status;
+
+                    ObjVehicleList.Vehicles.Add(ObjResponce);
+                }
+                ObjVehicleList.Message = "Vehicles data retrieved";
+                ObjVehicleList.Code = Responcecode.Success;
+                return await Task.FromResult(ObjVehicleList);
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(new VehicleListResponce
+                {
+                    Message = "Exception " + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+
+
+        }
+
+        public override Task<VehicleOptInOptOutResponce> UpdateStatus(VehicleOptInOptOutRequest request, ServerCallContext context)
+        {
+            try
+            {
+                VehicleOptInOptOut ObjvehicleOptInOptOut = new VehicleOptInOptOut();
+                VehicleOptInOptOut ObjvehicleOptInOptOutResponce = new VehicleOptInOptOut();
+                ObjvehicleOptInOptOutResponce.RefId = request.Refid;
+                ObjvehicleOptInOptOutResponce.AccountId = request.Accountid;
+                ObjvehicleOptInOptOutResponce.Status = (vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), request.Status.ToString().ToUpper()); //GetVehicleStatusEnum((int)request.Status);
+                ObjvehicleOptInOptOutResponce.Date = DateTime.Now;
+                ObjvehicleOptInOptOutResponce.Type = (vehicle.OptInOptOutType)Enum.Parse(typeof(vehicle.OptInOptOutType), request.OptInOptOutType.ToString()); //GetOptInOptOutEnum((int)request.OptInOptOutType);
+                ObjvehicleOptInOptOutResponce = _vehicelManager.UpdateStatus(ObjvehicleOptInOptOutResponce).Result;
+                return Task.FromResult(new VehicleOptInOptOutResponce
+                {
+                    Message = "Status updated for " + ObjvehicleOptInOptOutResponce.RefId,
+                     Code = Responcecode.Success
+                });
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(new VehicleOptInOptOutResponce
+                {
+                    Message = "Exception " + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+
+        }
     }
 }
