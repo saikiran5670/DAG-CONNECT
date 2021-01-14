@@ -221,7 +221,7 @@ namespace net.atos.daf.ct2.group
             entity.RefId = record.ref_id;
             return entity;
         }
-        private async Task<List<GroupRef>> GetRef(int groupid)
+        public async Task<List<GroupRef>> GetRef(int groupid)
         {
             try
             {

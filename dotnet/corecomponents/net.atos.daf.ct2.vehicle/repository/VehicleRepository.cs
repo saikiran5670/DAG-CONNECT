@@ -180,28 +180,31 @@ namespace net.atos.daf.ct2.vehicle.repository
         public async Task<IEnumerable<Vehicle>> Get(VehicleFilter vehiclefilter)
         {
 
-            var QueryStatement = @"select id
-                                            ,organization_id
-                                            ,name
-                                            ,vin
-                                            ,license_plate_number
-                                            ,status
-                                     from master.vehicle
-                                     where 1=1";
+            var QueryStatement = @"select Veh.id
+                                    ,veh.organization_id
+                                    ,veh.name
+                                    ,veh.vin
+                                    ,veh.license_plate_number
+                                    ,veh.status
+                                    ,vehpro.model
+                                    from master.vehicle veh
+                                    left join master.vehicleproperty vehpro
+                                    on veh.id=vehpro.vehicle_id
+                                    where 1=1";
             var parameter = new DynamicParameters();
 
             // Vehicle Id Filter
             if (vehiclefilter.VehicleId > 0)
             {
                 parameter.Add("@id", vehiclefilter.VehicleId);
-                QueryStatement = QueryStatement + " and id  = @id";
+                QueryStatement = QueryStatement + " and veh.id  = @id";
 
             }
             // organization id filter
             if (vehiclefilter.OrganizationId > 0)
             {
                 parameter.Add("@organization_id", vehiclefilter.OrganizationId);
-                QueryStatement = QueryStatement + " and organization_id  = @organization_id";
+                QueryStatement = QueryStatement + " and veh.organization_id  = @organization_id";
 
             }
 
@@ -209,7 +212,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             if (vehiclefilter.VIN !=null && Convert.ToInt32(vehiclefilter.VIN.Length)>0)
             {
                 parameter.Add("@vin", "%" + vehiclefilter.VIN + "%");
-                QueryStatement = QueryStatement + " and vin LIKE @vin";
+                QueryStatement = QueryStatement + " and veh.vin LIKE @vin";
 
             }
 
@@ -217,14 +220,14 @@ namespace net.atos.daf.ct2.vehicle.repository
             if (vehiclefilter.VehicleIdList != null && Convert.ToInt32(vehiclefilter.VehicleIdList.Length)>0)
             {
                 List<int> VehicleIds = vehiclefilter.VehicleIdList.Split(',').Select(int.Parse).ToList();
-                QueryStatement = QueryStatement + " and id  = ANY(@VehicleIds)";
+                QueryStatement = QueryStatement + " and veh.id  = ANY(@VehicleIds)";
                 parameter.Add("@VehicleIds", VehicleIds);
             }
 
-            if (vehiclefilter.Status!=VehicleStatusType.NONE)
+            if (vehiclefilter.Status!=VehicleStatusType.NONE && vehiclefilter.Status!=0)
             {
                 parameter.Add("@status", (char)vehiclefilter.Status);
-                QueryStatement = QueryStatement + " and status  = @status";
+                QueryStatement = QueryStatement + " and veh.status  = @status";
 
             }
 
@@ -248,6 +251,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             vehicle.Status = (VehicleStatusType)(Convert.ToChar(record.status));
             // vehicle.Status_Changed_Date = record.Status_Changed_Date;
             // vehicle.Termination_Date = record.Termination_Date;
+             vehicle.Model = record.model;
             return vehicle;
         }
 

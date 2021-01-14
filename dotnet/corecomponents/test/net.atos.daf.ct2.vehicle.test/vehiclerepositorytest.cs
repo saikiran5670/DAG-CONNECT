@@ -92,7 +92,7 @@ namespace net.atos.daf.ct2.vehicle.test
         public void CreateVehicleProperty()
         {
             VehicleProperty ObjVehicleProperty = new VehicleProperty();            
-            ObjVehicleProperty.VehicleId = 5;
+            ObjVehicleProperty.VehicleId = 36;
             ObjVehicleProperty.ManufactureDate = DateTime.Now;
             ObjVehicleProperty.RegistrationDateTime=DateTime.Now;
             ObjVehicleProperty.DeliveryDate=DateTime.Now;

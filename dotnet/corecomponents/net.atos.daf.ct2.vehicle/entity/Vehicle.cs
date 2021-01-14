@@ -21,6 +21,10 @@ namespace net.atos.daf.ct2.vehicle.entity
        // public OptInOptOutType Type { get; set; } 
         public VehicleProperty vehicleProperty { get; set; }
         public List<VehicleOptInOptOut> vehicleOptInOptOut { get; set; }
+
+        public string Model { get; set; }
+        
+        
         
         
         
