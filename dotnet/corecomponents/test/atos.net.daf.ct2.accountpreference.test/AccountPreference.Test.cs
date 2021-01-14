@@ -57,7 +57,7 @@ namespace atos.net.daf.ct2.accountpreference.test
             entity.VehicleDisplay_Type = VehicleDisplayType.Name;
             entity.DateFormat_Type = DateFormatDisplayType.Day_Month_Year;
             entity.DriverId = string.Empty;
-            var result = _repository.Create(entity).Result;
+            var result = _repository.Update(entity).Result;
             Assert.IsTrue(result != null && result.Id > 0);
         }
         [TestMethod]
@@ -91,7 +91,7 @@ namespace atos.net.daf.ct2.accountpreference.test
             entity.VehicleDisplay_Type = VehicleDisplayType.Name;
             entity.DateFormat_Type = DateFormatDisplayType.Day_Month_Year;
             entity.DriverId = string.Empty;
-            var result = _repository.Create(entity).Result;
+            var result = _repository.Update(entity).Result;
             Assert.IsTrue(result != null && result.Id > 0);
         }
 

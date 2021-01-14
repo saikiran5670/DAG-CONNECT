@@ -14,6 +14,8 @@ namespace net.atos.daf.ct2.organization.repository
     public class OrganizationRepository:IOrganizationRepository
     {
         private readonly IDataAccess dataAccess;
+        private static readonly log4net.ILog log =
+        log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public OrganizationRepository(IDataAccess _dataAccess)
         {
             dataAccess = _dataAccess;
@@ -50,13 +52,13 @@ namespace net.atos.daf.ct2.organization.repository
             return organization;
         }
 
-        public async Task<bool> Delete(string organizationId)
+        public async Task<bool> Delete(int organizationId)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@orgid", organizationId);
-                var query = @"delete from master.organization where org_id = @orgid";
+                parameter.Add("@id", organizationId);
+                var query = @"delete from master.organization where id=@id";
                 await dataAccess.ExecuteScalarAsync<int>(query, parameter);    
                 return true;
             }
@@ -70,7 +72,8 @@ namespace net.atos.daf.ct2.organization.repository
         {
             try
             {
-                 var parameter = new DynamicParameters();
+                var parameter = new DynamicParameters();
+                parameter.Add("@Id",organization.Id);
                 parameter.Add("@OrganizationId",organization.OrganizationId);
                 parameter.Add("@OrganizationType",organization.Type);
                 parameter.Add("@Name", organization.Name);
@@ -89,7 +92,7 @@ namespace net.atos.daf.ct2.organization.repository
                  address_type=@AddressType, street=@AddressStreet, street_number=@AddressStreetNumber,
                   postal_code=@PostalCode, city=@City,country_code=@CountryCode,reference_date=@ReferencedDate,
                   optout_status=@OptOutStatus,optout_status_changed_date=@OptOutStatusChangedDate,is_active=@IsActive
-	                                 WHERE org_id = @OrganizationId RETURNING id;";
+	                                 WHERE id = @Id RETURNING id;";
                 var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);              
             }
             catch (Exception ex)
@@ -98,17 +101,33 @@ namespace net.atos.daf.ct2.organization.repository
             }
             return organization;
         }
-
-        public async Task<IEnumerable<Organization>> Get(string organizationId)
+        public async Task<Organization> Get(int organizationId)
         {
             try
-            {
+            {                
                 var parameter = new DynamicParameters();
                 var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date, optout_status, optout_status_changed_date, is_active
-	                        FROM master.organization where org_id=@organizationId";
-                parameter.Add("@organizationId", organizationId);
-                var organization = await dataAccess.QueryAsync<Organization>(query, parameter);
-                return organization.ToList();
+	                        FROM master.organization where id=@Id";
+                parameter.Add("@Id", organizationId);
+                IEnumerable<Organization> OrganizationDetails = await dataAccess.QueryAsync<Organization>(query, parameter);
+                Organization objOrganization=new Organization();
+                foreach (var item in OrganizationDetails)
+                    {         
+                         objOrganization.Id=item.Id;
+                         objOrganization.OrganizationId=item.OrganizationId;
+                         objOrganization.Type=item.Type;
+                         objOrganization.Name=item.Name;
+                         objOrganization.AddressType=item.AddressType;
+                         objOrganization.AddressStreet=item.AddressStreet;
+                         objOrganization.PostalCode=item.PostalCode;
+                         objOrganization.City=item.City;
+                         objOrganization.CountryCode=item.CountryCode;
+                         objOrganization.ReferencedDate=item.ReferencedDate;
+                         objOrganization.OptOutStatus=item.OptOutStatus;
+                         objOrganization.OptOutStatusChangedDate=item.OptOutStatusChangedDate;
+                         objOrganization.IsActive=item.IsActive;
+                    }            
+                return objOrganization;
             }
             catch (Exception ex)
             {
