@@ -3,30 +3,30 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.organization.entity;
-using net.atos.daf.ct2.organization.repository;
 using net.atos.daf.ct2.organization;
-using net.atos.daf.ct2.account;
-using System.Collections.Generic;
-using AccountComponent = net.atos.daf.ct2.account;
 using AccountPreferenceComponent = net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.accountpreference;
-
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.repository;
+using System.Collections.Generic;
 namespace net.atos.daf.ct2.organizationservice.Services
 {
     public class OrganizationManagementService : OrganizationService.OrganizationServiceBase
     {
-        private readonly ILogger<GreeterService> _logger;
+      //  private readonly ILogger<GreeterService> _logger;
+        private readonly ILogger _logger;        
+        private readonly IAuditLogRepository _IAuditLogRepository;       
+        private readonly IAuditTraillib _AuditTrail;      
         private readonly IOrganizationManager organizationtmanager;
         private readonly IPreferenceManager preferencemanager;
-
-        public OrganizationManagementService(ILogger<GreeterService> logger, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager)
+        public OrganizationManagementService(ILogger<OrganizationManagementService> logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager)
         {
             _logger = logger;
+            _AuditTrail = AuditTrail;
             organizationtmanager = _organizationmanager;
             preferencemanager=_preferencemanager;
         }
-
-        public override Task<OrganizationResponse> Create(OrganizationRequest request, ServerCallContext context)
+        public override Task<OrganizationResponse> Create(OrganizationCreateRequest request, ServerCallContext context)
         {
             try
             {   
@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.organizationservice.Services
                 });
             }
         }    
-         public override Task<OrganizationResponse> Update(OrganizationRequest request, ServerCallContext context)
+         public override Task<OrganizationResponse> Update(OrganizationUpdateRequest request, ServerCallContext context)
         {
             try
             {
@@ -154,24 +154,24 @@ namespace net.atos.daf.ct2.organizationservice.Services
 
         public override Task<GetOrganizationResponce> Get(GetOrganizationRequest request, ServerCallContext context)
         {            
-            Organization  objOrganization =(Organization)(organizationtmanager.Get(request.Id).Result);
-            return Task.FromResult(new GetOrganizationResponce
-            {               
-               Id=objOrganization.Id,
-               OrganizationId = objOrganization.OrganizationId,
-               Type = objOrganization.Type,
-               Name = objOrganization.Name,
-               AddressType = objOrganization.AddressType,
-               AddressStreet = objOrganization.AddressStreet,              
-               AddressStreetNumber = objOrganization.AddressStreetNumber,
-               PostalCode = objOrganization.PostalCode,
-               City = objOrganization.City,
-               CountryCode = objOrganization.CountryCode,
-               ReferencedDate = objOrganization.ReferencedDate,
-               OptOutStatus = objOrganization.OptOutStatus,
-               OptOutStatusChangedDate = objOrganization.OptOutStatusChangedDate,
-               IsActive = objOrganization.IsActive
-            });                      
+           Organization  organization = organizationtmanager.Get(request.Id).Result;         
+           return Task.FromResult(new GetOrganizationResponce
+                {                 
+                    Id=organization.Id,
+                    OrganizationId=organization.OrganizationId,
+                    Type = organization.Type,
+                    Name = organization.Name,
+                    AddressType = organization.AddressType,
+                    AddressStreet = organization.AddressStreet,       
+                    AddressStreetNumber = organization.AddressStreetNumber,
+                    PostalCode = organization.PostalCode,
+                    City = organization.City,
+                    CountryCode = organization.CountryCode,
+                    ReferencedDate = organization.ReferencedDate,
+                    OptOutStatus = organization.OptOutStatus,
+                    OptOutStatusChangedDate = organization.OptOutStatusChangedDate,
+                    IsActive = organization.IsActive
+                });                           
         }
          private AccountPreferenceComponent.CurrencyType GetCurrencyType(int value)
         {

@@ -17,11 +17,11 @@ namespace net.atos.daf.ct2.rolerepository
             roleRepository = _roleRepository;
             auditlog=_auditlog;
         }
-        public async Task<int> AddRole(RoleMaster roleMaster)
+        public async Task<int> CreateRole(RoleMaster roleMaster)
         {
             try
             {
-                int RoleId= await roleRepository.AddRole(roleMaster);
+                int RoleId= await roleRepository.CreateRole(roleMaster);
                 auditlog.AddLogs(roleMaster.createdby,roleMaster.createdby,1,"Add Role",RoleId > 0,"Role Management", "Role Added With Role Id " + RoleId.ToString());
                 return RoleId;
             }
@@ -43,12 +43,12 @@ namespace net.atos.daf.ct2.rolerepository
             }
         }
 
-        public async Task<int> DeleteRole(int roleId, int userId)
+        public async Task<int> DeleteRole(int roleid, int Accountid)
         {
             try
             {
-                int RoleId= await roleRepository.DeleteRole(roleId, userId);
-                auditlog.AddLogs(userId,userId,1,"Delete Role", RoleId > 0,"Role Management", "Role Deleted With Role Id " + RoleId.ToString());
+                int RoleId= await roleRepository.DeleteRole(roleid, Accountid);
+                // auditlog.AddLogs(userId,userId,1,"Delete Role", RoleId > 0,"Role Management", "Role Deleted With Role Id " + RoleId.ToString());
                 return RoleId;
             }
             catch (Exception ex)
