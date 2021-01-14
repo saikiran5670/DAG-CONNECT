@@ -43,8 +43,6 @@ steps:
   inputs:
     script: |
       cat dotnet/businessservices/net.atos.daf.ct2.vehicleservice/appsettings.json
-
-      echo $(DAFConnectMasterDatabaseConnectionString)
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
