@@ -7,7 +7,8 @@ using Dapper;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.utilities;
-
+using net.atos.daf.ct2.account.entity;
+using net.atos.daf.ct2.account.ENUM;
 namespace net.atos.daf.ct2.account
 {
     public class AccountRepository : IAccountRepository
@@ -145,7 +146,7 @@ namespace net.atos.daf.ct2.account
                         query = query + " and ag.organization_id = @organization_id ";
                     }
                     // account type filter 
-                    if (((char)filter.AccountType) != ((char)AccountType.None))
+                    if (((char)filter.AccountType) != ((char) AccountType.None))
                     {
                         parameter.Add("@type", (char)filter.AccountType);
                         query = query + " and a.type = @type";
@@ -174,7 +175,51 @@ namespace net.atos.daf.ct2.account
                 throw ex;
             }
         }
+        public async Task<AccessRelationship> CreateAccessRelationship(AccessRelationship entity)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
 
+                //parameter.Add("@id", account.Id);
+                parameter.Add("@access_type", (char) entity.AccessRelationType);
+                parameter.Add("@account_group_id", entity.AccountGroupId);
+                parameter.Add("@vehicle_group_id", entity.VehicleGroupId);
+
+                string query = @"insert into master.accessrelationship(access_type,account_group_id,vehicle_group_id) " +
+                              "values(@access_type,@account_group_id,@vehicle_group_id) RETURNING id";
+
+                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                entity.Id = id;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return entity;
+        }
+         public async Task<AccessRelationship> UpdateAccessRelationship(AccessRelationship entity)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@access_type", (char) entity.AccessRelationType);
+                parameter.Add("@account_group_id", entity.AccountGroupId);
+                parameter.Add("@vehicle_group_id", entity.VehicleGroupId);
+
+                string query = @"insert into master.accessrelationship(access_type,account_group_id,vehicle_group_id) " +
+                              "values(@access_type,@account_group_id,@vehicle_group_id) RETURNING id";
+
+                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                entity.Id = id;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return entity;
+        }
         public async Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter)
         {
             try
@@ -234,7 +279,7 @@ namespace net.atos.daf.ct2.account
         {
             AccessRelationship entity = new AccessRelationship();
             entity.Id = record.id;
-            entity.AccessType = (AccessType)Convert.ToChar(record.access_type);
+            entity.AccessRelationType = (AccessRelationType)Convert.ToChar(record.access_type);
             entity.AccountGroupId = record.account_group_id;
             entity.VehicleGroupId = record.vehicle_group_id;
             return entity;
