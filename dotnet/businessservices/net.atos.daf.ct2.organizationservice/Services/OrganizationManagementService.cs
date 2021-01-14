@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.organizationservice.Services
             organizationtmanager = _organizationmanager;
             preferencemanager=_preferencemanager;
         }
-        public override Task<OrganizationResponse> Create(OrganizationRequest request, ServerCallContext context)
+        public override Task<OrganizationResponse> Create(OrganizationCreateRequest request, ServerCallContext context)
         {
             try
             {   
@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.organizationservice.Services
                 });
             }
         }    
-         public override Task<OrganizationResponse> Update(OrganizationRequest request, ServerCallContext context)
+         public override Task<OrganizationResponse> Update(OrganizationUpdateRequest request, ServerCallContext context)
         {
             try
             {

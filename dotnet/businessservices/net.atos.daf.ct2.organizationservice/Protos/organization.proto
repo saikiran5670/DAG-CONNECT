@@ -7,14 +7,14 @@ package organization;
 // The greeting service definition.
 service OrganizationService {
   // Sends a greeting
-  rpc Create (OrganizationRequest) returns (OrganizationResponse);
-  rpc Update (OrganizationRequest) returns (OrganizationResponse);
+  rpc Create (OrganizationCreateRequest) returns (OrganizationResponse);
+  rpc Update (OrganizationUpdateRequest) returns (OrganizationResponse);
   rpc Delete (OrganizationDeleteRequest) returns (OrganizationResponse);
   rpc Get (GetOrganizationRequest) returns (GetOrganizationResponce);    
 }
 
 // The request request.
-message OrganizationRequest {
+message OrganizationUpdateRequest {
     int32 Id=1;
     string OrganizationId= 2;
     string Type=3;
@@ -38,6 +38,30 @@ message OrganizationRequest {
     int32 VehicleDisplay_Type=21;
     int32 DateFormat_Type=22;
     string DriverId=23;
+  }
+  message OrganizationCreateRequest {   
+    string OrganizationId= 1;
+    string Type=2;
+    string Name=3;
+    string AddressType=4;
+    string AddressStreet=5;
+    string AddressStreetNumber=6; 
+    string PostalCode=7;    
+    string City=8;
+    string CountryCode=9;
+    int64 ReferencedDate=10;
+    bool OptOutStatus=11;
+    int64 OptOutStatusChangedDate=12;
+    bool IsActive=13;
+    int32 Ref_Id=14;
+    int32 PreferenceType=15;
+    int32 Language_Id=16;
+    int32 Timezone_Id=17;
+    int32 Currency_Type=18;
+    int32 Unit_Type=19;
+    int32 VehicleDisplay_Type=20;
+    int32 DateFormat_Type=21;
+    string DriverId=22;
   }
 
   message OrganizationDeleteRequest {
