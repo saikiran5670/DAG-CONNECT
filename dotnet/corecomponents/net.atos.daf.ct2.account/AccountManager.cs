@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Identity = net.atos.daf.ct2.identity;
 using IdentityEntity = net.atos.daf.ct2.identity.entity;
-
+using net.atos.daf.ct2.account.ENUM;
+using net.atos.daf.ct2.account.entity;
 
 namespace net.atos.daf.ct2.account
 {
@@ -92,6 +93,14 @@ namespace net.atos.daf.ct2.account
         public async Task<IEnumerable<Account>> Get(AccountFilter filter)
         {
             return await repository.Get(filter);
+        }
+        public async Task<AccessRelationship> CreateAccessRelationship(AccessRelationship entity)
+        {
+            return await repository.CreateAccessRelationship(entity);
+        }
+        public async Task<AccessRelationship> UpdateAccessRelationship(AccessRelationship entity)
+        {
+            return await repository.UpdateAccessRelationship(entity);
         }
         public async Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter)
         {

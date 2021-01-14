@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using net.atos.daf.ct2.account.entity;
+using net.atos.daf.ct2.account.ENUM;
 namespace net.atos.daf.ct2.account
 {
     public interface IAccountRepository
@@ -11,6 +12,8 @@ namespace net.atos.daf.ct2.account
         Task<bool> Delete(int accountId, int organizationId);
         Task<List<Account>> Get(AccountFilter filter);  
         Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter);    
+        Task<AccessRelationship> CreateAccessRelationship(AccessRelationship entity);
+        Task<AccessRelationship> UpdateAccessRelationship(AccessRelationship entity);
     }
 }
   

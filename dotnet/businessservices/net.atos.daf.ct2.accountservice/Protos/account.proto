@@ -7,13 +7,24 @@ package net.atos.daf.ct2.accountservice;
 
 // The greeting service definition.
 service AccountService {
-  // Sends a greeting
+  // Account Methods 
   rpc Create (AccountRequest) returns (AccountData);
   rpc Update (AccountRequest) returns (AccountData);
   rpc Delete (AccountRequest) returns (AccountResponse);
   rpc ChangePassword (AccountRequest) returns (AccountResponse);
   rpc Get (AccountFilter) returns (AccountDataList);
-  
+
+  // Account Preference Mthod
+  rpc CreatePreference (AccountPreference) returns (AccountPreferenceResponse);
+  rpc UpdatePreference (AccountPreference) returns (AccountPreferenceResponse);
+  rpc DeletePreference (AccountPreference) returns (AccountPreferenceResponse);
+  rpc GetPreference (AccountPreferenceFilter) returns (AccountPreferenceDataList);
+
+  // Account Group Method
+  rpc CreateGroup (AccountGroupRequest) returns (AccountGroupResponce);
+  rpc UpdateGroup (AccountGroupRequest) returns (AccountGroupResponce);
+  rpc DeleteGroup (DeleteRecordRequest) returns (AccountGroupResponce);
+  rpc GetGroupDetails (AccountGroupFilterRequest) returns (AccountGroupResponce);
 }
 enum AccountType
     {
@@ -61,23 +72,7 @@ message AccountRequest {
     //bool Active =12;
     bool Active =11;
   }
-// The request request.
-message Group {
-  int32 Id= 1;
-  string EmailId=2;
-  string Salutation=3;
-  string FirstName=4;
-  string LastName=5;
-  string Password=6;
-  google.protobuf.Timestamp Dob=7; 
-  AccountType Type=8;    
-  int32 Organization_Id=9;
-  //int32 Account_OrgId =10;
-  //google.protobuf.Timestamp StartDate=10;
-  //google.protobuf.Timestamp EndDate=11;
-  //bool Active =12;
-  bool Active =11;
-}
+
 message AccountId
 {
   int32 Id=1;
@@ -89,3 +84,133 @@ message AccountFilter {
   AccountType AccountType=3;
   string AccountIds = 4;
 }
+
+// Account Preference
+enum CurrencyType
+    {
+        //None = 'N',
+        Euro = 0;
+        USDollar = 1;
+        PondSterlingr = 2;
+    }
+    enum DateFormatDisplayType
+    {
+         //None = 'N',
+        Day_Month_Year= 0;
+        Month_Day_Year= 1;
+        Year_Month_Day= 2;
+    }
+    enum PreferenceType
+    {
+        //None = 'N',
+        Account = 0;
+        Organization = 1;
+    }
+    enum UnitType
+    {
+        // None = 'N',
+        Metric= 0;
+        Imperial= 1;
+        US_Imperial = 2;
+    }
+    enum VehicleDisplayType    
+    {
+        //None = 'N',
+        Registration_Number= 0;
+        Name= 1;
+        VIN = 2;   
+    }
+    message AccountPreference
+    {
+        int32 Id =1;
+        int32 Ref_Id =2;
+        PreferenceType preferenceType =3;
+        int32 Language_Id =4;
+        int32 Timezone_Id =5;
+        CurrencyType currency_Type =6;
+        UnitType unit_Type = 7;
+        VehicleDisplayType VehicleDisplay_Type =8;
+        DateFormatDisplayType dateFormat_Type =9;
+        string DriverId =10;
+        bool Is_Active =11;
+    }
+    message AccountPreferenceResponse
+    {
+      Responcecode Code=1;
+      string Message = 2;
+      AccountPreference AccountPreference= 3;      
+    }
+    message AccountPreferenceDataList
+    {
+      Responcecode Code=1;
+      string Message = 2;
+      repeated AccountPreference Preference= 3;      
+    }
+
+    
+    message AccountPreferenceFilter
+    {
+        int32 Id =1;
+        int32 Ref_Id =2;
+        PreferenceType preference =3;
+    }
+
+
+
+// End - Account Preference 
+
+
+// Begin Account Group
+enum ObjectType{
+  VehicleGroup = 0;
+  AccountGroup = 1;
+}
+
+enum GroupType{
+  Single = 0;
+  Group = 1;
+  Dynamic = 2;
+}
+
+enum FunctionEnum{
+  All = 0;
+}
+
+message AccountGroupRef{
+  
+  int32 Group_Id = 1;
+  int32 Ref_Id = 2;
+}
+
+message AccountGroupRequest{
+  int32 Id=1;
+  string Name= 2; 
+  ObjectType ObjectType = 3;
+  GroupType GroupType = 4;
+  string Argument = 5;
+  FunctionEnum FunctionEnum = 6;
+  int32 OrganizationId = 7;
+  int32 RefId = 8;
+  string Description= 9;
+  repeated AccountGroupRef GroupRef = 10;
+}
+message AccountGroupResponce{
+  int32 Id = 1;
+  Responcecode code=2;
+  string message = 3;
+  int32 GroupRefCount=4;
+  repeated AccountGroupRef GroupRef = 5;
+}
+message AccountGroupFilterRequest{
+  int32 Id=1;
+  ObjectType ObjectType = 2;
+  GroupType GroupType = 3;
+  bool GroupRef = 4;
+  bool GroupRefCount = 5;
+  FunctionEnum FunctionEnum = 6;
+  int32 OrganizationId = 7;
+}
+message DeleteRecordRequest {
+  int32 Id = 1;
+}
+// Begin Account Group
