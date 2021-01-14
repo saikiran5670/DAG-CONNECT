@@ -29,7 +29,7 @@ variables:
 steps:
 - task: replacetokens@3
   inputs:
-    targetFiles: 'BusinessServices/DAF.Services/DAF.VehicleManagement/appsettings.json'
+    targetFiles: 'dotnet/commonservices/net.atos.daf.ct2.auditservice/appsettings.json'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -38,6 +38,14 @@ steps:
     tokenSuffix: '}#'
     useLegacyPattern: false
     enableTelemetry: true
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      cat dotnet/commonservices/net.atos.daf.ct2.auditservice/appsettings.json
+
+      echo $(DAFConnectMasterDatabase)
+
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
