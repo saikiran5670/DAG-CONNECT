@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.accountservice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
-            var connectionString = Configuration.GetConnectionString("DevAzure");
+            var connectionString = Configuration.GetConnectionString("ConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             services.AddSingleton(dataAccess);
 

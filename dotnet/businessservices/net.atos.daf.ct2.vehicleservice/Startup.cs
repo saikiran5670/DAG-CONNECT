@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.vehicleservice
         {
             services.AddGrpc();
 
-            var connectionString = Configuration.GetConnectionString("DevAzure");
+            var connectionString = Configuration.GetConnectionString("ConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             services.AddSingleton(dataAccess); 
             services.AddTransient<IVehicleManager,VehicleManager>();

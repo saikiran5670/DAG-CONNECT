@@ -80,6 +80,7 @@ namespace net.atos.daf.ct2.account
             identityEntity.UserName = account.EmailId;
             identityEntity.FirstName = account.FirstName;
             identityEntity.LastName = account.LastName;
+            identityEntity.Password = account.Password;
             var identityresult = await identity.ChangeUserPassword(identityEntity);
             if(identityresult.StatusCode == System.Net.HttpStatusCode.OK)
             {

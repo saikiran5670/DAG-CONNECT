@@ -30,7 +30,7 @@ namespace net.atos.daf.ct2.group.test
         public void CreateGroup()
         {
             Group group = new Group();     
-            group.ObjType = ObjectType.VehicleGroup;
+            group.ObjectType = ObjectType.VehicleGroup;
             group.GroupType = GroupType.Group;
             group.Argument = "Truck";
             group.FunctionEnum = FunctionEnum.None;
@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.group.test
         public void CreateVehicleGroupWithVehicle()
         {
             Group group = new Group();
-            group.ObjType = ObjectType.VehicleGroup;
+            group.ObjectType = ObjectType.VehicleGroup;
             group.GroupType = GroupType.Group;
             group.Argument = "Truck";
             group.FunctionEnum = FunctionEnum.None;
@@ -73,7 +73,7 @@ namespace net.atos.daf.ct2.group.test
         {
             Group group = new Group();            
             group.Id = 2;
-            group.ObjType = ObjectType.AccountGroup;
+            group.ObjectType = ObjectType.AccountGroup;
             group.GroupType = GroupType.Single;
             group.Argument = "Truck";
             group.FunctionEnum = FunctionEnum.All;
