@@ -8,7 +8,12 @@ package account;
 // The greeting service definition.
 service AccountService {
   // Sends a greeting
-  rpc Create (AccountRequest) returns (AccountResponse);
+  rpc Create (AccountRequest) returns (AccountData);
+  rpc Update (AccountRequest) returns (AccountData);
+  rpc Delete (AccountRequest) returns (AccountResponse);
+  rpc ChangePassword (AccountRequest) returns (AccountResponse);
+  rpc Get (AccountFilter) returns (AccountDataList);
+  
 }
 enum AccountType
     {
@@ -23,18 +28,21 @@ enum AccountType
     }
 // common response 
 message AccountResponse {
-  Responcecode code=1;
-  string message = 2;
-  AccountRequest account = 3;
+  Responcecode Code=1;
+  string Message = 2;  
 }
 // common response 
-message AccountListResponse {
-  Responcecode code=1;
-  string message = 2;
-  repeated AccountRequest accounts = 3;
+message AccountData {
+  Responcecode Code=1;
+  string Message = 2;
+  AccountRequest Account = 3;
 }
-
-
+// common response 
+message AccountDataList {
+  Responcecode Code=1;
+  string Message = 2;
+  repeated AccountRequest Accounts = 3;
+}
 
 // The request request.
 message AccountRequest {
@@ -43,21 +51,25 @@ message AccountRequest {
     string Salutation=3;
     string FirstName=4;
     string LastName=5;
-    google.protobuf.Timestamp Dob=6; 
-    AccountType Type=7;    
-    int32 Organization_Id=8;
-    //int32 Account_OrgId =9;
+    string Password=6;
+    google.protobuf.Timestamp Dob=7; 
+    AccountType Type=8;    
+    int32 Organization_Id=9;
+    //int32 Account_OrgId =10;
     //google.protobuf.Timestamp StartDate=10;
     //google.protobuf.Timestamp EndDate=11;
     //bool Active =12;
-    bool Active =10;
+    bool Active =11;
   }
 
+message AccountId
+{
+  int32 Id=1;
+}
 // // The account filter
 message AccountFilter {
-  int32 AccountId= 1;
+  int32 Id= 1;
   int32 OrganizationId= 2;
   AccountType AccountType=3;
+  string AccountIds = 4;
 }
-
-
