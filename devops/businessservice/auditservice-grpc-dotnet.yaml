@@ -16,14 +16,18 @@ parameters:
   values:
   - DEV0
   - DEV01
+  - DEV02
 
 variables:
 - ${{ if eq(parameters.ENV, 'DEV0') }}:
   - group: DEV0-Build-Variables
 - ${{ if eq(parameters.ENV, 'DEV01') }}:
   - group: DEV01-Build-Variables
+- ${{ if eq(parameters.ENV, 'DEV02') }}:
+  - group: DEV02-Build-Variables
 
 steps:
+
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
