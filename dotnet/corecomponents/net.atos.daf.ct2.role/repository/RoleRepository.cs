@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.role.repository
             Roleparameter.Add("@name", roleMaster.Name);
             Roleparameter.Add("@is_active", true);
             Roleparameter.Add("@created_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-            Roleparameter.Add("@created_by", roleMaster.createdby);
+            Roleparameter.Add("@created_by", roleMaster.Createdby);
 
             int InsertedRoleId = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, Roleparameter);
             // if (roleMaster.FeatureSetID > 0)
@@ -114,7 +114,7 @@ namespace net.atos.daf.ct2.role.repository
                                 updated_date,
                                 updated_by
 	                            FROM master.role
-                                WHERE where 1=1";
+                                WHERE  1=1";
 
 
             var parameter = new DynamicParameters();
@@ -132,11 +132,11 @@ namespace net.atos.daf.ct2.role.repository
 
             }
 
-            // VIN Id Filter
-            if (roleFilter.Is_Active)
+            // Status Filter
+            if (roleFilter.Is_Active != null)
             {
-                parameter.Add("@vin", roleFilter.Is_Active);
-                QueryStatement = QueryStatement + " and vin LIKE @vin";
+                parameter.Add("@is_active", roleFilter.Is_Active);
+                QueryStatement = QueryStatement + " and is_active = @is_active";
 
             }                    
             IEnumerable<RoleMaster> roledetails = await dataAccess.QueryAsync<RoleMaster>(QueryStatement, parameter);
@@ -147,31 +147,31 @@ namespace net.atos.daf.ct2.role.repository
         public async Task<int> UpdateRole(RoleMaster roleMaster)
         {
             var parameter = new DynamicParameters();
-            parameter.Add("@rolemasterid", roleMaster.RoleMasterId);
-            parameter.Add("@rolename", roleMaster.Name);
-            parameter.Add("@featuresetid", roleMaster.FeatureSetID);
-            parameter.Add("@updatedby", roleMaster.modifiedby);
-            parameter.Add("@updateddate", DateTime.Now);
+            parameter.Add("@id", roleMaster.Id);
+            parameter.Add("@organization_id", roleMaster.Organization_Id);
+            parameter.Add("@name", roleMaster.Name);
+            parameter.Add("@updatedby", roleMaster.Updatedby);
+            parameter.Add("@updateddate", UTCHandling.GetUTCFromDateTime(DateTime.Now));
 
-            var RoleQueryStatement = @" UPDATE dafconnectmaster.rolemaster
-                                            SET name=@rolename,
-                                            updatedby=@updatedby,
-                                            updateddate=@updateddate  
-                                        WHERE rolemasterid = @rolemasterid
-                                        RETURNING rolemasterid;";
+            var RoleQueryStatement = @" UPDATE master.role
+                                            SET name=@name,
+                                            updated_by=@updatedby,
+                                            updated_date=@updateddate  
+                                        WHERE id = @id
+                                        RETURNING id;";
             int resultUpdatedRole = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, parameter);
 
-            if (roleMaster.FeatureSetID > 0)
-            {
-                var RoleFeatureQueryStatement = @" UPDATE dafconnectmaster.rolefeatureset
-                                            SET featuresetid=@featuresetid,
-                                            updatedby=@updatedby,
-                                            updateddate=@updateddate  
-                                        WHERE rolemasterid = @rolemasterid
-                                        RETURNING rolemasterid;";
-                int resultUpdatedRoleFeature = await dataAccess.ExecuteScalarAsync<int>(RoleFeatureQueryStatement, parameter);
-                return resultUpdatedRoleFeature;
-            }
+            // if (roleMaster.FeatureSetID > 0)
+            // {
+            //     var RoleFeatureQueryStatement = @" UPDATE dafconnectmaster.rolefeatureset
+            //                                 SET featuresetid=@featuresetid,
+            //                                 updatedby=@updatedby,
+            //                                 updateddate=@updateddate  
+            //                             WHERE rolemasterid = @rolemasterid
+            //                             RETURNING rolemasterid;";
+            //     int resultUpdatedRoleFeature = await dataAccess.ExecuteScalarAsync<int>(RoleFeatureQueryStatement, parameter);
+            //     return resultUpdatedRoleFeature;
+            // }
             return resultUpdatedRole;
         }
 

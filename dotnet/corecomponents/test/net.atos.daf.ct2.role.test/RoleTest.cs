@@ -30,7 +30,7 @@ namespace net.atos.daf.ct2.role.test
 
             ObjRole.Organization_Id =12;
             ObjRole.Name = "Role 9";
-            ObjRole.createdby = 2;
+            ObjRole.Createdby = 2;
             var role = _RoleRepository.CreateRole(ObjRole).Result;
             Assert.IsNotNull(role);
             Assert.IsTrue(role > 0);
@@ -51,11 +51,24 @@ namespace net.atos.daf.ct2.role.test
         [TestMethod]
         public void GetRoles()
         {
-            int roleid=1;
-            int accountid=20;
-            var role = _RoleRepository.GetRoles(roleid).Result;
+            RoleFilter filter = new RoleFilter();
+            filter.Organization_Id =8;
+            var role = _RoleRepository.GetRoles(filter).Result;
             Assert.IsNotNull(role);
             Assert.IsTrue(role.Count() > 0);
+
+        }
+
+        [TestMethod]
+        public void UpdateRole()
+        {
+            RoleMaster roleMaster = new RoleMaster();
+            roleMaster.Name = "UpdateRole";
+            roleMaster.RoleMasterId = 5;
+            roleMaster.Updatedby = 6;
+            var role = _RoleRepository.UpdateRole(roleMaster).Result;
+            Assert.IsNotNull(role);
+            Assert.IsTrue(role > 0);
 
         }
     }

@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.role.repository
     public interface IRoleRepository
     {
 
-        Task<IEnumerable<RoleMaster>> GetRoles(int roleid);
+        Task<IEnumerable<RoleMaster>> GetRoles(RoleFilter roleFilter);
         Task<int> CreateRole(RoleMaster roleMaster);
         Task<int> UpdateRole(RoleMaster roleMaster);
         Task<int> DeleteRole(int roleid, int Accountid);

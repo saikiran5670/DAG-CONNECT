@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "net.atos.daf.ct2.roleservice";
+
+package role;
+
+
+enum Responcecode{
+  Success = 0;
+  Failed = 1;
+}
+// The greeting service definition.
+service RoleService {
+  
+  rpc Create (RoleRequest) returns (RoleResponce);
+  rpc Update (RoleRequest) returns (RoleResponce);  
+  rpc Delete (RoleRequest) returns (RoleResponce);
+  rpc Get (RoleFilterRequest) returns (RoleListResponce);
+}
+
+message RoleRequest {
+    int32 Id=1;
+    int32 Organization_Id=2;
+    string Name = 3;
+    int32 CreatedBy=5;
+    bool Active = 6;
+    int32 UpdatedBy=7;  
+  }
+
+  message RoleListResponce {
+    Responcecode code=1;
+    string message = 2;
+    repeated RoleRequest roles = 3;
+  }
+
+  message RoleResponce {
+    Responcecode code=1;
+    string message = 2;
+  }
+
+  message RoleFilterRequest {
+    int32 RoleId = 1;
+    int32 OrganizationId = 2;
+    int32 AccountId = 3;
+    bool Active =4;
+  
+  }
