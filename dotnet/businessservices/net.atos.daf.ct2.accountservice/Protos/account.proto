@@ -3,7 +3,7 @@ import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "net.atos.daf.ct2.accountservice";
 
-package account;
+package net.atos.daf.ct2.accountservice;
 
 // The greeting service definition.
 service AccountService {
@@ -61,7 +61,23 @@ message AccountRequest {
     //bool Active =12;
     bool Active =11;
   }
-
+// The request request.
+message Group {
+  int32 Id= 1;
+  string EmailId=2;
+  string Salutation=3;
+  string FirstName=4;
+  string LastName=5;
+  string Password=6;
+  google.protobuf.Timestamp Dob=7; 
+  AccountType Type=8;    
+  int32 Organization_Id=9;
+  //int32 Account_OrgId =10;
+  //google.protobuf.Timestamp StartDate=10;
+  //google.protobuf.Timestamp EndDate=11;
+  //bool Active =12;
+  bool Active =11;
+}
 message AccountId
 {
   int32 Id=1;
