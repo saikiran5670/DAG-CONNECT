@@ -32,7 +32,8 @@ namespace net.atos.daf.ct2.account
                 // this can null  as well
                 if (account.Dob.HasValue)
                 {
-                    parameter.Add("@dob", UTCHandling.GetUTCFromDateTime(account.Dob.ToString()));
+                    //parameter.Add("@dob", UTCHandling.GetUTCFromDateTime(account.Dob.ToString()));
+                    parameter.Add("@dob", account.Dob);
                 }
                 else
                 {
@@ -82,7 +83,8 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@salutation", account.Salutation);
                 parameter.Add("@first_name", account.FirstName);
                 parameter.Add("@last_name", account.LastName);
-                parameter.Add("@dob", account.Dob != null ? UTCHandling.GetUTCFromDateTime(account.Dob.ToString()) : 0);
+                //parameter.Add("@dob", account.Dob != null ? UTCHandling.GetUTCFromDateTime(account.Dob.ToString()) : 0);
+                parameter.Add("@dob", account.Dob != null ? account.Dob : null);
                 parameter.Add("@type", (char)account.AccountType);
 
                 string query = @"update master.account set id = @id,email = @email,salutation = @salutation,
@@ -150,11 +152,13 @@ namespace net.atos.daf.ct2.account
                     }
 
                     // account ids filter                    
-                    if (Convert.ToInt32(filter.AccountIds.Count) > 0)
+                    if ((!string.IsNullOrEmpty(filter.AccountIds)) && Convert.ToInt32(filter.AccountIds.Length) > 0)
                     {
-                        string ids = string.Join<int>(",", filter.AccountIds);
-                        parameter.Add("@ids", ids);
-                        query = query + " and a.id in ( @id ) ";
+                        // Account Id list Filter                       
+                        List<int> accountids = filter.AccountIds.Split(',').Select(int.Parse).ToList();
+                        parameter.Add("@accountids", accountids);
+                        query = query + " and a.id = ANY(@accountids) ";
+                        
                     }
                     dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
 
@@ -164,7 +168,6 @@ namespace net.atos.daf.ct2.account
                     }
                 }
                 return accounts;
-
             }
             catch (Exception ex)
             {

@@ -14,6 +14,8 @@ namespace net.atos.daf.ct2.organization.repository
     public class OrganizationRepository:IOrganizationRepository
     {
         private readonly IDataAccess dataAccess;
+        private static readonly log4net.ILog log =
+        log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public OrganizationRepository(IDataAccess _dataAccess)
         {
             dataAccess = _dataAccess;
@@ -99,23 +101,7 @@ namespace net.atos.daf.ct2.organization.repository
             }
             return organization;
         }
-    //    public async Task<IEnumerable<Organization>> Get(string organizationId)
-    //     {
-    //         try
-    //         {
-    //             var parameter = new DynamicParameters();
-    //             var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date, optout_status, optout_status_changed_date, is_active
-	//                         FROM master.organization where org_id=@organizationId";
-    //             parameter.Add("@organizationId", organizationId);
-    //             var organization = await dataAccess.QueryAsync<Organization>(query, parameter);
-    //             return organization.ToList();
-    //         }
-    //         catch (Exception ex)
-    //         {
-    //             throw ex;
-    //         }
-    //     }
-        public async Task<IEnumerable<Organization>> Get(int organizationId)
+        public async Task<Organization> Get(int organizationId)
         {
             try
             {                
@@ -124,7 +110,24 @@ namespace net.atos.daf.ct2.organization.repository
 	                        FROM master.organization where id=@Id";
                 parameter.Add("@Id", organizationId);
                 IEnumerable<Organization> OrganizationDetails = await dataAccess.QueryAsync<Organization>(query, parameter);
-                return OrganizationDetails;
+                Organization objOrganization=new Organization();
+                foreach (var item in OrganizationDetails)
+                    {         
+                         objOrganization.Id=item.Id;
+                         objOrganization.OrganizationId=item.OrganizationId;
+                         objOrganization.Type=item.Type;
+                         objOrganization.Name=item.Name;
+                         objOrganization.AddressType=item.AddressType;
+                         objOrganization.AddressStreet=item.AddressStreet;
+                         objOrganization.PostalCode=item.PostalCode;
+                         objOrganization.City=item.City;
+                         objOrganization.CountryCode=item.CountryCode;
+                         objOrganization.ReferencedDate=item.ReferencedDate;
+                         objOrganization.OptOutStatus=item.OptOutStatus;
+                         objOrganization.OptOutStatusChangedDate=item.OptOutStatusChangedDate;
+                         objOrganization.IsActive=item.IsActive;
+                    }            
+                return objOrganization;
             }
             catch (Exception ex)
             {

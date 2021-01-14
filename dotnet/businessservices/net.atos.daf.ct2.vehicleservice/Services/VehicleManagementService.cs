@@ -129,7 +129,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     ObjResponce.Name = item.Name;
                     ObjResponce.Vin = item.VIN;
                     ObjResponce.LicensePlateNumber = item.License_Plate_Number;
-                    ObjResponce.Status = (VehicleStatusType)(char)item.Status;
+                    ObjResponce.Status =   VehicleStatusType.OptIn; //GetEnum(item.Status); //(vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), item.Status.ToString().ToUpper());
 
                     ObjVehicleList.Vehicles.Add(ObjResponce);
                 }
@@ -150,6 +150,30 @@ namespace net.atos.daf.ct2.vehicleservice.Services
 
         }
 
+        // private VehicleStatusType GetEnum(int value)
+        // {
+        //     VehicleStatusType vehicleStatusType;
+        //     switch(value)
+        //     {
+        //         case 0:
+        //         vehicleStatusType = VehicleStatusType.None;
+        //         break;
+        //         case 1:
+        //         vehicleStatusType = VehicleStatusType.Optin;
+        //         break;
+        //         case 2:
+        //         vehicleStatusType = VehicleStatusType.Optout;
+        //         case 3:
+        //         vehicleStatusType = VehicleStatusType.Terminate;
+        //         case 4:
+        //         vehicleStatusType = VehicleStatusType.Ota;
+        //         break;
+        //         default:
+        //          vehicleStatusType = VehicleStatusType.Optin;
+        //          break;
+        //     }
+        //     return vehicleStatusType;
+        // }
         public override Task<VehicleOptInOptOutResponce> UpdateStatus(VehicleOptInOptOutRequest request, ServerCallContext context)
         {
             try
