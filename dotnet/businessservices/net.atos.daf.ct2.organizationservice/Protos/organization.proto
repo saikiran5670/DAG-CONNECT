@@ -1,5 +1,5 @@
-syntax = "proto3";
-
+syntax ="proto3";
+import "google/protobuf/wrappers.proto";
 option csharp_namespace = "net.atos.daf.ct2.organizationservice";
 
 package organization;
@@ -50,16 +50,17 @@ message OrganizationResponse {
 }
 
 message GetOrganizationResponce {
+  
     int32 Id=1;
-    string OrganizationId= 2;
-    string Type=3;
-    string Name=4;
-    string AddressType=5;
-    string AddressStreet=6;
-    string AddressStreetNumber=7; 
-    string PostalCode=8;    
-    string City=9;
-    string CountryCode=10;
+    google.protobuf.StringValue OrganizationId= 2;
+    google.protobuf.StringValue Type=3;
+    google.protobuf.StringValue Name=4;
+    google.protobuf.StringValue AddressType=5;
+    google.protobuf.StringValue AddressStreet=6;
+    google.protobuf.StringValue AddressStreetNumber=7; 
+    google.protobuf.StringValue PostalCode=8;    
+    google.protobuf.StringValue City=9;
+    google.protobuf.StringValue CountryCode=10;
     int64 ReferencedDate=11;
     bool OptOutStatus=12;
     int64 OptOutStatusChangedDate=13;
