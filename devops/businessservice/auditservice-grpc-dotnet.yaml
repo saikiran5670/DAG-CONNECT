@@ -27,7 +27,17 @@ variables:
   - group: DEV02-Build-Variables
 
 steps:
-
+- task: replacetokens@3
+  inputs:
+    targetFiles: 'BusinessServices/DAF.Services/DAF.VehicleManagement/appsettings.json'
+    encoding: 'auto'
+    writeBOM: true
+    actionOnMissing: 'warn'
+    keepToken: false
+    tokenPrefix: '#{'
+    tokenSuffix: '}#'
+    useLegacyPattern: false
+    enableTelemetry: true
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
