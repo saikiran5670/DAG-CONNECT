@@ -118,26 +118,28 @@ namespace net.atos.daf.ct2.group
                         parameter.Add("@organization_id", groupFilter.OrganizationId);
                         query = query + " and organization_id  = @organization_id ";
                     }
+                    // group type filter
+                    if (((char)groupFilter.GroupType) != ((char)GroupType.None))
+                    {
+                        parameter.Add("@group_type", (char) groupFilter.GroupType,DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);                        
+                        query = query + " and group_type= @group_type";
+                    }
+
                     // function functional enum filter
                     if (((char)groupFilter.FunctionEnum) != ((char)FunctionEnum.None))
                     {
-                        parameter.Add("@function_enum", (char)groupFilter.FunctionEnum,DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
-                        query = query + " and function_enum  = @function_enum ";
+                        parameter.Add("@function_enum", (char) groupFilter.FunctionEnum,DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);                        
+                        query = query + " and function_enum  = @function_enum";
                     }
 
                     // object type filter
                     if (((char)groupFilter.ObjectType) != ((char)ObjectType.None))
                     {
-                        parameter.Add("@object_type", (char) groupFilter.ObjectType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
-                        query = query + " and object_type = @object_type ";
+                        parameter.Add("@object_type", (char) groupFilter.ObjectType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);                        
+                        query = query + " and object_type = @object_type";
                     }
 
-                    // group type filter
-                    if (((char)groupFilter.GroupType) != ((char)GroupType.None))
-                    {
-                        parameter.Add("@group_type ", (char)groupFilter.GroupType,DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
-                        query = query + " and group_type = @group_type ";
-                    }
+                    
                 }
                 IEnumerable<dynamic> groups = await dataAccess.QueryAsync<dynamic>(query, parameter);
                 Group group = new Group();
