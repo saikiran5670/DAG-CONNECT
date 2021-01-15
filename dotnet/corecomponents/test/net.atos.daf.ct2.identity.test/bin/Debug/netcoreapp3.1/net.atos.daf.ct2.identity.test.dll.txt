@@ -1,0 +1,12 @@
+net.atos.daf.ct2.identity.test.AccountAuthenticatorTest.AuthenticateUserTest
+net.atos.daf.ct2.identity.test.AccountAuthenticatorTest.UnauthorizedUserTest
+net.atos.daf.ct2.identity.test.AccountManagerTest.CreateUserTest
+net.atos.daf.ct2.identity.test.AccountManagerTest.FailedCreateUserTest
+net.atos.daf.ct2.identity.test.AccountManagerTest.UpdateUserTest
+net.atos.daf.ct2.identity.test.AccountManagerTest.UpdateUserNotFoundTest
+net.atos.daf.ct2.identity.test.AccountManagerTest.DeleteUserNotFoundTest
+net.atos.daf.ct2.identity.test.AccountManagerTest.ChangeUserPasswordTest
+net.atos.daf.ct2.identity.test.AccountManagerTest.ChangeUserPasswordNotFoundTest
+net.atos.daf.ct2.identity.test.TokenManagerTest.CreateToken
+net.atos.daf.ct2.identity.test.TokenManagerTest.ValidateToken
+net.atos.daf.ct2.identity.test.TokenManagerTest.DecodeToken

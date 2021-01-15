@@ -1,0 +1,9 @@
+c:\DAFCT2.0\atos.daf.ct.2.0\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.exceptionhandling\bin\Debug\netstandard2.0\net.atos.daf.ct2.exceptionhandling.deps.json
+c:\DAFCT2.0\atos.daf.ct.2.0\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.exceptionhandling\bin\Debug\netstandard2.0\net.atos.daf.ct2.exceptionhandling.dll
+c:\DAFCT2.0\atos.daf.ct.2.0\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.exceptionhandling\bin\Debug\netstandard2.0\net.atos.daf.ct2.exceptionhandling.pdb
+c:\DAFCT2.0\atos.daf.ct.2.0\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.exceptionhandling\obj\Debug\netstandard2.0\net.atos.daf.ct2.exceptionhandling.csprojAssemblyReference.cache
+c:\DAFCT2.0\atos.daf.ct.2.0\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.exceptionhandling\obj\Debug\netstandard2.0\net.atos.daf.ct2.exceptionhandling.AssemblyInfoInputs.cache
+c:\DAFCT2.0\atos.daf.ct.2.0\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.exceptionhandling\obj\Debug\netstandard2.0\net.atos.daf.ct2.exceptionhandling.AssemblyInfo.cs
+c:\DAFCT2.0\atos.daf.ct.2.0\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.exceptionhandling\obj\Debug\netstandard2.0\net.atos.daf.ct2.exceptionhandling.csproj.CoreCompileInputs.cache
+c:\DAFCT2.0\atos.daf.ct.2.0\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.exceptionhandling\obj\Debug\netstandard2.0\net.atos.daf.ct2.exceptionhandling.dll
+c:\DAFCT2.0\atos.daf.ct.2.0\atos.daf.ct2.0\dotnet\commoncomponent\net.atos.daf.ct2.exceptionhandling\obj\Debug\netstandard2.0\net.atos.daf.ct2.exceptionhandling.pdb

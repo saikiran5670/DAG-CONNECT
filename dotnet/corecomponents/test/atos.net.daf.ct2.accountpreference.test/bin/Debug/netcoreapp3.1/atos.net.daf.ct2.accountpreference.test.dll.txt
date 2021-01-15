@@ -1,0 +1,5 @@
+atos.net.daf.ct2.accountpreference.test.AccountPreference_Test.CreateOrganizationPreference
+atos.net.daf.ct2.accountpreference.test.AccountPreference_Test.UpdateOrganizationAccountPreference
+atos.net.daf.ct2.accountpreference.test.AccountPreference_Test.CreateAccountPreference
+atos.net.daf.ct2.accountpreference.test.AccountPreference_Test.UpdateAccountPreference
+atos.net.daf.ct2.accountpreference.test.AccountPreference_Test.DeleteOrganizationPreference
