@@ -56,7 +56,7 @@ namespace net.atos.daf.ct2.account.test
         public void ValidateToken()
         {
             string token ="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MTAzNjU4NDEsImp0aSI6ImRkMGY0YjIwLWM0YzctNGFlMC1hMTJiLWFiZjlmZWU4NmVmOSIsIkZpcnN0TmFtZSI6InRlc3QiLCJMYXN0TmFtZSI6InVzZXIiLCJFbWFpbCI6InRlc3R1c2V0QGVtYWlsLmNvbSIsIm5iZiI6MTYxMDM2NTg0MSwiZXhwIjoxNjEwMzY1OTAxLCJpc3MiOiJNZSIsImF1ZCI6IllvdSJ9.EzA9F7vHz0dQdBf7eRfohqnrec9wpscHOLgLseG7arX6cljrw2HluGD0vwZJ8CksyILknS-VOO0YwomdNadbJd4wW6qDOQSpB6dpU1YrUYsk5GZ79WPp1IpqlgSdfo8181wEU3uYapcsdLDOwFkjAA6gHPNHoSd5fceZF7r7rPO9D-K3mtItsBw5QYjYSPBN3ag_wp-Olb0sKY7SHcLGAEFtb9m-QY_xMeyBv7FTFGU26NWpmrSrgFCzb6kX1yVSUlO5IYLLnHvwA-AzVARBZgubCiVQiprEAiR_Iw7yUh_M2-atrnAax-QXk7pL2g2Cv0aHbLvTdFV99nZJu9CY6yK0I91xMY6Oes1JuZNgEXeLdqrhx7RX_PtU6GG6UBpbNyfQpH_l24n5nR1i1Fzb07Y7t1m_NTwJ3U_J0BYyaaOkAED3qsotD5Yhiohu6wj6C8eKxU9YxN0_fmUVVWlvYXOaTJGEM53t9bcwH8hacyIzNsYyJJFE0xb68a51_izDbIfKaKcRAdECBuc-lLM2eQwRrYp3NwGemO2Fhr7P_nYUgXT4OajvtdRbxI1BTTmx6oT6FtH0aO3FArD73WT2HRePBZz3Gr8Dtn4tUOGhil05H_0Ic5u-f_KVraqPCG9xdr-YdxQvcUHEnYk125UFVt-ssvQOHUcHHOQa2ieWLgI";
-            var result = accountIdentityManager.ValidateToken(token).Result;
+            bool result = accountIdentityManager.ValidateToken(token).Result;
             Assert.IsTrue(result);
         }
     }
