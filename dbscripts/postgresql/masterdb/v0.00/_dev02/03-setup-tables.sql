@@ -260,13 +260,14 @@ $$;
 CREATE TABLE if not exists  master.role 
 (
 	id serial not null,
-	organization_id int not null,
+	organization_id int,
 	name varchar(50) not null,
 	is_active boolean not null default true, ----------
 	created_date bigint,
 	created_by int,
 	updated_date bigint,
-	updated_by int
+	updated_by int,
+	description varchar(120)
 )
 TABLESPACE pg_default;
 
