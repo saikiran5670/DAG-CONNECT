@@ -3,7 +3,7 @@ CREATE TABLE if not exists master.organization
 (
 	id serial not null, 
 	org_id varchar (100) not null,
-	type char(1) not null,  
+	type varchar(50) not null,  
 	name varchar (100) not null,
 	address_type varchar (50),
 	street varchar (50),
@@ -31,6 +31,22 @@ then
 	begin
 		ALTER TABLE  master.organization 
 			ADD CONSTRAINT pk_organization_id PRIMARY KEY (id)
+			USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='uk_organization_orgid' AND table_name='organization'
+		and constraint_type='UNIQUE')
+then	
+	begin
+		ALTER TABLE  master.organization 
+			ADD CONSTRAINT uk_organization_orgid UNIQUE  (org_id)
 			USING INDEX TABLESPACE pg_default;
 	end;
 end if;
@@ -244,13 +260,14 @@ $$;
 CREATE TABLE if not exists  master.role 
 (
 	id serial not null,
-	organization_id int not null,
+	organization_id int,
 	name varchar(50) not null,
 	is_active boolean not null default true, ----------
 	created_date bigint,
 	created_by int,
 	updated_date bigint,
-	updated_by int
+	updated_by int,
+	description varchar(120)
 )
 TABLESPACE pg_default;
 
@@ -798,7 +815,15 @@ CREATE TABLE if not exists  master.vehicle
 	status char(1) not null,
 	status_changed_date bigint,
 	termination_date bigint,
-	vid varchar(50) 
+	vid varchar(50) ,
+	type char(1) ,
+	model varchar(50) ,
+	tcu_id varchar(50),
+	tcu_serial_number varchar(50) ,
+	tcu_brand varchar(50) ,
+	tcu_version varchar(8),
+	is_tcu_register boolean ,
+	reference_date bigint
 )
 TABLESPACE pg_default;
 
@@ -837,8 +862,25 @@ end if;
 end;
 $$;
 
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='uk_vehicle_vin' AND table_name='vehicle'
+		and constraint_type='UNIQUE')
+then	
+	begin
+		ALTER TABLE  master.vehicle 
+			ADD CONSTRAINT uk_vehicle_vin UNIQUE  (vin)
+			USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
 --vehicleproperty
-CREATE TABLE if not exists  master.vehicleproperty
+CREATE TABLE if not exists  master.vehicleproperties
 (
 	id serial not null,
 	vehicle_id int not null,
@@ -846,9 +888,7 @@ CREATE TABLE if not exists  master.vehicleproperty
 	registration_date bigint,
 	delivery_date bigint,
 	make varchar(50),
-	model varchar(50),
 	series varchar(50),
-	type char(1),
 	length int,
 	widht int,
 	height int,
@@ -880,18 +920,18 @@ CREATE TABLE if not exists  master.vehicleproperty
 )
 TABLESPACE pg_default;
 
-ALTER TABLE  master.vehicleproperty 
+ALTER TABLE  master.vehicleproperties 
     OWNER to pgadmin;
 
 Do $$
 begin
 if not exists(
 	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='pk_vehicleproperty_id' AND table_name='vehicleproperty'
+	WHERE constraint_name='pk_vehicleproperty_id' AND table_name='vehicleproperties'
 		and constraint_type='PRIMARY KEY')
 then	
 	begin
-		ALTER TABLE  master.vehicleproperty 
+		ALTER TABLE  master.vehicleproperties 
 			ADD CONSTRAINT pk_vehicleproperty_id PRIMARY KEY (id)
 			USING INDEX TABLESPACE pg_default;
 	end;
@@ -903,11 +943,11 @@ Do $$
 begin
 if not exists(
 	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_vehicleproperty_vehicleid_vehicle_id' AND table_name='vehicleproperty'
+	WHERE constraint_name='fk_vehicleproperty_vehicleid_vehicle_id' AND table_name='vehicleproperties'
 		and constraint_type='FOREIGN KEY')
 then	
 	begin
-		ALTER TABLE  master.vehicleproperty 
+		ALTER TABLE  master.vehicleproperties 
 			ADD CONSTRAINT fk_vehicleproperty_vehicleid_vehicle_id FOREIGN KEY (vehicle_id) REFERENCES  master.vehicle (id);
 			--USING INDEX TABLESPACE pg_default;
 	end;
@@ -1886,110 +1926,110 @@ end;
 $$;
 
 --tcu
-CREATE TABLE if not exists  master.tcu
-(
-	id serial not null,
-	tcu_id varchar(50) not null,
-	tcu_serial_number varchar(50) not null,
-	brand varchar(50) ,
-	version varchar(8) 
-	)
-TABLESPACE pg_default;
+-- CREATE TABLE if not exists  master.tcu
+-- (
+	-- id serial not null,
+	-- tcu_id varchar(50) not null,
+	-- tcu_serial_number varchar(50) not null,
+	-- brand varchar(50) ,
+	-- version varchar(8) 
+	-- )
+-- TABLESPACE pg_default;
 
-ALTER TABLE  master.tcu 
-    OWNER to pgadmin;
+-- ALTER TABLE  master.tcu 
+    -- OWNER to pgadmin;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='pk_tcu_id' AND table_name='tcu'
-		and constraint_type='PRIMARY KEY')
-then	
-	begin
-		ALTER TABLE  master.tcu 
-			ADD CONSTRAINT pk_tcu_id PRIMARY KEY (id)
-			USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+-- Do $$
+-- begin
+-- if not exists(
+	-- SELECT 1 FROM information_schema.table_constraints 
+	-- WHERE constraint_name='pk_tcu_id' AND table_name='tcu'
+		-- and constraint_type='PRIMARY KEY')
+-- then	
+	-- begin
+		-- ALTER TABLE  master.tcu 
+			-- ADD CONSTRAINT pk_tcu_id PRIMARY KEY (id)
+			-- USING INDEX TABLESPACE pg_default;
+	-- end;
+-- end if;
+-- end;
+-- $$;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='uk_tcu_tcuserialnumber' AND table_name='tcu_serial_number'
-		and constraint_type='UNIQUE')
-then	
-	begin
-		ALTER TABLE  master.tcu 
-			ADD CONSTRAINT uk_tcu_tcuserialnumber UNIQUE  (tcu_serial_number)
-			USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+-- Do $$
+-- begin
+-- if not exists(
+	-- SELECT 1 FROM information_schema.table_constraints 
+	-- WHERE constraint_name='uk_tcu_tcuserialnumber' AND table_name='tcu_serial_number'
+		-- and constraint_type='UNIQUE')
+-- then	
+	-- begin
+		-- ALTER TABLE  master.tcu 
+			-- ADD CONSTRAINT uk_tcu_tcuserialnumber UNIQUE  (tcu_serial_number)
+			-- USING INDEX TABLESPACE pg_default;
+	-- end;
+-- end if;
+-- end;
+-- $$;
 
 
---tcuvehiclemapping
-CREATE TABLE if not exists  master.tcuvehiclemapping 
-(
-	id serial not null,
-	tcu_id 	int NOT NULL,      
- 	vehicle_id 	int NOT NULL,      
-	is_tcu_register boolean not null default true,      
-	reference_date bigint
-	)
-TABLESPACE pg_default;
+-- --tcuvehiclemapping
+-- CREATE TABLE if not exists  master.tcuvehiclemapping 
+-- (
+	-- id serial not null,
+	-- tcu_id 	int NOT NULL,      
+ 	-- vehicle_id 	int NOT NULL,      
+	-- is_tcu_register boolean not null default true,      
+	-- reference_date bigint
+	-- )
+-- TABLESPACE pg_default;
 
-ALTER TABLE  master.tcuvehiclemapping 
-    OWNER to pgadmin;
+-- ALTER TABLE  master.tcuvehiclemapping 
+    -- OWNER to pgadmin;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='pk_tcuvehiclemapping_id' AND table_name='tcuvehiclemapping'
-		and constraint_type='PRIMARY KEY')
-then	
-	begin
-		ALTER TABLE  master.tcuvehiclemapping 
-			ADD CONSTRAINT pk_tcuvehiclemapping_id PRIMARY KEY (id)
-			USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+-- Do $$
+-- begin
+-- if not exists(
+	-- SELECT 1 FROM information_schema.table_constraints 
+	-- WHERE constraint_name='pk_tcuvehiclemapping_id' AND table_name='tcuvehiclemapping'
+		-- and constraint_type='PRIMARY KEY')
+-- then	
+	-- begin
+		-- ALTER TABLE  master.tcuvehiclemapping 
+			-- ADD CONSTRAINT pk_tcuvehiclemapping_id PRIMARY KEY (id)
+			-- USING INDEX TABLESPACE pg_default;
+	-- end;
+-- end if;
+-- end;
+-- $$;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_tcuvehiclemapping_vehicleid_vehicle_id' AND table_name='tcuvehiclemapping'
-		and constraint_type='FOREIGN KEY')
-then	
-	begin
-		ALTER TABLE  master.tcuvehiclemapping 
-			ADD CONSTRAINT fk_tcuvehiclemapping_vehicleid_vehicle_id FOREIGN KEY (vehicle_id) REFERENCES  master.vehicle (id);
-			--USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+-- Do $$
+-- begin
+-- if not exists(
+	-- SELECT 1 FROM information_schema.table_constraints 
+	-- WHERE constraint_name='fk_tcuvehiclemapping_vehicleid_vehicle_id' AND table_name='tcuvehiclemapping'
+		-- and constraint_type='FOREIGN KEY')
+-- then	
+	-- begin
+		-- ALTER TABLE  master.tcuvehiclemapping 
+			-- ADD CONSTRAINT fk_tcuvehiclemapping_vehicleid_vehicle_id FOREIGN KEY (vehicle_id) REFERENCES  master.vehicle (id);
+			-- --USING INDEX TABLESPACE pg_default;
+	-- end;
+-- end if;
+-- end;
+-- $$;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_tcuvehiclemapping_tcuid_tcu_id' AND table_name='tcuvehiclemapping'
-		and constraint_type='FOREIGN KEY')
-then	
-	begin
-		ALTER TABLE  master.tcuvehiclemapping 
-			ADD CONSTRAINT fk_tcuvehiclemapping_tcuid_tcu_id FOREIGN KEY (tcu_id) REFERENCES  master.tcu (id);
-			--USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+-- Do $$
+-- begin
+-- if not exists(
+	-- SELECT 1 FROM information_schema.table_constraints 
+	-- WHERE constraint_name='fk_tcuvehiclemapping_tcuid_tcu_id' AND table_name='tcuvehiclemapping'
+		-- and constraint_type='FOREIGN KEY')
+-- then	
+	-- begin
+		-- ALTER TABLE  master.tcuvehiclemapping 
+			-- ADD CONSTRAINT fk_tcuvehiclemapping_tcuid_tcu_id FOREIGN KEY (tcu_id) REFERENCES  master.tcu (id);
+			-- --USING INDEX TABLESPACE pg_default;
+	-- end;
+-- end if;
+-- end;
+-- $$;

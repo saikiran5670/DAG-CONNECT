@@ -44,8 +44,6 @@ steps:
     script: |
       cat dotnet/commonservices/net.atos.daf.ct2.auditservice/appsettings.json
 
-      echo $(DAFConnectMasterDatabase)
-
 - task: Docker@0
   displayName: 'Build an image'
   inputs:

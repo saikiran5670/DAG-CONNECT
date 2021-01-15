@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.account;
+using net.atos.daf.ct2.account.entity;
+using net.atos.daf.ct2.account.ENUM;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using Identity = net.atos.daf.ct2.identity;
@@ -71,7 +73,7 @@ namespace net.atos.daf.ct2.account.test
             entity.Salutation = "Mr";
             entity.FirstName = "Viranjay2";
             entity.LastName = "Singh2";
-            entity.Dob = dob;
+           // entity.Dob = dob;
             entity.AccountType = AccountType.SystemAccount;
             entity.Organization_Id=1;
             entity.StartDate = DateTime.Now;            
