@@ -3,7 +3,7 @@ CREATE TABLE if not exists master.organization
 (
 	id serial not null, 
 	org_id varchar (100) not null,
-	type char(1) not null,  
+	type varchar(50) not null,  
 	name varchar (100) not null,
 	address_type varchar (50),
 	street varchar (50),
