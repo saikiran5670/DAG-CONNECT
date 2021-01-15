@@ -35,7 +35,7 @@ namespace net.atos.daf.ct2.vehicle.test
             Objvehicle.ManufactureDate = DateTime.Now;
             Objvehicle.ChassisNo = "123545";
             Objvehicle.Status_Changed_Date = DateTime.Now;
-            Objvehicle.Status=VehicleStatusType.OptIn;
+            //Objvehicle.Status=1;//VehicleStatusType.OptIn;
             Objvehicle.Termination_Date=DateTime.Now;
             var resultvehicle = _vehicleRepository.Create(Objvehicle).Result;
             Assert.IsNotNull(resultvehicle);
@@ -78,7 +78,7 @@ namespace net.atos.daf.ct2.vehicle.test
             VehicleOptInOptOut ObjvehicleOptInOptOut = new VehicleOptInOptOut();            
             ObjvehicleOptInOptOut.RefId = 5;
             ObjvehicleOptInOptOut.AccountId = 4;
-            ObjvehicleOptInOptOut.Status=VehicleStatusType.OptOut;
+          //  ObjvehicleOptInOptOut.Status=2;//VehicleStatusType.OptOut;
             ObjvehicleOptInOptOut.Type=OptInOptOutType.VehicleLevel;
             ObjvehicleOptInOptOut.Date=DateTime.Now;
             var resultUpdateOptInOptOutvehicle = _vehicleRepository.UpdateStatus(ObjvehicleOptInOptOut).Result;
