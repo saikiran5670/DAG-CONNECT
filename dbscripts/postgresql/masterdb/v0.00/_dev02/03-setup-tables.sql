@@ -37,6 +37,22 @@ end if;
 end;
 $$;
 
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='uk_organization_orgid' AND table_name='organization'
+		and constraint_type='UNIQUE')
+then	
+	begin
+		ALTER TABLE  master.organization 
+			ADD CONSTRAINT uk_organization_orgid UNIQUE  (org_id)
+			USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
 CREATE TABLE if not exists  master.group
 (
 	 id serial not null,
@@ -832,6 +848,23 @@ then
 		ALTER TABLE  master.vehicle 
 			ADD CONSTRAINT fk_vehicle_organizationid_organization_id FOREIGN KEY (organization_id) REFERENCES  master.organization (id);
 			--USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='uk_vehicle_vin' AND table_name='vehicle'
+		and constraint_type='UNIQUE')
+then	
+	begin
+		ALTER TABLE  master.vehicle 
+			ADD CONSTRAINT uk_vehicle_vin UNIQUE  (vin)
+			USING INDEX TABLESPACE pg_default;
 	end;
 end if;
 end;
