@@ -53,7 +53,6 @@ end if;
 end;
 $$;
 
-
 CREATE TABLE if not exists  master.group
 (
 	 id serial not null,
@@ -815,7 +814,7 @@ CREATE TABLE if not exists  master.vehicle
 	status char(1) not null,
 	status_changed_date bigint,
 	termination_date bigint,
-	vid varchar(50),
+	vid varchar(50) ,
 	type char(1) ,
 	model varchar(50) ,
 	tcu_id varchar(50),
@@ -823,7 +822,7 @@ CREATE TABLE if not exists  master.vehicle
 	tcu_brand varchar(50) ,
 	tcu_version varchar(8),
 	is_tcu_register boolean ,
-	reference_date bigint 
+	reference_date bigint
 )
 TABLESPACE pg_default;
 
@@ -878,7 +877,7 @@ end if;
 end;
 $$;
 
---vehicleproperties 
+--vehicleproperty
 CREATE TABLE if not exists  master.vehicleproperties 
 (
 	id serial not null,
@@ -919,7 +918,7 @@ CREATE TABLE if not exists  master.vehicleproperties
 )
 TABLESPACE pg_default;
 
-ALTER TABLE  master.vehicleproperties  
+ALTER TABLE  master.vehicleproperties 
     OWNER to pgadmin;
 
 Do $$

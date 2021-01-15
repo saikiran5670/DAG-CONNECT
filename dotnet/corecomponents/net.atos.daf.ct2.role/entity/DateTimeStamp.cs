@@ -4,10 +4,10 @@ namespace net.atos.daf.ct2.role.entity
 {
     public class DateTimeStamp
     { 
-        public int createdby { get; set; }
-        public int modifiedby{get; set;}
-        public DateTime createddate { get; set; }
-        public DateTime modifieddate { get; set; }
-        public bool isactive { get; set; }
+        public int Createdby { get; set; }
+        public int Updatedby{get; set;}
+        public DateTime Createddate { get; set; }
+        public DateTime Updateddate { get; set; }
+        public bool is_active { get; set; }
     }
 }

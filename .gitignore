@@ -5097,6 +5097,7 @@ dotnet/corecomponents/net.atos.daf.ct2.account/obj/Debug/netstandard2.0/net.atos
 dotnet/businessservices/net.atos.daf.ct2.accountservice/obj/net.atos.daf.ct2.accountservice.csproj.nuget.g.targets
 
 dotnet/.vscode/launch.json
+dotnet/.vscode/settings.json
 
 /dotnet/commonservices/net.atos.daf.ct2.auditservice/bin/Debug/netcoreapp3.1
 /dotnet/commonservices/net.atos.daf.ct2.auditservice/obj
