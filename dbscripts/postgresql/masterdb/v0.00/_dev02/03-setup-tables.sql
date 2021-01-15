@@ -815,6 +815,8 @@ CREATE TABLE if not exists  master.vehicle
 	status_changed_date bigint,
 	termination_date bigint,
 	vid varchar(50) ,
+	type char(1) ,
+	model varchar(50) ,
 	tcu_id varchar(50),
 	tcu_serial_number varchar(50) ,
 	tcu_brand varchar(50) ,
@@ -877,7 +879,7 @@ end;
 $$;
 
 --vehicleproperty
-CREATE TABLE if not exists  master.vehicleproperty
+CREATE TABLE if not exists  master.vehicleproperties
 (
 	id serial not null,
 	vehicle_id int not null,
@@ -885,9 +887,7 @@ CREATE TABLE if not exists  master.vehicleproperty
 	registration_date bigint,
 	delivery_date bigint,
 	make varchar(50),
-	model varchar(50),
 	series varchar(50),
-	type char(1),
 	length int,
 	widht int,
 	height int,
@@ -919,18 +919,18 @@ CREATE TABLE if not exists  master.vehicleproperty
 )
 TABLESPACE pg_default;
 
-ALTER TABLE  master.vehicleproperty 
+ALTER TABLE  master.vehicleproperties 
     OWNER to pgadmin;
 
 Do $$
 begin
 if not exists(
 	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='pk_vehicleproperty_id' AND table_name='vehicleproperty'
+	WHERE constraint_name='pk_vehicleproperty_id' AND table_name='vehicleproperties'
 		and constraint_type='PRIMARY KEY')
 then	
 	begin
-		ALTER TABLE  master.vehicleproperty 
+		ALTER TABLE  master.vehicleproperties 
 			ADD CONSTRAINT pk_vehicleproperty_id PRIMARY KEY (id)
 			USING INDEX TABLESPACE pg_default;
 	end;
@@ -942,11 +942,11 @@ Do $$
 begin
 if not exists(
 	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_vehicleproperty_vehicleid_vehicle_id' AND table_name='vehicleproperty'
+	WHERE constraint_name='fk_vehicleproperty_vehicleid_vehicle_id' AND table_name='vehicleproperties'
 		and constraint_type='FOREIGN KEY')
 then	
 	begin
-		ALTER TABLE  master.vehicleproperty 
+		ALTER TABLE  master.vehicleproperties 
 			ADD CONSTRAINT fk_vehicleproperty_vehicleid_vehicle_id FOREIGN KEY (vehicle_id) REFERENCES  master.vehicle (id);
 			--USING INDEX TABLESPACE pg_default;
 	end;
