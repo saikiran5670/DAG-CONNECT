@@ -213,53 +213,70 @@ end if;
 end;
 $$;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_tripstatistics_vin_vehicle_vin' AND table_name='trip_statistics'
-		and constraint_type='FOREIGN KEY')
-then	
-	begin
-		ALTER TABLE  tripdetail.trip_statistics 
-			ADD CONSTRAINT fk_tripstatistics_vin_vehicle_vin FOREIGN KEY (vin) REFERENCES  master.vehicle (vin);
-			--USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
 
 Do $$
 begin
 if not exists(
 	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_tripstatistics_driver1id_driver_driverid' AND table_name='trip_statistics'
-		and constraint_type='FOREIGN KEY')
+	WHERE constraint_name='uk_tripstatistics_tripid' AND table_name='trip_statistics'
+		and constraint_type='UNIQUE')
 then	
 	begin
 		ALTER TABLE  tripdetail.trip_statistics 
-			ADD CONSTRAINT fk_tripstatistics_driver1id_driver_driverid FOREIGN KEY (driver1_id) REFERENCES  master.driver (driver_id);
-			--USING INDEX TABLESPACE pg_default;
+			ADD CONSTRAINT uk_tripstatistics_tripid UNIQUE  (trip_id)
+			USING INDEX TABLESPACE pg_default;
 	end;
 end if;
 end;
 $$;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_tripstatistics_driver2id_driver_driverid' AND table_name='trip_statistics'
-		and constraint_type='FOREIGN KEY')
-then	
-	begin
-		ALTER TABLE  tripdetail.trip_statistics 
-			ADD CONSTRAINT fk_tripstatistics_driver2id_driver_driverid FOREIGN KEY (driver2_id) REFERENCES  master.driver (driver_id);
-			--USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+--Do $$
+--begin
+--if not exists(
+--	SELECT 1 FROM information_schema.table_constraints 
+--	WHERE constraint_name='fk_tripstatistics_vin_vehicle_vin' AND table_name='trip_statistics'
+--		and constraint_type='FOREIGN KEY')
+--then	
+--	begin
+--		ALTER TABLE  tripdetail.trip_statistics 
+--			ADD CONSTRAINT fk_tripstatistics_vin_vehicle_vin FOREIGN KEY (vin) REFERENCES  master.vehicle (vin);
+--			--USING INDEX TABLESPACE pg_default;
+--	end;
+--end if;
+--end;
+--$$;
+
+--Do $$
+--begin
+--if not exists(
+--	SELECT 1 FROM information_schema.table_constraints 
+--	WHERE constraint_name='fk_tripstatistics_driver1id_driver_driverid' AND table_name='trip_statistics'
+--		and constraint_type='FOREIGN KEY')
+--then	
+--	begin
+--		ALTER TABLE  tripdetail.trip_statistics 
+--			ADD CONSTRAINT fk_tripstatistics_driver1id_driver_driverid FOREIGN KEY (driver1_id) REFERENCES  master.driver (driver_id);
+--			--USING INDEX TABLESPACE pg_default;
+--	end;
+--end if;
+--end;
+--$$;
+
+--Do $$
+--begin
+--if not exists(
+--	SELECT 1 FROM information_schema.table_constraints 
+--	WHERE constraint_name='fk_tripstatistics_driver2id_driver_driverid' AND table_name='trip_statistics'
+--		and constraint_type='FOREIGN KEY')
+--then	
+--	begin
+--		ALTER TABLE  tripdetail.trip_statistics 
+--			ADD CONSTRAINT fk_tripstatistics_driver2id_driver_driverid FOREIGN KEY (driver2_id) REFERENCES  master.driver (driver_id);
+--			--USING INDEX TABLESPACE pg_default;
+--	end;
+--end if;
+--end;
+--$$;
 
 ----------------
 
@@ -302,21 +319,21 @@ end if;
 end;
 $$;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_livefleetposstat_vin_vehicle_vin' AND table_name='livefleet_position_statistics'
-		and constraint_type='FOREIGN KEY')
-then	
-	begin
-		ALTER TABLE  livefleet.livefleet_position_statistics
-			ADD CONSTRAINT fk_livefleetposstat_vin_vehicle_vin FOREIGN KEY (vin) REFERENCES  master.vehicle (vin);
-			--USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+--Do $$
+--begin
+--if not exists(
+--	SELECT 1 FROM information_schema.table_constraints 
+--	WHERE constraint_name='fk_livefleetposstat_vin_vehicle_vin' AND table_name='livefleet_position_statistics'
+--		and constraint_type='FOREIGN KEY')
+--then	
+--	begin
+--		ALTER TABLE  livefleet.livefleet_position_statistics
+--			ADD CONSTRAINT fk_livefleetposstat_vin_vehicle_vin FOREIGN KEY (vin) REFERENCES  master.vehicle (vin);
+--			--USING INDEX TABLESPACE pg_default;
+--	end;
+--end if;
+--end;
+--$$;
 
 CREATE TABLE if not exists livefleet.livefleet_current_trip_statistics
 (
@@ -366,53 +383,53 @@ end if;
 end;
 $$;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_livefleetcurtripstat_driver1id_driver_driverid' AND table_name='livefleet_current_trip_statistics'
-		and constraint_type='FOREIGN KEY')
-then	
-	begin
-		ALTER TABLE  livefleet.livefleet_current_trip_statistics 
-			ADD CONSTRAINT fk_livefleetcurtripstat_driver1id_driver_driverid FOREIGN KEY (driver1_id) REFERENCES  master.driver (driver_id);
-			--USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+--Do $$
+--begin
+--if not exists(
+--	SELECT 1 FROM information_schema.table_constraints 
+--	WHERE constraint_name='fk_livefleetcurtripstat_driver1id_driver_driverid' AND table_name='livefleet_current_trip_statistics'
+--		and constraint_type='FOREIGN KEY')
+--then	
+--	begin
+--		ALTER TABLE  livefleet.livefleet_current_trip_statistics 
+--			ADD CONSTRAINT fk_livefleetcurtripstat_driver1id_driver_driverid FOREIGN KEY (driver1_id) REFERENCES  master.driver (driver_id);
+--			--USING INDEX TABLESPACE pg_default;
+--	end;
+--end if;
+--end;
+--$$;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_livefleetcurtripstat_driver2id_driver_driverid' AND table_name='livefleet_current_trip_statistics'
-		and constraint_type='FOREIGN KEY')
-then	
-	begin
-		ALTER TABLE  livefleet.livefleet_current_trip_statistics 
-			ADD CONSTRAINT fk_livefleetcurtripstat_driver2id_driver_driverid FOREIGN KEY (driver2_id) REFERENCES  master.driver (driver_id);
-			--USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+--Do $$
+--begin
+--if not exists(
+--	SELECT 1 FROM information_schema.table_constraints 
+--	WHERE constraint_name='fk_livefleetcurtripstat_driver2id_driver_driverid' AND table_name='livefleet_current_trip_statistics'
+--		and constraint_type='FOREIGN KEY')
+--then	
+--	begin
+--		ALTER TABLE  livefleet.livefleet_current_trip_statistics 
+--			ADD CONSTRAINT fk_livefleetcurtripstat_driver2id_driver_driverid FOREIGN KEY (driver2_id) REFERENCES  master.driver (driver_id);
+--			--USING INDEX TABLESPACE pg_default;
+--	end;
+--end if;
+--end;
+--$$;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_livefleetcurtripstat_vin_vehicle_vin' AND table_name='livefleet_current_trip_statistics'
-		and constraint_type='FOREIGN KEY')
-then	
-	begin
-		ALTER TABLE  livefleet.livefleet_current_trip_statistics
-			ADD CONSTRAINT fk_livefleetcurtripstat_vin_vehicle_vin FOREIGN KEY (vin) REFERENCES  master.vehicle (vin);
-			--USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+--Do $$
+--begin
+--if not exists(
+--	SELECT 1 FROM information_schema.table_constraints 
+--	WHERE constraint_name='fk_livefleetcurtripstat_vin_vehicle_vin' AND table_name='livefleet_current_trip_statistics'
+--		and constraint_type='FOREIGN KEY')
+--then	
+--	begin
+--		ALTER TABLE  livefleet.livefleet_current_trip_statistics
+--			ADD CONSTRAINT fk_livefleetcurtripstat_vin_vehicle_vin FOREIGN KEY (vin) REFERENCES  master.vehicle (vin);
+--			--USING INDEX TABLESPACE pg_default;
+--	end;
+--end if;
+--end;
+--$$;
 
 CREATE TABLE if not exists livefleet.livefleet_trip_driver_activity
 (
@@ -454,37 +471,37 @@ end if;
 end;
 $$;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_livefleettripdrvact_driverid_driver_driverid' AND table_name='livefleet_trip_driver_activity'
-		and constraint_type='FOREIGN KEY')
-then	
-	begin
-		ALTER TABLE  livefleet.livefleet_trip_driver_activity 
-			ADD CONSTRAINT fk_livefleettripdrvact_driverid_driver_driverid FOREIGN KEY (driver_id) REFERENCES  master.driver (driver_id);
-			--USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+--Do $$
+--begin
+--if not exists(
+--	SELECT 1 FROM information_schema.table_constraints 
+--	WHERE constraint_name='fk_livefleettripdrvact_driverid_driver_driverid' AND table_name='livefleet_trip_driver_activity'
+--		and constraint_type='FOREIGN KEY')
+--then	
+--	begin
+--		ALTER TABLE  livefleet.livefleet_trip_driver_activity 
+--			ADD CONSTRAINT fk_livefleettripdrvact_driverid_driver_driverid FOREIGN KEY (driver_id) REFERENCES  master.driver (driver_id);
+--			--USING INDEX TABLESPACE pg_default;
+--	end;
+--end if;
+--end;
+--$$;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_livefleettripdrvact_vin_vehicle_vin' AND table_name='livefleet_trip_driver_activity'
-		and constraint_type='FOREIGN KEY')
-then	
-	begin
-		ALTER TABLE  livefleet.livefleet_trip_driver_activity
-			ADD CONSTRAINT fk_livefleettripdrvact_vin_vehicle_vin FOREIGN KEY (vin) REFERENCES  master.vehicle (vin);
-			--USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+--Do $$
+--begin
+--if not exists(
+--	SELECT 1 FROM information_schema.table_constraints 
+--	WHERE constraint_name='fk_livefleettripdrvact_vin_vehicle_vin' AND table_name='livefleet_trip_driver_activity'
+--		and constraint_type='FOREIGN KEY')
+--then	
+--	begin
+--		ALTER TABLE  livefleet.livefleet_trip_driver_activity
+--			ADD CONSTRAINT fk_livefleettripdrvact_vin_vehicle_vin FOREIGN KEY (vin) REFERENCES  master.vehicle (vin);
+--			--USING INDEX TABLESPACE pg_default;
+--	end;
+--end if;
+--end;
+--$$;
 
 CREATE TABLE if not exists livefleet.livefleet_warning_statistics
 (
@@ -532,37 +549,37 @@ end if;
 end;
 $$;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_livefleetwarnstat_driver1id_driver_driverid' AND table_name='livefleet_warning_statistics'
-		and constraint_type='FOREIGN KEY')
-then	
-	begin
-		ALTER TABLE  livefleet.livefleet_warning_statistics 
-			ADD CONSTRAINT fk_livefleetwarnstat_driver1id_driver_driverid FOREIGN KEY (driver1_id) REFERENCES  master.driver (driver_id);
-			--USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+--Do $$
+--begin
+--if not exists(
+--	SELECT 1 FROM information_schema.table_constraints 
+--	WHERE constraint_name='fk_livefleetwarnstat_driver1id_driver_driverid' AND table_name='livefleet_warning_statistics'
+--		and constraint_type='FOREIGN KEY')
+--then	
+--	begin
+--		ALTER TABLE  livefleet.livefleet_warning_statistics 
+--			ADD CONSTRAINT fk_livefleetwarnstat_driver1id_driver_driverid FOREIGN KEY (driver1_id) REFERENCES  master.driver (driver_id);
+--			--USING INDEX TABLESPACE pg_default;
+--	end;
+--end if;
+--end;
+--$$;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_livefleetwarnstat_driver2id_driver_driverid' AND table_name='livefleet_warning_statistics'
-		and constraint_type='FOREIGN KEY')
-then	
-	begin
-		ALTER TABLE  livefleet.livefleet_warning_statistics 
-			ADD CONSTRAINT fk_livefleetwarnstat_driver2id_driver_driverid FOREIGN KEY (driver2_id) REFERENCES  master.driver (driver_id);
-			--USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+--Do $$
+--begin
+--if not exists(
+--	SELECT 1 FROM information_schema.table_constraints 
+--	WHERE constraint_name='fk_livefleetwarnstat_driver2id_driver_driverid' AND table_name='livefleet_warning_statistics'
+--		and constraint_type='FOREIGN KEY')
+--then	
+--	begin
+--		ALTER TABLE  livefleet.livefleet_warning_statistics 
+--			ADD CONSTRAINT fk_livefleetwarnstat_driver2id_driver_driverid FOREIGN KEY (driver2_id) REFERENCES  master.driver (driver_id);
+--			--USING INDEX TABLESPACE pg_default;
+--	end;
+--end if;
+--end;
+--$$;
 
 Do $$
 begin
@@ -580,18 +597,18 @@ end if;
 end;
 $$;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_livefleetwarnstat_vin_vehicle_vin' AND table_name='livefleet_warning_statistics'
-		and constraint_type='FOREIGN KEY')
-then	
-	begin
-		ALTER TABLE  livefleet.livefleet_warning_statistics
-			ADD CONSTRAINT fk_livefleetwarnstat_vin_vehicle_vin FOREIGN KEY (vin) REFERENCES  master.vehicle (vin);
-			--USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+--Do $$
+--begin
+--if not exists(
+--	SELECT 1 FROM information_schema.table_constraints 
+--	WHERE constraint_name='fk_livefleetwarnstat_vin_vehicle_vin' AND table_name='livefleet_warning_statistics'
+--		and constraint_type='FOREIGN KEY')
+--then	
+--	begin
+--		ALTER TABLE  livefleet.livefleet_warning_statistics
+--			ADD CONSTRAINT fk_livefleetwarnstat_vin_vehicle_vin FOREIGN KEY (vin) REFERENCES  master.vehicle (vin);
+--			--USING INDEX TABLESPACE pg_default;
+--	end;
+--end if;
+--end;
+--$$;

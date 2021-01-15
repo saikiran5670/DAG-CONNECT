@@ -85,17 +85,17 @@ namespace net.atos.daf.ct2.account.test
         //     var result = repository.Get(filter).Result;
         //     Assert.IsTrue(result != null);
         // }
-        [TestMethod]
-        public void GetAccountByOrganization()
-        {
-            AccountFilter filter = new AccountFilter();     
+        // [TestMethod]
+        // public void GetAccountByOrganization()
+        // {
+        //     AccountFilter filter = new AccountFilter();     
             
-            filter.Id=0;
-            filter.OrganizationId =1;
-            filter.AccountType = AccountType.None;            
-            var result = repository.Get(filter).Result;
-            Assert.IsTrue(result != null );
-        }
+        //     filter.Id=0;
+        //     filter.OrganizationId =1;
+        //     filter.AccountType = AccountType.None;            
+        //     var result = repository.Get(filter).Result;
+        //     Assert.IsTrue(result != null );
+        // }
         // [TestMethod]
         // public void GetAccountByType()
         // {

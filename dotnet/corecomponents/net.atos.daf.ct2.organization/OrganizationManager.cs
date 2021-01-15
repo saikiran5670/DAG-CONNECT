@@ -28,11 +28,11 @@ namespace net.atos.daf.ct2.organization
         {
             return await organizationRepository.Update(organization);
         }
-        public async Task<bool> Delete(string organizationId)
+        public async Task<bool> Delete(int organizationId)
         {
             return await organizationRepository.Delete(organizationId);
         }
-        public async Task<IEnumerable<Organization>> Get(string organizationId)
+        public async Task<Organization> Get(int organizationId)
         {
             return await organizationRepository.Get(organizationId);
         }

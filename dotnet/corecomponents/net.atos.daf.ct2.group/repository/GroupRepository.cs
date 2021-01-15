@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.group
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@object_type", (char)group.ObjType);
+                parameter.Add("@object_type", (char)group.ObjectType);
                 parameter.Add("@group_type", (char)group.GroupType);
                 parameter.Add("@argument", group.Argument);
                 parameter.Add("@function_enum", (char)group.FunctionEnum);
@@ -51,7 +51,7 @@ namespace net.atos.daf.ct2.group
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", group.Id);
-                parameter.Add("@object_type", (char)group.ObjType);
+                parameter.Add("@object_type", (char)group.ObjectType);
                 parameter.Add("@group_type", (char)group.GroupType);
                 parameter.Add("@argument", group.Argument);
                 parameter.Add("@function_enum", (char)group.FunctionEnum);
@@ -96,11 +96,12 @@ namespace net.atos.daf.ct2.group
             }
         }
 
-        public async Task<IEnumerable<Group>> Get(GroupFilter groupFilter)
+        public async Task<List<Group>> Get(GroupFilter groupFilter)
         {
             try
             {
                 var parameter = new DynamicParameters();
+                List<Group> groupList = new List<Group>();
                 var query = @"select id,object_type,group_type,argument,function_enum,organization_id,ref_id,name,description from master.group where 1=1 ";
 
                 if (groupFilter != null)
@@ -120,29 +121,31 @@ namespace net.atos.daf.ct2.group
                     // function functional enum filter
                     if (((char)groupFilter.FunctionEnum) != ((char)FunctionEnum.None))
                     {
-                        parameter.Add("@function_enum", (char)groupFilter.FunctionEnum);
+                        parameter.Add("@function_enum", (char)groupFilter.FunctionEnum,DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and function_enum  = @function_enum ";
                     }
 
                     // object type filter
                     if (((char)groupFilter.ObjectType) != ((char)ObjectType.None))
                     {
-                        parameter.Add("@object_type ", (char)groupFilter.ObjectType);
+                        parameter.Add("@object_type", (char) groupFilter.ObjectType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and object_type = @object_type ";
                     }
 
                     // group type filter
                     if (((char)groupFilter.GroupType) != ((char)GroupType.None))
                     {
-                        parameter.Add("@group_type ", (char)groupFilter.GroupType);
+                        parameter.Add("@group_type ", (char)groupFilter.GroupType,DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and group_type = @group_type ";
                     }
                 }
-                IEnumerable<Group> groups = await dataAccess.QueryAsync<Group>(query, parameter);
-
-                if (groupFilter.GroupRef || groupFilter.GroupRefCount)
+                IEnumerable<dynamic> groups = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                Group group = new Group();
+                
+                foreach (dynamic record in groups)
                 {
-                    foreach (Group group in groups)
+                    group = Map(record);
+                    if (groupFilter.GroupRef || groupFilter.GroupRefCount)
                     {
                         // group ref filter 
                         if (groupFilter.GroupRef)
@@ -155,9 +158,10 @@ namespace net.atos.daf.ct2.group
                             group.GroupRefCount = GetRefCount(group.Id).Result;
                         }
                     }
+                    groupList.Add(group);
                 }
 
-                return groups;
+                return groupList;
             }
             catch (Exception ex)
             {
@@ -203,6 +207,20 @@ namespace net.atos.daf.ct2.group
         #endregion
 
         #region private methods
+        private Group Map(dynamic record)
+        {
+            Group entity = new Group();
+            entity.Id = record.id;
+            entity.Name = record.name;
+            entity.Description = record.description;
+            entity.ObjectType = (ObjectType)Convert.ToChar(record.object_type);
+            entity.GroupType = (GroupType)Convert.ToChar(record.group_type);
+            entity.Argument = record.argument;
+            entity.FunctionEnum = (FunctionEnum)Convert.ToChar(record.function_enum);
+            entity.OrganizationId = record.organization_id;
+            entity.RefId = record.ref_id;
+            return entity;
+        }
         private async Task<List<GroupRef>> GetRef(int groupid)
         {
             try

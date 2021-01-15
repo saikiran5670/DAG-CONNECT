@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.rolerepository
             try
             {
                 int FeatureTypeId= await featureRepository.AddFeatureType(featureType);
-                auditlog.AddLogs(featureType.createdby,featureType.createdby,1,"Add Feature Type",FeatureTypeId > 0,"Feature Management", "Feature type Added With feature type Id " + FeatureTypeId.ToString());
+                //auditlog.AddLogs(featureType.Createdby,featureType.Createdby,1,"Add Feature Type",FeatureTypeId > 0,"Feature Management", "Feature type Added With feature type Id " + FeatureTypeId.ToString());
                 return FeatureTypeId;
             }
             catch (Exception ex)
@@ -35,7 +35,7 @@ namespace net.atos.daf.ct2.rolerepository
             try
             {
                 int FeatureTypeId= await featureRepository.UpdateFeatureType(featureType);
-                auditlog.AddLogs(featureType.modifiedby,featureType.modifiedby,1,"Update Feature Type", FeatureTypeId > 0,"Feature Management", "Feature type Updated With Feature type Id " + FeatureTypeId.ToString());
+                //auditlog.AddLogs(featureType.modifiedby,featureType.modifiedby,1,"Update Feature Type", FeatureTypeId > 0,"Feature Management", "Feature type Updated With Feature type Id " + FeatureTypeId.ToString());
                 return FeatureTypeId;
             }
             catch (Exception ex)
@@ -158,7 +158,7 @@ namespace net.atos.daf.ct2.rolerepository
             try
             {
                 int FeatureSetId=  await featureRepository.AddFeatureSet(featureSet);
-                auditlog.AddLogs(featureSet.createdby,featureSet.createdby,1,"Add Feature Set",FeatureSetId > 0,"Feature Management", "Feature set added With feature set Id " + FeatureSetId.ToString());
+               // auditlog.AddLogs(featureSet.createdby,featureSet.createdby,1,"Add Feature Set",FeatureSetId > 0,"Feature Management", "Feature set added With feature set Id " + FeatureSetId.ToString());
                 return FeatureSetId;
             }
             catch (Exception ex)
@@ -172,7 +172,7 @@ namespace net.atos.daf.ct2.rolerepository
             try
             {
                 int FeatureSetId= await featureRepository.UpdateFeatureSet(featureSet);
-                auditlog.AddLogs(featureSet.modifiedby,featureSet.modifiedby,1,"Updated Feature Set",FeatureSetId > 0,"Feature Management", "Feature set updated With feature set Id " + FeatureSetId.ToString());
+               // auditlog.AddLogs(featureSet.modifiedby,featureSet.modifiedby,1,"Updated Feature Set",FeatureSetId > 0,"Feature Management", "Feature set updated With feature set Id " + FeatureSetId.ToString());
                 return FeatureSetId;
             }
             catch (Exception ex)

@@ -3,14 +3,14 @@ using net.atos.daf.ct2.role.entity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace net.atos.daf.ct2.rolerepository
+namespace net.atos.daf.ct2.role
 {
     public interface IRoleManagement
     {
-         Task<IEnumerable<RoleMaster>> GetRoles(int roleid);
-        Task<int> AddRole(RoleMaster roleMaster);
+        Task<IEnumerable<RoleMaster>> GetRoles(RoleFilter rolefilter);
+        Task<int> CreateRole(RoleMaster roleMaster);
         Task<int> UpdateRole(RoleMaster roleMaster);
-        Task<int> DeleteRole(int roleid,int userid);
+      Task<int> DeleteRole(int roleid, int Accountid);
         Task<int> CheckRoleNameExist(string roleName);
     }
 }

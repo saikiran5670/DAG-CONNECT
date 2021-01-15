@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.auditservice.Services
     
     public class AudittrailService : AuditService.AuditServiceBase
     {
-        private readonly ILogger<AudittrailService> _logger;
+        private readonly ILogger _logger;
         
         private readonly IAuditLogRepository _IAuditLogRepository;
         
@@ -45,8 +45,9 @@ namespace net.atos.daf.ct2.auditservice.Services
                 logs.Sourceobject_id = request.SourceobjectId;  
                 logs.Targetobject_id = request.TargetobjectId;  
                 logs.Updated_data = null;     
+                _logger.LogError("Logs running fine");
                 var result = _AuditTrail.AddLogs(logs).Result;
-
+               
                  return Task.FromResult(new AuditResponce
                 {
                     Statuscode = "Success" + request.SourceobjectId,
@@ -55,6 +56,7 @@ namespace net.atos.daf.ct2.auditservice.Services
             }
             catch (Exception ex)
             {
+                 _logger.LogError("test logs logs");
                  return Task.FromResult(new AuditResponce
                 {
                     Statuscode = "Error",

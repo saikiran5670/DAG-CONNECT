@@ -67,11 +67,11 @@ namespace net.atos.daf.ct2.accountpreference
                 parameter.Add("@date_format_type", (char) preference.DateFormat_Type);
                 parameter.Add("@isActive", preference.Is_Active);
 
-            var query = @"update master.preference set ref_id=@ref_id,language_id=@language_id,
-                            timezone_id=@timezone_id, currency_type,@currency_type,unit_type=@unit_type,
+            var query = @"update master.accountpreference set ref_id=@ref_id,language_id=@language_id,
+                            timezone_id=@timezone_id, currency_type=@currency_type,unit_type=@unit_type,
                             vehicle_display_type=@vehicle_display_type,
-                            date_format_type=@date_format_type,isActive=@isActive                                     
-	                                WHERE ref_id = ref_@id and type=@type
+                            date_format_type=@date_format_type,is_active=@isActive                                     
+	                                WHERE id = @id and type=@type
                                     RETURNING id;";
             var Id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
