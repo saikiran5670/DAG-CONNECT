@@ -3,7 +3,7 @@ CREATE TABLE if not exists master.organization
 (
 	id serial not null, 
 	org_id varchar (100) not null,
-	type varchar(50) not null,  
+	type varchar(50) ,  
 	name varchar (100) not null,
 	address_type varchar (50),
 	street varchar (50),
@@ -1526,8 +1526,8 @@ CREATE TABLE if not exists  translation.translation
 	id serial NOT NULL,   
 	code varchar (8) NOT NULL,  
 	type char(1) NOT NULL,
-	name varchar (100) NOT NULL,
-	value varchar (250) NOT NULL,
+	name varchar (250) NOT NULL,
+	value varchar (1000) NOT NULL,
 	created_at bigint NOT NULL ,
 	modified_at bigint 
 )
