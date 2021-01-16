@@ -14,6 +14,7 @@ parameters:
   type: string
   default: DEV0
   values:
+  - All
   - DEV0
   - DEV01
   - DEV02
@@ -38,11 +39,13 @@ steps:
     tokenSuffix: '}#'
     useLegacyPattern: false
     enableTelemetry: true
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02')
 
 - task: CmdLine@2
   inputs:
     script: |
       cat dotnet/commonservices/net.atos.daf.ct2.auditservice/appsettings.json
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02')
 
 - task: Docker@0
   displayName: 'Build an image'
@@ -51,6 +54,7 @@ steps:
     azureContainerRegistry: $(ContainerRegistry)
     dockerFile: dotnet/AuditService_Dockerfile
     imageName: auditservice
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02')
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -59,3 +63,13 @@ steps:
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
     imageName: auditservice
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02')
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      echo $(ContainerRegistry)
+  condition: eq('${{ parameters.ENV }}', 'All')
+  
+      
+     
