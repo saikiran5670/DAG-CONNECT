@@ -49,8 +49,8 @@ namespace net.atos.daf.ct2.account.test
             user.Password="123456";
             var result = accountIdentityManager.Login(user).Result;
             Assert.IsNotNull(result);
-          //  Assert.IsNotNull(result.accountToken);
-            //Assert.IsNotNull(result.accountToken.AccessToken);
+          //  Assert.IsNotNull(result.AccountToken);
+            //Assert.IsNotNull(result.AccountToken.AccessToken);
         }
         [TestMethod]
         public void ValidateToken()

@@ -1,5 +1,6 @@
 using System;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.identity;
 using net.atos.daf.ct2.identity.entity;
@@ -11,11 +12,14 @@ namespace net.atos.daf.ct2.account
     {
         ITokenManager tokenManager;
         IAccountAuthenticator autheticator;
+        IAccountManager accountManager;
+        IAccountPreference accountPreference;        
 
-        public AccountIdentityManager(ITokenManager _tokenManager, IAccountAuthenticator _autheticator)
+        public AccountIdentityManager(ITokenManager _tokenManager, IAccountAuthenticator _autheticator,IAccountPreference _accountPreference)
         {
             autheticator = _autheticator;
             tokenManager = _tokenManager;
+            accountPreference=_accountPreference;
         }
         public async Task<AccountIdentity> Login(Identity user)
         {
@@ -28,7 +32,20 @@ namespace net.atos.daf.ct2.account
                 AccountIDPClaim accIDPclaims= tokenManager.DecodeToken(token.access_token);
 
                 AccountToken accToken = tokenManager.CreateToken(accIDPclaims);
-                accIdentity.accountToken=accToken;
+                accIdentity.AccountToken=accToken;
+                int accountId=GetAccountByEmail(user.UserName);
+                if(accountId>0)
+                {
+                    AccountPreferenceFilter filter=new AccountPreferenceFilter();
+                    filter.Ref_id=PreferenceType.Ref_id;
+                    filter.PreferenceType=PreferenceType.Account;
+                    // IEnumerable<AccountPreference> preferences=accountPreference.Get(filter);
+                    // foreach(var pref in preferences) 
+                    // {
+                    //     accIdentity.AccountPreference=pref;
+                    //     break; //get only first preference
+                    // }
+                }
             }
             return await Task.FromResult(accIdentity);
         }
@@ -37,6 +54,20 @@ namespace net.atos.daf.ct2.account
             bool result=false;
             result= tokenManager.ValidateToken(token);
             return Task.FromResult(result);
+        }
+        private int GetAccountByEmail(string email)
+        {
+            int accountid=0;
+            AccountFilter filter = new AccountFilter();     
+            filter.Name =email;
+        //    filter.AccountType = AccountType.None;            
+            IEnumerable<Account> result = accountManager.Get(filter).Result;
+            foreach(var account in result) 
+            {
+                accountid=account.Id;
+                //get only first account id
+            }
+            return accountid;
         }
     }
 }
