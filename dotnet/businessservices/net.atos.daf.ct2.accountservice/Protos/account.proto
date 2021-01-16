@@ -13,6 +13,8 @@ service AccountService {
   rpc Delete (AccountRequest) returns (AccountResponse);
   rpc ChangePassword (AccountRequest) returns (AccountResponse);
   rpc Get (AccountFilter) returns (AccountDataList);
+  rpc GetAccountDetail (IdRequest) returns (AccountDetailsResponse);
+  
 
   // Account Preference Mthod
   rpc CreatePreference (AccountPreference) returns (AccountPreferenceResponse);
@@ -23,8 +25,13 @@ service AccountService {
   // Account Group Method
   rpc CreateGroup (AccountGroupRequest) returns (AccountGroupResponce);
   rpc UpdateGroup (AccountGroupRequest) returns (AccountGroupResponce);
-  rpc DeleteGroup (DeleteRecordRequest) returns (AccountGroupResponce);
-  rpc GetGroupDetails (AccountGroupFilterRequest) returns (AccountGroupResponce);
+  rpc DeleteGroup (IdRequest) returns (AccountGroupResponce);
+  rpc GetAccountGroup (AccountGroupFilterRequest) returns (AccountGroupDataList);
+  rpc GetAccountGroupDetail (AccountGroupDetailsRequest ) returns (AccountGroupDetailsDataList);
+
+  // Add Role
+  rpc AddRoles (AccountRoleRequest) returns (AccountRoleResponse);
+  rpc RemoveRoles (AccountRole) returns (AccountRoleResponse);
 }
 enum AccountType
     {
@@ -48,6 +55,20 @@ message AccountData {
   string Message = 2;
   AccountRequest Account = 3;
 }
+// account details 
+message AccountDetails {  
+  AccountRequest Account = 1;
+  string Roles=2;
+  string AccountGroups = 3;
+}
+
+message AccountDetailsResponse {  
+  repeated AccountDetails AccountDetails = 1;
+
+  Responcecode Code=2;
+  string Message = 3;
+}
+
 // common response 
 message AccountDataList {
   Responcecode Code=1;
@@ -90,15 +111,15 @@ enum CurrencyType
     {
         //None = 'N',
         Euro = 0;
-        USDollar = 1;
-        PondSterlingr = 2;
+        Usdollar = 1;
+        PondSterling = 2;
     }
     enum DateFormatDisplayType
     {
          //None = 'N',
-        Day_Month_Year= 0;
-        Month_Day_Year= 1;
-        Year_Month_Day= 2;
+        DayMonthYear= 0;
+        MonthDayYear= 1;
+        YearMonthDay= 2;
     }
     enum PreferenceType
     {
@@ -111,15 +132,16 @@ enum CurrencyType
         // None = 'N',
         Metric= 0;
         Imperial= 1;
-        US_Imperial = 2;
+        Usimperial = 2;
     }
     enum VehicleDisplayType    
     {
         //None = 'N',
-        Registration_Number= 0;
+        RegistrationNumber= 0;
         Name= 1;
-        VIN = 2;   
+        Vin = 2;   
     }
+
     message AccountPreference
     {
         int32 Id =1;
@@ -145,18 +167,13 @@ enum CurrencyType
       Responcecode Code=1;
       string Message = 2;
       repeated AccountPreference Preference= 3;      
-    }
-
-    
+    }    
     message AccountPreferenceFilter
     {
         int32 Id =1;
         int32 Ref_Id =2;
         PreferenceType preference =3;
     }
-
-
-
 // End - Account Preference 
 
 
@@ -192,15 +209,21 @@ message AccountGroupRequest{
   int32 OrganizationId = 7;
   int32 RefId = 8;
   string Description= 9;
-  repeated AccountGroupRef GroupRef = 10;
+  int32 GroupRefCount=10;
+  repeated AccountGroupRef GroupRef = 11;
 }
 message AccountGroupResponce{
   int32 Id = 1;
   Responcecode code=2;
-  string message = 3;
-  int32 GroupRefCount=4;
-  repeated AccountGroupRef GroupRef = 5;
+  string message = 3;  
+  //repeated AccountGroupRef GroupRef = 4;
 }
+message AccountGroupDataList
+    {
+      Responcecode Code=1;
+      string Message = 2;
+      repeated AccountGroupRequest AccountGroupRequest= 3;      
+    }
 message AccountGroupFilterRequest{
   int32 Id=1;
   ObjectType ObjectType = 2;
@@ -210,7 +233,42 @@ message AccountGroupFilterRequest{
   FunctionEnum FunctionEnum = 6;
   int32 OrganizationId = 7;
 }
-message DeleteRecordRequest {
+message AccountGroupDetailsRequest {
+  int32 AccountId=1;  
+  int32 OrganizationId = 2;
+}
+message AccountGroupDetail {
+  int32 GroupId=1;
+  string AccountGroupName=2;    
+  int32 VehicleCount = 3;
+  int32 AccountCount = 4;
+}
+message AccountGroupDetailsDataList {
+  repeated AccountGroupDetail AccountGroupDetail= 1;  
+  Responcecode Code=2;
+  string Message = 3;
+}
+
+message IdRequest {
   int32 Id = 1;
 }
-// Begin Account Group
+// End Account Group
+
+// Begin Account Role
+
+message AccountRole {
+  int32 AccountId=1;
+  int32 OrganizationId=2;    
+  int32 RoleId = 3;  
+}
+
+message AccountRoleRequest {
+  repeated AccountRole AccountRoles=1;  
+}
+
+message AccountRoleResponse{
+  Responcecode Code=2;
+  string Message = 3; 
+}
+
+// End Account Role

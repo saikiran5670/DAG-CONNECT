@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.identity
 
                 var httpResponse = await client.PostAsync(url, querystring);
                 string result = httpResponse.Content.ReadAsStringAsync().Result;
-                response.StatusCode=response.StatusCode;
+                response.StatusCode=httpResponse.StatusCode;
                 response.Result=result;
                 return response;      
             }   

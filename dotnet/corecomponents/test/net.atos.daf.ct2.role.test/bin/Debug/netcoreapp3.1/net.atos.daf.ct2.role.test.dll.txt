@@ -1,8 +1,0 @@
-net.atos.daf.ct2.role.test.RoleTest.CreateRole
-net.atos.daf.ct2.role.test.RoleTest.DeleteRole
-net.atos.daf.ct2.role.test.RoleTest.GetRoles
-net.atos.daf.ct2.role.test.RoleTest.UpdateRole
-net.atos.daf.ct2.role.test.RoleTest.AddFeatureSet
-net.atos.daf.ct2.role.test.RoleTest.GetFeatureSet
-net.atos.daf.ct2.role.test.RoleTest.GetFeatures
-net.atos.daf.ct2.role.test.UnitTest1.TestMethod1

@@ -1,7 +1,0 @@
-net.atos.daf.ct2.vehicle.test.UnitTest1.TestMethod1
-net.atos.daf.ct2.vehicle.test.vehiclerepositorytest.CreateVehicle
-net.atos.daf.ct2.vehicle.test.vehiclerepositorytest.GetVehicle
-net.atos.daf.ct2.vehicle.test.vehiclerepositorytest.UpdateVehicle
-net.atos.daf.ct2.vehicle.test.vehiclerepositorytest.UpdateStatus
-net.atos.daf.ct2.vehicle.test.vehiclerepositorytest.CreateVehicleProperty
-net.atos.daf.ct2.vehicle.test.vehiclerepositorytest.UpdateVehicleProperty

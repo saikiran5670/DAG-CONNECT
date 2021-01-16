@@ -14,7 +14,7 @@ namespace atos.net.daf.ct2.accountpreference.test
         private readonly IDataAccess _dataAccess;
         private readonly IConfiguration _config;
         readonly IAccountPreferenceRepository _repository;        
-        private readonly IAuditLog _auditlog;
+        // private readonly IAuditLog _auditlog;
         public AccountPreference_Test()
         {
             _config = new ConfigurationBuilder()

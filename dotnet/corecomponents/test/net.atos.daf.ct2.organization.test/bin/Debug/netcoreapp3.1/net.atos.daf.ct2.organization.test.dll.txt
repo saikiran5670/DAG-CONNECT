@@ -1,9 +1,0 @@
-net.atos.daf.ct2.organization.test.OrganizationManagerTest.CreateOrganization_Manager
-net.atos.daf.ct2.organization.test.OrganizationManagerTest.UpdateOrganization_Manager
-net.atos.daf.ct2.organization.test.OrganizationManagerTest.DeleteOrganization_Manager
-net.atos.daf.ct2.organization.test.OrganizationManagerTest.GetOrganization_Manager
-net.atos.daf.ct2.organization.test.OrganizationRepositoryTest.CreateOrganization
-net.atos.daf.ct2.organization.test.OrganizationRepositoryTest.UpdateOrganization
-net.atos.daf.ct2.organization.test.OrganizationRepositoryTest.DeleteOrganization
-net.atos.daf.ct2.organization.test.OrganizationRepositoryTest.GetOrganization
-net.atos.daf.ct2.organization.test.UnitTest1.TestMethod1
