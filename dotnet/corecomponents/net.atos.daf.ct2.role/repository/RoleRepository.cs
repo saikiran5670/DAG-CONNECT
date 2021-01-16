@@ -129,8 +129,7 @@ namespace net.atos.daf.ct2.role.repository
                                 role.created_by, 
                                 role.updated_date,
                                 role.updated_by,
-                                roleFeatureSet.feature_set_id
-                                fsf.featurescount
+                                fsf.featurescount as featurescount
 	                            FROM master.role role
                                 LEFT JOIN master.rolefeatureset roleFeatureSet								
                                 ON role.id=roleFeatureSet.role_id

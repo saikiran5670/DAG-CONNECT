@@ -14,8 +14,8 @@ namespace net.atos.daf.ct2.role.entity
         public int Createdby { get; set; }
         public int Updatedby { get; set; }
         public bool Is_Active { get; set; }
-        public int Feature_set_id { get; set; }
-        public int FeaturesCount { get; set; }
+        public int? Feature_set_id { get; set; }
+        public int? Featurescount { get; set; }
         public FeatureSet FeatureSet { get; set; }
         
     }

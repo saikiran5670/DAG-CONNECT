@@ -6,6 +6,7 @@ using net.atos.daf.ct2.role.entity;
 using net.atos.daf.ct2.role;
 using net.atos.daf.ct2.role.repository;
 using net.atos.daf.ct2.features;
+using net.atos.daf.ct2.features.entity;
 using net.atos.daf.ct2.features.repository;
 
 namespace net.atos.daf.ct2.role
@@ -34,13 +35,15 @@ namespace net.atos.daf.ct2.role
                // auditlog.AddLogs(roleMaster.Createdby,roleMaster.Createdby,1,"Add Role",RoleId > 0,"Role Management", "Role Added With Role Id " + RoleId.ToString());
                if(RoleId > 0)
                {
-                   // int featuresetid = await FeatureManager.AddFeatureSet(roleMaster.FeatureSet);
-                   int featuresetid = 4;
+                   roleMaster.FeatureSet.Name = "FeatureSet_" + RoleId;
+                   int featuresetid = await FeatureManager.AddFeatureSet(roleMaster.FeatureSet);
+                //    int featuresetid = 4;
                     if (featuresetid > 0)
                     {
                         await roleRepository.Addrolefeatureset(RoleId,featuresetid);
                     }
                }
+
                
                 return RoleId;
             }
@@ -80,7 +83,7 @@ namespace net.atos.daf.ct2.role
         {
             try
             {
-                var Roles = roleRepository.GetRoles(rolefilter);
+                //var Roles = roleRepository.GetRoles(rolefilter);
                 return await roleRepository.GetRoles(rolefilter);
             }
             catch (Exception ex)

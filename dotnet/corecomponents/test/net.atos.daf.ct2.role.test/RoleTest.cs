@@ -78,7 +78,7 @@ namespace net.atos.daf.ct2.role.test
         public void GetRoles()
         {
             RoleFilter filter = new RoleFilter();
-            filter.Organization_Id =8;
+            filter.Organization_Id =12;
             var role = _RoleRepository.GetRoles(filter).Result;
             Assert.IsNotNull(role);
             Assert.IsTrue(role.Count() > 0);

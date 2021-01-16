@@ -10,6 +10,7 @@ using net.atos.daf.ct2.role.entity;
 using net.atos.daf.ct2.role;
 using net.atos.daf.ct2.features;
 using Newtonsoft.Json;
+using net.atos.daf.ct2.features.entity;
 
 namespace net.atos.daf.ct2.roleservice
 {
@@ -38,6 +39,12 @@ namespace net.atos.daf.ct2.roleservice
                 ObjRole.Name = request.Name;
                 ObjRole.Createdby = request.CreatedBy;
                 ObjRole.Description = request.Description;
+                ObjRole.FeatureSet = new FeatureSet();
+                ObjRole.FeatureSet.Features = new List<Feature>();
+                foreach(var item in request.Features)
+                {
+                     ObjRole.FeatureSet.Features.Add(new Feature() { Id = item.Id });
+                }
                 var role = _RoleManagement.CreateRole(ObjRole).Result;
                 
                 return Task.FromResult(new RoleResponce
@@ -133,9 +140,9 @@ namespace net.atos.daf.ct2.roleservice
                     ObjResponce.Name = item.Name;
                     ObjResponce.CreatedBy = item.Createdby;
                     ObjResponce.Active= item.Is_Active;
-                    ObjResponce.Description = item.Description == null ? " " : item.Description;
+                    ObjResponce.Description = item.Description == null ? "" : item.Description;
                     ObjResponce.Roletype= item.Organization_Id == null ? RoleTypes.Global : RoleTypes.Regular;
-                    ObjResponce.FeaturesCount = item.FeaturesCount;
+                    ObjResponce.FeaturesCount = item.Featurescount == null ?0 : Convert.ToInt32(item.Featurescount);
                     ObjroleList.Roles.Add(ObjResponce);
                 }
 
