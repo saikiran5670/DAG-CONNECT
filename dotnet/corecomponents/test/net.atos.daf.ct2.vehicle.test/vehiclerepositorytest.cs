@@ -146,7 +146,7 @@ namespace net.atos.daf.ct2.vehicle.test
         public void UpdateStatus()
         {
             VehicleOptInOptOut ObjvehicleOptInOptOut = new VehicleOptInOptOut();
-            ObjvehicleOptInOptOut.RefId = 5;
+            ObjvehicleOptInOptOut.RefId = 28;
             ObjvehicleOptInOptOut.AccountId = 4;
             ObjvehicleOptInOptOut.Status = VehicleStatusType.OptOut;
             ObjvehicleOptInOptOut.Type = OptInOptOutType.VehicleLevel;
@@ -165,11 +165,11 @@ namespace net.atos.daf.ct2.vehicle.test
             Group group = new Group();
             group.ObjectType = ObjectType.VehicleGroup;
             group.GroupType = GroupType.Group;
-            group.Argument = "Truck";
+            group.Argument = "Truck UT 01";
             group.FunctionEnum = FunctionEnum.None;
             group.OrganizationId = 1;
             group.RefId = null;
-            group.Name = "Vehicle Group Unit test01";
+            group.Name = "Vehicle Group Unit test 02";
             group.Description = "Vehicle Group";
             var groupResult = _groupRepository.Create(group).Result;
             if (groupResult.Id > 0)
@@ -192,7 +192,7 @@ namespace net.atos.daf.ct2.vehicle.test
         public void UpdateVehicleGroupWithVehicle()
         {
             Group group = new Group();
-            group.Id = 10;
+            group.Id = 24;
             group.ObjectType = ObjectType.VehicleGroup;
             group.GroupType = GroupType.Single;
             group.Argument = "Truck 10";
@@ -224,6 +224,7 @@ namespace net.atos.daf.ct2.vehicle.test
             var result = _groupRepository.Delete(7).Result;
             Assert.IsTrue(result == true);
         }
+
 
 
 

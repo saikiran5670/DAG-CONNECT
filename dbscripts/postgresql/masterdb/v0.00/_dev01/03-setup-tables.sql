@@ -3,7 +3,7 @@ CREATE TABLE if not exists master.organization
 (
 	id serial not null, 
 	org_id varchar (100) not null,
-	type varchar(50) not null,  
+	type varchar(50) ,  
 	name varchar (100) not null,
 	address_type varchar (50),
 	street varchar (50),
@@ -19,7 +19,7 @@ CREATE TABLE if not exists master.organization
 TABLESPACE pg_default;
 
 ALTER TABLE  master.organization 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -68,7 +68,7 @@ CREATE TABLE if not exists  master.group
 TABLESPACE pg_default;
 
 ALTER TABLE  master.group
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -111,7 +111,7 @@ CREATE TABLE if not exists  master.groupref
 TABLESPACE pg_default;
 
 ALTER TABLE  master.groupref 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -159,7 +159,7 @@ CREATE TABLE if not exists  master.account
 TABLESPACE pg_default;
 
 ALTER TABLE  master.account 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -206,7 +206,7 @@ CREATE TABLE if not exists  master.accountorg
 TABLESPACE pg_default;
 
 ALTER TABLE  master.accountorg 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -260,18 +260,19 @@ $$;
 CREATE TABLE if not exists  master.role 
 (
 	id serial not null,
-	organization_id int not null,
+	organization_id int,
 	name varchar(50) not null,
 	is_active boolean not null default true, ----------
 	created_date bigint,
 	created_by int,
 	updated_date bigint,
-	updated_by int
+	updated_by int,
+	description varchar(120)
 )
 TABLESPACE pg_default;
 
 ALTER TABLE  master.role 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -317,7 +318,7 @@ CREATE TABLE if not exists  master.accountrole
 TABLESPACE pg_default;
 
 ALTER TABLE  master.accountrole 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -394,7 +395,7 @@ CREATE TABLE if not exists  master.dataattribute
 TABLESPACE pg_default;
 
 ALTER TABLE  master.dataattribute 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -423,7 +424,7 @@ CREATE TABLE if not exists  master.dataattributeset
 TABLESPACE pg_default;
 
 ALTER TABLE  master.dataattributeset 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -450,7 +451,7 @@ CREATE TABLE if not exists  master.dataattributesetattribute
 TABLESPACE pg_default;
 
 ALTER TABLE  master.dataattributesetattribute 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -513,7 +514,7 @@ CREATE TABLE if not exists  master.feature
 TABLESPACE pg_default;
 
 ALTER TABLE  master.feature 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -559,7 +560,7 @@ CREATE TABLE if not exists  master.featureset
 TABLESPACE pg_default;
 
 ALTER TABLE  master.featureset 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -586,7 +587,7 @@ CREATE TABLE if not exists  master.featuresetfeature
 TABLESPACE pg_default;
 
 ALTER TABLE  master.featuresetfeature 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -645,7 +646,7 @@ CREATE TABLE if not exists  master.rolefeatureset
 TABLESPACE pg_default;
 
 ALTER TABLE  master.rolefeatureset 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -708,7 +709,7 @@ CREATE TABLE if not exists  master.menu
 TABLESPACE pg_default;
 
 ALTER TABLE  master.menu 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -753,7 +754,7 @@ CREATE TABLE if not exists  master.accessrelationship
 TABLESPACE pg_default;
 
 ALTER TABLE  master.accessrelationship 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -827,7 +828,7 @@ CREATE TABLE if not exists  master.vehicle
 TABLESPACE pg_default;
 
 ALTER TABLE  master.vehicle 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -919,7 +920,7 @@ CREATE TABLE if not exists  master.vehicleproperties
 TABLESPACE pg_default;
 
 ALTER TABLE  master.vehicleproperties 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -966,7 +967,7 @@ CREATE TABLE if not exists  master.vehicleoptinoptout
 TABLESPACE pg_default;
 
 ALTER TABLE  master.vehicleoptinoptout 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1012,7 +1013,7 @@ CREATE TABLE if not exists  master.orgrelationship
 TABLESPACE pg_default;
 
 ALTER TABLE  master.orgrelationship 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1075,7 +1076,7 @@ CREATE TABLE if not exists  master.orgrelationshipmapping
 TABLESPACE pg_default;
 
 ALTER TABLE  master.orgrelationshipmapping 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1176,7 +1177,7 @@ CREATE TABLE if not exists  master.package
 TABLESPACE pg_default;
 
 ALTER TABLE  master.package 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1221,7 +1222,7 @@ CREATE TABLE if not exists  master.subscription
 TABLESPACE pg_default;
 
 ALTER TABLE  master.subscription 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1269,7 +1270,7 @@ CREATE TABLE if not exists  master.packagesubscription
 TABLESPACE pg_default;
 
 ALTER TABLE  master.packagesubscription 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1331,7 +1332,7 @@ CREATE TABLE if not exists  master.subscribedpackagevehicle
 TABLESPACE pg_default;
 
 ALTER TABLE  master.subscribedpackagevehicle 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1412,7 +1413,7 @@ CREATE TABLE if not exists  master.timezone
 TABLESPACE pg_default;
 
 ALTER TABLE  master.timezone 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1452,7 +1453,7 @@ CREATE TABLE if not exists  logs.audittrail
 TABLESPACE pg_default;
 
 ALTER TABLE  logs.audittrail 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1483,7 +1484,7 @@ CREATE TABLE if not exists  translation.languages
 TABLESPACE pg_default;
 
 ALTER TABLE  translation.languages 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1524,15 +1525,15 @@ CREATE TABLE if not exists  translation.translation
 	id serial NOT NULL,   
 	code varchar (8) NOT NULL,  
 	type char(1) NOT NULL,
-	name varchar (100) NOT NULL,
-	value varchar (250) NOT NULL,
+	name varchar (250) NOT NULL,
+	value varchar (1000) NOT NULL,
 	created_at bigint NOT NULL ,
 	modified_at bigint 
 )
 TABLESPACE pg_default;
 
 ALTER TABLE  translation.translation 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1577,7 +1578,7 @@ CREATE TABLE if not exists  translation.translationgrouping
 TABLESPACE pg_default;
 
 ALTER TABLE  translation.translationgrouping 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1607,7 +1608,7 @@ CREATE TABLE if not exists  translation.icons
 TABLESPACE pg_default;
 
 ALTER TABLE  translation.icons 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1645,7 +1646,7 @@ CREATE TABLE if not exists  master.accountpreference
 TABLESPACE pg_default;
 
 ALTER TABLE  master.accountpreference 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1706,7 +1707,7 @@ CREATE TABLE if not exists  master.accountblob
 TABLESPACE pg_default;
 
 ALTER TABLE  master.accountblob 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1754,7 +1755,7 @@ CREATE TABLE if not exists  master.accountsession
 TABLESPACE pg_default;
 
 ALTER TABLE  master.accountsession 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1807,7 +1808,7 @@ CREATE TABLE if not exists  master.accounttoken
 TABLESPACE pg_default;
 
 ALTER TABLE  master.accounttoken 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 
 Do $$
@@ -1872,7 +1873,7 @@ CREATE TABLE if not exists  master.accountassertion
 TABLESPACE pg_default;
 
 ALTER TABLE  master.accountassertion 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 
 Do $$
@@ -1935,7 +1936,7 @@ $$;
 -- TABLESPACE pg_default;
 
 -- ALTER TABLE  master.tcu 
-    -- OWNER to pgadmin;
+    -- OWNER to pgdbadmin;
 
 -- Do $$
 -- begin
@@ -1982,7 +1983,7 @@ $$;
 -- TABLESPACE pg_default;
 
 -- ALTER TABLE  master.tcuvehiclemapping 
-    -- OWNER to pgadmin;
+    -- OWNER to pgdbadmin;
 
 -- Do $$
 -- begin

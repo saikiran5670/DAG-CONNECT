@@ -3,7 +3,7 @@ CREATE TABLE if not exists master.organization
 (
 	id serial not null, 
 	org_id varchar (100) not null,
-	type varchar(50) not null,  
+	type varchar(50) ,  
 	name varchar (100) not null,
 	address_type varchar (50),
 	street varchar (50),
@@ -260,13 +260,14 @@ $$;
 CREATE TABLE if not exists  master.role 
 (
 	id serial not null,
-	organization_id int not null,
+	organization_id int,
 	name varchar(50) not null,
 	is_active boolean not null default true, ----------
 	created_date bigint,
 	created_by int,
 	updated_date bigint,
-	updated_by int
+	updated_by int,
+	description varchar(120)
 )
 TABLESPACE pg_default;
 
@@ -1525,8 +1526,8 @@ CREATE TABLE if not exists  translation.translation
 	id serial NOT NULL,   
 	code varchar (8) NOT NULL,  
 	type char(1) NOT NULL,
-	name varchar (100) NOT NULL,
-	value varchar (250) NOT NULL,
+	name varchar (250) NOT NULL,
+	value varchar (1000) NOT NULL,
 	created_at bigint NOT NULL ,
 	modified_at bigint 
 )
