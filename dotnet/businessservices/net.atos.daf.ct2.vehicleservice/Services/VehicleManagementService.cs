@@ -41,8 +41,17 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 //Objvehicle.ManufactureDate = request.ManufactureDate;
                 //Objvehicle.ChassisNo = request.ChassisNo;
                 Objvehicle.Status_Changed_Date = DateTime.Now;
-                Objvehicle.Status = (vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), request.Status.ToString().ToUpper()); //GetVehicleStatusEnum((int)request.Status);
+                Objvehicle.Status = (vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), request.Status.ToString()); //GetVehicleStatusEnum((int)request.Status);
                 Objvehicle.Termination_Date = DateTime.Now;
+                Objvehicle.Vid = request.Vid;
+                Objvehicle.Type = (vehicle.VehicleType)Enum.Parse(typeof(vehicle.VehicleType), request.VehicleType.ToString());
+                Objvehicle.Model = request.Model;
+                Objvehicle.Tcu_Id = request.TcuId;
+                Objvehicle.Tcu_Serial_Number = request.TcuSerialNumber;
+                Objvehicle.Tcu_Brand = request.TcuBrand;
+                Objvehicle.Tcu_Version = request.TcuVersion;
+                Objvehicle.Is_Tcu_Register = request.IsTcuRegister;
+                Objvehicle.Reference_Date = Convert.ToDateTime(request.ReferenceDate);
 
                 ObjvehicleResponse = _vehicelManager.Create(Objvehicle).Result;
 
@@ -76,15 +85,22 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 Vehicle ObjvehicleResponse = new Vehicle();
                 Objvehicle.ID = request.Id;
                 Objvehicle.Name = request.Name;
-                //Objvehicle.VIN = request.Vin;
+                Objvehicle.VIN = request.Vin;
                 Objvehicle.License_Plate_Number = request.LicensePlateNumber;
-                //Objvehicle.ManufactureDate = request.ManufactureDate;
-                //Objvehicle.ChassisNo = request.ChassisNo;
-                //Objvehicle.Status_Changed_Date = DateTime.Now;
-                //Objvehicle.Status = VehicleStatusType.OptIn;
-                //Objvehicle.Termination_Date = DateTime.Now;
+                Objvehicle.Vid = request.Vid;
+                Objvehicle.Type = (vehicle.VehicleType)Enum.Parse(typeof(vehicle.VehicleType), request.VehicleType.ToString());
+                Objvehicle.Model = request.Model;
+                Objvehicle.Tcu_Id = request.TcuId;
+                Objvehicle.Tcu_Serial_Number = request.TcuSerialNumber;
+                Objvehicle.Tcu_Brand = request.TcuBrand;
+                Objvehicle.Tcu_Version = request.TcuVersion;
+                Objvehicle.Is_Tcu_Register = request.IsTcuRegister;
+                if(!string.IsNullOrEmpty(request.ReferenceDate))
+                Objvehicle.Reference_Date =Convert.ToDateTime(request.ReferenceDate);
 
                 ObjvehicleResponse = _vehicelManager.Update(Objvehicle).Result;
+
+                _logger.LogInformation("Update method in vehicle service called.");
                 return Task.FromResult(new VehicleResponce
                 {
                     Message = "Vehicle updated for id:- " + ObjvehicleResponse.ID,
@@ -94,6 +110,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
+                 _logger.LogError("Error in vehicle service Update method.");
                 return Task.FromResult(new VehicleResponce
                 {
                     Message = "Exception " + ex.Message,
@@ -118,7 +135,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 ObjVehicleFilter.FeatureId = request.FeatureId;
                 ObjVehicleFilter.VehicleIdList = request.VehicleIdList;
                 ObjVehicleFilter.VIN = request.VIN;
-                ObjVehicleFilter.Status = (vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), request.Status.ToString().ToUpper());
+                ObjVehicleFilter.Status = (vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), request.Status.ToString());
 
                 IEnumerable<Vehicle> ObjRetrieveVehicleList = _vehicelManager.Get(ObjVehicleFilter).Result;
                 foreach (var item in ObjRetrieveVehicleList)
@@ -129,12 +146,26 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     ObjResponce.Name = item.Name;
                     ObjResponce.Vin = item.VIN;
                     ObjResponce.LicensePlateNumber = item.License_Plate_Number;
-                    ObjResponce.Status =   VehicleStatusType.OptIn; //GetEnum(item.Status); //(vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), item.Status.ToString().ToUpper());
+                    ObjResponce.Vid = item.Vid;
+                    ObjResponce.Model=item.Model;
+                    if(item.Type !=vehicle.VehicleType.None)
+                    ObjResponce.VehicleType = (VehicleType)Enum.Parse(typeof(VehicleType), item.Type.ToString());
+                    ObjResponce.TcuId=item.Tcu_Id;
+                    ObjResponce.TcuBrand=item.Tcu_Brand;
+                    ObjResponce.TcuSerialNumber=item.Tcu_Serial_Number;
+                    ObjResponce.TcuVersion=item.Tcu_Version;
+                    ObjResponce.IsTcuRegister=item.Is_Tcu_Register;
+                    ObjResponce.ReferenceDate=item.Reference_Date.ToString();
+                    ObjResponce.TerminationDate=item.Termination_Date.ToString();
+                    ObjResponce.StatusDate=item.Status_Changed_Date.ToString();
+                    //ObjResponce.Status = SetEnumVehicleStatusType(item.Status); //GetEnum(item.Status); //(vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), item.Status.ToString().ToUpper());
 
                     ObjVehicleList.Vehicles.Add(ObjResponce);
                 }
                 ObjVehicleList.Message = "Vehicles data retrieved";
                 ObjVehicleList.Code = Responcecode.Success;
+
+                _logger.LogInformation("Get method in vehicle service called.");
                 return await Task.FromResult(ObjVehicleList);
             }
             catch (Exception ex)
@@ -182,10 +213,13 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 VehicleOptInOptOut ObjvehicleOptInOptOutResponce = new VehicleOptInOptOut();
                 ObjvehicleOptInOptOutResponce.RefId = request.Refid;
                 ObjvehicleOptInOptOutResponce.AccountId = request.Accountid;
-                ObjvehicleOptInOptOutResponce.Status = (vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), request.Status.ToString().ToUpper()); //GetVehicleStatusEnum((int)request.Status);
+                ObjvehicleOptInOptOutResponce.Status = (vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), request.Status.ToString()); //GetVehicleStatusEnum((int)request.Status);
                 ObjvehicleOptInOptOutResponce.Date = DateTime.Now;
                 ObjvehicleOptInOptOutResponce.Type = (vehicle.OptInOptOutType)Enum.Parse(typeof(vehicle.OptInOptOutType), request.OptInOptOutType.ToString()); //GetOptInOptOutEnum((int)request.OptInOptOutType);
                 ObjvehicleOptInOptOutResponce = _vehicelManager.UpdateStatus(ObjvehicleOptInOptOutResponce).Result;
+
+                 _logger.LogInformation("UpdateStatus method in vehicle service called.");
+
                 return Task.FromResult(new VehicleOptInOptOutResponce
                 {
                     Message = "Status updated for " + ObjvehicleOptInOptOutResponce.RefId,
@@ -322,14 +356,14 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 GroupFilter ObjGroupFilter = new GroupFilter();
                 ObjGroupFilter.Id = request.Id;
                 ObjGroupFilter.OrganizationId = request.OrganizationId;
-                ObjGroupFilter.FunctionEnum = (group.FunctionEnum)Convert.ToChar(request.FunctionEnum);
-                //ObjGroupFilter.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(FunctionEnum), request.FunctionEnum.ToString());
+                //ObjGroupFilter.FunctionEnum = (group.FunctionEnum)Convert.ToChar(request.FunctionEnum);
+                ObjGroupFilter.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
                 ObjGroupFilter.GroupRef = request.GroupRef;
                 ObjGroupFilter.GroupRefCount = request.GroupRefCount;
-                //ObjGroupFilter.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
-                //ObjGroupFilter.GroupType = (group.GroupType)Enum.Parse(typeof(GroupType), request.GroupType.ToString());
-                ObjGroupFilter.ObjectType = (group.ObjectType)Convert.ToChar(request.ObjectType);
-                ObjGroupFilter.GroupType = (group.GroupType)Convert.ToChar(request.GroupType);
+                ObjGroupFilter.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
+                ObjGroupFilter.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
+                //ObjGroupFilter.ObjectType = (group.ObjectType)Convert.ToChar(request.ObjectType);
+                //ObjGroupFilter.GroupType = GetEnum(Convert.ToChar(request.GroupType));//(group.GroupType)Convert.ToChar(request.GroupType);
                 IEnumerable<Group> ObjRetrieveGroupList = _groupManager.Get(ObjGroupFilter).Result;
                 VehicleGroupRefResponce ObjVehicleGroupRes = new VehicleGroupRefResponce();
                 foreach (var item in ObjRetrieveGroupList)
@@ -343,32 +377,38 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     ObjVehicleGroupRes.GroupRefDetails.Add(ObjGroupRef);
                 }
 
-                VehicleFilter ObjVehicleFilter = new VehicleFilter();
-                ObjVehicleFilter.OrganizationId = request.OrganizationId;
-                IEnumerable<Vehicle> ObjRetrieveVehicleList = _vehicelManager.Get(ObjVehicleFilter).Result;
-
-
-                foreach (var item in ObjRetrieveVehicleList)
+                if (ObjectType.VehicleGroup == (ObjectType)ObjGroupFilter.ObjectType)
                 {
-                    VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
+                    VehicleFilter ObjVehicleFilter = new VehicleFilter();
+                    ObjVehicleFilter.OrganizationId = request.OrganizationId;
+                    IEnumerable<Vehicle> ObjRetrieveVehicleList = _vehicelManager.Get(ObjVehicleFilter).Result;
 
-                    ObjGroupRef.Id = item.ID;
-                    ObjGroupRef.VehicleGroupORVehicleName = item.Name;
-                    ObjGroupRef.RegistartionNo = item.License_Plate_Number;
-                    ObjGroupRef.VIN = item.VIN;
-                    ObjGroupRef.Status = (VehicleStatusType)item.Status;
-                    ObjGroupRef.IsVehicleGroup = false;
-                    ObjGroupRef.Model = item.Model == null ? "" : item.Model;
-                    ObjVehicleGroupRes.GroupRefDetails.Add(ObjGroupRef);
+                    foreach (var item in ObjRetrieveVehicleList)
+                    {
+                        VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
+
+                        ObjGroupRef.Id = item.ID;
+                        ObjGroupRef.VehicleGroupORVehicleName = item.Name;
+                        ObjGroupRef.RegistartionNo = item.License_Plate_Number;
+                        ObjGroupRef.VIN = item.VIN;
+                        //ObjGroupRef.Status = SetEnumVehicleStatusType(item.Status);
+                        ObjGroupRef.Status = (VehicleStatusType)Enum.Parse(typeof(VehicleStatusType), item.Status.ToString());
+                        ObjGroupRef.IsVehicleGroup = false;
+                        ObjGroupRef.Model = item.Model == null ? "" : item.Model;
+                        ObjVehicleGroupRes.GroupRefDetails.Add(ObjGroupRef);
+                    }
                 }
 
                 ObjVehicleGroupRes.Message = "Vehicle and vehicle group list generated";
                 ObjVehicleGroupRes.Code = Responcecode.Success;
 
+                _logger.LogInformation("GetGroupDetails method in vehicle service called.");
+
                 return await Task.FromResult(ObjVehicleGroupRes);
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in vehicle service GetGroupDetails method.");
                 return await Task.FromResult(new VehicleGroupRefResponce
                 {
                     Message = "Exception " + ex.Message,
@@ -403,15 +443,22 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     ObjGroupRef.VehicleGroupORVehicleName = item.Name;
                     ObjGroupRef.RegistartionNo = item.License_Plate_Number;
                     ObjGroupRef.VIN = item.VIN;
-                    ObjGroupRef.Model = item.Model == null ? "" : item.Model;
+                    ObjGroupRef.Model = item.Model;
+                    ObjGroupRef.StatusDate=item.Status_Changed_Date.ToString();
+                    ObjGroupRef.TerminationDate=item.Termination_Date.ToString();
                     ObjVehicleRes.GroupRefDetails.Add(ObjGroupRef);
                 }
                 ObjVehicleRes.Message = "Vehicle and vehicle group list generated";
                 ObjVehicleRes.Code = Responcecode.Success;
+
+                _logger.LogInformation("GetVehiclesByVehicleGroup method in vehicle service called.");
+
                 return await Task.FromResult(ObjVehicleRes);
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in vehicle service GetVehiclesByVehicleGroup method.");
+
                 return await Task.FromResult(new VehicleGroupRefResponce
                 {
                     Message = "Exception " + ex.Message,
@@ -419,5 +466,57 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 });
             }
         }
+
+        //  private VehicleStatusType SetEnumVehicleStatusType(vehicle.VehicleStatusType type)
+        // {
+        //     VehicleStatusType vehicleStatusType = VehicleStatusType.None;
+
+        //     if ( type == vehicle.VehicleStatusType.NONE)
+        //     {
+        //         vehicleStatusType = VehicleStatusType.None;
+        //     }
+        //     else if ( type == vehicle.VehicleStatusType.OPTIN)
+        //     {
+        //         vehicleStatusType = VehicleStatusType.Optin;
+        //     }
+        //     else if ( type == vehicle.VehicleStatusType.OPTOUT)
+        //     {
+        //         vehicleStatusType = VehicleStatusType.Optout;
+        //     }
+        //     else if ( type == vehicle.VehicleStatusType.TERMINATE)
+        //     {
+        //         vehicleStatusType = VehicleStatusType.Terminate;
+        //     }
+        //     else if ( type == vehicle.VehicleStatusType.OTA)
+        //     {
+        //         vehicleStatusType = VehicleStatusType.Ota;
+        //     }
+        //     return vehicleStatusType;
+        // }
+
+        private group.GroupType GetEnum(char value)
+        {
+            group.GroupType groupType;
+            switch (value)
+            {
+                case 'N':
+                    groupType = group.GroupType.None;
+                    break;
+                case 'S':
+                    groupType = group.GroupType.Single;
+                    break;
+                case 'G':
+                    groupType = group.GroupType.Group;
+                    break;
+                case 'D':
+                    groupType = group.GroupType.Dynamic;
+                    break;
+                default:
+                    groupType = group.GroupType.None;
+                    break;
+            }
+            return groupType;
+        }
+
     }
 }

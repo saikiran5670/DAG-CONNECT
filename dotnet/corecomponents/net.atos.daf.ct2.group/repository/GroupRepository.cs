@@ -135,7 +135,7 @@ namespace net.atos.daf.ct2.group
                     // group type filter
                     if (((char)groupFilter.GroupType) != ((char)GroupType.None))
                     {
-                        parameter.Add("@group_type ", (char)groupFilter.GroupType,DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                        parameter.Add("@group_type", (char)groupFilter.GroupType,DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and group_type = @group_type ";
                     }
                 }

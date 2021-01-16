@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
 
 option csharp_namespace = "net.atos.daf.ct2.vehicleservice";
 
@@ -52,19 +53,35 @@ enum GroupType{
 enum FunctionEnum{
         All = 0;
     }
-
+enum VehicleType
+    {
+      RigidHeavyTruck=0;
+      ArticulatedTruck=1; 
+      Lcv=2;
+      Trailer=3; 
+      Vl=4;
+      SemiTrailer=5;
+    }
 
 // The request message containing the vehicle details.
 message VehicleRequest {
   int32 Id=1;
-  int32 Organizationid=2;
+  google.protobuf.Int32Value Organizationid=2;
   string Name = 3;
   string Vin=4;
   string LicensePlateNumber=5;
 VehicleStatusType Status=6;
-google.protobuf.Timestamp StatusDate=7;
-google.protobuf.Timestamp TerminationDate=8;
-
+google.protobuf.StringValue StatusDate=7;
+google.protobuf.StringValue TerminationDate=8;
+google.protobuf.StringValue Vid=9;
+VehicleType VehicleType=10;
+google.protobuf.StringValue Model=11;
+google.protobuf.StringValue TcuId=12;
+google.protobuf.StringValue Tcu_Serial_Number=13;
+google.protobuf.StringValue Tcu_Brand=14;
+google.protobuf.StringValue Tcu_Version=15;
+bool Is_Tcu_Register=16;
+google.protobuf.StringValue reference_date=17;
 }
 
 // The response message containing the greetings.
@@ -150,10 +167,12 @@ message VehicleGroupRefDetails{
   string VehicleGroupORVehicleName= 2; 
   string VIN= 3; 
   string RegistartionNo= 4;
-  string Model= 5;
+  google.protobuf.StringValue Model= 5;
   int32 VehicleCount= 6;
   VehicleStatusType Status=7;
   bool IsVehicleGroup=8;
+  google.protobuf.StringValue StatusDate=9;
+  google.protobuf.StringValue TerminationDate=10;
   
 }
 

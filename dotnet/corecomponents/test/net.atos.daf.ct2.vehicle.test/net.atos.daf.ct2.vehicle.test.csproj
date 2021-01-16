@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\net.atos.daf.ct2.vehicle\net.atos.daf.ct2.vehicle.csproj" />
+    <ProjectReference Include="..\..\net.atos.daf.ct2.group\net.atos.daf.ct2.group.csproj" />
   </ItemGroup>
 
 </Project>
