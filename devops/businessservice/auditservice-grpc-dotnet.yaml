@@ -6,7 +6,7 @@
 trigger:
 - none
 
-pool: Azure Pipelines
+pool:  dafct-dev1-privateagent
 
 parameters:
 - name: ENV
