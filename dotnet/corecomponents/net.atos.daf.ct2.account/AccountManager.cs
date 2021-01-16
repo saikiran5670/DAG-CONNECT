@@ -113,5 +113,14 @@ namespace net.atos.daf.ct2.account
         {
             return await repository.RemoveRole(accountRoles);
         }
+        public async  Task<List<string>> GetRoles(AccountRole accountRoles)
+        {
+            return await repository.GetRoles(accountRoles);
+        }   
+        public async  Task<List<int>> GetRoleAccounts(int roleId)
+        {
+            return await repository.GetRoleAccounts(roleId);
+        }   
+        
     }
 }

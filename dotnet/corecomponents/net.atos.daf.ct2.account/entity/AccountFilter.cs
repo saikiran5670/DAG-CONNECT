@@ -9,5 +9,6 @@ namespace net.atos.daf.ct2.account.entity
         public string Email { get; set; }
         public AccountType AccountType { get; set; }
         public string AccountIds { get; set; }
+        public string Name { get; set; }
     }    
 }
