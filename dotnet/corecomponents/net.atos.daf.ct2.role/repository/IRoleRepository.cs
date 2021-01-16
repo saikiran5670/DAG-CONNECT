@@ -13,5 +13,6 @@ namespace net.atos.daf.ct2.role.repository
         Task<int> UpdateRole(RoleMaster roleMaster);
         Task<int> DeleteRole(int roleid, int Accountid);
         Task<int> CheckRoleNameExist(string roleName);
+        Task<int>  Addrolefeatureset(int RoleId,int FeatureSetId);
     }
 }
