@@ -26,6 +26,8 @@ variables:
   - group: DEV01-Build-Variables
 - ${{ if eq(parameters.ENV, 'DEV02') }}:
   - group: DEV02-Build-Variables
+- ${{ if eq(parameters.ENV, 'All') }}:
+  - group: DEV02-Build-Variables
 
 steps:
 - task: replacetokens@3
