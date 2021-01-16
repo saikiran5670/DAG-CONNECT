@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using net.atos.daf.ct2.identity;
 using net.atos.daf.ct2.identity.entity;
 using net.atos.daf.ct2.account.entity;
+using net.atos.daf.ct2.accountpreference;
 
 namespace net.atos.daf.ct2.account
 {
@@ -13,9 +14,9 @@ namespace net.atos.daf.ct2.account
         ITokenManager tokenManager;
         IAccountAuthenticator autheticator;
         IAccountManager accountManager;
-        IAccountPreference accountPreference;        
+        IPreferenceManager accountPreference;        
 
-        public AccountIdentityManager(ITokenManager _tokenManager, IAccountAuthenticator _autheticator,IAccountPreference _accountPreference)
+        public AccountIdentityManager(ITokenManager _tokenManager, IAccountAuthenticator _autheticator,IPreferenceManager _accountPreference)
         {
             autheticator = _autheticator;
             tokenManager = _tokenManager;
@@ -37,7 +38,7 @@ namespace net.atos.daf.ct2.account
                 if(accountId>0)
                 {
                     AccountPreferenceFilter filter=new AccountPreferenceFilter();
-                    filter.Ref_id=PreferenceType.Ref_id;
+                    //filter.Ref_Id =PreferenceType.Ref_id;
                     filter.PreferenceType=PreferenceType.Account;
                     // IEnumerable<AccountPreference> preferences=accountPreference.Get(filter);
                     // foreach(var pref in preferences) 
@@ -59,7 +60,7 @@ namespace net.atos.daf.ct2.account
         {
             int accountid=0;
             AccountFilter filter = new AccountFilter();     
-            filter.Name =email;
+            filter.Email =email;
         //    filter.AccountType = AccountType.None;            
             IEnumerable<Account> result = accountManager.Get(filter).Result;
             foreach(var account in result) 
