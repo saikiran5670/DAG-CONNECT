@@ -17,5 +17,7 @@ namespace net.atos.daf.ct2.account
         Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter);    
         Task<AccessRelationship> CreateAccessRelationship(AccessRelationship entity);
         Task<AccessRelationship> UpdateAccessRelationship(AccessRelationship entity);
+        Task<bool> AddRole(List<AccountRole> accountRoles);
+        Task<bool> RemoveRole(AccountRole accountRoles);
     }
 }

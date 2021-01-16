@@ -5291,3 +5291,8 @@ dotnet/.vscode/settings.json
 /dotnet/businessservices/net.atos.daf.ct2.vehicleservice/obj
 /dotnet/businessservices/net.atos.daf.ct2.organizationservice/obj/Debug/netcoreapp3.1
 /dotnet/businessservices/net.atos.daf.ct2.organizationservice/obj
+dotnet/corecomponents/test/net.atos.daf.ct2.group.test/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.group.dll
+dotnet/corecomponents/test/net.atos.daf.ct2.group.test/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.group.dll
+dotnet/corecomponents/test/net.atos.daf.ct2.group.test/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.group.pdb
+dotnet/corecomponents/test/net.atos.daf.ct2.group.test/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.group.test.dll
+dotnet/corecomponents/test/net.atos.daf.ct2.group.test/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.group.test.pdb
