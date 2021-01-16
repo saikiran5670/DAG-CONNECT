@@ -89,8 +89,8 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@type", (char)account.AccountType);
 
                 string query = @"update master.account set id = @id,email = @email,salutation = @salutation,
-                                first_name = @first_name,last_name = @last_name ,dob = @dob,type = @type)
-                                 where id = @id RETURNING id";
+                                first_name = @first_name,last_name = @last_name ,dob = @dob,type = @type
+                                where id = @id RETURNING id";
 
                 account.Id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
@@ -107,13 +107,14 @@ namespace net.atos.daf.ct2.account
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", accountid);
                 parameter.Add("@organization_id", organization_id);
-                string query = @"delete from master.accountorg where account_id = @id and organization_id = @organization_id";
+                string query = @"update master.accountorg set is_active = 0 where account_id = @id and organization_id = @organization_id";
                 var result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                if (accountid > 0)
-                {
-                    query = @"delete from master.account where id = @id";
-                    await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                }
+                //TODO:: Do we need is_active column in account table as well
+                // if (accountid > 0)
+                // {
+                //     query = @"update master.account set where id = @id";
+                //     await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                // }
                 return true;
             }
             catch (Exception ex)
@@ -130,7 +131,7 @@ namespace net.atos.daf.ct2.account
                 //List<Account> accounts = new List<Account>();
                 List<Account> accounts = new List<Account>();
                 string query = string.Empty;
-                query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.dob,a.type as accounttype,ag.organization_id as Organization_Id from master.account a join master.accountorg ag on a.id = ag.account_id where 1=1 ";
+                query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.dob,a.type as accounttype,ag.organization_id as Organization_Id from master.account a join master.accountorg ag on a.id = ag.account_id and ag.is_active=true where 1=1 ";
                 if (filter != null)
                 {
                     // id filter
@@ -139,6 +140,12 @@ namespace net.atos.daf.ct2.account
                         parameter.Add("@id", filter.Id);
                         query = query + " and a.id = @id ";
                     }
+                    // email id filter
+                    if (!string.IsNullOrEmpty(filter.Email))
+                    {
+                        parameter.Add("@email", filter.Email);
+                        query = query + " and a.email = @email ";
+                    }
                     // organization id filter
                     if (filter.OrganizationId > 0)
                     {
@@ -146,7 +153,7 @@ namespace net.atos.daf.ct2.account
                         query = query + " and ag.organization_id = @organization_id ";
                     }
                     // account type filter 
-                    if (((char)filter.AccountType) != ((char) AccountType.None))
+                    if (((char)filter.AccountType) != ((char)AccountType.None))
                     {
                         parameter.Add("@type", (char)filter.AccountType);
                         query = query + " and a.type = @type";
@@ -159,7 +166,7 @@ namespace net.atos.daf.ct2.account
                         List<int> accountids = filter.AccountIds.Split(',').Select(int.Parse).ToList();
                         parameter.Add("@accountids", accountids);
                         query = query + " and a.id = ANY(@accountids) ";
-                        
+
                     }
                     dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
 
@@ -182,7 +189,7 @@ namespace net.atos.daf.ct2.account
                 var parameter = new DynamicParameters();
 
                 //parameter.Add("@id", account.Id);
-                parameter.Add("@access_type", (char) entity.AccessRelationType);
+                parameter.Add("@access_type", (char)entity.AccessRelationType);
                 parameter.Add("@account_group_id", entity.AccountGroupId);
                 parameter.Add("@vehicle_group_id", entity.VehicleGroupId);
 
@@ -198,13 +205,13 @@ namespace net.atos.daf.ct2.account
             }
             return entity;
         }
-         public async Task<AccessRelationship> UpdateAccessRelationship(AccessRelationship entity)
+        public async Task<AccessRelationship> UpdateAccessRelationship(AccessRelationship entity)
         {
             try
             {
                 var parameter = new DynamicParameters();
 
-                parameter.Add("@access_type", (char) entity.AccessRelationType);
+                parameter.Add("@access_type", (char)entity.AccessRelationType);
                 parameter.Add("@account_group_id", entity.AccountGroupId);
                 parameter.Add("@vehicle_group_id", entity.VehicleGroupId);
 
@@ -244,7 +251,7 @@ namespace net.atos.daf.ct2.account
                     else if (filter.AccountGroupId > 0)
                     {
                         query = @"select id,access_type,account_group_id,vehicle_group_id 
-                                    from master.accessRelationship where ac.account_group_id=@account_group_id";
+                                    from master.accessRelationship where account_group_id=@account_group_id";
                         parameter.Add("@account_group_id", filter.AccountGroupId);
                     }
                     dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
@@ -262,6 +269,68 @@ namespace net.atos.daf.ct2.account
             }
         }
 
+        // Begin Add Account to Role
+        public async Task<bool> AddRole(List<AccountRole> accountRoles)
+        {
+            bool result = false;
+            try
+            {
+                var parameter = new DynamicParameters();                
+                string query = string.Empty;
+                if (accountRoles != null)
+                {
+                    parameter.Add("@account_id", accountRoles[0].AccountId);
+                    parameter.Add("@organization_id", accountRoles[0].OrganizationId);
+
+                    query = @"insert into master.accountrole (account_id,organization_id,role_id) values ";
+
+                    foreach (AccountRole accountRole in accountRoles)
+                    {
+                        parameter.Add("@role_id_" + accountRole.RoleId.ToString(), accountRole.RoleId);
+                        query = query + @" (@account_id,@organization_id,@role_id_" + accountRole.RoleId.ToString() + "),";
+                    }
+                    if (!string.IsNullOrEmpty(query))
+                    {
+                        query = query.TrimEnd(',');
+                        await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    }
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return result;
+        }
+
+         public async Task<bool> RemoveRole(AccountRole accountRoles)
+        {
+            bool result = false;
+            try
+            {
+                var parameter = new DynamicParameters();                
+                string query = string.Empty;
+                if (accountRoles != null)
+                {
+                    parameter.Add("@account_id", accountRoles.AccountId);
+                    parameter.Add("@organization_id", accountRoles.OrganizationId);
+                    query = @"delete from master.accountrole where account_id = @account_id and organization_id=@organization_id";                    
+                    if (!string.IsNullOrEmpty(query))
+                    {
+                        query = query.TrimEnd(',');
+                        await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    }
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return result;
+        }
+        // End Add Account to Role
         private Account Map(dynamic record)
         {
             Account account = new Account();

@@ -7,6 +7,6 @@ namespace net.atos.daf.ct2.accountpreference
          None = 'N',
         Metric= 'M',
         Imperial= 'I',
-        US_Imperial = 'U'
+        Usimperial = 'U'
     }
 }

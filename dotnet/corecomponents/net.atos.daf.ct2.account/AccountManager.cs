@@ -89,7 +89,6 @@ namespace net.atos.daf.ct2.account
             }
             return result;
         }
-
         public async Task<IEnumerable<Account>> Get(AccountFilter filter)
         {
             return await repository.Get(filter);
@@ -105,6 +104,14 @@ namespace net.atos.daf.ct2.account
         public async Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter)
         {
             return await repository.GetAccessRelationship(filter);
+        }
+        public async  Task<bool> AddRole(List<AccountRole> accountRoles)
+        {
+            return await repository.AddRole(accountRoles);
+        }
+        public async  Task<bool> RemoveRole(AccountRole accountRoles)
+        {
+            return await repository.RemoveRole(accountRoles);
         }
     }
 }

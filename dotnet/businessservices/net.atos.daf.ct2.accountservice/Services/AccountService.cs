@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
@@ -8,7 +9,7 @@ using System.Collections.Generic;
 using AccountComponent = net.atos.daf.ct2.account;
 using Preference = net.atos.daf.ct2.accountpreference;
 using Group = net.atos.daf.ct2.group;
-
+using Microsoft.Extensions.DependencyInjection;
 
 
 namespace net.atos.daf.ct2.accountservice
@@ -18,8 +19,8 @@ namespace net.atos.daf.ct2.accountservice
         private readonly ILogger<GreeterService> _logger;
         private readonly AccountComponent.IAccountManager accountmanager;
         private readonly Preference.IPreferenceManager preferencemanager;
-        private readonly Group.GroupManager groupmanager;
-        public AccountManagementService(ILogger<GreeterService> logger, AccountComponent.IAccountManager _accountmanager,Preference.IPreferenceManager _preferencemanager, Group.GroupManager _groupmanager)
+        private readonly Group.IGroupManager groupmanager;
+        public AccountManagementService(ILogger<GreeterService> logger, AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager)
         {
             _logger = logger;
             accountmanager = _accountmanager;
@@ -36,9 +37,9 @@ namespace net.atos.daf.ct2.accountservice
                 account.EmailId = request.EmailId;
                 account.Salutation = request.Salutation;
                 account.FirstName = request.FirstName;
-                account.LastName = request.LastName;                
+                account.LastName = request.LastName;
                 account.Dob = request.Dob.Seconds;
-                account.AccountType = GetEnum((int) request.Type);
+                account.AccountType = GetEnum((int)request.Type);
                 account.Organization_Id = request.OrganizationId;
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
@@ -46,7 +47,7 @@ namespace net.atos.daf.ct2.accountservice
 
                 // response 
                 AccountData response = new AccountData();
-                response.Code  = Responcecode.Success;
+                response.Code = Responcecode.Success;
                 response.Message = "Created";
                 response.Account = request;
 
@@ -71,9 +72,9 @@ namespace net.atos.daf.ct2.accountservice
                 account.EmailId = request.EmailId;
                 account.Salutation = request.Salutation;
                 account.FirstName = request.FirstName;
-                account.LastName = request.LastName;                
+                account.LastName = request.LastName;
                 account.Dob = request.Dob.Seconds;
-                account.AccountType = GetEnum((int) request.Type);
+                account.AccountType = GetEnum((int)request.Type);
                 account.Organization_Id = request.OrganizationId;
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
@@ -81,7 +82,7 @@ namespace net.atos.daf.ct2.accountservice
 
                 // response 
                 AccountData response = new AccountData();
-                response.Code  = Responcecode.Success;
+                response.Code = Responcecode.Success;
                 response.Message = "Updated";
                 response.Account = request;
 
@@ -106,9 +107,9 @@ namespace net.atos.daf.ct2.accountservice
                 account.EmailId = request.EmailId;
                 account.Salutation = request.Salutation;
                 account.FirstName = request.FirstName;
-                account.LastName = request.LastName;                
+                account.LastName = request.LastName;
                 account.Dob = request.Dob.Seconds;
-                account.AccountType = GetEnum((int) request.Type);
+                account.AccountType = GetEnum((int)request.Type);
                 account.Organization_Id = request.OrganizationId;
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
@@ -116,7 +117,7 @@ namespace net.atos.daf.ct2.accountservice
 
                 // response 
                 AccountResponse response = new AccountResponse();
-                response.Code  = Responcecode.Success;
+                response.Code = Responcecode.Success;
                 response.Message = "Delete";
                 return Task.FromResult(response);
             }
@@ -125,7 +126,7 @@ namespace net.atos.daf.ct2.accountservice
                 return Task.FromResult(new AccountResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Deletion Faile due to - " + ex.Message                    
+                    Message = "Account Deletion Faile due to - " + ex.Message
                 });
             }
         }
@@ -139,17 +140,17 @@ namespace net.atos.daf.ct2.accountservice
                 account.Salutation = request.Salutation;
                 account.FirstName = request.FirstName;
                 account.LastName = request.LastName;
-                account.Password = request.Password;                
+                account.Password = request.Password;
                 account.Dob = request.Dob.Seconds;
-                account.AccountType = GetEnum((int) request.Type);
+                account.AccountType = GetEnum((int)request.Type);
                 account.Organization_Id = request.OrganizationId;
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
-                var result = accountmanager.Delete(account).Result;
+                var result = accountmanager.ChangePassword(account).Result;
 
                 // response 
                 AccountResponse response = new AccountResponse();
-                response.Code  = Responcecode.Success;
+                response.Code = Responcecode.Success;
                 response.Message = "Change Password";
                 return Task.FromResult(response);
             }
@@ -158,32 +159,32 @@ namespace net.atos.daf.ct2.accountservice
                 return Task.FromResult(new AccountResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Change Password faile due to with reason : " + ex.Message                    
+                    Message = "Account Change Password faile due to with reason : " + ex.Message
                 });
             }
         }
 
-         public override Task<AccountDataList> Get(AccountFilter request , ServerCallContext context)
+        public override Task<AccountDataList> Get(AccountFilter request, ServerCallContext context)
         {
             try
             {
                 AccountComponent.entity.AccountFilter filter = new AccountComponent.entity.AccountFilter();
                 filter.Id = request.Id;
-                filter.OrganizationId = request.OrganizationId;                
-                filter.AccountType = GetEnum((int) request.AccountType);                
+                filter.OrganizationId = request.OrganizationId;
+                filter.AccountType = GetEnum((int)request.AccountType);
                 filter.AccountIds = null;
-                if(request.AccountIds != null && Convert.ToString(request.AccountIds).Length >0)
+                if (request.AccountIds != null && Convert.ToString(request.AccountIds).Length > 0)
                 {
-                    filter.AccountIds = request.AccountIds;                    
-                }                
+                    filter.AccountIds = request.AccountIds;
+                }
                 var result = accountmanager.Get(filter).Result;
                 // response 
                 AccountDataList response = new AccountDataList();
-                foreach(AccountComponent.entity.Account entity in result)
+                foreach (AccountComponent.entity.Account entity in result)
                 {
                     response.Accounts.Add(MapToRequest(entity));
-                }                
-                response.Code  = Responcecode.Success;
+                }
+                response.Code = Responcecode.Success;
                 response.Message = "Get";
                 return Task.FromResult(response);
             }
@@ -192,10 +193,71 @@ namespace net.atos.daf.ct2.accountservice
                 return Task.FromResult(new AccountDataList
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get faile due to with reason : " + ex.Message                                      
+                    Message = "Get faile due to with reason : " + ex.Message
                 });
             }
         }
+
+        public override Task<AccountDetailsResponse> GetAccountDetail(IdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                AccountComponent.entity.AccountFilter filter = new AccountComponent.entity.AccountFilter();
+                filter.Id = 0;
+                filter.OrganizationId = request.Id;
+                filter.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
+                filter.AccountIds = null;
+                // list of account for organization 
+                var result = accountmanager.Get(filter).Result;
+                // response 
+                AccountDetailsResponse response = new AccountDetailsResponse();
+                AccountDetails accountDetails = new AccountDetails();
+                List<string> accountGroupName = null;
+                foreach (AccountComponent.entity.Account entity in result)
+                {
+                    accountDetails.Account = MapToRequest(entity);
+                    Group.GroupFilter groupFilter = new Group.GroupFilter();
+                    groupFilter.RefId = entity.Id;
+                    var vehicleGroupList = groupmanager.Get(groupFilter).Result;
+                    if (vehicleGroupList != null)
+                    {
+                        accountGroupName = new List<string>();
+                        foreach (Group.Group vGroup in vehicleGroupList)
+                        {
+                            accountGroupName.Add(vGroup.Name);
+                        }
+                    }
+                    if (accountGroupName != null)
+                    {
+                        accountDetails.AccountGroups = string.Join(",", accountGroupName);
+                    }
+                    // Get roles        
+                    accountDetails.Roles = "Role1,Role2,Role3";
+                    // End Get Roles
+                    response.AccountDetails.Add(accountDetails);
+                }
+                response.Code = Responcecode.Success;
+                response.Message = "Get";
+                return Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(new AccountDetailsResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Get faile due to with reason : " + ex.Message
+                });
+            }
+        }
+        // End Account
+
+        // Begin AccessRelationship
+
+
+
+        // Begin AccessRelationship
+
+
         // Begin AccountPreference
 
         public override Task<AccountPreferenceResponse> CreatePreference(AccountPreference request, ServerCallContext context)
@@ -205,18 +267,19 @@ namespace net.atos.daf.ct2.accountservice
                 Preference.AccountPreference preference = new Preference.AccountPreference();
                 preference.Id = request.Id;
                 preference.Ref_Id = request.RefId;
-                preference.PreferenceType = (Preference.PreferenceType)  Enum.Parse(typeof(Preference.PreferenceType), request.PreferenceType.ToString());
+
+                preference.PreferenceType = (Preference.PreferenceType)Enum.Parse(typeof(Preference.PreferenceType), request.PreferenceType.ToString());
                 preference.Language_Id = request.LanguageId;
                 preference.Timezone_Id = request.TimezoneId;
-                preference.Currency_Type = (Preference.CurrencyType)  Enum.Parse(typeof(Preference.CurrencyType), request.CurrencyType.ToString());
-                preference.Unit_Type = (Preference.UnitType)  Enum.Parse(typeof(Preference.UnitType), request.UnitType.ToString());
-                preference.VehicleDisplay_Type = (Preference.VehicleDisplayType)  Enum.Parse(typeof(Preference.VehicleDisplayType), request.VehicleDisplayType.ToString());
-                preference.DateFormat_Type = (Preference.DateFormatDisplayType)  Enum.Parse(typeof(Preference.DateFormatDisplayType), request.DateFormatType.ToString());
+                preference.Currency_Type = (Preference.CurrencyType)Enum.Parse(typeof(Preference.CurrencyType), request.CurrencyType.ToString());
+                preference.Unit_Type = (Preference.UnitType)Enum.Parse(typeof(Preference.UnitType), request.UnitType.ToString());
+                preference.VehicleDisplay_Type = (Preference.VehicleDisplayType)Enum.Parse(typeof(Preference.VehicleDisplayType), request.VehicleDisplayType.ToString());
+                preference.DateFormat_Type = (Preference.DateFormatDisplayType)Enum.Parse(typeof(Preference.DateFormatDisplayType), request.DateFormatType.ToString());
                 preference = preferencemanager.Create(preference).Result;
-
+                if (preference.Id.HasValue) request.Id = preference.Id.Value;
                 // response 
                 AccountPreferenceResponse response = new AccountPreferenceResponse();
-                response.Code  = Responcecode.Success;
+                response.Code = Responcecode.Success;
                 response.Message = "Preference Created";
                 response.AccountPreference = request;
 
@@ -240,18 +303,18 @@ namespace net.atos.daf.ct2.accountservice
                 Preference.AccountPreference preference = new Preference.AccountPreference();
                 preference.Id = request.Id;
                 preference.Ref_Id = request.RefId;
-                preference.PreferenceType = (Preference.PreferenceType)  Enum.Parse(typeof(Preference.PreferenceType), request.PreferenceType.ToString());
+                preference.PreferenceType = (Preference.PreferenceType)Enum.Parse(typeof(Preference.PreferenceType), request.PreferenceType.ToString());
                 preference.Language_Id = request.LanguageId;
                 preference.Timezone_Id = request.TimezoneId;
-                preference.Currency_Type = (Preference.CurrencyType)  Enum.Parse(typeof(Preference.CurrencyType), request.CurrencyType.ToString());
-                preference.Unit_Type = (Preference.UnitType)  Enum.Parse(typeof(Preference.UnitType), request.UnitType.ToString());
-                preference.VehicleDisplay_Type = (Preference.VehicleDisplayType)  Enum.Parse(typeof(Preference.VehicleDisplayType), request.VehicleDisplayType.ToString());
-                preference.DateFormat_Type = (Preference.DateFormatDisplayType)  Enum.Parse(typeof(Preference.DateFormatDisplayType), request.DateFormatType.ToString());
+                preference.Currency_Type = (Preference.CurrencyType)Enum.Parse(typeof(Preference.CurrencyType), request.CurrencyType.ToString());
+                preference.Unit_Type = (Preference.UnitType)Enum.Parse(typeof(Preference.UnitType), request.UnitType.ToString());
+                preference.VehicleDisplay_Type = (Preference.VehicleDisplayType)Enum.Parse(typeof(Preference.VehicleDisplayType), request.VehicleDisplayType.ToString());
+                preference.DateFormat_Type = (Preference.DateFormatDisplayType)Enum.Parse(typeof(Preference.DateFormatDisplayType), request.DateFormatType.ToString());
                 preference = preferencemanager.Update(preference).Result;
-
+                if (preference.Id.HasValue) request.Id = preference.Id.Value;
                 // response 
                 AccountPreferenceResponse response = new AccountPreferenceResponse();
-                response.Code  = Responcecode.Success;
+                response.Code = Responcecode.Success;
                 response.Message = "Preference Updated";
                 response.AccountPreference = request;
 
@@ -273,11 +336,11 @@ namespace net.atos.daf.ct2.accountservice
             {
                 Preference.AccountPreference preference = new Preference.AccountPreference();
                 preference.Id = request.Id;
-                preference.Ref_Id = request.RefId;               
+                preference.Ref_Id = request.RefId;
                 var result = preferencemanager.Delete(request.Id).Result;
                 // response 
                 AccountPreferenceResponse response = new AccountPreferenceResponse();
-                response.Code  = Responcecode.Success;
+                response.Code = Responcecode.Success;
                 response.Message = "Preference Delete";
                 response.AccountPreference = request;
                 return Task.FromResult(response);
@@ -298,15 +361,15 @@ namespace net.atos.daf.ct2.accountservice
             {
                 Preference.AccountPreferenceFilter preferenceFilter = new Preference.AccountPreferenceFilter();
                 preferenceFilter.Id = request.Id;
-                preferenceFilter.Ref_Id = request.RefId; 
-                preferenceFilter.PreferenceType = (Preference.PreferenceType)  Enum.Parse(typeof(Preference.PreferenceType), request.Preference.ToString());
+                preferenceFilter.Ref_Id = request.RefId;
+                preferenceFilter.PreferenceType = (Preference.PreferenceType)Enum.Parse(typeof(Preference.PreferenceType), request.Preference.ToString());
 
                 var result = preferencemanager.Get(preferenceFilter).Result;
                 // response 
                 AccountPreferenceDataList response = new AccountPreferenceDataList();
-                response.Code  = Responcecode.Success;
+                response.Code = Responcecode.Success;
                 response.Message = "Get";
-                foreach(Preference.AccountPreference entity in result)
+                foreach (Preference.AccountPreference entity in result)
                 {
                     response.Preference.Add(MapToPreferenceRequest(entity));
                 }
@@ -318,7 +381,7 @@ namespace net.atos.daf.ct2.accountservice
                 {
                     Code = Responcecode.Failed,
                     Message = "Preference Get Faile due to - " + ex.Message
-                    
+
                 });
             }
         }
@@ -334,22 +397,30 @@ namespace net.atos.daf.ct2.accountservice
                 entity.Description = request.Description;
                 entity.Argument = request.Argument;
                 entity.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
-                entity.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
-                entity.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
+                entity.GroupType = group.GroupType.Group;
+                //entity.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
+                //entity.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
+                entity.ObjectType = group.ObjectType.AccountGroup;
                 entity.OrganizationId = request.OrganizationId;
 
                 entity.GroupRef = new List<Group.GroupRef>();
-                foreach (var item in request.GroupRef)
+                if (request.GroupRef != null)
                 {
-                    entity.GroupRef.Add(new Group.GroupRef() { Ref_Id = item.RefId });
+                    foreach (var item in request.GroupRef)
+                    {
+                        if (item.RefId > 0)
+                            entity.GroupRef.Add(new Group.GroupRef() { Ref_Id = item.RefId });
+                    }
                 }
                 var result = groupmanager.Create(entity).Result;
-
-                if (result.Id > 0)
+                if (result.Id > 0 && entity.GroupRef != null)
                 {
-                    bool AddvehicleGroupRef = groupmanager.UpdateRef(entity).Result;
+                    if (entity.GroupRef.Count > 0)
+                    {
+                        bool AddvehicleGroupRef = groupmanager.UpdateRef(entity).Result;
+                    }
                 }
-                _logger.LogInformation("Created Account Group :" + Convert.ToString(entity.Name));                
+                _logger.LogInformation("Group Created:" + Convert.ToString(entity.Name));
                 return Task.FromResult(new AccountGroupResponce
                 {
                     Message = "Account group created with id:- " + entity.Id,
@@ -371,6 +442,7 @@ namespace net.atos.daf.ct2.accountservice
             try
             {
                 Group.Group entity = new Group.Group();
+                entity.Id = request.Id;
                 entity.Name = request.Name;
                 entity.Description = request.Description;
                 entity.Argument = request.Argument;
@@ -382,18 +454,22 @@ namespace net.atos.daf.ct2.accountservice
                 entity.GroupRef = new List<Group.GroupRef>();
                 foreach (var item in request.GroupRef)
                 {
-                    entity.GroupRef.Add(new Group.GroupRef() { Ref_Id = item.RefId });
+                    if (item.RefId > 0)
+                        entity.GroupRef.Add(new Group.GroupRef() { Ref_Id = item.RefId });
                 }
-                var result = groupmanager.Create(entity).Result;
+                var result = groupmanager.Update(entity).Result;
 
-                if (result.Id > 0)
+                if (result.Id > 0 && entity != null)
                 {
-                    bool AddvehicleGroupRef = groupmanager.UpdateRef(entity).Result;
+                    if (entity.GroupRef.Count > 0)
+                    {
+                        bool AddvehicleGroupRef = groupmanager.UpdateRef(entity).Result;
+                    }
                 }
-                _logger.LogInformation("Update Account Group :" + Convert.ToString(entity.Name));                
+                _logger.LogInformation("Update Account Group :" + Convert.ToString(entity.Name));
                 return Task.FromResult(new AccountGroupResponce
                 {
-                    Message = "Account group updated with id: " + entity.Id,
+                    Message = "Account group updated for id: " + entity.Id,
                     Code = Responcecode.Success
                 });
             }
@@ -408,14 +484,14 @@ namespace net.atos.daf.ct2.accountservice
             }
         }
 
-        public override Task<AccountGroupResponce> DeleteGroup(DeleteRecordRequest request, ServerCallContext context)
+        public override Task<AccountGroupResponce> DeleteGroup(IdRequest request, ServerCallContext context)
         {
             try
             {
                 bool result = groupmanager.Delete(request.Id).Result;
-                
+
                 _logger.LogInformation("Delete group method in account group.");
-                
+
                 return Task.FromResult(new AccountGroupResponce
                 {
                     Message = "Account Group deleted with id:- " + request,
@@ -434,10 +510,11 @@ namespace net.atos.daf.ct2.accountservice
             }
         }
 
-        public async override Task<AccountGroupResponce> GetGroupDetails(AccountGroupFilterRequest request, ServerCallContext context)
+        public async override Task<AccountGroupDataList> GetAccountGroup(AccountGroupFilterRequest request, ServerCallContext context)
         {
             try
             {
+                AccountGroupDataList accountGroupList = new AccountGroupDataList();
                 Group.GroupFilter ObjGroupFilter = new Group.GroupFilter();
                 ObjGroupFilter.Id = request.Id;
                 ObjGroupFilter.OrganizationId = request.OrganizationId;
@@ -448,38 +525,150 @@ namespace net.atos.daf.ct2.accountservice
                 ObjGroupFilter.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
 
                 IEnumerable<Group.Group> ObjRetrieveGroupList = groupmanager.Get(ObjGroupFilter).Result;
-                // foreach (var item in ObjRetrieveVehicleList)
-                // {
-                //     VehicleRequest ObjResponce = new VehicleRequest();
-                //     ObjResponce.Id = item.ID;
-                //     ObjResponce.Organizationid = item.Organization_Id;
-                //     ObjResponce.Name = item.Name;
-                //     ObjResponce.Vin = item.VIN;
-                //     ObjResponce.LicensePlateNumber = item.License_Plate_Number;
-                //     ObjResponce.Status = (VehicleStatusType)(char)item.Status;
-
-                //     ObjVehicleList.Vehicles.Add(ObjResponce);
-                // }
-                // ObjVehicleList.Message = "Vehicles data retrieved";
-                // ObjVehicleList.Code = Responcecode.Success;
-                // return await Task.FromResult(ObjVehicleList);
-
-                return await Task.FromResult(new AccountGroupResponce
+                foreach (var item in ObjRetrieveGroupList)
                 {
-                    Message = "Exception " ,
-                    Code = Responcecode.Success
-                });
+                    AccountGroupRequest ObjResponce = new AccountGroupRequest();
+                    ObjResponce = MapToAccountGroupResponse(item);
+                    accountGroupList.AccountGroupRequest.Add(ObjResponce);
+                }
+                accountGroupList.Message = "Vehicles data retrieved";
+                accountGroupList.Code = Responcecode.Success;
+                return await Task.FromResult(accountGroupList);
             }
             catch (Exception ex)
             {
-                return await Task.FromResult(new AccountGroupResponce
+                return await Task.FromResult(new AccountGroupDataList
                 {
                     Message = "Exception " + ex.Message,
                     Code = Responcecode.Failed
                 });
             }
         }
+        // Get group details
+        public async override Task<AccountGroupDetailsDataList> GetAccountGroupDetail(AccountGroupDetailsRequest request, ServerCallContext context)
+        {
+            try
+            {
+                Group.GroupFilter groupFilter = new Group.GroupFilter();
+                AccountGroupDetailsDataList response = new AccountGroupDetailsDataList();
+                AccountGroupDetail accountDetail = new AccountGroupDetail();
+
+                groupFilter.OrganizationId = request.OrganizationId;
+                groupFilter.GroupType = Group.GroupType.Group;
+                groupFilter.FunctionEnum = Group.FunctionEnum.None;
+                groupFilter.ObjectType = Group.ObjectType.AccountGroup;
+                groupFilter.GroupRef = true;
+                // all account group of organization with account count
+                IEnumerable<Group.Group> accountGroups = groupmanager.Get(groupFilter).Result;
+                // get access relationship 
+                AccountComponent.entity.AccessRelationshipFilter accessFilter = new AccountComponent.entity.AccessRelationshipFilter();
+                foreach (Group.Group group in accountGroups)
+                {
+                    accountDetail.AccountGroupName = group.Name;
+                    accountDetail.AccountCount = group.GroupRefCount;
+
+                    accessFilter.AccountGroupId = group.Id;
+                    var accessList = accountmanager.GetAccessRelationship(accessFilter).Result;
+                    List<Int32> groupId = new List<int>();
+                    // vehicle group 
+                    if (accessList != null)
+                    {
+                        groupId.AddRange(accessList.Select(c => c.Id).ToList());
+                        groupFilter = new Group.GroupFilter();
+                        groupFilter.GroupIds = groupId;
+                        groupFilter.GroupRef = true;
+                        var vehicleGroups = groupmanager.Get(groupFilter).Result;
+                        Int32 count = 0;
+                        // Get vehicles count
+                        foreach (Group.Group vGroup in vehicleGroups)
+                        {
+                            count = count + vGroup.GroupRefCount;
+                        }
+                        accountDetail.VehicleCount = count;
+                    }
+                    response.AccountGroupDetail.Add(accountDetail);
+                }
+                response.Message = "Get AccountGroup";
+                response.Code = Responcecode.Success;
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(new AccountGroupDetailsDataList
+                {
+                    Message = "Exception " + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+
         // End Account Group
+
+        // Begin Account Role
+
+        public async override Task<AccountRoleResponse> AddRoles(AccountRoleRequest request, ServerCallContext context)
+        {
+
+            try
+            {
+                List<AccountComponent.entity.AccountRole> accountRoles = new List<AccountComponent.entity.AccountRole>();
+                AccountRoleResponse response = new AccountRoleResponse();
+                if (request != null && request.AccountRoles != null)
+                {
+                    foreach (AccountRole accountRole in request.AccountRoles)
+                    {
+                        AccountComponent.entity.AccountRole role = new AccountComponent.entity.AccountRole();
+                        role.OrganizationId = accountRole.OrganizationId;
+                        role.AccountId = accountRole.AccountId;
+                        role.RoleId = accountRole.RoleId;
+                        accountRoles.Add(role);
+                    }
+                }
+                var result = accountmanager.AddRole(accountRoles).Result;
+                response.Message = "Account Added to Roles";
+                response.Code = Responcecode.Success;
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(new AccountRoleResponse
+                {
+                    Message = "Exception " + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+
+        public async override Task<AccountRoleResponse> RemoveRoles(AccountRole request, ServerCallContext context)
+        {
+
+            try
+            {
+                AccountComponent.entity.AccountRole accountRole = new AccountComponent.entity.AccountRole();
+                AccountRoleResponse response = new AccountRoleResponse();
+                if (request != null)
+                {
+                    accountRole.OrganizationId = request.OrganizationId;
+                    accountRole.AccountId = request.AccountId;
+                    accountRole.RoleId = request.RoleId;
+
+                }
+                var result = accountmanager.RemoveRole(accountRole).Result;
+                response.Message = "Deleted Account from roles";
+                response.Code = Responcecode.Success;
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(new AccountRoleResponse
+                {
+                    Message = "Exception " + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+
+        // End Account Role
 
         // Begin Private Methods
         private AccountRequest MapToRequest(AccountComponent.entity.Account account)
@@ -487,48 +676,71 @@ namespace net.atos.daf.ct2.accountservice
             AccountRequest request = new AccountRequest();
 
             request.Id = account.Id;
-            request.EmailId = account.EmailId ;
+            request.EmailId = account.EmailId;
             request.Salutation = account.Salutation;
-            request.FirstName = account.FirstName ;
+            request.FirstName = account.FirstName;
             request.LastName = account.LastName;
             request.Dob = new Google.Protobuf.WellKnownTypes.Timestamp();
             if (account.Dob.HasValue) request.Dob.Seconds = account.Dob.Value;
             //request.Dob.Seconds  = account.Dob.HasValue ? account.Dob.Value : 0;
             //request.Type = SetEnumAccountType(account.AccountType);
-            request.Type = (AccountType)  Enum.Parse(typeof(AccountType), account.AccountType.ToString());
-            request.OrganizationId = account.Organization_Id;            
+            request.Type = (AccountType)Enum.Parse(typeof(AccountType), account.AccountType.ToString());
+            request.OrganizationId = account.Organization_Id;
             return request;
         }
         private AccountPreference MapToPreferenceRequest(Preference.AccountPreference entity)
         {
             AccountPreference request = new AccountPreference();
 
-            request.Id = entity.Id.Value;            
-            request.RefId = request.RefId;
-            request.PreferenceType = (PreferenceType)  Enum.Parse(typeof(PreferenceType), entity.PreferenceType.ToString());
+            if (entity.Id != null) request.Id = entity.Id.Value;
+            request.RefId = entity.Ref_Id;
+            request.PreferenceType = (PreferenceType)Enum.Parse(typeof(PreferenceType), entity.PreferenceType.ToString());
             request.LanguageId = entity.Language_Id;
             request.TimezoneId = entity.Timezone_Id;
-            request.CurrencyType = (CurrencyType)  Enum.Parse(typeof(CurrencyType), entity.Currency_Type.ToString());
-            request.UnitType = (UnitType)  Enum.Parse(typeof(UnitType), entity.Unit_Type.ToString());
-            request.VehicleDisplayType = (VehicleDisplayType)  Enum.Parse(typeof(VehicleDisplayType), entity.VehicleDisplay_Type.ToString());
-            request.DateFormatType = (DateFormatDisplayType)  Enum.Parse(typeof(DateFormatDisplayType), entity.DateFormat_Type.ToString());              
+            request.CurrencyType = (CurrencyType)Enum.Parse(typeof(CurrencyType), entity.Currency_Type.ToString());
+            request.UnitType = (UnitType)Enum.Parse(typeof(UnitType), entity.Unit_Type.ToString());
+            request.VehicleDisplayType = (VehicleDisplayType)Enum.Parse(typeof(VehicleDisplayType), entity.VehicleDisplay_Type.ToString());
+            request.DateFormatType = (DateFormatDisplayType)Enum.Parse(typeof(DateFormatDisplayType), entity.DateFormat_Type.ToString());
             return request;
         }
-        
+
+        private AccountGroupRequest MapToAccountGroupResponse(Group.Group entity)
+        {
+            AccountGroupRequest request = new AccountGroupRequest();
+            request.Id = entity.Id;
+            request.Name = entity.Name;
+            request.Description = entity.Description;
+            request.Argument = entity.Argument;
+            request.FunctionEnum = (FunctionEnum)Enum.Parse(typeof(FunctionEnum), entity.FunctionEnum.ToString());
+            request.GroupType = (GroupType)Enum.Parse(typeof(GroupType), entity.GroupType.ToString());
+            request.ObjectType = (ObjectType)Enum.Parse(typeof(ObjectType), entity.ObjectType.ToString());
+            request.OrganizationId = entity.OrganizationId;
+            request.GroupRefCount = entity.GroupRefCount;
+            if (entity.GroupRef != null)
+            {
+                foreach (var item in entity.GroupRef)
+                {
+                    request.GroupRef.Add(new AccountGroupRef() { RefId = item.Ref_Id, GroupId = item.Group_Id });
+                }
+            }
+
+            return request;
+        }
+
 
         private AccountType SetEnumAccountType(AccountComponent.ENUM.AccountType type)
         {
             AccountType accountType = AccountType.None;
 
-            if ( type == AccountComponent.ENUM.AccountType.None)
+            if (type == AccountComponent.ENUM.AccountType.None)
             {
                 accountType = AccountType.None;
             }
-            else if ( type == AccountComponent.ENUM.AccountType.SystemAccount)
+            else if (type == AccountComponent.ENUM.AccountType.SystemAccount)
             {
                 accountType = AccountType.SystemAccount;
             }
-            else if ( type == AccountComponent.ENUM.AccountType.PortalAccount)
+            else if (type == AccountComponent.ENUM.AccountType.PortalAccount)
             {
                 accountType = AccountType.PortalAccount;
             }
@@ -537,20 +749,20 @@ namespace net.atos.daf.ct2.accountservice
         private AccountComponent.ENUM.AccountType GetEnum(int value)
         {
             AccountComponent.ENUM.AccountType accountType;
-            switch(value)
+            switch (value)
             {
                 case 0:
-                accountType = AccountComponent.ENUM.AccountType.None;
-                break;
+                    accountType = AccountComponent.ENUM.AccountType.None;
+                    break;
                 case 1:
-                accountType = AccountComponent.ENUM.AccountType.SystemAccount;
-                break;
+                    accountType = AccountComponent.ENUM.AccountType.SystemAccount;
+                    break;
                 case 2:
-                accountType = AccountComponent.ENUM.AccountType.PortalAccount;
-                break;
+                    accountType = AccountComponent.ENUM.AccountType.PortalAccount;
+                    break;
                 default:
-                 accountType = AccountComponent.ENUM.AccountType.PortalAccount;
-                 break;
+                    accountType = AccountComponent.ENUM.AccountType.PortalAccount;
+                    break;
             }
             return accountType;
         }

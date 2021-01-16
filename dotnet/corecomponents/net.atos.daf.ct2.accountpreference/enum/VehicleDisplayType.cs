@@ -4,10 +4,10 @@ namespace net.atos.daf.ct2.accountpreference
 {
     public enum VehicleDisplayType    
     {
-        None = 'N',
-        Registration_Number= 'R',
+        None = 'M',
+        RegistrationNumber= 'R',
         Name= 'N',
-        VIN = 'V'
+        Vin = 'V'
    
     }
 }
