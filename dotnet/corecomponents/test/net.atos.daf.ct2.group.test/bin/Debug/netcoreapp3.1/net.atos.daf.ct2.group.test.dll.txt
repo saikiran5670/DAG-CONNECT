@@ -1,0 +1,3 @@
+net.atos.daf.ct2.group.test.GroupManagerTest.CreateGroup_Manager
+net.atos.daf.ct2.group.test.GroupManagerTest.GetVehicleGroupByOrganization
+net.atos.daf.ct2.group.test.GroupRepositoryTest.Get

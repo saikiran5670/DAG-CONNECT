@@ -1,0 +1,2 @@
+net.atos.daf.ct2.Audittrail.test.AuditTrailtest.AddLogs
+net.atos.daf.ct2.Audittrail.test.AuditTrailtest.AddLogsParam
