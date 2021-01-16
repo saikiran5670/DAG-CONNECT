@@ -13,7 +13,7 @@ service AccountService {
   rpc Delete (AccountRequest) returns (AccountResponse);
   rpc ChangePassword (AccountRequest) returns (AccountResponse);
   rpc Get (AccountFilter) returns (AccountDataList);
-  rpc GetAccountDetail (IdRequest) returns (AccountDetailsResponse);
+  rpc GetAccountDetail (AccountGroupDetailsRequest) returns (AccountDetailsResponse);
   
 
   // Account Preference Mthod
@@ -236,6 +236,9 @@ message AccountGroupFilterRequest{
 message AccountGroupDetailsRequest {
   int32 AccountId=1;  
   int32 OrganizationId = 2;
+  int32 GroupId=3;
+  int32 RoleId=4;
+  string Name = 5;
 }
 message AccountGroupDetail {
   int32 GroupId=1;
