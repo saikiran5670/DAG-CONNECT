@@ -324,7 +324,19 @@ namespace net.atos.daf.ct2.accountservice
 
         // Begin AccessRelationship
 
+        private AccountComponent.entity.AccessRelationship CreateAccessRelationship (AccountComponent.entity.AccessRelationship accessRelationship)
+        {
+            
+            var result = accountmanager.CreateAccessRelationship(accessRelationship).Result;
+            return result;
+        }
 
+        private AccountComponent.entity.AccessRelationship UpdateAccessRelationship (AccountComponent.entity.AccessRelationship accessRelationship)
+        {
+            
+            var result = accountmanager.UpdateAccessRelationship(accessRelationship).Result;
+            return result;
+        }
 
         // Begin AccessRelationship
 

@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.accountservice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
-            var connectionString = Configuration.GetConnectionString("ConnectionString");
+            var connectionString = Configuration.GetConnectionString("ConnectionStringHardCode");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             // Identity configuration
             services.AddSingleton(dataAccess);

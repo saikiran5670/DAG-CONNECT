@@ -10,7 +10,7 @@ service Greeter {
   rpc SayHello (HelloRequest) returns (HelloReply);
   rpc ConnectionStringKey (ConnectionStringRequest) returns (ConnectionStringResponse);
   rpc ConnectionStringHardCode (ConnectionStringRequest) returns (ConnectionStringResponse);
-}
+}  
 
 // The request message containing the user's name.
 message HelloRequest {
