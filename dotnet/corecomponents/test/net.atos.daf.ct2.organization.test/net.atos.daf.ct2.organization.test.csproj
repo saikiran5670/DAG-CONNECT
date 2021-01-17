@@ -19,7 +19,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\commoncomponent\net.atos.daf.ct2.audit\net.atos.daf.ct2.audit.csproj" />
+    <ProjectReference Include="..\..\..\commoncomponent\net.atos.daf.ct2.data\net.atos.daf.ct2.data.csproj" />
     <ProjectReference Include="..\..\net.atos.daf.ct2.organization\net.atos.daf.ct2.organization.csproj" />
+    <ProjectReference Include="..\..\net.atos.daf.ct2.vehicle\net.atos.daf.ct2.vehicle.csproj" />
   </ItemGroup>
 
 </Project>

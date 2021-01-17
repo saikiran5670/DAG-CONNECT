@@ -9,6 +9,8 @@ using AccountPreferenceComponent = net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using System.Collections.Generic;
+using net.atos.daf.ct2.vehicle.repository;
+using net.atos.daf.ct2.vehicle;
 namespace net.atos.daf.ct2.organizationservice.Services
 {
     public class OrganizationManagementService : OrganizationService.OrganizationServiceBase
@@ -18,13 +20,22 @@ namespace net.atos.daf.ct2.organizationservice.Services
         private readonly IAuditLogRepository _IAuditLogRepository;       
         private readonly IAuditTraillib _AuditTrail;      
         private readonly IOrganizationManager organizationtmanager;
+<<<<<<< HEAD
+        private readonly IPreferenceManager preferencemanager;
+         private readonly IVehicleManager vehicleManager;
+
+        
+        public OrganizationManagementService(ILogger<OrganizationManagementService> logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager)
+=======
         private readonly AccountPreferenceComponent.IPreferenceManager preferencemanager;
         public OrganizationManagementService(ILogger<OrganizationManagementService> logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,AccountPreferenceComponent.IPreferenceManager _preferencemanager)
+>>>>>>> 9b7b71e724160c3712e493c72530b1eb3e50f0ce
         {
             _logger = logger;
             _AuditTrail = AuditTrail;
             organizationtmanager = _organizationmanager;
             preferencemanager=_preferencemanager;
+            vehicleManager=_vehicleManager;
         }
         public override Task<OrganizationResponse> Create(OrganizationCreateRequest request, ServerCallContext context)
         {

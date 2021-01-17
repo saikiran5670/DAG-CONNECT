@@ -247,7 +247,13 @@ namespace net.atos.daf.ct2.vehicle.repository
             return vehicle;
         }
 
+<<<<<<< HEAD
+        //isexist vin check
+       
+        public async Task<VehicleProperty> UpdateProperty(VehicleProperty vehicleproperty)
+=======
         public async Task<VehicleOptInOptOut> UpdateStatus(VehicleOptInOptOut vehicleOptInOptOut)
+>>>>>>> 9b7b71e724160c3712e493c72530b1eb3e50f0ce
         {
             var parameter = new DynamicParameters();
             var QueryStatement = string.Empty;
@@ -485,7 +491,9 @@ namespace net.atos.daf.ct2.vehicle.repository
             return vehicleproperty;
         }
 
+
         #endregion
+
 
         //     public async Task<int> AddVehicle(Vehicle vehicle)
         //     {  

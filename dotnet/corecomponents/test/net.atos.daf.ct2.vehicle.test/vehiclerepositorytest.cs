@@ -321,5 +321,33 @@ namespace net.atos.daf.ct2.vehicle.test
             Assert.IsTrue(resultCreateProperty.ID > 0);
 
         }
+
+        [TestMethod]
+        public void UpdateVehicleforCRM()
+        {          
+            string vin="V22";
+            string tcuId="V22UpdatedManager";
+            string tcuactivation="true";
+            string referenceDateTime="04-04-2019";
+            var resultUpdatevehicle = _vehicleRepository.Update(vin,tcuId,tcuactivation,referenceDateTime).Result;
+            Assert.IsNotNull(resultUpdatevehicle);
+          //  Assert.IsTrue(resultUpdatevehicle.ID > 0);
+
+        }
+
+         [TestMethod]
+        public void CreateVehicleforCRM()
+        {          
+            int orgid=10;
+            string vin="V2265555";
+            string tcuId="tesdddddd";
+            string tcuactivation="true";
+            string referenceDateTime="1610877108";
+
+            var resultUpdatevehicle = _vehicleRepository.Create(orgid,vin,tcuId,tcuactivation,referenceDateTime).Result;
+            Assert.IsNotNull(resultUpdatevehicle);
+          //  Assert.IsTrue(resultUpdatevehicle.ID > 0);
+
+        }
     }
 }

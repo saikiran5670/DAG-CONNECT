@@ -1,11 +1,8 @@
 using net.atos.daf.ct2.audit;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.organization.entity;
 using net.atos.daf.ct2.organization.repository;
-using  net.atos.daf.ct2.audit.Enum;
+
 
 namespace net.atos.daf.ct2.organization
 {
@@ -35,6 +32,14 @@ namespace net.atos.daf.ct2.organization
         public async Task<Organization> Get(int organizationId)
         {
             return await organizationRepository.Get(organizationId);
+        }
+       public async Task<Customer> UpdateCustomer(Customer customer)
+        {
+            return await organizationRepository.UpdateCustomer(customer);
+        }
+        public async Task<KeyHandOver> KeyHandOverEvent(KeyHandOver keyHandOver)
+        {
+            return await organizationRepository.KeyHandOverEvent(keyHandOver);
         }
     }
 }
