@@ -5340,3 +5340,11 @@ dotnet/commoncomponent/test/net.atos.daf.ct2.Audittrail.test/obj/Debug/netcoreap
 /dotnet/corecomponents/test/net.atos.daf.ct2.role.test/obj
 /dotnet/dataservices/net.atos.daf.ct2.authenticationservicerest/obj
 >>>>>>> 17bf4d620756ae54b9a4e5fbbd629f4ac51452e0
+/dotnet/.vs/net.atos.daf.ct2/config
+/dotnet/commoncomponent/net.atos.daf.ct2.audit/bin/Debug/netcoreapp3.1
+/dotnet/commoncomponent/net.atos.daf.ct2.audit/obj/Debug/netcoreapp3.1
+/dotnet/commoncomponent/net.atos.daf.ct2.data/bin/Debug/netcoreapp3.1
+/dotnet/commoncomponent/net.atos.daf.ct2.data/obj/Debug/netcoreapp3.1
+/dotnet/corecomponents/net.atos.daf.ct2.account/bin/Debug/netcoreapp3.1
+/dotnet/commoncomponent/net.atos.daf.ct2.exceptionhandling/obj/Debug/netcoreapp3.1
+/dotnet/commoncomponent/net.atos.daf.ct2.utilities/obj/Debug/netcoreapp3.1
