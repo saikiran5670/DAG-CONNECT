@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: accountservice
+  name: organizationservice
 spec:
   selector:
     matchLabels:
-      run: accountservice
+      run: organizationservice
   replicas: 1
   template:
     metadata:
       labels:
-        run: accountservice
+        run: organizationservice
     spec:
       containers:
-      - name: accountservice
-        image: dafdev017756.azurecr.io/accountservice
+      - name: organizationservice
+        image: dafdev017756.azurecr.io/organizationservice
         imagePullPolicy: Always
         resources:
           limits:
@@ -28,7 +28,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: accountservice
+  name: organizationservice
 spec:
   type: LoadBalancer
   ports:
@@ -36,4 +36,4 @@ spec:
     port: 80
     targetPort: 80
   selector:
-    run: accountservice
+    run: organizationservice

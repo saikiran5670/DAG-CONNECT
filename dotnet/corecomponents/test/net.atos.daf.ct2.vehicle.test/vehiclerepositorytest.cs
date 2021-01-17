@@ -245,10 +245,10 @@ namespace net.atos.daf.ct2.vehicle.test
             ObjVehicleProperty.Dimensions_Size_Height = 3;
             ObjVehicleProperty.Dimensions_Size_Weight = 4;
             ObjVehicleProperty.Engine_ID = "1";
-            ObjVehicleProperty.Engine_Type = EngineType.Trucks;
+            ObjVehicleProperty.Engine_Type = "Trucks";
             ObjVehicleProperty.Engine_Power = 500;
-            ObjVehicleProperty.Engine_Coolant = EngineCoolantType.Coolant1;
-            ObjVehicleProperty.Engine_EmissionLevel = EngineEmissionLevelType.EURO_III_EEV;
+            ObjVehicleProperty.Engine_Coolant = "Coolant1";
+            ObjVehicleProperty.Engine_EmissionLevel = "EURO_III_EEV";
             ObjVehicleProperty.Chasis_Id = "234";
             ObjVehicleProperty.SideSkirts = true;
             ObjVehicleProperty.SideCollars = true;
@@ -265,11 +265,11 @@ namespace net.atos.daf.ct2.vehicle.test
             ObjVehicleProperty.DriverLine_RearAxle_Load = 2;
             ObjVehicleProperty.DriverLine_RearAxle_Ratio = 2;
             ObjVehicleProperty.GearBox_Id = "2";
-            ObjVehicleProperty.GearBox_Type = GearBoxType.GrearBox1;
+            ObjVehicleProperty.GearBox_Type = "GrearBox1";
             ObjVehicleProperty.DriverLine_Cabin_ID = "2";
             ObjVehicleProperty.DriverLine_Cabin_Color_Value = "2";
 
-            var resultCreateProperty = _vehicleRepository.CreateProperty(ObjVehicleProperty).Result;
+            var resultCreateProperty = _vehicleRepository.UpdateProperty(ObjVehicleProperty).Result;
             Assert.IsNotNull(resultCreateProperty);
             Assert.IsTrue(resultCreateProperty.ID > 0);
 
@@ -292,10 +292,10 @@ namespace net.atos.daf.ct2.vehicle.test
             ObjVehicleProperty.Dimensions_Size_Height = 3;
             ObjVehicleProperty.Dimensions_Size_Weight = 4;
             ObjVehicleProperty.Engine_ID = "1";
-            ObjVehicleProperty.Engine_Type = EngineType.Trucks;
+            ObjVehicleProperty.Engine_Type = "Trucks";
             ObjVehicleProperty.Engine_Power = 500;
-            ObjVehicleProperty.Engine_Coolant = EngineCoolantType.Coolant1;
-            ObjVehicleProperty.Engine_EmissionLevel = EngineEmissionLevelType.EURO_III_EEV;
+            ObjVehicleProperty.Engine_Coolant = "Coolant1";
+            ObjVehicleProperty.Engine_EmissionLevel = "EURO_III";
             ObjVehicleProperty.Chasis_Id = "234";
             ObjVehicleProperty.SideSkirts = true;
             ObjVehicleProperty.SideCollars = true;
@@ -312,7 +312,7 @@ namespace net.atos.daf.ct2.vehicle.test
             ObjVehicleProperty.DriverLine_RearAxle_Load = 2;
             ObjVehicleProperty.DriverLine_RearAxle_Ratio = 2;
             ObjVehicleProperty.GearBox_Id = "2";
-            ObjVehicleProperty.GearBox_Type = GearBoxType.GrearBox1;
+            ObjVehicleProperty.GearBox_Type = "GrearBox2";
             ObjVehicleProperty.DriverLine_Cabin_ID = "2";
             ObjVehicleProperty.DriverLine_Cabin_Color_Value = "2";
 

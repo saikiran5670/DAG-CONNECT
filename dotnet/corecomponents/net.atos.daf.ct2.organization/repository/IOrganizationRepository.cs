@@ -17,5 +17,6 @@ namespace net.atos.daf.ct2.organization.repository
         Task<Organization> Update(Organization organization);
         Task<bool> Delete(int organizationId);        
         Task<Organization> Get(int organizationId);
+        Task<int> CreateVehicleParty(List<Organization> organization);
     }
 }

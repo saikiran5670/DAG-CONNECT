@@ -16,7 +16,6 @@ parameters:
   type: string
   default: DEV0
   values:
-  - All
   - DEV0
   - DEV01
   - DEV02
@@ -28,13 +27,11 @@ variables:
   - group: DEV01-Build-Variables
 - ${{ if eq(parameters.ENV, 'DEV02') }}:
   - group: DEV02-Build-Variables
-- ${{ if eq(parameters.ENV, 'All') }}:
-  - group: DEV02-Build-Variables
 
 steps:
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/commonservices/net.atos.daf.ct2.auditservice/appsettings.json'
+    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.organizationservice/appsettings.json'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -43,22 +40,19 @@ steps:
     tokenSuffix: '}#'
     useLegacyPattern: false
     enableTelemetry: true
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02')
 
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/commonservices/net.atos.daf.ct2.auditservice/appsettings.json
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02')
+      cat dotnet/businessservices/net.atos.daf.ct2.organizationservice/appsettings.json
 
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
-    dockerFile: dotnet/AuditService_Dockerfile
-    imageName: auditservice
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02')
+    dockerFile: dotnet/OrganizationService_Dockerfile
+    imageName: organizationservice
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -66,14 +60,5 @@ steps:
     azureSubscription: $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
-    imageName: auditservice
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02')
+    imageName: organizationservice
 
-- task: CmdLine@2
-  inputs:
-    script: |
-      echo $(ContainerRegistry)
-  condition: eq('${{ parameters.ENV }}', 'All')
-  
-      
-     

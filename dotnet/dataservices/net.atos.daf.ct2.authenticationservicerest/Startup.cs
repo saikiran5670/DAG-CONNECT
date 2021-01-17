@@ -10,7 +10,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using net.atos.daf.ct2.account;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.repository;
+using AccountComponent = net.atos.daf.ct2.account;
+using Identity = net.atos.daf.ct2.identity;
+using AccountPreference = net.atos.daf.ct2.accountpreference;
 
 namespace net.atos.daf.ct2.authenticationservicerest
 {
@@ -27,6 +32,31 @@ namespace net.atos.daf.ct2.authenticationservicerest
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            var connectionString = Configuration.GetConnectionString("ConnectionString");
+            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
+            // Identity configuration
+            services.AddSingleton(dataAccess);
+            services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration")); 
+            
+            services.AddTransient<IAuditLogRepository,AuditLogRepository>();
+            services.AddTransient<IAuditTraillib,AuditTraillib>();
+
+            services.AddTransient<Identity.IAccountManager,Identity.AccountManager>();
+            services.AddTransient<Identity.ITokenManager,Identity.TokenManager>();
+            services.AddTransient<Identity.IAccountAuthenticator,Identity.AccountAuthenticator>();
+            
+            services.AddTransient<AccountComponent.IAccountIdentityManager,AccountComponent.AccountIdentityManager>();
+            
+            services.AddTransient<AccountPreference.IPreferenceManager,AccountPreference.PreferenceManager>();
+            services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();
+            
+            // services.AddTransient<IGroupManager, GroupManager>();
+            // services.AddTransient<IGroupRepository, GroupRepository>();
+            
+            services.AddTransient<AccountComponent.IAccountRepository,AccountComponent.AccountRepository>();
+            services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();            
+         
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

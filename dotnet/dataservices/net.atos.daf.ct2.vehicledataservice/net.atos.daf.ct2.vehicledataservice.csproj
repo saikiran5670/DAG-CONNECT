@@ -17,4 +17,8 @@
       <HintPath>..\..\dlls\net.atos.daf.ct2.vehiclerepository.dll</HintPath>           
     </Reference>
   </ItemGroup>
+ <ItemGroup>
+   <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.vehicle\net.atos.daf.ct2.vehicle.csproj" />
+   <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.organization\net.atos.daf.ct2.organization.csproj" />
+ </ItemGroup>
 </Project>

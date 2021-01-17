@@ -11,7 +11,6 @@ namespace net.atos.daf.ct2.vehicle
             Task<Vehicle> Update(Vehicle Vehicle);
             Task<IEnumerable<Vehicle>> Get(VehicleFilter vehiclefilter);   
             Task<VehicleOptInOptOut> UpdateStatus(VehicleOptInOptOut vehicleOptInOptOut);
-            Task<VehicleProperty> CreateProperty(VehicleProperty vehicleproperty);
             Task<VehicleProperty> UpdateProperty(VehicleProperty vehicleproperty);
     }
 }

@@ -5291,7 +5291,6 @@ dotnet/.vscode/settings.json
 /dotnet/businessservices/net.atos.daf.ct2.vehicleservice/obj
 /dotnet/businessservices/net.atos.daf.ct2.organizationservice/obj/Debug/netcoreapp3.1
 /dotnet/businessservices/net.atos.daf.ct2.organizationservice/obj
-<<<<<<< HEAD
 dotnet/commoncomponent/test/net.atos.daf.ct2.Audittrail.test/obj/Debug/netcoreapp3.1/net.atos.daf.ct2.Audittrail.test.csproj.CoreCompileInputs.cache
 dotnet/corecomponents/test/atos.net.daf.ct2.accountpreference.test/bin/Debug/netcoreapp3.1/atos.net.daf.ct2.accountpreference.test.dll
 dotnet/corecomponents/test/atos.net.daf.ct2.accountpreference.test/bin/Debug/netcoreapp3.1/atos.net.daf.ct2.accountpreference.test.pdb
@@ -5317,10 +5316,27 @@ dotnet/corecomponents/test/atos.net.daf.ct2.accountpreference.test/bin/Debug/net
 dotnet/corecomponents/test/atos.net.daf.ct2.accountpreference.test/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.data.dll
 dotnet/corecomponents/test/atos.net.daf.ct2.accountpreference.test/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.data.pdb
 dotnet/corecomponents/test/atos.net.daf.ct2.accountpreference.test/bin/Debug/netcoreapp3.1/Newtonsoft.Json.dll
-=======
 dotnet/corecomponents/test/net.atos.daf.ct2.group.test/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.group.dll
 dotnet/corecomponents/test/net.atos.daf.ct2.group.test/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.group.dll
 dotnet/corecomponents/test/net.atos.daf.ct2.group.test/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.group.pdb
 dotnet/corecomponents/test/net.atos.daf.ct2.group.test/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.group.test.dll
 dotnet/corecomponents/test/net.atos.daf.ct2.group.test/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.group.test.pdb
->>>>>>> 2e7872e595bc80a5c6d13a3e33864514c58253c2
+dotnet/commoncomponent/test/net.atos.daf.ct2.Audittrail.test/obj/Debug/netcoreapp3.1/net.atos.daf.ct2.Audittrail.test.csproj.CoreCompileInputs.cache
+dotnet/commoncomponent/test/net.atos.daf.ct2.Audittrail.test/obj/Debug/netcoreapp3.1/net.atos.daf.ct2.Audittrail.test.csproj.FileListAbsolute.txt
+dotnet/commoncomponent/test/net.atos.daf.ct2.Audittrail.test/obj/Debug/netcoreapp3.1/net.atos.daf.ct2.Audittrail.test.csprojAssemblyReference.cache
+dotnet/appsettings.json
+dotnet/.vscode/tasks.json
+dotnet/commoncomponent/test/net.atos.daf.ct2.Audittrail.test/obj/Debug/netcoreapp3.1/net.atos.daf.ct2.Audittrail.test.csproj.CoreCompileInputs.cache
+dotnet/commoncomponent/test/net.atos.daf.ct2.Audittrail.test/obj/Debug/netcoreapp3.1/net.atos.daf.ct2.Audittrail.test.csproj.FileListAbsolute.txt
+dotnet/commoncomponent/test/net.atos.daf.ct2.Audittrail.test/obj/Debug/netcoreapp3.1/net.atos.daf.ct2.Audittrail.test.csprojAssemblyReference.cache
+/dotnet/businessservices/.vs/businessservices/DesignTimeBuild
+/dotnet/businessservices/.vs/businessservices/v16
+/dotnet/businessservices/clients/net.atos.daf.ct2.auditclient/obj
+/dotnet/businessservices/net.atos.daf.ct2.authenticationservice/obj/Debug/netcoreapp3.1
+/dotnet/businessservices/net.atos.daf.ct2.authenticationservice/obj
+/dotnet/businessservices/net.atos.daf.ct2.organizationservice/bin/Debug/netcoreapp3.1
+/dotnet/businessservices/net.atos.daf.ct2.organizationservice/net.atos.daf.ct2.organizationservice.csproj.user
+/dotnet/businessservices/net.atos.daf.ct2.roleservice/bin/Debug/netcoreapp3.1
+/dotnet/corecomponents/test/net.atos.daf.ct2.role.test/obj
+/dotnet/dataservices/net.atos.daf.ct2.authenticationservicerest/obj
+>>>>>>> 17bf4d620756ae54b9a4e5fbbd629f4ac51452e0
