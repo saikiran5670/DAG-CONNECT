@@ -203,6 +203,7 @@ namespace net.atos.daf.ct2.organizationservice.Services
                 case 0:
                 unitType = AccountPreferenceComponent.UnitType.None;
                 break;
+                 
                 case 1:
                 unitType = AccountPreferenceComponent.UnitType.Metric;
                 break;
