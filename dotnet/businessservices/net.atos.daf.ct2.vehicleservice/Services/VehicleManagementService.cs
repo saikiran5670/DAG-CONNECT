@@ -392,9 +392,9 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
 
                         ObjGroupRef.Id = item.ID;
-                        ObjGroupRef.VehicleGroupORVehicleName = item.Name;
-                        ObjGroupRef.RegistartionNo = item.License_Plate_Number;
-                        ObjGroupRef.VIN = item.VIN;
+                        ObjGroupRef.VehicleGroupORVehicleName = item.Name== null ? "" : item.Name;
+                        ObjGroupRef.RegistartionNo = item.License_Plate_Number== null ? "" : item.License_Plate_Number;
+                        ObjGroupRef.VIN = item.VIN== null ? "" : item.VIN;
                         //ObjGroupRef.Status = SetEnumVehicleStatusType(item.Status);
                         ObjGroupRef.Status = (VehicleStatusType)Enum.Parse(typeof(VehicleStatusType), item.Status.ToString());
                         ObjGroupRef.IsVehicleGroup = false;
