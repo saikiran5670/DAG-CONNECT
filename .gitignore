@@ -5324,3 +5324,13 @@ dotnet/corecomponents/test/net.atos.daf.ct2.group.test/bin/Debug/netcoreapp3.1/n
 dotnet/corecomponents/test/net.atos.daf.ct2.group.test/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.group.test.dll
 dotnet/corecomponents/test/net.atos.daf.ct2.group.test/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.group.test.pdb
 >>>>>>> 2e7872e595bc80a5c6d13a3e33864514c58253c2
+/dotnet/businessservices/.vs/businessservices/DesignTimeBuild
+/dotnet/businessservices/.vs/businessservices/v16
+/dotnet/businessservices/clients/net.atos.daf.ct2.auditclient/obj
+/dotnet/businessservices/net.atos.daf.ct2.authenticationservice/obj/Debug/netcoreapp3.1
+/dotnet/businessservices/net.atos.daf.ct2.authenticationservice/obj
+/dotnet/businessservices/net.atos.daf.ct2.organizationservice/bin/Debug/netcoreapp3.1
+/dotnet/businessservices/net.atos.daf.ct2.organizationservice/net.atos.daf.ct2.organizationservice.csproj.user
+/dotnet/businessservices/net.atos.daf.ct2.roleservice/bin/Debug/netcoreapp3.1
+/dotnet/corecomponents/test/net.atos.daf.ct2.role.test/obj
+/dotnet/dataservices/net.atos.daf.ct2.authenticationservicerest/obj
