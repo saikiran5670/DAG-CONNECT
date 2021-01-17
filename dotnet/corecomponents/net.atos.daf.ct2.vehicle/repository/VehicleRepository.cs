@@ -251,7 +251,6 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             var parameter = new DynamicParameters();
             var QueryStatement = string.Empty;
-
             if ((char)vehicleOptInOptOut.Type == 'V')
             {
                 QueryStatement = @" UPDATE master.vehicle

@@ -21,7 +21,7 @@ namespace net.atos.daf.ct2.organization.repository
     public class OrganizationRepository:IOrganizationRepository
     {
         private readonly IDataAccess dataAccess;
-          private readonly IVehicleManager _vehicelManager;
+        private readonly IVehicleManager _vehicelManager;
         private static readonly log4net.ILog log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public OrganizationRepository(IDataAccess _dataAccess,IVehicleManager vehicleManager)
@@ -302,7 +302,8 @@ namespace net.atos.daf.ct2.organization.repository
             //bool isSuccess=false;
             try
             {
-                int vehId= await _vehicelManager.Update(keyHandOver.KeyHandOverEvent.EndCustomer.ID,keyHandOver.KeyHandOverEvent.VIN,keyHandOver.KeyHandOverEvent.TCUActivation, keyHandOver.KeyHandOverEvent.ReferenceDateTime);
+                //int vehId= await _vehicelManager.Update(keyHandOver.KeyHandOverEvent.EndCustomer.ID,keyHandOver.KeyHandOverEvent.VIN,keyHandOver.KeyHandOverEvent.TCUActivation, keyHandOver.KeyHandOverEvent.ReferenceDateTime);
+                int vehId=0;
 
 
                 // var parameterOrg = new DynamicParameters();
