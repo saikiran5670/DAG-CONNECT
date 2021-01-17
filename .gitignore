@@ -5329,3 +5329,14 @@ dotnet/.vscode/tasks.json
 dotnet/commoncomponent/test/net.atos.daf.ct2.Audittrail.test/obj/Debug/netcoreapp3.1/net.atos.daf.ct2.Audittrail.test.csproj.CoreCompileInputs.cache
 dotnet/commoncomponent/test/net.atos.daf.ct2.Audittrail.test/obj/Debug/netcoreapp3.1/net.atos.daf.ct2.Audittrail.test.csproj.FileListAbsolute.txt
 dotnet/commoncomponent/test/net.atos.daf.ct2.Audittrail.test/obj/Debug/netcoreapp3.1/net.atos.daf.ct2.Audittrail.test.csprojAssemblyReference.cache
+/dotnet/businessservices/.vs/businessservices/DesignTimeBuild
+/dotnet/businessservices/.vs/businessservices/v16
+/dotnet/businessservices/clients/net.atos.daf.ct2.auditclient/obj
+/dotnet/businessservices/net.atos.daf.ct2.authenticationservice/obj/Debug/netcoreapp3.1
+/dotnet/businessservices/net.atos.daf.ct2.authenticationservice/obj
+/dotnet/businessservices/net.atos.daf.ct2.organizationservice/bin/Debug/netcoreapp3.1
+/dotnet/businessservices/net.atos.daf.ct2.organizationservice/net.atos.daf.ct2.organizationservice.csproj.user
+/dotnet/businessservices/net.atos.daf.ct2.roleservice/bin/Debug/netcoreapp3.1
+/dotnet/corecomponents/test/net.atos.daf.ct2.role.test/obj
+/dotnet/dataservices/net.atos.daf.ct2.authenticationservicerest/obj
+>>>>>>> 17bf4d620756ae54b9a4e5fbbd629f4ac51452e0

@@ -198,26 +198,74 @@ namespace net.atos.daf.ct2.accountservice
             }
         }
 
-        public override Task<AccountDetailsResponse> GetAccountDetail(IdRequest request, ServerCallContext context)
+        public override async Task<AccountDetailsResponse> GetAccountDetail(AccountGroupDetailsRequest request, ServerCallContext context)
         {
             try
             {
                 AccountComponent.entity.AccountFilter filter = new AccountComponent.entity.AccountFilter();
-                filter.Id = 0;
-                filter.OrganizationId = request.Id;
-                filter.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
-                filter.AccountIds = null;
-                // list of account for organization 
-                var result = accountmanager.Get(filter).Result;
-                // response 
+
+                List<AccountComponent.entity.Account> accounts = new List<AccountComponent.entity.Account>();
+                List<int> accountIds = new List<int>();
                 AccountDetailsResponse response = new AccountDetailsResponse();
                 AccountDetails accountDetails = new AccountDetails();
                 List<string> accountGroupName = null;
-                foreach (AccountComponent.entity.Account entity in result)
+                if (request.GroupId > 0)
+                {
+                    // AccountComponent.entity.AccessRelationshipFilter accessFilter = new AccountComponent.entity.AccessRelationshipFilter();
+                    // accessFilter.AccountGroupId = filter.GroupId;
+                    // var accessRelationship = accountmanager.GetAccessRelationship(accessFilter).Result;
+                    Group.GroupFilter groupFilter = new Group.GroupFilter();
+                    groupFilter.Id = request.GroupId;
+                    groupFilter.OrganizationId = filter.OrganizationId;
+                    groupFilter.ObjectType = group.ObjectType.AccountGroup;
+                    groupFilter.GroupRef = true;
+                    var groups = groupmanager.Get(groupFilter).Result;
+                    foreach (Group.Group group in groups)
+                    {
+                        if (group != null && group.GroupRef != null)
+                        {
+                            accountIds.AddRange(group.GroupRef.Select(a => a.Ref_Id).ToList());
+                        }
+                    }
+                    if (accountIds != null && accountIds.Count > 0)
+                    {
+                        filter.Id = 0;
+                        filter.OrganizationId = request.OrganizationId;
+                        filter.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
+                        filter.AccountIds = string.Join(",",accountIds);
+                        // list of account for organization 
+                        accounts = accountmanager.Get(filter).Result.ToList();
+                    }
+                    // get all refid
+                }
+                else if (request.RoleId > 0)
+                {
+                        accountIds = accountmanager.GetRoleAccounts(request.RoleId).Result;
+                        filter.Id = 0;
+                        filter.OrganizationId = request.OrganizationId;
+                        filter.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
+                        filter.AccountIds = string.Join(",",accountIds);
+                        // list of account for organization 
+                        accounts = accountmanager.Get(filter).Result.ToList();
+                }
+                else
+                {
+                    filter.Id = 0;
+                    filter.OrganizationId = request.OrganizationId;
+                    filter.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
+                    filter.AccountIds = null;
+                    // list of account for organization 
+                    accounts = accountmanager.Get(filter).Result.ToList();
+                }
+
+                // account group details                 
+                foreach (AccountComponent.entity.Account entity in accounts)
                 {
                     accountDetails.Account = MapToRequest(entity);
                     Group.GroupFilter groupFilter = new Group.GroupFilter();
-                    groupFilter.RefId = entity.Id;
+                    groupFilter.OrganizationId=request.OrganizationId;
+                    groupFilter.RefId = request.AccountId;                    
+
                     var vehicleGroupList = groupmanager.Get(groupFilter).Result;
                     if (vehicleGroupList != null)
                     {
@@ -231,18 +279,26 @@ namespace net.atos.daf.ct2.accountservice
                     {
                         accountDetails.AccountGroups = string.Join(",", accountGroupName);
                     }
-                    // Get roles        
-                    accountDetails.Roles = "Role1,Role2,Role3";
+
+                    // Get roles   
+                    AccountComponent.entity.AccountRole accountRole = new AccountComponent.entity.AccountRole();
+                    accountRole.AccountId = request.AccountId;
+                    accountRole.OrganizationId = request.OrganizationId;
+                    var roles = accountmanager.GetRoles(accountRole).Result;
+                    if (roles != null && Convert.ToInt32(roles.Count) > 0)
+                    {
+                        accountDetails.Roles = string.Join(",", roles);
+                    }
                     // End Get Roles
                     response.AccountDetails.Add(accountDetails);
                 }
                 response.Code = Responcecode.Success;
                 response.Message = "Get";
-                return Task.FromResult(response);
+                return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
-                return Task.FromResult(new AccountDetailsResponse
+                return await Task.FromResult(new AccountDetailsResponse
                 {
                     Code = Responcecode.Failed,
                     Message = "Get faile due to with reason : " + ex.Message
@@ -423,6 +479,7 @@ namespace net.atos.daf.ct2.accountservice
                 _logger.LogInformation("Group Created:" + Convert.ToString(entity.Name));
                 return Task.FromResult(new AccountGroupResponce
                 {
+                    Id = entity.Id,
                     Message = "Account group created with id:- " + entity.Id,
                     Code = Responcecode.Success
                 });
@@ -469,6 +526,7 @@ namespace net.atos.daf.ct2.accountservice
                 _logger.LogInformation("Update Account Group :" + Convert.ToString(entity.Name));
                 return Task.FromResult(new AccountGroupResponce
                 {
+                    Id = entity.Id,
                     Message = "Account group updated for id: " + entity.Id,
                     Code = Responcecode.Success
                 });
@@ -494,6 +552,7 @@ namespace net.atos.daf.ct2.accountservice
 
                 return Task.FromResult(new AccountGroupResponce
                 {
+                    Id = request.Id,
                     Message = "Account Group deleted with id:- " + request,
                     Code = Responcecode.Success
                 });
@@ -551,32 +610,39 @@ namespace net.atos.daf.ct2.accountservice
             {
                 Group.GroupFilter groupFilter = new Group.GroupFilter();
                 AccountGroupDetailsDataList response = new AccountGroupDetailsDataList();
-                AccountGroupDetail accountDetail = new AccountGroupDetail();
+                AccountGroupDetail accountDetail = null;
 
                 groupFilter.OrganizationId = request.OrganizationId;
                 groupFilter.GroupType = Group.GroupType.Group;
                 groupFilter.FunctionEnum = Group.FunctionEnum.None;
                 groupFilter.ObjectType = Group.ObjectType.AccountGroup;
-                groupFilter.GroupRef = true;
+                groupFilter.GroupRefCount = true;
                 // all account group of organization with account count
                 IEnumerable<Group.Group> accountGroups = groupmanager.Get(groupFilter).Result;
                 // get access relationship 
                 AccountComponent.entity.AccessRelationshipFilter accessFilter = new AccountComponent.entity.AccessRelationshipFilter();
                 foreach (Group.Group group in accountGroups)
                 {
+                    accountDetail = new AccountGroupDetail();
+                    accountDetail.GroupId = group.Id;
                     accountDetail.AccountGroupName = group.Name;
                     accountDetail.AccountCount = group.GroupRefCount;
 
                     accessFilter.AccountGroupId = group.Id;
                     var accessList = accountmanager.GetAccessRelationship(accessFilter).Result;
                     List<Int32> groupId = new List<int>();
+                    accountDetail.VehicleCount=0;
+                    
                     // vehicle group 
-                    if (accessList != null)
+                    if (Convert.ToInt32(accessList.Count) > 0)
                     {
-                        groupId.AddRange(accessList.Select(c => c.Id).ToList());
+                        groupId.AddRange(accessList.Select(c => c.VehicleGroupId).ToList());
                         groupFilter = new Group.GroupFilter();
                         groupFilter.GroupIds = groupId;
-                        groupFilter.GroupRef = true;
+                        groupFilter.GroupRefCount = true;
+                        groupFilter.ObjectType = Group.ObjectType.None;
+                        groupFilter.GroupType = Group.GroupType.None;
+                        groupFilter.FunctionEnum = Group.FunctionEnum.None;
                         var vehicleGroups = groupmanager.Get(groupFilter).Result;
                         Int32 count = 0;
                         // Get vehicles count

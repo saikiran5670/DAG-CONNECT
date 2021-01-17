@@ -9,8 +9,7 @@ namespace net.atos.daf.ct2.vehicle.entity
         public int VehicleId { get; set; }
         public string Classification_Make { get; set; }
         public string Classification_Series { get; set; }
-        public string Classification_Model { get; set; }
-        public VehicleType Classification_Type { get; set; }
+      
         public int Tank_Nr { get; set; }
         public int Tank_Volume { get; set; }
         public string Chasis_Id { get; set; }

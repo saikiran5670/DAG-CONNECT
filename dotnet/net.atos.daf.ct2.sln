@@ -77,6 +77,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.authentica
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.authenticationservicerest", "dataservices\net.atos.daf.ct2.authenticationservicerest\net.atos.daf.ct2.authenticationservicerest.csproj", "{0F9A534C-C12B-4B56-A57A-C8BC045ACE0D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "clients", "clients", "{2C8AEBCE-DCE7-4CA6-99E8-899A800A4BB3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.auditclient", "businessservices\clients\net.atos.daf.ct2.auditclient\net.atos.daf.ct2.auditclient.csproj", "{72A53846-E761-4A8D-8FC6-409C30E35290}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -450,6 +454,18 @@ Global
 		{0F9A534C-C12B-4B56-A57A-C8BC045ACE0D}.Release|x64.Build.0 = Release|Any CPU
 		{0F9A534C-C12B-4B56-A57A-C8BC045ACE0D}.Release|x86.ActiveCfg = Release|Any CPU
 		{0F9A534C-C12B-4B56-A57A-C8BC045ACE0D}.Release|x86.Build.0 = Release|Any CPU
+		{72A53846-E761-4A8D-8FC6-409C30E35290}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72A53846-E761-4A8D-8FC6-409C30E35290}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72A53846-E761-4A8D-8FC6-409C30E35290}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{72A53846-E761-4A8D-8FC6-409C30E35290}.Debug|x64.Build.0 = Debug|Any CPU
+		{72A53846-E761-4A8D-8FC6-409C30E35290}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{72A53846-E761-4A8D-8FC6-409C30E35290}.Debug|x86.Build.0 = Debug|Any CPU
+		{72A53846-E761-4A8D-8FC6-409C30E35290}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72A53846-E761-4A8D-8FC6-409C30E35290}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72A53846-E761-4A8D-8FC6-409C30E35290}.Release|x64.ActiveCfg = Release|Any CPU
+		{72A53846-E761-4A8D-8FC6-409C30E35290}.Release|x64.Build.0 = Release|Any CPU
+		{72A53846-E761-4A8D-8FC6-409C30E35290}.Release|x86.ActiveCfg = Release|Any CPU
+		{72A53846-E761-4A8D-8FC6-409C30E35290}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3B76D23F-3BCE-4CB2-9A75-B50AEEFFB647} = {2783CFF0-6071-4B9E-8414-18ACB95D1997}
@@ -484,5 +500,7 @@ Global
 		{886B0676-C594-4FCB-BF1C-78DDFA879ACD} = {E42B6632-428F-4BDE-BB14-D8FA9DD42E87}
 		{4E575E09-A0D9-41B6-9707-7AF5EFBA84B6} = {E42B6632-428F-4BDE-BB14-D8FA9DD42E87}
 		{0F9A534C-C12B-4B56-A57A-C8BC045ACE0D} = {C93E4ACE-B462-4601-AD70-594B9B6634BD}
+		{2C8AEBCE-DCE7-4CA6-99E8-899A800A4BB3} = {E42B6632-428F-4BDE-BB14-D8FA9DD42E87}
+		{72A53846-E761-4A8D-8FC6-409C30E35290} = {2C8AEBCE-DCE7-4CA6-99E8-899A800A4BB3}
 	EndGlobalSection
 EndGlobal

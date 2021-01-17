@@ -1,3 +1,0 @@
-c:\project\atos.daf.ct2.0\dotnet\commoncomponent\test\net.atos.daf.ct2.Audittrail.test\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.Audittrail.test.csprojAssemblyReference.cache
-c:\project\atos.daf.ct2.0\dotnet\commoncomponent\test\net.atos.daf.ct2.Audittrail.test\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.Audittrail.test.AssemblyInfoInputs.cache
-c:\project\atos.daf.ct2.0\dotnet\commoncomponent\test\net.atos.daf.ct2.Audittrail.test\obj\Debug\netcoreapp3.1\net.atos.daf.ct2.Audittrail.test.AssemblyInfo.cs

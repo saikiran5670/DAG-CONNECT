@@ -110,46 +110,45 @@ namespace net.atos.daf.ct2.group
                     if (groupFilter.Id > 0)
                     {
                         parameter.Add("@id", groupFilter.Id);
-                        query = query + " and id  = @id ";
+                        query = query + " and id=@id ";
                     }
                     // ref id filter
                     if (groupFilter.RefId > 0)
                     {
                         return await GetByRefId(groupFilter.RefId);
-                    }               
-                    // multiple groups filter based on ids
-                    // Account Id list Filter                       
-                    if (groupFilter.GroupIds != null)
-                    {
-                        parameter.Add("@groupids", groupFilter.GroupIds);
-                        query = query + " a.id = ANY(@groupids) ";
                     }
-
                     // organization id filter
                     if (groupFilter.OrganizationId > 0)
                     {
                         parameter.Add("@organization_id", groupFilter.OrganizationId);
-                        query = query + " and organization_id  = @organization_id ";
+                        query = query + " and organization_id=@organization_id ";
                     }
                     // group type filter
                     if (((char)groupFilter.GroupType) != ((char)GroupType.None))
                     {
                         parameter.Add("@group_type", (char)groupFilter.GroupType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
-                        query = query + " and group_type= @group_type";
+                        query = query + " and group_type=@group_type";
                     }
 
                     // function functional enum filter
                     if (((char)groupFilter.FunctionEnum) != ((char)FunctionEnum.None))
                     {
                         parameter.Add("@function_enum", (char)groupFilter.FunctionEnum, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
-                        query = query + " and function_enum  = @function_enum";
+                        query = query + " and function_enum=@function_enum";
                     }
-
                     // object type filter
                     if (((char)groupFilter.ObjectType) != ((char)ObjectType.None))
                     {
-                        parameter.Add("@object_type", (char)groupFilter.ObjectType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
-                        query = query + " and object_type = @object_type";
+
+                        parameter.Add("@object_type", (char) groupFilter.ObjectType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                        query = query + " and object_type = @object_type ";
+                    }
+                 
+                    // Account Id list Filter                       
+                    if (groupFilter.GroupIds != null)
+                    {
+                        parameter.Add("@groupids", groupFilter.GroupIds);
+                        query = query + " and id=ANY(@groupids)";
                     }
                 }
                 IEnumerable<dynamic> groups = await dataAccess.QueryAsync<dynamic>(query, parameter);
@@ -248,8 +247,8 @@ namespace net.atos.daf.ct2.group
                 // ref id filter
                 if (refId > 0)
                 {
+                    query = query + " and gr.ref_id=@ref_id ";
                     parameter.Add("@ref_id", refId);
-                    query = query + " and gr.ref_id= @id ";
                 }
                 IEnumerable<dynamic> groups = await dataAccess.QueryAsync<dynamic>(query, parameter);
                 Group group = new Group();
@@ -266,7 +265,7 @@ namespace net.atos.daf.ct2.group
                 throw ex;
             }
         }
-        private async Task<List<GroupRef>> GetRef(int groupid)
+        public async Task<List<GroupRef>> GetRef(int groupid)
         {
             try
             {

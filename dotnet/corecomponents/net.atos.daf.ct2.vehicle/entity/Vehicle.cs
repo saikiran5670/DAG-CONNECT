@@ -7,7 +7,7 @@ namespace net.atos.daf.ct2.vehicle.entity
     {
           //public int VehicleID { get; set; }
         public int ID { get; set; }
-        public int Organization_Id { get; set; }
+        public int ? Organization_Id { get; set; }
         public string Name { get; set; }
         public string VIN { get; set; }       
         public string License_Plate_Number { get; set; }
@@ -21,6 +21,30 @@ namespace net.atos.daf.ct2.vehicle.entity
        // public OptInOptOutType Type { get; set; } 
         public VehicleProperty vehicleProperty { get; set; }
         public List<VehicleOptInOptOut> vehicleOptInOptOut { get; set; }
+
+        public string Model { get; set; }
+        public string Vid { get; set; }
+        public VehicleType Type { get; set; }
+        public string Tcu_Id { get; set; }
+        public string Tcu_Serial_Number { get; set; }
+        public string Tcu_Brand { get; set; }
+        public string Tcu_Version { get; set; }
+        public bool Is_Tcu_Register { get; set; }
+        public DateTime ? Reference_Date { get; set; }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         

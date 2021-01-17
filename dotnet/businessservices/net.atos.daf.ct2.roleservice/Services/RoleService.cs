@@ -8,7 +8,9 @@ using net.atos.daf.ct2.roleservice;
 using net.atos.daf.ct2.role.repository;
 using net.atos.daf.ct2.role.entity;
 using net.atos.daf.ct2.role;
+using net.atos.daf.ct2.features;
 using Newtonsoft.Json;
+using net.atos.daf.ct2.features.entity;
 
 namespace net.atos.daf.ct2.roleservice
 {
@@ -18,10 +20,12 @@ namespace net.atos.daf.ct2.roleservice
 
         private readonly ILogger<RoleManagementService> _logger;
         private readonly IRoleManagement _RoleManagement;
-        public RoleManagementService(ILogger<RoleManagementService> logger, IRoleManagement RoleManagement)
+        private readonly IFeatureManager _FeaturesManager;
+        public RoleManagementService(ILogger<RoleManagementService> logger, IRoleManagement RoleManagement,IFeatureManager FeatureManager)
         {
             _logger = logger;
             _RoleManagement = RoleManagement;
+            _FeaturesManager=FeatureManager;
 
         }
 
@@ -34,6 +38,13 @@ namespace net.atos.daf.ct2.roleservice
                 ObjRole.Organization_Id =request.OrganizationId;
                 ObjRole.Name = request.Name;
                 ObjRole.Createdby = request.CreatedBy;
+                ObjRole.Description = request.Description;
+                ObjRole.FeatureSet = new FeatureSet();
+                ObjRole.FeatureSet.Features = new List<Feature>();
+                foreach(var item in request.Features)
+                {
+                     ObjRole.FeatureSet.Features.Add(new Feature() { Id = item.Id });
+                }
                 var role = _RoleManagement.CreateRole(ObjRole).Result;
                 
                 return Task.FromResult(new RoleResponce
@@ -124,10 +135,14 @@ namespace net.atos.daf.ct2.roleservice
                  foreach (var item in role)
                 {
                     RoleRequest ObjResponce = new RoleRequest();
-                    ObjResponce.OrganizationId =item.Organization_Id;
+                    ObjResponce.Id=item.Id;
+                    ObjResponce.OrganizationId =item.Organization_Id == null ? 0 : item.Organization_Id.Value;
                     ObjResponce.Name = item.Name;
                     ObjResponce.CreatedBy = item.Createdby;
-                    ObjResponce.Active= item.is_active;
+                    ObjResponce.Active= item.Is_Active;
+                    ObjResponce.Description = item.Description == null ? "" : item.Description;
+                    ObjResponce.Roletype= item.Organization_Id == null ? RoleTypes.Global : RoleTypes.Regular;
+                    ObjResponce.FeaturesCount = item.Featurescount == null ?0 : Convert.ToInt32(item.Featurescount);
                     ObjroleList.Roles.Add(ObjResponce);
                 }
 
@@ -138,6 +153,34 @@ namespace net.atos.daf.ct2.roleservice
             catch(Exception ex)
             {
                 return await Task.FromResult(new RoleListResponce
+                {
+                    Message = "Exception " + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+
+        public async override Task<FeaturesListResponce> GetFeatures(FeaturesFilterRequest request,ServerCallContext context)
+        {
+            try
+            {
+            FeaturesListResponce ObFeaturesList = new FeaturesListResponce();
+            var result= await _FeaturesManager.GetFeatures(Convert.ToChar(request.Type),true);
+                 foreach (var item in result)
+                {
+                    FeaturesRequest ObjResponce = new FeaturesRequest();
+                    ObjResponce.Id=item.Id;
+                    ObjResponce.Name = item.Name;
+                    ObjResponce.Active= item.Is_Active;
+                    ObjResponce.Description = item.Description == null ? "" : item.Description;
+                    ObjResponce.Type= item.Type.ToString();
+                    ObFeaturesList.Features.Add(ObjResponce);
+                }
+             return await Task.FromResult(ObFeaturesList);
+            }
+            catch(Exception ex)
+            {
+                return await Task.FromResult(new FeaturesListResponce
                 {
                     Message = "Exception " + ex.Message,
                     Code = Responcecode.Failed

@@ -12,6 +12,8 @@ using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.role.repository; 
 using net.atos.daf.ct2.roleservice;
 using net.atos.daf.ct2.role;
+using net.atos.daf.ct2.features;
+using net.atos.daf.ct2.features.repository;
 
 namespace net.atos.daf.ct2.roleservice
 {
@@ -34,6 +36,8 @@ namespace net.atos.daf.ct2.roleservice
             services.AddSingleton(dataAccess); 
             services.AddTransient<IRoleManagement,RoleManagement>();
             services.AddTransient<IRoleRepository, RoleRepository>();
+            services.AddTransient<IFeatureManager,FeatureManager>();
+            services.AddTransient<IFeatureRepository,FeatureRepository>();
 
         }
 

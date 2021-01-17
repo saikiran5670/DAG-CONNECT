@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.account
         IAccountManager accountManager;
         IPreferenceManager preferenceManager;        
         
-        public AccountIdentityManager(IdentityComponent.ITokenManager _tokenManager, IdentityComponent.IAccountAuthenticator _autheticator,IPreferenceManager _preferenceManager,IAccountManager _accountManager)
+       public AccountIdentityManager(IdentityComponent.ITokenManager _tokenManager, IdentityComponent.IAccountAuthenticator _autheticator,IPreferenceManager _preferenceManager, AccountManager _accountManager)
         {
             autheticator = _autheticator;
             tokenManager = _tokenManager;
@@ -41,6 +41,7 @@ namespace net.atos.daf.ct2.account
                 {
                     AccountPreferenceFilter filter=new AccountPreferenceFilter();
                     filter.Ref_Id=accountId;
+                    //filter.Ref_Id =PreferenceType.Ref_id;
                     filter.PreferenceType=PreferenceType.Account;
                     IEnumerable<AccountPreference> preferences = preferenceManager.Get(filter).Result;
                     foreach(var pref in preferences) 
@@ -64,6 +65,7 @@ namespace net.atos.daf.ct2.account
             AccountFilter filter = new AccountFilter();     
             filter.Email =email;
             filter.AccountType = AccountType.PortalAccount;            
+        //    filter.AccountType = AccountType.None;            
             IEnumerable<Account> result = accountManager.Get(filter).Result;
             foreach(var account in result) 
             {

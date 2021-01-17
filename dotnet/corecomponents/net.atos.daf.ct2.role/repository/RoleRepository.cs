@@ -24,16 +24,17 @@ namespace net.atos.daf.ct2.role.repository
         {
 
             var RoleQueryStatement = @" INSERT INTO master.role
-                                    (organization_id,name,is_active,created_date,created_by) 
-	                                VALUES (@organization_id,@name,@is_active,@created_date,@created_by)
+                                    (organization_id,name,is_active,created_date,created_by,description) 
+	                                VALUES (@organization_id,@name,@is_active,@created_date,@created_by,@description)
 	                                RETURNING id";
 
             var Roleparameter = new DynamicParameters();
-            Roleparameter.Add("@organization_id", roleMaster.Organization_Id);
+            Roleparameter.Add("@organization_id", roleMaster.Organization_Id == 0 ?null : roleMaster.Organization_Id);
             Roleparameter.Add("@name", roleMaster.Name);
             Roleparameter.Add("@is_active", true);
             Roleparameter.Add("@created_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
             Roleparameter.Add("@created_by", roleMaster.Createdby);
+            Roleparameter.Add("@description", roleMaster.Description);
 
             int InsertedRoleId = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, Roleparameter);
             // if (roleMaster.FeatureSetID > 0)
@@ -53,6 +54,21 @@ namespace net.atos.daf.ct2.role.repository
             //     int resultAddRoleFeature = await dataAccess.ExecuteScalarAsync<int>(RoleFeatureQueryStatement, RoleFeatureparameter);
             //     return resultAddRoleFeature;
             // }
+            return InsertedRoleId;
+        }
+
+        public async Task<int>  Addrolefeatureset(int RoleId,int FeatureSetId)
+        {
+             var RoleQueryStatement = @"INSERT INTO master.rolefeatureset(
+                                        feature_set_id, role_id)
+                                        VALUES (@feature_set_id, @role_id);";
+
+            var Roleparameter = new DynamicParameters();
+            Roleparameter.Add("@feature_set_id", FeatureSetId);
+            Roleparameter.Add("@role_id", RoleId);
+           
+
+            int InsertedRoleId = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, Roleparameter);
             return InsertedRoleId;
         }
 
@@ -105,15 +121,22 @@ namespace net.atos.daf.ct2.role.repository
             //                             WHERE (role.rolemasterid=@roleid or @roleid=0)
             //                             and role.isactive=true;";
 
-            var QueryStatement= @"SELECT id, 
-                                organization_id, 
-                                name, 
-                                is_active, 
-                                created_date, 
-                                created_by, 
-                                updated_date,
-                                updated_by
-	                            FROM master.role
+            var QueryStatement= @"SELECT role.id, 
+                                role.organization_id, 
+                                role.name, 
+                                role.is_active, 
+                                role.created_date, 
+                                role.created_by, 
+                                role.updated_date,
+                                role.updated_by,
+                                fsf.featurescount as featurescount
+	                            FROM master.role role
+                                LEFT JOIN master.rolefeatureset roleFeatureSet								
+                                ON role.id=roleFeatureSet.role_id
+								LEFT JOIN (Select Count(feature_id) as featurescount,feature_set_id
+										   from master.featuresetfeature
+										  group by feature_set_id) fsf
+								on roleFeatureSet.feature_set_id = fsf.feature_set_id
                                 WHERE  1=1";
 
 
@@ -151,10 +174,12 @@ namespace net.atos.daf.ct2.role.repository
             parameter.Add("@organization_id", roleMaster.Organization_Id);
             parameter.Add("@name", roleMaster.Name);
             parameter.Add("@updatedby", roleMaster.Updatedby);
-            parameter.Add("@updateddate", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+            parameter.Add("@updateddate", UTCHandling.GetUTCFromDateTime(DateTime.Now));            
+            parameter.Add("@description", roleMaster.Description);
 
             var RoleQueryStatement = @" UPDATE master.role
                                             SET name=@name,
+                                            SET description= @Description
                                             updated_by=@updatedby,
                                             updated_date=@updateddate  
                                         WHERE id = @id
