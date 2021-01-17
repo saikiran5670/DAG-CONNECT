@@ -120,7 +120,7 @@ enum CurrencyType
         DayMonthYear= 0;
         MonthDayYear= 1;
         YearMonthDay= 2;
-    }
+    } 
     enum PreferenceType
     {
         //None = 'N',
