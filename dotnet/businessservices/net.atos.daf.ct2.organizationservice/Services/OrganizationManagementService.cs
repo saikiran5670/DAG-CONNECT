@@ -185,7 +185,7 @@ namespace net.atos.daf.ct2.organizationservice.Services
                 currencyType = AccountPreferenceComponent.CurrencyType.Euro;
                 break;
                 case 2:
-                currencyType = AccountPreferenceComponent.CurrencyType.USDollar;
+                currencyType = AccountPreferenceComponent.CurrencyType.UsDollar;
                 break;
                 default:
                 currencyType = AccountPreferenceComponent.CurrencyType.PondSterlingr;
