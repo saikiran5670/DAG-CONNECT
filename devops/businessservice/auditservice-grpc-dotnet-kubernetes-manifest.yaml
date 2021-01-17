@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       run: auditservice
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       labels:
