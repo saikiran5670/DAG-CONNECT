@@ -91,14 +91,14 @@ namespace net.atos.daf.ct2.identity
             var jwt = new JwtSecurityToken(
                 claims: claimList.ToArray(),
                 notBefore: now,
-                expires: now.AddSeconds(60),
+                expires: now.AddMinutes(15),
                 signingCredentials: signingCredentials
             );
             string token = new JwtSecurityTokenHandler().WriteToken(jwt);
             return new AccountToken
             {
                 AccessToken = token,
-                ExpiresIn = 30,
+                ExpiresIn = 15,
             };
         }
         public bool ValidateToken(string token)
@@ -192,7 +192,7 @@ namespace net.atos.daf.ct2.identity
                         default:
                             assertion = new AccountAssertion();
                             assertion.Key = c.Type;
-                            assertion.Value = c.Type;
+                            assertion.Value = c.Value;
                             assertion.SessionState = "";
                             assertion.AccountId = "";
                             assertion.CreatedAt = "";

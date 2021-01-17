@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.account.entity;
 
 namespace net.atos.daf.ct2.account
 {
@@ -11,6 +12,13 @@ namespace net.atos.daf.ct2.account
         Task<bool> Delete(int accountId, int organizationId);
         Task<List<Account>> Get(AccountFilter filter);  
         Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter);    
+        Task<AccessRelationship> CreateAccessRelationship(AccessRelationship entity);
+        Task<AccessRelationship> UpdateAccessRelationship(AccessRelationship entity);
+        Task<bool> AddRole(List<AccountRole> accountRoles);
+        Task<bool> RemoveRole(AccountRole accountRoles);
+        Task<List<string>> GetRoles(AccountRole accountRole);
+        Task<List<int>> GetRoleAccounts(int roleId);
+
     }
 }
   

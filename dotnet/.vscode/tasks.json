@@ -93,7 +93,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/businessservices/net.atos.daf.ct2.identityservice/net.atos.daf.ct2.identityservice.csproj",
+                "${workspaceFolder}/dataservices/net.atos.daf.ct2.authenticationservicerest/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.authenticationservicerest.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -105,7 +105,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/businessservices/net.atos.daf.ct2.identityservice/net.atos.daf.ct2.identityservice.csproj",
+                "${workspaceFolder}/dataservices/net.atos.daf.ct2.authenticationservicerest/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.authenticationservicerest.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -118,7 +118,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/businessservices/net.atos.daf.ct2.identityservice/net.atos.daf.ct2.identityservice.csproj",
+                "${workspaceFolder}/dataservices/net.atos.daf.ct2.authenticationservicerest/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.authenticationservicerest.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

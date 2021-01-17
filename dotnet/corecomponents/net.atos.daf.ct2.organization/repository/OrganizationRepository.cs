@@ -430,5 +430,20 @@ namespace net.atos.daf.ct2.organization.repository
                 throw ex;
             }   
         }
+
+        public async Task<int> CreateVehicleParty(List<Organization> organization)
+        {
+            foreach (var item in organization)
+            {
+                string Org_Id = await dataAccess.QuerySingleAsync<string>("SELECT org_id FROM master.organization where org_id=@org_id", new { org_id = item.OrganizationId });
+                if(!string.IsNullOrEmpty(Org_Id)){
+                    await Create(item);
+                }
+                else{
+                    await Update(item);
+                }
+            }
+            return 0;
+        }
     }
 }

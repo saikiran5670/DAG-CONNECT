@@ -1,6 +1,6 @@
 using System;
-
-namespace net.atos.daf.ct2.account
+using net.atos.daf.ct2.account.ENUM;
+namespace net.atos.daf.ct2.account.entity
 {
     public class Account
     {
@@ -16,7 +16,7 @@ namespace net.atos.daf.ct2.account
         public int Account_OrgId { get; set; } 
         public DateTime StartDate { get; set; }   
         public DateTime ? EndDate { get; set; }  
-        public bool Active { get; set; }    
+        // public bool Active { get; set; }    
         
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.organization.entity;
 using net.atos.daf.ct2.organization;
 using AccountPreferenceComponent = net.atos.daf.ct2.accountpreference;
-using net.atos.daf.ct2.accountpreference;
+//using net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using System.Collections.Generic;
@@ -20,11 +20,16 @@ namespace net.atos.daf.ct2.organizationservice.Services
         private readonly IAuditLogRepository _IAuditLogRepository;       
         private readonly IAuditTraillib _AuditTrail;      
         private readonly IOrganizationManager organizationtmanager;
+<<<<<<< HEAD
         private readonly IPreferenceManager preferencemanager;
          private readonly IVehicleManager vehicleManager;
 
         
         public OrganizationManagementService(ILogger<OrganizationManagementService> logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager)
+=======
+        private readonly AccountPreferenceComponent.IPreferenceManager preferencemanager;
+        public OrganizationManagementService(ILogger<OrganizationManagementService> logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,AccountPreferenceComponent.IPreferenceManager _preferencemanager)
+>>>>>>> 9b7b71e724160c3712e493c72530b1eb3e50f0ce
         {
             _logger = logger;
             _AuditTrail = AuditTrail;
@@ -53,7 +58,7 @@ namespace net.atos.daf.ct2.organizationservice.Services
                 
                 organization = organizationtmanager.Create(organization).Result;
 
-                 AccountPreference accountPreference=new AccountPreference();
+                 AccountPreferenceComponent.AccountPreference accountPreference=new AccountPreferenceComponent.AccountPreference();
                  accountPreference.Ref_Id=organization.Id;
                  accountPreference.PreferenceType=GetPreferenceType(request.PreferenceType);                 
                  accountPreference.Language_Id= request.LanguageId;
@@ -102,7 +107,7 @@ namespace net.atos.daf.ct2.organizationservice.Services
                 
                 organization = organizationtmanager.Update(organization).Result;
 
-                 AccountPreference accountPreference=new AccountPreference();
+                 AccountPreferenceComponent.AccountPreference accountPreference=new AccountPreferenceComponent.AccountPreference();
                  accountPreference.Ref_Id=organization.Id;
                  accountPreference.PreferenceType=GetPreferenceType(request.PreferenceType);                 
                  accountPreference.Language_Id= request.LanguageId;
@@ -191,12 +196,13 @@ namespace net.atos.daf.ct2.organizationservice.Services
                 currencyType = AccountPreferenceComponent.CurrencyType.Euro;
                 break;
                 case 2:
-                currencyType = AccountPreferenceComponent.CurrencyType.USDollar;
+                currencyType = AccountPreferenceComponent.CurrencyType.Usdollar;
                 break;
                 default:
-                currencyType = AccountPreferenceComponent.CurrencyType.PondSterlingr;
+                currencyType = AccountPreferenceComponent.CurrencyType.PondSterling;
                 break;
             }
+            
             return currencyType;
         }
 
@@ -208,6 +214,7 @@ namespace net.atos.daf.ct2.organizationservice.Services
                 case 0:
                 unitType = AccountPreferenceComponent.UnitType.None;
                 break;
+                 
                 case 1:
                 unitType = AccountPreferenceComponent.UnitType.Metric;
                 break;
@@ -215,7 +222,7 @@ namespace net.atos.daf.ct2.organizationservice.Services
                 unitType = AccountPreferenceComponent.UnitType.Imperial;
                 break;
                 default:
-                unitType = AccountPreferenceComponent.UnitType.US_Imperial;
+                unitType = AccountPreferenceComponent.UnitType.Usimperial;
                 break;
             }
             return unitType;
@@ -230,13 +237,13 @@ namespace net.atos.daf.ct2.organizationservice.Services
                 vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.None;
                 break;
                 case 1:
-                vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.Registration_Number;
+                vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.RegistrationNumber;
                 break;
                 case 2:
                 vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.Name;
                 break;
                 default:
-                vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.VIN;
+                vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.Vin;
                 break;
             }
             return vehicleDisplayType;
@@ -250,13 +257,13 @@ namespace net.atos.daf.ct2.organizationservice.Services
                 dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.None;
                 break;
                 case 1:
-                dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.Day_Month_Year;
+                dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.DayMonthYear;
                 break;
                 case 2:
-                dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.Month_Day_Year;
+                dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.MonthDayYear;
                 break;
                 default:
-                dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.Year_Month_Day;
+                dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.YearMonthDay;
                 break;
             }
             return dateFormatDisplayType;

@@ -6,7 +6,7 @@ namespace net.atos.daf.ct2.accountpreference
     {
         None = 'N',
         Euro = 'E',
-        USDollar = 'U',
-        PondSterlingr = 'P'
+        Usdollar = 'U',
+        PondSterling = 'P'
     }
 }

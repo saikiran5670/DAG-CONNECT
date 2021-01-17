@@ -6,7 +6,9 @@
 trigger:
 - none
 
-pool: dafct-dev1-privateagent
+pool: 
+  name: Azure Pipelines
+  vmImage: ubuntu-18.04
 
 parameters:
 - name: ENV
@@ -14,6 +16,7 @@ parameters:
   type: string
   default: DEV0
   values:
+  - All
   - DEV0
   - DEV01
   - DEV02
@@ -24,6 +27,8 @@ variables:
 - ${{ if eq(parameters.ENV, 'DEV01') }}:
   - group: DEV01-Build-Variables
 - ${{ if eq(parameters.ENV, 'DEV02') }}:
+  - group: DEV02-Build-Variables
+- ${{ if eq(parameters.ENV, 'All') }}:
   - group: DEV02-Build-Variables
 
 steps:
@@ -38,13 +43,13 @@ steps:
     tokenSuffix: '}#'
     useLegacyPattern: false
     enableTelemetry: true
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02')
 
 - task: CmdLine@2
   inputs:
     script: |
       cat dotnet/commonservices/net.atos.daf.ct2.auditservice/appsettings.json
-
-      echo $(DAFConnectMasterDatabase)
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02')
 
 - task: Docker@0
   displayName: 'Build an image'
@@ -53,6 +58,7 @@ steps:
     azureContainerRegistry: $(ContainerRegistry)
     dockerFile: dotnet/AuditService_Dockerfile
     imageName: auditservice
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02')
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -61,3 +67,13 @@ steps:
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
     imageName: auditservice
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02')
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      echo $(ContainerRegistry)
+  condition: eq('${{ parameters.ENV }}', 'All')
+  
+      
+     

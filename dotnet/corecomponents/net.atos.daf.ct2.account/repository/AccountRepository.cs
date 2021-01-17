@@ -7,7 +7,8 @@ using Dapper;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.utilities;
-
+using net.atos.daf.ct2.account.entity;
+using net.atos.daf.ct2.account.ENUM;
 namespace net.atos.daf.ct2.account
 {
     public class AccountRepository : IAccountRepository
@@ -30,21 +31,21 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@first_name", account.FirstName);
                 parameter.Add("@last_name", account.LastName);
                 // this can null  as well
-                if (account.Dob.HasValue)
-                {
-                    //parameter.Add("@dob", UTCHandling.GetUTCFromDateTime(account.Dob.ToString()));
-                    parameter.Add("@dob", account.Dob);
-                }
-                else
-                {
-                    parameter.Add("@dob", DBNull.Value);
-                }
+                // if (account.Dob.HasValue)
+                // {
+                //     //parameter.Add("@dob", UTCHandling.GetUTCFromDateTime(account.Dob.ToString()));
+                //     parameter.Add("@dob", account.Dob);
+                // }
+                // else
+                // {
+                //     parameter.Add("@dob", DBNull.Value);
+                // }
 
 
                 parameter.Add("@type", (char)account.AccountType);
 
-                string query = @"insert into master.account(email,salutation,first_name,last_name,dob,type) " +
-                              "values(@email,@salutation,@first_name,@last_name,@dob,@type) RETURNING id";
+                string query = @"insert into master.account(email,salutation,first_name,last_name,type) " +
+                              "values(@email,@salutation,@first_name,@last_name,@type) RETURNING id";
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 account.Id = id;
@@ -59,7 +60,7 @@ namespace net.atos.daf.ct2.account
                     {
                         parameter.Add("@end_date", null);
                     }
-                    parameter.Add("@is_active", account.Active);
+                    parameter.Add("@is_active", true);
                     parameter.Add("@account_id", account.Id);
                     parameter.Add("@organization_Id", account.Organization_Id);
                     query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,is_active)  
@@ -84,12 +85,12 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@first_name", account.FirstName);
                 parameter.Add("@last_name", account.LastName);
                 //parameter.Add("@dob", account.Dob != null ? UTCHandling.GetUTCFromDateTime(account.Dob.ToString()) : 0);
-                parameter.Add("@dob", account.Dob != null ? account.Dob : null);
+                //parameter.Add("@dob", account.Dob != null ? account.Dob : null);
                 parameter.Add("@type", (char)account.AccountType);
 
                 string query = @"update master.account set id = @id,email = @email,salutation = @salutation,
-                                first_name = @first_name,last_name = @last_name ,dob = @dob,type = @type)
-                                 where id = @id RETURNING id";
+                                first_name = @first_name,last_name = @last_name ,type = @type
+                                where id = @id RETURNING id";
 
                 account.Id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
@@ -106,13 +107,14 @@ namespace net.atos.daf.ct2.account
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", accountid);
                 parameter.Add("@organization_id", organization_id);
-                string query = @"delete from master.accountorg where account_id = @id and organization_id = @organization_id";
+                string query = @"update master.accountorg set is_active = 0 where account_id = @id and organization_id = @organization_id";
                 var result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                if (accountid > 0)
-                {
-                    query = @"delete from master.account where id = @id";
-                    await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                }
+                //TODO:: Do we need is_active column in account table as well
+                // if (accountid > 0)
+                // {
+                //     query = @"update master.account set where id = @id";
+                //     await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                // }
                 return true;
             }
             catch (Exception ex)
@@ -129,7 +131,7 @@ namespace net.atos.daf.ct2.account
                 //List<Account> accounts = new List<Account>();
                 List<Account> accounts = new List<Account>();
                 string query = string.Empty;
-                query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.dob,a.type as accounttype,ag.organization_id as Organization_Id from master.account a join master.accountorg ag on a.id = ag.account_id where 1=1 ";
+                query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.dob,a.type as accounttype,ag.organization_id as Organization_Id from master.account a join master.accountorg ag on a.id = ag.account_id and ag.is_active=true where 1=1 ";
                 if (filter != null)
                 {
                     // id filter
@@ -137,6 +139,18 @@ namespace net.atos.daf.ct2.account
                     {
                         parameter.Add("@id", filter.Id);
                         query = query + " and a.id = @id ";
+                    }
+                    // email id filter
+                    if (!string.IsNullOrEmpty(filter.Email))
+                    {
+                        parameter.Add("@email", filter.Email);
+                        query = query + " and a.email = @email ";
+                    }
+                    // email id filter
+                    if (!string.IsNullOrEmpty(filter.Name))
+                    {
+                        parameter.Add("@name", filter.Name + "%");
+                        query = query + " and a.first_name || ' ' || a.last_name like = @name ";
                     }
                     // organization id filter
                     if (filter.OrganizationId > 0)
@@ -147,18 +161,20 @@ namespace net.atos.daf.ct2.account
                     // account type filter 
                     if (((char)filter.AccountType) != ((char)AccountType.None))
                     {
-                        parameter.Add("@type", (char)filter.AccountType);
-                        query = query + " and a.type = @type";
+                        parameter.Add("@type", (char)filter.AccountType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                        
+                        query = query + " and a.type=@type";
                     }
 
                     // account ids filter                    
                     if ((!string.IsNullOrEmpty(filter.AccountIds)) && Convert.ToInt32(filter.AccountIds.Length) > 0)
                     {
-                        // Account Id list Filter                       
+                        // Account Id list Filter
+                        filter.AccountIds = filter.AccountIds.TrimEnd(',');
                         List<int> accountids = filter.AccountIds.Split(',').Select(int.Parse).ToList();
                         parameter.Add("@accountids", accountids);
-                        query = query + " and a.id = ANY(@accountids) ";
-                        
+                        query = query + " and a.id = ANY(@accountids)";
+
                     }
                     dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
 
@@ -174,7 +190,52 @@ namespace net.atos.daf.ct2.account
                 throw ex;
             }
         }
+        public async Task<AccessRelationship> CreateAccessRelationship(AccessRelationship entity)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
 
+                //parameter.Add("@id", account.Id);
+                parameter.Add("@access_type", (char)entity.AccessRelationType);
+                parameter.Add("@account_group_id", entity.AccountGroupId);
+                parameter.Add("@vehicle_group_id", entity.VehicleGroupId);
+
+                string query = @"insert into master.accessrelationship(access_type,account_group_id,vehicle_group_id) " +
+                              "values(@access_type,@account_group_id,@vehicle_group_id) RETURNING id";
+
+                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                entity.Id = id;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return entity;
+        }
+        // TODO: Update should delete existing relationship and insert new vehicle groups to account group
+        public async Task<AccessRelationship> UpdateAccessRelationship(AccessRelationship entity)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@access_type", (char)entity.AccessRelationType);
+                parameter.Add("@account_group_id", entity.AccountGroupId);
+                parameter.Add("@vehicle_group_id", entity.VehicleGroupId);
+
+                string query = @"insert into master.accessrelationship(access_type,account_group_id,vehicle_group_id) " +
+                              "values(@access_type,@account_group_id,@vehicle_group_id) RETURNING id";
+
+                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                entity.Id = id;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return entity;
+        }
         public async Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter)
         {
             try
@@ -193,13 +254,13 @@ namespace net.atos.daf.ct2.account
                         from master.accessRelationship ac
                         inner join master.groupref gr on ac.account_group_id = gr.group_id where 1= 1";
                         parameter.Add("@ref_id", filter.AccountId);
-                        query = query + " and gr.ref_id = @ref_id ";
+                        query = query + " and gr.ref_id=@ref_id ";
                     }
                     // organization id filter
                     else if (filter.AccountGroupId > 0)
                     {
                         query = @"select id,access_type,account_group_id,vehicle_group_id 
-                                    from master.accessRelationship where ac.account_group_id=@account_group_id";
+                                    from master.accessRelationship where account_group_id=@account_group_id";
                         parameter.Add("@account_group_id", filter.AccountGroupId);
                     }
                     dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
@@ -217,6 +278,122 @@ namespace net.atos.daf.ct2.account
             }
         }
 
+        // Begin Add Account to Role
+        public async Task<bool> AddRole(List<AccountRole> accountRoles)
+        {
+            bool result = false;
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                if (accountRoles != null)
+                {
+                    parameter.Add("@account_id", accountRoles[0].AccountId);
+                    parameter.Add("@organization_id", accountRoles[0].OrganizationId);
+
+                    query = @"insert into master.accountrole (account_id,organization_id,role_id) values ";
+
+                    foreach (AccountRole accountRole in accountRoles)
+                    {
+                        parameter.Add("@role_id_" + accountRole.RoleId.ToString(), accountRole.RoleId);
+                        query = query + @" (@account_id,@organization_id,@role_id_" + accountRole.RoleId.ToString() + "),";
+                    }
+                    if (!string.IsNullOrEmpty(query))
+                    {
+                        query = query.TrimEnd(',');
+                        await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    }
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return result;
+        }
+
+        public async Task<bool> RemoveRole(AccountRole accountRoles)
+        {
+            bool result = false;
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                if (accountRoles != null)
+                {
+                    parameter.Add("@account_id", accountRoles.AccountId);
+                    parameter.Add("@organization_id", accountRoles.OrganizationId);
+                    query = @"delete from master.accountrole where account_id = @account_id and organization_id=@organization_id";
+                    if (!string.IsNullOrEmpty(query))
+                    {
+                        query = query.TrimEnd(',');
+                        await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    }
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return result;
+        }
+
+        public async Task<List<int>> GetRoleAccounts(int roleId)
+        {
+            List<int> accountIds = null;
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                if (roleId > 0)
+                {
+                    parameter.Add("@role_id", roleId);
+                    query = @"select a.id from master.account a inner join master.accountrole ac on  a.id=ac.account_id
+                            inner join master.role r on r.id=ac.role_id where ac.role_id=@role_id";
+                    query = query.TrimEnd(',');
+                    accountIds = new List<int>();
+                    accountIds = await dataAccess.ExecuteScalarAsync<List<int>>(query, parameter);                    
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return accountIds;
+        }
+        public async Task<List<string>> GetRoles(AccountRole accountRole)
+        {
+            List<string> Roles = new List<string>();
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                if (accountRole != null)
+                {
+                    parameter.Add("@account_id", accountRole.AccountId);
+                    parameter.Add("@organization_id", accountRole.OrganizationId);
+
+                    query = @"select r.id,r.name from master.account a inner join master.accountrole ac on a.id = ac.account_id 
+                                    inner join master.role r on r.id = ac.role_id where 
+                                    ac.account_id = @account_id and ac.organization_id=@organization_id";
+
+                    dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+
+                    foreach (dynamic record in result)
+                    {
+                        Roles.Add(record.name);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return Roles;
+        }
+        // End Add Account to Role
         private Account Map(dynamic record)
         {
             Account account = new Account();
@@ -234,7 +411,7 @@ namespace net.atos.daf.ct2.account
         {
             AccessRelationship entity = new AccessRelationship();
             entity.Id = record.id;
-            entity.AccessType = (AccessType)Convert.ToChar(record.access_type);
+            entity.AccessRelationType = (AccessRelationType)Convert.ToChar(record.access_type);
             entity.AccountGroupId = record.account_group_id;
             entity.VehicleGroupId = record.vehicle_group_id;
             return entity;

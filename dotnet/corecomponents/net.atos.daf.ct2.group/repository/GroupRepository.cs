@@ -61,8 +61,7 @@ namespace net.atos.daf.ct2.group
                 parameter.Add("@description", group.Description);
 
                 var query = @"update master.group set object_type = @object_type,group_type = @group_type,
-                                     argument = @argument,function_enum = @function_enum,
-                                     organization_id = @organization_id,
+                                     argument = @argument,function_enum = @function_enum,                                     
                                      ref_id = @ref_id,
                                      name = @name,description = @description
 	                                 WHERE id = @id
@@ -110,38 +109,50 @@ namespace net.atos.daf.ct2.group
                     if (groupFilter.Id > 0)
                     {
                         parameter.Add("@id", groupFilter.Id);
-                        query = query + " and id  = @id ";
+                        query = query + " and id=@id ";
+                    }
+                    // ref id filter
+                    if (groupFilter.RefId > 0)
+                    {
+                        return await GetByRefId(groupFilter.RefId);
                     }
                     // organization id filter
                     if (groupFilter.OrganizationId > 0)
                     {
                         parameter.Add("@organization_id", groupFilter.OrganizationId);
-                        query = query + " and organization_id  = @organization_id ";
+                        query = query + " and organization_id=@organization_id ";
                     }
-                    // function functional enum filter
-                    if (((char)groupFilter.FunctionEnum) != ((char)FunctionEnum.None))
-                    {
-                        parameter.Add("@function_enum", (char)groupFilter.FunctionEnum);
-                        query = query + " and function_enum  = @function_enum ";
-                    }
-
-                    // object type filter
-                    if (((char)groupFilter.ObjectType) != ((char)ObjectType.None))
-                    {
-                        parameter.Add("@object_type ", (char)groupFilter.ObjectType);
-                        query = query + " and object_type = @object_type ";
-                    }
-
                     // group type filter
                     if (((char)groupFilter.GroupType) != ((char)GroupType.None))
                     {
-                        parameter.Add("@group_type ", (char)groupFilter.GroupType);
-                        query = query + " and group_type = @group_type ";
+                        parameter.Add("@group_type", (char)groupFilter.GroupType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                        query = query + " and group_type=@group_type";
+                    }
+
+                    // function functional enum filter
+                    if (((char)groupFilter.FunctionEnum) != ((char)FunctionEnum.None))
+                    {
+                        parameter.Add("@function_enum", (char)groupFilter.FunctionEnum, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                        query = query + " and function_enum=@function_enum";
+                    }
+                    // object type filter
+                    if (((char)groupFilter.ObjectType) != ((char)ObjectType.None))
+                    {
+
+                        parameter.Add("@object_type", (char) groupFilter.ObjectType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                        query = query + " and object_type=@object_type ";
+                    }
+                 
+                    // Account Id list Filter                       
+                    if (groupFilter.GroupIds != null)
+                    {
+                        parameter.Add("@groupids", groupFilter.GroupIds);
+                        query = query + " and id=ANY(@groupids)";
                     }
                 }
                 IEnumerable<dynamic> groups = await dataAccess.QueryAsync<dynamic>(query, parameter);
                 Group group = new Group();
-                
+
                 foreach (dynamic record in groups)
                 {
                     group = Map(record);
@@ -168,6 +179,8 @@ namespace net.atos.daf.ct2.group
                 throw ex;
             }
         }
+
+
         public async Task<bool> AddRef(Group group)
         {
             try
@@ -221,7 +234,37 @@ namespace net.atos.daf.ct2.group
             entity.RefId = record.ref_id;
             return entity;
         }
-        private async Task<List<GroupRef>> GetRef(int groupid)
+
+        public async Task<List<Group>> GetByRefId(Int32 refId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                List<Group> groupList = new List<Group>();
+                var query = @"select g.id,g.object_type,g.group_type,g.argument,g.function_enum,g.organization_id,g.ref_id,g.name,
+                            g.description from master.group g inner join master.groupref gr on g.id = gr.group_id";
+                // ref id filter
+                if (refId > 0)
+                {
+                    query = query + " and gr.ref_id=@ref_id ";
+                    parameter.Add("@ref_id", refId);
+                }
+                IEnumerable<dynamic> groups = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                Group group = new Group();
+
+                foreach (dynamic record in groups)
+                {
+                    group = Map(record);                    
+                    groupList.Add(group);
+                }
+                return groupList;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<List<GroupRef>> GetRef(int groupid)
         {
             try
             {

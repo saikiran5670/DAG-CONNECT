@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Identity = net.atos.daf.ct2.identity;
 using IdentityEntity = net.atos.daf.ct2.identity.entity;
-
+using net.atos.daf.ct2.account.ENUM;
+using net.atos.daf.ct2.account.entity;
 
 namespace net.atos.daf.ct2.account
 {
@@ -88,14 +89,38 @@ namespace net.atos.daf.ct2.account
             }
             return result;
         }
-
         public async Task<IEnumerable<Account>> Get(AccountFilter filter)
         {
             return await repository.Get(filter);
+        }
+        public async Task<AccessRelationship> CreateAccessRelationship(AccessRelationship entity)
+        {
+            return await repository.CreateAccessRelationship(entity);
+        }
+        public async Task<AccessRelationship> UpdateAccessRelationship(AccessRelationship entity)
+        {
+            return await repository.UpdateAccessRelationship(entity);
         }
         public async Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter)
         {
             return await repository.GetAccessRelationship(filter);
         }
+        public async  Task<bool> AddRole(List<AccountRole> accountRoles)
+        {
+            return await repository.AddRole(accountRoles);
+        }
+        public async  Task<bool> RemoveRole(AccountRole accountRoles)
+        {
+            return await repository.RemoveRole(accountRoles);
+        }
+        public async  Task<List<string>> GetRoles(AccountRole accountRoles)
+        {
+            return await repository.GetRoles(accountRoles);
+        }   
+        public async  Task<List<int>> GetRoleAccounts(int roleId)
+        {
+            return await repository.GetRoleAccounts(roleId);
+        }   
+        
     }
 }

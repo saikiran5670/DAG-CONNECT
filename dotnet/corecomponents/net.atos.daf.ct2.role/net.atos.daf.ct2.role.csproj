@@ -16,6 +16,11 @@
     </Reference>
   </ItemGroup>
 
+   <ItemGroup>
+     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.utilities\net.atos.daf.ct2.utilities.csproj" />
+     <ProjectReference Include="..\net.atos.daf.ct2.features\net.atos.daf.ct2.features.csproj" />
+   </ItemGroup>
+
 
 
 

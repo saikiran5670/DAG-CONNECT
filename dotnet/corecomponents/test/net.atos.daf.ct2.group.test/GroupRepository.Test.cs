@@ -131,12 +131,13 @@ namespace net.atos.daf.ct2.group.test
             // filter by organization
             GroupFilter filter = new GroupFilter();
             filter.OrganizationId = 1;
-            filter.FunctionEnum = FunctionEnum.None;
-            filter.ObjectType = ObjectType.None;
-            filter.GroupType = GroupType.None;
+            filter.FunctionEnum = FunctionEnum.All;
+            filter.ObjectType = ObjectType.AccountGroup;
+            filter.GroupType = GroupType.Single;
+            //filter.GroupType = GroupType.None;
             var result = _groupRepository.Get(filter).Result;
 
-            // filter by id
+            //filter by id
             filter = new GroupFilter();
             filter.Id = 2;
             filter.FunctionEnum = FunctionEnum.None;

@@ -180,18 +180,6 @@ namespace net.atos.daf.ct2.vehiclerepository
             }
         }
 
-        public async Task<VehicleProperty> CreateProperty(VehicleProperty vehicleproperty)
-        {
-            try
-            {
-                return await vehicleRepository.CreateProperty(vehicleproperty);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
         public async Task<VehicleProperty> UpdateProperty(VehicleProperty vehicleproperty)
         {
             try
