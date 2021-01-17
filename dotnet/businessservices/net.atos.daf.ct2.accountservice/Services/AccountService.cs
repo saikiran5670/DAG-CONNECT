@@ -39,18 +39,29 @@ namespace net.atos.daf.ct2.accountservice
                 account.FirstName = request.FirstName;
                 account.LastName = request.LastName;
                 //account.Dob = null;//request.Dob.Seconds;
-                account.AccountType =  AccountComponent.ENUM.AccountType.PortalAccount; //GetEnum((int)request.Type);
+                account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount; //GetEnum((int)request.Type);
                 account.Organization_Id = request.OrganizationId;
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
                 account = accountmanager.Create(account).Result;
-
                 // response 
                 AccountData response = new AccountData();
-                response.Code = Responcecode.Success;
-                request.Id=account.Id;
-                response.Message = "Created";
-                response.Account = request;
+
+                if (account.isDuplicate)
+                {
+                    response.Message = "The duplicate account, please provide unique email address.";                    
+                    response.Code = Responcecode.Failed;
+                }
+                else
+                {
+                    response.Code = Responcecode.Success;
+                    request.Id = account.Id;
+                    response.Message = "Created";
+                    response.Account = request;
+                }
+
+
+
 
                 return Task.FromResult(response);
             }
@@ -75,7 +86,7 @@ namespace net.atos.daf.ct2.accountservice
                 account.FirstName = request.FirstName;
                 account.LastName = request.LastName;
                 //account.Dob = request.Dob.Seconds;
-                account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;; //GetEnum((int)request.Type);
+                account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount; ; //GetEnum((int)request.Type);
                 account.Organization_Id = request.OrganizationId;
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
@@ -110,7 +121,7 @@ namespace net.atos.daf.ct2.accountservice
                 account.FirstName = request.FirstName;
                 account.LastName = request.LastName;
                 //account.Dob = request.Dob.Seconds;
-                account.AccountType =  AccountComponent.ENUM.AccountType.PortalAccount; //GetEnum((int)request.Type);
+                account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount; //GetEnum((int)request.Type);
                 account.Organization_Id = request.OrganizationId;
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
@@ -233,7 +244,7 @@ namespace net.atos.daf.ct2.accountservice
                         filter.Id = 0;
                         filter.OrganizationId = request.OrganizationId;
                         filter.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
-                        filter.AccountIds = string.Join(",",accountIds);
+                        filter.AccountIds = string.Join(",", accountIds);
                         // list of account for organization 
                         accounts = accountmanager.Get(filter).Result.ToList();
                     }
@@ -241,13 +252,13 @@ namespace net.atos.daf.ct2.accountservice
                 }
                 else if (request.RoleId > 0)
                 {
-                        accountIds = accountmanager.GetRoleAccounts(request.RoleId).Result;
-                        filter.Id = 0;
-                        filter.OrganizationId = request.OrganizationId;
-                        filter.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
-                        filter.AccountIds = string.Join(",",accountIds);
-                        // list of account for organization 
-                        accounts = accountmanager.Get(filter).Result.ToList();
+                    accountIds = accountmanager.GetRoleAccounts(request.RoleId).Result;
+                    filter.Id = 0;
+                    filter.OrganizationId = request.OrganizationId;
+                    filter.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
+                    filter.AccountIds = string.Join(",", accountIds);
+                    // list of account for organization 
+                    accounts = accountmanager.Get(filter).Result.ToList();
                 }
                 else
                 {
@@ -264,8 +275,8 @@ namespace net.atos.daf.ct2.accountservice
                 {
                     accountDetails.Account = MapToRequest(entity);
                     Group.GroupFilter groupFilter = new Group.GroupFilter();
-                    groupFilter.OrganizationId=request.OrganizationId;
-                    groupFilter.RefId = request.AccountId;                    
+                    groupFilter.OrganizationId = request.OrganizationId;
+                    groupFilter.RefId = request.AccountId;
                     groupFilter.ObjectType = Group.ObjectType.None;
                     groupFilter.FunctionEnum = Group.FunctionEnum.None;
                     groupFilter.GroupType = Group.GroupType.None;
@@ -335,7 +346,7 @@ namespace net.atos.daf.ct2.accountservice
                 preference.Unit_Type = (Preference.UnitType)Enum.Parse(typeof(Preference.UnitType), request.UnitType.ToString());
                 preference.VehicleDisplay_Type = (Preference.VehicleDisplayType)Enum.Parse(typeof(Preference.VehicleDisplayType), request.VehicleDisplayType.ToString());
                 preference.DateFormat_Type = (Preference.DateFormatDisplayType)Enum.Parse(typeof(Preference.DateFormatDisplayType), request.DateFormatType.ToString());
-                preference.Is_Active=true;
+                preference.Is_Active = true;
                 preference = preferencemanager.Create(preference).Result;
                 if (preference.Id.HasValue) request.Id = preference.Id.Value;
                 // response 
@@ -639,8 +650,8 @@ namespace net.atos.daf.ct2.accountservice
                     accessFilter.AccountGroupId = group.Id;
                     var accessList = accountmanager.GetAccessRelationship(accessFilter).Result;
                     List<Int32> groupId = new List<int>();
-                    accountDetail.VehicleCount=0;
-                    
+                    accountDetail.VehicleCount = 0;
+
                     // vehicle group 
                     if (Convert.ToInt32(accessList.Count) > 0)
                     {
@@ -785,7 +796,7 @@ namespace net.atos.daf.ct2.accountservice
             request.Name = entity.Name;
             request.Description = entity.Description;
             //request.Argument = entity.Argument;
-            
+
             //request.FunctionEnum = (FunctionEnum)Enum.Parse(typeof(FunctionEnum), entity.FunctionEnum.ToString());
             //request.FunctionEnum = entity.FunctionEnum.ToString();
             //request.GroupType = (GroupType)Enum.Parse(typeof(GroupType), entity.GroupType.ToString());

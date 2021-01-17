@@ -29,6 +29,12 @@ namespace net.atos.daf.ct2.account
             identityEntity.FirstName = account.FirstName;
             identityEntity.LastName = account.LastName;
             var identityresult = await identity.CreateUser(identityEntity);
+
+            // user already exits in IDP.
+            if(identityresult.StatusCode == System.Net.HttpStatusCode.Conflict)
+            {
+               account.isDuplicate=true;
+            }
             if(identityresult.StatusCode == System.Net.HttpStatusCode.Created)
             {
                account = await repository.Create(account);
