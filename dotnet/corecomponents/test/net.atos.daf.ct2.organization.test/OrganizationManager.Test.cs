@@ -6,6 +6,7 @@ using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.organization.repository;
 using System.Collections.Generic;
 using net.atos.daf.ct2.organization.entity;
+using net.atos.daf.ct2.vehicle;
 namespace net.atos.daf.ct2.organization.test
 {
     [TestClass]
@@ -15,6 +16,7 @@ namespace net.atos.daf.ct2.organization.test
         readonly IOrganizationRepository _organizationRepository;        
         private readonly IOrganizationManager _organizationManager;
         private readonly IAuditTraillib _auditlog;
+           private readonly IVehicleManager _vehicelManager;
          private readonly IAuditLogRepository _auditLogRepository;
         public OrganizationManagerTest()
         {
@@ -27,7 +29,7 @@ namespace net.atos.daf.ct2.organization.test
             _dataAccess = new PgSQLDataAccess(connectionString);
             _auditLogRepository=new AuditLogRepository(_dataAccess);
             _auditlog= new AuditTraillib(_auditLogRepository);
-            _organizationRepository = new OrganizationRepository(_dataAccess);
+            _organizationRepository = new OrganizationRepository(_dataAccess,_vehicelManager);
             _organizationManager = new OrganizationManager(_organizationRepository,_auditlog);
         }
 
@@ -85,6 +87,17 @@ namespace net.atos.daf.ct2.organization.test
         public void GetOrganization_Manager()
         {          
             var result = _organizationManager.Get(1).Result;
+            Assert.IsTrue(result != null);
+        }
+
+
+         public void KeyHandOverEvent_Manager(KeyHandOver keyHandOver)
+        {    
+            keyHandOver.KeyHandOverEvent.EndCustomer.ID="1";
+            keyHandOver.KeyHandOverEvent.VIN="V22";
+            keyHandOver.KeyHandOverEvent.TCUActivation="true";
+            keyHandOver.KeyHandOverEvent.ReferenceDateTime="04-04-2019";           
+            var result = _organizationManager.KeyHandOverEvent(keyHandOver).Result;
             Assert.IsTrue(result != null);
         }
     }

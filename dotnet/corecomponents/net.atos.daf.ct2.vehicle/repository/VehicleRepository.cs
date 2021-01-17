@@ -273,6 +273,8 @@ namespace net.atos.daf.ct2.vehicle.repository
             return vehicle;
         }
 
+        //isexist vin check
+       
         public async Task<VehicleProperty> UpdateProperty(VehicleProperty vehicleproperty)
         {
 
@@ -416,6 +418,47 @@ namespace net.atos.daf.ct2.vehicle.repository
             return vehicleOptInOptOut;
         }
 
+         // For CRM interface -- START
+        public async Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime)
+        {            
+             int vehid=0;                     
+            // var queryVehUpdate =@"update master.vehicle set tcu_id=@tcuId WHERE vin=@vin RETURNING id;";
+            var parameterVehUpdate = new DynamicParameters();           
+             parameterVehUpdate.Add("@vin",vin);
+             parameterVehUpdate.Add("@tcu_id",tcuId);
+             parameterVehUpdate.Add("@is_tcu_register",Convert.ToBoolean(tcuactivation));
+             parameterVehUpdate.Add("@reference_date",referenceDateTime != null ? UTCHandling.GetUTCFromDateTime(referenceDateTime) : 0);
+            
+             var queryUpdate = @"update master.vehicle set tcu_id=@tcu_id,is_tcu_register=@is_tcu_register,reference_date=@reference_date WHERE vin = @vin RETURNING id;";
+              vehid = await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameterVehUpdate);              
+             return vehid;
+        }
+        public async Task<int> Create(int orgId,string vin,string tcuId,string tcuactivation,string referenceDateTime)
+        {            
+             int vehid=0;          
+             var parameterVehInsert = new DynamicParameters();
+             parameterVehInsert.Add("@organization_id",orgId);        
+             parameterVehInsert.Add("@vin",vin);               
+             parameterVehInsert.Add("@tcuid", tcuId);           
+             parameterVehInsert.Add("@is_tcu_register", Convert.ToBoolean(tcuactivation));
+             parameterVehInsert.Add("@reference_date",referenceDateTime != null ? UTCHandling.GetUTCFromDateTime(referenceDateTime) : 0);
+             var queryVehInsert= @"INSERT INTO master.vehicle
+                                      (organization_id                                  
+                                      ,vin
+                                      ,tcu_id
+                                      ,is_tcu_register
+                                      ,reference_date) 
+                            	VALUES(@organization_id                                     
+                                      ,@vin
+                                      ,@tcuid
+                                      ,@is_tcu_register
+                                      ,@reference_date
+                                     ) RETURNING id";
+             vehid = await dataAccess.ExecuteScalarAsync<int>(queryVehInsert, parameterVehInsert);    
+             return vehid;
+        }
+
+         // For CRM interface -- END
 
         //     public async Task<int> AddVehicle(Vehicle vehicle)
         //     {  

@@ -227,5 +227,27 @@ namespace net.atos.daf.ct2.vehiclerepository
                 throw ex;
             }
         }
+        public async Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime)
+        {
+            try
+            {
+                return await vehicleRepository.Update(vin,tcuId,tcuactivation,referenceDateTime);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }     
+         public async Task<int> Create(int orgId, string vin,string tcuId,string tcuactivation,string referenceDateTime)
+        {
+            try
+            {
+                return await vehicleRepository.Create(orgId,vin,tcuId,tcuactivation,referenceDateTime);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }         
     }
 }
