@@ -84,14 +84,14 @@ message AccountRequest {
     string FirstName=4;
     string LastName=5;
     string Password=6;
-    google.protobuf.Timestamp Dob=7; 
-    AccountType Type=8;    
-    int32 Organization_Id=9;
+    //google.protobuf.Timestamp Dob=7; 
+    //AccountType Type=7;    
+    int32 OrganizationId=7;
     //int32 Account_OrgId =10;
     //google.protobuf.Timestamp StartDate=10;
     //google.protobuf.Timestamp EndDate=11;
     //bool Active =12;
-    bool Active =11;
+    //bool Active =11;
   }
 
 message AccountId
@@ -102,8 +102,8 @@ message AccountId
 message AccountFilter {
   int32 Id= 1;
   int32 OrganizationId= 2;
-  AccountType AccountType=3;
-  string AccountIds = 4;
+  //AccountType AccountType=3;
+  string AccountIds = 3;
 }
 
 // Account Preference
@@ -120,7 +120,7 @@ enum CurrencyType
         DayMonthYear= 0;
         MonthDayYear= 1;
         YearMonthDay= 2;
-    }  
+    }
     enum PreferenceType
     {
         //None = 'N',
@@ -146,15 +146,15 @@ enum CurrencyType
     {
         int32 Id =1;
         int32 Ref_Id =2;
-        PreferenceType preferenceType =3;
-        int32 Language_Id =4;
-        int32 Timezone_Id =5;
-        CurrencyType currency_Type =6;
-        UnitType unit_Type = 7;
-        VehicleDisplayType VehicleDisplay_Type =8;
-        DateFormatDisplayType dateFormat_Type =9;
-        string DriverId =10;
-        bool Is_Active =11;
+        //PreferenceType preferenceType =3;
+        int32 Language_Id =3;
+        int32 Timezone_Id =4;
+        CurrencyType currency_Type =5;
+        UnitType unit_Type = 6;
+        VehicleDisplayType VehicleDisplay_Type =7;
+        DateFormatDisplayType dateFormat_Type =8;
+        string DriverId =9;
+        //bool Is_Active =11;
     }
     message AccountPreferenceResponse
     {
@@ -172,7 +172,7 @@ enum CurrencyType
     {
         int32 Id =1;
         int32 Ref_Id =2;
-        PreferenceType preference =3;
+        //PreferenceType preference =3;
     }
 // End - Account Preference 
 
@@ -202,15 +202,15 @@ message AccountGroupRef{
 message AccountGroupRequest{
   int32 Id=1;
   string Name= 2; 
-  ObjectType ObjectType = 3;
-  GroupType GroupType = 4;
-  string Argument = 5;
-  FunctionEnum FunctionEnum = 6;
-  int32 OrganizationId = 7;
-  int32 RefId = 8;
-  string Description= 9;
-  int32 GroupRefCount=10;
-  repeated AccountGroupRef GroupRef = 11;
+  //string ObjectType = 3;
+  //string GroupType = 4;
+  //string Argument = 5;
+  //string FunctionEnum = 6;
+  int32 OrganizationId = 3;
+  int32 RefId = 4;
+  string Description= 5;
+  int32 GroupRefCount=6;
+  repeated AccountGroupRef GroupRef = 7;
 }
 message AccountGroupResponce{
   int32 Id = 1;
@@ -226,12 +226,12 @@ message AccountGroupDataList
     }
 message AccountGroupFilterRequest{
   int32 Id=1;
-  ObjectType ObjectType = 2;
-  GroupType GroupType = 3;
-  bool GroupRef = 4;
-  bool GroupRefCount = 5;
-  FunctionEnum FunctionEnum = 6;
-  int32 OrganizationId = 7;
+  //ObjectType ObjectType = 2;
+  //GroupType GroupType = 3;
+  bool GroupRef = 2;
+  bool GroupRefCount = 3;
+  //FunctionEnum FunctionEnum = 6;
+  int32 OrganizationId = 4;
 }
 message AccountGroupDetailsRequest {
   int32 AccountId=1;  

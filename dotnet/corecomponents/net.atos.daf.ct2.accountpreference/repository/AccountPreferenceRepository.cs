@@ -38,7 +38,7 @@ namespace net.atos.daf.ct2.accountpreference
                                 currency_type,unit_type,vehicle_display_type,date_format_type,driver_id,is_active
                                 ) values (
                                 @ref_id,@type,@language_id,@timezone_id,
-                                @currency_type,@unit_type,@vehicle_display_type,@date_format_type,@driver_id,@is_active
+                                @currency_type,@unit_type,@vehicle_display_type,@date_format_type,@driver_id,true
                                 ) RETURNING id";
 
                 var preferenceId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
@@ -65,12 +65,12 @@ namespace net.atos.daf.ct2.accountpreference
                 parameter.Add("@unit_type", (char)preference.Unit_Type);
                 parameter.Add("@vehicle_display_type", (char)preference.VehicleDisplay_Type);
                 parameter.Add("@date_format_type", (char)preference.DateFormat_Type);
-                parameter.Add("@isActive", preference.Is_Active);
+                //parameter.Add("@isActive", preference.Is_Active);
 
                 var query = @"update master.accountpreference set ref_id=@ref_id,language_id=@language_id,
                             timezone_id=@timezone_id, currency_type=@currency_type,unit_type=@unit_type,
                             vehicle_display_type=@vehicle_display_type,
-                            date_format_type=@date_format_type,is_active=@isActive                                     
+                            date_format_type=@date_format_type,is_active=true                                     
 	                                WHERE id = @id and type=@type
                                     RETURNING id;";
                 var Id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);

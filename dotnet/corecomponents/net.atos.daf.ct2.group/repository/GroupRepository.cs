@@ -61,8 +61,7 @@ namespace net.atos.daf.ct2.group
                 parameter.Add("@description", group.Description);
 
                 var query = @"update master.group set object_type = @object_type,group_type = @group_type,
-                                     argument = @argument,function_enum = @function_enum,
-                                     organization_id = @organization_id,
+                                     argument = @argument,function_enum = @function_enum,                                     
                                      ref_id = @ref_id,
                                      name = @name,description = @description
 	                                 WHERE id = @id
@@ -141,7 +140,7 @@ namespace net.atos.daf.ct2.group
                     {
 
                         parameter.Add("@object_type", (char) groupFilter.ObjectType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
-                        query = query + " and object_type = @object_type ";
+                        query = query + " and object_type=@object_type ";
                     }
                  
                     // Account Id list Filter                       

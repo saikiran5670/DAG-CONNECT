@@ -38,8 +38,8 @@ namespace net.atos.daf.ct2.accountservice
                 account.Salutation = request.Salutation;
                 account.FirstName = request.FirstName;
                 account.LastName = request.LastName;
-                account.Dob = request.Dob.Seconds;
-                account.AccountType = GetEnum((int)request.Type);
+                //account.Dob = null;//request.Dob.Seconds;
+                account.AccountType =  AccountComponent.ENUM.AccountType.PortalAccount; //GetEnum((int)request.Type);
                 account.Organization_Id = request.OrganizationId;
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
@@ -48,6 +48,7 @@ namespace net.atos.daf.ct2.accountservice
                 // response 
                 AccountData response = new AccountData();
                 response.Code = Responcecode.Success;
+                request.Id=account.Id;
                 response.Message = "Created";
                 response.Account = request;
 
@@ -73,8 +74,8 @@ namespace net.atos.daf.ct2.accountservice
                 account.Salutation = request.Salutation;
                 account.FirstName = request.FirstName;
                 account.LastName = request.LastName;
-                account.Dob = request.Dob.Seconds;
-                account.AccountType = GetEnum((int)request.Type);
+                //account.Dob = request.Dob.Seconds;
+                account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;; //GetEnum((int)request.Type);
                 account.Organization_Id = request.OrganizationId;
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
@@ -108,8 +109,8 @@ namespace net.atos.daf.ct2.accountservice
                 account.Salutation = request.Salutation;
                 account.FirstName = request.FirstName;
                 account.LastName = request.LastName;
-                account.Dob = request.Dob.Seconds;
-                account.AccountType = GetEnum((int)request.Type);
+                //account.Dob = request.Dob.Seconds;
+                account.AccountType =  AccountComponent.ENUM.AccountType.PortalAccount; //GetEnum((int)request.Type);
                 account.Organization_Id = request.OrganizationId;
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
@@ -141,8 +142,8 @@ namespace net.atos.daf.ct2.accountservice
                 account.FirstName = request.FirstName;
                 account.LastName = request.LastName;
                 account.Password = request.Password;
-                account.Dob = request.Dob.Seconds;
-                account.AccountType = GetEnum((int)request.Type);
+                //account.Dob = request.Dob.Seconds;
+                account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;//GetEnum((int)request.Type);
                 account.Organization_Id = request.OrganizationId;
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
@@ -171,7 +172,7 @@ namespace net.atos.daf.ct2.accountservice
                 AccountComponent.entity.AccountFilter filter = new AccountComponent.entity.AccountFilter();
                 filter.Id = request.Id;
                 filter.OrganizationId = request.OrganizationId;
-                filter.AccountType = GetEnum((int)request.AccountType);
+                filter.AccountType = AccountComponent.ENUM.AccountType.PortalAccount; //;GetEnum((int)request.AccountType);
                 filter.AccountIds = null;
                 if (request.AccountIds != null && Convert.ToString(request.AccountIds).Length > 0)
                 {
@@ -265,6 +266,9 @@ namespace net.atos.daf.ct2.accountservice
                     Group.GroupFilter groupFilter = new Group.GroupFilter();
                     groupFilter.OrganizationId=request.OrganizationId;
                     groupFilter.RefId = request.AccountId;                    
+                    groupFilter.ObjectType = Group.ObjectType.None;
+                    groupFilter.FunctionEnum = Group.FunctionEnum.None;
+                    groupFilter.GroupType = Group.GroupType.None;
 
                     var vehicleGroupList = groupmanager.Get(groupFilter).Result;
                     if (vehicleGroupList != null)
@@ -324,13 +328,14 @@ namespace net.atos.daf.ct2.accountservice
                 preference.Id = request.Id;
                 preference.Ref_Id = request.RefId;
 
-                preference.PreferenceType = (Preference.PreferenceType)Enum.Parse(typeof(Preference.PreferenceType), request.PreferenceType.ToString());
+                preference.PreferenceType = Preference.PreferenceType.Account; //(Preference.PreferenceType)Enum.Parse(typeof(Preference.PreferenceType), request.PreferenceType.ToString());
                 preference.Language_Id = request.LanguageId;
                 preference.Timezone_Id = request.TimezoneId;
                 preference.Currency_Type = (Preference.CurrencyType)Enum.Parse(typeof(Preference.CurrencyType), request.CurrencyType.ToString());
                 preference.Unit_Type = (Preference.UnitType)Enum.Parse(typeof(Preference.UnitType), request.UnitType.ToString());
                 preference.VehicleDisplay_Type = (Preference.VehicleDisplayType)Enum.Parse(typeof(Preference.VehicleDisplayType), request.VehicleDisplayType.ToString());
                 preference.DateFormat_Type = (Preference.DateFormatDisplayType)Enum.Parse(typeof(Preference.DateFormatDisplayType), request.DateFormatType.ToString());
+                preference.Is_Active=true;
                 preference = preferencemanager.Create(preference).Result;
                 if (preference.Id.HasValue) request.Id = preference.Id.Value;
                 // response 
@@ -359,7 +364,7 @@ namespace net.atos.daf.ct2.accountservice
                 Preference.AccountPreference preference = new Preference.AccountPreference();
                 preference.Id = request.Id;
                 preference.Ref_Id = request.RefId;
-                preference.PreferenceType = (Preference.PreferenceType)Enum.Parse(typeof(Preference.PreferenceType), request.PreferenceType.ToString());
+                preference.PreferenceType = Preference.PreferenceType.Account; //(Preference.PreferenceType)Enum.Parse(typeof(Preference.PreferenceType), request.PreferenceType.ToString());
                 preference.Language_Id = request.LanguageId;
                 preference.Timezone_Id = request.TimezoneId;
                 preference.Currency_Type = (Preference.CurrencyType)Enum.Parse(typeof(Preference.CurrencyType), request.CurrencyType.ToString());
@@ -418,7 +423,7 @@ namespace net.atos.daf.ct2.accountservice
                 Preference.AccountPreferenceFilter preferenceFilter = new Preference.AccountPreferenceFilter();
                 preferenceFilter.Id = request.Id;
                 preferenceFilter.Ref_Id = request.RefId;
-                preferenceFilter.PreferenceType = (Preference.PreferenceType)Enum.Parse(typeof(Preference.PreferenceType), request.Preference.ToString());
+                preferenceFilter.PreferenceType = Preference.PreferenceType.Account; // (Preference.PreferenceType)Enum.Parse(typeof(Preference.PreferenceType), request.Preference.ToString());
 
                 var result = preferencemanager.Get(preferenceFilter).Result;
                 // response 
@@ -451,11 +456,10 @@ namespace net.atos.daf.ct2.accountservice
                 Group.Group entity = new Group.Group();
                 entity.Name = request.Name;
                 entity.Description = request.Description;
-                entity.Argument = request.Argument;
-                entity.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
+                entity.Argument = "";
+                //entity.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
+                entity.FunctionEnum = group.FunctionEnum.None;
                 entity.GroupType = group.GroupType.Group;
-                //entity.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
-                //entity.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
                 entity.ObjectType = group.ObjectType.AccountGroup;
                 entity.OrganizationId = request.OrganizationId;
 
@@ -502,10 +506,11 @@ namespace net.atos.daf.ct2.accountservice
                 entity.Id = request.Id;
                 entity.Name = request.Name;
                 entity.Description = request.Description;
-                entity.Argument = request.Argument;
-                entity.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
-                entity.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
-                entity.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
+                entity.Argument = "";//request.Argument;
+                // entity.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
+                entity.FunctionEnum = group.FunctionEnum.None;
+                entity.GroupType = group.GroupType.Group;
+                entity.ObjectType = group.ObjectType.AccountGroup;
                 entity.OrganizationId = request.OrganizationId;
 
                 entity.GroupRef = new List<Group.GroupRef>();
@@ -577,11 +582,14 @@ namespace net.atos.daf.ct2.accountservice
                 Group.GroupFilter ObjGroupFilter = new Group.GroupFilter();
                 ObjGroupFilter.Id = request.Id;
                 ObjGroupFilter.OrganizationId = request.OrganizationId;
-                ObjGroupFilter.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
+                //ObjGroupFilter.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
+                ObjGroupFilter.FunctionEnum = Group.FunctionEnum.None;
                 ObjGroupFilter.GroupRef = request.GroupRef;
                 ObjGroupFilter.GroupRefCount = request.GroupRefCount;
-                ObjGroupFilter.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
-                ObjGroupFilter.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
+                //ObjGroupFilter.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
+                ObjGroupFilter.ObjectType = Group.ObjectType.AccountGroup;
+                //ObjGroupFilter.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
+                ObjGroupFilter.GroupType = Group.GroupType.Group;
 
                 IEnumerable<Group.Group> ObjRetrieveGroupList = groupmanager.Get(ObjGroupFilter).Result;
                 foreach (var item in ObjRetrieveGroupList)
@@ -746,11 +754,11 @@ namespace net.atos.daf.ct2.accountservice
             request.Salutation = account.Salutation;
             request.FirstName = account.FirstName;
             request.LastName = account.LastName;
-            request.Dob = new Google.Protobuf.WellKnownTypes.Timestamp();
-            if (account.Dob.HasValue) request.Dob.Seconds = account.Dob.Value;
+            //request.Dob = new Google.Protobuf.WellKnownTypes.Timestamp();
+            //if (account.Dob.HasValue) request.Dob.Seconds = account.Dob.Value;
             //request.Dob.Seconds  = account.Dob.HasValue ? account.Dob.Value : 0;
             //request.Type = SetEnumAccountType(account.AccountType);
-            request.Type = (AccountType)Enum.Parse(typeof(AccountType), account.AccountType.ToString());
+            //request.Type = (AccountType)Enum.Parse(typeof(AccountType), account.AccountType.ToString());
             request.OrganizationId = account.Organization_Id;
             return request;
         }
@@ -760,7 +768,7 @@ namespace net.atos.daf.ct2.accountservice
 
             if (entity.Id != null) request.Id = entity.Id.Value;
             request.RefId = entity.Ref_Id;
-            request.PreferenceType = (PreferenceType)Enum.Parse(typeof(PreferenceType), entity.PreferenceType.ToString());
+            //request.PreferenceType = (PreferenceType)Enum.Parse(typeof(PreferenceType), entity.PreferenceType.ToString());
             request.LanguageId = entity.Language_Id;
             request.TimezoneId = entity.Timezone_Id;
             request.CurrencyType = (CurrencyType)Enum.Parse(typeof(CurrencyType), entity.Currency_Type.ToString());
@@ -776,10 +784,14 @@ namespace net.atos.daf.ct2.accountservice
             request.Id = entity.Id;
             request.Name = entity.Name;
             request.Description = entity.Description;
-            request.Argument = entity.Argument;
-            request.FunctionEnum = (FunctionEnum)Enum.Parse(typeof(FunctionEnum), entity.FunctionEnum.ToString());
-            request.GroupType = (GroupType)Enum.Parse(typeof(GroupType), entity.GroupType.ToString());
-            request.ObjectType = (ObjectType)Enum.Parse(typeof(ObjectType), entity.ObjectType.ToString());
+            //request.Argument = entity.Argument;
+            
+            //request.FunctionEnum = (FunctionEnum)Enum.Parse(typeof(FunctionEnum), entity.FunctionEnum.ToString());
+            //request.FunctionEnum = entity.FunctionEnum.ToString();
+            //request.GroupType = (GroupType)Enum.Parse(typeof(GroupType), entity.GroupType.ToString());
+            //request.GroupType = entity.GroupType.ToString();
+            //request.ObjectType = (ObjectType)Enum.Parse(typeof(ObjectType), entity.ObjectType.ToString());
+            //request.ObjectType = entity.ObjectType.ToString();
             request.OrganizationId = entity.OrganizationId;
             request.GroupRefCount = entity.GroupRefCount;
             if (entity.GroupRef != null)

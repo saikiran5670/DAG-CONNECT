@@ -16,7 +16,7 @@ namespace net.atos.daf.ct2.account.entity
         public int Account_OrgId { get; set; } 
         public DateTime StartDate { get; set; }   
         public DateTime ? EndDate { get; set; }  
-        public bool Active { get; set; }    
+        // public bool Active { get; set; }    
         
     }
 }
