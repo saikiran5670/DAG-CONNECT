@@ -20,16 +20,11 @@ namespace net.atos.daf.ct2.organizationservice.Services
         private readonly IAuditLogRepository _IAuditLogRepository;       
         private readonly IAuditTraillib _AuditTrail;      
         private readonly IOrganizationManager organizationtmanager;
-<<<<<<< HEAD
         private readonly IPreferenceManager preferencemanager;
          private readonly IVehicleManager vehicleManager;
 
         
         public OrganizationManagementService(ILogger<OrganizationManagementService> logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager)
-=======
-        private readonly AccountPreferenceComponent.IPreferenceManager preferencemanager;
-        public OrganizationManagementService(ILogger<OrganizationManagementService> logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,AccountPreferenceComponent.IPreferenceManager _preferencemanager)
->>>>>>> 9b7b71e724160c3712e493c72530b1eb3e50f0ce
         {
             _logger = logger;
             _AuditTrail = AuditTrail;
