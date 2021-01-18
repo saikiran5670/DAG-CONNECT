@@ -33,8 +33,8 @@ jobs:
   - task: RunYuniqlCLI@1
     displayName: Run Yuniql
     inputs:
-      connectionString: $(VEHICLEMARTCONNECTIONSTRING)
-      workspacePath: $(VEHICLEMARTSCRIPTS)
+      connectionString: $(VEHICLEDATAMARTCONNECTIONSTRING)
+      workspacePath: $(VEHICLEDATAMARTSCRIPTS)
       targetPlatform: postgresql
       additionalArguments: --debug --environment $(ENVIRONMENT)
  
