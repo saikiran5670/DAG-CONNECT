@@ -13,14 +13,19 @@ service AccountService {
   rpc Delete (AccountRequest) returns (AccountResponse);
   rpc ChangePassword (AccountRequest) returns (AccountResponse);
   rpc Get (AccountFilter) returns (AccountDataList);
-  rpc GetAccountDetail (AccountGroupDetailsRequest) returns (AccountDetailsResponse);
-  
+  rpc GetAccountDetail (AccountGroupDetailsRequest) returns (AccountDetailsResponse); 
 
   // Account Preference Mthod
   rpc CreatePreference (AccountPreference) returns (AccountPreferenceResponse);
   rpc UpdatePreference (AccountPreference) returns (AccountPreferenceResponse);
   rpc DeletePreference (AccountPreference) returns (AccountPreferenceResponse);
   rpc GetPreference (AccountPreferenceFilter) returns (AccountPreferenceDataList);
+
+  // Access Relationship
+  rpc CreateAccessRelationship (AccessRelationship) returns (AccessRelationshipResponse);
+  rpc UpdateAccessRelationship (AccessRelationship) returns (AccessRelationshipResponse);
+  rpc DeleteAccessRelationship (AccessRelationship) returns (AccessRelationshipResponse);
+  rpc GetAccessRelationship (AccessRelationshipFilter) returns (AccessRelationshipDataList);
 
   // Account Group Method
   rpc CreateGroup (AccountGroupRequest) returns (AccountGroupResponce);
@@ -102,8 +107,10 @@ message AccountId
 message AccountFilter {
   int32 Id= 1;
   int32 OrganizationId= 2;
-  //AccountType AccountType=3;
-  string AccountIds = 3;
+  string Name=3;
+  string Email=4;  
+  string AccountIds = 5;
+
 }
 
 // Account Preference
@@ -149,10 +156,10 @@ enum CurrencyType
         //PreferenceType preferenceType =3;
         int32 Language_Id =3;
         int32 Timezone_Id =4;
-        CurrencyType currency_Type =5;
-        UnitType unit_Type = 6;
+        CurrencyType Currency_Type =5;
+        UnitType Unit_Type = 6;
         VehicleDisplayType VehicleDisplay_Type =7;
-        DateFormatDisplayType dateFormat_Type =8;
+        DateFormatDisplayType DateFormat_Type =8;
         string DriverId =9;
         //bool Is_Active =11;
     }
@@ -175,7 +182,6 @@ enum CurrencyType
         //PreferenceType preference =3;
     }
 // End - Account Preference 
-
 
 // Begin Account Group
 enum ObjectType{
@@ -270,8 +276,38 @@ message AccountRoleRequest {
 }
 
 message AccountRoleResponse{
-  Responcecode Code=2;
-  string Message = 3; 
+  Responcecode Code=1;
+  string Message = 2; 
 }
 
 // End Account Role
+
+// Begin Account Relationship 
+
+message AccessRelationship
+{
+  int32 Id=1;
+  string AccessRelationType =2;
+  int32 AccountGroupId =3;
+  int32 VehicleGroupId =4;
+  //string StartDate=5;
+  //string EndDate=6;        
+}
+message AccessRelationshipFilter
+{
+  int32 AccountId =1;
+  int32 AccountGroupId =2;   
+}
+message AccessRelationshipResponse
+{
+  Responcecode Code=1;
+  string Message = 2;
+  AccessRelationship AccessRelationship=3;
+}
+message AccessRelationshipDataList
+{
+  Responcecode Code=1;
+  string Message = 2;
+  repeated AccessRelationship AccessRelationship=3;
+}
+// End Account Relationship 

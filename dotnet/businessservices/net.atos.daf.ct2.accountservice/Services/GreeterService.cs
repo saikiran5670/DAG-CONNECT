@@ -55,24 +55,24 @@ namespace net.atos.daf.ct2.accountservice
             }
         }
 
-        public override Task<ConnectionStringResponse> ConnectionStringHardCode(ConnectionStringRequest request, ServerCallContext context)
-        {
-            try
-            {
-                var connectionString = Configuration.GetConnectionString("ConnectionStringHardCode");
-                var response = new ConnectionStringResponse();
-                response.Message = connectionString;
+        // public override Task<ConnectionStringResponse> ConnectionStringHardCode(ConnectionStringRequest request, ServerCallContext context)
+        // {
+        //     try
+        //     {
+        //         var connectionString = Configuration.GetConnectionString("ConnectionStringHardCode");
+        //         var response = new ConnectionStringResponse();
+        //         response.Message = connectionString;
 
-                return Task.FromResult(response);
-            }
-            catch (Exception ex)
-            {
-                return Task.FromResult(new ConnectionStringResponse
-                {
-                    Message = "Exception " + ex.Message
-                });
-            }
-        }
+        //         return Task.FromResult(response);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return Task.FromResult(new ConnectionStringResponse
+        //         {
+        //             Message = "Exception " + ex.Message
+        //         });
+        //     }
+        // }
 
     }
 }

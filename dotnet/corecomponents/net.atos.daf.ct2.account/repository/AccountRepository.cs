@@ -138,7 +138,7 @@ namespace net.atos.daf.ct2.account
                     if (filter.Id > 0)
                     {
                         parameter.Add("@id", filter.Id);
-                        query = query + " and a.id = @id ";
+                        query = query + " and a.id=@id ";
                     }
                     // email id filter
                     if (!string.IsNullOrEmpty(filter.Email))
@@ -150,7 +150,7 @@ namespace net.atos.daf.ct2.account
                     if (!string.IsNullOrEmpty(filter.Name))
                     {
                         parameter.Add("@name", filter.Name + "%");
-                        query = query + " and a.first_name || ' ' || a.last_name like = @name ";
+                        query = query + " and (a.first_name || ' ' || a.last_name) like @name ";
                     }
                     // organization id filter
                     if (filter.OrganizationId > 0)
@@ -219,14 +219,14 @@ namespace net.atos.daf.ct2.account
             try
             {
                 var parameter = new DynamicParameters();
-
+                parameter.Add("@id", entity.Id);
                 parameter.Add("@access_type", (char)entity.AccessRelationType);
                 parameter.Add("@account_group_id", entity.AccountGroupId);
                 parameter.Add("@vehicle_group_id", entity.VehicleGroupId);
 
-                string query = @"insert into master.accessrelationship(access_type,account_group_id,vehicle_group_id) " +
-                              "values(@access_type,@account_group_id,@vehicle_group_id) RETURNING id";
-
+                string query = @"update master.accessrelationship set access_type=@access_type,
+                                account_group_id=@account_group_id,vehicle_group_id=@vehicle_group_id" +
+                                " where id=@id";
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 entity.Id = id;
             }
@@ -235,6 +235,22 @@ namespace net.atos.daf.ct2.account
                 throw ex;
             }
             return entity;
+        }
+        public async Task<bool> DeleteAccessRelationship(int accountGroupId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", accountGroupId);
+                string query = @"delete from update master.accessrelationship where id=@id";
+                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);                
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+                throw ex;
+            }           
         }
         public async Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter)
         {
