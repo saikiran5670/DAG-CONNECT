@@ -1,7 +1,7 @@
 CREATE SCHEMA  tripdetail 
-    AUTHORIZATION pgadmin;
+    AUTHORIZATION pgdbadmin;
 CREATE SCHEMA  livefleet 
-    AUTHORIZATION pgadmin;
+    AUTHORIZATION pgdbadmin;
 CREATE SCHEMA  master 
-    AUTHORIZATION pgadmin;
+    AUTHORIZATION pgdbadmin;
 

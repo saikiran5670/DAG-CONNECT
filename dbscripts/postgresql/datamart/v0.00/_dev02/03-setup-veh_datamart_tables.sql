@@ -11,7 +11,7 @@ CREATE TABLE if not exists master.vehicle
 TABLESPACE pg_default;
 
 ALTER TABLE  master.vehicle 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -56,7 +56,7 @@ CREATE TABLE if not exists master.driver
 TABLESPACE pg_default;
 
 ALTER TABLE  master.driver 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -102,7 +102,7 @@ CREATE TABLE if not exists master.warning_details
 TABLESPACE pg_default;
 
 ALTER TABLE  master.warning_details 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -195,7 +195,7 @@ CREATE TABLE if not exists tripdetail.trip_statistics
 TABLESPACE pg_default;
 
 ALTER TABLE  tripdetail.trip_statistics 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -301,7 +301,7 @@ CREATE TABLE if not exists livefleet.livefleet_position_statistics
 TABLESPACE pg_default;
 
 ALTER TABLE  livefleet.livefleet_position_statistics
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -365,7 +365,7 @@ CREATE TABLE if not exists livefleet.livefleet_current_trip_statistics
 TABLESPACE pg_default;
 
 ALTER TABLE  livefleet.livefleet_current_trip_statistics
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -453,7 +453,7 @@ CREATE TABLE if not exists livefleet.livefleet_trip_driver_activity
 TABLESPACE pg_default;
 
 ALTER TABLE  livefleet.livefleet_trip_driver_activity
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -531,7 +531,7 @@ CREATE TABLE if not exists livefleet.livefleet_warning_statistics
 TABLESPACE pg_default;
 
 ALTER TABLE  livefleet.livefleet_warning_statistics
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
