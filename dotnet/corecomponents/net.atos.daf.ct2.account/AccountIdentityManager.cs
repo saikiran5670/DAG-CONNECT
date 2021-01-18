@@ -53,6 +53,20 @@ namespace net.atos.daf.ct2.account
             }
             return await Task.FromResult(accIdentity);
         }
+        public async Task<IdentityEntity.AccountToken> GenerateToken(IdentityEntity.Identity user)
+        {
+            IdentityEntity.AccountToken accToken = new IdentityEntity.AccountToken();
+
+            IdentityEntity.Response idpResponse = await autheticator.AccessToken(user);
+            if(idpResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                IdentityEntity.IDPToken token = JsonConvert.DeserializeObject<IdentityEntity.IDPToken>(Convert.ToString(idpResponse.Result));
+                IdentityEntity.AccountIDPClaim accIDPclaims= tokenManager.DecodeToken(token.access_token);
+              
+                accToken = tokenManager.CreateToken(accIDPclaims);
+            }
+            return await Task.FromResult(accToken);
+        }
         public Task<bool> ValidateToken(string token)
         {
             bool result=false;
@@ -64,8 +78,8 @@ namespace net.atos.daf.ct2.account
             int accountid=0;
             AccountFilter filter = new AccountFilter();     
             filter.Email =email;
-            filter.AccountType = AccountType.PortalAccount;            
-        //    filter.AccountType = AccountType.None;            
+            // filter.AccountType = AccountType.PortalAccount;            
+            filter.AccountType = AccountType.None;            
             IEnumerable<Account> result = accountManager.Get(filter).Result;
             foreach(var account in result) 
             {

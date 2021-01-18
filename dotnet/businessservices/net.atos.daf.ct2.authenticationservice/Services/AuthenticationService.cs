@@ -33,30 +33,60 @@ namespace net.atos.daf.ct2.authenticationservice
                 account.UserName = request.UserName;
                 account.Password = request.Password;
                 AccountEntity.AccountIdentity accIdentity = accountIdentityManager.Login(account).Result;
-                // response 
-                AccountPreference accPreference= new AccountPreference();
-                // accPreference.Id = accIdentity.AccountPreference.Id == null ?0:accIdentity.AccountPreference.Id;
-                // accPreference.Ref_Id =accIdentity.AccountPreference.Ref_Id;
-                // accPreference.preferenceType =accIdentity.AccountPreference.PreferenceType;
-                // accPreference.Language_Id =accIdentity.AccountPreference.Language_Id;
-                // accPreference.Timezone_Id =accIdentity.AccountPreference.Timezone_Id;
-                // accPreference.Currency_Type =accIdentity.AccountPreference.Currency_Type;
-                // accPreference.Unit_Type = accIdentity.AccountPreference.Unit_Type;
-                // accPreference.VehicleDisplay_Type =accIdentity.AccountPreference.VehicleDisplay_Type;
-                // accPreference.DateFormat_Type =accIdentity.AccountPreference.DateFormat_Type;
-                // accPreference.DriverId =accIdentity.AccountPreference.DriverId;
-                // accPreference.Is_Active =accIdentity.AccountPreference.Is_Active;
+                if(accIdentity !=null)
+                {
+                    AccountPreference accPreference= new AccountPreference();
+                    // accPreference.Id = accIdentity.AccountPreference.Id == null ?0:accIdentity.AccountPreference.Id;
+                    accPreference.RefId = accIdentity.AccountPreference.Ref_Id;
+                    accPreference.PreferenceType = (PreferenceType)Enum.Parse(typeof(PreferenceType), accIdentity.AccountPreference.PreferenceType.ToString());                 
+                    // accPreference.PreferenceType =accIdentity.AccountPreference.PreferenceType;
+                    accPreference.LanguageId =accIdentity.AccountPreference.Language_Id;
+                    accPreference.TimezoneId =accIdentity.AccountPreference.Timezone_Id;
+                    accPreference.CurrencyType = (CurrencyType)Enum.Parse(typeof(CurrencyType), accIdentity.AccountPreference.Currency_Type.ToString());                 
+                    accPreference.UnitType = (UnitType)Enum.Parse(typeof(UnitType), accIdentity.AccountPreference.Unit_Type.ToString());                 
+                    accPreference.VehicleDisplayType= (VehicleDisplayType)Enum.Parse(typeof(VehicleDisplayType), accIdentity.AccountPreference.VehicleDisplay_Type.ToString());                 
+                    accPreference.DateFormatType= (DateFormatDisplayType)Enum.Parse(typeof(DateFormatDisplayType), accIdentity.AccountPreference.DateFormat_Type.ToString());                 
+                    accPreference.DriverId =accIdentity.AccountPreference.DriverId;
+                    accPreference.IsActive =accIdentity.AccountPreference.Is_Active;
 
-                response.AccountPreference=accPreference;
-                return Task.FromResult(response);
+                    response.AccountPreference=accPreference;
+                    return Task.FromResult(response);
+                }
+                else 
+                {
+                    return Task.FromResult(new AccountIdentityResponse
+                    {
+                        //Account not present  in IDP or IDP related error
+                        Code = Responsecode.Failed,
+                        Message = "Account is not configured.",
+                    });
+                }
             }
             catch (Exception ex)
             {
                 return Task.FromResult(new AccountIdentityResponse
                 {
-                    ///Code = Responsecode.Failed,
+                    Code = Responsecode.Failed,
                     Message = " Authentication is failed due to - " + ex.Message,
-
+                });
+            }
+        }
+        public override Task<ValidateResponse> Validate(ValidateRequest request, ServerCallContext context)
+        {
+            ValidateResponse response = new ValidateResponse();
+            try
+            {
+                response.Valid=false;
+                response.Valid = accountIdentityManager.ValidateToken(request.Token).Result;
+                return Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(new ValidateResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = " Token is not valid - " + ex.Message,
+                    Valid = false,
                 });
             }
         }

@@ -1,5 +1,5 @@
 syntax = "proto3";
-import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
 
 option csharp_namespace = "net.atos.daf.ct2.authenticationservice";
 
@@ -35,17 +35,17 @@ message CommonResponse {
 
 message AccountPreference
 {
-    int32 Id =1;
-    int32 Ref_Id =2;
+    google.protobuf.Int32Value Id =1;
+    int32 RefId =2;
     PreferenceType preferenceType =3;
-    int32 Language_Id =4;
-    int32 Timezone_Id =5;
-    CurrencyType currency_Type =6;
-    UnitType unit_Type = 7;
-    VehicleDisplayType VehicleDisplay_Type =8;
-    DateFormatDisplayType dateFormat_Type =9;
+    int32 LanguageId =4;
+    int32 TimezoneId =5;
+    CurrencyType currencyType =6;
+    UnitType unitType = 7;
+    VehicleDisplayType VehicleDisplayType =8;
+    DateFormatDisplayType dateFormatType =9;
     string DriverId =10;
-    bool Is_Active =11;
+    bool IsActive =11;
 }
 enum AccountType
 {
