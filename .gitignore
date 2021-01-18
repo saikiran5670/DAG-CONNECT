@@ -5348,3 +5348,6 @@ dotnet/commoncomponent/test/net.atos.daf.ct2.Audittrail.test/obj/Debug/netcoreap
 /dotnet/corecomponents/net.atos.daf.ct2.account/bin/Debug/netcoreapp3.1
 /dotnet/commoncomponent/net.atos.daf.ct2.exceptionhandling/obj/Debug/netcoreapp3.1
 /dotnet/commoncomponent/net.atos.daf.ct2.utilities/obj/Debug/netcoreapp3.1
+/dotnet/.vs/net.atos.daf.ct2/DesignTimeBuild
+/dotnet/corecomponents/net.atos.daf.ct2.identitysession/obj
+/dotnet/corecomponents/test/net.atos.daf.ct2.identitysession.test/obj
