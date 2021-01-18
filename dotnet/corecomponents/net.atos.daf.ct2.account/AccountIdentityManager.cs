@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.account
         IAccountManager accountManager;
         IPreferenceManager preferenceManager;        
         
-       public AccountIdentityManager(IdentityComponent.ITokenManager _tokenManager, IdentityComponent.IAccountAuthenticator _autheticator,IPreferenceManager _preferenceManager, AccountManager _accountManager)
+       public AccountIdentityManager(IdentityComponent.ITokenManager _tokenManager, IdentityComponent.IAccountAuthenticator _autheticator,IPreferenceManager _preferenceManager,IAccountManager _accountManager)
         {
             autheticator = _autheticator;
             tokenManager = _tokenManager;
