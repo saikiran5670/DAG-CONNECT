@@ -54,8 +54,9 @@ namespace net.atos.daf.ct2.authenticationservice
             {
                 return Task.FromResult(new AccountIdentityResponse
                 {
-                    Code = Responsecode.Failed,
+                    ///Code = Responsecode.Failed,
                     Message = " Authentication is failed due to - " + ex.Message,
+
                 });
             }
         }
