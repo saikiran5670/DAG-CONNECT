@@ -35,21 +35,45 @@ namespace net.atos.daf.ct2.authenticationservice
                 AccountEntity.AccountIdentity accIdentity = accountIdentityManager.Login(account).Result;
                 if(accIdentity !=null)
                 {
-                    AccountPreference accPreference= new AccountPreference();
-                    // accPreference.Id = accIdentity.AccountPreference.Id == null ?0:accIdentity.AccountPreference.Id;
-                    accPreference.RefId = accIdentity.AccountPreference.Ref_Id;
-                    accPreference.PreferenceType = (PreferenceType)Enum.Parse(typeof(PreferenceType), accIdentity.AccountPreference.PreferenceType.ToString());                 
-                    // accPreference.PreferenceType =accIdentity.AccountPreference.PreferenceType;
-                    accPreference.LanguageId =accIdentity.AccountPreference.Language_Id;
-                    accPreference.TimezoneId =accIdentity.AccountPreference.Timezone_Id;
-                    accPreference.CurrencyType = (CurrencyType)Enum.Parse(typeof(CurrencyType), accIdentity.AccountPreference.Currency_Type.ToString());                 
-                    accPreference.UnitType = (UnitType)Enum.Parse(typeof(UnitType), accIdentity.AccountPreference.Unit_Type.ToString());                 
-                    accPreference.VehicleDisplayType= (VehicleDisplayType)Enum.Parse(typeof(VehicleDisplayType), accIdentity.AccountPreference.VehicleDisplay_Type.ToString());                 
-                    accPreference.DateFormatType= (DateFormatDisplayType)Enum.Parse(typeof(DateFormatDisplayType), accIdentity.AccountPreference.DateFormat_Type.ToString());                 
-                    accPreference.DriverId =accIdentity.AccountPreference.DriverId;
-                    accPreference.IsActive =accIdentity.AccountPreference.Is_Active;
+                    if(accIdentity.AccountToken!=null)
+                    {
+                        AccountToken accToken = new AccountToken();
+                        accToken.AccessToken=accIdentity.AccountToken.AccessToken;
+                        accToken.ExpiresIn=accIdentity.AccountToken.ExpiresIn;
+                        accToken.TokenType=accIdentity.AccountToken.TokenType;
+                        accToken.SessionState=accIdentity.AccountToken.SessionState;
+                        accToken.Scope=accIdentity.AccountToken.Scope;
 
-                    response.AccountPreference=accPreference;
+                        response.AccountToken=accToken;
+                    }
+                    else 
+                    {
+                        return Task.FromResult(new AccountIdentityResponse
+                        {
+                            //Account not present  in IDP or IDP related error
+                            Code = Responsecode.Failed,
+                            Message = "Account is not configured.",
+                        });
+                    }
+                    if(accIdentity.AccountPreference!=null)
+                    {
+                        AccountPreference accPreference= new AccountPreference();
+                        // accPreference.Id = accIdentity.AccountPreference.Id == null ?0:accIdentity.AccountPreference.Id;
+                        accPreference.RefId = accIdentity.AccountPreference.Ref_Id;
+                        accPreference.PreferenceType = (PreferenceType)Enum.Parse(typeof(PreferenceType), accIdentity.AccountPreference.PreferenceType.ToString());                 
+                        // accPreference.PreferenceType =accIdentity.AccountPreference.PreferenceType;
+                        accPreference.LanguageId =accIdentity.AccountPreference.Language_Id;
+                        accPreference.TimezoneId =accIdentity.AccountPreference.Timezone_Id;
+                        accPreference.CurrencyType = (CurrencyType)Enum.Parse(typeof(CurrencyType), accIdentity.AccountPreference.Currency_Type.ToString());                 
+                        accPreference.UnitType = (UnitType)Enum.Parse(typeof(UnitType), accIdentity.AccountPreference.Unit_Type.ToString());                 
+                        accPreference.VehicleDisplayType= (VehicleDisplayType)Enum.Parse(typeof(VehicleDisplayType), accIdentity.AccountPreference.VehicleDisplay_Type.ToString());                 
+                        accPreference.DateFormatType= (DateFormatDisplayType)Enum.Parse(typeof(DateFormatDisplayType), accIdentity.AccountPreference.DateFormat_Type.ToString());                 
+                        accPreference.DriverId =accIdentity.AccountPreference.DriverId;
+                        accPreference.IsActive =accIdentity.AccountPreference.Is_Active;
+
+                        response.AccountPreference=accPreference;
+                    }
+
                     return Task.FromResult(response);
                 }
                 else 

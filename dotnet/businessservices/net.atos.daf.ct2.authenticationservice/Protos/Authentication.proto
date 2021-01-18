@@ -18,7 +18,8 @@ message IdentityRequest {
 message AccountIdentityResponse {
     Responsecode code=1;
     string Message=2;
-    AccountPreference AccountPreference= 3;      
+    AccountToken AccountToken=3;
+    AccountPreference AccountPreference= 4;      
 }
 message ValidateRequest {
     string Token=1;
@@ -33,18 +34,27 @@ message CommonResponse {
     string Message = 2;  
 }
 
+message AccountToken
+{
+    string AccessToken=1;
+    int32 ExpiresIn=2;
+    google.protobuf.StringValue TokenType=3;
+    google.protobuf.StringValue SessionState=4;
+    google.protobuf.StringValue Scope=5;
+}
+
 message AccountPreference
 {
     google.protobuf.Int32Value Id =1;
-    int32 RefId =2;
+    google.protobuf.Int32Value  RefId =2;
     PreferenceType preferenceType =3;
-    int32 LanguageId =4;
-    int32 TimezoneId =5;
+    google.protobuf.Int32Value LanguageId =4;
+    google.protobuf.Int32Value TimezoneId =5;
     CurrencyType currencyType =6;
     UnitType unitType = 7;
     VehicleDisplayType VehicleDisplayType =8;
     DateFormatDisplayType dateFormatType =9;
-    string DriverId =10;
+    google.protobuf.StringValue DriverId =10;
     bool IsActive =11;
 }
 enum AccountType
