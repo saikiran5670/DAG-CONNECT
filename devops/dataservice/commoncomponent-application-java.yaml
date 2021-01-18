@@ -11,21 +11,21 @@ jobs:
 - job: Build
   steps:
     - task: Maven@3
-    displayName: 'Maven java/commoncomponent/daf.common/pom.xml'
-    inputs:
+      displayName: 'Maven java/commoncomponent/daf.common/pom.xml'
+      inputs:
         mavenPomFile: java/commoncomponent/daf.common/pom.xml
         publishJUnitResults: false
 
     - task: CopyFiles@2
-    displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
-    inputs:
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
-    condition: succeededOrFailed()
+      condition: succeededOrFailed()
 
     - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: drop'
-    inputs:
+      displayName: 'Publish Artifact: drop'
+      inputs:
         PathtoPublish: '$(build.artifactstagingdirectory)'
-    condition: succeededOrFailed()
+      condition: succeededOrFailed()
