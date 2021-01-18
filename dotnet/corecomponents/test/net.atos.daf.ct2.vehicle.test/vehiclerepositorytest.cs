@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.vehicle.test
 
         public vehiclerepositorytest()
         {
-            string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y\\97;Ssl Mode=Require;";
+            string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             _dataAccess = new PgSQLDataAccess(connectionString);
             _vehicleRepository = new VehicleRepository(_dataAccess);
             _groupRepository=new GroupRepository(_dataAccess);
@@ -232,14 +232,15 @@ namespace net.atos.daf.ct2.vehicle.test
         public void CreateVehicleProperty()
         {
             VehicleProperty ObjVehicleProperty = new VehicleProperty();
-            ObjVehicleProperty.VehicleId = 36;
+            ObjVehicleProperty.VehicleId =45;
+            ObjVehicleProperty.VIN = "V326598744";
             ObjVehicleProperty.ManufactureDate = DateTime.Now;
             ObjVehicleProperty.RegistrationDateTime = DateTime.Now;
             ObjVehicleProperty.DeliveryDate = DateTime.Now;
             ObjVehicleProperty.Classification_Make = "Make 1";
-            // ObjVehicleProperty.Classification_Model="Model 1";
+            ObjVehicleProperty.Classification_Model="Vehicle I Data";
             ObjVehicleProperty.Classification_Series = "Series 1";
-            //  ObjVehicleProperty.Classification_Type=VehicleType.TRAILER;
+            ObjVehicleProperty.Classification_Type=VehicleType.Lcv;
             ObjVehicleProperty.Dimensions_Size_Length = 1;
             ObjVehicleProperty.Dimensions_Size_Width = 2;
             ObjVehicleProperty.Dimensions_Size_Height = 3;
@@ -267,6 +268,7 @@ namespace net.atos.daf.ct2.vehicle.test
             ObjVehicleProperty.GearBox_Id = "2";
             ObjVehicleProperty.GearBox_Type = "GrearBox1";
             ObjVehicleProperty.DriverLine_Cabin_ID = "2";
+            ObjVehicleProperty.DriverLine_Cabin_Color_ID = "white";
             ObjVehicleProperty.DriverLine_Cabin_Color_Value = "2";
 
             var resultCreateProperty = _vehicleRepository.UpdateProperty(ObjVehicleProperty).Result;
@@ -276,49 +278,53 @@ namespace net.atos.daf.ct2.vehicle.test
         }
 
         [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
         public void UpdateVehicleProperty()
         {
             VehicleProperty ObjVehicleProperty = new VehicleProperty();
-            ObjVehicleProperty.VehicleId = 5;
+            //ObjVehicleProperty.VehicleId = 5;
+            ObjVehicleProperty.VIN="V001118";
+            ObjVehicleProperty.License_Plate_Number ="LPN1195";
             ObjVehicleProperty.ManufactureDate = DateTime.Now;
             ObjVehicleProperty.RegistrationDateTime = DateTime.Now;
             ObjVehicleProperty.DeliveryDate = DateTime.Now;
-            ObjVehicleProperty.Classification_Make = "Make 1";
-            //    ObjVehicleProperty.Classification_Model="Model 1";
-            ObjVehicleProperty.Classification_Series = "Series 1";
-            //    ObjVehicleProperty.Classification_Type=VehicleType.TRAILER;
-            ObjVehicleProperty.Dimensions_Size_Length = 1;
-            ObjVehicleProperty.Dimensions_Size_Width = 2;
-            ObjVehicleProperty.Dimensions_Size_Height = 3;
-            ObjVehicleProperty.Dimensions_Size_Weight = 4;
-            ObjVehicleProperty.Engine_ID = "1";
-            ObjVehicleProperty.Engine_Type = "Trucks";
-            ObjVehicleProperty.Engine_Power = 500;
-            ObjVehicleProperty.Engine_Coolant = "Coolant1";
-            ObjVehicleProperty.Engine_EmissionLevel = "EURO_III";
-            ObjVehicleProperty.Chasis_Id = "234";
+            ObjVehicleProperty.Classification_Make = "Truck 08 ";
+            ObjVehicleProperty.Classification_Model="M0011";
+            ObjVehicleProperty.Classification_Series = "T002";
+            ObjVehicleProperty.Classification_Type=VehicleType.Lcv;
+            ObjVehicleProperty.Dimensions_Size_Length = 11;
+            ObjVehicleProperty.Dimensions_Size_Width = 11;
+            ObjVehicleProperty.Dimensions_Size_Height = 11;
+            ObjVehicleProperty.Dimensions_Size_Weight = 10;
+            ObjVehicleProperty.Engine_ID = "2";
+            ObjVehicleProperty.Engine_Type = "E0023";
+            ObjVehicleProperty.Engine_Power = 1001;
+            ObjVehicleProperty.Engine_Coolant = "C0023";
+            ObjVehicleProperty.Engine_EmissionLevel = "EURO_II";
+            ObjVehicleProperty.Chasis_Id = "11155";
             ObjVehicleProperty.SideSkirts = true;
             ObjVehicleProperty.SideCollars = true;
             ObjVehicleProperty.RearOverhang = 122;
             ObjVehicleProperty.Tank_Nr = 155;
             ObjVehicleProperty.Tank_Volume = 155;
             ObjVehicleProperty.DriverLine_AxleConfiguration = "4535";
-            ObjVehicleProperty.DriverLine_Wheelbase = 1;
+            ObjVehicleProperty.DriverLine_Wheelbase = 5;
             ObjVehicleProperty.DriverLine_Tire_Size = "1.2";
             ObjVehicleProperty.DriverLine_Tire_Size = "1.2";
-            ObjVehicleProperty.DriverLine_FrontAxle_Position = 1;
-            ObjVehicleProperty.DriverLine_FrontAxle_Load = 2;
-            ObjVehicleProperty.DriverLine_RearAxle_Position = 2;
-            ObjVehicleProperty.DriverLine_RearAxle_Load = 2;
-            ObjVehicleProperty.DriverLine_RearAxle_Ratio = 2;
+            ObjVehicleProperty.DriverLine_FrontAxle_Position = 5;
+            ObjVehicleProperty.DriverLine_FrontAxle_Load = 5;
+            ObjVehicleProperty.DriverLine_RearAxle_Position = 5;
+            ObjVehicleProperty.DriverLine_RearAxle_Load = 6;
+            ObjVehicleProperty.DriverLine_RearAxle_Ratio = 4;
             ObjVehicleProperty.GearBox_Id = "2";
-            ObjVehicleProperty.GearBox_Type = "GrearBox2";
+            ObjVehicleProperty.GearBox_Type = "GrearBox test";
             ObjVehicleProperty.DriverLine_Cabin_ID = "2";
-            ObjVehicleProperty.DriverLine_Cabin_Color_Value = "2";
+             ObjVehicleProperty.DriverLine_Cabin_Color_ID= "Red";
+            ObjVehicleProperty.DriverLine_Cabin_Color_Value = "10:10";
 
-            var resultCreateProperty = _vehicleRepository.UpdateProperty(ObjVehicleProperty).Result;
-            Assert.IsNotNull(resultCreateProperty);
-            Assert.IsTrue(resultCreateProperty.ID > 0);
+            var resultUpdateProperty = _vehicleRepository.UpdateProperty(ObjVehicleProperty).Result;
+            Assert.IsNotNull(resultUpdateProperty);
+            Assert.IsTrue(resultUpdateProperty.ID > 0);
 
         }
     }

@@ -44,7 +44,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
 
                 vehicleProperties.Classification_Make = vehicleUpdatedEvent.Vehicle.VehicleClassification.Make;
                 vehicleProperties.Classification_Series = vehicleUpdatedEvent.Vehicle.VehicleClassification.Series;
-                vehicleProperties.Classification_Type = vehicleUpdatedEvent.Vehicle.VehicleClassification.Type;
+                vehicleProperties.Classification_Type = (VehicleType)Enum.Parse(typeof(VehicleType),vehicleUpdatedEvent.Vehicle.VehicleClassification.Type.ToString());
                 vehicleProperties.Classification_Model = vehicleUpdatedEvent.Vehicle.VehicleClassification.Model;
                 vehicleProperties.Chasis_Id = vehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.ID;
                 
@@ -98,9 +98,17 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                 
                 if(!string.IsNullOrEmpty(vehicleUpdatedEvent.Vehicle.VehicleDimensions.Size.Width))
                 vehicleProperties.Dimensions_Size_Width = Convert.ToInt32(vehicleUpdatedEvent.Vehicle.VehicleDimensions.Size.Width);
+
+                if(!string.IsNullOrEmpty(vehicleUpdatedEvent.Vehicle.VehicleDimensions.Size.Height))
                 vehicleProperties.Dimensions_Size_Height = Convert.ToInt32(vehicleUpdatedEvent.Vehicle.VehicleDimensions.Size.Height);
+
+                if(!string.IsNullOrEmpty(vehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.ToString()))
                 vehicleProperties.Dimensions_Size_Weight = Convert.ToInt32(vehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights);
+
+                if(!string.IsNullOrEmpty(vehicleUpdatedEvent.Vehicle.VehicleDelivery.RegistrationDate))
                 vehicleProperties.RegistrationDateTime = Convert.ToDateTime(vehicleUpdatedEvent.Vehicle.VehicleDelivery.RegistrationDate);
+
+                if(!string.IsNullOrEmpty(vehicleUpdatedEvent.Vehicle.VehicleDelivery.DeliveryDate))
                 vehicleProperties.DeliveryDate = Convert.ToDateTime(vehicleUpdatedEvent.Vehicle.VehicleDelivery.DeliveryDate);
 
                  List<Organization> objOrgList=new List<Organization> ();   
