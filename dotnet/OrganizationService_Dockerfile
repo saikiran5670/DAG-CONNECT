@@ -15,6 +15,7 @@ COPY ["corecomponents/net.atos.daf.ct2.account/net.atos.daf.ct2.account.csproj",
 COPY ["corecomponents/net.atos.daf.ct2.accountpreference/net.atos.daf.ct2.accountpreference.csproj", "corecomponents/net.atos.daf.ct2.accountpreference/"]
 COPY ["corecomponents/net.atos.daf.ct2.identity/net.atos.daf.ct2.identity.csproj", "corecomponents/net.atos.daf.ct2.identity/"]
 COPY ["corecomponents/net.atos.daf.ct2.organization/net.atos.daf.ct2.organization.csproj", "corecomponents/net.atos.daf.ct2.organization/"]
+COPY ["corecomponents/net.atos.daf.ct2.vehicle/net.atos.daf.ct2.vehicle.csproj", "corecomponents/net.atos.daf.ct2.vehicle/"]
 RUN dotnet restore "businessservices/net.atos.daf.ct2.organizationservice/net.atos.daf.ct2.organizationservice.csproj"
 COPY . .
 WORKDIR "/src/businessservices/net.atos.daf.ct2.organizationservice"
