@@ -19,12 +19,12 @@ namespace net.atos.daf.ct2.organization.test
         private readonly IVehicleManager _vehicelManager;
         public OrganizationRepositoryTest()
         {
-            _config = new ConfigurationBuilder()
-             .AddJsonFile("appsettings.Test.json")
-            .Build();
+            // _config = new ConfigurationBuilder()
+            //  .AddJsonFile("appsettings.Test.json")
+            // .Build();
             //Get connection string
            // var connectionString = _config.GetConnectionString("DevAzure");
-            string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y\\97;Ssl Mode=Require;";
+            string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             //string connectionString = "Server = 127.0.0.1; Port = 5432; Database = DAFCT; User Id = postgres; Password = Admin@1978; CommandTimeout = 90; ";
             _dataAccess = new PgSQLDataAccess(connectionString);
             _organizationRepository = new OrganizationRepository(_dataAccess,_vehicelManager); 
@@ -91,10 +91,10 @@ namespace net.atos.daf.ct2.organization.test
          [TestMethod]
         public void KeyHandOverEvent(KeyHandOver keyHandOver)
         {    
-            keyHandOver.KeyHandOverEvent.EndCustomer.ID="1";
+           // keyHandOver.KeyHandOverEvent.EndCustomer.ID="1";
             keyHandOver.KeyHandOverEvent.VIN="V22";
-            keyHandOver.KeyHandOverEvent.TCUActivation="true";
-            keyHandOver.KeyHandOverEvent.ReferenceDateTime="04-04-2019";           
+            // keyHandOver.KeyHandOverEvent.TCUActivation="true";
+            // keyHandOver.KeyHandOverEvent.ReferenceDateTime="04-04-2019";           
             var result = _organizationRepository.KeyHandOverEvent(keyHandOver).Result;
             Assert.IsTrue(result != null);
         }
