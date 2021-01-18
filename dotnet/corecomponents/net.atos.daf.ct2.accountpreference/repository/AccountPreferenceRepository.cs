@@ -88,7 +88,7 @@ namespace net.atos.daf.ct2.accountpreference
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", refId);
-                var query = @"update from master.accountpreference set is_active=false where ref_id = @id";
+                var query = @"update master.accountpreference set is_active=false where ref_id = @id";
                 await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
             }
