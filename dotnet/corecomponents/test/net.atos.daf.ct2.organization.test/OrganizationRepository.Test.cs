@@ -24,10 +24,16 @@ namespace net.atos.daf.ct2.organization.test
             // .Build();
             //Get connection string
            // var connectionString = _config.GetConnectionString("DevAzure");
-            string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+            var connectionString="Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+        
             //string connectionString = "Server = 127.0.0.1; Port = 5432; Database = DAFCT; User Id = postgres; Password = Admin@1978; CommandTimeout = 90; ";
             _dataAccess = new PgSQLDataAccess(connectionString);
             _organizationRepository = new OrganizationRepository(_dataAccess,_vehicelManager); 
+      
+      
+      
+      
+      
         }
 
         [TestMethod]
@@ -91,10 +97,19 @@ namespace net.atos.daf.ct2.organization.test
          [TestMethod]
         public void KeyHandOverEvent(KeyHandOver keyHandOver)
         {    
-           // keyHandOver.KeyHandOverEvent.EndCustomer.ID="1";
             keyHandOver.KeyHandOverEvent.VIN="V22";
-            // keyHandOver.KeyHandOverEvent.TCUActivation="true";
-            // keyHandOver.KeyHandOverEvent.ReferenceDateTime="04-04-2019";           
+            keyHandOver.KeyHandOverEvent.TCUID="TUID";          
+            keyHandOver.KeyHandOverEvent.EndCustomer.ID="testing";     
+            keyHandOver.KeyHandOverEvent.EndCustomer.Name="NAPA TRUCKS query test";    
+            keyHandOver.KeyHandOverEvent.EndCustomer.Address.Type="Home";
+            keyHandOver.KeyHandOverEvent.EndCustomer.Address.Street="Home";
+            keyHandOver.KeyHandOverEvent.EndCustomer.Address.StreetNumber="home";
+            keyHandOver.KeyHandOverEvent.EndCustomer.Address.PostalCode="home";
+            keyHandOver.KeyHandOverEvent.EndCustomer.Address.City="home";
+            keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode="home";  
+            keyHandOver.KeyHandOverEvent.ReferenceDateTime="01-01-2019";  
+            keyHandOver.KeyHandOverEvent.TCUActivation="true";        
+
             var result = _organizationRepository.KeyHandOverEvent(keyHandOver).Result;
             Assert.IsTrue(result != null);
         }
