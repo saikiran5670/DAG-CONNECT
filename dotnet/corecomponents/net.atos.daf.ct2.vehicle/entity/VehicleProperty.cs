@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.vehicle.entity
         public string VIN { get; set; }
         public string Classification_Make { get; set; }
         public string Classification_Series { get; set; }
-        public VehicleType Classification_Type { get; set; }
+        public string Classification_Type { get; set; }
         public string Classification_Model { get; set; }
         public string License_Plate_Number { get; set; }
         public int Tank_Nr { get; set; }

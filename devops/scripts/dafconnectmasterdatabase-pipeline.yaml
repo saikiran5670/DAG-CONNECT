@@ -1,0 +1,40 @@
+trigger:
+- none
+
+parameters:
+- name: ENV
+  displayName: ENV
+  type: string
+  default: DEV0
+  values:
+  - DEV0
+  - DEV01
+  - DEV02
+
+variables:
+- ${{ if eq(parameters.ENV, 'DEV0') }}:
+  - group: DEV0-Release-Variables
+- ${{ if eq(parameters.ENV, 'DEV01') }}:
+  - group: DEV01-Release-Variables
+- ${{ if eq(parameters.ENV, 'DEV02') }}:
+  - group: DEV02-Release-Variables
+  
+jobs:
+- job: Job_1
+  displayName: Running Database Scripts
+  pool:
+    name: $(PRIVATEAGENT)
+    vmImage: ubuntu-18.04
+  steps:
+  - checkout: self
+  - task: UseYuniqlCLI@1
+    displayName: Use Yuniql
+    
+  - task: RunYuniqlCLI@1
+    displayName: Run Yuniql
+    inputs:
+      connectionString: $(PGDAFCONNECTMASTERDATABASECONNECTIONSTRING)
+      workspacePath: $(PGMASTERDBSCRIPTS)
+      targetPlatform: postgresql
+      additionalArguments: --debug --environment $(ENVIRONMENT)
+ 
