@@ -165,7 +165,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@org_id", customer.CompanyUpdatedEvent.Company.ID);               
-                 var query = @"SELECT org_id FROM master.organization where org_id=@org_id";
+                var query = @"SELECT id FROM master.organization where org_id=@org_id";
                 int iscustomerexist= await dataAccess.ExecuteScalarAsync<int>(query, parameter);                       
         
                if (iscustomerexist>0)
@@ -237,7 +237,7 @@ namespace net.atos.daf.ct2.organization.repository
              
                 var parameter = new DynamicParameters();
                 parameter.Add("@org_id", keyHandOver.KeyHandOverEvent.EndCustomer.ID);
-                var query = @"Select org_id from master.organization where org_id=@org_id";
+                var query = @"Select id from master.organization where org_id=@org_id";
                 int iscustomerexist= await dataAccess.ExecuteScalarAsync<int>(query, parameter); 
 
                 if (iscustomerexist>0 && isVINExist>0)  // Update organization and vehicle
@@ -268,8 +268,8 @@ namespace net.atos.daf.ct2.organization.repository
                 var queryUpdate = @"update master.vehicle set tcu_id=@tcu_id,is_tcu_register=@is_tcu_register,reference_date=@reference_date WHERE vin=@vin RETURNING id;";
                 int vehid = await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameterVehUpdate); 
                 return keyHandOver;  
-            //     update vehicle
-            //    int vehId= await _vehicelManager.Update(keyHandOver.KeyHandOverEvent.EndCustomer.ID,keyHandOver.KeyHandOverEvent.VIN,keyHandOver.KeyHandOverEvent.TCUActivation, keyHandOver.KeyHandOverEvent.ReferenceDateTime);
+                //     update vehicle
+                //    int vehId= await _vehicelManager.Update(keyHandOver.KeyHandOverEvent.EndCustomer.ID,keyHandOver.KeyHandOverEvent.VIN,keyHandOver.KeyHandOverEvent.TCUActivation, keyHandOver.KeyHandOverEvent.ReferenceDateTime);
                }
                     
              if (iscustomerexist<1 && isVINExist<1)  // Insert organization and vehicle
