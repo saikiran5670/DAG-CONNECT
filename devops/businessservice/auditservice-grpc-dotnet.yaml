@@ -6,7 +6,7 @@
 trigger:
 - none
 
-pool: $(PrivateAgent)
+pool: $(PRIVATEAGENT)
 
 parameters:
 - name: ENV
