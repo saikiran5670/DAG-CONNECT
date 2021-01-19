@@ -1,0 +1,37 @@
+trigger:
+- none
+
+pool: dafct-dev1-privateagent
+
+parameters:
+- name: ENV
+  displayName: ENV
+  type: string
+  default: DEV0
+  values:
+  - DEV0
+  - DEV01
+
+variables:
+- ${{ if eq(parameters.ENV, 'DEV0') }}:
+  - group: DEV0-Build-Variables
+- ${{ if eq(parameters.ENV, 'DEV01') }}:
+  - group: DEV01-Build-Variables
+
+
+steps:
+- task: Docker@0
+  displayName: 'Build an image'
+  inputs:
+    azureSubscription:  $(Subscription)
+    azureContainerRegistry: $(ContainerRegistry)
+    dockerFile: ui/dockerfilefront
+    imageName: uiservice
+
+- task: Docker@0
+  displayName: 'Push an image'
+  inputs:
+    azureSubscription: $(Subscription)
+    azureContainerRegistry: $(ContainerRegistry)
+    action: 'Push an image'
+    imageName: uiservice
