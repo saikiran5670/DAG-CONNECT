@@ -1,0 +1,33 @@
+<mat-card class='mat-elevation-z margin-bottom-xlg no-padding' *ngIf='closePopup' style="min-width: 900px; min-height: 300px;">
+  <mat-card-content>
+    <div fxLayout="row" fxLayoutAlign="start space-around"
+            style='padding: 10px 20px !important; background: #d4d4d4;'>
+      <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+          <span class='custom-font'>{{ data.tableTitle }} ({{ dataSource.filteredData.length }})</span>
+      </div>
+      <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
+          <mat-icon (click)='onClose(false)' style='cursor: pointer;'>close</mat-icon>
+      </div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="start space-around">
+      <div style='padding: 10px 20px 0px 20px;' class='full-width' fxLayout="column" fxLayoutGap="3px"
+          fxLayoutAlign="left">
+          <div class='margin-bottom-xlg'>
+            <mat-form-field>
+              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
+            </mat-form-field>
+          </div>
+          <mat-table [dataSource]="dataSource" class="table-items" matSort>
+            <ng-container *ngFor="let disCol of data.colsList; let colIndex = index" matColumnDef="{{disCol}}">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ data.colsName[colIndex] }}</mat-header-cell>
+              <mat-cell *matCellDef="let element ">{{ element[disCol] }}</mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="data.colsList"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: data.colsList;">
+            </mat-row>
+          </mat-table>
+          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+      </div>
+    </div>  
+  </mat-card-content>
+</mat-card>

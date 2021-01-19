@@ -78,7 +78,7 @@ namespace net.atos.daf.ct2.account.test
             entity.Organization_Id=1;
             entity.StartDate = DateTime.Now;            
             entity.EndDate = DateTime.Now.AddYears(2);
-            entity.Active = true;
+            // entity.Active = true;
             var result = _manager.Create(entity).Result;
             Assert.IsTrue(result != null && result.Id > 0);
         }

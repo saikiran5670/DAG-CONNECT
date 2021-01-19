@@ -1,0 +1,30 @@
+<div style='padding: 30px;'>
+  <div fxLayoutGap="3px" fxLayoutAlign="flex-end">
+    <mat-icon (click)='cancel()' style='cursor: pointer;'>close</mat-icon>
+  </div>
+  <div class="header">
+    <h1 mat-dialog-title>{{ data.title  }}</h1>
+  </div>
+  <div mat-dialog-content>
+
+    <mat-form-field>
+      <mat-label>User Group Name</mat-label>
+      <input matInput id="name" [(ngModel)]="data.inputText" required #name="ngModel">
+    </mat-form-field>
+    <!-- <span *ngIf="name.invalid && name.touched">User group Name is required</span> -->
+  </div>
+  <div mat-dialog-actions>
+
+    <button *ngIf="data.button1Text" mat-flat-button color="primary" (click)="onClickButton1()" [disabled]="name.invalid" [mat-dialog-close]="data.inputText">
+      Create
+    </button>
+
+
+    <button *ngIf="data.button2Text" mat-flat-button color="primary" (click)="onClickButton2()" [mat-dialog-close]="data.inputText" [disabled]="name.invalid">
+      {{ data.button2Text }}
+    </button>
+
+  </div>
+  <br>
+  <p class="dialog-message "> {{ data.message }}</p>
+</div>
