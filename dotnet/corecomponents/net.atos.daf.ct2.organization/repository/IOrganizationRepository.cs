@@ -13,6 +13,6 @@ namespace net.atos.daf.ct2.organization.repository
         //Task<Organization> UpdateCustomer(Organization organization);
         Task<Customer> UpdateCustomer(Customer customer);
         Task<KeyHandOver> KeyHandOverEvent(KeyHandOver keyHandOver);
-        Task<int> CreateVehicleParty(List<Organization> organization);
+        Task<int> CreateVehicleParty(List<Customer> customers);
     }
 }

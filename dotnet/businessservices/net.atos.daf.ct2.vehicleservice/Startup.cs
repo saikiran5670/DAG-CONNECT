@@ -31,9 +31,15 @@ namespace net.atos.daf.ct2.vehicleservice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
-
+               services.AddCors(o => o.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+    }));
+            
             var connectionString = Configuration.GetConnectionString("ConnectionString");
-           //var connectionString ="Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y\\97;Ssl Mode=Require";
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             services.AddSingleton(dataAccess); 
             services.AddTransient<IVehicleManager,VehicleManager>();
@@ -56,10 +62,13 @@ namespace net.atos.daf.ct2.vehicleservice
 
             app.UseRouting();
 
+            app.UseGrpcWeb();
+            app.UseCors();
+
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>();
-                endpoints.MapGrpcService<VehicleManagementService>();
+                endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb().RequireCors("AllowAll");
+                endpoints.MapGrpcService<VehicleManagementService>().EnableGrpcWeb().RequireCors("AllowAll");
 
                 endpoints.MapGet("/", async context =>
                 {

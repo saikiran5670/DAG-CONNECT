@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.vehicle.entity
         public string VIN { get; set; }
         public string Classification_Make { get; set; }
         public string Classification_Series { get; set; }
-        public string Classification_Type { get; set; }
+        public VehicleType Classification_Type { get; set; }
         public string Classification_Model { get; set; }
         public string License_Plate_Number { get; set; }
         public int Tank_Nr { get; set; }
@@ -41,10 +41,10 @@ namespace net.atos.daf.ct2.vehicle.entity
         public int Dimensions_Size_Width { get; set; }
         public int Dimensions_Size_Height { get; set; }
         public int Dimensions_Size_Weight { get; set; }
-         public DateTime ManufactureDate { get; set; }
+        public DateTime ManufactureDate { get; set; }
         public DateTime RegistrationDateTime { get; set; }
         public DateTime DeliveryDate { get; set; }
-        // public string Party_Role_1 { get; set; }
+        public string Org_Id { get; set; }
         // public int Party_Role_ID_1 { get; set; }
         // public string Party_Role_Name_1 { get; set; }
         // public string Party_Role_2 { get; set; }
