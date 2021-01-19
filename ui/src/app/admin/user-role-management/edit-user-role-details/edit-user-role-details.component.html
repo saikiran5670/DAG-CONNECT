@@ -1,0 +1,156 @@
+<form [formGroup]="userRoleFormGroup">
+    <div fxLayout="row" fxLayoutAlign="end end" class='margin-bottom-sm'>
+        <button *ngIf="viewFlag" mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblBack || 'Back' }}</button>
+    </div>
+    <mat-card class='mat-elevation-z margin-bottom-xlg' *ngIf="viewFlag">
+        <mat-card-content>
+            <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ title }}</span>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <!-- <mat-label>{{ translationData.lblSalutation }}</mat-label> -->
+                  <mat-label>{{ translationData.lblUserRoleName || 'User Role Name' }}</mat-label>
+                  <mat-label class='custom-font'>{{ this.gridData[0].name  }}</mat-label>
+                </div>
+                <div *ngIf="loggedInUser == 'admin'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <!-- <mat-label>{{ translationData.lblFirstName }}</mat-label> -->
+                    <mat-label>{{ translationData.lblUserRoleType || 'Role Type' }}</mat-label>
+                    <mat-label class='custom-font'>{{ this.gridData[0].roleType  }}</mat-label>
+                </div>
+                <div [ngClass]="loggedInUser == 'admin' ? 'areaWidth min-width-30-per' : 'areaWidth min-width-60-per'" fxLayout="column" fxLayoutAlign="left">
+                    <!-- <mat-label>{{ translationData.lblLastName }}</mat-label> -->
+                    <mat-label>{{ translationData.lblUserRoleDescriptionOptional || 'User Role Description' }}</mat-label>
+                    <mat-label class='custom-font'>{{ this.gridData[0].roleDescription ? this.gridData[0].roleDescription : '--' }}</mat-label>
+                </div>
+            </div>  
+        </mat-card-content>
+    </mat-card> 
+    <mat-card class='mat-elevation-z margin-bottom-xlg' *ngIf="!viewFlag">
+        <mat-card-content>
+            <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ title }}</span>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>{{ createStatus ? (translationData.lblNewUserRoleName || 'New User Role Name') : (translationData.lblUserRoleName || 'User Role Name') }}<span class='mandatoryColor'>*</span></mat-label>
+                    <mat-form-field appearance="outline" class="full-width">
+                        <input placeholder="{{ translationData.lblEnterUserRoleName || 'Enter User Role Name' }}" (keyup)="isUserRoleExist=false; doneFlag=false"  matInput formControlName="userRoleName" required>
+                    <mat-icon style='color:green;' matSuffix *ngIf="doneFlag">done</mat-icon>
+                    </mat-form-field>
+                    <mat-error *ngIf="userRoleFormGroup.get('userRoleName').hasError('required')">
+                        {{ translationData.lblPleaseentertheUserRolename || 'Please enter the User Role name'}}
+                    </mat-error>
+                    <mat-error #UserValueCheck *ngIf="isUserRoleExist" >
+                        {{ translationData.lblUserRolealreadyexistsPleasechooseadifferentname || 'User Role already exists. Please choose a different name.'}}
+                    </mat-error>
+                </div>
+                <div *ngIf="loggedInUser == 'admin'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>
+                        {{ translationData.lblUserRoleType || 'Role Type'}}<span class='mandatoryColor'>*</span>
+                    </mat-label>
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-select formControlName="roleType">
+                            <mat-option *ngFor="let roleType of roleTypes" [value]="roleType">
+                                {{roleType}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div [ngClass]="loggedInUser == 'admin' ? 'areaWidth min-width-30-per' : 'areaWidth min-width-60-per'" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label style='display: flex; place-content: space-between;'>
+                        <span>{{ translationData.lblUserRoleDescriptionOptional || 'User Role Description (Optional)'}}</span>
+                        <span>{{ translationData.lbl120CharMax || '120 characters max'}}</span>
+                    </mat-label>
+                    <mat-form-field appearance="outline" class="full-width">
+                        <input maxlength="120" placeholder="{{ translationData.lblEnterAboutUserRole || 'Enter About User Role' }}" matInput formControlName="userRoleDescription">
+                    </mat-form-field>
+                </div>
+            </div>
+        </mat-card-content>        
+        <mat-card-actions class='no-margin no-padding'>
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <div fxLayout="column" fxLayoutAlign="left">
+                    <div fxLayout="row" fxLayoutAlign='center center'>
+                        <mat-icon class='margin-right-10'>info</mat-icon>
+                        <span>{{ translationData.lblHintMessage || 'You can select services from below list to provide access for this role'}}</span>
+                    </div>
+                </div>
+                <div fxLayout="column" fxLayoutAlign="end">
+                    <div fxLayout="row">
+                        <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel'}}</button>
+                        <button class='margin-right-10'  mat-raised-button color="primary" *ngIf="!createStatus"
+                            (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
+                        <button class='no-margin' [disabled]="!userRoleFormGroup.valid" mat-raised-button color="primary"
+                            (click)='onCreate()'>{{ createStatus || duplicateFlag ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm || 'Confirm') }}</button>
+                    </div>
+                </div>
+            </div>
+        </mat-card-actions>
+    </mat-card>
+    <mat-card class='mat-elevation-z'>
+        <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ createStatus ? ( translationData.lblSelectRoleAccess || 'Select Role Access') : (translationData.lblSelectedRoleAccess || 'Selected Role Access') }}</span>
+            </div>
+        </div>
+        <div *ngIf='createStatus' fxLayout="row" fxLayoutAlign="start start" class='margin-top-xlg'>
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                <mat-form-field>
+                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblFilter || 'Filter' }}">
+                </mat-form-field>
+            </div>
+        </div>
+        <div fxLayout="row" class='margin-top-xlg'>
+            <div fxLayout="column" class='full-width'>
+                <mat-table [dataSource]="dataSource" matSort>      
+                    <ng-container matColumnDef="name">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatureName || 'Feature Name'}}</mat-header-cell>
+                        <mat-cell *matCellDef="let row; let index"> {{row.name}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="select">
+                        <!-- <mat-header-cell *matHeaderCellDef>
+                          <mat-checkbox (change)='$event ? masterToggleForFeatures() : null;' [disabled]="viewFlag"
+                            [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
+                            [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
+                            [aria-label]='checkboxLabelForFeatures()'>
+                          </mat-checkbox>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                          <mat-checkbox (click)='$event.stopPropagation()' [disabled]="viewFlag"
+                            (change)='$event ? selectionForFeatures.toggle(row) : null; onCheckboxChange($event, row)'
+                            [checked]='selectionForFeatures.isSelected(row)'
+                            [aria-label]='checkboxLabelForFeatures(row)'>
+                          </mat-checkbox>
+                        </mat-cell> -->
+
+                        <mat-header-cell *matHeaderCellDef>{{ translationData.lblAccess || 'Access'}}
+                            <mat-slide-toggle color="primary" (change)='$event ? masterToggleForFeatures() : null;' [disabled]="viewFlag"
+                              [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
+                              [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
+                              [aria-label]='checkboxLabelForFeatures()'>
+                            </mat-slide-toggle>
+                          </mat-header-cell>
+                          <mat-cell *matCellDef="let row">
+                            <mat-slide-toggle color="primary" (click)='$event.stopPropagation()' [disabled]="viewFlag"
+                              (change)='$event ? selectionForFeatures.toggle(row) : null; onCheckboxChange($event, row)'
+                              [checked]='selectionForFeatures.isSelected(row)'
+                              [aria-label]='checkboxLabelForFeatures(row)'>
+                            </mat-slide-toggle>
+                          </mat-cell>
+                        
+
+                    </ng-container> 
+                    <mat-header-row *matHeaderRowDef="featureDisplayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: featureDisplayedColumns;">
+                    </mat-row>
+                </mat-table>
+                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+            </div>
+        </div>
+    </mat-card>
+</form>

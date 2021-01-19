@@ -164,11 +164,9 @@ namespace net.atos.daf.ct2.organization.repository
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@org_id", customer.CompanyUpdatedEvent.Company.ID);
-                //var query = @"Select org_id from master.organization where org_id=@org_id";
-                 var query = @"SELECT org_id FROM master.organization where org_id=@org_id";
-                int iscustomerexist= await dataAccess.ExecuteScalarAsync<int>(query, parameter);  
-                      
+                parameter.Add("@org_id", customer.CompanyUpdatedEvent.Company.ID);               
+                var query = @"SELECT id FROM master.organization where org_id=@org_id";
+                int iscustomerexist= await dataAccess.ExecuteScalarAsync<int>(query, parameter);                       
         
                if (iscustomerexist>0)
                  {
@@ -182,15 +180,15 @@ namespace net.atos.daf.ct2.organization.repository
                 parameterUpdate.Add("@PostalCode", customer.CompanyUpdatedEvent.Company.Address.PostalCode);  
                 parameterUpdate.Add("@City", customer.CompanyUpdatedEvent.Company.Address.City);
                 parameterUpdate.Add("@CountryCode", customer.CompanyUpdatedEvent.Company.Address.CountryCode);    
-              //  parameterUpdate.Add("@ReferencedDate", customer.CompanyUpdatedEvent.Company.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(customer.CompanyUpdatedEvent.Company.ReferenceDateTime.ToString()) : 0);    
-               // reference_date=@ReferencedDate    
+                parameterUpdate.Add("@reference_date", customer.CompanyUpdatedEvent.Company.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(customer.CompanyUpdatedEvent.Company.ReferenceDateTime.ToString()) : 0);    
+                
                 var queryUpdate = @"update master.organization set name=@Name,type=@Type,
                  address_type=@AddressType, street=@AddressStreet, street_number=@AddressStreetNumber,
-                  postal_code=@PostalCode, city=@City,country_code=@CountryCode                               
-	                                 WHERE org_id = @org_id RETURNING org_id;";
+                  postal_code=@PostalCode, city=@City,country_code=@CountryCode,reference_date=@reference_date                               
+	                                 WHERE org_id = @org_id RETURNING id;";
+
                 await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameterUpdate);      
-            }           
-        
+            }    
             else
             {                     
                 var parameterInsert = new DynamicParameters();
@@ -203,13 +201,12 @@ namespace net.atos.daf.ct2.organization.repository
                 parameterInsert.Add("@PostalCode", customer.CompanyUpdatedEvent.Company.Address.PostalCode);  
                 parameterInsert.Add("@City", customer.CompanyUpdatedEvent.Company.Address.City);
                 parameterInsert.Add("@CountryCode", customer.CompanyUpdatedEvent.Company.Address.CountryCode);    
-               //  parameterUpdate.Add("@ReferencedDate", customer.CompanyUpdatedEvent.Company.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(customer.CompanyUpdatedEvent.Company.ReferenceDateTime.ToString()) : 0);                
+                parameterInsert.Add("@reference_date", customer.CompanyUpdatedEvent.Company.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(customer.CompanyUpdatedEvent.Company.ReferenceDateTime.ToString()) : 0);                
                
                 string queryInsert= "insert into master.organization(org_id, name,type ,address_type, street, street_number, postal_code, city,country_code,reference_date) " +
-                              "values(@org_id, @Name,@Type ,@AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,44444455) RETURNING org_id";
+                              "values(@org_id, @Name,@Type ,@AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@reference_date) RETURNING id";
 
-                var orgid =   await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameterInsert);                
-               // organization.Id = orgid;
+                 await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameterInsert);      
             } 
            }        
             catch (Exception ex)
@@ -229,6 +226,9 @@ namespace net.atos.daf.ct2.organization.repository
             // if not exist then first create organization and map the organizationid to VIN 
             // if organization and VIN both already exist in system then update thier details
 
+             log.Info("KeyHandOverEvent method is called in repository :");
+
+               try{
                 var parameterVeh = new DynamicParameters();
                 parameterVeh.Add("@vinexsist", keyHandOver.KeyHandOverEvent.VIN);
                 var queryVeh = @"SELECT id from master.vehicle where vin=@vinexsist";
@@ -236,7 +236,7 @@ namespace net.atos.daf.ct2.organization.repository
              
                 var parameter = new DynamicParameters();
                 parameter.Add("@org_id", keyHandOver.KeyHandOverEvent.EndCustomer.ID);
-                var query = @"Select org_id from master.organization where org_id=@org_id";
+                var query = @"Select id from master.organization where org_id=@org_id";
                 int iscustomerexist= await dataAccess.ExecuteScalarAsync<int>(query, parameter); 
 
                 if (iscustomerexist>0 && isVINExist>0)  // Update organization and vehicle
@@ -250,29 +250,39 @@ namespace net.atos.daf.ct2.organization.repository
                 parameterOrgUpdate.Add("@PostalCode", keyHandOver.KeyHandOverEvent.EndCustomer.Address.PostalCode);  
                 parameterOrgUpdate.Add("@City",keyHandOver.KeyHandOverEvent.EndCustomer.Address.City);
                 parameterOrgUpdate.Add("@CountryCode", keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode);    
-               // parameterOrgUpdate.Add("@ReferencedDate", keyHandOver.ReferenceDateTime);   
-
+                
                 var queryOrgUpdate = @"update master.organization set name=@Name,
                  address_type=@AddressType,street=@AddressStreet,street_number=@AddressStreetNumber,
                   postal_code=@PostalCode,city=@City,country_code=@CountryCode                 
 	                                 WHERE org_id=@org_id RETURNING id;";
 
-              await dataAccess.ExecuteScalarAsync<int>(queryOrgUpdate, parameterOrgUpdate);    
+                await dataAccess.ExecuteScalarAsync<int>(queryOrgUpdate, parameterOrgUpdate);    
+               
+                bool istcuactive=true;
+                string tcuactivation=keyHandOver.KeyHandOverEvent.TCUActivation;
+                if(tcuactivation.ToUpper()=="YES")
+                {
+                  istcuactive=true;
+                }
+                else if(tcuactivation.ToUpper()=="NO")
+                {
+                    istcuactive=false;
+                }
 
                 var parameterVehUpdate = new DynamicParameters();           
                 parameterVehUpdate.Add("@vin",keyHandOver.KeyHandOverEvent.VIN);
                 parameterVehUpdate.Add("@tcu_id",keyHandOver.KeyHandOverEvent.TCUID);
-                parameterVehUpdate.Add("@is_tcu_register",Convert.ToBoolean(keyHandOver.KeyHandOverEvent.TCUActivation));
+                parameterVehUpdate.Add("@is_tcu_register",istcuactive);
                 parameterVehUpdate.Add("@reference_date",keyHandOver.KeyHandOverEvent.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(keyHandOver.KeyHandOverEvent.ReferenceDateTime) : 0);
             
                 var queryUpdate = @"update master.vehicle set tcu_id=@tcu_id,is_tcu_register=@is_tcu_register,reference_date=@reference_date WHERE vin=@vin RETURNING id;";
                 int vehid = await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameterVehUpdate); 
                 return keyHandOver;  
-            //     update vehicle
-            //    int vehId= await _vehicelManager.Update(keyHandOver.KeyHandOverEvent.EndCustomer.ID,keyHandOver.KeyHandOverEvent.VIN,keyHandOver.KeyHandOverEvent.TCUActivation, keyHandOver.KeyHandOverEvent.ReferenceDateTime);
+                //     update vehicle
+                //    int vehId= await _vehicelManager.Update(keyHandOver.KeyHandOverEvent.EndCustomer.ID,keyHandOver.KeyHandOverEvent.VIN,keyHandOver.KeyHandOverEvent.TCUActivation, keyHandOver.KeyHandOverEvent.ReferenceDateTime);
                }
                     
-            else if (iscustomerexist<0 && isVINExist<0)  // Insert organization and vehicle
+             if (iscustomerexist<1 && isVINExist<1)  // Insert organization and vehicle
                 {
                 var parameterOrgInsert = new DynamicParameters();
                 parameterOrgInsert.Add("@org_id",keyHandOver.KeyHandOverEvent.EndCustomer.ID);               
@@ -282,40 +292,53 @@ namespace net.atos.daf.ct2.organization.repository
                 parameterOrgInsert.Add("@AddressStreetNumber",keyHandOver.KeyHandOverEvent.EndCustomer.Address.StreetNumber);
                 parameterOrgInsert.Add("@PostalCode", keyHandOver.KeyHandOverEvent.EndCustomer.Address.PostalCode);  
                 parameterOrgInsert.Add("@City",keyHandOver.KeyHandOverEvent.EndCustomer.Address.City);
-                parameterOrgInsert.Add("@CountryCode", keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode);    
-               // parameterOrgUpdate.Add("@ReferencedDate", keyHandOver.ReferenceDateTime);   
+                parameterOrgInsert.Add("@CountryCode", keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode); 
                           
-                string queryOrgInsert= "insert into master.organization(org_id,type, name, address_type, street, street_number, postal_code, city,country_code) " +
-                              "values(@org_id, 'Dealer', @Name, @AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode) RETURNING id";
+                string queryOrgInsert= "insert into master.organization(org_id,name,address_type,street,street_number,postal_code,city,country_code) " +
+                              "values(@org_id,@Name,@AddressType,@AddressStreet,@AddressStreetNumber,@PostalCode,@City,@CountryCode) RETURNING id";
 
-                var orgid =   await dataAccess.ExecuteScalarAsync<int>(queryOrgInsert, parameterOrgInsert);     
+                var orgid =   await dataAccess.ExecuteScalarAsync<int>(queryOrgInsert, parameterOrgInsert);   
+
+                bool istcuactive=true;
+                string tcuactivation=keyHandOver.KeyHandOverEvent.TCUActivation;
+                if(tcuactivation.ToUpper()=="YES")
+                {
+                  istcuactive=true;
+                }
+                else if(tcuactivation.ToUpper()=="NO")
+                {
+                    istcuactive=false;
+                }  
                 
                 var parameterVehInsert = new DynamicParameters();
                 parameterVehInsert.Add("@organization_id",orgid);        
                 parameterVehInsert.Add("@vin",keyHandOver.KeyHandOverEvent.VIN);               
                 parameterVehInsert.Add("@tcuid", keyHandOver.KeyHandOverEvent.TCUID);           
-                parameterVehInsert.Add("@is_tcu_register", Convert.ToBoolean(keyHandOver.KeyHandOverEvent.TCUActivation));
-               // parameterVehInsert.Add("@reference_date", keyHandOver.KeyHandOverEvent.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(keyHandOver.KeyHandOverEvent.ReferenceDateTime) : 0);
+                parameterVehInsert.Add("@is_tcu_register", istcuactive);
+                parameterVehInsert.Add("@reference_date", keyHandOver.KeyHandOverEvent.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(keyHandOver.KeyHandOverEvent.ReferenceDateTime) : 0);
+                
                 var queryVehInsert= @"INSERT INTO master.vehicle
                                       (organization_id                                  
                                       ,vin
                                       ,tcu_id
-                                      ,is_tcu_register)                                    
+                                      ,is_tcu_register
+                                      ,reference_date)                                    
                             	VALUES(@organization_id                                     
                                       ,@vin
                                       ,@tcuid
-                                      ,@is_tcu_register                                                                       
+                                      ,@is_tcu_register
+                                      ,@reference_date                                                                       
                                      ) RETURNING id";
-                var vehid = await dataAccess.ExecuteScalarAsync<int>(queryVehInsert, parameterVehInsert); 
-                // Insert vehicle
+                int vehid = await dataAccess.ExecuteScalarAsync<int>(queryVehInsert, parameterVehInsert); 
+                //Insert vehicle
                 // int vehId= await _vehicelManager.Create(orgid,keyHandOver.KeyHandOverEvent.EndCustomer.ID,keyHandOver.KeyHandOverEvent.VIN,keyHandOver.KeyHandOverEvent.TCUActivation, keyHandOver.KeyHandOverEvent.ReferenceDateTime);
 
                 return keyHandOver;               
-               }
+              }
 
-               else if (iscustomerexist>0 && isVINExist<0) // Update organization and insert vehicle
+               else if (iscustomerexist>0 && isVINExist<1) // Update organization and insert vehicle
                 {
-                 var parameterOrgUpdate = new DynamicParameters();
+                var parameterOrgUpdate = new DynamicParameters();
                 parameterOrgUpdate.Add("@org_id",keyHandOver.KeyHandOverEvent.EndCustomer.ID);               
                 parameterOrgUpdate.Add("@Name", keyHandOver.KeyHandOverEvent.EndCustomer.Name);              
                 parameterOrgUpdate.Add("@AddressType",keyHandOver.KeyHandOverEvent.EndCustomer.Address.Type);
@@ -323,24 +346,33 @@ namespace net.atos.daf.ct2.organization.repository
                 parameterOrgUpdate.Add("@AddressStreetNumber",keyHandOver.KeyHandOverEvent.EndCustomer.Address.StreetNumber);
                 parameterOrgUpdate.Add("@PostalCode", keyHandOver.KeyHandOverEvent.EndCustomer.Address.PostalCode);  
                 parameterOrgUpdate.Add("@City",keyHandOver.KeyHandOverEvent.EndCustomer.Address.City);
-                parameterOrgUpdate.Add("@CountryCode", keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode);    
-               // parameterOrgUpdate.Add("@ReferencedDate", keyHandOver.ReferenceDateTime);   
-
-                var queryOrgUpdate = @"update master.organization set name=@Name,
+                parameterOrgUpdate.Add("@CountryCode", keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode);   
+                parameterOrgUpdate.Add("@reference_date", keyHandOver.KeyHandOverEvent.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(keyHandOver.KeyHandOverEvent.ReferenceDateTime) : 0);
+                 
+                 var queryOrgUpdate = @"update master.organization set name=@Name,
                  address_type=@AddressType, street=@AddressStreet, street_number=@AddressStreetNumber,
-                  postal_code=@PostalCode,city=@City,country_code=@CountryCode                 
+                  postal_code=@PostalCode,city=@City,country_code=@CountryCode,reference_date=@reference_date                 
 	                                 WHERE org_id = @org_id RETURNING id;";
+               await dataAccess.ExecuteScalarAsync<int>(queryOrgUpdate, parameterOrgUpdate); 
 
-                await dataAccess.ExecuteScalarAsync<int>(queryOrgUpdate, parameterOrgUpdate); 
-
-                var orgid = await dataAccess.ExecuteScalarAsync<int>(queryOrgUpdate, parameterOrgUpdate); 
+                int orgid = await dataAccess.ExecuteScalarAsync<int>(queryOrgUpdate, parameterOrgUpdate); 
+               
+                bool istcuactive=true;
+                string tcuactivation=keyHandOver.KeyHandOverEvent.TCUActivation;
+                if(tcuactivation.ToUpper()=="YES")
+                {
+                  istcuactive=true;
+                }
+                else if(tcuactivation.ToUpper()=="NO")
+                {
+                    istcuactive=false;
+                }  
 
                 var parameterVehInsert = new DynamicParameters();
                 parameterVehInsert.Add("@organization_id",orgid);        
                 parameterVehInsert.Add("@vin",keyHandOver.KeyHandOverEvent.VIN);               
                 parameterVehInsert.Add("@tcuid", keyHandOver.KeyHandOverEvent.TCUID);           
-                parameterVehInsert.Add("@is_tcu_register", Convert.ToBoolean(keyHandOver.KeyHandOverEvent.TCUActivation));
-               // parameterVehInsert.Add("@reference_date", keyHandOver.KeyHandOverEvent.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(keyHandOver.KeyHandOverEvent.ReferenceDateTime) : 0);
+                parameterVehInsert.Add("@is_tcu_register", istcuactive);
                 var queryVehInsert= @"INSERT INTO master.vehicle
                                       (organization_id                                  
                                       ,vin
@@ -351,14 +383,14 @@ namespace net.atos.daf.ct2.organization.repository
                                       ,@tcuid
                                       ,@is_tcu_register                                                                       
                                      ) RETURNING id";
-                var vehid = await dataAccess.ExecuteScalarAsync<int>(queryVehInsert, parameterVehInsert);
+                int vehid = await dataAccess.ExecuteScalarAsync<int>(queryVehInsert, parameterVehInsert);
                  return keyHandOver;  
                  // Insert vehicle
                  //int vehId= await _vehicelManager.Create(orgid,keyHandOver.KeyHandOverEvent.EndCustomer.ID,keyHandOver.KeyHandOverEvent.VIN,keyHandOver.KeyHandOverEvent.TCUActivation, keyHandOver.KeyHandOverEvent.ReferenceDateTime);
    
                 }
                   
-               else if (iscustomerexist>0 && isVINExist<0) // Insert organization and update vehicle
+               else if (iscustomerexist<1 && isVINExist>0) // Insert organization and update vehicle
                 {
                 var parameterOrgInsert = new DynamicParameters();
                 parameterOrgInsert.Add("@org_id",keyHandOver.KeyHandOverEvent.EndCustomer.ID);               
@@ -369,17 +401,28 @@ namespace net.atos.daf.ct2.organization.repository
                 parameterOrgInsert.Add("@PostalCode", keyHandOver.KeyHandOverEvent.EndCustomer.Address.PostalCode);  
                 parameterOrgInsert.Add("@City",keyHandOver.KeyHandOverEvent.EndCustomer.Address.City);
                 parameterOrgInsert.Add("@CountryCode", keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode);    
-               // parameterOrgUpdate.Add("@ReferencedDate", keyHandOver.ReferenceDateTime);   
+                parameterOrgInsert.Add("@reference_date", keyHandOver.KeyHandOverEvent.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(keyHandOver.KeyHandOverEvent.ReferenceDateTime) : 0);  
                           
-                string queryOrgInsert= "insert into master.organization(org_id,type, name, address_type, street, street_number, postal_code, city,country_code) " +
-                              "values(@org_id, 'Dealer', @Name, @AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode) RETURNING id";
+                string queryOrgInsert= "insert into master.organization(org_id,name, address_type, street, street_number, postal_code, city,country_code,reference_date) " +
+                              "values(@org_id,@Name, @AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@reference_date) RETURNING id";
 
-                var orgid =   await dataAccess.ExecuteScalarAsync<int>(queryOrgInsert, parameterOrgInsert);  
+                int orgid =   await dataAccess.ExecuteScalarAsync<int>(queryOrgInsert, parameterOrgInsert);  
+                
+                bool istcuactive=true;
+                string tcuactivation=keyHandOver.KeyHandOverEvent.TCUActivation;
+                if(tcuactivation.ToUpper()=="YES")
+                {
+                  istcuactive=true;
+                }
+                else if(tcuactivation.ToUpper()=="NO")
+                {
+                    istcuactive=false;
+                }  
 
                 var parameterVehUpdate = new DynamicParameters();           
                 parameterVehUpdate.Add("@vin",keyHandOver.KeyHandOverEvent.VIN);
                 parameterVehUpdate.Add("@tcu_id",keyHandOver.KeyHandOverEvent.TCUID);
-                parameterVehUpdate.Add("@is_tcu_register",Convert.ToBoolean(keyHandOver.KeyHandOverEvent.TCUActivation));
+                parameterVehUpdate.Add("@is_tcu_register",istcuactive);
                 parameterVehUpdate.Add("@reference_date",keyHandOver.KeyHandOverEvent.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(keyHandOver.KeyHandOverEvent.ReferenceDateTime) : 0);
             
                 var queryUpdate = @"update master.vehicle set tcu_id=@tcu_id,is_tcu_register=@is_tcu_register,reference_date=@reference_date WHERE vin = @vin RETURNING id;";
@@ -387,9 +430,15 @@ namespace net.atos.daf.ct2.organization.repository
  
                 //update vehicle
                 //int vehId= await _vehicelManager.Update(keyHandOver.KeyHandOverEvent.EndCustomer.ID,keyHandOver.KeyHandOverEvent.VIN,keyHandOver.KeyHandOverEvent.TCUActivation, keyHandOver.KeyHandOverEvent.ReferenceDateTime);
-                 
-                }      
-                 return keyHandOver;          
+                 }     
+               }
+             catch (Exception ex)
+            {
+                log.Info("KeyHandOverEvent method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                log.Error(ex.ToString()); 
+                throw ex;
+            }
+            return keyHandOver;  
             }           
                
         public async Task<int> CreateVehicleParty(List<Customer> customers)

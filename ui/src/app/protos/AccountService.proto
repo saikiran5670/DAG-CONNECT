@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+/*This is a namespace for a service developed in C#. We may use java_namespace if we would write it in java and its naming convesions */
+option csharp_namespace = "net.atos.daf.ct2.accountservice.protos";
+
+/*Package name to avoid message clashes*/
+package accountservice;
+
+/*AccountService is a service used by portal for account management.*/
+service AccountService {
+
+
+    rpc Create(Account) returns (Account);
+
+    rpc Update(Account) returns (Account);
+
+    rpc Delete(Account) returns (bool);
+
+    rpc Duplicate(Account) returns (bool);
+
+    rpc  Account Get(accountid,);
+
+    rpc  List<Account> GetAccountByOrganization(organizationid);
+
+    rpc  List<Account> Search(Keyword);
+
+    rpc GetAccountsByAccountGroup(int accountGroupId);
+
+    rpc GetAccountsByRole(int roleid);
+}
+
+message Account {
+	string accesstoken = 1;
+	int32 expiresin  = 2;
+	int32 refreshexpiresin   = 3;
+	string refreshtoken = 4;
+	string tokentype  = 5;
+	int32 notbeforepolicy  = 6;
+	string sessionstate = 7;
+	string scope  = 8;
+	string error= 9;
+}

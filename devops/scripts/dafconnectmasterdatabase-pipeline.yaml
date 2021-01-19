@@ -10,6 +10,7 @@ parameters:
   - DEV0
   - DEV01
   - DEV02
+  - TEST01
 
 variables:
 - ${{ if eq(parameters.ENV, 'DEV0') }}:
@@ -18,6 +19,8 @@ variables:
   - group: DEV01-Release-Variables
 - ${{ if eq(parameters.ENV, 'DEV02') }}:
   - group: DEV02-Release-Variables
+- ${{ if eq(parameters.ENV, 'TEST01') }}:
+  - group: TEST01-Release-Variables
   
 jobs:
 - job: Job_1
@@ -34,7 +37,7 @@ jobs:
     displayName: Run Yuniql
     inputs:
       connectionString: $(PGDAFCONNECTMASTERDATABASECONNECTIONSTRING)
-      workspacePath: $(PGMASTERDBSCRIPTS)
+      workspacePath: $(PGDAFCONNECTMASTERDATABASESCRIPTS)
       targetPlatform: postgresql
       additionalArguments: --debug --environment $(ENVIRONMENT)
  

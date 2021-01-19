@@ -1,0 +1,79 @@
+<div class='bgtrans'>
+    <div *ngIf='!editFlag'>
+        <mat-card class='mat-elevation-z'>
+            <div fxLayout="row" fxLayoutAlign="space-between">
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserRoleDetails || 'All User Role Details' }}</span>
+                </div>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                    <button mat-flat-button color="primary" (click)="newUserRole()">
+                        <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUserRole || 'New User Role'}}
+                    </button>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start start" class='margin-top-xlg'>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <mat-form-field>
+                        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblFilter || 'Filter' }}">
+                    </mat-form-field>
+                </div>
+            </div>
+            <div fxLayout="row" class='margin-top-xlg' *ngIf='!initData'>
+                <p>
+                    No record found.<br><br>
+
+                    Please click on 'New User Role' button and create new role
+                </p>
+            </div>
+            <div fxLayout="row" class='margin-top-xlg' *ngIf='initData'>
+                <div fxLayout="column" class='full-width'>
+                    <mat-table [dataSource]="dataSource" matSort>
+                        <!-- <ng-container matColumnDef="newTag">
+                            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <mat-icon *ngIf="row.newTag" inline="true" color="warn"> fiber_new </mat-icon>
+                            </mat-cell>
+                        </ng-container> -->
+                        <ng-container matColumnDef="name">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRoleName || 'Role Name'}}</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
+                                <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+                                <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{row.name}}</span> &nbsp;
+                                <mat-icon *ngIf="row.roleType == 'Global'" inline="true"> public </mat-icon>
+                            </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="roleDescription">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRoleDescription || 'Role Description'}}</mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{row.roleDescription}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="action">
+                            <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action' }}</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <button class='actionBtn' mat-flat-button matTooltip="View" (click)="viewUserRole(row)">
+                                    <mat-icon>visibility</mat-icon>
+                                </button>
+                                <button class='actionBtn'  mat-flat-button (click)="editUserRole(row, 'duplicate')" matTooltip="Duplicate">
+                                    <mat-icon>content_copy</mat-icon>
+                                </button>
+                                <button *ngIf="(row.roleType == 'Global' && loggedInUser == 'admin') || (row.roleType == 'Regular')" class='actionBtn'  mat-flat-button (click)="editUserRole(row, 'edit')" matTooltip="Edit">
+                                    <mat-icon>create</mat-icon>
+                                </button>
+                                <button *ngIf="(row.roleType == 'Global' && loggedInUser == 'admin') || (row.roleType == 'Regular')" class='actionBtn'  mat-flat-button (click)="deleteUserRole(row)" matTooltip="Delete">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </mat-cell>
+                        </ng-container>
+                        <mat-header-row *matHeaderRowDef="roleDisplayedColumns"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: roleDisplayedColumns;">
+                        </mat-row>
+                    </mat-table>
+                    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+                </div>
+            </div>
+        </mat-card>
+    </div>
+    <div *ngIf='editFlag'>
+        <app-edit-user-role-details [translationData]='translationData' [viewFlag]='viewFlag' [duplicateFlag]='duplicateFlag' [createStatus]='createStatus' [title]='titleText' [gridData]='rowsData' (backToPage)='editData($event)'></app-edit-user-role-details>
+    </div>
+</div>

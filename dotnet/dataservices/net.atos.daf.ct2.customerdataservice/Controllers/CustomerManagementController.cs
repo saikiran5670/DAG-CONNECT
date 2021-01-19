@@ -18,7 +18,11 @@ using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-
+using Microsoft.Net.Http.Headers;
+using AccountComponent = net.atos.daf.ct2.account;
+using AccountEntity = net.atos.daf.ct2.account.entity;
+using IdentityComponent = net.atos.daf.ct2.identity;
+using IdentityEntity = net.atos.daf.ct2.identity.entity;
 
 namespace net.atos.daf.ct2.customerdataservice.Controllers
 {
@@ -32,54 +36,87 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
         private readonly IOrganizationManager organizationtmanager;
         private readonly IPreferenceManager preferencemanager;
         private readonly IVehicleManager vehicleManager;
+         AccountComponent.IAccountIdentityManager accountIdentityManager;
 
-        public CustomerManagementController(ILogger<CustomerManagementController> logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager)
+        private IHttpContextAccessor _httpContextAccessor;
+
+        public CustomerManagementController(ILogger<CustomerManagementController> logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager,IHttpContextAccessor httpContextAccessor,AccountComponent.IAccountIdentityManager _accountIdentityManager)
         {
            _logger = logger;
            _AuditTrail = AuditTrail;
             organizationtmanager = _organizationmanager;
             preferencemanager=_preferencemanager;
             vehicleManager=_vehicleManager;
+           _httpContextAccessor=httpContextAccessor;
+            accountIdentityManager=_accountIdentityManager;
         } 
         
         [HttpPost]
         [Route("UpdateCustomerData")]
         public async Task<IActionResult> update(Customer customer)
         {
-            try
-            {               
-               //  logger.LogInformation("Customer update function called -" + organization.OrganizationId);  
-                 var OrgId= await organizationtmanager.UpdateCustomer(customer);
-                // logger.LogInformation("Customer updated - " + organization.OrganizationId);
-                 return Ok(OrgId);
-            }
-            catch (Exception ex)
+            string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
+            bool valid=false;
+            try 
             {
-               // logger.LogError(ex.Message);
-                var p = ex.Message;
-               // return StatusCode(500, "Internal Server Error.");
-               return StatusCode(500, ex.Message);
+                if(string.IsNullOrEmpty(token))
+                {
+                    return StatusCode(400,"Bad Request:");
+                }
+                else
+                {
+                     valid = await accountIdentityManager.ValidateToken(token);
+                     if(valid)
+                     {
+                        var OrgId= await organizationtmanager.UpdateCustomer(customer);
+                        return Ok(OrgId);
+                     }
+                     else
+                     {
+                         return StatusCode(401,"Invalid_Grant:");
+                     }
+                }
             }
+            catch(Exception ex)
+            {
+                valid = false;
+               // logger.LogError(ex.Message +" " +ex.StackTrace);
+                return StatusCode(500,"Internal Server Error.");
+            }                        
         }  
 
         [HttpPost]
         [Route("KeyHandOverEvent")]
         public async Task<IActionResult> KeyHandOverEvent(KeyHandOver keyHandOver)
         {
-            try
-            {               
-               //  logger.LogInformation("Customer update function called -" + organization.OrganizationId);  
-                 var OrgId= await organizationtmanager.KeyHandOverEvent(keyHandOver);
-                // logger.LogInformation("Customer updated - " + organization.OrganizationId);
-                 return Ok(OrgId);
-            }
-            catch (Exception ex)
+           string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
+            bool valid=false;
+            try 
             {
-               // logger.LogError(ex.Message);
-                //var p = ex.Message;
-              //  return StatusCode(500, "Internal Server Error.");
-              return StatusCode(500, ex.Message);
+                if(string.IsNullOrEmpty(token))
+                {
+                    return StatusCode(400,"Bad Request:");
+                }
+                else
+                {
+                     valid = await accountIdentityManager.ValidateToken(token);
+                     if(valid)
+                     {
+                        var OrgId= await organizationtmanager.KeyHandOverEvent(keyHandOver);
+                        return Ok(OrgId);
+                     }
+                     else
+                     {
+                         return StatusCode(401,"Invalid_Grant:");
+                     }
+                }
             }
+            catch(Exception ex)
+            {
+                valid = false;
+               // logger.LogError(ex.Message +" " +ex.StackTrace);
+                return StatusCode(500,"Internal Server Error.");
+            }   
         }       
     }
 }

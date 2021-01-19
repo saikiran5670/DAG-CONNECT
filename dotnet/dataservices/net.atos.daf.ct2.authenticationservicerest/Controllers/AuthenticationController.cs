@@ -39,13 +39,16 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                 }
                 else
                 {
-                    AccountEntity.AccountIdentity response = await accountIdentityManager.Login(user);
-                    return Ok(response);
-                    // if(response!=null && response.Result==null)
-                    //     return Ok(result);
-                    // else 
-                    //     return StatusCode((int) response.StatusCode,response.Result);
-
+                    IdentityEntity.AccountToken response = await accountIdentityManager.GenerateToken(user);
+                    if(response!=null)
+                    {
+                        return Ok(response);
+                    }
+                    else 
+                    {
+                        //Account not present  in IDP or IDP related error
+                        return StatusCode(404,"Account is not configured.");
+                    }
                 }
             }
             catch(Exception ex)
@@ -53,8 +56,8 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                 logger.LogError(ex.Message +" " +ex.StackTrace);
                 return StatusCode(500,"Internal Server Error.");
             }            
-        }
-        
+        }        
+
         [HttpPost]        
         [Route("Validate")]
         public async Task<IActionResult> Validate([FromBody] string token)
@@ -78,6 +81,43 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                 return StatusCode(500,"Internal Server Error.");
             }           
             return Ok(valid); 
+        }
+        
+        private async Task<IActionResult> Login([FromBody] IdentityEntity.Identity user)
+        {
+            try 
+            {
+                if(string.IsNullOrEmpty(user.UserName))
+                {
+                    return StatusCode(401,"invalid_grant: The username is Empty.");
+                }
+                else if(string.IsNullOrEmpty(user.Password))
+                {
+                    return StatusCode(401,"invalid_grant: The password is Empty.");
+                }
+                else
+                {
+                    AccountEntity.AccountIdentity response = await accountIdentityManager.Login(user);
+                    if(response!=null)
+                    {
+                        return Ok(response);
+                    }else 
+                    {
+                        return StatusCode(404,"Account is not configured.");
+                    }
+                    
+                    // if(response!=null && response.Result==null)
+                    //     return Ok(result);
+                    // else 
+                    //     return StatusCode((int) response.StatusCode,response.Result);
+
+                }
+            }
+            catch(Exception ex)
+            {
+                logger.LogError(ex.Message +" " +ex.StackTrace);
+                return StatusCode(500,"Internal Server Error.");
+            }            
         }
     }
 }

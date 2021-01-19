@@ -1,0 +1,31 @@
+<!-- <div class="form-group">
+  <input type="text" placeholder="Search By Name" [(ngModel)]="searchTerm"  />
+</div>
+<div  *ngFor="let employee of filteredEmployees" >
+
+<div >
+
+  <app-display-accordian [employee]="employee" [searchTerm]="searchTerm"  >
+
+  </app-display-accordian>
+</div>
+</div> -->
+
+<!-- example of accordian control -->
+<div  *ngFor="let employee of filteredEmployees" >
+
+<div >
+
+  <app-display-accordian [employee]="employee" [searchTerm]="searchTerm"  >
+
+  </app-display-accordian>
+</div>
+</div>
+<!-- END of accordian control -->
+
+<div >
+
+  <app-display-table  >
+
+  </app-display-table>
+</div>
