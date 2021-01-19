@@ -51,7 +51,7 @@ steps:
   inputs:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
-    dockerFile: dotnet/Customerdataservice_Dockerfile
+    dockerFile: dotnet/CustomerDataService_Dockerfile
     imageName: customerdataservice
 
 - task: Docker@0
