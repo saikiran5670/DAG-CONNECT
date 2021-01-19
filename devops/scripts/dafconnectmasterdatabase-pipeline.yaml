@@ -37,7 +37,7 @@ jobs:
     displayName: Run Yuniql
     inputs:
       connectionString: $(PGDAFCONNECTMASTERDATABASECONNECTIONSTRING)
-      workspacePath: $(PGMASTERDBSCRIPTS)
+      workspacePath: $(PGDAFCONNECTMASTERDATABASESCRIPTS)
       targetPlatform: postgresql
       additionalArguments: --debug --environment $(ENVIRONMENT)
  
