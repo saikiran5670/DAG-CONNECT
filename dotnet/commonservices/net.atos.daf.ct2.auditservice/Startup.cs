@@ -31,6 +31,13 @@ namespace net.atos.daf.ct2.auditservice
         {
             services.AddGrpc();
             
+            services.AddCors(o => o.AddPolicy("AllowAll", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+            }));
             var connectionString = Configuration.GetConnectionString("ConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             services.AddSingleton(dataAccess); 
@@ -47,11 +54,13 @@ namespace net.atos.daf.ct2.auditservice
             }
 
             app.UseRouting();
+            app.UseGrpcWeb();
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>();
-                endpoints.MapGrpcService<AudittrailService>();
+                endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb().RequireCors("AllowAll");;
+                endpoints.MapGrpcService<AudittrailService>().EnableGrpcWeb().RequireCors("AllowAll");;
 
                 endpoints.MapGet("/", async context =>
                 {

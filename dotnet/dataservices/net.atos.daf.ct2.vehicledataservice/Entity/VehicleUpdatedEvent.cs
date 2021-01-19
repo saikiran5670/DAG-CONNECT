@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.vehicledataservice.Entity
 {
-    // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse); 
+    
     public class VehicleID
     {
         public string VIN { get; set; }
@@ -153,10 +153,13 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         public VehicleDimensions VehicleDimensions { get; set; }
         public VehicleDelivery VehicleDelivery { get; set; }
     }
-
-    public class VehicleUpdatedEvent
-    {
-        public Vehicle Vehicle { get; set; }
+    public class VehicleUpdatedEvent    {
+        public Vehicle Vehicle { get; set; } 
     }
+
+    public class Root  {
+        public VehicleUpdatedEvent VehicleUpdatedEvent { get; set; } 
+    }
+
 
 }

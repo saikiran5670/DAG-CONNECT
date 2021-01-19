@@ -54,16 +54,16 @@ namespace net.atos.daf.ct2.organizationservice.Services
                 organization = organizationtmanager.Create(organization).Result;
 
                  AccountPreferenceComponent.AccountPreference accountPreference=new AccountPreferenceComponent.AccountPreference();
-                 accountPreference.Ref_Id=organization.Id;
+                 accountPreference.RefId=organization.Id;
                  accountPreference.PreferenceType=GetPreferenceType(request.PreferenceType);                 
-                 accountPreference.Language_Id= request.LanguageId;
-                 accountPreference.Timezone_Id= request.TimezoneId;
-                 accountPreference.Currency_Type=GetCurrencyType(request.CurrencyType);
-                 accountPreference.Unit_Type=GetUnitType(request.UnitType);
-                 accountPreference.VehicleDisplay_Type=GetVehicleDisplayType(request.VehicleDisplayType);
-                 accountPreference.DateFormat_Type=GetDateFormatDisplayType(request.DateFormatType);
+                 accountPreference.LanguageId= request.LanguageId;
+                 accountPreference.TimezoneId= request.TimezoneId;
+                 accountPreference.CurrencyId=request.CurrencyType;
+                 accountPreference.UnitId=request.UnitType;
+                 accountPreference.VehicleDisplayId=request.VehicleDisplayType;
+                 accountPreference.DateFormatTypeId=request.DateFormatType;
                  accountPreference.DriverId= string.Empty;
-                 accountPreference.Is_Active= request.IsActive;
+                 accountPreference.Active= request.IsActive;
 
                  accountPreference = preferencemanager.Create(accountPreference).Result;
                 
@@ -103,16 +103,16 @@ namespace net.atos.daf.ct2.organizationservice.Services
                 organization = organizationtmanager.Update(organization).Result;
 
                  AccountPreferenceComponent.AccountPreference accountPreference=new AccountPreferenceComponent.AccountPreference();
-                 accountPreference.Ref_Id=organization.Id;
+                 accountPreference.RefId=organization.Id;
                  accountPreference.PreferenceType=GetPreferenceType(request.PreferenceType);                 
-                 accountPreference.Language_Id= request.LanguageId;
-                 accountPreference.Timezone_Id= request.TimezoneId;
-                 accountPreference.Currency_Type=GetCurrencyType(request.CurrencyType);
-                 accountPreference.Unit_Type=GetUnitType(request.UnitType);
-                 accountPreference.VehicleDisplay_Type=GetVehicleDisplayType(request.VehicleDisplayType);
-                 accountPreference.DateFormat_Type=GetDateFormatDisplayType(request.DateFormatType);
+                 accountPreference.LanguageId= request.LanguageId;
+                 accountPreference.TimezoneId= request.TimezoneId;
+                 accountPreference.CurrencyId=request.CurrencyType;
+                 accountPreference.UnitId=request.UnitType;
+                 accountPreference.VehicleDisplayId=request.VehicleDisplayType;
+                 accountPreference.DateFormatTypeId=request.DateFormatType;
                  accountPreference.DriverId= string.Empty;
-                 accountPreference.Is_Active= request.IsActive;
+                 accountPreference.Active= request.IsActive;
                  
                  accountPreference = preferencemanager.Update(accountPreference).Result;
 
@@ -179,90 +179,90 @@ namespace net.atos.daf.ct2.organizationservice.Services
                     IsActive = organization.IsActive
                 });                           
         }
-         private AccountPreferenceComponent.CurrencyType GetCurrencyType(int value)
-        {
-            AccountPreferenceComponent.CurrencyType currencyType;
-            switch(value)
-            {
-                case 0:
-                currencyType = AccountPreferenceComponent.CurrencyType.None;
-                break;
-                case 1:
-                currencyType = AccountPreferenceComponent.CurrencyType.Euro;
-                break;
-                case 2:
-                currencyType = AccountPreferenceComponent.CurrencyType.Usdollar;
-                break;
-                default:
-                currencyType = AccountPreferenceComponent.CurrencyType.PondSterling;
-                break;
-            }
+    //      private AccountPreferenceComponent.CurrencyType GetCurrencyType(int value)
+    //     {
+    //         AccountPreferenceComponent.CurrencyType currencyType;
+    //         switch(value)
+    //         {
+    //             case 0:
+    //             currencyType = AccountPreferenceComponent.CurrencyType.None;
+    //             break;
+    //             case 1:
+    //             currencyType = AccountPreferenceComponent.CurrencyType.Euro;
+    //             break;
+    //             case 2:
+    //             currencyType = AccountPreferenceComponent.CurrencyType.Usdollar;
+    //             break;
+    //             default:
+    //             currencyType = AccountPreferenceComponent.CurrencyType.PondSterling;
+    //             break;
+    //         }
             
-            return currencyType;
-        }
+    //         return currencyType;
+    //     }
 
-       private AccountPreferenceComponent.UnitType GetUnitType(int value)
-        {
-            AccountPreferenceComponent.UnitType unitType;
-            switch(value)
-            {
-                case 0:
-                unitType = AccountPreferenceComponent.UnitType.None;
-                break;
+    //    private AccountPreferenceComponent.UnitType GetUnitType(int value)
+    //     {
+    //         AccountPreferenceComponent.UnitType unitType;
+    //         switch(value)
+    //         {
+    //             case 0:
+    //             unitType = AccountPreferenceComponent.UnitType.None;
+    //             break;
                  
-                case 1:
-                unitType = AccountPreferenceComponent.UnitType.Metric;
-                break;
-                case 2:
-                unitType = AccountPreferenceComponent.UnitType.Imperial;
-                break;
-                default:
-                unitType = AccountPreferenceComponent.UnitType.Usimperial;
-                break;
-            }
-            return unitType;
-        }
+    //             case 1:
+    //             unitType = AccountPreferenceComponent.UnitType.Metric;
+    //             break;
+    //             case 2:
+    //             unitType = AccountPreferenceComponent.UnitType.Imperial;
+    //             break;
+    //             default:
+    //             unitType = AccountPreferenceComponent.UnitType.Usimperial;
+    //             break;
+    //         }
+    //         return unitType;
+    //     }
 
-        private AccountPreferenceComponent.VehicleDisplayType GetVehicleDisplayType(int value)
-        {
-            AccountPreferenceComponent.VehicleDisplayType vehicleDisplayType;
-            switch(value)
-            {
-                case 0:
-                vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.None;
-                break;
-                case 1:
-                vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.RegistrationNumber;
-                break;
-                case 2:
-                vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.Name;
-                break;
-                default:
-                vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.Vin;
-                break;
-            }
-            return vehicleDisplayType;
-        }
-        private AccountPreferenceComponent.DateFormatDisplayType GetDateFormatDisplayType(int value)
-        {
-            AccountPreferenceComponent.DateFormatDisplayType dateFormatDisplayType;
-            switch(value)
-            {
-                case 0:
-                dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.None;
-                break;
-                case 1:
-                dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.DayMonthYear;
-                break;
-                case 2:
-                dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.MonthDayYear;
-                break;
-                default:
-                dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.YearMonthDay;
-                break;
-            }
-            return dateFormatDisplayType;
-        }
+    //     private AccountPreferenceComponent.VehicleDisplayType GetVehicleDisplayType(int value)
+    //     {
+    //         AccountPreferenceComponent.VehicleDisplayType vehicleDisplayType;
+    //         switch(value)
+    //         {
+    //             case 0:
+    //             vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.None;
+    //             break;
+    //             case 1:
+    //             vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.RegistrationNumber;
+    //             break;
+    //             case 2:
+    //             vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.Name;
+    //             break;
+    //             default:
+    //             vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.Vin;
+    //             break;
+    //         }
+    //         return vehicleDisplayType;
+    //     }
+    //     private AccountPreferenceComponent.DateFormatDisplayType GetDateFormatDisplayType(int value)
+    //     {
+    //         AccountPreferenceComponent.DateFormatDisplayType dateFormatDisplayType;
+    //         switch(value)
+    //         {
+    //             case 0:
+    //             dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.None;
+    //             break;
+    //             case 1:
+    //             dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.DayMonthYear;
+    //             break;
+    //             case 2:
+    //             dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.MonthDayYear;
+    //             break;
+    //             default:
+    //             dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.YearMonthDay;
+    //             break;
+    //         }
+    //         return dateFormatDisplayType;
+    //     }
 
          private AccountPreferenceComponent.PreferenceType GetPreferenceType(int value)
          {

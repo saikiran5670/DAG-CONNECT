@@ -82,8 +82,8 @@ namespace net.atos.daf.ct2.vehicle.repository
             {
                 parameter.Add("@status", (char)VehicleStatusType.OptIn);
             }
-            parameter.Add("@status_changed_date", vehicle.Status_Changed_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Status_Changed_Date.ToString()) : 0);
-            parameter.Add("@termination_date", vehicle.Termination_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Termination_Date.ToString()) : 0);
+            parameter.Add("@status_changed_date", (vehicle.Status_Changed_Date != null && DateTime.Compare(DateTime.MinValue, vehicle.Status_Changed_Date) > 0) ? UTCHandling.GetUTCFromDateTime(vehicle.Status_Changed_Date.ToString()) : 0);
+            parameter.Add("@termination_date", (vehicle.Termination_Date != null && DateTime.Compare(DateTime.MinValue, vehicle.Termination_Date) > 0)  ? UTCHandling.GetUTCFromDateTime(vehicle.Termination_Date.ToString()) : 0);
             parameter.Add("@vid", vehicle.Vid);
             parameter.Add("@type", (char)vehicle.Type);
             parameter.Add("@model", vehicle.Model);
@@ -92,7 +92,8 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@tcu_brand", vehicle.Tcu_Brand);
             parameter.Add("@tcu_version", vehicle.Tcu_Version);
             parameter.Add("@is_tcu_register", vehicle.Is_Tcu_Register);
-            parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : 0);
+            parameter.Add("@reference_date", (vehicle.Reference_Date != null && DateTime.Compare(DateTime.MinValue, vehicle.Termination_Date) > 0)  ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : 0);
+           
             parameter.Add("@id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
             int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
             vehicle.ID = vehicleID;
@@ -314,62 +315,77 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         public async Task<VehicleProperty> UpdateProperty(VehicleProperty vehicleproperty)
         {
+            Vehicle objVeh=new Vehicle();
             var InsertQueryStatement = string.Empty;
             var UpdateQueryStatement = string.Empty;
-            vehicleproperty.VehicleId = await dataAccess.QuerySingleAsync<int>("SELECT id FROM master.vehicle where vin=@vin", new { vin = vehicleproperty.VIN });
-            if (vehicleproperty.VehicleId > 0)
+            int VehicleId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = vehicleproperty.VIN });
+            int OrgId= await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.organization where org_id=@org_id), null)", new { org_id = vehicleproperty.Org_Id });
+
+            vehicleproperty.VehicleId=VehicleId;
+            objVeh.Organization_Id=OrgId;
+            objVeh.VIN=vehicleproperty.VIN;
+            objVeh.Model=vehicleproperty.Classification_Model;
+            objVeh.License_Plate_Number=vehicleproperty.License_Plate_Number;
+            objVeh.Type=(VehicleType)vehicleproperty.Classification_Type;
+            objVeh.ID=VehicleId;
+
+            var parameter = new DynamicParameters();
+            if (VehicleId > 0)
             {
+                
+              
+
                 UpdateQueryStatement = @" UPDATE master.vehicleproperties
                                     SET
-                                      ,manufacture_date=@manufacture_date
-                                      ,registration_date=@registration_date
-                                      ,delivery_date=@delivery_date
-                                      ,make=@make
-                                      ,model=@model
-                                      ,series=@series
-                                      ,type=@type
-                                      ,length=@length
-                                      ,widht=@widht
-                                      ,height=@height
-                                      ,weight=@weight
-                                      ,engine_id=@engine_id
-                                      ,engine_type=@engine_type
-                                      ,engine_power=@engine_power
-                                      ,engine_coolant=@engine_coolant
-                                      ,engine_emission_level=@engine_emission_level
-                                      ,chasis_id=@chasis_id
-                                      ,chasis_side_skirts=@chasis_side_skirts
-                                      ,chasis_side_collar=@chasis_side_collar
-                                      ,chasis_rear_overhang=@chasis_rear_overhang
-                                      ,chasis_fuel_tank_number=@chasis_fuel_tank_number
-                                      ,chasis_fuel_tank_volume=@chasis_fuel_tank_volume
-                                      ,driveline_axle_configuration=@driveline_axle_configuration
-                                      ,driveline_wheel_base=@driveline_wheel_base
-                                      ,driveline_tire_size=@driveline_tire_size
-                                      ,driveline_front_axle_position=@driveline_front_axle_position
-                                      ,driveline_front_axle_load=@driveline_front_axle_load
-                                      ,driveline_rear_axle_position=@driveline_rear_axle_position
-                                      ,driveline_rear_axle_load=@driveline_rear_axle_load
-                                      ,driveline_rear_axle_ratio=@driveline_rear_axle_ratio
-                                      ,transmission_gearbox_id=@transmission_gearbox_id
-                                      ,transmission_gearbox_type=@transmission_gearbox_type
-                                      ,cabin_id=@cabin_id
-                                      ,cabin_color_id=@cabin_color_id
-                                      ,cabin_color_value=@cabin_color_value
-                                       WHERE vehicle_id = @vehicle_id";
+                                      manufacture_date = @manufacture_date
+                                      ,registration_date = @registration_date
+                                      ,delivery_date = @delivery_date
+                                      ,make = @make                                     
+                                      ,series = @series                                      
+                                      ,length = @length
+                                      ,widht = @widht
+                                      ,height = @height
+                                      ,weight = @weight
+                                      ,engine_id = @engine_id
+                                      ,engine_type = @engine_type
+                                      ,engine_power = @engine_power
+                                      ,engine_coolant = @engine_coolant
+                                      ,engine_emission_level = @engine_emission_level
+                                      ,chasis_id = @chasis_id
+                                      ,is_chasis_side_skirts = @is_chasis_side_skirts
+                                      ,is_chasis_side_collar = @is_chasis_side_collar
+                                      ,chasis_rear_overhang = @chasis_rear_overhang
+                                      ,chasis_fuel_tank_number = @chasis_fuel_tank_number
+                                      ,chasis_fuel_tank_volume = @chasis_fuel_tank_volume
+                                      ,driveline_axle_configuration = @driveline_axle_configuration
+                                      ,driveline_wheel_base = @driveline_wheel_base
+                                      ,driveline_tire_size = @driveline_tire_size
+                                      ,driveline_front_axle_position = @driveline_front_axle_position
+                                      ,driveline_front_axle_load = @driveline_front_axle_load
+                                      ,driveline_rear_axle_position = @driveline_rear_axle_position
+                                      ,driveline_rear_axle_load = @driveline_rear_axle_load
+                                      ,driveline_rear_axle_ratio = @driveline_rear_axle_ratio
+                                      ,transmission_gearbox_id = @transmission_gearbox_id
+                                      ,transmission_gearbox_type = @transmission_gearbox_type
+                                      ,cabin_id = @cabin_id
+                                      ,cabin_color_id = @cabin_color_id
+                                      ,cabin_color_value = @cabin_color_value
+                                       WHERE vehicle_id = @vehicle_id
+                                       RETURNING vehicle_id";
             }
             else
             {
+
+                objVeh = await Create(objVeh);
+
                 InsertQueryStatement = @"INSERT INTO master.vehicleproperties
                                       (
                                        vehicle_id
                                       ,manufacture_date
                                       ,registration_date
                                       ,delivery_date
-                                      ,make
-                                      ,model
-                                      ,series
-                                      ,type
+                                      ,make                                      
+                                      ,series                                      
                                       ,length
                                       ,widht
                                       ,height
@@ -403,10 +419,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                       ,@manufacture_date
                                       ,@registration_date
                                       ,@delivery_date
-                                      ,@make
-                                      ,@model
-                                      ,@series
-                                      ,@type
+                                      ,@make                                      
+                                      ,@series                                     
                                       ,@length
                                       ,@widht
                                       ,@height
@@ -437,11 +451,11 @@ namespace net.atos.daf.ct2.vehicle.repository
                                       ,@cabin_color_value) RETURNING id";
 
             }
-            var parameter = new DynamicParameters();
-            parameter.Add("@vehicle_id", vehicleproperty.VehicleId);
-            parameter.Add("@manufacture_date", vehicleproperty.ManufactureDate);
-            parameter.Add("@registration_date", vehicleproperty.RegistrationDateTime);
-            parameter.Add("@delivery_date", vehicleproperty.DeliveryDate);
+           
+            parameter.Add("@vehicle_id", objVeh.ID);
+            parameter.Add("@manufacture_date", vehicleproperty.ManufactureDate != null ? UTCHandling.GetUTCFromDateTime(vehicleproperty.ManufactureDate.ToString()) : 0);
+            parameter.Add("@registration_date", vehicleproperty.RegistrationDateTime != null ? UTCHandling.GetUTCFromDateTime(vehicleproperty.RegistrationDateTime.ToString()) : 0);
+            parameter.Add("@delivery_date", vehicleproperty.DeliveryDate != null ? UTCHandling.GetUTCFromDateTime(vehicleproperty.DeliveryDate.ToString()) : 0);
             parameter.Add("@make", vehicleproperty.Classification_Make);
             // parameter.Add("@model", vehicleproperty.Classification_Model);
             parameter.Add("@series", vehicleproperty.Classification_Series);
@@ -451,13 +465,13 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@height", vehicleproperty.Dimensions_Size_Height);
             parameter.Add("@weight", vehicleproperty.Dimensions_Size_Weight);
             parameter.Add("@engine_id", vehicleproperty.Engine_ID);
-            //parameter.Add("@engine_type", (char)vehicleproperty.Engine_Type);
+            parameter.Add("@engine_type", vehicleproperty.Engine_Type);
             parameter.Add("@engine_power", vehicleproperty.Engine_Power);
             parameter.Add("@engine_coolant", vehicleproperty.Engine_Coolant);
             parameter.Add("@engine_emission_level", vehicleproperty.Engine_EmissionLevel);
             parameter.Add("@chasis_id", vehicleproperty.Chasis_Id);
-            parameter.Add("@chasis_side_skirts", vehicleproperty.SideSkirts);
-            parameter.Add("@chasis_side_collar", vehicleproperty.SideCollars);
+            parameter.Add("@is_chasis_side_skirts", vehicleproperty.SideSkirts);
+            parameter.Add("@is_chasis_side_collar", vehicleproperty.SideCollars);
             parameter.Add("@chasis_rear_overhang", vehicleproperty.RearOverhang);
             parameter.Add("@chasis_fuel_tank_number", vehicleproperty.Tank_Nr);
             parameter.Add("@chasis_fuel_tank_volume", vehicleproperty.Tank_Volume);
@@ -470,19 +484,26 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@driveline_rear_axle_load", vehicleproperty.DriverLine_RearAxle_Load);
             parameter.Add("@driveline_rear_axle_ratio", vehicleproperty.DriverLine_RearAxle_Ratio);
             parameter.Add("@transmission_gearbox_id", vehicleproperty.GearBox_Id);
-           // parameter.Add("@transmission_gearbox_type", (char)vehicleproperty.GearBox_Type);
+            parameter.Add("@transmission_gearbox_type", vehicleproperty.GearBox_Type);
             parameter.Add("@cabin_id", vehicleproperty.DriverLine_Cabin_ID);
             parameter.Add("@cabin_color_id", vehicleproperty.DriverLine_Cabin_Color_ID);
             parameter.Add("@cabin_color_value", vehicleproperty.DriverLine_Cabin_Color_Value);
             parameter.Add("@id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
 
-            int vehicleID;
-            if (vehicleproperty.VehicleId > 0)
-                vehicleID = await dataAccess.ExecuteScalarAsync<int>(UpdateQueryStatement, parameter);
+            
+            if (VehicleId > 0)
+            {
+                await dataAccess.ExecuteAsync("UPDATE master.vehicle SET model = @model ,type = @type,license_plate_number = @license_plate_number WHERE vin = @vin",new {model=objVeh.Model, type=(char)objVeh.Type,license_plate_number=objVeh.License_Plate_Number,vin=objVeh.VIN});
+                vehicleproperty.ID = await dataAccess.ExecuteScalarAsync<int>(UpdateQueryStatement, parameter);
+            }
             else
-                vehicleID = await dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, parameter);
+            {
+                vehicleproperty.ID = await dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, parameter);
+            }
             return vehicleproperty;
         }
+
+        
 
 
         #endregion
