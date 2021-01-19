@@ -31,7 +31,16 @@ namespace net.atos.daf.ct2.roleservice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
-             var connectionString = Configuration.GetConnectionString("DevAzure");
+
+            services.AddCors(o => o.AddPolicy("AllowAll", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+            }));
+
+            var connectionString = Configuration.GetConnectionString("DevAzure");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             services.AddSingleton(dataAccess); 
             services.AddTransient<IRoleManagement,RoleManagement>();
@@ -50,11 +59,15 @@ namespace net.atos.daf.ct2.roleservice
             }
 
             app.UseRouting();
+            app.UseGrpcWeb();
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>();
-                endpoints.MapGrpcService<RoleManagementService>();
+                endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb()
+                                                  .RequireCors("AllowAll");
+                endpoints.MapGrpcService<RoleManagementService>().EnableGrpcWeb()
+                                                  .RequireCors("AllowAll");
 
                 endpoints.MapGet("/", async context =>
                 {
