@@ -6,6 +6,7 @@
  <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.78" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="5.0.0" />
    
     <Reference Include="net.atos.daf.ct2.data">
       <HintPath>..\..\dlls\net.atos.daf.ct2.data.dll</HintPath>           
@@ -20,5 +21,9 @@
  <ItemGroup>
    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.vehicle\net.atos.daf.ct2.vehicle.csproj" />
    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.organization\net.atos.daf.ct2.organization.csproj" />
+   <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.data\net.atos.daf.ct2.data.csproj" />
+   <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.account\net.atos.daf.ct2.account.csproj" />
+   <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.accountpreference\net.atos.daf.ct2.accountpreference.csproj" />
+   <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.identity\net.atos.daf.ct2.identity.csproj" />
  </ItemGroup>
 </Project>
