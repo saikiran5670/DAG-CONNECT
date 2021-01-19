@@ -24,9 +24,15 @@ namespace net.atos.daf.ct2.identity
         public AccountToken CreateToken(AccountIDPClaim customclaims)
         {
             AccountToken accountToken=new AccountToken();
-
             accountToken.ExpiresIn = customclaims.TokenExpiresIn;
 
+            var now = DateTime.Now;
+            long unixTimeSecondsIssueAt = new DateTimeOffset(now).ToUnixTimeSeconds();
+            long unixTimeSecondsExpiresAt = 0;
+            if(customclaims.TokenExpiresIn > 0)
+            {
+                unixTimeSecondsExpiresAt = new DateTimeOffset(now.AddSeconds(customclaims.TokenExpiresIn)).ToUnixTimeSeconds();
+            }
             var privateKey = _settings.RsaPrivateKey.ToByteArray();
             using RSA rsa = RSA.Create();
             rsa.ImportRSAPrivateKey(privateKey, out _);
@@ -36,13 +42,15 @@ namespace net.atos.daf.ct2.identity
             };
             
             List<Claim> claimList = new List<Claim>();
-            if (customclaims.ValidTo>0)
+            if (unixTimeSecondsExpiresAt>0)
             {
-                claimList.Add(new Claim(JwtRegisteredClaimNames.Exp, customclaims.ValidTo.ToString()));
+                //customclaims.ValidTo
+                claimList.Add(new Claim(JwtRegisteredClaimNames.Exp, unixTimeSecondsExpiresAt.ToString()));
             }
-            if (customclaims.IssuedAt>0)
+            if (unixTimeSecondsIssueAt > 0)
             {
-                claimList.Add(new Claim(JwtRegisteredClaimNames.Iat, customclaims.IssuedAt.ToString()));
+                //customclaims.IssuedAt
+                claimList.Add(new Claim(JwtRegisteredClaimNames.Iat, unixTimeSecondsIssueAt.ToString()));
             }
             if (!String.IsNullOrEmpty(customclaims.Id))
             {
@@ -92,8 +100,6 @@ namespace net.atos.daf.ct2.identity
                 }
             }           
             
-            DateTime now = ConvertDoubleToDateTime(customclaims.IssuedAt);
-
             var jwt = new JwtSecurityToken(
                 claims: claimList.ToArray(),
                 notBefore: now,
@@ -122,7 +128,7 @@ namespace net.atos.daf.ct2.identity
             var handler = new JwtSecurityTokenHandler();
             var validationParameters = new TokenValidationParameters
             {
-                ValidateIssuer = true,
+                ValidateIssuer = false,
                 ValidateAudience = false,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
