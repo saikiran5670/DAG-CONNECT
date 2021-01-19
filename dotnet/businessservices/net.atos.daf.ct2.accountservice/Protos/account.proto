@@ -18,7 +18,7 @@ service AccountService {
   // Account Preference Mthod
   rpc CreatePreference (AccountPreference) returns (AccountPreferenceResponse);
   rpc UpdatePreference (AccountPreference) returns (AccountPreferenceResponse);
-  rpc DeletePreference (AccountPreference) returns (AccountPreferenceResponse);
+  rpc DeletePreference (AccountPreferenceFilter) returns (AccountPreferenceResponse);
   rpc GetPreference (AccountPreferenceFilter) returns (AccountPreferenceDataList);
 
   // Access Relationship
@@ -113,55 +113,56 @@ message AccountFilter {
 
 }
 
-// Account Preference
-enum CurrencyType
-    {
-        //None = 'N',
-        Euro = 0;
-        Usdollar = 1;
-        PondSterling = 2;
-    }
-    enum DateFormatDisplayType
-    {
-         //None = 'N',
-        DayMonthYear= 0;
-        MonthDayYear= 1;
-        YearMonthDay= 2;
-    }
-    enum PreferenceType
-    {
-        //None = 'N',
-        Account = 0;
-        Organization = 1;
-    }
-    enum UnitType
-    {
-        // None = 'N',
-        Metric= 0;
-        Imperial= 1;
-        Usimperial = 2;
-    }
-    enum VehicleDisplayType    
-    {
-        //None = 'N',
-        RegistrationNumber= 0;
-        Name= 1;
-        Vin = 2;   
-    }
+// // Account Preference
+// enum CurrencyType
+//     {
+//         //None = 'N',
+//         Euro = 0;
+//         Usdollar = 1;
+//         PondSterling = 2;
+//     }
+//     enum DateFormatDisplayType
+//     {
+//          //None = 'N',
+//         DayMonthYear= 0;
+//         MonthDayYear= 1;
+//         YearMonthDay= 2;
+//     }
+//     enum PreferenceType
+//     {
+//         //None = 'N',
+//         Account = 0;
+//         Organization = 1;
+//     }
+//     enum UnitType
+//     {
+//         // None = 'N',
+//         Metric= 0;
+//         Imperial= 1;
+//         Usimperial = 2;
+//     }
+//     enum VehicleDisplayType    
+//     {
+//         //None = 'N',
+//         RegistrationNumber= 0;
+//         Name= 1;
+//         Vin = 2;   
+//     }
 
     message AccountPreference
     {
         int32 Id =1;
         int32 Ref_Id =2;
         //PreferenceType preferenceType =3;
-        int32 Language_Id =3;
-        int32 Timezone_Id =4;
-        CurrencyType Currency_Type =5;
-        UnitType Unit_Type = 6;
-        VehicleDisplayType VehicleDisplay_Type =7;
-        DateFormatDisplayType DateFormat_Type =8;
+        int32 LanguageId =3;
+        int32 TimezoneId =4;
+        int32 CurrencyId =5;
+        int32 UnitId = 6;
+        int32 VehicleDisplayId =7;
+        int32 DateFormatId =8;
         string DriverId =9;
-        //bool Is_Active =11;
+        int32 TimeFormatId=10;
+        int32 LandingPageDisplayId=11;        
     }
     message AccountPreferenceResponse
     {
