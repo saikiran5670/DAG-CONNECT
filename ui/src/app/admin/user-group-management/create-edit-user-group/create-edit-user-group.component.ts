@@ -55,7 +55,7 @@ export class CreateEditUserGroupComponent implements OnInit {
     'role',
     'userGroup',
   ];
- 
+
   vehGrp: VehicleGroup;
   vehSelectionFlag: boolean = false;
   mainTableFlag: boolean = true;
@@ -67,17 +67,17 @@ export class CreateEditUserGroupComponent implements OnInit {
   columnNames: string[];
   products: any[] = [];
   newUserGroupName: any;
-  enteredUserGroupDescription: any; 
+  enteredUserGroupDescription: any;
   editUserContent: boolean = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   inputText: any;
-  @Input() translationData : any;
-  @Input() createStatus:boolean;
-  @Input() editFlag:boolean;
-  @Input() viewDisplayFlag:boolean;
-  @Input() selectedRowData:any;
+  @Input() translationData: any;
+  @Input() createStatus: boolean;
+  @Input() editFlag: boolean;
+  @Input() viewDisplayFlag: boolean;
+  @Input() selectedRowData: any;
 
   userCreatedMsg: any = '';
   // grpTitleVisible: boolean = false;
@@ -86,7 +86,7 @@ export class CreateEditUserGroupComponent implements OnInit {
   initData: any;
   rowsData: any;
   titleText: string;
-  
+
   UserGroupForm: FormGroup;
   constructor(private _formBuilder: FormBuilder,
     private userService: EmployeeService,
@@ -101,14 +101,14 @@ export class CreateEditUserGroupComponent implements OnInit {
       userGroupName: ['', [Validators.required]],
       userGroupDescription: [],
     });
-   
+
     this.loadUsersData();
 
   }
 
- 
-  loadUsersData(){
-    this.userService.getUsers().subscribe((usrlist)=>{
+
+  loadUsersData() {
+    this.userService.getUsers().subscribe((usrlist) => {
       // this.filterFlag = true;
       this.initData = usrlist;
       this.dataSourceUsers = new MatTableDataSource(usrlist);
@@ -116,87 +116,57 @@ export class CreateEditUserGroupComponent implements OnInit {
       this.dataSourceUsers.sort = this.sort;
     });
   }
-  OpenDialog(options, flag, item) {
-    // this.alertService.success("sucess!");
-
-    if (flag == '') {
-      //Model for create
-      this.dialogService.open(options);
-      this.dialogService.confirmed().subscribe((res) => {
-        if (res) {
-          this.loadUsersData();
-        }
-      });
-    } else {
-      //Model for delete
-      let name = `${item.salutation} ${item.firstName} ${item.lastName}`;
-      this.dialogService.DeleteModelOpen(options, name);
-      this.dialogService.confirmedDel().subscribe((res) => {
-        if (res) {
-          //console.log('userID :',item.userID);
-          this.userService.deleteUser(item.userID).subscribe(d=>{
-            console.log(d);
-          });
-          this.openSnackBar('Item delete', 'dismiss');
-          this.loadUsersData();
-        }
-      });
-    }
-  }
 
   onCancel() {
     this.createStatus = false;
     this.backToPage.emit({ editFlag: false, editText: 'cancel' });
   }
-  onReset(){
+  onReset() {
     // this.newUserGroupName = '';
     // this.enteredUserGroupDescription = '';
   }
-  onInputChange(event){
-    
+  onInputChange(event) {
+
     this.newUserGroupName = event.target.value;
   }
-  onInputGD(event){
+  onInputGD(event) {
     this.enteredUserGroupDescription = event.target.value;
   }
 
-  onCreate(res){
+  onCreate(res) {
     let create = document.getElementById("createUpdateButton");
 
-    // this.UserGroupForm.controls.userGroupName.value
-    // let create = this.UserGroupForm.get('createUpdateButton')
-  // mockData added for API
-  let randomMockId = Math.random();
+    // mockData added for API
+    let randomMockId = Math.random();
     let id = randomMockId;
-  this.usrgrp = {
-    organizationId: 1,
-    name: this.UserGroupForm.controls.userGroupName.value,
-    isActive: true,
-    id: id,
-    usergroupId: id,
-    vehicles: "05",
-    users: "04",
-    userGroupDescriptions: this.UserGroupForm.controls.userGroupDescription.value,
-  }
+    this.usrgrp = {
+      organizationId: 1,
+      name: this.UserGroupForm.controls.userGroupName.value,
+      isActive: true,
+      id: id,
+      usergroupId: id,
+      vehicles: "05",
+      users: "04",
+      userGroupDescriptions: this.UserGroupForm.controls.userGroupDescription.value,
+    }
     this.userCreatedMsg = this.getUserCreatedMessage();
     this.createStatus = false;
     this.editUserContent = false;
-    this.editFlag= false;
+    this.editFlag = false;
     this.viewDisplayFlag = false;
 
-    if(create.innerText == "Confirm"){
+    if (create.innerText == "Confirm") {
       this.usrgrp = {
         organizationId: this.selectedRowData.organizationId,
-        name: this.newUserGroupName,
+        name: this.UserGroupForm.controls.userGroupName.value,
         isActive: true,
         id: this.selectedRowData.id,
         usergroupId: this.selectedRowData.id,
         vehicles: "05",
         users: "04",
-        userGroupDescriptions: this.enteredUserGroupDescription,
+        userGroupDescriptions: this.UserGroupForm.controls.userGroupDescription.value,
       }
       this.userService.updateUserGroup(this.usrgrp).subscribe((result) => {
-        console.log(result);
         this.userService.getUserGroup(1, true).subscribe((grp) => {
           this.products = grp;
           this.initData = grp;
@@ -205,47 +175,47 @@ export class CreateEditUserGroupComponent implements OnInit {
           this.dataSource.sort = this.sort;
           this.backToPage.emit({ FalseFlag: false, editText: 'create', gridData: grp, successMsg: this.userCreatedMsg });
         });
+      });
+    } else if (create.innerText == "Create") {
+      this.userService.createUserGroup(this.usrgrp).subscribe((d) => {
+        this.userService.getUserGroup(1, true).subscribe((grp) => {
+          // this.products = grp;
+          // this.initData = grp;
+          // this.dataSource = new MatTableDataSource(grp);
+          // this.dataSource.paginator = this.paginator;
+          // this.dataSource.sort = this.sort;
+          this.backToPage.emit({ FalseFlag: false, editText: 'create', gridData: grp, successMsg: this.userCreatedMsg });
         });
-        }else if(create.innerText == "Create" ){
-        this.userService.createUserGroup(this.usrgrp).subscribe((d) => {
-          this.userService.getUserGroup(1, true).subscribe((grp) => {
-            // this.products = grp;
-            // this.initData = grp;
-            // this.dataSource = new MatTableDataSource(grp);
-            // this.dataSource.paginator = this.paginator;
-            // this.dataSource.sort = this.sort;
-            this.backToPage.emit({ FalseFlag: false, editText: 'create', gridData: grp,successMsg: this.userCreatedMsg  });
-          });
-            });
-          }
-          
+      });
+    }
+
   }
 
-  getUserCreatedMessage(){
-    this.userName = `${this.UserGroupForm.controls.userGroupName.value}`;  
-    if(this.createStatus){
-      if(this.translationData.lblUserAccountCreatedSuccessfully)
+  getUserCreatedMessage() {
+    this.userName = `${this.UserGroupForm.controls.userGroupName.value}`;
+    if (this.createStatus) {
+      if (this.translationData.lblUserAccountCreatedSuccessfully)
         return this.translationData.lblUserAccountCreatedSuccessfully.replace('$', this.userName);
       else
         return ("User Account '$' Created Successfully").replace('$', this.userName);
-    }else{
-      if(this.translationData.lblUserAccountUpdatedSuccessfully)
+    } else {
+      if (this.translationData.lblUserAccountUpdatedSuccessfully)
         return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', this.userName);
       else
         return ("User Account '$' Updated Successfully").replace('$', this.userName);
     }
   }
 
-loadUserGroupData(orgid) {
-  this.userService.getUserGroup(orgid, true).subscribe((grp) => {
-    this.products = grp;
-    this.initData = grp;
-    this.dataSource = new MatTableDataSource(grp);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  });
-}
-  
+  loadUserGroupData(orgid) {
+    this.userService.getUserGroup(orgid, true).subscribe((grp) => {
+      this.products = grp;
+      this.initData = grp;
+      this.dataSource = new MatTableDataSource(grp);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    });
+  }
+
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
@@ -278,18 +248,18 @@ loadUserGroupData(orgid) {
     this.editFlag = false;
     this.editUserContent = true;
     this.UserGroupForm.patchValue({
-                  userGroupName: this.selectedRowData.name,
-                  userGroupDescription: this.selectedRowData.userGroupDescriptions,
-                }) 
+      userGroupName: this.selectedRowData.name,
+      userGroupDescription: this.selectedRowData.userGroupDescriptions,
+    })
   }
- 
+
 
   masterToggleForVehGrp() {
     this.isAllSelectedForVehGrp()
       ? this.selectionForVehGrp.clear()
       : this.dataSourceUsers.data.forEach((row) =>
-          this.selectionForVehGrp.select(row)
-        );
+        this.selectionForVehGrp.select(row)
+      );
   }
 
   isAllSelectedForVehGrp() {
@@ -302,11 +272,10 @@ loadUserGroupData(orgid) {
     if (row)
       return `${this.isAllSelectedForVehGrp() ? 'select' : 'deselect'} all`;
     else
-      return `${
-        this.selectionForVehGrp.isSelected(row) ? 'deselect' : 'select'
-      } row`;
+      return `${this.selectionForVehGrp.isSelected(row) ? 'deselect' : 'select'
+        } row`;
   }
-  
+
 
 }
 
