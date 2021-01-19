@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>59c1e6ad-79bd-4ca1-9250-7ab67dbc7f67</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
 <ItemGroup>
     <None Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
@@ -14,6 +17,7 @@
 </ItemGroup>
 <ItemGroup>
   <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="5.0.0" />
+  <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
   <PackageReference Include="NLog" Version="4.7.6" />
   <PackageReference Include="NLog.Targets.ElasticSearch" Version="7.5.0" />
   <PackageReference Include="NLog.Web" Version="4.10.0" />
