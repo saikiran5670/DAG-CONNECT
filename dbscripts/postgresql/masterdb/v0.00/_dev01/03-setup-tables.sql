@@ -1407,7 +1407,9 @@ CREATE TABLE if not exists  master.timezone
     id	Serial Not Null,
 	short_name	Varchar(10) not null,
 	name	Varchar(100) not null,
-	ut_coff_set	Varchar(50) not null
+	ut_coff_set	Varchar(50) not null,
+	key Varchar(100) not null
+
 )
 
 TABLESPACE pg_default;
