@@ -58,18 +58,19 @@ namespace net.atos.daf.ct2.authenticationservice
                     if(accIdentity.AccountPreference!=null)
                     {
                         AccountPreference accPreference= new AccountPreference();
-                        // accPreference.Id = accIdentity.AccountPreference.Id == null ?0:accIdentity.AccountPreference.Id;
-                        accPreference.RefId = accIdentity.AccountPreference.Ref_Id;
+                        accPreference.Id = accIdentity.AccountPreference.Id;
+                        accPreference.RefId = accIdentity.AccountPreference.RefId;
                         accPreference.PreferenceType = (PreferenceType)Enum.Parse(typeof(PreferenceType), accIdentity.AccountPreference.PreferenceType.ToString());                 
-                        // accPreference.PreferenceType =accIdentity.AccountPreference.PreferenceType;
-                        accPreference.LanguageId =accIdentity.AccountPreference.Language_Id;
-                        accPreference.TimezoneId =accIdentity.AccountPreference.Timezone_Id;
-                        accPreference.CurrencyType = (CurrencyType)Enum.Parse(typeof(CurrencyType), accIdentity.AccountPreference.Currency_Type.ToString());                 
-                        accPreference.UnitType = (UnitType)Enum.Parse(typeof(UnitType), accIdentity.AccountPreference.Unit_Type.ToString());                 
-                        accPreference.VehicleDisplayType= (VehicleDisplayType)Enum.Parse(typeof(VehicleDisplayType), accIdentity.AccountPreference.VehicleDisplay_Type.ToString());                 
-                        accPreference.DateFormatType= (DateFormatDisplayType)Enum.Parse(typeof(DateFormatDisplayType), accIdentity.AccountPreference.DateFormat_Type.ToString());                 
+                        accPreference.LanguageId =accIdentity.AccountPreference.LanguageId;
+                        accPreference.TimezoneId =accIdentity.AccountPreference.TimezoneId;
+                        accPreference.CurrencyId = accIdentity.AccountPreference.CurrencyId;                 
+                        accPreference.UnitId = accIdentity.AccountPreference.UnitId;                 
+                        accPreference.VehicleDisplayId= accIdentity.AccountPreference.VehicleDisplayId;                 
+                        accPreference.DateFormatId= accIdentity.AccountPreference.DateFormatTypeId;                 
+                        accPreference.TimeFormatId =accIdentity.AccountPreference.TimeFormatId;
+                        accPreference.LandingPageDisplayId =accIdentity.AccountPreference.LandingPageDisplayId;
                         accPreference.DriverId =accIdentity.AccountPreference.DriverId;
-                        accPreference.IsActive =accIdentity.AccountPreference.Is_Active;
+                        accPreference.Active =accIdentity.AccountPreference.Active;
 
                         response.AccountPreference=accPreference;
                     }
