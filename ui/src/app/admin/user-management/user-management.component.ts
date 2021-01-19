@@ -303,7 +303,7 @@ export class UserManagementComponent implements OnInit {
     this.stepFlag = item.stepFlag;
     this.editFlag = false;
     this.viewFlag = false;
-    if(item.msg){
+    if(item.msg && item.msg != ""){
       this.successMsgBlink(item.msg);
     }
     if(item.tableData){

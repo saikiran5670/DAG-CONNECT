@@ -59,6 +59,7 @@ export class EditViewUserComponent implements OnInit {
   isSelectPictureConfirm : boolean = false;
   imageChangedEvent: any = '';
   croppedImage: any = '';
+  breadcumMsg: any = '';
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private userService: EmployeeService,) { }
 
@@ -96,6 +97,11 @@ export class EditViewUserComponent implements OnInit {
     this.setDefaultAccountInfo();
     this.setDefaultGeneralSetting();
     this.loadTable();
+    this.breadcumMsg = this.getBreadcum(this.fromEdit);
+  }
+
+  getBreadcum(val: any){
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblUserManagement ? this.translationData.lblUserManagement : "User Management"} / ${this.translationData.lblUserDetails}`;
   }
 
   loadTable(){

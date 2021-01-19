@@ -1,5 +1,13 @@
-<div fxLayout="row" fxLayoutAlign="end end" class='margin-bottom-sm'>
+<!-- <div fxLayout="row" fxLayoutAlign="end end" class='margin-bottom-sm'>
     <button *ngIf="fromEdit == 'edit' || fromEdit == 'view'" mat-raised-button color="primary" (click)='toBack()'>{{ translationData.lblBack || 'Back' }}</button>
+</div> -->
+<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+    <span>{{ breadcumMsg }}</span>
+  </div>
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+    <button mat-flat-button color="primary" (click)="toBack()">{{ translationData.lblBack || 'Back' }}</button>
+  </div>
 </div>
 <mat-card class='margin-bottom-xlg mat-elevation-z'>
     <mat-card-content>
@@ -192,7 +200,7 @@
                   <button class='margin-right-10' mat-raised-button color="primary"
                     (click)='onEditAccountInfoReset()'>{{ translationData.lblReset || 'Reset' }}</button>
                   <button [disabled]="!accountInfoForm.valid" mat-raised-button color="primary"
-                    (click)='onAccountInfoUpdate()'>{{ translationData.lblUpdate || 'Update' }}</button>
+                    (click)='onAccountInfoUpdate()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
                 </div>
             </div>
           </div>
@@ -386,7 +394,7 @@
               <button class='margin-right-10' mat-raised-button color="primary"
                 (click)='onEditGeneralSettingsReset()'>{{ translationData.lblReset || 'Reset' }}</button>
               <button mat-raised-button color="primary"
-                (click)='onGeneralSettingsUpdate()'>{{ translationData.lblUpdate || 'Update' }}</button>
+                (click)='onGeneralSettingsUpdate()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
             </div>
         </form>
     </mat-card-content>

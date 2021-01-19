@@ -161,12 +161,17 @@ export class NewUserStepComponent implements OnInit {
     this.grpTitleVisible = false;
   }
 
-  onCancel(){
-    let emitObj = {
-      stepFlag :false,
-      msg : ""
+  onCancel(flag: boolean){
+    if(flag){
+      this.updateTableData();
     }
-    this.userCreate.emit(emitObj);
+    else{
+      let emitObj = {
+        stepFlag :false,
+        msg: ""
+      }
+      this.userCreate.emit(emitObj);
+    }  
   }
 
   onCreate(createStatus: any){
@@ -228,11 +233,11 @@ export class NewUserStepComponent implements OnInit {
     }, (error) => {  });
   }
 
-  updateTableData(status: any){
+  updateTableData(status?: any){
     this.userService.getUsers().subscribe((data) => {
       let emitObj = {
         stepFlag: false,
-        msg: this.getUserCreatedMessage(status),
+        msg: status ? this.getUserCreatedMessage(status) : '',
         tableData: data
       }
       this.userCreate.emit(emitObj);
