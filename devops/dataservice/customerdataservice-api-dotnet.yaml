@@ -6,7 +6,9 @@
 trigger:
 - none
 
-pool: dafct-dev1-privateagent
+pool: 
+  name: Azure Pipelines
+  vmImage: ubuntu-18.04
 
 parameters:
 - name: ENV
@@ -14,11 +16,9 @@ parameters:
   type: string
   default: DEV0
   values:
-  - All
   - DEV0
   - DEV01
   - DEV02
-  - TEST01
 
 variables:
 - ${{ if eq(parameters.ENV, 'DEV0') }}:
@@ -27,15 +27,11 @@ variables:
   - group: DEV01-Build-Variables
 - ${{ if eq(parameters.ENV, 'DEV02') }}:
   - group: DEV02-Build-Variables
-- ${{ if eq(parameters.ENV, 'TEST01') }}:
-  - group: TEST01-Build-Variables
-- ${{ if eq(parameters.ENV, 'All') }}:
-  - group: DEV02-Build-Variables
 
 steps:
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/commonservices/net.atos.daf.ct2.auditservice/appsettings.json'
+    targetFiles: 'dotnet/dataservices/net.atos.daf.ct2.customerdataservice/appsettings.json'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -44,22 +40,19 @@ steps:
     tokenSuffix: '}#'
     useLegacyPattern: false
     enableTelemetry: true
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01')
 
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/commonservices/net.atos.daf.ct2.auditservice/appsettings.json
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01')
+      cat dotnet/dataservices/net.atos.daf.ct2.customerdataservice/appsettings.json
 
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
-    dockerFile: dotnet/AuditService_Dockerfile
-    imageName: auditservice
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01')
+    dockerFile: dotnet/Customerdataservice_Dockerfile
+    imageName: customerdataservice
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -67,14 +60,5 @@ steps:
     azureSubscription: $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
-    imageName: auditservice
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01')
+    imageName: customerdataservice
 
-- task: CmdLine@2
-  inputs:
-    script: |
-      echo $(ContainerRegistry)
-  condition: eq('${{ parameters.ENV }}', 'All')
-  
-      
-     
