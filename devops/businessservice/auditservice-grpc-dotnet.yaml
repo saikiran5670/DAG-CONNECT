@@ -6,7 +6,7 @@
 trigger:
 - none
 
-pool: dafct-dev1-privateagent
+pool: $(PrivateAgent)
 
 parameters:
 - name: ENV
