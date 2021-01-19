@@ -25,7 +25,7 @@ variables:
 - ${{ if eq(parameters.ENV, 'DEV02') }}:
   - group: DEV02-Build-Variables
 - ${{ if eq(parameters.ENV, 'TEST01') }}:
-  - group: TEST01-Build-Variable
+  - group: TEST01-Build-Variables
 
 pool: $(PRIVATEAGENT)
 
