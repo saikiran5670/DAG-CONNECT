@@ -18,6 +18,7 @@ parameters:
   - DEV0
   - DEV01
   - DEV02
+  - TEST01
 
 variables:
 - ${{ if eq(parameters.ENV, 'DEV0') }}:
@@ -26,6 +27,8 @@ variables:
   - group: DEV01-Build-Variables
 - ${{ if eq(parameters.ENV, 'DEV02') }}:
   - group: DEV02-Build-Variables
+- ${{ if eq(parameters.ENV, 'TEST01') }}:
+  - group: TEST01-Build-Variables
 - ${{ if eq(parameters.ENV, 'All') }}:
   - group: DEV02-Build-Variables
 
@@ -41,13 +44,13 @@ steps:
     tokenSuffix: '}#'
     useLegacyPattern: false
     enableTelemetry: true
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02')
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01')
 
 - task: CmdLine@2
   inputs:
     script: |
       cat dotnet/commonservices/net.atos.daf.ct2.auditservice/appsettings.json
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02')
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01')
 
 - task: Docker@0
   displayName: 'Build an image'
@@ -56,7 +59,7 @@ steps:
     azureContainerRegistry: $(ContainerRegistry)
     dockerFile: dotnet/AuditService_Dockerfile
     imageName: auditservice
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02')
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01')
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -65,7 +68,7 @@ steps:
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
     imageName: auditservice
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02')
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01')
 
 - task: CmdLine@2
   inputs:
