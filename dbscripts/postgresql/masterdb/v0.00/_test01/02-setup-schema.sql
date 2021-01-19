@@ -1,7 +1,7 @@
 CREATE SCHEMA  master 
-    AUTHORIZATION pgadmin;
+    AUTHORIZATION pgdbmadmin;
 CREATE SCHEMA  logs 
-    AUTHORIZATION pgadmin;
+    AUTHORIZATION pgdbmadmin;
 CREATE SCHEMA  translation 
-    AUTHORIZATION pgadmin;
+    AUTHORIZATION pgdbmadmin;
 
