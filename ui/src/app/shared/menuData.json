@@ -1,0 +1,103 @@
+[
+    {
+      "mainMenu": "Dashboard",
+      "mainRoute": "dashboard",
+      "subMenuFlag": false
+    },
+    {
+      "mainMenu": "Live Fleet",
+      "mainRoute": "livefleet",
+      "subMenuFlag": true,
+      "subMenu": [
+        {
+          "name": "Live Fleet",
+          "subRoute": "livefleet"
+        },
+        {
+          "name": "Log Book",
+          "subRoute": "logbook"
+        }
+      ]
+    },
+    {
+      "mainMenu": "Report",
+      "mainRoute": "report",
+      "subMenuFlag": true,
+      "subMenu": [
+        {
+          "name": "Trip Report",
+          "subRoute": "tripreport"
+        },
+        {
+          "name": "Trip Tracing",
+          "subRoute": "triptracing"
+        }
+      ]
+    },
+    {
+      "mainMenu": "Configuration",
+      "mainRoute": "configuration",
+      "subMenuFlag": true,
+      "subMenu": [
+        {
+          "name": "Alerts",
+          "subRoute": "alerts"
+        },
+        {
+          "name": "Landmarks",
+          "subRoute": "landmarks"
+        },
+        {
+          "name": "Vehicle Management",
+          "subRoute": "vehiclemanagement"
+        }
+      ]
+    },
+    {
+      "mainMenu": "Admin",
+      "mainRoute": "admin",
+      "subMenuFlag": true,
+      "subMenu": [
+        {
+          "name": "Orgnisation Details",
+          "subRoute": "orgnisationdetails"
+        },
+        {
+          "name": "User Group Management",
+          "subRoute": "usergroupmanagement"
+        },
+        {
+          "name": "User Management",
+          "subRoute": "usermanagement"
+        },
+        {
+          "name": "User Role Management",
+          "subRoute": "userrolemanagement"
+        },
+        {
+          "name": "Driver Management",
+          "subRoute": "drivermanagement"
+        }
+      ]
+    },
+    {
+      "mainMenu": "Tachograph",
+      "mainRoute": "tachograph",
+      "subMenuFlag": false
+    },
+    {
+      "mainMenu": "Mobile Portal",
+      "mainRoute": "mobileportal",
+      "subMenuFlag": false
+    },
+    {
+      "mainMenu": "Shop",
+      "mainRoute": "shop",
+      "subMenuFlag": false
+    },
+    {
+      "mainMenu": "Information",
+      "mainRoute": "information",
+      "subMenuFlag": false
+    }
+]

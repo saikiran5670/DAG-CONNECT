@@ -10,5 +10,6 @@ namespace net.atos.daf.ct2.account
     {
        Task<AccountIdentity> Login(Identity user);
        Task<bool> ValidateToken(string token);
+       Task<AccountToken> GenerateToken(Identity user);
     }
 }

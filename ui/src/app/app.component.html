@@ -1,0 +1,102 @@
+<div [dir]="dirValue">
+    <mat-toolbar color="primary" *ngIf="isLogedIn">
+        <mat-toolbar-row>
+            <button mat-flat-button id="hamburger" class="hamburgerMenu" (click)="sidenavToggle()">
+                <mat-icon class="" aria-hidden="true">{{ menuCollapsed ? 'menu' : 'close' }}</mat-icon>
+            </button>
+            <div class="logo">
+                <img class='margin-left-sm' src="assets/connected-logo-big.png">
+            </div>
+            <div class='toolbarRightContainer full-width'>
+                <div fxLayoutAlign="start center" class='half-width titleText'>{{ currentTitle | titlecase }}
+                </div>
+                <div fxLayoutAlign="end" class='half-width'>
+                    <!-- <a class="navIcon">
+                        <mat-icon aria-hidden="false" aria-label="fullscreen" matTooltip="Full Screen">fullscreen</mat-icon>
+                    </a> -->
+                    <!-- <img class="navIcon countryflag" mat-card-avatar src="{{fileUploadedPath}}"> -->
+                    <!-- <a class="navIcon">
+                        <mat-icon aria-hidden="false" aria-label="notifications" matTooltip="Notifications">notifications_none</mat-icon>
+                        <span class="badge">0</span>
+                    </a>
+                    <a class="navIcon">
+                        <mat-icon aria-hidden="false" aria-label="setting" matTooltip="Setting">settings</mat-icon>
+                    </a> -->
+                </div>
+            </div>
+        </mat-toolbar-row>
+    </mat-toolbar>
+    <div class="dashboardMenu" id="sideNavConteiner" [ngClass]="menuCollapsed ? 'menuCollapsed' : ''" *ngIf="isLogedIn">
+        <div class='userBgImg'>
+            <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="5px">
+                <div fxLayout="column">
+                    <img class="userIcon" mat-card-avatar src="{{fileUploadedPath}}">
+                </div>
+                <div *ngIf="!menuCollapsed" fxLayoutAlign="center" fxLayout="column" class='font-size-0-9'>
+                    <span class='userName'>Mr. John Rutherford</span>
+                    <span class='display-flex align-items-center'>
+                        <span class='userRole'>Fleet Admin</span>
+                        <span>
+                            <mat-icon class='font-size-20'>keyboard_arrow_down</mat-icon>
+                        </span>
+                    </span>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="end">
+                <div fxLayout="column">
+                    <button mat-icon-button (click)="logOut()" class="menuToggler display-flex align-items-center">
+                        <mat-icon class='logoutIcon'>exit_to_app</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div style="clear: both"></div>
+        <ul>
+            <li #menuName *ngFor='let menu of menuPages; index as i' class="menuItem" [ngClass]="{'active': pageName === menu.mainRoute}" [attr.menuName]="menu.mainRoute">
+                <a class='selectedManu' *ngIf='!menu.subMenuFlag; else elseBlock' [routerLink]="[ '/'+ menu.mainRoute]" (click)='navigateToPage(menu.mainRoute)'>
+                    <mat-icon class="box-svg-css margin-right-lg">dashboard</mat-icon>
+                    <span class="menuLabel">{{menu.mainMenu | titlecase}}</span>
+                </a>
+                <ng-template #elseBlock>
+                    <a class='selectedManu' (click)="menuSelected(menu.mainRoute)">
+                        <mat-icon class="box-svg-css margin-right-lg">directions_car</mat-icon>
+                        <span class="menuLabel">{{menu.mainMenu | titlecase}}</span>
+                        <span *ngIf="!menuCollapsed && menu.mainMenu === 'Live Fleet'" [ngClass]="{'fleetCount': menu.mainMenu === 'Live Fleet' }">0</span>
+                        <mat-icon class="navigationArrow">
+                            {{ menuStatus[menu.mainRoute].open ? 'keyboard_arrow_down' : 'keyboard_arrow_right' }}</mat-icon>
+                    </a>
+                    <ul class="subMenuItems slider" [ngClass]="{'closed' : !menuStatus[menu.mainRoute].open}">
+                        <!-- <li *ngFor='let subMenuItem of menu.subMenu; index as j' [ngClass]="{'active': subpage === subMenuItem.subRoute}"> -->
+                            <li *ngFor='let subMenuItem of menu.subMenu; index as j' [ngClass]="{'linkActive': subpage === subMenuItem.subRoute}">
+                            <a [routerLink]="[ '/'+menu.mainRoute+'/'+subMenuItem.subRoute ]" (click)="navigateToPage(subMenuItem.subRoute)">
+                                <mat-icon class='box-svg-css margin-right-10'>stop_circle</mat-icon>
+                                <span class='font-size-0-9'>{{subMenuItem.name | titlecase}}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </ng-template>
+            </li>
+        </ul>
+        <!-- <div style="clear: both"></div>
+        <button mat-icon-button (click)="logOut()" class="menuToggler">
+            <mat-icon>exit_to_app</mat-icon>
+        </button> -->
+    </div>
+    <app-preferences *ngIf="isLogedIn"></app-preferences>
+    <div id="sideMenuCollapseBtnContainer" class='sideMenuCollapseBtnContainer' [ngClass]="menuCollapsed ? 'withCollapse' : 'withoutCollapse'" *ngIf="isLogedIn">
+        <button mat-icon-button (click)="sidenavToggle()" class="collapseBtn">
+           <mat-icon>{{menuCollapsed ? 'keyboard_arrow_right' : 'keyboard_arrow_left'}}</mat-icon>
+        </button>
+    </div>
+    <mat-sidenav-container fxFlexFill [ngClass]="{'rightContainer': isLogedIn, 'menuCollapsed' : menuCollapsed }">
+        <mat-sidenav #sidenav *ngIf="isLogedIn">
+            <mat-nav-list>
+            </mat-nav-list>
+        </mat-sidenav>
+        <mat-sidenav-content fxFlexFill>
+            <div class='mobileTitleText'>{{ currentTitle | titlecase }}</div>
+            <app-alerts></app-alerts>
+            <router-outlet></router-outlet>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+</div>

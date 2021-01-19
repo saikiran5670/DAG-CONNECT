@@ -1,0 +1,28 @@
+@import "../styles.less";
+.hamburgerMenu{
+    min-width: 50px;
+    padding: 5px;
+    margin: 0px;
+    @media @tabletToDesktop {
+        display: none;
+    }
+}
+.titleText{
+    @media @tabletToDesktop {
+        display: block;
+    }
+    @media @mobile {
+        display: none !important;
+    }
+}
+.mobileTitleText{
+    font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;
+    letter-spacing: normal;
+    padding: 5px;
+    @media @tabletToDesktop {
+        display: none !important;
+    }
+    @media @mobile {
+        display: block !important;
+    }
+}

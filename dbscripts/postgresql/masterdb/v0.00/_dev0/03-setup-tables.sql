@@ -1408,7 +1408,8 @@ CREATE TABLE if not exists  master.timezone
     id	Serial Not Null,
 	short_name	Varchar(10) not null,
 	name	Varchar(100) not null,
-	ut_coff_set	Varchar(50) not null
+	ut_coff_set	Varchar(50) not null,
+	key Varchar(100) not null
 )
 
 TABLESPACE pg_default;
@@ -1637,12 +1638,14 @@ CREATE TABLE if not exists  master.accountpreference
 	type char(1) NOT NULL,      
 	language_id int NOT NULL,      
 	timezone_id int NOT NULL,      
-	currency_type char(1) NOT NULL,      
-	unit_type char(1) NOT NULL,      
-	vehicle_display_type char(1) NOT NULL,      
-	date_format_type char(1) NOT NULL,      
+	currency_id int NOT NULL,      
+	unit_id int NOT NULL,      
+	vehicle_display_id int NOT NULL,      
+	date_format_id int NOT NULL,      
 	driver_id Varchar(16) ,      
-	is_active boolean not null default true
+	is_active boolean not null default true,
+	time_format_id int NOT NULL,      
+	landing_page_display_id int NOT NULL
 )
 TABLESPACE pg_default;
 
@@ -2033,3 +2036,368 @@ $$;
 -- end if;
 -- end;
 -- $$;
+
+CREATE TABLE if not exists  master.unit  
+(
+	id serial NOT NULL,  
+	name varchar (50) NOT NULL,  
+	key varchar (100) NOT NULL, 
+	description varchar (100) 
+)
+TABLESPACE pg_default;
+
+ALTER TABLE  master.unit  
+    OWNER to pgadmin;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='pk_unit_id' AND table_name='unit'
+		and constraint_type='PRIMARY KEY')
+then	
+	begin
+		ALTER TABLE  master.unit  
+			ADD CONSTRAINT pk_unit_id PRIMARY KEY (id)
+			USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='uk_unit_key' AND table_name='unit'
+		and constraint_type='UNIQUE')
+then	
+	begin
+		ALTER TABLE  master.unit  
+			ADD CONSTRAINT uk_unit_key UNIQUE  (key)
+			USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+--currency  (Master data is also required)
+CREATE TABLE if not exists  master.currency  
+(
+	id serial NOT NULL,  
+	name varchar (50) NOT NULL,  
+	key varchar (100) NOT NULL, 
+	description varchar (100) 
+)
+TABLESPACE pg_default;
+
+ALTER TABLE  master.currency  
+    OWNER to pgadmin;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='pk_currency_id' AND table_name='currency'
+		and constraint_type='PRIMARY KEY')
+then	
+	begin
+		ALTER TABLE  master.currency  
+			ADD CONSTRAINT pk_currency_id PRIMARY KEY (id)
+			USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='uk_currency_key' AND table_name='currency'
+		and constraint_type='UNIQUE')
+then	
+	begin
+		ALTER TABLE  master.currency  
+			ADD CONSTRAINT uk_currency_key UNIQUE  (key)
+			USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+--dateformat  (Master data is also required)
+CREATE TABLE if not exists  master.dateformat  
+(
+	id serial NOT NULL,  
+	name varchar (50) NOT NULL,  
+	key varchar (100) NOT NULL, 
+	description varchar (100) 
+)
+TABLESPACE pg_default;
+
+ALTER TABLE  master.dateformat  
+    OWNER to pgadmin;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='pk_dateformat_id' AND table_name='dateformat'
+		and constraint_type='PRIMARY KEY')
+then	
+	begin
+		ALTER TABLE  master.dateformat  
+			ADD CONSTRAINT pk_dateformat_id PRIMARY KEY (id)
+			USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='uk_dateformat_key' AND table_name='dateformat'
+		and constraint_type='UNIQUE')
+then	
+	begin
+		ALTER TABLE  master.dateformat  
+			ADD CONSTRAINT uk_dateformat_key UNIQUE  (key)
+			USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+--vehicledisplay  (Master data is also required)
+CREATE TABLE if not exists  master.vehicledisplay  
+(
+	id serial NOT NULL,  
+	name varchar (50) NOT NULL,  
+	key varchar (100) NOT NULL, 
+	description varchar (100) 
+)
+TABLESPACE pg_default;
+
+ALTER TABLE  master.vehicledisplay  
+    OWNER to pgadmin;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='pk_vehicledisplay_id' AND table_name='vehicledisplay'
+		and constraint_type='PRIMARY KEY')
+then	
+	begin
+		ALTER TABLE  master.vehicledisplay  
+			ADD CONSTRAINT pk_vehicledisplay_id PRIMARY KEY (id)
+			USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='uk_vehicledisplay_key' AND table_name='vehicledisplay'
+		and constraint_type='UNIQUE')
+then	
+	begin
+		ALTER TABLE  master.vehicledisplay  
+			ADD CONSTRAINT uk_vehicledisplay_key UNIQUE  (key)
+			USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+--timeformat  (Master data is also required)
+CREATE TABLE if not exists  master.timeformat  
+(
+	id serial NOT NULL,  
+	name varchar (50) NOT NULL,  
+	key varchar (100) NOT NULL, 
+	description varchar (100) 
+)
+TABLESPACE pg_default;
+
+ALTER TABLE  master.timeformat  
+    OWNER to pgadmin;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='pk_timeformat_id' AND table_name='timeformat'
+		and constraint_type='PRIMARY KEY')
+then	
+	begin
+		ALTER TABLE  master.timeformat  
+			ADD CONSTRAINT pk_timeformat_id PRIMARY KEY (id)
+			USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='uk_timeformat_key' AND table_name='timeformat'
+		and constraint_type='UNIQUE')
+then	
+	begin
+		ALTER TABLE  master.timeformat  
+			ADD CONSTRAINT uk_timeformat_key UNIQUE  (key)
+			USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+--landingpagedisplay  (Master data is also required)
+CREATE TABLE if not exists  master.landingpagedisplay  
+(
+	id serial NOT NULL,  
+	name varchar (50) NOT NULL,  
+	key varchar (100) NOT NULL, 
+	description varchar (100) 
+)
+TABLESPACE pg_default;
+
+ALTER TABLE  master.landingpagedisplay  
+    OWNER to pgadmin;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='pk_landingpagedisplay_id' AND table_name='landingpagedisplay'
+		and constraint_type='PRIMARY KEY')
+then	
+	begin
+		ALTER TABLE  master.landingpagedisplay  
+			ADD CONSTRAINT pk_landingpagedisplay_id PRIMARY KEY (id)
+			USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='uk_landingpagedisplay_key' AND table_name='landingpagedisplay'
+		and constraint_type='UNIQUE')
+then	
+	begin
+		ALTER TABLE  master.landingpagedisplay  
+			ADD CONSTRAINT uk_landingpagedisplay_key UNIQUE  (key)
+			USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='fk_accountpreference_currencyid_currency_id' AND table_name='accountpreference'
+		and constraint_type='FOREIGN KEY')
+then	
+	begin
+		ALTER TABLE  master.accountpreference 
+			ADD CONSTRAINT fk_accountpreference_currencyid_currency_id FOREIGN KEY (currency_id) REFERENCES  master.currency (id);
+			--USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='fk_accountpreference_unitid_unit_id' AND table_name='accountpreference'
+		and constraint_type='FOREIGN KEY')
+then	
+	begin
+		ALTER TABLE  master.accountpreference 
+			ADD CONSTRAINT fk_accountpreference_unitid_unit_id FOREIGN KEY (unit_id) REFERENCES  master.unit (id);
+			--USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='fk_accountpreference_vehicledisplayid_vehicledisplay_id' AND table_name='accountpreference'
+		and constraint_type='FOREIGN KEY')
+then	
+	begin
+		ALTER TABLE  master.accountpreference 
+			ADD CONSTRAINT fk_accountpreference_vehicledisplayid_vehicledisplay_id FOREIGN KEY (vehicle_display_id) REFERENCES  master.vehicledisplay (id);
+			--USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='fk_accountpreference_dateformatid_dateformat_id' AND table_name='accountpreference'
+		and constraint_type='FOREIGN KEY')
+then	
+	begin
+		ALTER TABLE  master.accountpreference 
+			ADD CONSTRAINT fk_accountpreference_dateformatid_dateformat_id FOREIGN KEY (date_format_id) REFERENCES  master.dateformat (id);
+			--USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='fk_accountpreference_timeformatid_dateformat_id' AND table_name='accountpreference'
+		and constraint_type='FOREIGN KEY')
+then	
+	begin
+		ALTER TABLE  master.accountpreference 
+			ADD CONSTRAINT fk_accountpreference_timeformatid_dateformat_id FOREIGN KEY (time_format_id ) REFERENCES  master.timeformat (id);
+			--USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='fk_accountpreference_landingpagedisplayid_dateformat_id' AND table_name='accountpreference'
+		and constraint_type='FOREIGN KEY')
+then	
+	begin
+		ALTER TABLE  master.accountpreference 
+			ADD CONSTRAINT fk_accountpreference_landingpagedisplayid_dateformat_id FOREIGN KEY (landing_page_display_id ) REFERENCES  master.landingpagedisplay (id);
+			--USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;

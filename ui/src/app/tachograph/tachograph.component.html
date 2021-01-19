@@ -1,0 +1,31 @@
+<div class='bgtrans'>
+    <div cdkDropListGroup>
+        <div class="example-container">
+            <h2>To do</h2>
+
+            <div cdkDropList [cdkDropListData]="todo" class="example-list example-boundary" (cdkDropListDropped)="drop($event)">
+                <div class="example-box" *ngFor="let item of todo" cdkDragBoundary=".example-boundary" cdkDrag>{{item}}</div>
+            </div>
+        </div>
+
+        <!-- <div class="example-container">
+            <h2>Done</h2>
+
+            <div cdkDropList [cdkDropListData]="done" class="example-list" (cdkDropListDropped)="drop($event)">
+                <div class="example-box" *ngFor="let item of done" cdkDrag>{{item}}</div>
+            </div>
+        </div> -->
+    </div>
+    <div fxLayout="row" fxLayoutAlign="space-between" class='padding-10'>
+        <div fxLayout="column">
+            <button mat-flat-button color="primary" (click)="saveData()">Save</button>
+        </div>
+    </div>
+    <div class="example-container" *ngIf='showOutput'>
+        <h2>Output</h2>
+
+        <div cdkDropList [cdkDropListData]="outputData" class="example-list">
+            <div class="example-box" *ngFor="let item of outputData" cdkDrag>{{item}}</div>
+        </div>
+    </div>
+</div>
