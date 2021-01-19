@@ -1637,12 +1637,14 @@ CREATE TABLE if not exists  master.accountpreference
 	type char(1) NOT NULL,      
 	language_id int NOT NULL,      
 	timezone_id int NOT NULL,      
-	currency_type char(1) NOT NULL,      
-	unit_type char(1) NOT NULL,      
-	vehicle_display_type char(1) NOT NULL,      
-	date_format_type char(1) NOT NULL,      
+	currency_id int NOT NULL,      
+	unit_id int NOT NULL,      
+	vehicle_display_id int NOT NULL,      
+	date_format_id int NOT NULL,      
 	driver_id Varchar(16) ,      
-	is_active boolean not null default true
+	is_active boolean not null default true,
+	time_format_id int NOT NULL,      
+	landing_page_display_id int NOT NULL
 )
 TABLESPACE pg_default;
 
@@ -2303,4 +2305,99 @@ end if;
 end;
 $$;
 
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='fk_accountpreference_currencyid_currency_id' AND table_name='accountpreference'
+		and constraint_type='FOREIGN KEY')
+then	
+	begin
+		ALTER TABLE  master.accountpreference 
+			ADD CONSTRAINT fk_accountpreference_currencyid_currency_id FOREIGN KEY (currency_id) REFERENCES  master.currency (id);
+			--USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='fk_accountpreference_unitid_unit_id' AND table_name='accountpreference'
+		and constraint_type='FOREIGN KEY')
+then	
+	begin
+		ALTER TABLE  master.accountpreference 
+			ADD CONSTRAINT fk_accountpreference_unitid_unit_id FOREIGN KEY (unit_id) REFERENCES  master.unit (id);
+			--USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='fk_accountpreference_vehicledisplayid_vehicledisplay_id' AND table_name='accountpreference'
+		and constraint_type='FOREIGN KEY')
+then	
+	begin
+		ALTER TABLE  master.accountpreference 
+			ADD CONSTRAINT fk_accountpreference_vehicledisplayid_vehicledisplay_id FOREIGN KEY (vehicle_display_id) REFERENCES  master.vehicledisplay (id);
+			--USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='fk_accountpreference_dateformatid_dateformat_id' AND table_name='accountpreference'
+		and constraint_type='FOREIGN KEY')
+then	
+	begin
+		ALTER TABLE  master.accountpreference 
+			ADD CONSTRAINT fk_accountpreference_dateformatid_dateformat_id FOREIGN KEY (date_format_id) REFERENCES  master.dateformat (id);
+			--USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='fk_accountpreference_timeformatid_dateformat_id' AND table_name='accountpreference'
+		and constraint_type='FOREIGN KEY')
+then	
+	begin
+		ALTER TABLE  master.accountpreference 
+			ADD CONSTRAINT fk_accountpreference_timeformatid_dateformat_id FOREIGN KEY (time_format_id ) REFERENCES  master.timeformat (id);
+			--USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='fk_accountpreference_landingpagedisplayid_dateformat_id' AND table_name='accountpreference'
+		and constraint_type='FOREIGN KEY')
+then	
+	begin
+		ALTER TABLE  master.accountpreference 
+			ADD CONSTRAINT fk_accountpreference_landingpagedisplayid_dateformat_id FOREIGN KEY (landing_page_display_id ) REFERENCES  master.landingpagedisplay (id);
+			--USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
 
