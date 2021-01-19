@@ -1,0 +1,142 @@
+<div fxLayout="row" fxLayoutAlign="stretch" class="loginPageContainer">
+    <div fxLayout="column" fxLayoutAlign="stretch" class='full-width loginPageBg'>
+        <div fxLayout="row" fxLayoutAlign="end end" class='logo-icon'>
+            <div fxLayout="column" fxLayoutAlign="stretch">
+                <img src="../../../assets/logo_daf.png" alt="" srcset="">
+            </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end end" class='txtContainer'>
+            <div fxLayout="column" fxLayoutAlign="stretch" class='loginTxtContainer'>
+                <div fxLayout="row" fxLayoutAlign="center" class='logoContainer'>
+                    <div fxLayout="column" fxLayoutAlign="center">
+                        <img src="../../../assets/logo.png" alt="" srcset="">
+                    </div>
+                </div> 
+                 <div fxLayout="row" fxLayoutAlign="center" class='invalidMsgContainer'>
+                    <div fxLayout="column" fxLayoutAlign="center">
+                        <span *ngIf='invalidUserMsg && !forgotPwdFlag'>Invalid user name and password. Try again</span>
+                    </div>
+                </div>
+                <div *ngIf='!forgotPwdFlag' fxLayout="row" fxLayoutAlign="start" class='fieldContainer'>
+                    <div fxLayout="column" fxLayoutAlign="start" class='full-width'>
+                        <form [formGroup]="loginForm" (ngSubmit)="onLogin(loginForm.value)">
+        
+                            <div fxLayout="column" fxLayoutAlign="start" fxLayoutGap="15" class='loginField'>
+                            
+                                  <div fxLayout="row" fxLayoutAlign="start">
+                                    <div fxLayout="column" fxLayoutAlign="center" class='loginIcon'>
+                                        <mat-icon>supervisor_account</mat-icon>
+                                    </div>
+                                    <div fxLayout="column" fxLayoutAlign="start" class='full-width'>
+                                        <mat-form-field appearance="fill">
+                                            <input matInput placeholder="User name" formControlName="username" required>
+                                            <mat-error *ngIf="loginForm.get('username').hasError('required')">
+                                              User name is required
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                  </div> 
+                                  <div fxLayout="row" fxLayoutAlign="start" class='margin-top-10'>
+                                    <div fxLayout="column" fxLayoutAlign="center" class='loginIcon'>
+                                        <mat-icon>lock</mat-icon>
+                                    </div>
+                                    <div fxLayout="column" fxLayoutAlign="start" class='full-width'>
+                                        <mat-form-field appearance="fill">
+                                            <input matInput placeholder="Password" [type]="hide ? 'password' : 'text'" formControlName="password">
+                                            <button class='pwdVisibleIcon' type='button' mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                                            <mat-icon>{{hide ? 'visibility' : 'visibility_off'}}</mat-icon>
+                                            </button>
+                                            <mat-error *ngIf="loginForm.controls.password.errors?.required">Password is required</mat-error>
+                                            <mat-error *ngIf="loginForm.controls.password.hasError('minlength')">Password should be minimum 6 characters</mat-error>
+                                          </mat-form-field>
+                                    </div>
+                                  </div> 
+                                <div class="text-right linkBtn">
+                                    <a (click)="onForgetPassword()">Forgot password?</a>
+                                </div>
+                                <button [disabled]="!loginForm.valid" mat-raised-button color="primary" class="margin-top-20 mat-elevation-z box-button" type="submit">Login</button>
+                            </div>
+                        </form> 
+                    </div>
+                </div>
+                <div *ngIf='forgotPwdFlag' fxLayout="row" fxLayoutAlign="start" class='fieldContainer'>
+                    <div fxLayout="column" fxLayoutAlign="start" class='full-width'>
+                        <form [formGroup]="forgotPasswordForm" (ngSubmit)="onResetPassword(forgotPasswordForm.value)">
+                            <div fxLayout="column" fxLayoutAlign="start" fxLayoutGap="15" class='loginField'>
+                                  <div fxLayout="row" fxLayoutAlign="start">
+                                    <div fxLayout="column" fxLayoutAlign="center">
+                                        <span class='resetText'>Reset your DAF Connect Password</span>
+                                    </div>
+                                  </div> 
+                                  <div fxLayout="row" fxLayoutAlign="start" class='margin-top-10'>
+                                    <div fxLayout="column" fxLayoutAlign="center">
+                                        <span class='infoTxt'>Submit your email address and we'll send you a link to reset your password</span>
+                                    </div>
+                                  </div> 
+                                  <div fxLayout="row" fxLayoutAlign="start" class='margin-top-10'>
+                                    <div fxLayout="column" fxLayoutAlign="start" class='full-width emailField'>
+                                        <mat-label><span>Registered Email Id</span><span class='asterick'>*</span></mat-label>
+                                        <mat-form-field appearance="fill">
+                                            <input matInput placeholder="Enter your registered Email Id" formControlName="email" required>
+                                            <mat-error *ngIf="forgotPasswordForm.get('email').hasError('required')">
+                                              Email id is required
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                  </div> 
+                                <div class="text-right linkBtn">
+                                    <a (click)="onBackToLogin()">Back to Login</a>
+                                </div>
+                                <button [disabled]="!forgotPasswordForm.valid" mat-raised-button color="primary" class="margin-top-20 mat-elevation-z box-button" type="submit">Reset Password</button>
+                            </div>
+                        </form> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer>
+    <div *ngIf='cookiesFlag' fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="45px" class='cookieContainer'>
+        <div fxLayout="column">
+            <span>This site uses cookies to offer you a better browsing experience. No third party cookies are used on this site.</span>
+        </div>
+        <div fxLayout="column">
+            <button mat-raised-button color="primary" class="cookieBtn" (click)='acceptCookies()'>I Understand</button>
+        </div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="space-between" class='loginFooter'>
+        <div fxLayout="column" fxLayoutAlign="left">
+            <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="30px">
+                <div fxLayout="column" fxLayoutAlign="left">
+                    <a href='https://www.daf.com/en/legal/privacy-statement' target='_blank'><span>Private Statement</span></a>
+                </div>
+                <div fxLayout="column" fxLayoutAlign="left">
+                    <a href='https://www.daf.com/en/legal/privacy-statement' target='_blank'><span>General conditions</span></a>
+                </div>
+                <div fxLayout="column" fxLayoutAlign="left">
+                    <a href='https://www.daf.com/en/legal/privacy-statement' target='_blank'><span>DAF and cookies</span></a>
+                </div>
+            </div>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="end">
+            <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="30px">
+                <div fxLayout="column" fxLayoutAlign="left">
+                    <a href='https://www.daf.com/' target='_blank'><span>Support: DAF.Connect@DAFTRUCKS.com</span></a>
+                </div>
+                <div fxLayout="column" fxLayoutAlign="left">
+                    <a href='https://www.daf.com/' target='_blank' class='display-flex'><span><mat-icon class='pdfIcon'>picture_as_pdf</mat-icon></span><span class='pdfLink'>Quick Reference Guide</span></a>
+                </div>
+            </div>
+        </div>
+        <!-- <div fxLayout="column">
+            <a href='https://www.daf.com/en/legal/privacy-statement' target='_blank'><span>Private Statement</span></a>
+        </div>
+        <div fxLayout="column">
+            <a href='https://www.daf.com/' target='_blank'><span>Support: DAF.Connect@DAFTRUCKS.com</span></a>
+        </div>
+        <div fxLayout="column">
+            <a href='https://www.daf.com/' target='_blank' class='display-flex'><span><mat-icon class='pdfIcon'>picture_as_pdf</mat-icon></span><span class='pdfLink'>Quick Reference Guide</span></a>
+        </div> -->
+    </div>
+</footer>

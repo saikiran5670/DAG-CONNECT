@@ -1,0 +1,703 @@
+{
+  "GetUserGroups": [
+    {
+      "organizationId": 1,
+      "name": "usergrp2",
+      "isActive": true,
+      "usergroupId": "2",
+      "vehicles": "05",
+      "users": "04",
+      "id": "2",
+      "userGroupDescriptions": "Lorem ipsum dolor sit amet, consecteture adipiscing elit."
+    },
+    {
+      "organizationId": 1,
+      "name": "usergrp50",
+      "isActive": true,
+      "usergroupId": "5",
+      "vehicles": "05",
+      "users": "04",
+      "id": "5",
+      "userGroupDescriptions": "Lorem ipsum dolor sit amet, consecteture adipiscing elit."
+    },
+    {
+      "id": "3",
+      "usergroupId": "3",
+      "organizationId": "1",
+      "name": "usergrp3",
+      "isActive": "1",
+      "createdBy": "1",
+      "createdDate": "1222222",
+      "updatedBy": "1",
+      "updatedDate": "12222",
+      "isuserdefinedgroup": "0",
+      "vehicles": "09",
+      "users": "05",
+      "userGroupDescriptions": "Lorem ipsum dolor sit amet, consecteture adipiscing elit."
+    },
+    {
+      "id": "4",
+      "usergroupId": "4",
+      "organizationId": "1",
+      "name": "usergrp4",
+      "isActive": "1",
+      "createdBy": "1",
+      "createdDate": "1222222",
+      "updatedBy": "1",
+      "updatedDate": "12222",
+      "isuserdefinedgroup": "0",
+      "vehicles": "09",
+      "users": "05",
+      "userGroupDescriptions": "Lorem ipsum dolor sit amet, consecteture adipiscing elit."
+    },
+    {
+      "organizationId": 1,
+      "name": "dafTestUser",
+      "isActive": true,
+      "id": 0.26418530375507876,
+      "usergroupId": 0.26418530375507876,
+      "vehicles": "05",
+      "users": "04",
+      "userGroupDescriptions": "Lorem ipsum dolor sit amet, consecteture adipiscing elit."
+    },
+    {
+      "organizationId": 1,
+      "name": "NamitaTestUserGrp",
+      "isActive": true,
+      "id": 0.4806707017939338,
+      "usergroupId": 0.4806707017939338,
+      "vehicles": "05",
+      "users": "04",
+      "userGroupDescriptions": "Lorem ipsum dolor sit amet, consecteture adipiscing elit."
+    }
+  ],
+  "GetUserDetails": [
+    {
+      "id": 1,
+      "userID": 1,
+      "isActive": true,
+      "salutation": "Mr.",
+      "firstName": "TestFName",
+      "lastName": "TestLName",
+      "dob": "2020-10-19T10:48:24.563685",
+      "emailId": "test1@test.com",
+      "userTypeid": 1,
+      "createBy": 1,
+      "role": "Fleet Exec",
+      "userGroup": "usergrp1",
+      "createdOn": "2020-10-15T13:15:16.828755"
+    },
+    {
+      "id": 2,
+      "userID": 2,
+      "userName": null,
+      "password": null,
+      "emailId": "test2@test.com",
+      "firstName": "DAFestFName",
+      "lastName": "DAFTestLName",
+      "dob": "2020-10-19T10:48:24.563685",
+      "salutation": "Ms.",
+      "lastPasswordChangedDate": "0001-01-01T00:00:00",
+      "lastLoginDate": "0001-01-01T00:00:00",
+      "loginAttempt": 0,
+      "isLocked": 0,
+      "parentUserId": 0,
+      "userTypeid": 1,
+      "updatedby": 2,
+      "createBy": 0,
+      "isActive": false,
+      "createdBy": 1,
+      "modifiedBy": 0,
+      "createdOn": "0001-01-01T00:00:00",
+      "modifiedOn": "0001-01-01T00:00:00",
+      "role": "Fleet Manager",
+      "userGroup": "usergrp2"
+    },
+    {
+      "id": 3,
+      "userID": 3,
+      "userName": null,
+      "password": null,
+      "emailId": "test3@test.com",
+      "firstName": "AtosFName",
+      "lastName": "AtosLName",
+      "dob": "2020-10-19T10:48:24.563685",
+      "salutation": "Ms.",
+      "lastPasswordChangedDate": "0001-01-01T00:00:00",
+      "lastLoginDate": "0001-01-01T00:00:00",
+      "loginAttempt": 0,
+      "isLocked": 0,
+      "parentUserId": 0,
+      "userTypeid": 1,
+      "updatedby": 3,
+      "createBy": 0,
+      "isActive": false,
+      "createdBy": 1,
+      "modifiedBy": 0,
+      "createdOn": "0001-01-01T00:00:00",
+      "modifiedOn": "0001-01-01T00:00:00",
+      "role": "Fleet Manager",
+      "userGroup": "usergrp3"
+    },
+    {
+      "id": 4,
+      "userID": 4,
+      "userName": null,
+      "password": null,
+      "emailId": "test4@test.com",
+      "firstName": "ContiFName",
+      "lastName": "ContiLName",
+      "dob": "2020-10-19T10:48:24.563685",
+      "salutation": "Ms.",
+      "lastPasswordChangedDate": "0001-01-01T00:00:00",
+      "lastLoginDate": "0001-01-01T00:00:00",
+      "loginAttempt": 0,
+      "isLocked": 0,
+      "parentUserId": 0,
+      "userTypeid": 1,
+      "updatedby": 2,
+      "createBy": 0,
+      "isActive": false,
+      "createdBy": 1,
+      "modifiedBy": 0,
+      "createdOn": "0001-01-01T00:00:00",
+      "modifiedOn": "0001-01-01T00:00:00",
+      "role": "Fleet Manager",
+      "userGroup": "usergrp4"
+    },
+    {
+      "id": 5,
+      "userID": 5,
+      "userName": null,
+      "password": null,
+      "emailId": "test5@test.com",
+      "firstName": "VolvoFName",
+      "lastName": "VolvoLName",
+      "dob": "2020-10-19T10:48:24.563685",
+      "salutation": "Ms.",
+      "lastPasswordChangedDate": "0001-01-01T00:00:00",
+      "lastLoginDate": "0001-01-01T00:00:00",
+      "loginAttempt": 0,
+      "isLocked": 0,
+      "parentUserId": 0,
+      "userTypeid": 1,
+      "updatedby": 5,
+      "createBy": 0,
+      "isActive": false,
+      "createdBy": 1,
+      "modifiedBy": 0,
+      "createdOn": "0001-01-01T00:00:00",
+      "modifiedOn": "0001-01-01T00:00:00",
+      "role": "Fleet Manager",
+      "userGroup": "usergrp5"
+    },
+    {
+      "isActive": true,
+      "salutation": "Ms.",
+      "firstName": "BMWFName",
+      "lastName": "BMWLName",
+      "emailId": "bmw001@bwm.com",
+      "userTypeid": 1,
+      "createBy": 1,
+      "role": "Fleet Admin",
+      "userGroup": "mockUserGrp",
+      "id": 0.17745492141693142,
+      "userID": 0.17745492141693142,
+      "dob": "",
+      "createdOn": "2021-01-19T04:55:18.370Z"
+    }
+  ],
+  "GetVehicleByID": [
+    {
+      "id": 7,
+      "vehicleID": 7,
+      "vin": "V076",
+      "registrationNo": "RG07",
+      "chassisNo": "RG07",
+      "terminationDate": "2020-10-28T15:16:17.636337",
+      "isActive": true,
+      "createdDate": "2020-10-28T15:16:17.636337",
+      "createdBy": 1,
+      "updatedDate": "2020-10-28T15:16:17.636337",
+      "updatedBy": 1,
+      "vehicleName": "veh76",
+      "name": "veh76",
+      "model": "2020 DAF LF",
+      "Status": "assets/connected-logo-small.png",
+      "isGroup": false
+    },
+    {
+      "id": 8,
+      "vehicleID": 8,
+      "vin": "V02",
+      "registrationNo": "RG02",
+      "chassisNo": "RG02",
+      "terminationDate": "2020-10-28T15:16:17.636337",
+      "isActive": true,
+      "createdDate": "2020-10-28T15:16:17.636337",
+      "createdBy": 1,
+      "updatedDate": "2020-10-28T15:16:17.636337",
+      "updatedBy": 1,
+      "vehicleName": "veh02",
+      "name": "veh02",
+      "model": "2002 DAF LF",
+      "Status": "assets/connected-logo-small.png",
+      "isGroup": false
+    },
+    {
+      "id": 6,
+      "vehicleID": 6,
+      "vin": "V03",
+      "registrationNo": "RG03",
+      "chassisNo": "RG03",
+      "terminationDate": "2020-10-28T15:16:17.636337",
+      "isActive": true,
+      "createdDate": "2020-10-28T15:16:17.636337",
+      "createdBy": 1,
+      "updatedDate": "2020-10-28T15:16:17.636337",
+      "updatedBy": 1,
+      "name": "Vehicle33",
+      "model": "2019 DAF LF",
+      "Status": "assets/connected-logo-small.png",
+      "isGroup": false
+    }
+  ],
+  "GetVehicleGroupByID": [
+    {
+      "id": 41,
+      "organizationID": 1,
+      "name": "Vehicle111",
+      "parentID": 0,
+      "isActive": true,
+      "createdDate": "2020-12-14T06:19:33.111Z",
+      "createdBy": 0,
+      "updatedDate": "2020-12-14T06:19:33.111Z",
+      "updatedBy": 0,
+      "isDefaultGroup": true,
+      "isUserDefindGroup": true,
+      "vin": "-",
+      "registrationNumber": "-",
+      "model": "-",
+      "Status": "assets/images/john.png",
+      "isGroup": true,
+      "vehicles": [
+        {
+          "vehicleID": 0,
+          "vin": null,
+          "registrationNo": null,
+          "chassisNo": null,
+          "terminationDate": "2020-12-14T06:19:33.111Z",
+          "isActive": true,
+          "createdDate": "2020-12-14T06:19:33.111Z",
+          "createdBy": 0,
+          "updatedDate": "2020-12-14T06:19:33.111Z",
+          "updatedBy": 0
+        }
+      ],
+      "vehicleOrgIds": "string"
+    },
+    {
+      "id": 43,
+      "organizationID": 1,
+      "name": "veh101",
+      "parentID": 0,
+      "isActive": true,
+      "createdDate": "2020-12-14T06:19:33.111Z",
+      "createdBy": 0,
+      "updatedDate": "2020-12-14T06:19:33.111Z",
+      "updatedBy": 0,
+      "isDefaultGroup": true,
+      "isUserDefindGroup": true,
+      "vin": "-",
+      "registrationNumber": "-",
+      "model": "-",
+      "Status": "assets/images/john.png",
+      "isGroup": true,
+      "vehicles": [
+        {
+          "vehicleID": 0,
+          "vin": null,
+          "registrationNo": null,
+          "chassisNo": null,
+          "terminationDate": "2020-12-14T06:19:33.111Z",
+          "isActive": true,
+          "createdDate": "2020-12-14T06:19:33.111Z",
+          "createdBy": 0,
+          "updatedDate": "2020-12-14T06:19:33.111Z",
+          "updatedBy": 0
+        }
+      ],
+      "vehicleOrgIds": "string"
+    },
+    {
+      "vehicleGroupID": 92,
+      "organizationID": 1,
+      "name": "testMH",
+      "parentID": 0,
+      "isActive": true,
+      "createdDate": "2020-12-14T06:19:33.111Z",
+      "createdBy": 0,
+      "updatedDate": "2020-12-14T06:19:33.111Z",
+      "updatedBy": 0,
+      "isDefaultGroup": true,
+      "isUserDefindGroup": true,
+      "vin": "-",
+      "registrationNumber": "-",
+      "model": "-",
+      "Status": "assets/images/john.png",
+      "isGroup": true,
+      "vehicles": [
+        {
+          "vehicleID": 0,
+          "vin": "VIN456",
+          "registrationNo": "NL J-229-FV",
+          "chassisNo": null,
+          "terminationDate": "2020-12-14T06:19:33.111Z",
+          "isActive": true,
+          "createdDate": "2020-12-14T06:19:33.111Z",
+          "createdBy": 0,
+          "updatedDate": "2020-12-14T06:19:33.111Z",
+          "updatedBy": 0
+        }
+      ],
+      "vehicleOrgIds": "string",
+      "id": 44
+    },
+    {
+      "vehicleGroupID": 365,
+      "organizationID": 1,
+      "name": "testgroup01",
+      "parentID": 0,
+      "isActive": true,
+      "createdDate": "2020-12-14T06:19:33.111Z",
+      "createdBy": 0,
+      "updatedDate": "2020-12-14T06:19:33.111Z",
+      "updatedBy": 0,
+      "isDefaultGroup": true,
+      "isUserDefindGroup": true,
+      "vin": "-",
+      "registrationNumber": "-",
+      "model": "-",
+      "Status": "assets/images/john.png",
+      "isGroup": true,
+      "vehicles": [
+        {
+          "vehicleID": 0,
+          "vin": "VIN456",
+          "registrationNo": "NL J-229-FV",
+          "chassisNo": null,
+          "terminationDate": "2020-12-14T06:19:33.111Z",
+          "isActive": true,
+          "createdDate": "2020-12-14T06:19:33.111Z",
+          "createdBy": 0,
+          "updatedDate": "2020-12-14T06:19:33.111Z",
+          "updatedBy": 0
+        }
+      ],
+      "vehicleOrgIds": "string",
+      "id": 45
+    }
+  ],
+  "GetRoles": [
+    {
+      "id": 1,
+      "roleMasterId": 1,
+      "name": "Admin",
+      "roleDescription": "Admin role Descr",
+      "createdby": 5,
+      "modifiedby": 0,
+      "createddate": "2020-10-15T13:15:16.828755",
+      "modifieddate": "0001-01-01T00:00:00",
+      "services": 2,
+      "roleType": "Global",
+      "features": [
+        {
+          "name": "Reports _view"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "roleMasterId": 2,
+      "name": "Fleet Admin",
+      "roleDescription": "Fleet admin role",
+      "createdby": 5,
+      "modifiedby": 0,
+      "createddate": "2020-10-15T13:15:16.828755",
+      "modifieddate": "0001-01-01T00:00:00",
+      "services": 5,
+      "roleType": "Global",
+      "features": [
+        {
+          "name": "Reports _delete"
+        },
+        {
+          "name": "Reports _edit"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "roleMasterId": 3,
+      "name": "Fleet Manager",
+      "roleDescription": "Fleet manager role",
+      "createdby": 5,
+      "modifiedby": 0,
+      "createddate": "2020-10-15T13:15:16.828755",
+      "modifieddate": "0001-01-01T00:00:00",
+      "services": 9,
+      "roleType": "Global",
+      "features": [
+        {
+          "name": "Reports _view"
+        },
+        {
+          "name": "Reports _create"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "roleMasterId": 4,
+      "name": "Fleet Exec",
+      "roleDescription": "Fleet Exec role",
+      "createdby": 5,
+      "modifiedby": 0,
+      "createddate": "2020-10-15T13:15:16.828755",
+      "modifieddate": "0001-01-01T00:00:00",
+      "services": 4,
+      "roleType": "Global",
+      "features": [
+        {
+          "name": "Reports _fullAccess"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "roleMasterId": 5,
+      "name": "Sub dealer",
+      "roleDescription": "Sub dealer role",
+      "createdby": 5,
+      "modifiedby": 0,
+      "createddate": "2020-10-15T13:15:16.828755",
+      "modifieddate": "0001-01-01T00:00:00",
+      "isactive": true,
+      "services": 9,
+      "roleType": "Global"
+    },
+    {
+      "id": 0.3100991993026423,
+      "roleMasterId": 0.3100991993026423,
+      "name": "Role001",
+      "roleDescription": null,
+      "createdby": 5,
+      "modifiedby": 0,
+      "createddate": "2021-01-19T04:55:18.370Z",
+      "modifieddate": "0001-01-01T00:00:00",
+      "isactive": true,
+      "services": 2,
+      "roleType": "Regular",
+      "features": []
+    }
+  ],
+  "GetFeatures": [
+    {
+      "name": "Reports _view"
+    },
+    {
+      "name": "Reports _create"
+    },
+    {
+      "name": "Reports _edit"
+    },
+    {
+      "name": "Reports _delete"
+    },
+    {
+      "name": "Reports _fullAccess"
+    }
+  ],
+  "SSB": [
+    {
+      "organizationId": 1,
+      "vehiclegroups": "Vehiclegrp1",
+      "users": "04"
+    },
+    {
+      "organizationId": 2,
+      "vehiclegroups": "Vehiclegrp2",
+      "users": "03"
+    },
+    {
+      "organizationId": 3,
+      "vehiclegroups": "Vehiclegrp3",
+      "users": "05"
+    }
+  ],
+  "GetDefaultSetting": {
+    "language": {
+      "val": [
+        "L-1",
+        "L-2"
+      ],
+      "selectedIndex": 1
+    },
+    "timeZone": {
+      "val": [
+        "TZ-1",
+        "TZ-2"
+      ],
+      "selectedIndex": 1
+    },
+    "currency": {
+      "val": [
+        "C-1",
+        "C-2",
+        "C-3"
+      ],
+      "selectedIndex": 0
+    },
+    "dateFormat": {
+      "val": [
+        "DF-1",
+        "DF-2",
+        "DF-3"
+      ],
+      "selectedIndex": 2
+    },
+    "unit": {
+      "val": [
+        "U-1",
+        "U-2",
+        "U-3",
+        "U-4"
+      ],
+      "selectedIndex": 3
+    },
+    "vehDisplay": {
+      "val": [
+        "VD-1",
+        "VD-2",
+        "VD-3"
+      ],
+      "selectedIndex": 1
+    },
+    "timeFormat": {
+      "val": [
+        "TF-1",
+        "TF-2",
+        "TF-3"
+      ],
+      "selectedIndex": 1
+    },
+    "landingPage": {
+      "val": [
+        "LP-1",
+        "LP-2",
+        "LP-3"
+      ],
+      "selectedIndex": 1
+    }
+  },
+  "GetAccountInfo": [
+    {
+      "salutation": "Ms.",
+      "firstName": "TestName-À",
+      "lastName": "TestLastName Òè",
+      "emailId": "test@atos.net",
+      "birthDate": "05/31/1988",
+      "organization": "Atos"
+    }
+  ],
+  "ChangePassword": [
+    {
+      "currentPassword": "Abcd@123"
+    }
+  ],
+  "GetLabelTranslation": [
+    {
+      "code": "lblName",
+      "translation": "Name"
+    }
+  ],
+  "GetSelectedRoles": [
+    {
+      "id": 1,
+      "roleMasterId": 1,
+      "name": "Admin",
+      "roleDescription": "Admin role Desc",
+      "createdby": 5,
+      "modifiedby": 0,
+      "createddate": "2020-10-15T13:15:16.828755",
+      "modifieddate": "0001-01-01T00:00:00",
+      "services": 2,
+      "roleType": "Global",
+      "features": [
+        {
+          "name": "Reports _view"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "roleMasterId": 2,
+      "name": "Fleet Admin",
+      "roleDescription": "Fleet admin role",
+      "createdby": 5,
+      "modifiedby": 0,
+      "createddate": "2020-10-15T13:15:16.828755",
+      "modifieddate": "0001-01-01T00:00:00",
+      "services": 5,
+      "roleType": "Global",
+      "features": [
+        {
+          "name": "Reports _delete"
+        },
+        {
+          "name": "Reports _edit"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "roleMasterId": 3,
+      "name": "Fleet Manager",
+      "roleDescription": "Fleet manager role",
+      "createdby": 5,
+      "modifiedby": 0,
+      "createddate": "2020-10-15T13:15:16.828755",
+      "modifieddate": "0001-01-01T00:00:00",
+      "services": 9,
+      "roleType": "Global",
+      "features": [
+        {
+          "name": "Reports _view"
+        },
+        {
+          "name": "Reports _create"
+        }
+      ]
+    }
+  ],
+  "GetSelectedUserGroups": [
+    {
+      "organizationId": 1,
+      "name": "usergrp2",
+      "isActive": true,
+      "usergroupId": "2",
+      "vehicles": "05",
+      "users": "04",
+      "id": "2"
+    },
+    {
+      "organizationId": 1,
+      "name": "usergrp50",
+      "isActive": true,
+      "usergroupId": "5",
+      "vehicles": "05",
+      "users": "04",
+      "id": "5"
+    }
+  ]
+}

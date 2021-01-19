@@ -1,0 +1,200 @@
+<div class='bgtrans'>
+    <div *ngIf='!editFlag'>
+        <mat-card class='mat-elevation-z margin-bottom-xlg'>
+            <form [formGroup]="importDriverFormGroup">
+                <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
+                    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                        <span class='custom-font'>{{ translationData.lblImportNewDrivers || 'Import New Drivers' }}</span>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="15px">
+                    <div style='width:30%' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                        <span style='display: flex; align-items: center;'>
+                            <mat-icon style="margin-right: 5px;">cloud_upload</mat-icon><a [download]="templateFileName" [href]="templateFileUrl"
+                                style='font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>{{ translationData.lblDownloadaTemplate || 'Download a Template' }}</a>
+                        </span>
+                        <span>{{ translationData.lblDownloadaTemplateMessage || 'You can enter multiple driver records. New Driver IDs records will be added and existing Driver ID records will be updated. Few fields are mandatory; the rest optional – please see the template for details. All the fields (with the exception of the Driver ID) can be edited later from the Driver Management screen shown below.'}}</span>
+                    </div>
+                    <div style='width:70%; border: 1px solid; border-radius: 5px;' fxLayout="column" fxLayoutAlign="end">
+                        <div style='border-bottom: 1px solid; padding: 10px; background: #d8d8d8;' fxLayout="row"
+                            fxLayoutAlign="start">
+                            <div fxLayout="column" fxLayoutAlign="left">
+                                <span>{{ translationData.lblUploadupdateddriverdetailsandselectgroupfordefiningcategory || 'Upload updated driver details and select group for defining category' }}</span>
+                            </div>
+                        </div>
+                        <div style='padding: 20px 10px 10px;' fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="start">
+                            <div style="width: 35%;" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                                <div fxLayout="row" fxLayoutAlign="start">
+                                    <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                                        <mat-label>{{ translationData.lblSelectUserGroupOptional || 'Select User Group (Optional)'}}</mat-label>
+                                        <mat-form-field appearance="outline" class="full-width">
+                                            <mat-select placeholder="{{ translationData.lblSelectusergroup || 'Select User Group' }}" formControlName="userGroup">
+                                                <mat-option *ngFor="let userGrp of userGrpList" [value]="userGrp.name">
+                                                    {{userGrp.name}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="width: 65%;" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                                <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
+                                    <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                                        <!-- <mat-label>Upload updated Excel file <span class='mandatoryColor'>*</span></mat-label>
+                                        <mat-form-field appearance="outline" class="full-width">
+                                            <mat-select placeholder="Upload Updated Excel file" formControlName="uploadFile" required>
+                                                <mat-option *ngFor="let userGrp of userGrpList" [value]="userGrp.name">
+                                                    {{userGrp.name}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <mat-error *ngIf="importDriverFormGroup.get('uploadFile').hasError('required')">
+                                            Upload File is required
+                                        </mat-error> -->
+                                        <!-- <mat-form-field appearance="outline" class="full-width">
+                                            <div class="myfilebrowser">
+                                                <input placeholder="Upload Updated Excel file" matInput [(ngModel)]="myfilename" readonly name="memberContactNo"  formControlName="uploadFile" required />
+                                                <button mat-flat-button color="primary">
+                                                Browse
+                                                </button>
+                                            <input type="file" #UploadFileInput id="fileUpload" (change)="fileChangeEvent($event)" name="fileUpload"/>
+                                            </div>                                    
+                                        </mat-form-field> -->
+                                        <mat-label>{{ translationData.lblUploadUpdatedExcelFile || 'Upload updated Excel file' }} <span class='mandatoryColor'>*</span></mat-label>
+                                        <mat-form-field appearance="outline">
+                                            <ngx-mat-file-input (change)="addfile($event)" [accept]="'.xlsx'" formControlName="uploadFile" placeholder="Upload Excel File" ></ngx-mat-file-input>
+                                            <button mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse || 'Browse' }}</button>
+                                        </mat-form-field>
+                                        <mat-error *ngIf="importDriverFormGroup.get('uploadFile').hasError('required')">
+                                            {{ translationData.lblPleaseselectafile || 'Please select a file' }}
+                                        </mat-error>
+                                        <mat-error *ngIf="importDriverFormGroup.get('uploadFile').hasError('maxContentSize')">
+                                            The total size must not exceed {{importDriverFormGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{importDriverFormGroup.get('uploadFile')?.getError('maxContentSize').actualSize
+                                            | byteFormat}}).
+                                        </mat-error>
+                                        <!-- <div class="form-group">
+                                            <label for="file">Choose File</label>
+                                            <input type="file"
+                                                id="file"
+                                                (change)="handleFileInput($event.target.files)">
+                                        </div> -->
+                                    </div>
+                                    <div fxLayout="column" fxLayoutAlign="space-around">
+                                        <button [disabled]="!importDriverFormGroup.valid" [ngStyle]="{'margin-top': importDriverFormGroup.get('uploadFile').hasError('required') ? '5px' : '25px' }" mat-flat-button color="primary"
+                                            (click)="importDrivers()">
+                                            <mat-icon>keyboard_arrow_up</mat-icon> {{ translationData.lblImport || 'Import' }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </mat-card>
+
+        <mat-card *ngIf='importDriverPopup' style='background: transparent; border: 1px solid;' class='mat-elevation-z margin-bottom-xlg'>
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+                <div style='width:95%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span class='custom-font'>{{ translationData.lblImportedFileDetails || 'Imported File Details' }}</span>
+                </div>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+                    <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start space-between">
+                <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span>Imported <span style='color: green'>2 new drivers</span></span>
+                </div>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span>{{ translationData.lblRole || 'Role' }}: <span class='custom-font'>Driver</span></span>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start space-between">
+                <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span>Rejected <span style='color: red'>6 drivers</span></span>
+                </div>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span>{{ translationData.lblUserGroup || 'User Group' }}: <span class='custom-font'>{{ userGrpName }}</span></span>
+                </div>
+            </div>
+        </mat-card>
+
+        <mat-card class='mat-elevation-z'>
+            <div fxLayout="row" fxLayoutAlign="space-between">
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span class='custom-font'>{{ translationData.lblDriverDetails || 'Driver Details' }}</span>
+                </div>
+            </div>
+
+            <!-- <div class="example-header">
+                <mat-form-field>
+                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+                </mat-form-field>
+            </div> -->
+            <div fxLayout="row" fxLayoutAlign="space-between">
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <mat-form-field>
+                        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblFilter || 'Filter' }}">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <button mat-flat-button color="primary"
+                        (click)="onConsentClick('opt-in')" style='margin-right: 10px;'>
+                        <mat-icon>keyboard_arrow_up</mat-icon> {{ translationData.lblOptInAll || 'Opt-In All'}}
+                    </button>
+                    <button mat-flat-button color="primary"
+                        (click)="onConsentClick('opt-out')">
+                        <mat-icon>close</mat-icon>{{ translationData.lblOptOutAll || 'Opt-Out All'}}
+                    </button>
+                </div>
+            </div>
+
+            <div class="example-container">
+                <mat-table [dataSource]="dataSource" matSort>
+                    <ng-container matColumnDef="usergroupId">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>User Group ID</mat-header-cell>
+                        <mat-cell *matCellDef="let row"> {{row.usergroupId}} </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="name">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>Group Name</mat-header-cell>
+                        <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
+                    </ng-container>
+
+
+                    <ng-container matColumnDef="isActive">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>isActive</mat-header-cell>
+                        <mat-cell *matCellDef="let row"> {{row.isActive}} </mat-cell>
+                    </ng-container>
+
+
+                    <ng-container matColumnDef="action">
+                        <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <button class='actionBtn' mat-flat-button matTooltip="View">
+                                <mat-icon>visibility</mat-icon>
+                              </button>
+                            <button class='actionBtn' mat-flat-button (click)="editgroup(row)" matTooltip="Edit">
+                                <mat-icon>create</mat-icon>
+                            </button>
+                            <button class='actionBtn' mat-flat-button (click)="deleteGroup(row)" matTooltip="Delete">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </mat-cell>
+                    </ng-container>
+
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;">
+                    </mat-row>
+                </mat-table>
+
+                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+            </div>
+
+        </mat-card>
+    </div>
+    <div *ngIf='editFlag'>
+        <app-edit-driver-details [translationData]='translationData' [rowData]='rowData' (backToPage)="editData($event)"></app-edit-driver-details>
+    </div>
+</div>

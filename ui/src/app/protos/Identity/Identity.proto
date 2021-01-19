@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option csharp_namespace = "DotNetCoreAPI.Services.Protos";
+
+package identity;
+
+service AuthService {
+	rpc GenerateToken(UserRequest) returns (TokenResponse);
+}
+
+message UserRequest {
+	string username = 1;
+	string password = 2;
+}
+
+message TokenResponse {
+	string accesstoken = 1;
+	int32 expiresin  = 2;
+	int32 refreshexpiresin   = 3;
+	string refreshtoken = 4;
+	string tokentype  = 5;
+	int32 notbeforepolicy  = 6;
+	string sessionstate = 7;
+	string scope  = 8;
+	string error= 9;
+}
