@@ -1,0 +1,72 @@
+<mat-card class='mat-elevation-z margin-bottom-xlg no-padding' *ngIf='closePopup'
+    style="min-width: 800px; min-height: 300px;">
+    <mat-card-content>
+        <div fxLayout="row" fxLayoutAlign="start space-around"
+            style='padding: 10px 20px !important; background: #d4d4d4;'>
+            <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                <span class='custom-font'>{{ data.tableHeader }} ({{ selectionData.selected.length }})</span>
+            </div>
+            <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
+                <mat-icon matTooltip="{{ data.translationData.lblClose || 'Close'}}" (click)='onClose(false)' style='cursor: pointer;'>close</mat-icon>
+            </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start space-around">
+            <div style='padding: 10px 20px 0px 20px;' class='full-width' fxLayout="column" fxLayoutGap="3px"
+                fxLayoutAlign="left">
+                <div class='margin-bottom-xlg'>
+                    <mat-form-field>
+                      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ data.translationData.lblSearch || 'Search' }}">
+                    </mat-form-field>
+                  </div>
+                <mat-table [dataSource]="dataSource" class="table-items" matSort>
+                    <ng-container *ngFor="let disCol of data.colsList; let colIndex = index" matColumnDef="{{disCol}}">
+                        <div *ngIf="disCol == 'select'">
+                            <mat-header-cell *matHeaderCellDef>
+                                <mat-checkbox (change)='$event ? masterToggleForSelectionData() : null'
+                                    [checked]='selectionData.hasValue() && isAllSelectedForSelectionData()'
+                                    [indeterminate]='selectionData.hasValue() && !isAllSelectedForSelectionData()'
+                                    [aria-label]='checkboxLabelForSelectionData()'>
+                                </mat-checkbox><span style='margin: 5px 0px 0px 5px;'>{{ data.colsName[colIndex]
+                                    }}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <mat-checkbox (click)='$event.stopPropagation()'
+                                    (change)='$event ? selectionData.toggle(row) : null'
+                                    [checked]='selectionData.isSelected(row)'
+                                    [aria-label]='checkboxLabelForSelectionData(row)'>
+                                </mat-checkbox>
+                            </mat-cell>
+                        </div>
+                        <div *ngIf="disCol == 'services'">
+                            <mat-header-cell *matHeaderCellDef> {{ data.colsName[colIndex] }}</mat-header-cell>
+                            <mat-cell *matCellDef="let element ">
+                                <span *ngFor='let item of [].constructor(element.services); let i = index'>
+                                    <img title={{item}} src="../../../assets/connected-logo-small.png" style="width: 20px;height: 20px;"/>&nbsp;
+                                </span> 
+                            </mat-cell>
+                        </div>
+                        <div *ngIf="disCol != 'select'">
+                            <mat-header-cell *matHeaderCellDef> {{ data.colsName[colIndex] }}</mat-header-cell>
+                            <mat-cell *matCellDef="let element "> {{ element[disCol] }}
+                            </mat-cell>
+                        </div>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="data.colsList"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: data.colsList;">
+                    </mat-row>
+                </mat-table>
+                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+            </div>
+        </div>
+    </mat-card-content>
+    <mat-card-actions fxLayoutAlign="end end" class='no-margin' style="padding: 0px 20px;">
+        <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
+            <button class='margin-right-10' mat-raised-button color="primary" (click)='onClose(false)'>{{
+                data.translationData.lblCancel || 'Cancel' }}</button>
+            <button class='margin-right-10' mat-raised-button color="primary" (click)="onReset()">{{
+                data.translationData.lblReset || 'Reset' }}</button>
+            <button mat-raised-button color="primary" (click)="onConfirm()">{{
+                data.translationData.lblConfirm || 'Confirm' }}</button>
+        </div>
+    </mat-card-actions>
+</mat-card>

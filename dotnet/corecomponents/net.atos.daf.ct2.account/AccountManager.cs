@@ -107,6 +107,10 @@ namespace net.atos.daf.ct2.account
         {
             return await repository.UpdateAccessRelationship(entity);
         }
+        public async Task<bool> DeleteAccessRelationship(int accountGroupId)
+        {
+            return await repository.DeleteAccessRelationship(accountGroupId);
+        }
         public async Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter)
         {
             return await repository.GetAccessRelationship(filter);

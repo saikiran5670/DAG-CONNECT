@@ -44,7 +44,10 @@ bld/
 [Bb]in/
 [Oo]bj/
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> c16a1c14fc062e1ddbf8a1db15659fe002d464ae
 # Visual Studio 2015 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot

@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.accountservice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
-            var connectionString = Configuration.GetConnectionString("ConnectionStringHardCode");
+            var connectionString = Configuration.GetConnectionString("ConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             // Identity configuration
             services.AddSingleton(dataAccess);
@@ -43,13 +43,12 @@ namespace net.atos.daf.ct2.accountservice
 
             services.AddTransient<Identity.IAccountManager,Identity.AccountManager>();
             
-            services.AddTransient<IGroupManager, GroupManager>();
             services.AddTransient<IGroupRepository, GroupRepository>();
-            
+            services.AddTransient<IGroupManager, GroupManager>();
 
             services.AddTransient<IAccountRepository,AccountRepository>();
             services.AddTransient<IAccountManager,AccountManager>();            
-             services.AddTransient<IVehicleRepository, VehicleRepository>(); 
+            services.AddTransient<IVehicleRepository, VehicleRepository>(); 
             services.AddTransient<IVehicleManager,VehicleManager>();
 
             //services.AddTransient<IGroupManager, GroupManager>();

@@ -1,0 +1,4 @@
+FROM nginx:alpine
+COPY ./dist/ngHereApp /usr/share/nginx/html
+EXPOSE 80 443
+ENTRYPOINT [ "nginx", "-g", "daemon off;" ]

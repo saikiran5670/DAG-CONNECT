@@ -1,0 +1,250 @@
+<div *ngIf='grpTitleVisible' fxLayout="row" fxLayoutAlign="center center" style='padding:10px; color:#fff; background: #5dc24e;'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+     {{ grpCreatedMsg }}   
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+        <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+    </div>
+</div>
+
+<!-- <button mat-raised-button (click)="isLinear = !isLinear" id="toggle-linear">
+    {{!isLinear ? 'Enable linear mode' : 'Disable linear mode'}}
+  </button> -->
+  <mat-horizontal-stepper [linear]="isLinear" labelPosition="bottom" #stepper>
+    <mat-step [stepControl]="firstFormGroup">
+      <form [formGroup]="firstFormGroup">
+        <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 1: {{ translationData.lblSelectUserRole || 'Select User Role' }}</ng-template>
+        <!-- <mat-form-field>
+          <mat-label>Name</mat-label>
+          <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
+        </mat-form-field> -->
+        <mat-card>
+          <mat-card-content>
+            <div fxLayout="row">
+              <div fxLayout="column" class='full-width'>
+                <mat-table [dataSource]="roleDataSource" matSort>
+
+                  <ng-container matColumnDef="select">
+                    <mat-header-cell *matHeaderCellDef>
+                      <mat-checkbox (change)='$event ? masterToggleForRole() : null'
+                        [checked]='selectionForRole.hasValue() && isAllSelectedForRole()'
+                        [indeterminate]='selectionForRole.hasValue() && !isAllSelectedForRole()'
+                        [aria-label]='checkboxLabel()'>
+                      </mat-checkbox>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                      <mat-checkbox (click)='$event.stopPropagation()'
+                        (change)='$event ? selectionForRole.toggle(row) : null'
+                        [checked]='selectionForRole.isSelected(row)'
+                        [aria-label]='checkboxLabel(row)'>
+                      </mat-checkbox>
+                    </mat-cell>
+                  </ng-container>
+
+                  <!-- <ng-container matColumnDef="roleMasterId">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> roleMasterId </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.roleMasterId}} </mat-cell>
+                  </ng-container> -->
+          
+                  <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> User Role </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
+                  </ng-container>
+          
+                  <ng-container matColumnDef="services">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Services </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.services}} </mat-cell>
+                  </ng-container>
+                  
+                  <!-- <ng-container matColumnDef="isactive">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> isActive </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.isactive}} </mat-cell>
+                  </ng-container> -->
+          
+                  <mat-header-row *matHeaderRowDef="roleDisplayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: roleDisplayedColumns;">
+                  </mat-row>
+                </mat-table>
+          
+                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+              </div>
+            </div>
+          </mat-card-content>
+          <mat-card-actions fxLayoutAlign="end end">
+            <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
+              <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+              <button mat-raised-button color="primary" matStepperNext>{{ translationData.lblNext || 'Next' }}</button>
+            </div>
+          </mat-card-actions>
+        </mat-card>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="secondFormGroup">
+      <form [formGroup]="secondFormGroup">
+        <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 2: {{ translationData.lblSelectVehicleGroupVehicle || 'Select Vehicle Group/Vehicle' }}</ng-template>
+        <!-- <mat-form-field>
+          <mat-label>Address</mat-label>
+          <input matInput formControlName="secondCtrl" placeholder="Ex. 1 Main St, New York, NY"
+                 required>
+        </mat-form-field> -->
+        <mat-card>
+          <mat-card-content>
+            <div fxLayout="row">
+              <div fxLayout="column" class='full-width'>
+                <div fxLayoutGap="3px" fxLayoutAlign="end">
+                  <mat-label>View list by : </mat-label>
+                  <mat-radio-group (change)='onChange($event)'>
+                      <mat-radio-button style='margin-right: 20px;' value="group" [checked]="selectedType ===  'group' ? true : false">{{ translationData.lblGroup || 'Group' }}</mat-radio-button>
+                      <mat-radio-button style='margin-right: 20px;' value="vehicle" [checked]="selectedType ===  'vehicle' ? true : false">{{ translationData.lblVehicle || 'Vehicle' }}</mat-radio-button>
+                      <mat-radio-button value="both" [checked]="selectedType ===  'both' ? true : false">{{ translationData.lblBoth || 'Both' }}</mat-radio-button>
+                  </mat-radio-group>
+                </div>
+                <mat-table [dataSource]="vehGrpDataSource" matSort>
+                  
+                  <ng-container matColumnDef="select">
+                    <mat-header-cell *matHeaderCellDef>
+                      <mat-checkbox (change)='$event ? masterToggleForVehGrp() : null'
+                        [checked]='selectionForVehGrp.hasValue() && isAllSelectedForVehGrp()'
+                        [indeterminate]='selectionForVehGrp.hasValue() && !isAllSelectedForVehGrp()'
+                        [aria-label]='checkboxLabelForVehGrp()'>
+                      </mat-checkbox>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                      <mat-checkbox (click)='$event.stopPropagation()'
+                        (change)='$event ? selectionForVehGrp.toggle(row) : null'
+                        [checked]='selectionForVehGrp.isSelected(row)'
+                        [aria-label]='checkboxLabelForVehGrp(row)'>
+                      </mat-checkbox>
+                    </mat-cell>
+                  </ng-container>
+
+                  <!-- <ng-container matColumnDef="vehicleGroupID">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Vehicle Group Id </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.vehicleGroupID}} </mat-cell>
+                  </ng-container> -->
+          
+                  <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Vehicle Group/Vehicle </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
+                  </ng-container>
+
+                  <ng-container matColumnDef="vehicles">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Vehicle/VIN </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.vehicles}} </mat-cell>
+                  </ng-container>
+
+                  <ng-container matColumnDef="registrationNumber">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Registration Number </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.registrationNumber}} </mat-cell>
+                  </ng-container>
+          
+          
+                  <!-- <ng-container matColumnDef="isActive">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> isActive </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.isActive}} </mat-cell>
+                  </ng-container> -->
+                  <mat-header-row *matHeaderRowDef="vehGrpdisplayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: vehGrpdisplayedColumns;">
+                  </mat-row>
+                </mat-table>
+          
+                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+              </div>
+            </div>
+          </mat-card-content>
+          <mat-card-actions fxLayoutAlign="end end">
+            <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
+              <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+              <button class='margin-right-10' mat-raised-button color="primary" matStepperPrevious>{{ translationData.lblPrevious || 'Previous' }}</button>
+              <button mat-raised-button color="primary" matStepperNext>{{ translationData.lblNext || 'Next' }}</button>
+            </div>
+          </mat-card-actions>
+        </mat-card>
+      </form>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 3: {{ translationData.lblSummary || 'Summary' }}</ng-template>
+      <!-- <p>You are now done.</p> -->
+      <app-confirm-step [translationData]='translationData' [selectedRoleData]='selectionForRole.selected' [selectedVehGrpData]='selectionForVehGrp.selected'></app-confirm-step>
+     <!-- <mat-card class='margin-bottom-xlg mat-elevation-z'>
+        <mat-card-content>
+          
+           <div fxLayout="row">
+            <div fxLayout="column" class='full-width margin-bottom-sm'>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Selected User Roles - ({{ selectedRoleDataSourceAll().filteredData.length }})</span>
+            </div>
+          </div>    
+          <div fxLayout="row" *ngIf='selectedRoleDataSourceAll().filteredData.length > 0'>
+            <div fxLayout="column" class='full-width'>
+              <mat-table [dataSource]="selectedRoleDataSourceAll()" matSort>
+                <ng-container matColumnDef="roleMasterId">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> roleMasterId </mat-header-cell>
+                  <mat-cell *matCellDef="let row"> {{row.roleMasterId}} </mat-cell>
+                </ng-container>
+        
+                <ng-container matColumnDef="name">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> Role Name </mat-header-cell>
+                  <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
+                </ng-container>
+        
+        
+                <ng-container matColumnDef="isactive">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> isActive </mat-header-cell>
+                  <mat-cell *matCellDef="let row"> {{row.isactive}} </mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="displayedColumnsRoleConfirm"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumnsRoleConfirm;">
+                </mat-row>
+              </mat-table>
+        
+              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+            </div>
+          </div> 
+        </mat-card-content>
+      </mat-card> 
+      <mat-card class='margin-bottom-xlg mat-elevation-z'>
+        <mat-card-content>
+          <div fxLayout="row">
+            <div fxLayout="column" class='full-width margin-bottom-sm'>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Selected Vehicle Groups/Vehicles - ({{ selectedVehGrpDataSourceAll().filteredData.length }})</span>
+            </div>
+          </div>
+          <div fxLayout="row" *ngIf='selectedVehGrpDataSourceAll().filteredData.length > 0'>
+            <div fxLayout="column" class='full-width'>
+              <mat-table [dataSource]="selectedVehGrpDataSourceAll()" matSort>
+                <ng-container matColumnDef="vehicleGroupID">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> Vehicle Group Id </mat-header-cell>
+                  <mat-cell *matCellDef="let row"> {{row.vehicleGroupID}} </mat-cell>
+                </ng-container>
+        
+                <ng-container matColumnDef="name">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> Vehicle Group Name </mat-header-cell>
+                  <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
+                </ng-container>
+        
+        
+                <ng-container matColumnDef="isActive">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> isActive </mat-header-cell>
+                  <mat-cell *matCellDef="let row"> {{row.isActive}} </mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="displayedColumnsVehGrpConfirm"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumnsVehGrpConfirm;">
+                </mat-row>
+              </mat-table>
+        
+              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card> -->
+      <mat-card class='bg-theme mat-elevation-z'>
+        <mat-card-actions fxLayoutAlign="end end">
+          <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
+            <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+            <button class='margin-right-10' mat-raised-button color="primary" matStepperPrevious>{{ translationData.lblPrevious || 'Previous' }}</button>
+            <button mat-raised-button color="primary" (click)="onConfirm()">{{ translationData.lblConfirm || 'Confirm' }}</button>
+          </div>
+        </mat-card-actions>
+      </mat-card>  
+    </mat-step>
+  </mat-horizontal-stepper>

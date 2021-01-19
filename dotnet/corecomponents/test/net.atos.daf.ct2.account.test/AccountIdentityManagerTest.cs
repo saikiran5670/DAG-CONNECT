@@ -3,10 +3,15 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration; 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.identity;
 using net.atos.daf.ct2.identity.entity;
+using net.atos.daf.ct2.accountpreference;
+
 
 namespace net.atos.daf.ct2.account.test
 {
@@ -14,7 +19,7 @@ namespace net.atos.daf.ct2.account.test
     public class AccountIdentityManagerTest
     {
         private readonly IAccountIdentityManager accountIdentityManager;
-        
+        private readonly IConfiguration _config;
         public AccountIdentityManagerTest()
         {
             var idenityconfiguration = new IdentityJsonConfiguration(){
@@ -34,12 +39,21 @@ namespace net.atos.daf.ct2.account.test
             RsaPublicKey="MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAqyFYwF13lXMGZV7/nDiaQ4oPDAH8y23yV0EfSa8Oc0eqnIZd/6GrvirhejmDl5tAJHZANfLbS5Pmj4nScu3SizhoEbb4yhXgp7uJpRGADRAFs9E1v08VBHFQSCaSo4vOXxgrG5UtQjNpSjJWqBIG2kvA6kz1ZDbtK5xaZS+K2vQ64/9o9gYd3Rof/0BqrfMcg0+vq7N7+gTwiDMqcu93EiLbDbIbEQpLohJdQ7DgnxvlcGoPY47mHucR9RALlq0C31U2NDwqErNJZ6BeiSCnRW+aA0mW5zfvD1TS5S9Fdi3Bhb4lEocP/qcfqZC9YYlFu0vhbAz3JJEHIiuVG0V39Rd+De+bi/3Hwj8617+IeuB/pXSBp2C2eTez+dmDewiqFXg5Pv2k3P4FnQU0cbTCj53zIyfwon3p8UF/7wYS1BPMQe2VqhfdjzgvnhLmSd3PXA4gul6gZdSnnUOE0exZ6af1ldqrxi3X3JVqK3S+/WLEpfpCw+nE3jxq/9h+qydcIWr+p0zYwTeh3xxHyGS9dU1SdjwfL4EkDJxxTjAshXOg+4w+IHHFGDpu+nQbm8vQfZTm+NQZFkCsVnueWPthqj3sCz7DL6oh41XCYBPkoFrFXa+e8O3ByMyMs4Uv/5BtIDjXYDHCxF1kY2nR0ySVLWXRAJHgZlt8+8qMbgWSoRsCAwEAAQ=="
           };
 
-            IOptions<IdentityJsonConfiguration> setting = Options.Create(idenityconfiguration);
-            identity.ITokenManager _tokenManager=new identity.TokenManager(setting);
-            identity.IAccountAuthenticator _autheticator= new identity.AccountAuthenticator(setting); 
-            
+          IOptions<IdentityJsonConfiguration> setting = Options.Create(idenityconfiguration);
 
-            accountIdentityManager = new AccountIdentityManager(_tokenManager,_autheticator);
+        var connectionString = _config.GetConnectionString("DevAzure");            
+        IDataAccess _dataAccess = new PgSQLDataAccess(connectionString);
+        IAuditLogRepository _auditLogRepository=new AuditLogRepository(_dataAccess);
+        IAuditTraillib _auditlog= new AuditTraillib(_auditLogRepository);
+        IAccountPreferenceRepository _repository= new AccountPreferenceRepository(_dataAccess); 
+        IPreferenceManager _preferenceManager = new PreferenceManager(_repository,_auditlog);        
+        identity.ITokenManager _tokenManager=new identity.TokenManager(setting);
+        identity.IAccountManager _accountManager=new identity.AccountManager(setting);
+        identity.IAccountAuthenticator _autheticator= new identity.AccountAuthenticator(setting);
+        IAccountRepository _repo = new AccountRepository(_dataAccess);
+        IAccountManager _accManager=new AccountManager(_repo,_auditlog,_accountManager);
+        accountIdentityManager = new AccountIdentityManager(_tokenManager,_autheticator,_preferenceManager,_accManager);
+
         }
         [TestMethod]
         public void AccountLogin()
