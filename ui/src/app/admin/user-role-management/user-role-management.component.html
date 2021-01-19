@@ -37,8 +37,9 @@
                         <ng-container matColumnDef="name">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRoleName || 'Role Name'}}</mat-header-cell>
                             <mat-cell *matCellDef="let row">
-                                <mat-icon *ngIf="row.newTag" inline="true" color="warn"> fiber_new </mat-icon>
-                                {{row.name}} &nbsp;
+                                <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
+                                <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+                                <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{row.name}}</span> &nbsp;
                                 <mat-icon *ngIf="row.roleType == 'Global'" inline="true"> public </mat-icon>
                             </mat-cell>
                         </ng-container>

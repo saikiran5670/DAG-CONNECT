@@ -157,9 +157,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
           features: this.selectionForFeatures.selected
         }
         this.userService.createUserRole(objData).subscribe((res) => {
-          this.userService.getUserRoles().subscribe((data) => {
-            this.backToPage.emit({ editFlag: false, editText: 'create', gridData: data });
-          }, (error) => { });
+          this.backToPage.emit({ editFlag: false, editText: 'create' });
         }, (error) => { });
       }
     }, (error) => { });
@@ -183,9 +181,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
       features: this.selectionForFeatures.selected
     }
     this.userService.updateUserRole(objData).subscribe((res) => {
-      this.userService.getUserRoles().subscribe((data) => {
-        this.backToPage.emit({ editFlag: false, editText: 'edit', gridData: data });
-      }, (error) => { });
+      this.backToPage.emit({ editFlag: false, editText: 'edit'});
     }, (error) => { });
   }
 

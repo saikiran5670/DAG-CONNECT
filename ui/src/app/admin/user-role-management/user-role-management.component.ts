@@ -92,23 +92,33 @@ export class UserRoleManagementComponent implements OnInit {
 
   loadInitData() {
     this.userService.getUserRoles().subscribe((data) => {
+      this.initData = this.getNewTagData(data);
       setTimeout(()=>{
-        this.dataSource = new MatTableDataSource(data);
+        this.dataSource = new MatTableDataSource(this.initData);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
       });
-      this.initData = data;
-      let currentDate = new Date().getTime();
-      
-      this.initData.forEach(row => {
-        let createdDate = new Date(row.createddate).getTime();
-        let nextDate = createdDate + 86400000;
-        if(currentDate > createdDate && currentDate < nextDate){
-          row.newTag = true;
-        }
-      });
     });
   }
+
+  getNewTagData(data: any){
+    let currentDate = new Date().getTime();
+    data.forEach(row => {
+      let createdDate = new Date(row.createddate).getTime();
+      let nextDate = createdDate + 86400000;
+      if(currentDate > createdDate && currentDate < nextDate){
+        row.newTag = true;
+      }
+      else{
+        row.newTag = false;
+      }
+    });
+    let newTrueData = data.filter(item => item.newTag == true);
+    let newFalseData = data.filter(item => item.newTag == false);
+    Array.prototype.push.apply(newTrueData,newFalseData); 
+    return newTrueData;
+  }
+
 
   newUserRole() {
     this.titleText = this.translationData.lblCreateNewUserRole || "Create New User Role";
@@ -181,11 +191,10 @@ export class UserRoleManagementComponent implements OnInit {
     this.viewFlag = item.viewFlag;
     if(item.editText == 'create'){
       this.openSnackBar('Item created', 'dismiss');
-      this.initData = item.gridData;
     }else if(item.editText == 'edit'){
       this.openSnackBar('Item edited', 'dismiss');
-      this.initData = item.gridData;
     }
+    this.initData = this.loadInitData();
     setTimeout(()=>{
       this.dataSource = new MatTableDataSource(this.initData);
       this.dataSource.paginator = this.paginator;
