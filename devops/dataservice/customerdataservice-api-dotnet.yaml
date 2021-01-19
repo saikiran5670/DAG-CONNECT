@@ -6,9 +6,7 @@
 trigger:
 - none
 
-pool: 
-  name: Azure Pipelines
-  vmImage: ubuntu-18.04
+pool: dafct-dev1-privateagent
 
 parameters:
 - name: ENV
