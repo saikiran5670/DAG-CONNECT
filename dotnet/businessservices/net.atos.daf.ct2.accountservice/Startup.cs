@@ -32,24 +32,33 @@ namespace net.atos.daf.ct2.accountservice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
+            // Enable CORS for service
+            services.AddCors(o => o.AddPolicy("AllowAll", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+            }));
+
             var connectionString = Configuration.GetConnectionString("ConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             // Identity configuration
             services.AddSingleton(dataAccess);
-            services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration")); 
+            services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
 
-            services.AddTransient<IAuditLogRepository,AuditLogRepository>();
-            services.AddTransient<IAuditTraillib,AuditTraillib>();
+            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
+            services.AddTransient<IAuditTraillib, AuditTraillib>();
 
-            services.AddTransient<Identity.IAccountManager,Identity.AccountManager>();
-            
+            services.AddTransient<Identity.IAccountManager, Identity.AccountManager>();
+
             services.AddTransient<IGroupRepository, GroupRepository>();
             services.AddTransient<IGroupManager, GroupManager>();
 
-            services.AddTransient<IAccountRepository,AccountRepository>();
-            services.AddTransient<IAccountManager,AccountManager>();            
-            services.AddTransient<IVehicleRepository, VehicleRepository>(); 
-            services.AddTransient<IVehicleManager,VehicleManager>();
+            services.AddTransient<IAccountRepository, AccountRepository>();
+            services.AddTransient<IAccountManager, AccountManager>();
+            services.AddTransient<IVehicleRepository, VehicleRepository>();
+            services.AddTransient<IVehicleManager, VehicleManager>();
 
             //services.AddTransient<IGroupManager, GroupManager>();
             //services.AddTransient<IPreferenceManager, PreferenceManager>();
@@ -66,16 +75,21 @@ namespace net.atos.daf.ct2.accountservice
             }
 
             app.UseRouting();
+            app.UseGrpcWeb();
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>();
-                endpoints.MapGrpcService<AccountManagementService>();
+                endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb()
+                                                  .RequireCors("AllowAll");
+                endpoints.MapGrpcService<AccountManagementService>().EnableGrpcWeb()
+                                                  .RequireCors("AllowAll");
+
                 endpoints.MapGet("/", async context =>
                 {
                     await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
                 });
-            });
+            }); 
         }
     }
 }
