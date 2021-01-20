@@ -441,19 +441,15 @@ namespace net.atos.daf.ct2.organization.repository
             return keyHandOver;  
             }           
                
-        public async Task<int> CreateVehicleParty(List<Organization> organization)
+        public async Task<int> CreateVehicleParty(List<Customer> customers)
         {
-            foreach (var item in organization)
+             int count=0;
+            foreach (var item in customers)
             {
-                string Org_Id = await dataAccess.QuerySingleAsync<string>("SELECT org_id FROM master.organization where org_id=@org_id", new { org_id = item.OrganizationId });
-                if(!string.IsNullOrEmpty(Org_Id)){
-                    await Create(item);
-                }
-                else{
-                    await Update(item);
-                }
+                await UpdateCustomer(item);             
+                count+=1;
             }
-            return 0;
+            return count;
         }
     }
 }

@@ -9,6 +9,7 @@ using net.atos.daf.ct2.audit.entity;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.auditservice;
+using System.Text;
 
 namespace net.atos.daf.ct2.auditservice.Services
 {

@@ -2,6 +2,7 @@ using net.atos.daf.ct2.audit;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.organization.entity;
 using net.atos.daf.ct2.organization.repository;
+using System.Collections.Generic;
 
 
 namespace net.atos.daf.ct2.organization
@@ -40,6 +41,11 @@ namespace net.atos.daf.ct2.organization
         public async Task<KeyHandOver> KeyHandOverEvent(KeyHandOver keyHandOver)
         {
             return await organizationRepository.KeyHandOverEvent(keyHandOver);
+        }
+
+        public async Task<int> CreateVehicleParty(List<Customer> customers)
+        {
+            return await organizationRepository.CreateVehicleParty(customers);
         }
     }
 }

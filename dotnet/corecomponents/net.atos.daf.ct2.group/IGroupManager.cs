@@ -18,6 +18,7 @@ namespace net.atos.daf.ct2.group
             Task<IEnumerable<Group>> Get(GroupFilter groupFilter);
             Task<bool> UpdateRef(Group group);
             Task<List<GroupRef>> GetRef(int groupid);
+            Task<bool> AddRefToGroups(Group group);
         
     }
 }

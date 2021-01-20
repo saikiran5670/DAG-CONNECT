@@ -143,9 +143,9 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     VehicleRequest ObjResponce = new VehicleRequest();
                     ObjResponce.Id = item.ID;
                     ObjResponce.Organizationid = item.Organization_Id;
-                    ObjResponce.Name = item.Name;
+                    ObjResponce.Name = item.Name==null?"":item.Name;
                     ObjResponce.Vin = item.VIN;
-                    ObjResponce.LicensePlateNumber = item.License_Plate_Number;
+                    ObjResponce.LicensePlateNumber = item.License_Plate_Number==null?"":item.License_Plate_Number;;
                     ObjResponce.Vid = item.Vid;
                     ObjResponce.Model = item.Model;
                     if (item.Type != vehicle.VehicleType.None)

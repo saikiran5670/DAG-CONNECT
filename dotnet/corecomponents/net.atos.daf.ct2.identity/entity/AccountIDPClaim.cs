@@ -4,8 +4,8 @@ namespace net.atos.daf.ct2.identity.entity
 {
    public class AccountIDPClaim
     {
-        public string ValidTo { get; set; }
-        public string IssuedAt { get; set; }
+        public double ValidTo { get; set; }
+        public double IssuedAt { get; set; }
         public string Id { get; set; }
         public string Issuer { get; set; }
         public string Subject { get; set; }
@@ -16,6 +16,7 @@ namespace net.atos.daf.ct2.identity.entity
         public string Algorithm { get; set; }
         public string AlgoType { get; set; }
         public string Sid { get; set; }
+        public int TokenExpiresIn { get; set; }
         public List<AccountAssertion> Assertions { get; set; }
         
         // validto:/*exp*/
