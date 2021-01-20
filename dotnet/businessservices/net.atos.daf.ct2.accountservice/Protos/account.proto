@@ -32,7 +32,9 @@ service AccountService {
   rpc UpdateGroup (AccountGroupRequest) returns (AccountGroupResponce);
   rpc DeleteGroup (IdRequest) returns (AccountGroupResponce);
   rpc GetAccountGroup (AccountGroupFilterRequest) returns (AccountGroupDataList);
-  rpc GetAccountGroupDetail (AccountGroupDetailsRequest ) returns (AccountGroupDetailsDataList);
+  rpc GetAccountGroupDetail (AccountGroupDetailsRequest) returns (AccountGroupDetailsDataList);
+  rpc AddAccountToGroups(AccountGroupRefRequest) returns (AccountGroupRefResponce);
+  
 
   // Add Role
   rpc AddRoles (AccountRoleRequest) returns (AccountRoleResponse);
@@ -200,19 +202,22 @@ enum FunctionEnum{
   All = 0;
 }
 
+message AccountGroupRefResponce{
+  Responcecode code=1;
+  string message = 2;    
+}
+
 message AccountGroupRef{
   
   int32 Group_Id = 1;
   int32 Ref_Id = 2;
 }
-
+message AccountGroupRefRequest{
+  repeated AccountGroupRef GroupRef = 1;
+}
 message AccountGroupRequest{
   int32 Id=1;
-  string Name= 2; 
-  //string ObjectType = 3;
-  //string GroupType = 4;
-  //string Argument = 5;
-  //string FunctionEnum = 6;
+  string Name= 2;   
   int32 OrganizationId = 3;
   int32 RefId = 4;
   string Description= 5;

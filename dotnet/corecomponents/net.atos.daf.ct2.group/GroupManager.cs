@@ -39,12 +39,15 @@ namespace net.atos.daf.ct2.group
         }
         public async Task<bool> UpdateRef(Group group)
         {
-            return await gropRepository.AddRef(group);
+            return await gropRepository.UpdateRef(group);
         }
-
         public async Task<List<GroupRef>> GetRef(int groupid)
         {
             return await gropRepository.GetRef(groupid);
+        }
+        public async Task<bool> AddRefToGroups(Group group)
+        {
+            return await gropRepository.AddRefToGroups(group);
         }
     }
 }

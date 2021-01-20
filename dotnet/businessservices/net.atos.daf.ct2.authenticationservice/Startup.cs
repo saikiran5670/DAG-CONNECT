@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -63,6 +64,9 @@ namespace net.atos.daf.ct2.authenticationservice
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //Added for turn off caching of signature providers to avoid memory leak IDP
+            CryptoProviderFactory.DefaultCacheSignatureProviders =false;
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

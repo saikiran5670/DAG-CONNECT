@@ -32,8 +32,15 @@ namespace net.atos.daf.ct2.organizationservice
         }
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpc();
-
+            services.AddGrpc();   
+            services.AddCors(o => o.AddPolicy("AllowAll", builder =>
+                {
+                builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+                 }));         
+                    
             string connectionString = Configuration.GetConnectionString("ConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
           // var connectionString = Configuration.GetConnectionString("ConnectionString");
@@ -56,20 +63,23 @@ namespace net.atos.daf.ct2.organizationservice
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }
-
+            }           
             app.UseRouting();
+            app.UseGrpcWeb();
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>();
-                endpoints.MapGrpcService<OrganizationManagementService>();             
+                endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb()
+                                                  .RequireCors("AllowAll");
+                endpoints.MapGrpcService<OrganizationManagementService>().EnableGrpcWeb()
+                                                  .RequireCors("AllowAll");
 
                 endpoints.MapGet("/", async context =>
                 {
                     await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
                 });
-            });
+            });             
         }
     }
 }

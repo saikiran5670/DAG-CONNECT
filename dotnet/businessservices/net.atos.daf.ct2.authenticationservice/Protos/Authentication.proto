@@ -46,22 +46,18 @@ message AccountToken
 message AccountPreference
 {
     google.protobuf.Int32Value Id =1;
-    google.protobuf.Int32Value  RefId =2;
+    int32  RefId =2;
     PreferenceType preferenceType =3;
-    google.protobuf.Int32Value LanguageId =4;
-    google.protobuf.Int32Value TimezoneId =5;
-    CurrencyType currencyType =6;
-    UnitType unitType = 7;
-    VehicleDisplayType VehicleDisplayType =8;
-    DateFormatDisplayType dateFormatType =9;
-    google.protobuf.StringValue DriverId =10;
-    bool IsActive =11;
-}
-enum AccountType
-{
-    None = 0;
-    SystemAccount = 1;
-    PortalAccount = 2;        
+    int32  LanguageId =4;
+    int32  TimezoneId =5;
+    int32  CurrencyId =6;
+    int32  UnitId =7;
+    int32  VehicleDisplayId =8;
+    int32  DateFormatId =9;
+    int32  TimeFormatId =10;
+    int32  LandingPageDisplayId =11;
+    google.protobuf.StringValue DriverId =12;
+    bool Active =13;
 }
 enum Responsecode{
     Success = 0;
@@ -73,33 +69,5 @@ enum PreferenceType
     Account = 0;
     Organization = 1;
 }
-enum CurrencyType
-{
-    //None = 'N',
-    Euro = 0;
-    Usdollar = 1;
-    PondSterling = 2;
-}
-enum UnitType
-{
-    // None = 'N',
-    Metric= 0;
-    Imperial= 1;
-    Usimperial = 2;
-}
-enum VehicleDisplayType    
-{
-    //None = 'N',
-    RegistrationNumber= 0;
-    Name= 1;
-    Vin = 2;   
-}
-enum DateFormatDisplayType
-{
-        //None = 'N',
-    DayMonthYear= 0;
-    MonthDayYear= 1;
-    YearMonthDay= 2;
-}  
 
 
