@@ -6,10 +6,6 @@
 trigger:
 - none
 
-pool: 
-  name: Azure Pipelines
-  vmImage: ubuntu-18.04
-
 parameters:
 - name: ENV
   displayName: ENV
@@ -19,6 +15,7 @@ parameters:
   - DEV0
   - DEV01
   - DEV02
+  - TEST01
 
 variables:
 - ${{ if eq(parameters.ENV, 'DEV0') }}:
@@ -27,6 +24,10 @@ variables:
   - group: DEV01-Build-Variables
 - ${{ if eq(parameters.ENV, 'DEV02') }}:
   - group: DEV02-Build-Variables
+- ${{ if eq(parameters.ENV, 'TEST01') }}:
+  - group: TEST01-Build-Variables
+
+pool: $(PRIVATEAGENT)
 
 steps:
 - task: replacetokens@3

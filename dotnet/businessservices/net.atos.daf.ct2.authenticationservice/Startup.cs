@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,7 +34,14 @@ namespace net.atos.daf.ct2.authenticationservice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
-            
+            // Enable CORS for service
+            services.AddCors(o => o.AddPolicy("AllowAll", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+            }));
             var connectionString = Configuration.GetConnectionString("ConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             // Identity configuration
@@ -63,17 +71,24 @@ namespace net.atos.daf.ct2.authenticationservice
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //Added for turn off caching of signature providers to avoid memory leak IDP
+            CryptoProviderFactory.DefaultCacheSignatureProviders =false;
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
             app.UseRouting();
+            app.UseGrpcWeb();
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>();
-                endpoints.MapGrpcService<AuthenticationService>();
+                endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb()
+                                                  .RequireCors("AllowAll");;
+                endpoints.MapGrpcService<AuthenticationService>().EnableGrpcWeb()
+                                                  .RequireCors("AllowAll");;
 
                 endpoints.MapGet("/", async context =>
                 {

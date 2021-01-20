@@ -9,6 +9,8 @@ using AccountComponent = net.atos.daf.ct2.account;
 using AccountEntity = net.atos.daf.ct2.account.entity;
 using IdentityComponent = net.atos.daf.ct2.identity;
 using IdentityEntity = net.atos.daf.ct2.identity.entity;
+using AccountPreferenceComponent = net.atos.daf.ct2.accountpreference;
+using net.atos.daf.ct2.authenticationservicerest.Entity;
 
 namespace net.atos.daf.ct2.authenticationservicerest.Controllers
 {
@@ -23,9 +25,10 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
             accountIdentityManager =_accountIdentityManager;
             logger=_logger;
         }
+        
         [HttpPost]        
         [Route("Auth")]
-        public async Task<IActionResult> Auth([FromBody] IdentityEntity.Identity user)
+        public async Task<IActionResult> Login([FromBody] IdentityEntity.Identity user)
         {
             try 
             {
@@ -39,14 +42,42 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                 }
                 else
                 {
-                    IdentityEntity.AccountToken response = await accountIdentityManager.GenerateToken(user);
+                    AuthToken authToken= new AuthToken();
+                    AccountEntity.AccountIdentity response = await accountIdentityManager.Login(user);
                     if(response!=null)
                     {
-                        return Ok(response);
+                        if(response.AccountToken!=null)
+                        {
+                            authToken.access_token=response.AccountToken.AccessToken;
+                            authToken.expires_in=response.AccountToken.ExpiresIn;
+                            authToken.token_type=response.AccountToken.TokenType;
+                            authToken.session_state=response.AccountToken.SessionState;
+                            authToken.scope=response.AccountToken.Scope;
+                        }
+                        else 
+                        {
+                            return StatusCode(404,"Account is not configured.");
+                        }
+                        if(response.AccountPreference!=null)
+                        {
+                            authToken.locale=response.AccountPreference.LanguageId.ToString();
+                            authToken.timezone=response.AccountPreference.TimezoneId.ToString();
+                            authToken.unit=response.AccountPreference.UnitId.ToString();
+                            authToken.currency=response.AccountPreference.CurrencyId.ToString();
+                            authToken.date_format=response.AccountPreference.DateFormatTypeId.ToString();
+                        }
+                        else 
+                        {
+                            authToken.locale=string.Empty;
+                            authToken.timezone=string.Empty;
+                            authToken.unit=string.Empty;
+                            authToken.currency=string.Empty;
+                            authToken.date_format=string.Empty;
+                        }
+                        return Ok(authToken);
                     }
                     else 
                     {
-                        //Account not present  in IDP or IDP related error
                         return StatusCode(404,"Account is not configured.");
                     }
                 }
@@ -56,7 +87,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                 logger.LogError(ex.Message +" " +ex.StackTrace);
                 return StatusCode(500,"Internal Server Error.");
             }            
-        }        
+        }
 
         [HttpPost]        
         [Route("Validate")]
@@ -82,8 +113,8 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
             }           
             return Ok(valid); 
         }
-        
-        private async Task<IActionResult> Login([FromBody] IdentityEntity.Identity user)
+        //In case, to generate only account token 
+        private async Task<IActionResult> GenerateToken([FromBody] IdentityEntity.Identity user)
         {
             try 
             {
@@ -97,20 +128,15 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                 }
                 else
                 {
-                    AccountEntity.AccountIdentity response = await accountIdentityManager.Login(user);
+                    IdentityEntity.AccountToken response = await accountIdentityManager.GenerateToken(user);
                     if(response!=null)
                     {
                         return Ok(response);
-                    }else 
+                    }
+                    else 
                     {
                         return StatusCode(404,"Account is not configured.");
                     }
-                    
-                    // if(response!=null && response.Result==null)
-                    //     return Ok(result);
-                    // else 
-                    //     return StatusCode((int) response.StatusCode,response.Result);
-
                 }
             }
             catch(Exception ex)

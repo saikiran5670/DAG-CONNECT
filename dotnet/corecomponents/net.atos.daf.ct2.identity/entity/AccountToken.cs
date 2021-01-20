@@ -7,6 +7,6 @@ namespace net.atos.daf.ct2.identity.entity
         public string TokenType { get; set; }
         public string SessionState { get; set; }
         public string Scope { get; set; }
-        public string Error { get; set; }
+        // public string Error { get; set; }
     }
 }

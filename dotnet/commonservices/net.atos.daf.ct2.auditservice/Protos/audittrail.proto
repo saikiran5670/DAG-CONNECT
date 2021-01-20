@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
 
 
 option csharp_namespace = "net.atos.daf.ct2.auditservice";
@@ -15,7 +16,7 @@ service AuditService {
     
 message AuditRecord {
     int32 Audittrailid =1;
-    google.protobuf.Timestamp Performed_at=2;     
+    google.protobuf.StringValue Performed_at=2;     
     int32 Performed_by =3;
     string Component_name =4;
     string Service_name =5;

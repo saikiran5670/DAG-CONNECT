@@ -2,14 +2,15 @@ using System;
 using System.Text;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Logging;
+using System.IdentityModel.Tokens.Jwt;
 using net.atos.daf.ct2.identity.entity;
 namespace net.atos.daf.ct2.identity
 {
@@ -22,6 +23,16 @@ namespace net.atos.daf.ct2.identity
         }
         public AccountToken CreateToken(AccountIDPClaim customclaims)
         {
+            AccountToken accountToken=new AccountToken();
+            accountToken.ExpiresIn = customclaims.TokenExpiresIn;
+
+            var now = DateTime.Now;
+            long unixTimeSecondsIssueAt = new DateTimeOffset(now).ToUnixTimeSeconds();
+            long unixTimeSecondsExpiresAt = 0;
+            if(customclaims.TokenExpiresIn > 0)
+            {
+                unixTimeSecondsExpiresAt = new DateTimeOffset(now.AddSeconds(customclaims.TokenExpiresIn)).ToUnixTimeSeconds();
+            }
             var privateKey = _settings.RsaPrivateKey.ToByteArray();
             using RSA rsa = RSA.Create();
             rsa.ImportRSAPrivateKey(privateKey, out _);
@@ -29,16 +40,17 @@ namespace net.atos.daf.ct2.identity
             {
                 CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false }
             };
-            var now = DateTime.Now;
-            var unixTimeSeconds = new DateTimeOffset(now).ToUnixTimeSeconds();
+            
             List<Claim> claimList = new List<Claim>();
-            if (!String.IsNullOrEmpty(customclaims.ValidTo))
+            if (unixTimeSecondsExpiresAt>0)
             {
-                claimList.Add(new Claim(JwtRegisteredClaimNames.Exp, customclaims.ValidTo));
+                //customclaims.ValidTo
+                claimList.Add(new Claim(JwtRegisteredClaimNames.Exp, unixTimeSecondsExpiresAt.ToString()));
             }
-            if (!String.IsNullOrEmpty(customclaims.IssuedAt))
+            if (unixTimeSecondsIssueAt > 0)
             {
-                claimList.Add(new Claim(JwtRegisteredClaimNames.Iat, customclaims.IssuedAt));
+                //customclaims.IssuedAt
+                claimList.Add(new Claim(JwtRegisteredClaimNames.Iat, unixTimeSecondsIssueAt.ToString()));
             }
             if (!String.IsNullOrEmpty(customclaims.Id))
             {
@@ -58,6 +70,7 @@ namespace net.atos.daf.ct2.identity
             }
             if (!String.IsNullOrEmpty(customclaims.TokenType))
             {
+                accountToken.TokenType = customclaims.TokenType;
                 claimList.Add(new Claim(JwtRegisteredClaimNames.Typ, customclaims.TokenType));
             }
             if (!String.IsNullOrEmpty(customclaims.Sid))
@@ -68,47 +81,51 @@ namespace net.atos.daf.ct2.identity
             {
                 claimList.Add(new Claim(JwtRegisteredClaimNames.Azp, customclaims.AuthorizedParty));
             }
-
-            //  {
-
-            //     new Claim(JwtRegisteredClaimNames.Iat, customclaims.IssuedAt, ClaimValueTypes.Integer64),
-            //     new Claim(JwtRegisteredClaimNames.Jti, customclaims.Id),
-            //     new Claim(JwtRegisteredClaimNames.Iss, customclaims.Issuer),
-            //     new Claim(JwtRegisteredClaimNames., customclaims.),
-            //     new Claim(JwtRegisteredClaimNames., customclaims.),
-            //     new Claim(JwtRegisteredClaimNames., customclaims.),
-            //     new Claim(JwtRegisteredClaimNames., customclaims.),
-            //     new Claim(JwtRegisteredClaimNames., customclaims.)
-            // };
+            
             foreach (var assertion in customclaims.Assertions)
             {
                 if (!String.IsNullOrEmpty(assertion.Value))
                 {
                     claimList.Add(new Claim(assertion.Key, assertion.Value));
+                 
+                    switch (assertion.Key.ToString())
+                    {
+                        case "session_state":
+                            accountToken.SessionState  = assertion.Value.ToString();
+                            break;
+                        case "scope":
+                            accountToken.Scope = assertion.Value.ToString();
+                            break;
+                    }
                 }
-            }
-
+            }           
+            
             var jwt = new JwtSecurityToken(
                 claims: claimList.ToArray(),
                 notBefore: now,
-                expires: now.AddMinutes(15),
+                expires: now.AddSeconds(accountToken.ExpiresIn),
                 signingCredentials: signingCredentials
             );
             string token = new JwtSecurityTokenHandler().WriteToken(jwt);
-            return new AccountToken
-            {
-                AccessToken = token,
-                ExpiresIn = 15,
-            };
+            accountToken.AccessToken = token;            
+            return accountToken;
         }
         public bool ValidateToken(string token)
         {
-            var publicKey = _settings.RsaPublicKey.ToByteArray();
-            //   AccountIDPClaim customclaims = DecodeToken(token);
-            using RSA rsa = RSA.Create();
-            rsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(_settings.RsaPublicKey), out _);
+            // CryptoProviderFactory.DefaultCacheSignatureProviders = false;
+            //var publicKey = _settings.RsaPublicKey.ToByteArray();
             //rsa.ImportRSAPublicKey(publicKey, out _);
 
+            using RSA rsa = RSA.Create();
+            rsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(_settings.RsaPublicKey), out _);
+            SecurityKey key = new RsaSecurityKey(rsa)
+            {
+                CryptoProviderFactory = new CryptoProviderFactory()
+                {
+                    CacheSignatureProviders = false
+                }
+            };
+            var handler = new JwtSecurityTokenHandler();
             var validationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = false,
@@ -116,12 +133,15 @@ namespace net.atos.daf.ct2.identity
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = _settings.Issuer,
-                ValidAudience = _settings.Audience,
-                IssuerSigningKey = new RsaSecurityKey(rsa)
+                IssuerSigningKey = key,
+                CryptoProviderFactory = new CryptoProviderFactory()
+                {
+                    CacheSignatureProviders = false
+                }
             };
+            IdentityModelEventSource.ShowPII = true;
             try
             {
-                var handler = new JwtSecurityTokenHandler();
                 handler.ValidateToken(token, validationParameters, out var validatedSecurityToken);
             }
             catch
@@ -161,45 +181,47 @@ namespace net.atos.daf.ct2.identity
                 var claims = jwtToken.Claims;
                 foreach (Claim c in claims)
                 {
-                    switch (c.Type)
+                    if(!string.IsNullOrEmpty(c.Value))
                     {
-                        /*Jwt Registered ClaimNames */
-                        case "exp":
-                            customclaims.ValidTo = c.Value;
-                            break;
-                        case "iat":
-                            customclaims.IssuedAt = c.Value;
-                            break;
-                        case "jti":
-                            customclaims.Id = c.Value;
-                            break;
-                        case "iss":
-                            customclaims.Issuer = c.Value;
-                            break;
-                        case "sub":
-                            customclaims.Subject = c.Value;
-                            break;
-                        case "aud":
-                            customclaims.Audience = c.Value;
-                            break;
-                        case "typ":
-                            customclaims.TokenType = c.Value;
-                            break;
-                        case "azp":
-                            customclaims.AuthorizedParty = c.Value;
-                            break;
-                        /*User defined account specific ClaimNames */
-                        default:
-                            assertion = new AccountAssertion();
-                            assertion.Key = c.Type;
-                            assertion.Value = c.Value;
-                            assertion.SessionState = "";
-                            assertion.AccountId = "";
-                            assertion.CreatedAt = "";
-                            assertionList.Add(assertion);
-                            break;
+                        switch (c.Type)
+                        {                    
+                            /*Jwt Registered ClaimNames */
+                            case "exp":                           
+                                customclaims.ValidTo = Convert.ToDouble(c.Value);
+                                break;
+                            case "iat":
+                                customclaims.IssuedAt = Convert.ToDouble(c.Value);
+                                break;
+                            case "jti":
+                                customclaims.Id = c.Value;
+                                break;
+                            case "iss":
+                                customclaims.Issuer = c.Value;
+                                break;
+                            case "sub":
+                                customclaims.Subject = c.Value;
+                                break;
+                            case "aud":
+                                customclaims.Audience = c.Value;
+                                break;
+                            case "typ":
+                                customclaims.TokenType = c.Value;
+                                break;
+                            case "azp":
+                                customclaims.AuthorizedParty = c.Value;
+                                break;
+                            /*User defined account specific ClaimNames */
+                            default:
+                                assertion = new AccountAssertion();
+                                assertion.Key = c.Type;
+                                assertion.Value = c.Value;
+                                assertion.SessionState = "";
+                                assertion.AccountId = "";
+                                assertion.CreatedAt = "";
+                                assertionList.Add(assertion);
+                                break;
+                        }
                     }
-                    // jwtPayload += '"' + c.Type + "\":\"" + c.Value + "\",";
                 }
                 customclaims.Assertions = assertionList;
             }
@@ -207,20 +229,6 @@ namespace net.atos.daf.ct2.identity
             {
                 customclaims = new AccountIDPClaim();
             }
-            // code to extract token and bind claim & assestoin object
-            // claim.
-            //return decodedValue.ToString();
-            // var claims= new Claim[] {
-            //         new Claim(JwtRegisteredClaimNames.Exp, customclaims.ValidTo),
-            //         new Claim(JwtRegisteredClaimNames.Iat, "unixTimeSeconds.ToString()", ClaimValueTypes.Integer64),
-            //         new Claim(JwtRegisteredClaimNames.Jti, customclaims.Id),
-            //         new Claim(JwtRegisteredClaimNames.Iss, customclaims.Issuer),
-            //         new Claim(JwtRegisteredClaimNames.Sub, customclaims.Subject),
-            //         new Claim(JwtRegisteredClaimNames.Aud, customclaims.Audience),
-            //         new Claim(JwtRegisteredClaimNames.Typ, customclaims.TokenType),
-            //         new Claim(JwtRegisteredClaimNames.Sid, customclaims.Sid),
-            //         new Claim(JwtRegisteredClaimNames.Azp, customclaims.AuthorizedParty)
-            // };
             return customclaims;
         }
         public AccountIDPClaim DecodeOLD(string jwtInput)
@@ -230,10 +238,17 @@ namespace net.atos.daf.ct2.identity
 
             return customclaims;
         }
+        private DateTime ConvertDoubleToDateTime(double utc)
+        {
+            DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            dateTime = dateTime.AddSeconds(utc);
+            return dateTime;
+        }
     }
     public static class TypeConverterExtension
     {
         public static byte[] ToByteArray(this string value) =>
          Convert.FromBase64String(value);
     }
+    
 }

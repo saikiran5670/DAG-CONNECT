@@ -139,10 +139,10 @@ namespace net.atos.daf.ct2.group
                     if (((char)groupFilter.ObjectType) != ((char)ObjectType.None))
                     {
 
-                        parameter.Add("@object_type", (char) groupFilter.ObjectType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                        parameter.Add("@object_type", (char)groupFilter.ObjectType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and object_type=@object_type ";
                     }
-                 
+
                     // Account Id list Filter                       
                     if (groupFilter.GroupIds != null)
                     {
@@ -179,9 +179,36 @@ namespace net.atos.daf.ct2.group
                 throw ex;
             }
         }
-
-
-        public async Task<bool> AddRef(Group group)
+        public async Task<bool> AddRefToGroups(Group group)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                var result = false;
+                if (group.GroupRef != null)
+                {
+                    foreach (GroupRef groupRef in group.GroupRef)
+                    {
+                        if (groupRef.Group_Id > 0 && groupRef.Ref_Id > 0)
+                        {
+                            parameter = new DynamicParameters();
+                            parameter.Add("@group_id", groupRef.Group_Id);
+                            parameter.Add("@ref_id",groupRef.Ref_Id);
+                            query = @"insert into master.groupref (group_id,ref_id) values (@group_id,@ref_id)";
+                            await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                        }
+                    }
+                    result = true;
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<bool> UpdateRef(Group group)
         {
             try
             {
@@ -254,7 +281,7 @@ namespace net.atos.daf.ct2.group
 
                 foreach (dynamic record in groups)
                 {
-                    group = Map(record);                    
+                    group = Map(record);
                     groupList.Add(group);
                 }
                 return groupList;
