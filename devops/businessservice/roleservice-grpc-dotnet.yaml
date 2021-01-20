@@ -50,7 +50,7 @@ steps:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
     dockerFile: dotnet/RoleService_Dockerfile
-    imageName: accountservice
+    imageName: roleservice
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -58,5 +58,5 @@ steps:
     azureSubscription: $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
-    imageName: accountservice
+    imageName: roleservice
 
