@@ -3,13 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using System.Collections.Generic;
 using AccountComponent = net.atos.daf.ct2.account;
 using Preference = net.atos.daf.ct2.accountpreference;
 using Group = net.atos.daf.ct2.group;
-using Microsoft.Extensions.DependencyInjection;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.Enum;
 
 
 namespace net.atos.daf.ct2.accountservice
@@ -20,12 +19,15 @@ namespace net.atos.daf.ct2.accountservice
         private readonly AccountComponent.IAccountManager accountmanager;
         private readonly Preference.IPreferenceManager preferencemanager;
         private readonly Group.IGroupManager groupmanager;
+        //private readonly IAuditTraillib auditlog;
+        
         public AccountManagementService(ILogger<GreeterService> logger, AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager)
         {
             _logger = logger;
             accountmanager = _accountmanager;
             preferencemanager = _preferencemanager;
             groupmanager = _groupmanager;
+            //auditlog =  _auditlog;
         }
 
         public override Task<AccountData> Create(AccountRequest request, ServerCallContext context)
@@ -44,6 +46,7 @@ namespace net.atos.daf.ct2.accountservice
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
                 account = accountmanager.Create(account).Result;
+                //auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Account Service","Create Account",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"Create Account" + account.EmailId,1,2,null);
                 // response 
                 AccountData response = new AccountData();
 
@@ -59,10 +62,6 @@ namespace net.atos.daf.ct2.accountservice
                     response.Message = "Created";
                     response.Account = request;
                 }
-
-
-
-
                 return Task.FromResult(response);
             }
             catch (Exception ex)
@@ -1009,8 +1008,6 @@ namespace net.atos.daf.ct2.accountservice
 
             return request;
         }
-
-
         private AccountType SetEnumAccountType(AccountComponent.ENUM.AccountType type)
         {
             AccountType accountType = AccountType.None;
