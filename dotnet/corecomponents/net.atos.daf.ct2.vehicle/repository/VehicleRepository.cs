@@ -182,9 +182,9 @@ namespace net.atos.daf.ct2.vehicle.repository
             if (record.status != null)
             vehicle.Status = (VehicleStatusType)(Convert.ToChar(record.status));
             if (record.status_changed_date != null)
-                vehicle.Status_Changed_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.status_changed_date,"Central European Standard Time", "yyyy-MM-ddTHH:mm:ss"));
+                vehicle.Status_Changed_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.status_changed_date,"America/New_York", "yyyy-MM-ddTHH:mm:ss"));
             if (record.termination_date != null)
-                vehicle.Termination_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.termination_date, "Jordan Standard Time", "yyyy-MM-ddTHH:mm:ss"));
+                vehicle.Termination_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.termination_date, "America/Toronto", "yyyy-MM-ddTHH:mm:ss"));
             vehicle.Model = record.model;
             vehicle.Vid = record.vid;
             vehicle.Type = (VehicleType)(Convert.ToChar(record.type == null ? 'N' : record.type));
@@ -194,7 +194,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             vehicle.Tcu_Version = record.tcu_version;
             vehicle.Is_Tcu_Register = record.is_tcu_register == null ? false : record.is_tcu_register;
             if (record.reference_date != null)
-                vehicle.Reference_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.reference_date, "Arabian Standard Time", "yyyy-MM-ddTHH:mm:ss"));
+                vehicle.Reference_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.reference_date, "Asia/Dubai", "yyyy-MM-ddTHH:mm:ss"));
             return vehicle;
         }
 

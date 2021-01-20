@@ -6,4 +6,4 @@ if [ "$#" -ne 1 ]; then
   exit 1
 fi
 
-echo "create_namespace '$1'"
+echo "create_namespace '$1'" | hbase shell -n
