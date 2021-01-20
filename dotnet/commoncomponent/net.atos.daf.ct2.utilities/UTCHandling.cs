@@ -120,6 +120,20 @@ namespace net.atos.daf.ct2.utilities
             DateTimeOffset utcTime = new DateTimeOffset(Convert.ToDateTime(sourceDateTime), TimeZoneInfo.Local.GetUtcOffset(Convert.ToDateTime(sourceDateTime)));
             long dtunixTime = utcTime.ToUnixTimeMilliseconds();                       
             return dtunixTime;
+        } 
+
+        /// <summary>
+        /// This methid is used to get UTC values from datetime string and timezone mame as input parameters
+        /// </summary>
+        /// <param name="sourceDateTime"></param>
+        /// <param name="timezonename"></param>
+        /// <returns></returns>
+        public static long GetUTCFromDateTime(string sourceDateTime,string timezonename)
+        {        
+            TimeZoneInfo tzinfo = TimeZoneInfo.FindSystemTimeZoneById(timezonename);         
+            DateTimeOffset utcTime = new DateTimeOffset(Convert.ToDateTime(sourceDateTime),tzinfo.GetUtcOffset(Convert.ToDateTime(sourceDateTime)));
+            long dtunixTime = utcTime.ToUnixTimeMilliseconds();                       
+            return dtunixTime;
         }    
     }
 }
