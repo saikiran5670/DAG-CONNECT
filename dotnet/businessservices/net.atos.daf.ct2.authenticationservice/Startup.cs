@@ -34,7 +34,14 @@ namespace net.atos.daf.ct2.authenticationservice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
-            
+            // Enable CORS for service
+            services.AddCors(o => o.AddPolicy("AllowAll", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+            }));
             var connectionString = Configuration.GetConnectionString("ConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             // Identity configuration
@@ -73,11 +80,15 @@ namespace net.atos.daf.ct2.authenticationservice
             }
 
             app.UseRouting();
+            app.UseGrpcWeb();
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>();
-                endpoints.MapGrpcService<AuthenticationService>();
+                endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb()
+                                                  .RequireCors("AllowAll");;
+                endpoints.MapGrpcService<AuthenticationService>().EnableGrpcWeb()
+                                                  .RequireCors("AllowAll");;
 
                 endpoints.MapGet("/", async context =>
                 {

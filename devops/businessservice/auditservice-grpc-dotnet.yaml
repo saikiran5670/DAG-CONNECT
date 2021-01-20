@@ -6,8 +6,6 @@
 trigger:
 - none
 
-pool: $(PRIVATEAGENT)
-
 parameters:
 - name: ENV
   displayName: ENV
@@ -19,6 +17,8 @@ parameters:
   - DEV01
   - DEV02
   - TEST01
+
+pool: $(PRIVATEAGENT)
 
 variables:
 - ${{ if eq(parameters.ENV, 'DEV0') }}:

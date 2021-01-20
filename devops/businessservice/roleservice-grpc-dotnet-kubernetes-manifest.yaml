@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: roleservice
+spec:
+  selector:
+    matchLabels:
+      run: roleservice
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: roleservice
+    spec:
+      containers:
+      - name: roleservice
+        image: dafdev017756.azurecr.io/roleservice
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: roleservice
+spec:
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    run: roleservice
