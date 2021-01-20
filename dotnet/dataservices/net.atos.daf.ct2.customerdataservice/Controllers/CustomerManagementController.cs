@@ -79,7 +79,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                      else
                      {
                          logger.LogInformation("Customer data not updated, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
-                         return StatusCode(401,"Invalid_Grant:");
+                         return StatusCode(401,"Forbidden:");
                      }
                 }
             }
@@ -116,7 +116,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                      else
                      {
                          logger.LogInformation("KeyHandOverEvent not executed successfully, company ID -" + keyHandOver.KeyHandOverEvent.EndCustomer.ID);
-                         return StatusCode(401,"Invalid_Grant:");
+                         return StatusCode(401,"Forbidden:");
                      }
                 }
             }
