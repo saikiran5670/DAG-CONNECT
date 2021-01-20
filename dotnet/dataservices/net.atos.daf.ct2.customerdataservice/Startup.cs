@@ -17,10 +17,11 @@ using net.atos.daf.ct2.vehicle;
 using  net.atos.daf.ct2.vehicle.repository;
 using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Http;
-using net.atos.daf.ct2.audit.repository;
 using AccountComponent = net.atos.daf.ct2.account;
 using Identity = net.atos.daf.ct2.identity;
 using AccountPreference = net.atos.daf.ct2.accountpreference;
+using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
 
 namespace net.atos.daf.ct2.customerdataservice
 {
@@ -58,19 +59,12 @@ namespace net.atos.daf.ct2.customerdataservice
 
              services.AddTransient<Identity.IAccountManager,Identity.AccountManager>();
             services.AddTransient<Identity.ITokenManager,Identity.TokenManager>();
-            services.AddTransient<Identity.IAccountAuthenticator,Identity.AccountAuthenticator>();
-            
-            services.AddTransient<AccountComponent.IAccountIdentityManager,AccountComponent.AccountIdentityManager>();
-            
+            services.AddTransient<Identity.IAccountAuthenticator,Identity.AccountAuthenticator>();            
+            services.AddTransient<AccountComponent.IAccountIdentityManager,AccountComponent.AccountIdentityManager>();            
             services.AddTransient<AccountPreference.IPreferenceManager,AccountPreference.PreferenceManager>();
             services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();
-            
-            // services.AddTransient<IGroupManager, GroupManager>();
-            // services.AddTransient<IGroupRepository, GroupRepository>();
-            
             services.AddTransient<AccountComponent.IAccountRepository,AccountComponent.AccountRepository>();
             services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();   
-
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
@@ -91,6 +85,12 @@ namespace net.atos.daf.ct2.customerdataservice
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+            app.UseSwagger();
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer Data Service V1");
             });
         }
     }
