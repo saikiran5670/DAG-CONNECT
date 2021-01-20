@@ -2,21 +2,21 @@ using System;
 
 namespace net.atos.daf.ct2.translation.Enum
 {
-    public class transationenum
+    public class translationenum
     {
                 
         public enum TranslationType
         {
-            Text = 1,
-            Url = 2,
-            Image = 3
+            Text = 'T',
+            Url = 'U',
+            Image = 'I'
             
         }
 
         public enum GroupingType
         {
-            Menu= 1,
-            Feature = 2
+            Menu= 'M',
+            Feature = 'F'
             
         }
 
