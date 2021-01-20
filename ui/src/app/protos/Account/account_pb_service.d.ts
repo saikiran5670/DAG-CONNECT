@@ -175,6 +175,15 @@ type AccountServiceGetAccountGroupDetail = {
   readonly responseType: typeof src_app_protos_Account_account_pb.AccountGroupDetailsDataList;
 };
 
+type AccountServiceAddAccountToGroups = {
+  readonly methodName: string;
+  readonly service: typeof AccountService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof src_app_protos_Account_account_pb.AccountGroupRefRequest;
+  readonly responseType: typeof src_app_protos_Account_account_pb.AccountGroupRefResponce;
+};
+
 type AccountServiceAddRoles = {
   readonly methodName: string;
   readonly service: typeof AccountService;
@@ -214,6 +223,7 @@ export class AccountService {
   static readonly DeleteGroup: AccountServiceDeleteGroup;
   static readonly GetAccountGroup: AccountServiceGetAccountGroup;
   static readonly GetAccountGroupDetail: AccountServiceGetAccountGroupDetail;
+  static readonly AddAccountToGroups: AccountServiceAddAccountToGroups;
   static readonly AddRoles: AccountServiceAddRoles;
   static readonly RemoveRoles: AccountServiceRemoveRoles;
 }
@@ -420,6 +430,15 @@ export class AccountServiceClient {
   getAccountGroupDetail(
     requestMessage: src_app_protos_Account_account_pb.AccountGroupDetailsRequest,
     callback: (error: ServiceError|null, responseMessage: src_app_protos_Account_account_pb.AccountGroupDetailsDataList|null) => void
+  ): UnaryResponse;
+  addAccountToGroups(
+    requestMessage: src_app_protos_Account_account_pb.AccountGroupRefRequest,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: src_app_protos_Account_account_pb.AccountGroupRefResponce|null) => void
+  ): UnaryResponse;
+  addAccountToGroups(
+    requestMessage: src_app_protos_Account_account_pb.AccountGroupRefRequest,
+    callback: (error: ServiceError|null, responseMessage: src_app_protos_Account_account_pb.AccountGroupRefResponce|null) => void
   ): UnaryResponse;
   addRoles(
     requestMessage: src_app_protos_Account_account_pb.AccountRoleRequest,

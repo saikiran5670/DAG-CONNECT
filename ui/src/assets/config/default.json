@@ -14,6 +14,6 @@
       "translationServiceUrl": "http://localhost:3000",
       "translationServiceUrl_bkp": "http://51.105.154.162/Translation",
       "backendGrpcServiceUrl": "https://localhost:5001",
-      "accountGrpcServiceUrl": "http://52.143.13.128:80"
+      "accountGrpcServiceUrl": "http://20.54.198.157:80"
     }
 }

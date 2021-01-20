@@ -392,6 +392,30 @@ export namespace AccountPreferenceFilter {
   }
 }
 
+export class AccountGroupRefResponce extends jspb.Message {
+  getCode(): ResponcecodeMap[keyof ResponcecodeMap];
+  setCode(value: ResponcecodeMap[keyof ResponcecodeMap]): void;
+
+  getMessage(): string;
+  setMessage(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountGroupRefResponce.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountGroupRefResponce): AccountGroupRefResponce.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountGroupRefResponce, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountGroupRefResponce;
+  static deserializeBinaryFromReader(message: AccountGroupRefResponce, reader: jspb.BinaryReader): AccountGroupRefResponce;
+}
+
+export namespace AccountGroupRefResponce {
+  export type AsObject = {
+    code: ResponcecodeMap[keyof ResponcecodeMap],
+    message: string,
+  }
+}
+
 export class AccountGroupRef extends jspb.Message {
   getGroupId(): number;
   setGroupId(value: number): void;
@@ -413,6 +437,28 @@ export namespace AccountGroupRef {
   export type AsObject = {
     groupId: number,
     refId: number,
+  }
+}
+
+export class AccountGroupRefRequest extends jspb.Message {
+  clearGrouprefList(): void;
+  getGrouprefList(): Array<AccountGroupRef>;
+  setGrouprefList(value: Array<AccountGroupRef>): void;
+  addGroupref(value?: AccountGroupRef, index?: number): AccountGroupRef;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountGroupRefRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountGroupRefRequest): AccountGroupRefRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountGroupRefRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountGroupRefRequest;
+  static deserializeBinaryFromReader(message: AccountGroupRefRequest, reader: jspb.BinaryReader): AccountGroupRefRequest;
+}
+
+export namespace AccountGroupRefRequest {
+  export type AsObject = {
+    grouprefList: Array<AccountGroupRef.AsObject>,
   }
 }
 

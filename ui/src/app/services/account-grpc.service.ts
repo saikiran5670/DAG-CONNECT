@@ -12,12 +12,12 @@ import { AccountDataList, AccountFilter } from '../protos/Account/account_pb';
 	export class AccountGrpcService {
 		private backendGrpc: string;
 		
-		constructor(private httpClient: HttpClient, private config: ConfigService) {
+		constructor(private httpClient: HttpClient, private config: ConfigService, private gRpcClient: AccountServiceClient) {
 			this.backendGrpc = config.getSettings("foundationServices").accountGrpcServiceUrl;
+			this.gRpcClient = new AccountServiceClient(this.backendGrpc);
 		}
 
         getAllAccounts(){
-            let gRpcClient= new AccountServiceClient(this.backendGrpc);         
             let req = new AccountFilter();
             req.setId(0);
             req.setOrganizationid(35);
@@ -26,7 +26,7 @@ import { AccountDataList, AccountFilter } from '../protos/Account/account_pb';
             req.setAccountids("");
 
             return new Promise((resolve, reject) => {
-				gRpcClient.get(req, (err: ServiceError, response: AccountDataList) => {
+				this.gRpcClient.get(req, (err: ServiceError, response: AccountDataList) => {
 					if (err) {
 						console.log(`Error while invoking gRpc: ${err}`);
 						return reject(err);
@@ -37,5 +37,7 @@ import { AccountDataList, AccountFilter } from '../protos/Account/account_pb';
 					}
 				});
 			});
-        }
+		}
+		
+		
 	}
