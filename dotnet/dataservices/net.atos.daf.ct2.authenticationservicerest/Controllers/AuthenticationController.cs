@@ -66,6 +66,14 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                             authToken.currency=response.AccountPreference.CurrencyId.ToString();
                             authToken.date_format=response.AccountPreference.DateFormatTypeId.ToString();
                         }
+                        else 
+                        {
+                            authToken.locale=string.Empty;
+                            authToken.timezone=string.Empty;
+                            authToken.unit=string.Empty;
+                            authToken.currency=string.Empty;
+                            authToken.date_format=string.Empty;
+                        }
                         return Ok(authToken);
                     }
                     else 

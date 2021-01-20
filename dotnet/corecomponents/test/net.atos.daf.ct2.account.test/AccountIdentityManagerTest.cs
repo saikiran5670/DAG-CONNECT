@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.account.test
     public class AccountIdentityManagerTest
     {
         private readonly IAccountIdentityManager accountIdentityManager;
-        private readonly IConfiguration _config;
+        private readonly IConfiguration _config=null;
         public AccountIdentityManagerTest()
         {
             var idenityconfiguration = new IdentityJsonConfiguration(){
