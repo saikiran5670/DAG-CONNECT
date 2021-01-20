@@ -56,7 +56,11 @@ namespace net.atos.daf.ct2.authenticationservicerest
             
             services.AddTransient<AccountComponent.IAccountRepository,AccountComponent.AccountRepository>();
             services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();            
-         
+
+            services.AddCors(c =>  
+            {  
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());  
+            });         
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,6 +73,12 @@ namespace net.atos.daf.ct2.authenticationservicerest
 
             app.UseHttpsRedirection();
 
+            app.UseCors(builder => 
+            {
+                builder.WithOrigins("*");
+                builder.AllowAnyMethod();
+                builder.AllowAnyHeader();
+            });  
             app.UseRouting();
 
             app.UseAuthorization();
