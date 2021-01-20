@@ -8,5 +8,9 @@ namespace net.atos.daf.ct2.identitysession.repository
 {
    public interface IAccountAssertionRepository
     {
+        Task<int> InsertAssertion(AccountAssertion accountAssertion);
+        Task<int> UpdateAssertion(AccountAssertion accountAssertion);
+        Task<int> DeleteAssertion(int accountId);
+        Task<IEnumerable<AccountAssertion>> GetAssertion(int accountId);
     }
 }
