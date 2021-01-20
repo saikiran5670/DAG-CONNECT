@@ -12,6 +12,7 @@ import { map } from 'rxjs/internal/operators';
 import { TranslationService } from '../../services/translation.service';
 import { CommonTableComponent } from '../.././shared/common-table/common-table.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { AccountGrpcService } from '../../services/account-grpc.service';
 
 @Component({
   selector: 'app-user-management',
@@ -57,7 +58,8 @@ export class UserManagementComponent implements OnInit {
     private _router:Router,
     private actr: ActivatedRoute,
     private translationService: TranslationService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private accountGrpcService: AccountGrpcService
   ) {
     // const resolvedData:any[] = actr.snapshot.data['resl'];
     // console.log('constructor: ',resolvedData);
@@ -243,6 +245,12 @@ export class UserManagementComponent implements OnInit {
   }
 
   loadUsersData(){
+
+    this.accountGrpcService.getAllAccounts().then((result: any) => {
+      console.log(`Inside UI result:: ${result}`);
+    });
+    
+    //Existing code
     this.userService.getUsers().subscribe((usrlist)=>{
       this.filterFlag = true;
       usrlist = this.getNewTagData(usrlist);
