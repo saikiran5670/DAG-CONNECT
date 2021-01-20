@@ -30,7 +30,8 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
     [Route("[controller]")]
     public class CustomerManagementController: ControllerBase
     {
-        private readonly ILogger _logger;        
+        //private readonly ILogger _logger;       
+        private readonly ILogger<CustomerManagementController> logger; 
         private readonly IAuditLogRepository _IAuditLogRepository;       
         private readonly IAuditTraillib _AuditTrail;      
         private readonly IOrganizationManager organizationtmanager;
@@ -40,9 +41,9 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
 
         private IHttpContextAccessor _httpContextAccessor;
 
-        public CustomerManagementController(ILogger<CustomerManagementController> logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager,IHttpContextAccessor httpContextAccessor,AccountComponent.IAccountIdentityManager _accountIdentityManager)
+        public CustomerManagementController(ILogger<CustomerManagementController> _logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager,IHttpContextAccessor httpContextAccessor,AccountComponent.IAccountIdentityManager _accountIdentityManager)
         {
-           _logger = logger;
+            logger = _logger;
            _AuditTrail = AuditTrail;
             organizationtmanager = _organizationmanager;
             preferencemanager=_preferencemanager;
@@ -55,24 +56,29 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
         [Route("UpdateCustomerData")]
         public async Task<IActionResult> update(Customer customer)
         {
+         
             string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
             bool valid=false;
             try 
             {
                 if(string.IsNullOrEmpty(token))
                 {
+                    logger.LogInformation("UpdateCustomerData function called with empty token, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
                     return StatusCode(400,"Bad Request:");
                 }
                 else
-                {
+                {  
+                     logger.LogInformation("UpdateCustomerData function called , company ID -" + customer.CompanyUpdatedEvent.Company.ID);
                      valid = await accountIdentityManager.ValidateToken(token);
                      if(valid)
                      {
                         var OrgId= await organizationtmanager.UpdateCustomer(customer);
+                        logger.LogInformation("Customer data has been updated, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
                         return Ok(OrgId);
                      }
                      else
                      {
+                         logger.LogInformation("Customer data not updated, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
                          return StatusCode(401,"Invalid_Grant:");
                      }
                 }
@@ -80,7 +86,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
             catch(Exception ex)
             {
                 valid = false;
-               // logger.LogError(ex.Message +" " +ex.StackTrace);
+                logger.LogError(ex.Message +" " +ex.StackTrace);
                 return StatusCode(500,"Internal Server Error.");
             }                        
         }  
@@ -95,6 +101,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
             {
                 if(string.IsNullOrEmpty(token))
                 {
+                    logger.LogInformation("KeyHandOverEvent function called with empty token, company ID -" + keyHandOver.KeyHandOverEvent.EndCustomer.ID);
                     return StatusCode(400,"Bad Request:");
                 }
                 else
@@ -103,10 +110,12 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                      if(valid)
                      {
                         var OrgId= await organizationtmanager.KeyHandOverEvent(keyHandOver);
+                        logger.LogInformation("KeyHandOverEvent executed successfully, company ID -" + keyHandOver.KeyHandOverEvent.EndCustomer.ID);
                         return Ok(OrgId);
                      }
                      else
                      {
+                         logger.LogInformation("KeyHandOverEvent not executed successfully, company ID -" + keyHandOver.KeyHandOverEvent.EndCustomer.ID);
                          return StatusCode(401,"Invalid_Grant:");
                      }
                 }
@@ -114,7 +123,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
             catch(Exception ex)
             {
                 valid = false;
-               // logger.LogError(ex.Message +" " +ex.StackTrace);
+                logger.LogError(ex.Message +" " +ex.StackTrace);
                 return StatusCode(500,"Internal Server Error.");
             }   
         }       

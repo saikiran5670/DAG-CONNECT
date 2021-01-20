@@ -2,7 +2,7 @@ using System;
 
 namespace net.atos.daf.ct2.translation.entity
 {
-    public class langauge
+    public class Langauge
     {
         public int Id { get; set; }
         public string Name { get; set; }
