@@ -1,5 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
 
+@font-face {
+    font-family: "Helvetica Neue LT Std";
+    src: local("Helvetica Neue LT Std"), url( ./assets/fonts/helveticaneueltstdblk/HelveticaNeueLTStd-Lt.otf) format("opentype");
+}
+@font-face {
+    font-family: "Helvetica Neue LT Std-Md";
+    src: local("Helvetica Neue LT Std-Md"), url( ./assets/fonts/helveticaneueltstdblk/HelveticaNeueLTStd-Md.otf) format("opentype");
+}
+
+
 /* body {
     margin: 0;
     font-family: PT Sans, "PT Sans" !important;
@@ -693,13 +703,7 @@ footer{
             }
         }
     }
-    // .mat-table {
-    //     .mat-checkbox{
-    //         .mat-checkbox-layout{
-    //             margin-bottom: 0px;
-    //         }
-    //     }
-    // }
+ 
     .areaWidth{
         .mat-form-field {
             .mat-form-field-wrapper {
@@ -746,21 +750,6 @@ app-consent-opt{
         }
     }
 }
-
-// .mat-table{
-//     .mat-cell{
-//         button{
-//             &.actionBtn{
-//                 min-width: 40px; 
-//                 padding: 0px 5px;
-
-//                 @media @mobile {
-//                     min-width: 0px;
-//                 }
-//             }
-//         }
-//     }
-// }
 
 .user-preferences{
     .preferences-container {
@@ -937,15 +926,24 @@ app-consent-opt{
 
     .mat-header-row {
         min-height: 40px !important;
-        background: #65C3F8 !important;
+        background: #BEE3F8 !important;
+        font-family: "Helvetica Neue LT Std-Md";
+        color: #353C45;
+        
         .mat-header-cell{
-            font-size: 1em;
+            // font-size: 1em;
             font-weight: bold;
+            font-size: 16px;
+        }
+        .mat-sort-header-arrow {
+            color: #353C45;
         }
     }
     .mat-row {
+        font-family: 'Helvetica Neue LT Std';
         min-height: 40px !important;
         .mat-cell{
+            font-size: 15px;
             button{
                 background: transparent;
                 &.actionBtn{
@@ -959,10 +957,10 @@ app-consent-opt{
             }
         } 
         &:nth-child(even){
-            background-color:#ECF7FE;
+            background-color:#ffffff;
         }
         &:nth-child(odd){
-            background-color:#ffffff;
+            background-color:#ECF7FE;
         }
     }
     .mat-checkbox{
@@ -970,7 +968,15 @@ app-consent-opt{
             margin-bottom: 0px;
         }
     }
+    //---common css for mat-icons------
+    .mat-icon {
+        color: #656B6F !important;
+    &.deleteIcon {
+        color: #DB3E51 !important;
+    }
+    }
 }
+ 
 
 //-----------Common Css for Buttons-----------//
 .mat-flat-button{
