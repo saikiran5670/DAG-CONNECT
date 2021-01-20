@@ -8,7 +8,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "protogen": "protoc --plugin=protoc-gen-ts=C:/work/DAF/dafct2.0/Frontend/node_modules/.bin/protoc-gen-ts.cmd --js_out=import_style=commonjs,binary:C:/work/DAF/dafct2.0/Frontend --ts_out=service=grpc-web:C:/work/DAF/dafct2.0/Frontend src/app/protos/customer.proto"
+    "protogen": "C:/DAF-Workspace/Tools/bin/protoc --plugin=protoc-gen-ts=C:/DAF-Workspace/atos.daf.ct2.0/ui/node_modules/.bin/protoc-gen-ts.cmd --js_out=import_style=commonjs,binary:C:/DAF-Workspace/atos.daf.ct2.0/ui --ts_out=service=grpc-web:C:/DAF-Workspace/atos.daf.ct2.0/ui src/app/protos/Account/account.proto"
   },
   "private": true,
   "dependencies": {
