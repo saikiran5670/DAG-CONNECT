@@ -1,5 +1,5 @@
 using System;
-
+using TimeZoneConverter;
 namespace net.atos.daf.ct2.utilities
 {
    public static class UTCHandling
@@ -38,7 +38,9 @@ namespace net.atos.daf.ct2.utilities
         {
             string sConverteddateTime = string.Empty;          
             DateTime date = (new DateTime(1970, 1, 1)).AddMilliseconds(utctimemilleseconds);    
-            TimeZoneInfo tzinfo = TimeZoneInfo.FindSystemTimeZoneById(timezoneName);
+          //  TimeZoneInfo tzinfo = TimeZoneInfo.FindSystemTimeZoneById(timezoneName);
+            TimeZoneInfo tzinfo = TZConvert.GetTimeZoneInfo(timezoneName);
+           // TimeZoneInfo tzinfo = TimeZoneInfo.FindSystemTimeZoneById(timezoneName);
             DateTimeOffset utcTime = new DateTimeOffset(date, TimeZoneInfo.Local.GetUtcOffset(date));
             long dtunixTime = utcTime.ToUnixTimeMilliseconds();   
             DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0).AddMilliseconds(Convert.ToDouble(dtunixTime));
@@ -135,5 +137,20 @@ namespace net.atos.daf.ct2.utilities
             long dtunixTime = utcTime.ToUnixTimeMilliseconds();                       
             return dtunixTime;
         }    
+        
+        //  public static long GetUTCFromDateTime(long utctimemilleseconds, string timezoneName, string dateformat)
+        // {        
+        //     string sConverteddateTime = string.Empty;          
+        //     DateTime date = (new DateTime(1970, 1, 1)).AddMilliseconds(utctimemilleseconds);    
+        //    // TimeZoneInfo tzinfo = TimeZoneInfo.FindSystemTimeZoneById(timezoneName);
+        //     TimeZoneInfo tzi = TZConvert.GetTimeZoneInfo(timezoneName);
+        //     DateTimeOffset utcTime = new DateTimeOffset(date, TimeZoneInfo.Local.GetUtcOffset(date));
+        //     long dtunixTime = utcTime.ToUnixTimeMilliseconds();   
+        //     DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0).AddMilliseconds(Convert.ToDouble(dtunixTime));
+        //     DateTime dtzone = TimeZoneInfo.ConvertTimeFromUtc(dt, tzi);
+
+        //     return dtunixTime;
+        // }  
+
     }
 }
