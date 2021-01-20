@@ -66,6 +66,11 @@ namespace net.atos.daf.ct2.customerdataservice
             services.AddTransient<AccountComponent.IAccountRepository,AccountComponent.AccountRepository>();
             services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();   
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            
+            services.AddSwaggerGen(c =>
+            {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Customer Data Service", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
