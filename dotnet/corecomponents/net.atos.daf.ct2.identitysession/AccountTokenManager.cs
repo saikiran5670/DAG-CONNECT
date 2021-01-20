@@ -1,8 +1,72 @@
 using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using net.atos.daf.ct2.identitysession.entity;
+using net.atos.daf.ct2.identitysession.repository;
 
 namespace net.atos.daf.ct2.identitysession
 {
-    public class AccountTokenManager
+    public class AccountTokenManager : IAccountTokenManager
     {
+         IAccountTokenRepository tokenRepository;
+        public AccountTokenManager (IAccountTokenRepository _tokenRepository)
+        {
+            tokenRepository =_tokenRepository;
+        }
+       public async Task<int> InsertToken(AccountToken accountToken)
+        {
+            try
+            {
+                return await tokenRepository.InsertToken(accountToken);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<int> DeleteToken(AccountToken accountToken)
+        {
+            try
+            {
+                return await tokenRepository.DeleteToken(accountToken);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+           public async Task<IEnumerable<AccountToken>> GetTokenDetails(int AccountID)
+        {
+            try
+            {
+                return await tokenRepository.GetTokenDetails(AccountID);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+           public async Task<IEnumerable<AccountToken>> GetTokenDetails(string AccessToken)
+        {
+            try
+            {
+                return await tokenRepository.GetTokenDetails(AccessToken);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+          public async Task<bool> ValidateToken(AccountToken accountToken)
+        {
+            try
+            {
+                return await tokenRepository.ValidateToken(accountToken);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }
