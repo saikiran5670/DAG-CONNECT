@@ -258,6 +258,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                                 SET
                                                 status=@status
                                                 ,status_changed_date=@status_changed_date
+                                                ,termination_date=@termination_date
                                                 WHERE id = @id
                                                 RETURNING id;";
 
@@ -270,6 +271,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                                 SET
                                                 status=@status
                                                 ,status_changed_date=@status_changed_date
+                                                ,termination_date=@termination_date
                                                 WHERE organization_id = @id
                                                 RETURNING id;";
 
@@ -278,6 +280,14 @@ namespace net.atos.daf.ct2.vehicle.repository
 
             parameter.Add("@status", (char)vehicleOptInOptOut.Status);
             parameter.Add("@status_changed_date", vehicleOptInOptOut.Date != null ? UTCHandling.GetUTCFromDateTime(vehicleOptInOptOut.Date) : 0);
+            if(vehicleOptInOptOut.Status.ToString()==VehicleStatusType.Terminate.ToString())
+            {
+            parameter.Add("@termination_date", vehicleOptInOptOut.Date != null ? UTCHandling.GetUTCFromDateTime(vehicleOptInOptOut.Date) : 0);
+            }
+            else
+            {
+                parameter.Add("@termination_date",null);
+            }
             int vehiclepropertyId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
             if (vehiclepropertyId > 0)
             {
