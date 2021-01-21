@@ -273,7 +273,7 @@ export class UserManagementComponent implements OnInit {
     req.setName('Vishal');
     grpc.unary(Greeter.SayHello, {
       request: req,
-      host: 'https://10.10.128.16',
+      host: 'https://10.10.128.9:80',
       onEnd: (res) => {
         const { status, message } = res;
         if (status === grpc.Code.OK && message) {
