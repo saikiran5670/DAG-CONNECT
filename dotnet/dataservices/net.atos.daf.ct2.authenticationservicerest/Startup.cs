@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
@@ -60,7 +62,12 @@ namespace net.atos.daf.ct2.authenticationservicerest
             services.AddCors(c =>  
             {  
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());  
-            });         
+            });
+
+            services.AddSwaggerGen(c =>
+            {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Authentication  Service", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -86,6 +93,12 @@ namespace net.atos.daf.ct2.authenticationservicerest
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+            app.UseSwagger();
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Authentication Service");
             });
         }
     }
