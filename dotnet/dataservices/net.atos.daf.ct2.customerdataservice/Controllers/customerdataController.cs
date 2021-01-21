@@ -27,11 +27,11 @@ using IdentityEntity = net.atos.daf.ct2.identity.entity;
 namespace net.atos.daf.ct2.customerdataservice.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class CustomerManagementController: ControllerBase
+    [Route("customer-data")]
+    public class customerdataController: ControllerBase
     {
         //private readonly ILogger _logger;       
-        private readonly ILogger<CustomerManagementController> logger; 
+        private readonly ILogger<customerdataController> logger; 
         private readonly IAuditLogRepository _IAuditLogRepository;       
         private readonly IAuditTraillib _AuditTrail;      
         private readonly IOrganizationManager organizationtmanager;
@@ -41,7 +41,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
 
         private IHttpContextAccessor _httpContextAccessor;
 
-        public CustomerManagementController(ILogger<CustomerManagementController> _logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager,IHttpContextAccessor httpContextAccessor,AccountComponent.IAccountIdentityManager _accountIdentityManager)
+        public customerdataController(ILogger<customerdataController> _logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager,IHttpContextAccessor httpContextAccessor,AccountComponent.IAccountIdentityManager _accountIdentityManager)
         {
             logger = _logger;
            _AuditTrail = AuditTrail;
@@ -52,15 +52,15 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
             accountIdentityManager=_accountIdentityManager;
         } 
         
-        [HttpPost]
-        [Route("UpdateCustomerData")]
+        [HttpPost]      
+        [Route("update")]
         public async Task<IActionResult> update(Customer customer)
         {
          
             string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
             bool valid=false;
             try 
-            {
+            {               
                 if(string.IsNullOrEmpty(token))
                 {
                     logger.LogInformation("UpdateCustomerData function called with empty token, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
@@ -75,13 +75,13 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                         var OrgId= await organizationtmanager.UpdateCustomer(customer);
                         logger.LogInformation("Customer data has been updated, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
                         return Ok(OrgId);
-                     }
+                    }
                      else
                      {
                          logger.LogInformation("Customer data not updated, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
                          return StatusCode(401,"Forbidden:");
                      }
-                }
+               }
             }
             catch(Exception ex)
             {
@@ -92,8 +92,8 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
         }  
 
         [HttpPost]
-        [Route("KeyHandOverEvent")]
-        public async Task<IActionResult> KeyHandOverEvent(KeyHandOver keyHandOver)
+        [Route("keyhandover")]
+        public async Task<IActionResult> keyhandover(KeyHandOver keyHandOver)
         {
            string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
             bool valid=false;

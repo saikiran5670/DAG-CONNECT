@@ -11,15 +11,21 @@
                 <div fxLayoutAlign="start center" class='half-width titleText'>{{ currentTitle | titlecase }}
                 </div>
                 <div fxLayoutAlign="end" class='half-width'>
-                    <!-- <a class="navIcon">
-                        <mat-icon aria-hidden="false" aria-label="fullscreen" matTooltip="Full Screen">fullscreen</mat-icon>
-                    </a> -->
+                     <a class="navIcon">
+                        <mat-icon aria-hidden="false" aria-label="fullscreen" (click)="fullScreen()" matTooltip="Full Screen">fullscreen</mat-icon>
+                    </a> 
                     <!-- <img class="navIcon countryflag" mat-card-avatar src="{{fileUploadedPath}}"> -->
-                    <!-- <a class="navIcon">
+                    <a class="navIcon">
                         <mat-icon aria-hidden="false" aria-label="notifications" matTooltip="Notifications">notifications_none</mat-icon>
                         <span class="badge">0</span>
                     </a>
-                    <a class="navIcon">
+                    <!-- TODO : language selection(dropdown) -->
+                    <mat-select *ngIf="language" class="matSelect" [value]="language.val[language.selectedIndex]">
+                        <mat-option *ngFor="let lang of language.val"  [value]="lang">
+                            &nbsp;{{lang}}
+                        </mat-option>
+                    </mat-select>
+                    <!-- <a class="navIcon">
                         <mat-icon aria-hidden="false" aria-label="setting" matTooltip="Setting">settings</mat-icon>
                     </a> -->
                 </div>
@@ -54,12 +60,12 @@
         <ul>
             <li #menuName *ngFor='let menu of menuPages; index as i' class="menuItem" [ngClass]="{'active': pageName === menu.mainRoute}" [attr.menuName]="menu.mainRoute">
                 <a class='selectedManu' *ngIf='!menu.subMenuFlag; else elseBlock' [routerLink]="[ '/'+ menu.mainRoute]" (click)='navigateToPage(menu.mainRoute)'>
-                    <mat-icon class="box-svg-css margin-right-lg">dashboard</mat-icon>
+                    <mat-icon class="box-svg-css margin-right-lg">{{menu.icon}}</mat-icon>
                     <span class="menuLabel">{{menu.mainMenu | titlecase}}</span>
                 </a>
                 <ng-template #elseBlock>
                     <a class='selectedManu' (click)="menuSelected(menu.mainRoute)">
-                        <mat-icon class="box-svg-css margin-right-lg">directions_car</mat-icon>
+                        <mat-icon class="box-svg-css margin-right-lg">{{menu.icon}}</mat-icon>
                         <span class="menuLabel">{{menu.mainMenu | titlecase}}</span>
                         <span *ngIf="!menuCollapsed && menu.mainMenu === 'Live Fleet'" [ngClass]="{'fleetCount': menu.mainMenu === 'Live Fleet' }">0</span>
                         <mat-icon class="navigationArrow">

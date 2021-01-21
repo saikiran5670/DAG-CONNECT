@@ -12,7 +12,11 @@ import { map } from 'rxjs/internal/operators';
 import { TranslationService } from '../../services/translation.service';
 import { CommonTableComponent } from '../.././shared/common-table/common-table.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { AccountGrpcService } from '../../services/account-grpc.service';
+//import { AccountGrpcService } from '../../services/account-grpc.service';
+import { ConfigService } from '@ngx-config/core';
+import { Greeter, GreeterClient, ServiceError } from 'src/app/protos/Greet/greet_pb_service';
+import { HelloReply, HelloRequest } from 'src/app/protos/Greet/greet_pb';
+import { grpc } from '@improbable-eng/grpc-web';
 
 @Component({
   selector: 'app-user-management',
@@ -50,7 +54,8 @@ export class UserManagementComponent implements OnInit {
   filterFlag = false;
 
   dialogRef: MatDialogRef<CommonTableComponent>;
-
+  backendGrpc: any;
+  gRpcClient: GreeterClient;
   constructor(
     private userService: EmployeeService,
     private dialogService: ConfirmDialogService,
@@ -59,7 +64,8 @@ export class UserManagementComponent implements OnInit {
     private actr: ActivatedRoute,
     private translationService: TranslationService,
     private dialog: MatDialog,
-    private accountGrpcService: AccountGrpcService
+    private config: ConfigService,
+    //private accountGrpcService: AccountGrpcService
   ) {
     // const resolvedData:any[] = actr.snapshot.data['resl'];
     // console.log('constructor: ',resolvedData);
@@ -73,6 +79,8 @@ export class UserManagementComponent implements OnInit {
     // else{
     //   this.error= resolvedData;
     // }
+    this.backendGrpc = config.getSettings("foundationServices").accountGrpcServiceUrl;
+	  this.gRpcClient = new GreeterClient(this.backendGrpc);
     this.defaultTranslation();
   }
 
@@ -163,10 +171,10 @@ export class UserManagementComponent implements OnInit {
   ngOnInit() {
     let langCode = 'EN-GB';
     let labelList = 'lblFilter,lblReset,lblName,lblGroup,lblRole,lblUsers,lblEmailID,lblUserGroup,lblAction,lblCancel,lblCreate,lblCreateContinue,lblUpdate,lblStep,lblPrevious,lblSalutation,lblFirstName,lblLastName,lblBirthDate,lblOrganization,lblLanguage,lblTimeZone,lblCurrency,lblSelectUserRole,lblSelectUserGroup,lblSummary,lblSelectVehicleGroupVehicle,lblUserRole,lblSearch,lblServices,lblNext,lblGroupName,lblVehicles,lblAll,lblVehicle,lblBoth,lblVIN,lblRegistrationNumber,lblVehicleName,lblSelectedUserRoles,lblSelectedVehicleGroupsVehicles,lblNew,lblDeleteAccount,lblNo,lblYes,lblBack,lblConfirm,lblAlldetailsaremandatory,lblSelectedUserGroups,lblUserManagement,lblAllUserDetails,lblNewUser,lblAddNewUser,lblUpdateUser,lblAccountInformation,lblUserGeneralSetting,lblLoginEmail,lblUnit,lblDateFormat,lblVehicleDisplayDefault,lblUserAccountCreatedSuccessfully,lblUserAccountUpdatedSuccessfully,lblViewListDetails,lblAreyousureyouwanttodeleteuseraccount,lblCreateUserAPIFailedMessage,lblPleasechoosesalutation,lblSpecialcharactersnotallowed,lblPleaseenterFirstName,lblPleaseenterLastName,lblPleaseentervalidemailID,lblPleaseenteremailID,lblUsersbirthdatecannotbemorethan120yearsinthepast,lblUsercannotbelessthan18yearsatthetimeofregistration,lblUsersbirthdatecannotbeinthefuture,lblErrorupdatingAccountInformationforUser,lblErrorupdatingUserRolesassociations,lblErrorupdatingVehiclesVehiclegroupsassociations,lblErrorupdatingUserGroupsassociations,lblUseraccountwassuccessfullydeleted,lblErrordeletingUseraccount';
-    this.translationService.getTranslationLabel(labelList, langCode).subscribe( (data) => {
-      this.processTranslation(data);
-      this.loadUsersData();
-    });
+    // this.translationService.getTranslationLabel(labelList, langCode).subscribe( (data) => {
+    //   this.processTranslation(data);
+       this.loadUsersData();
+    // });
   }
 
   processTranslation(transData: any){
@@ -246,11 +254,48 @@ export class UserManagementComponent implements OnInit {
 
   loadUsersData(){
 
-    this.accountGrpcService.getAllAccounts().then((result: any) => {
-      console.log(`Inside UI result:: ${result}`);
-    });
+    // this.accountGrpcService.getAllAccounts().then((result: any) => {
+    //   console.log(`Inside UI result:: ${result}`);
+    // });
+
+    // this.accountGrpcService.getGreet().then((result: any) => {
+    //   console.log(`Inside UI result:: ${result}`);
+    // });
+    
+
+    // this.getGreeter().then((data: any) => {
+    //   console.log("resp data:: ", data)
+    // });
+
+    
+    //method 2
+    const req = new HelloRequest();
+    req.setName('Vishal');
+    grpc.unary(Greeter.SayHello, {
+      request: req,
+      host: 'https://10.10.128.9:80',
+      onEnd: (res) => {
+        const { status, message } = res;
+        if (status === grpc.Code.OK && message) {
+          var result = message.toObject() as HelloReply.AsObject;
+          console.log("Unary resp:: ", result);
+          this.makeData();
+        }
+        else{
+          console.log("res.statusMessage:: ", res.statusMessage)
+        }
+      },
+    });  
+
+    // this.accountGrpcService.getGreet().then((result: any) => {
+    //   console.log(`Inside UI result:: ${result}`);
+    // });
     
     //Existing code
+    
+  }
+
+  makeData(){
     this.userService.getUsers().subscribe((usrlist)=>{
       this.filterFlag = true;
       usrlist = this.getNewTagData(usrlist);
@@ -258,6 +303,23 @@ export class UserManagementComponent implements OnInit {
       this.dataSource = new MatTableDataSource(usrlist);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+    });
+  }
+
+  getGreeter(): Promise<any> {
+    let req = new HelloRequest();
+    req.setName('Vishal');
+    return new Promise((resolve, reject) => {
+      this.gRpcClient.sayHello(req, (err: ServiceError, response: HelloReply) => {
+        if (err) {
+          console.log(`Error while invoking gRpc: ${err}`);
+          return reject(err);
+        }
+        else{
+          console.log("response:: ", response);
+          return resolve(response);
+        }
+      });
     });
   }
 

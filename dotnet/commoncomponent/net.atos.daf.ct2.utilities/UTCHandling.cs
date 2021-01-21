@@ -133,7 +133,8 @@ namespace net.atos.daf.ct2.utilities
         /// <returns></returns>
         public static long GetUTCFromDateTime(string sourceDateTime,string timezonename)
         {        
-            TimeZoneInfo tzinfo = TimeZoneInfo.FindSystemTimeZoneById(timezonename);         
+            // TimeZoneInfo tzinfo = TimeZoneInfo.FindSystemTimeZoneById(timezonename);    
+            TimeZoneInfo tzinfo = TZConvert.GetTimeZoneInfo(timezonename);     
             DateTimeOffset utcTime = new DateTimeOffset(Convert.ToDateTime(sourceDateTime),tzinfo.GetUtcOffset(Convert.ToDateTime(sourceDateTime)));
             long dtunixTime = utcTime.ToUnixTimeMilliseconds();                       
             return dtunixTime;
