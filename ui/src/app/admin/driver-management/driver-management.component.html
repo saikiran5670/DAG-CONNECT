@@ -79,8 +79,8 @@
                                                 (change)="handleFileInput($event.target.files)">
                                         </div> -->
                                     </div>
-                                    <div fxLayout="column" fxLayoutAlign="space-around">
-                                        <button [disabled]="!importDriverFormGroup.valid" [ngStyle]="{'margin-top': importDriverFormGroup.get('uploadFile').hasError('required') ? '5px' : '25px' }" mat-flat-button color="primary"
+                                    <div fxLayout="column" fxLayoutAlign="space-around" class='margin-bottom-sm'>
+                                        <button style='color: #fff;' [disabled]="!importDriverFormGroup.valid" [ngStyle]="{'margin-top': importDriverFormGroup.get('uploadFile').hasError('required') ? '5px' : '28px' }" mat-flat-button color="primary"
                                             (click)="importDrivers()">
                                             <mat-icon>keyboard_arrow_up</mat-icon> {{ translationData.lblImport || 'Import' }}
                                         </button>
