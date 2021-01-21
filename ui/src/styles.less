@@ -376,11 +376,11 @@ Refer : https://styleguide.daf.com/en/guidelines-for-developers/use-of-colors
 // ---- Mat-UI component ----- //
 /*--checkbox---*/
 .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element, .mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element{
-    background: #29539c;
+    background: #ffffff;
 }
-.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background, .mat-checkbox-checked.mat-accent .mat-checkbox-background {
-    background-color: #29539c;
-}
+// .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background, .mat-checkbox-checked.mat-accent .mat-checkbox-background {
+//     background-color: #29539c;
+// }
 /*--radio btn---*/
 .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
     border-color: #29539c;
@@ -718,9 +718,9 @@ footer{
             }
         }
     }   
-    mat-error{
-        font-size: 0.8em;
-    }
+    // mat-error{
+    //     font-size: 0.8em;
+    // }
     .mandatoryColor{
         color: red;
     }
@@ -978,6 +978,18 @@ app-consent-opt{
     }
 }
  
+//--------Common style for Form elements-------
+    .mat-form-field-outline {
+        &.mat-form-field-outline-thick {
+            color: #D50017 !important;
+        }
+    }
+    .mat-error {
+        color: #D50017 !important;
+        font-size: 14px;
+    }
+
+
 
 //-----------Common Css for Buttons-----------//
 .mat-flat-button{
@@ -990,6 +1002,23 @@ app-consent-opt{
     //  line-height: 24px; //no need to define as per style guide
     //  letter-spacing: 0.1em; //need to confirm on this
  }}}
+//  .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background, .mat-checkbox-checked.mat-accent .mat-checkbox-background
+ .mat-checkbox-checked,.mat-checkbox-indeterminate,.mat-checkbox {
+     &.mat-accent{
+         .mat-checkbox-background {
+             background-color: #ffffff;
+             border: 1px solid #B9C1C6;
+             border-radius: 2px;
+             
+            .mat-checkbox-checkmark {
+                fill: #00529C !important;
+                    .mat-checkbox-checkmark-path{
+                        stroke:  #00529C !important;
+                    }
+             }
+         }
+     }
+ }
 
 //---------------------------------------//
 
