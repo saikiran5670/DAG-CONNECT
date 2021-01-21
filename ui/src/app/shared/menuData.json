@@ -2,11 +2,13 @@
     {
       "mainMenu": "Dashboard",
       "mainRoute": "dashboard",
+      "icon": "speed",
       "subMenuFlag": false
     },
     {
       "mainMenu": "Live Fleet",
       "mainRoute": "livefleet",
+      "icon": "directions_car",
       "subMenuFlag": true,
       "subMenu": [
         {
@@ -22,6 +24,7 @@
     {
       "mainMenu": "Report",
       "mainRoute": "report",
+      "icon": "leaderboard",
       "subMenuFlag": true,
       "subMenu": [
         {
@@ -37,6 +40,7 @@
     {
       "mainMenu": "Configuration",
       "mainRoute": "configuration",
+      "icon": "settings",
       "subMenuFlag": true,
       "subMenu": [
         {
@@ -56,6 +60,7 @@
     {
       "mainMenu": "Admin",
       "mainRoute": "admin",
+      "icon": "person",
       "subMenuFlag": true,
       "subMenu": [
         {
@@ -83,21 +88,25 @@
     {
       "mainMenu": "Tachograph",
       "mainRoute": "tachograph",
+      "icon": "show_chart",
       "subMenuFlag": false
     },
     {
       "mainMenu": "Mobile Portal",
       "mainRoute": "mobileportal",
+      "icon": "mobile_screen_share",
       "subMenuFlag": false
     },
     {
       "mainMenu": "Shop",
       "mainRoute": "shop",
+      "icon": "shopping_cart",
       "subMenuFlag": false
     },
     {
       "mainMenu": "Information",
       "mainRoute": "information",
+      "icon": "info",
       "subMenuFlag": false
     }
 ]

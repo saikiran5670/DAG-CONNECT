@@ -538,8 +538,8 @@
   "GetDefaultSetting": {
     "language": {
       "val": [
-        "L-1",
-        "L-2"
+        "EN-US",
+        "EN-GB"
       ],
       "selectedIndex": 1
     },
