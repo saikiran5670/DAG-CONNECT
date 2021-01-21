@@ -15,7 +15,7 @@ using net.atos.daf.ct2.authenticationservicerest.Entity;
 namespace net.atos.daf.ct2.authenticationservicerest.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    // [Route("[controller]")]
     public class AuthenticationController: ControllerBase
     {
         private readonly ILogger logger;
@@ -28,20 +28,28 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
         
         [HttpPost]        
         [Route("Auth")]
-        public async Task<IActionResult> Login([FromBody] IdentityEntity.Identity user)
+        public async Task<IActionResult> Login()
         {
             try 
             {
-                if(string.IsNullOrEmpty(user.UserName))
+                if (!string.IsNullOrEmpty(Request.Headers["Authorization"]))  
+                {  
+                var authHeader = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");  
+                var identity = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(authHeader));
+                var arrUsernamePassword = identity.Split(':');  
+                if(string.IsNullOrEmpty(arrUsernamePassword[0]))
                 {
                     return StatusCode(401,"invalid_grant: The username is Empty.");
                 }
-                else if(string.IsNullOrEmpty(user.Password))
+                else if(string.IsNullOrEmpty(arrUsernamePassword[1]))
                 {
                     return StatusCode(401,"invalid_grant: The password is Empty.");
                 }
                 else
                 {
+                    IdentityEntity.Identity user = new IdentityEntity.Identity();
+                    user.UserName=arrUsernamePassword[0];
+                    user.Password=arrUsernamePassword[1];
                     AuthToken authToken= new AuthToken();
                     AccountEntity.AccountIdentity response = await accountIdentityManager.Login(user);
                     if(response!=null)
@@ -82,6 +90,11 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                     }
                 }
             }
+            else 
+            {
+                return StatusCode(401,"The authorization header is either empty or isn't Basic.");
+            }
+            }
             catch(Exception ex)
             {
                 logger.LogError(ex.Message +" " +ex.StackTrace);
@@ -102,7 +115,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                 }
                 else
                 {
-                     valid = await accountIdentityManager.ValidateToken(token);
+                    valid = await accountIdentityManager.ValidateToken(token);
                 }
             }
             catch(Exception ex)

@@ -4,6 +4,7 @@ import * as data from './shared/menuData.json';
 import { DataInterchangeService } from './services/data-interchange.service';
 import { TranslationService } from './services/translation.service';
 import { DeviceDetectorService } from 'ngx-device-detector';
+import { EmployeeService } from './services/employee.service';
 
 @Component({
   selector: 'app-root',
@@ -27,6 +28,7 @@ export class AppComponent {
   public fileUploadedPath: any;
   isLogedIn: boolean = false;
   menuPages: any = (data as any).default;
+  language: any;
   private pagetTitles = {
     livefleet: 'live fleet',
     logbook: 'log book',
@@ -107,8 +109,12 @@ export class AppComponent {
   }
 
 
-  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService) {
+  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, private userService: EmployeeService) {
     this.defaultTranslation();
+    this.userService.getDefaultSetting().subscribe((data)=>{
+      this.language = data['language'];
+      console.log(this.language);
+    });
     this.dataInterchangeService.dataInterface$.subscribe(data => {
       this.isLogedIn = data;
       this.getTranslationLabels()
@@ -272,5 +278,13 @@ private setPageTitle() {
 
   logOut() {
     this.router.navigate(["/auth/login"]);
+  }
+
+  fullScreen() {
+    let elem = document.documentElement;
+    let methodToBeInvoked = elem.requestFullscreen || elem['mozRequestFullscreen'] || elem['msRequestFullscreen'];
+    if (methodToBeInvoked){
+       methodToBeInvoked.call(elem);
+    }
   }
 }
