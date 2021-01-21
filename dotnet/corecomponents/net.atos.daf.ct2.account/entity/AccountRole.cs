@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System;
 
 namespace net.atos.daf.ct2.account.entity
@@ -6,7 +7,9 @@ namespace net.atos.daf.ct2.account.entity
     {
         public int AccountId { get; set; }
         public int OrganizationId { get; set; }
-        public int RoleId { get; set; }
+        public List<int> RoleIds { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime ? EndDate { get; set; }
         
     }
 }

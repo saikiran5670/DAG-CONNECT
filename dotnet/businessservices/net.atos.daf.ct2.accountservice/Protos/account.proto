@@ -23,22 +23,22 @@ service AccountService {
 
   // Access Relationship
   rpc CreateAccessRelationship (AccessRelationship) returns (AccessRelationshipResponse);
-  rpc UpdateAccessRelationship (AccessRelationship) returns (AccessRelationshipResponse);
-  rpc DeleteAccessRelationship (AccessRelationship) returns (AccessRelationshipResponse);
+  //rpc UpdateAccessRelationship (AccessRelationship) returns (AccessRelationshipResponse);
+  rpc DeleteAccessRelationship (AccessRelationshipDeleteRequest) returns (AccessRelationshipResponse);
   rpc GetAccessRelationship (AccessRelationshipFilter) returns (AccessRelationshipDataList);
 
   // Account Group Method
   rpc CreateGroup (AccountGroupRequest) returns (AccountGroupResponce);
   rpc UpdateGroup (AccountGroupRequest) returns (AccountGroupResponce);
-  rpc DeleteGroup (IdRequest) returns (AccountGroupResponce);
+  rpc RemoveGroup (IdRequest) returns (AccountGroupResponce);
   rpc GetAccountGroup (AccountGroupFilterRequest) returns (AccountGroupDataList);
   rpc GetAccountGroupDetail (AccountGroupDetailsRequest) returns (AccountGroupDetailsDataList);
   rpc AddAccountToGroups(AccountGroupRefRequest) returns (AccountGroupRefResponce);
   
 
   // Add Role
-  rpc AddRoles (AccountRoleRequest) returns (AccountRoleResponse);
-  rpc RemoveRoles (AccountRole) returns (AccountRoleResponse);
+   rpc AddRoles (AccountRoleRequest) returns (AccountRoleResponse);
+  rpc RemoveRoles (AccountRoleDeleteRequest) returns (AccountRoleResponse);
 }
 enum AccountType
     {
@@ -271,14 +271,19 @@ message IdRequest {
 
 // Begin Account Role
 
-message AccountRole {
-  int32 AccountId=1;
-  int32 OrganizationId=2;    
+message AccountRole {  
   int32 RoleId = 3;  
 }
 
+message AccountRoleDeleteRequest {
+  int32 AccountId=1;
+  int32 OrganizationId=2;  
+}
+
 message AccountRoleRequest {
-  repeated AccountRole AccountRoles=1;  
+  int32 AccountId=1;
+  int32 OrganizationId=2;    
+  repeated AccountRole AccountRoles=3;  
 }
 
 message AccountRoleResponse{
@@ -289,6 +294,12 @@ message AccountRoleResponse{
 // End Account Role
 
 // Begin Account Relationship 
+
+message AccessRelationshipDeleteRequest
+{
+  int32 AccountGroupId =1;
+  int32 VehicleGroupId =2;        
+}
 
 message AccessRelationship
 {

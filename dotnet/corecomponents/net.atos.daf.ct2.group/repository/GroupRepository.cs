@@ -114,7 +114,7 @@ namespace net.atos.daf.ct2.group
                     // ref id filter
                     if (groupFilter.RefId > 0)
                     {
-                        return await GetByRefId(groupFilter.RefId);
+                        return await GetByRefId(groupFilter);
                     }
                     // organization id filter
                     if (groupFilter.OrganizationId > 0)
@@ -194,7 +194,7 @@ namespace net.atos.daf.ct2.group
                         {
                             parameter = new DynamicParameters();
                             parameter.Add("@group_id", groupRef.Group_Id);
-                            parameter.Add("@ref_id",groupRef.Ref_Id);
+                            parameter.Add("@ref_id", groupRef.Ref_Id);
                             query = @"insert into master.groupref (group_id,ref_id) values (@group_id,@ref_id)";
                             await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                         }
@@ -262,7 +262,7 @@ namespace net.atos.daf.ct2.group
             return entity;
         }
 
-        public async Task<List<Group>> GetByRefId(Int32 refId)
+        private async Task<List<Group>> GetByRefId(GroupFilter filter)
         {
             try
             {
@@ -270,12 +270,39 @@ namespace net.atos.daf.ct2.group
                 List<Group> groupList = new List<Group>();
                 var query = @"select g.id,g.object_type,g.group_type,g.argument,g.function_enum,g.organization_id,g.ref_id,g.name,
                             g.description from master.group g inner join master.groupref gr on g.id = gr.group_id";
+
                 // ref id filter
-                if (refId > 0)
+                if (filter.RefId > 0)
                 {
                     query = query + " and gr.ref_id=@ref_id ";
-                    parameter.Add("@ref_id", refId);
+                    parameter.Add("@ref_id", filter.RefId);
                 }
+                // organization id filter
+                if (filter.OrganizationId > 0)
+                {
+                    parameter.Add("@organization_id", filter.OrganizationId);
+                    query = query + " and g.organization_id=@organization_id ";
+                }
+                // group type filter
+                if (((char)filter.GroupType) != ((char)GroupType.None))
+                {
+                    parameter.Add("@group_type", (char)filter.GroupType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                    query = query + " and g.group_type=@group_type";
+                }
+                // function functional enum filter
+                if (((char)filter.FunctionEnum) != ((char)FunctionEnum.None))
+                {
+                    parameter.Add("@function_enum", (char)filter.FunctionEnum, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                    query = query + " and g.function_enum=@function_enum";
+                }
+                // object type filter
+                if (((char)filter.ObjectType) != ((char)ObjectType.None))
+                {
+
+                    parameter.Add("@object_type", (char)filter.ObjectType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                    query = query + " and g.object_type=@object_type ";
+                }
+
                 IEnumerable<dynamic> groups = await dataAccess.QueryAsync<dynamic>(query, parameter);
                 Group group = new Group();
 
