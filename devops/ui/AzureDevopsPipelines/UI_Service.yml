@@ -1,7 +1,7 @@
 trigger:
 - none
 
-pool: dafct-dev1-privateagent
+pool: dafct-dta-privateagent
 
 parameters:
 - name: ENV
