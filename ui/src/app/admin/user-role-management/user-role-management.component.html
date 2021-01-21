@@ -60,7 +60,7 @@
                                     <mat-icon>create</mat-icon>
                                 </button>
                                 <button *ngIf="(row.roleType == 'Global' && loggedInUser == 'admin') || (row.roleType == 'Regular')" class='actionBtn'  mat-flat-button (click)="deleteUserRole(row)" matTooltip="Delete">
-                                    <mat-icon>delete</mat-icon>
+                                    <mat-icon class="deleteIcon">delete_outline</mat-icon>
                                 </button>
                             </mat-cell>
                         </ng-container>
