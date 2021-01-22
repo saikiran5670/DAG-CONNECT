@@ -395,9 +395,9 @@ namespace net.atos.daf.ct2.account
             }
             return accountIds;
         }
-        public async Task<List<string>> GetRoles(AccountRole accountRole)
+        public async Task<List<KeyValue>> GetRoles(AccountRole accountRole)
         {
-            List<string> Roles = new List<string>();
+            List<KeyValue> Roles = new List<KeyValue>();
             try
             {
                 var parameter = new DynamicParameters();
@@ -406,16 +406,13 @@ namespace net.atos.daf.ct2.account
                 {
                     parameter.Add("@account_id", accountRole.AccountId);
                     parameter.Add("@organization_id", accountRole.OrganizationId);
-
                     query = @"select r.id,r.name from master.account a inner join master.accountrole ac on a.id = ac.account_id 
                                     inner join master.role r on r.id = ac.role_id where 
                                     ac.account_id = @account_id and ac.organization_id=@organization_id";
-
                     dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
-
                     foreach (dynamic record in result)
                     {
-                        Roles.Add(record.name);
+                        Roles.Add(new KeyValue(){ Id = record.id, Name = record.name});
                     }
                 }
             }
