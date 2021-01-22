@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+    kubernetes.io/ingress.class: traefik-internal
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+  name: customerdataservice-ingress
+  namespace: dafdev01
+spec:
+  rules:
+  - host: services-00.aks-ingress.dev1.ct2.atos.net
+    http:
+      paths:
+      - backend:
+          serviceName: customerdataservice
+          servicePort: 80
+        path: /swagger
+      - backend:
+          serviceName: customerdataservice
+          servicePort: 80
+        path: /customer-data
+  tls:
+  - hosts:
+    - services-00.aks-ingress.dev1.ct2.atos.net
+
