@@ -395,9 +395,9 @@ namespace net.atos.daf.ct2.account
             }
             return accountIds;
         }
-        public async Task<List<string>> GetRoles(AccountRole accountRole)
+        public async Task<List<KeyValue>> GetRoles(AccountRole accountRole)
         {
-            List<string> Roles = new List<string>();
+            List<KeyValue> Roles = new List<KeyValue>();
             try
             {
                 var parameter = new DynamicParameters();
@@ -406,16 +406,13 @@ namespace net.atos.daf.ct2.account
                 {
                     parameter.Add("@account_id", accountRole.AccountId);
                     parameter.Add("@organization_id", accountRole.OrganizationId);
-
                     query = @"select r.id,r.name from master.account a inner join master.accountrole ac on a.id = ac.account_id 
                                     inner join master.role r on r.id = ac.role_id where 
                                     ac.account_id = @account_id and ac.organization_id=@organization_id";
-
                     dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
-
                     foreach (dynamic record in result)
                     {
-                        Roles.Add(record.name);
+                        Roles.Add(new KeyValue(){ Id = record.id, Name = record.name});
                     }
                 }
             }
@@ -426,6 +423,52 @@ namespace net.atos.daf.ct2.account
             return Roles;
         }
         // End Add Account to Role
+
+        // Begig - Account rendering
+
+        public async Task<List<KeyValue>> GetAccountOrg(int accountId)
+        {
+            List<KeyValue> keyValueList = null;
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                if (accountId > 0)
+                {
+                    parameter.Add("@account_id", accountId);
+                    query = @"select o.id,o.name from master.organization o inner join master.accountorg ao on o.id=ao.organization_id and ao.is_active=true where ao.account_id=@account_id";                    
+                    keyValueList = await dataAccess.ExecuteScalarAsync<List<KeyValue>>(query, parameter);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return keyValueList;
+        }
+        public async Task<List<KeyValue>> GetAccountRole(int accountId)
+        {
+            List<KeyValue> keyValueList = null;
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                if (accountId > 0)
+                {
+                    parameter.Add("@account_id", accountId);
+                    query = @"select r.id,r.name from master.role r inner join master.accountrole ac on r.id=ac.role_id and r.is_active=true where ac.account_id=@account_id";
+                    keyValueList = await dataAccess.ExecuteScalarAsync<List<KeyValue>>(query, parameter);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return keyValueList;
+        }
+        // End - Account Rendering
+
+
         private Account Map(dynamic record)
         {
             Account account = new Account();

@@ -6,11 +6,11 @@ import { AuthService } from '../../services/auth.service';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 
-interface Organization {
+export interface Organization {
   value: string;
   viewValue: string;
 }
-interface Role {
+export interface Role {
   value: string;
   viewValue: string;
 }

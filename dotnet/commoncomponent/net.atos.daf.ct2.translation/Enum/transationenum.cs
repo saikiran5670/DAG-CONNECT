@@ -9,11 +9,12 @@ namespace net.atos.daf.ct2.translation.Enum
         {
             Text = 'T',
             Url = 'U',
-            Image = 'I'
+            Image = 'I',
+            Dropdown = 'D'
             
         }
 
-        public enum GroupingType
+        public enum MenuType
         {
             Menu= 'M',
             Feature = 'F'

@@ -5,6 +5,7 @@ import { DataInterchangeService } from './services/data-interchange.service';
 import { TranslationService } from './services/translation.service';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { EmployeeService } from './services/employee.service';
+import { Organization, Role } from 'src/app/authentication/login/login.component'
 
 @Component({
   selector: 'app-root',
@@ -29,6 +30,11 @@ export class AppComponent {
   isLogedIn: boolean = false;
   menuPages: any = (data as any).default;
   language: any;
+  openUserRoleDialog= false;
+  organizations: Organization[];
+  roles: Role[];
+  organization: any;
+  role: any;
   private pagetTitles = {
     livefleet: 'live fleet',
     logbook: 'log book',
@@ -285,6 +291,23 @@ private setPageTitle() {
     let methodToBeInvoked = elem.requestFullscreen || elem['mozRequestFullscreen'] || elem['msRequestFullscreen'];
     if (methodToBeInvoked){
        methodToBeInvoked.call(elem);
+    }
+  }
+
+  onClickUserRole(){
+    this.openUserRoleDialog = !this.openUserRoleDialog;
+    if(this.openUserRoleDialog){
+      this.organizations = [
+        { value: 'daf-0', viewValue: 'DAF Connect' },
+        { value: 'conti-1', viewValue: 'Conti' },
+        { value: 'daf-2', viewValue: 'DAF CT 2.0' }
+      ];
+
+      this.roles = [
+        { value: 'fleetadmin-0', viewValue: 'Fleet Admin' },
+        { value: 'fleetmanager-1', viewValue: 'Fleet Manager' },
+        { value: 'user-2', viewValue: 'Fleet User' }
+      ];
     }
   }
 }

@@ -332,7 +332,7 @@ namespace net.atos.daf.ct2.accountservice
                     var roles = accountmanager.GetRoles(accountRole).Result;
                     if (roles != null && Convert.ToInt32(roles.Count) > 0)
                     {
-                        accountDetails.Roles = string.Join(",", roles);
+                        accountDetails.Roles = string.Join(",", roles.Select(role => role.Name).ToArray());
                     }
                     // End Get Roles
                     response.AccountDetails.Add(accountDetails);
@@ -1021,7 +1021,50 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
+         public async override Task<AccountRoles> GetRoles(AccountRoleDeleteRequest request, ServerCallContext context)
+        {
 
+            try
+            {
+                AccountRoles response = new AccountRoles();
+                AccountComponent.entity.AccountRole accountRole = new AccountComponent.entity.AccountRole();
+                accountRole.AccountId = request.AccountId;
+                accountRole.OrganizationId = request.OrganizationId;
+
+                if (request != null && request.AccountId > 0 && request.OrganizationId >0)
+                {
+                    accountRole.OrganizationId = request.OrganizationId;
+                    accountRole.AccountId = request.AccountId;
+                    var roles = accountmanager.GetRoles(accountRole).Result;                    
+                    foreach (AccountComponent.entity.KeyValue role in roles)
+                    {
+                        //response.Roles = new NameIdResponse();
+                        response.Roles.Add(new NameIdResponse(){Id=role.Id,Name = role.Name});
+                    }
+
+                    response.Message = "Get Roles.";
+                    response.Code = Responcecode.Success;
+                    return await Task.FromResult(response);
+                }
+                else 
+                {
+                    // validation message
+                    response.Message = "Please provide accountid and organizationid to get roles details.";
+                    response.Code = Responcecode.Failed;
+                    return await Task.FromResult(response);
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:get account roles with exception - " + ex.Message);
+                return await Task.FromResult(new AccountRoles
+                {
+                    Message = "Exception " + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
         // End Account Role
 
         // Begin Private Methods
