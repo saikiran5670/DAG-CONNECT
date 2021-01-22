@@ -37,7 +37,7 @@ spec:
       containers:
       - name: keycloak-container
         #image: jboss/keycloak:11.0.3
-        image: acrakspzfu3h3wyefhu.azurecr.io/keycloak
+        image: #{acrurl}#/keycloak
         imagePullPolicy: "Always"
         #securityContext:
           #allowPrivilegeEscalation: false
