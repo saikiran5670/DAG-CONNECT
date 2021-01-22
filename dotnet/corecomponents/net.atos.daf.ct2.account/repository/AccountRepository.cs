@@ -437,7 +437,8 @@ namespace net.atos.daf.ct2.account
                 {
                     parameter.Add("@account_id", accountId);
                     query = @"select o.id,o.name from master.organization o inner join master.accountorg ao on o.id=ao.organization_id and ao.is_active=true where ao.account_id=@account_id";                    
-                    keyValueList = await dataAccess.ExecuteScalarAsync<List<KeyValue>>(query, parameter);
+                    IEnumerable<KeyValue> result = await dataAccess.QueryAsync<KeyValue>(query, parameter);
+                    keyValueList = result.ToList();
                 }
             }
             catch (Exception ex)
@@ -457,7 +458,8 @@ namespace net.atos.daf.ct2.account
                 {
                     parameter.Add("@account_id", accountId);
                     query = @"select r.id,r.name from master.role r inner join master.accountrole ac on r.id=ac.role_id and r.is_active=true where ac.account_id=@account_id";
-                    keyValueList = await dataAccess.ExecuteScalarAsync<List<KeyValue>>(query, parameter);
+                    IEnumerable<KeyValue> result= await dataAccess.QueryAsync<KeyValue>(query, parameter);
+                    keyValueList = result.ToList();
                 }
             }
             catch (Exception ex)

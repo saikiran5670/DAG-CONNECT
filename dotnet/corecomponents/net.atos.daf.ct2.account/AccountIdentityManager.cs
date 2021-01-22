@@ -51,6 +51,8 @@ namespace net.atos.daf.ct2.account
                         accIdentity.AccountPreference=pref;
                         break; //get only first preference
                     }
+                    accIdentity.AccountOrganization = accountManager.GetAccountOrg(accountId).Result;
+                    accIdentity.AccountRole = accountManager.GetAccountRole(accountId).Result;
                 }
             }
             return await Task.FromResult(accIdentity);
