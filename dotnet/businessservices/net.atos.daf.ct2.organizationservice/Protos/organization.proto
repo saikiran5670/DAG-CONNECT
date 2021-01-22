@@ -56,17 +56,16 @@ message OrganizationUpdateRequest {
     bool OptOutStatus=11;
     int64 OptOutStatusChangedDate=12;
     bool IsActive=13;
-    int32 Ref_Id=14;
-    int32 PreferenceType=15;
-    int32 Language_Id=16;
-    int32 Timezone_Id=17;
-    int32 Currency_Type=18;
-    int32 Unit_Type=19;
-    int32 VehicleDisplay_Type=20;
-    int32 DateFormat_Type=21;
-    string DriverId=22;
-    int32 TimeFormatId=23;
-    int32 LandingPageDisplayId=24;
+    int32 PreferenceType=14;
+    int32 Language_Id=15;
+    int32 Timezone_Id=16;
+    int32 Currency_Type=17;
+    int32 Unit_Type=18;
+    int32 VehicleDisplay_Type=19;
+    int32 DateFormat_Type=20;
+    string DriverId=21;
+    int32 TimeFormatId=22;
+    int32 LandingPageDisplayId=23;
   }
 
   message OrganizationDeleteRequest {
@@ -89,9 +88,9 @@ message GetOrganizationResponce {
     google.protobuf.StringValue PostalCode=8;    
     google.protobuf.StringValue City=9;
     google.protobuf.StringValue CountryCode=10;   
-    google.protobuf.StringValue ReferencedDate=11;
+    google.protobuf.StringValue Referenced=11;
     bool OptOutStatus=12;  
-    google.protobuf.StringValue OptOutStatusChangedDate=13;
+    google.protobuf.StringValue OptOutStatusChanged=13;
     bool IsActive=14;
     int32 RefId=15;
     google.protobuf.StringValue PrefType=16;

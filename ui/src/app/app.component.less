@@ -17,7 +17,7 @@
         // }
     }
     &.withCollapse{
-        left: 50px;
+        left: 100px;
     }
     .collapseBtn{
         width: 18px;
@@ -79,13 +79,14 @@ ul {
             }
 
             mat-icon {
-                height: 18px;
-                width: 18px;
-                font-size: 20px;
+                height: 22px;
+                width: 22px;
+                font-size: 22px;
                 flex-grow: 0;
                 flex-shrink: 0;
                 margin-right: 15px;
                 color: #b5d1fc; 
+                
             }
             
             .fleetCount{
@@ -171,7 +172,7 @@ a{
     z-index: 2;
 
     &.menuCollapsed {
-        width: 50px;
+        width: 100px;
         text-align: center;
         overflow-y: auto;
         overflow-x: visible;
@@ -203,11 +204,14 @@ a{
                     padding-left: 0;
                     padding-right: 0;
                     justify-content: center;
+                    flex-wrap: wrap;
+                    flex-direction: column;
+                    
 
                     .mat-icon {
-                        margin: 0 10px;
+                        margin: 0;
                     }
-                    .menuLabel, .navigationArrow {
+                    .navigationArrow {
                         display: none;
                     }
                 }
@@ -219,7 +223,18 @@ a{
         }
         .userBgImg{
             padding: 20px 10px 10px 0px;
+
+            .userImageContainer{
+                display: flex;
+                flex-flow: column wrap;
+            }
         }
+        .display-flex .align-items-center{
+            .mat-icon{
+                cursor: pointer;
+            }
+        }
+        
     }
      
      .menuItemDivider {
@@ -251,5 +266,10 @@ a{
             margin-bottom: 0.2em;
         }
     }
+}
+.userRoleDialogContainer{
+    width: 210px;
+    position: absolute;
+    z-index: 2;
 }
 
