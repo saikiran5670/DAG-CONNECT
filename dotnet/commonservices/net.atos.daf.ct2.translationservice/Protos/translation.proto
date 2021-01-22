@@ -1,0 +1,48 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "net.atos.daf.ct2.translationservice";
+
+package net.atos.daf.ct2.translationservice;
+
+
+service TranslationService {
+rpc GetTranslations(TranslationsRequest) returns (TranslationsResponce);
+}
+
+enum TranslationType{
+    Menu = 0;
+    Feature = 1;
+  }
+  
+    // response code  
+    enum Responcecode{
+        Success = 0;
+        Failed = 1;
+      }
+  
+  enum Contenttype{
+    Text = 0;
+    Dropdown = 1;
+    Image =2;
+  }
+  message TranslationsRequest
+    {
+      TranslationType Menutype =1;
+      string  Langaugecode = 2;
+      string Name=3;
+      string value = 4;
+      string filter = 8;
+      Contenttype Contenttype = 6;
+      int32 ID =5; 
+      int32 MenuId= 7;
+    }
+  
+    message TranslationsResponce
+    {
+      Responcecode code=1;
+      string message = 2;
+      repeated TranslationsRequest Translations = 3;
+  
+    }
+  

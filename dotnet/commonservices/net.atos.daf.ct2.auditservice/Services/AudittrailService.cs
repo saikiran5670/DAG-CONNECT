@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.auditservice.Services
                 logs.Message = request.Message;  
                 logs.Sourceobject_id = request.SourceobjectId;  
                 logs.Targetobject_id = request.TargetobjectId;  
-                logs.Updated_data = null;     
+                logs.Updated_data = request.UpdatedData;     
                 _logger.LogError("Logs running fine");
                 var result = _AuditTrail.AddLogs(logs).Result;
                

@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.translation.test
        
        public TransaltionTest()
         {
-            string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y\\97;Ssl Mode=Require;";
+            string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             _dataAccess = new PgSQLDataAccess(connectionString);
             _ITranslationRepository = new TranslationRepository(_dataAccess);
             //  _logs = new AuditTraillib(_ITranslationRepository);
@@ -30,5 +30,22 @@ namespace net.atos.daf.ct2.translation.test
                 var result = _ITranslationRepository.GetAllLanguageCode().Result;
                 Assert.IsTrue(result.Count() > 0);
         }
+
+        [TestMethod]
+        public void GetTranslationsByMenu()
+        {
+                var result = _ITranslationRepository.GetTranslationsByMenu(3,((char)translationenum.MenuType.Menu).ToString()).Result;
+                Assert.IsTrue(result.Count() > 0);
+        }
+        
+        [TestMethod]
+        public void GetLangagugeTranslationByKey()
+        {
+                var result = _ITranslationRepository.GetLangagugeTranslationByKey("dlanguage_Lithuanian","D").Result;
+                Assert.IsTrue(result.Count() > 0);
+        }
+
+        
+        
     }
 }
