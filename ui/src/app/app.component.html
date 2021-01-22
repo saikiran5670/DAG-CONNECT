@@ -34,7 +34,7 @@
     </mat-toolbar>
     <div class="dashboardMenu" id="sideNavConteiner" [ngClass]="menuCollapsed ? 'menuCollapsed' : ''" *ngIf="isLogedIn">
         <div class='userBgImg'>
-            <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="5px">
+            <div class="userImageContainer" fxLayout="row" fxLayoutAlign="start" fxLayoutGap="5px">
                 <div fxLayout="column">
                     <img class="userIcon" mat-card-avatar src="{{fileUploadedPath}}">
                 </div>
@@ -49,7 +49,7 @@
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="end">
-                <div fxLayout="column">
+                <div class="logoutButton" fxLayout="column">
                     <button mat-icon-button (click)="logOut()" class="menuToggler display-flex align-items-center">
                         <mat-icon class='logoutIcon'>exit_to_app</mat-icon>
                     </button>
@@ -60,12 +60,12 @@
         <ul>
             <li #menuName *ngFor='let menu of menuPages; index as i' class="menuItem" [ngClass]="{'active': pageName === menu.mainRoute}" [attr.menuName]="menu.mainRoute">
                 <a matTooltip='{{menu.mainMenu | titlecase}}' class='selectedManu' *ngIf='!menu.subMenuFlag; else elseBlock' [routerLink]="[ '/'+ menu.mainRoute]" (click)='navigateToPage(menu.mainRoute)'>
-                    <mat-icon class="box-svg-css margin-right-lg">{{menu.icon}}</mat-icon>
+                    <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
                     <span class="menuLabel">{{menu.mainMenu | titlecase}}</span>
                 </a>
                 <ng-template #elseBlock>
                     <a matTooltip='{{menu.mainMenu | titlecase}}' class='selectedManu' (click)="menuSelected(menu.mainRoute)">
-                        <mat-icon class="box-svg-css margin-right-lg">{{menu.icon}}</mat-icon>
+                        <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
                         <span class="menuLabel">{{menu.mainMenu | titlecase}}</span>
                         <span *ngIf="!menuCollapsed && menu.mainMenu === 'Live Fleet'" [ngClass]="{'fleetCount': menu.mainMenu === 'Live Fleet' }">0</span>
                         <mat-icon class="navigationArrow">
