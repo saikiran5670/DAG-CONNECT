@@ -182,7 +182,7 @@ namespace net.atos.daf.ct2.vehicle.test
                 groupResult.GroupRef.Add(new GroupRef() { Ref_Id = 104 });
                 groupResult.GroupRef.Add(new GroupRef() { Ref_Id = 105 });
             }
-            var result = _groupRepository.AddRef(groupResult).Result;
+            var result = _groupRepository.UpdateRef(groupResult).Result;
             Assert.IsTrue(result);
         }
 
@@ -212,7 +212,7 @@ namespace net.atos.daf.ct2.vehicle.test
                 groupResult.GroupRef.Add(new GroupRef() { Ref_Id = 14 });
                 groupResult.GroupRef.Add(new GroupRef() { Ref_Id = 15 });
             }
-            var result = _groupRepository.AddRef(groupResult).Result;
+            var result = _groupRepository.UpdateRef(groupResult).Result;
             Assert.IsTrue(result);
         }
 
@@ -322,32 +322,32 @@ namespace net.atos.daf.ct2.vehicle.test
 
         }
 
-        [TestMethod]
-        public void UpdateVehicleforCRM()
-        {          
-            string vin="V22";
-            string tcuId="V22UpdatedManager";
-            string tcuactivation="true";
-            string referenceDateTime="04-04-2019";
-            var resultUpdatevehicle = _vehicleRepository.Update(vin,tcuId,tcuactivation,referenceDateTime).Result;
-            Assert.IsNotNull(resultUpdatevehicle);
-          //  Assert.IsTrue(resultUpdatevehicle.ID > 0);
+        // [TestMethod]
+        // public void UpdateVehicleforCRM()
+        // {          
+        //     string vin="V22";
+        //     string tcuId="V22UpdatedManager";
+        //     string tcuactivation="true";
+        //     string referenceDateTime="04-04-2019";
+        //     var resultUpdatevehicle = _vehicleRepository.update(vin,tcuId,tcuactivation,referenceDateTime).Result;
+        //     Assert.IsNotNull(resultUpdatevehicle);
+        //   //  Assert.IsTrue(resultUpdatevehicle.ID > 0);
 
-        }
+        // }
 
-         [TestMethod]
-        public void CreateVehicleforCRM()
-        {          
-            int orgid=10;
-            string vin="V2265555";
-            string tcuId="tesdddddd";
-            string tcuactivation="true";
-            string referenceDateTime="1610877108";
+        //  [TestMethod]
+        // public void CreateVehicleforCRM()
+        // {          
+        //     int orgid=10;
+        //     string vin="V2265555";
+        //     string tcuId="tesdddddd";
+        //     string tcuactivation="true";
+        //     string referenceDateTime="1610877108";
 
-            var resultUpdatevehicle = _vehicleRepository.Create(orgid,vin,tcuId,tcuactivation,referenceDateTime).Result;
-            Assert.IsNotNull(resultUpdatevehicle);
-          //  Assert.IsTrue(resultUpdatevehicle.ID > 0);
+        //     var resultUpdatevehicle = _vehicleRepository.create(orgid,vin,tcuId,tcuactivation,referenceDateTime).Result;
+        //     Assert.IsNotNull(resultUpdatevehicle);
+        //   //  Assert.IsTrue(resultUpdatevehicle.ID > 0);
 
-        }
+        // }
     }
 }

@@ -20,6 +20,9 @@ using net.atos.daf.ct2.audit;
 using AccountComponent = net.atos.daf.ct2.account;
 using Identity = net.atos.daf.ct2.identity;
 using AccountPreference = net.atos.daf.ct2.accountpreference;
+using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
+
 
 
 namespace net.atos.daf.ct2.vehicledataservice
@@ -37,7 +40,7 @@ namespace net.atos.daf.ct2.vehicledataservice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-             var connectionString = Configuration.GetConnectionString("ConnectionString");
+            var connectionString = Configuration.GetConnectionString("ConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);           
             services.AddSingleton(dataAccess); 
             services.AddTransient<IAuditTraillib,AuditTraillib>(); 
@@ -58,6 +61,12 @@ namespace net.atos.daf.ct2.vehicledataservice
             
             services.AddTransient<AccountComponent.IAccountRepository,AccountComponent.AccountRepository>();
             services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();            
+
+            services.AddSwaggerGen(c =>
+            {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Vehicle Data Service", Version = "v1" });
+            });
+
          
         }
 
@@ -73,12 +82,20 @@ namespace net.atos.daf.ct2.vehicledataservice
 
             app.UseRouting();
 
+            app.UseSwagger();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+            app.UseSwaggerUI(c =>
+            {
+               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Vehicle Data Service V1");
+            });
+
         }
     }
 }

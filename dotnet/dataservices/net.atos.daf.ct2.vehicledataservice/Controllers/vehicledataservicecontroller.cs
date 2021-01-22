@@ -18,7 +18,7 @@ using IdentityEntity = net.atos.daf.ct2.identity.entity;
 namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("vehicle-data")]
     public class vehicledataservicecontroller : ControllerBase
     {
         private readonly ILogger<vehicledataservicecontroller> logger;
@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
 
                 string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 bool valid = await accountIdentityManager.ValidateToken(token);
-                if(true)
+                if(valid)
                 {
                 logger.LogInformation("UpdateVehicle function called -" + vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN);
                 
