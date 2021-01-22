@@ -1498,7 +1498,7 @@ CREATE TABLE if not exists  translation.language
 	id serial NOT NULL,  
 	name varchar (50) NOT NULL,  
 	code varchar (8) NOT NULL, 
-	key varchar (100) NOT NULL, 
+	key varchar (250) NOT NULL, 
 	description varchar (100) 
 )
 TABLESPACE pg_default;
@@ -1591,7 +1591,7 @@ $$;
 CREATE TABLE if not exists  translation.translationgrouping 
 (
 	id serial NOT NULL,    
-	name varchar (100)NOT NULL,     
+	name varchar (250)NOT NULL,     
 	ref_id int NOT NULL,    
 	type char(1) NOT NULL    
 )
