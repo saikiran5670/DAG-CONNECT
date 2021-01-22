@@ -8,6 +8,7 @@ using net.atos.daf.ct2.identitysession.entity;
 using net.atos.daf.ct2.data;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.identitysession.repository;
+using Dapper;
 namespace net.atos.daf.ct2.identitysession.test
 {
     [TestClass]
@@ -18,7 +19,8 @@ namespace net.atos.daf.ct2.identitysession.test
         private readonly IConfiguration _config;
         private readonly AccountAssertionRepository _accountAssertionRepository;
         public AccountAssertionManagerTest()
-        {           
+        { 
+            //string connectionString = "Server = localhost; Port = 5432; Database = DAF; User Id = postgres; Password = Abcd@1234; CommandTimeout = 90; ";
             string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             _dataAccess = new PgSQLDataAccess(connectionString);
             _accountAssertionRepository = new AccountAssertionRepository(_dataAccess);   
@@ -34,9 +36,9 @@ namespace net.atos.daf.ct2.identitysession.test
             AccountAssertion accountAssertion =new AccountAssertion();
             accountAssertion.Key="asdfgh";
             accountAssertion.Value="test1";
-            accountAssertion.SessionState="2424werwerwersaw342";
-            accountAssertion.AccountId="12";
-            accountAssertion.CreatedAt="sdfdggrwewew332";
+            accountAssertion.SessionState="2";
+            accountAssertion.AccountId="4";
+            accountAssertion.CreatedAt="1";
 
             int result= await _accountAssertionManager.InsertAssertion(accountAssertion);
             Assert.IsNotNull(result);
@@ -49,11 +51,12 @@ namespace net.atos.daf.ct2.identitysession.test
         public async Task UnT_identitysession_AccountAssertionManager_UpdateAssertion()
         { 
             AccountAssertion accountAssertion =new AccountAssertion();
-            accountAssertion.Key="asdfgh22";
+            accountAssertion.Id=2;
+            accountAssertion.Key="test";
             accountAssertion.Value="test2";
-            accountAssertion.SessionState="2424werwerwersaw34df";
-            accountAssertion.AccountId="12";
-            accountAssertion.CreatedAt="sdfdggrwewew33ff";
+            accountAssertion.SessionState="2";
+            accountAssertion.AccountId="4";
+            accountAssertion.CreatedAt="4";
 
             int result= await _accountAssertionManager.UpdateAssertion(accountAssertion);
             Assert.IsNotNull(result);
@@ -65,7 +68,7 @@ namespace net.atos.daf.ct2.identitysession.test
         [TestMethod]
         public async Task UnT_identitysession_AccountAssertionManager_DeleteAssertion()
         {                      
-            int AccountId=123;           
+            int AccountId=4;           
             int result= await _accountAssertionManager.DeleteAssertion(AccountId);
             Assert.IsNotNull(result);
             Assert.IsTrue(result>0);           
@@ -77,7 +80,7 @@ namespace net.atos.daf.ct2.identitysession.test
         public async Task UnT_identitysession_AccountAssertionManager_GetAssertion()
         { 
             AccountAssertion accountAssertion =new AccountAssertion();            
-            int AccountId=12;           
+            int AccountId=4;           
             var result= await _accountAssertionManager.GetAssertion(AccountId);            
             Assert.IsNotNull(result);
             Assert.IsTrue(result!=null);       
