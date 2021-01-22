@@ -38,7 +38,8 @@ namespace net.atos.daf.ct2.accountservice
                 builder.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+                    //.WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+                    .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding", "X-Grpc-Web", "User-Agent");
             }));
 
             var connectionString = Configuration.GetConnectionString("ConnectionString");
@@ -49,19 +50,13 @@ namespace net.atos.daf.ct2.accountservice
 
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IAuditTraillib, AuditTraillib>();
-
             services.AddTransient<Identity.IAccountManager, Identity.AccountManager>();
-
             services.AddTransient<IGroupRepository, GroupRepository>();
             services.AddTransient<IGroupManager, GroupManager>();
-
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IAccountManager, AccountManager>();
             services.AddTransient<IVehicleRepository, VehicleRepository>();
             services.AddTransient<IVehicleManager, VehicleManager>();
-
-            //services.AddTransient<IGroupManager, GroupManager>();
-            //services.AddTransient<IPreferenceManager, PreferenceManager>();
             services.AddTransient<IAccountPreferenceRepository, AccountPreferenceRepository>();
             services.AddTransient<IPreferenceManager, PreferenceManager>();
         }
@@ -80,16 +75,19 @@ namespace net.atos.daf.ct2.accountservice
 
             app.UseEndpoints(endpoints =>
             {
+                
+                
                 endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb()
                                                   .RequireCors("AllowAll");
                 endpoints.MapGrpcService<AccountManagementService>().EnableGrpcWeb()
                                                   .RequireCors("AllowAll");
 
+                
                 endpoints.MapGet("/", async context =>
                 {
                     await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
                 });
-            }); 
+            });
         }
     }
 }

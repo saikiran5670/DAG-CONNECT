@@ -1492,7 +1492,7 @@ $$;
 
 ------------------------------------------------------------
 --languages (Master data is also required)
-CREATE TABLE if not exists  translation.languages 
+CREATE TABLE if not exists  translation.language
 (
 	id serial NOT NULL,  
 	name varchar (50) NOT NULL,  
@@ -1502,18 +1502,18 @@ CREATE TABLE if not exists  translation.languages
 )
 TABLESPACE pg_default;
 
-ALTER TABLE  translation.languages 
+ALTER TABLE  translation.language
     OWNER to pgadmin;
 
 Do $$
 begin
 if not exists(
 	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='pk_languages_id' AND table_name='languages'
+	WHERE constraint_name='pk_languages_id' AND table_name='language'
 		and constraint_type='PRIMARY KEY')
 then	
 	begin
-		ALTER TABLE  translation.languages 
+		ALTER TABLE  translation.language
 			ADD CONSTRAINT pk_languages_id PRIMARY KEY (id)
 			USING INDEX TABLESPACE pg_default;
 	end;
@@ -1525,11 +1525,11 @@ Do $$
 begin
 if not exists(
 	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='uk_languages_code' AND table_name='languages'
+	WHERE constraint_name='uk_languages_code' AND table_name='language'
 		and constraint_type='UNIQUE')
 then	
 	begin
-		ALTER TABLE  translation.languages 
+		ALTER TABLE  translation.language
 			ADD CONSTRAINT uk_languages_code UNIQUE  (code)
 			USING INDEX TABLESPACE pg_default;
 	end;
@@ -1579,7 +1579,7 @@ if not exists(
 then	
 	begin
 		ALTER TABLE  translation.translation 
-			ADD CONSTRAINT fk_translation_code_languages_code FOREIGN KEY (code) REFERENCES  translation.languages (code);
+			ADD CONSTRAINT fk_translation_code_languages_code FOREIGN KEY (code) REFERENCES  translation.language (code);
 			--USING INDEX TABLESPACE pg_default;
 	end;
 end if;
@@ -1694,7 +1694,7 @@ if not exists(
 then	
 	begin
 		ALTER TABLE  master.accountpreference 
-			ADD CONSTRAINT fk_accountpreference_languageid_languages_id FOREIGN KEY (language_id) REFERENCES  translation.languages (id);
+			ADD CONSTRAINT fk_accountpreference_languageid_languages_id FOREIGN KEY (language_id) REFERENCES  translation.language (id);
 			--USING INDEX TABLESPACE pg_default;
 	end;
 end if;

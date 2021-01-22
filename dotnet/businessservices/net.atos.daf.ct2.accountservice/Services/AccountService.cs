@@ -19,15 +19,15 @@ namespace net.atos.daf.ct2.accountservice
         private readonly AccountComponent.IAccountManager accountmanager;
         private readonly Preference.IPreferenceManager preferencemanager;
         private readonly Group.IGroupManager groupmanager;
-        //private readonly IAuditTraillib auditlog;
-        
-        public AccountManagementService(ILogger<GreeterService> logger, AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager)
+        private readonly IAuditTraillib auditlog;
+
+        public AccountManagementService(ILogger<GreeterService> logger, AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, IAuditTraillib _auditlog)
         {
             _logger = logger;
             accountmanager = _accountmanager;
             preferencemanager = _preferencemanager;
             groupmanager = _groupmanager;
-            //auditlog =  _auditlog;
+            auditlog = _auditlog;
         }
 
         public override Task<AccountData> Create(AccountRequest request, ServerCallContext context)
@@ -46,13 +46,18 @@ namespace net.atos.daf.ct2.accountservice
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
                 account = accountmanager.Create(account).Result;
-                //auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Account Service","Create Account",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"Create Account" + account.EmailId,1,2,null);
+                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Account with email: ", 1, 2, "").Result;
                 // response 
                 AccountData response = new AccountData();
 
                 if (account.isDuplicate)
                 {
                     response.Message = "The duplicate account, please provide unique email address.";
+                    response.Code = Responcecode.Failed;
+                }
+                else if (account.isError)
+                {
+                    response.Message = "There is an error creating account in IDP.";
                     response.Code = Responcecode.Failed;
                 }
                 else
@@ -66,6 +71,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in account service:create account with exception - " + ex.Message);
                 return Task.FromResult(new AccountData
                 {
                     Code = Responcecode.Failed,
@@ -84,13 +90,12 @@ namespace net.atos.daf.ct2.accountservice
                 account.Salutation = request.Salutation;
                 account.FirstName = request.FirstName;
                 account.LastName = request.LastName;
-                //account.Dob = request.Dob.Seconds;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount; ; //GetEnum((int)request.Type);
                 account.Organization_Id = request.OrganizationId;
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
                 account = accountmanager.Update(account).Result;
-
+                auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Update Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Account Updated", 1, 2, account.EmailId);
                 // response 
                 AccountData response = new AccountData();
                 response.Code = Responcecode.Success;
@@ -101,6 +106,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in account service:update account with exception - " + ex.Message);
                 return Task.FromResult(new AccountData
                 {
                     Code = Responcecode.Failed,
@@ -119,12 +125,12 @@ namespace net.atos.daf.ct2.accountservice
                 account.Salutation = request.Salutation;
                 account.FirstName = request.FirstName;
                 account.LastName = request.LastName;
-                //account.Dob = request.Dob.Seconds;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount; //GetEnum((int)request.Type);
                 account.Organization_Id = request.OrganizationId;
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
                 var result = accountmanager.Delete(account).Result;
+                auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Service", "Account Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Account Delete", 1, 2, account.Id.ToString());
 
                 // response 
                 AccountResponse response = new AccountResponse();
@@ -134,6 +140,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in account service:delete account with exception - " + ex.Message);
                 return Task.FromResult(new AccountResponse
                 {
                     Code = Responcecode.Failed,
@@ -158,15 +165,23 @@ namespace net.atos.daf.ct2.accountservice
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
                 var result = accountmanager.ChangePassword(account).Result;
-
                 // response 
                 AccountResponse response = new AccountResponse();
-                response.Code = Responcecode.Success;
-                response.Message = "Change Password";
+                if (result)
+                {
+                    response.Code = Responcecode.Success;
+                    response.Message = "Change Password";
+                }
+                else
+                {
+                    response.Code = Responcecode.Failed;
+                    response.Message = "There is some issues while changing password, Please try again.";
+                }
                 return Task.FromResult(response);
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in account service:change password with exception - " + ex.Message);
                 return Task.FromResult(new AccountResponse
                 {
                     Code = Responcecode.Failed,
@@ -191,6 +206,7 @@ namespace net.atos.daf.ct2.accountservice
                     filter.AccountIds = request.AccountIds;
                 }
                 var result = accountmanager.Get(filter).Result;
+                _logger.LogInformation("Get account with filter.");
                 // response 
                 AccountDataList response = new AccountDataList();
                 foreach (AccountComponent.entity.Account entity in result)
@@ -203,6 +219,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in account service:get accounts with exception - " + ex.Message);
                 return Task.FromResult(new AccountDataList
                 {
                     Code = Responcecode.Failed,
@@ -222,6 +239,15 @@ namespace net.atos.daf.ct2.accountservice
                 AccountDetailsResponse response = new AccountDetailsResponse();
                 AccountDetails accountDetails = new AccountDetails();
                 List<string> accountGroupName = null;
+
+                // validation 
+                if (request.OrganizationId <= 0)
+                {
+                    response.Code= Responcecode.Failed;
+                    response.Message = "Organization filter is required";
+                    return response;
+                }
+
                 if (request.GroupId > 0)
                 {
                     // AccountComponent.entity.AccessRelationshipFilter accessFilter = new AccountComponent.entity.AccessRelationshipFilter();
@@ -264,6 +290,7 @@ namespace net.atos.daf.ct2.accountservice
                 else
                 {
                     filter.Id = 0;
+                    if(request.AccountId>0) filter.Id=request.AccountId;                    
                     filter.OrganizationId = request.OrganizationId;
                     filter.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
                     filter.AccountIds = null;
@@ -274,31 +301,33 @@ namespace net.atos.daf.ct2.accountservice
                 // account group details                 
                 foreach (AccountComponent.entity.Account entity in accounts)
                 {
+                    accountDetails = new AccountDetails();
+                    accountDetails.Account = new AccountRequest();
                     accountDetails.Account = MapToRequest(entity);
+                    // group filter
                     Group.GroupFilter groupFilter = new Group.GroupFilter();
                     groupFilter.OrganizationId = request.OrganizationId;
-                    groupFilter.RefId = request.AccountId;
-                    groupFilter.ObjectType = Group.ObjectType.None;
+                    groupFilter.RefId = entity.Id;
+                    groupFilter.ObjectType = Group.ObjectType.AccountGroup;
                     groupFilter.FunctionEnum = Group.FunctionEnum.None;
-                    groupFilter.GroupType = Group.GroupType.None;
+                    groupFilter.GroupType = Group.GroupType.Group;
+                    var accountGroupList = groupmanager.Get(groupFilter).Result;
 
-                    var vehicleGroupList = groupmanager.Get(groupFilter).Result;
-                    if (vehicleGroupList != null)
+                    if (accountGroupList != null)
                     {
                         accountGroupName = new List<string>();
-                        foreach (Group.Group vGroup in vehicleGroupList)
+                        foreach (Group.Group aGroup in accountGroupList)
                         {
-                            accountGroupName.Add(vGroup.Name);
+                            accountGroupName.Add(aGroup.Name);
                         }
                     }
                     if (accountGroupName != null)
                     {
                         accountDetails.AccountGroups = string.Join(",", accountGroupName);
                     }
-
                     // Get roles   
                     AccountComponent.entity.AccountRole accountRole = new AccountComponent.entity.AccountRole();
-                    accountRole.AccountId = request.AccountId;
+                    accountRole.AccountId = entity.Id;
                     accountRole.OrganizationId = request.OrganizationId;
                     var roles = accountmanager.GetRoles(accountRole).Result;
                     if (roles != null && Convert.ToInt32(roles.Count) > 0)
@@ -307,6 +336,7 @@ namespace net.atos.daf.ct2.accountservice
                     }
                     // End Get Roles
                     response.AccountDetails.Add(accountDetails);
+                    _logger.LogInformation("Get account details.");
                 }
                 response.Code = Responcecode.Success;
                 response.Message = "Get";
@@ -314,6 +344,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in account service:account details with exception - " + ex.Message);
                 return await Task.FromResult(new AccountDetailsResponse
                 {
                     Code = Responcecode.Failed,
@@ -352,23 +383,29 @@ namespace net.atos.daf.ct2.accountservice
                 //account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount; //GetEnum((int)request.Type);                
                 accessRelationship.StartDate = DateTime.Now;
                 accessRelationship.EndDate = null;
-                if (!string.IsNullOrEmpty(validationMessage))
+                if (string.IsNullOrEmpty(validationMessage))
                 {
                     accessRelationship = accountmanager.CreateAccessRelationship(accessRelationship).Result;
+                    var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Access Relationship", 1, 2, Convert.ToString(accessRelationship.AccountGroupId)).Result;
+                    response.AccessRelationship = new AccessRelationship();
                     response.AccessRelationship.Id = accessRelationship.Id;
+                    response.AccessRelationship.AccessRelationType = accessRelationship.AccessRelationType.ToString();
+                    response.AccessRelationship.AccountGroupId = accessRelationship.AccountGroupId;
+                    response.AccessRelationship.VehicleGroupId = accessRelationship.VehicleGroupId;
                     response.Code = Responcecode.Success;
                     response.Message = "AccessRelationship Created";
                 }
                 else
                 {
                     response.Message = validationMessage;
-                    response.Code = Responcecode.Success;
+                    response.Code = Responcecode.Failed;
 
                 }
                 return Task.FromResult(response);
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in account service:create account relationship with exception - " + ex.Message);
                 return Task.FromResult(new AccessRelationshipResponse
                 {
                     Code = Responcecode.Failed,
@@ -377,72 +414,78 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
-        public override Task<AccessRelationshipResponse> UpdateAccessRelationship(AccessRelationship request, ServerCallContext context)
+        // public override Task<AccessRelationshipResponse> UpdateAccessRelationship(AccessRelationship request, ServerCallContext context)
+        // {
+        //     string validationMessage = string.Empty;
+        //     try
+        //     {
+        //         // access relation ship entity
+        //         AccountComponent.entity.AccessRelationship accessRelationship = new AccountComponent.entity.AccessRelationship();
+        //         // response 
+        //         AccessRelationshipResponse response = new AccessRelationshipResponse();
+
+        //         accessRelationship.Id = request.Id;
+        //         accessRelationship.AccountGroupId = request.AccountGroupId;
+        //         accessRelationship.VehicleGroupId = request.VehicleGroupId;
+        //         if (!string.IsNullOrWhiteSpace(request.AccessRelationType) && request.AccessRelationType == "R")
+        //         {
+        //             accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadOnly;
+        //         }
+        //         if (!string.IsNullOrWhiteSpace(request.AccessRelationType) && request.AccessRelationType == "W")
+        //         {
+        //             accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadWrite;
+        //         }
+        //         else
+        //         {
+        //             validationMessage = "The AccessType should be ReadOnly / ReadWrite.(R/W).";
+        //         }
+        //         //account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount; //GetEnum((int)request.Type);                
+        //         accessRelationship.StartDate = DateTime.Now;
+        //         accessRelationship.EndDate = null;
+        //         if (string.IsNullOrEmpty(validationMessage))
+        //         {
+        //             accessRelationship = accountmanager.UpdateAccessRelationship(accessRelationship).Result;                    
+        //             response.Code = Responcecode.Success;
+        //             response.Message = "AccessRelationship Updated";
+        //         }
+        //         else
+        //         {
+        //             response.Message = validationMessage;
+        //             response.Code = Responcecode.Success;
+
+        //         }
+        //         return Task.FromResult(response);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return Task.FromResult(new AccessRelationshipResponse
+        //         {
+        //             Code = Responcecode.Failed,
+        //             Message = "Account Creation Faile due to - " + ex.Message
+
+        //         });
+        //     }
+        // }
+        public override Task<AccessRelationshipResponse> DeleteAccessRelationship(AccessRelationshipDeleteRequest request, ServerCallContext context)
         {
             string validationMessage = string.Empty;
             try
             {
-                // access relation ship entity
-                AccountComponent.entity.AccessRelationship accessRelationship = new AccountComponent.entity.AccessRelationship();
                 // response 
                 AccessRelationshipResponse response = new AccessRelationshipResponse();
+                if (request == null || request.AccountGroupId <= 0)
+                {
+                    validationMessage = "The delete access group , Account Group Id and Vehicle Group Id is required.";
+                }
+                if (request == null || request.VehicleGroupId <= 0)
+                {
+                    validationMessage = "The delete access group , Account Group Id and Vehicle Group Id is required.";
+                }
+                if (string.IsNullOrEmpty(validationMessage))
+                {
 
-                accessRelationship.Id = request.Id;
-                accessRelationship.AccountGroupId = request.AccountGroupId;
-                accessRelationship.VehicleGroupId = request.VehicleGroupId;
-                if (!string.IsNullOrWhiteSpace(request.AccessRelationType) && request.AccessRelationType == "R")
-                {
-                    accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadOnly;
-                }
-                if (!string.IsNullOrWhiteSpace(request.AccessRelationType) && request.AccessRelationType == "W")
-                {
-                    accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadWrite;
-                }
-                else
-                {
-                    validationMessage = "The AccessType should be ReadOnly / ReadWrite.(R/W).";
-                }
-                //account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount; //GetEnum((int)request.Type);                
-                accessRelationship.StartDate = DateTime.Now;
-                accessRelationship.EndDate = null;
-                if (!string.IsNullOrEmpty(validationMessage))
-                {
-                    accessRelationship = accountmanager.UpdateAccessRelationship(accessRelationship).Result;
-                    response.Code = Responcecode.Success;
-                    response.Message = "AccessRelationship Updated";
-                }
-                else
-                {
-                    response.Message = validationMessage;
-                    response.Code = Responcecode.Success;
-
-                }
-                return Task.FromResult(response);
-            }
-            catch (Exception ex)
-            {
-                return Task.FromResult(new AccessRelationshipResponse
-                {
-                    Code = Responcecode.Failed,
-                    Message = "Account Creation Faile due to - " + ex.Message
-
-                });
-            }
-        }
-        public override Task<AccessRelationshipResponse> DeleteAccessRelationship(AccessRelationship request, ServerCallContext context)
-        {
-            string validationMessage = string.Empty;
-            try
-            {
-                // response 
-                AccessRelationshipResponse response = new AccessRelationshipResponse();
-                if (request == null || request.Id <= 0)
-                {
-                    validationMessage = "The Access Id need to be provide for deleting access relationship.";
-                }
-                if (!string.IsNullOrEmpty(validationMessage))
-                {
-                    var result = accountmanager.DeleteAccessRelationship(request.Id).Result;
+                    var result = accountmanager.DeleteAccessRelationship(request.AccountGroupId, request.VehicleGroupId).Result;
+                    var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Access Relationship", 1, 2, Convert.ToString(request.AccountGroupId)).Result;
                     response.Code = Responcecode.Success;
                     response.Message = "AccessRelationship Deleted";
                 }
@@ -456,6 +499,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in account service:create access relationship with exception - " + ex.Message);
                 return Task.FromResult(new AccessRelationshipResponse
                 {
                     Code = Responcecode.Failed,
@@ -480,9 +524,10 @@ namespace net.atos.daf.ct2.accountservice
                 {
                     validationMessage = "Please provide AccountId or AccountGroupId to get AccessRelationship.";
                 }
-                if (!string.IsNullOrEmpty(validationMessage))
+                if (string.IsNullOrEmpty(validationMessage))
                 {
                     var accessResult = accountmanager.GetAccessRelationship(filter).Result;
+                    _logger.LogInformation("Get account relationship.");
                     foreach (AccountComponent.entity.AccessRelationship accessRelationship in accessResult)
                     {
                         response.AccessRelationship.Add(MapToAccessRelationShipRequest(accessRelationship));
@@ -500,6 +545,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in account service:get accessrelatioship with exception - " + ex.Message);
                 return Task.FromResult(new AccessRelationshipDataList
                 {
                     Code = Responcecode.Failed,
@@ -524,10 +570,11 @@ namespace net.atos.daf.ct2.accountservice
                 preference.UnitId = request.UnitId;
                 preference.VehicleDisplayId = request.VehicleDisplayId;
                 preference.DateFormatTypeId = request.DateFormatId;
-                preference.DriverId = request.DriverId;                
+                preference.DriverId = request.DriverId;
                 preference.TimeFormatId = request.TimeFormatId;
                 preference.LandingPageDisplayId = request.LandingPageDisplayId;
                 preference = preferencemanager.Create(preference).Result;
+                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Preference", 1, 2, Convert.ToString(preference.Id)).Result;
                 if (preference.Id.HasValue) request.Id = preference.Id.Value;
                 // response 
                 AccountPreferenceResponse response = new AccountPreferenceResponse();
@@ -539,6 +586,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in account service:create preference with exception - " + ex.Message);
                 return Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
@@ -555,17 +603,18 @@ namespace net.atos.daf.ct2.accountservice
                 Preference.AccountPreference preference = new Preference.AccountPreference();
                 preference.Id = request.Id;
                 preference.RefId = request.RefId;
-                preference.PreferenceType = Preference.PreferenceType.Account; //(Preference.PreferenceType)Enum.Parse(typeof(Preference.PreferenceType), request.PreferenceType.ToString());
+                preference.PreferenceType = Preference.PreferenceType.Account;
                 preference.LanguageId = request.LanguageId;
                 preference.TimezoneId = request.TimezoneId;
                 preference.CurrencyId = request.CurrencyId;
                 preference.UnitId = request.UnitId;
                 preference.VehicleDisplayId = request.VehicleDisplayId;
                 preference.DateFormatTypeId = request.DateFormatId;
-                preference.DriverId = request.DriverId;               
+                preference.DriverId = request.DriverId;
                 preference.TimeFormatId = request.TimeFormatId;
                 preference.LandingPageDisplayId = request.LandingPageDisplayId;
                 preference = preferencemanager.Update(preference).Result;
+                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Update Preference", 1, 2, Convert.ToString(preference.Id)).Result;
                 if (preference.Id.HasValue) request.Id = preference.Id.Value;
                 // response 
                 AccountPreferenceResponse response = new AccountPreferenceResponse();
@@ -577,6 +626,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in account service:update account preference with exception - " + ex.Message);
                 return Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
@@ -589,18 +639,17 @@ namespace net.atos.daf.ct2.accountservice
         {
             try
             {
-                // Preference.AccountPreference preference = new Preference.AccountPreference();
-                // preference.Id = request.Id;
-                // preference.RefId = request.RefId;
                 var result = preferencemanager.Delete(request.RefId).Result;
+                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Preference", 1, 2, Convert.ToString(request.RefId)).Result;
                 // response 
                 AccountPreferenceResponse response = new AccountPreferenceResponse();
                 response.Code = Responcecode.Success;
-                response.Message = "Preference Delete.";                
+                response.Message = "Preference Delete.";
                 return Task.FromResult(response);
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in account service:delete account preference with exception - " + ex.Message);
                 return Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
@@ -617,7 +666,7 @@ namespace net.atos.daf.ct2.accountservice
                 preferenceFilter.Id = request.Id;
                 preferenceFilter.Ref_Id = request.RefId;
                 preferenceFilter.PreferenceType = Preference.PreferenceType.Account; // (Preference.PreferenceType)Enum.Parse(typeof(Preference.PreferenceType), request.Preference.ToString());
-
+                _logger.LogInformation("Get account preference.");
                 var result = preferencemanager.Get(preferenceFilter).Result;
                 // response 
                 AccountPreferenceDataList response = new AccountPreferenceDataList();
@@ -631,6 +680,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in account service:get account preference with exception - " + ex.Message);
                 return Task.FromResult(new AccountPreferenceDataList
                 {
                     Code = Responcecode.Failed,
@@ -650,7 +700,6 @@ namespace net.atos.daf.ct2.accountservice
                 entity.Name = request.Name;
                 entity.Description = request.Description;
                 entity.Argument = "";
-                //entity.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
                 entity.FunctionEnum = group.FunctionEnum.None;
                 entity.GroupType = group.GroupType.Group;
                 entity.ObjectType = group.ObjectType.AccountGroup;
@@ -673,6 +722,7 @@ namespace net.atos.daf.ct2.accountservice
                         bool AddvehicleGroupRef = groupmanager.UpdateRef(entity).Result;
                     }
                 }
+                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Account Group ", 1, 2, Convert.ToString(result.Id)).Result;
                 _logger.LogInformation("Group Created:" + Convert.ToString(entity.Name));
                 return Task.FromResult(new AccountGroupResponce
                 {
@@ -699,13 +749,11 @@ namespace net.atos.daf.ct2.accountservice
                 entity.Id = request.Id;
                 entity.Name = request.Name;
                 entity.Description = request.Description;
-                entity.Argument = "";//request.Argument;
-                // entity.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
+                entity.Argument = "";//request.Argument;                
                 entity.FunctionEnum = group.FunctionEnum.None;
                 entity.GroupType = group.GroupType.Group;
                 entity.ObjectType = group.ObjectType.AccountGroup;
                 entity.OrganizationId = request.OrganizationId;
-
                 entity.GroupRef = new List<Group.GroupRef>();
                 foreach (var item in request.GroupRef)
                 {
@@ -722,6 +770,7 @@ namespace net.atos.daf.ct2.accountservice
                     }
                 }
                 _logger.LogInformation("Update Account Group :" + Convert.ToString(entity.Name));
+                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Update Account Group ", 1, 2, Convert.ToString(result.Id)).Result;
                 return Task.FromResult(new AccountGroupResponce
                 {
                     Id = entity.Id,
@@ -731,7 +780,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in create account group :CreateGroup with exception - " + ex.Message);
+                _logger.LogError("Error in create account group :UpdateGroup with exception - " + ex.Message);
                 return Task.FromResult(new AccountGroupResponce
                 {
                     Message = "Account Group Update Failed :-" + ex.Message,
@@ -740,14 +789,12 @@ namespace net.atos.daf.ct2.accountservice
             }
         }
 
-        public override Task<AccountGroupResponce> DeleteGroup(IdRequest request, ServerCallContext context)
+        public override Task<AccountGroupResponce> RemoveGroup(IdRequest request, ServerCallContext context)
         {
             try
             {
                 bool result = groupmanager.Delete(request.Id).Result;
-
-                _logger.LogInformation("Delete group method in account group.");
-
+                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Account Group ", 1, 2, Convert.ToString(request.Id)).Result;
                 return Task.FromResult(new AccountGroupResponce
                 {
                     Id = request.Id,
@@ -757,8 +804,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service delete group method.");
-
+                _logger.LogError("Error in delete account group :DeleteGroup with exception - " + ex.Message);
                 return Task.FromResult(new AccountGroupResponce
                 {
                     Message = "Exception :-" + ex.Message,
@@ -766,7 +812,44 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
+        public override Task<AccountGroupRefResponce> AddAccountToGroups(AccountGroupRefRequest request, ServerCallContext context)
+        {
+            try
+            {
+                Group.Group group = new Group.Group();
+                group.GroupRef = new List<Group.GroupRef>();
+                AccountGroupRefResponce response = new AccountGroupRefResponce();
+                bool result = false;
 
+                if (request.GroupRef != null)
+                {
+                    foreach (var item in request.GroupRef)
+                    {
+                        group.GroupRef.Add(new Group.GroupRef() { Ref_Id = item.RefId , Group_Id= item.GroupId});
+                    }
+                    // add account to groups
+                    if (group.GroupRef != null && Convert.ToInt16(group.GroupRef.Count) > 0)
+                    {
+                            result = groupmanager.AddRefToGroups(group).Result;
+                    }
+                }                
+                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Account Group ", 1, 2, "").Result;
+                return Task.FromResult(new AccountGroupRefResponce
+                {
+                   Message = "Account Added to Account Group.",
+                   Code = Responcecode.Success
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in delete account group :DeleteGroup with exception - " + ex.Message);
+                return Task.FromResult(new AccountGroupRefResponce
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
         public async override Task<AccountGroupDataList> GetAccountGroup(AccountGroupFilterRequest request, ServerCallContext context)
         {
             try
@@ -774,17 +857,15 @@ namespace net.atos.daf.ct2.accountservice
                 AccountGroupDataList accountGroupList = new AccountGroupDataList();
                 Group.GroupFilter ObjGroupFilter = new Group.GroupFilter();
                 ObjGroupFilter.Id = request.Id;
-                ObjGroupFilter.OrganizationId = request.OrganizationId;
-                //ObjGroupFilter.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
+                ObjGroupFilter.OrganizationId = request.OrganizationId;                
                 ObjGroupFilter.FunctionEnum = Group.FunctionEnum.None;
                 ObjGroupFilter.GroupRef = request.GroupRef;
-                ObjGroupFilter.GroupRefCount = request.GroupRefCount;
-                //ObjGroupFilter.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
-                ObjGroupFilter.ObjectType = Group.ObjectType.AccountGroup;
-                //ObjGroupFilter.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
+                ObjGroupFilter.GroupRefCount = request.GroupRefCount;                
+                ObjGroupFilter.ObjectType = Group.ObjectType.AccountGroup;                
                 ObjGroupFilter.GroupType = Group.GroupType.Group;
 
                 IEnumerable<Group.Group> ObjRetrieveGroupList = groupmanager.Get(ObjGroupFilter).Result;
+                _logger.LogInformation("Get account group.");
                 foreach (var item in ObjRetrieveGroupList)
                 {
                     AccountGroupRequest ObjResponce = new AccountGroupRequest();
@@ -797,6 +878,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in account service:get account group with exception - " + ex.Message);
                 return await Task.FromResult(new AccountGroupDataList
                 {
                     Message = "Exception " + ex.Message,
@@ -854,6 +936,7 @@ namespace net.atos.daf.ct2.accountservice
                         accountDetail.VehicleCount = count;
                     }
                     response.AccountGroupDetail.Add(accountDetail);
+                    _logger.LogInformation("Get account group details.");
                 }
                 response.Message = "Get AccountGroup";
                 response.Code = Responcecode.Success;
@@ -861,6 +944,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in account service:get account group details with exception - " + ex.Message);
                 return await Task.FromResult(new AccountGroupDetailsDataList
                 {
                     Message = "Exception " + ex.Message,
@@ -878,26 +962,29 @@ namespace net.atos.daf.ct2.accountservice
 
             try
             {
-                List<AccountComponent.entity.AccountRole> accountRoles = new List<AccountComponent.entity.AccountRole>();
+                AccountComponent.entity.AccountRole role = new AccountComponent.entity.AccountRole();
                 AccountRoleResponse response = new AccountRoleResponse();
                 if (request != null && request.AccountRoles != null)
                 {
+                    role.OrganizationId = request.OrganizationId;
+                    role.AccountId = request.AccountId;
+                    role.RoleIds = new List<int>();
                     foreach (AccountRole accountRole in request.AccountRoles)
                     {
-                        AccountComponent.entity.AccountRole role = new AccountComponent.entity.AccountRole();
-                        role.OrganizationId = accountRole.OrganizationId;
-                        role.AccountId = accountRole.AccountId;
-                        role.RoleId = accountRole.RoleId;
-                        accountRoles.Add(role);
+                        role.RoleIds.Add(accountRole.RoleId);
                     }
+                    role.StartDate = DateTime.UtcNow;
+                    role.EndDate = null;
                 }
-                var result = accountmanager.AddRole(accountRoles).Result;
+                var result = accountmanager.AddRole(role).Result;
+                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Add Roles accoount id", 1, 2, Convert.ToString(request.AccountId)).Result;
                 response.Message = "Account Added to Roles";
                 response.Code = Responcecode.Success;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in account service:add roles with exception - " + ex.Message);
                 return await Task.FromResult(new AccountRoleResponse
                 {
                     Message = "Exception " + ex.Message,
@@ -906,7 +993,7 @@ namespace net.atos.daf.ct2.accountservice
             }
         }
 
-        public async override Task<AccountRoleResponse> RemoveRoles(AccountRole request, ServerCallContext context)
+        public async override Task<AccountRoleResponse> RemoveRoles(AccountRoleDeleteRequest request, ServerCallContext context)
         {
 
             try
@@ -917,16 +1004,16 @@ namespace net.atos.daf.ct2.accountservice
                 {
                     accountRole.OrganizationId = request.OrganizationId;
                     accountRole.AccountId = request.AccountId;
-                    accountRole.RoleId = request.RoleId;
-
                 }
                 var result = accountmanager.RemoveRole(accountRole).Result;
-                response.Message = "Deleted Account from roles";
+                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Remove Roles from accoount id", 1, 2, Convert.ToString(request.AccountId)).Result;
+                response.Message = "Deleted Account roles.";
                 response.Code = Responcecode.Success;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in account service:remove account roles with exception - " + ex.Message);
                 return await Task.FromResult(new AccountRoleResponse
                 {
                     Message = "Exception " + ex.Message,
@@ -958,17 +1045,17 @@ namespace net.atos.daf.ct2.accountservice
         private AccountPreference MapToPreferenceRequest(Preference.AccountPreference entity)
         {
             AccountPreference request = new AccountPreference();
-            request.Id = entity.Id.HasValue ?  entity.Id.Value : 0;
-            request.RefId = entity.RefId ;            
+            request.Id = entity.Id.HasValue ? entity.Id.Value : 0;
+            request.RefId = entity.RefId;
             request.LanguageId = entity.LanguageId;
             request.TimezoneId = entity.TimezoneId;
             request.CurrencyId = entity.CurrencyId;
-            request.UnitId = entity.UnitId ;
+            request.UnitId = entity.UnitId;
             request.VehicleDisplayId = entity.VehicleDisplayId;
-            request.DateFormatId = entity.DateFormatTypeId;            
+            request.DateFormatId = entity.DateFormatTypeId;
             request.DriverId = entity.DriverId;
             request.TimeFormatId = entity.TimeFormatId;
-            request.LandingPageDisplayId = entity.LandingPageDisplayId ;
+            request.LandingPageDisplayId = entity.LandingPageDisplayId;
             return request;
         }
         // Map to access relationship from entity to request

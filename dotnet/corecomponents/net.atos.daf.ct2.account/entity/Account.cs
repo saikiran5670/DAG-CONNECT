@@ -17,6 +17,7 @@ namespace net.atos.daf.ct2.account.entity
         public DateTime StartDate { get; set; }   
         public DateTime ? EndDate { get; set; }  
         public bool isDuplicate { get; set; }
+        public bool isError { get; set; }
         // public bool Active { get; set; }    
         
     }

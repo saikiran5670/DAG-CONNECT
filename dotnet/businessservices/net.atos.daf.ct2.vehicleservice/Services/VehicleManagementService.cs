@@ -436,25 +436,34 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     }
                     VehicleIdList.Append(item.Ref_Id);
                 }
+
+                VehicleGroupRefResponce ObjVehicleRes = new VehicleGroupRefResponce();
+                if(VehicleIdList.Length >0)
+                {
                 VehicleFilter ObjVehicleFilter = new VehicleFilter();
                 ObjVehicleFilter.VehicleIdList = VehicleIdList.ToString();
                 IEnumerable<Vehicle> ObjRetrieveVehicleList = _vehicelManager.Get(ObjVehicleFilter).Result;
-                VehicleGroupRefResponce ObjVehicleRes = new VehicleGroupRefResponce();
+                
                 foreach (var item in ObjRetrieveVehicleList)
                 {
                     VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
                     ObjGroupRef.Id = item.ID;
-                    ObjGroupRef.VehicleGroupORVehicleName = item.Name;
-                    ObjGroupRef.RegistartionNo = item.License_Plate_Number;
-                    ObjGroupRef.VIN = item.VIN;
+                    ObjGroupRef.VehicleGroupORVehicleName = item.Name== null ? "" : item.Name;
+                    ObjGroupRef.RegistartionNo = item.License_Plate_Number== null ? "" : item.License_Plate_Number;
+                    ObjGroupRef.VIN = item.VIN== null ? "" : item.VIN;
                     ObjGroupRef.Model = item.Model;
                     ObjGroupRef.StatusDate = item.Status_Changed_Date.ToString();
                     ObjGroupRef.TerminationDate = item.Termination_Date.ToString();
                     ObjVehicleRes.GroupRefDetails.Add(ObjGroupRef);
                 }
-                ObjVehicleRes.Message = "Vehicle and vehicle group list generated";
+                ObjVehicleRes.Message = "List of Vehicle generated for vehicle group";
                 ObjVehicleRes.Code = Responcecode.Success;
-
+                }
+                else
+                {
+                    ObjVehicleRes.Message = "No vehicle found for vehicle group";
+                    ObjVehicleRes.Code = Responcecode.Success;
+                }
                 _logger.LogInformation("GetVehiclesByVehicleGroup method in vehicle service called.");
 
                 return await Task.FromResult(ObjVehicleRes);
