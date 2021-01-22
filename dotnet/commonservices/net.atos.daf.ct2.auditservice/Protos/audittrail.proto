@@ -16,7 +16,7 @@ service AuditService {
     
 message AuditRecord {
     int32 Audittrailid =1;
-    google.protobuf.StringValue Performed_at=2;     
+    google.protobuf.Timestamp  Performed_at=2;     
     int32 Performed_by =3;
     string Component_name =4;
     string Service_name =5;
