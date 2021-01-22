@@ -684,7 +684,7 @@ INSERT INTO master.menu (name ,
 	is_active ,
 	parent_id  ,
 	feature_id) 
-select 'Admin',null,true,null,null 
+select 'Admin',null,true,null,1 
 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Admin');
 
 INSERT INTO master.menu (name ,
@@ -692,7 +692,7 @@ INSERT INTO master.menu (name ,
 	is_active ,
 	parent_id  ,
 	feature_id) 
-select 'User Management',null,true,(select id from master.menu where name = 'User Management'),null 
+select 'User Management',null,true,(select id from master.menu where name = 'User Management'),1 
 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'User Management');
 
 
