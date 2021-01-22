@@ -60,10 +60,12 @@ namespace net.atos.daf.ct2.organizationservice.Services
                  accountPreference.TimezoneId= request.TimezoneId;
                  accountPreference.CurrencyId=request.CurrencyType;
                  accountPreference.UnitId=request.UnitType;
+                 accountPreference.TimeFormatId=request.TimeFormatId;
                  accountPreference.VehicleDisplayId=request.VehicleDisplayType;
                  accountPreference.DateFormatTypeId=request.DateFormatType;
                  accountPreference.DriverId= string.Empty;
                  accountPreference.Active= request.IsActive;
+                 accountPreference.LandingPageDisplayId= request.LandingPageDisplayId;              
 
                  accountPreference = preferencemanager.Create(accountPreference).Result;
                 
@@ -113,6 +115,8 @@ namespace net.atos.daf.ct2.organizationservice.Services
                  accountPreference.DateFormatTypeId=request.DateFormatType;
                  accountPreference.DriverId= string.Empty;
                  accountPreference.Active= request.IsActive;
+                 accountPreference.TimeFormatId=request.TimeFormatId;
+                 accountPreference.LandingPageDisplayId= request.LandingPageDisplayId;   
                  
                  accountPreference = preferencemanager.Update(accountPreference).Result;
 
@@ -173,10 +177,21 @@ namespace net.atos.daf.ct2.organizationservice.Services
                     PostalCode = organization.PostalCode,
                     City = organization.City,
                     CountryCode = organization.CountryCode,
-                    ReferencedDate = organization.ReferencedDate,
+                    Referenced =Convert.ToString(organization.Referenced),
                     OptOutStatus = organization.OptOutStatus,
-                    OptOutStatusChangedDate = organization.OptOutStatusChangedDate,
-                    IsActive = organization.IsActive
+                    OptOutStatusChanged = Convert.ToString(organization.OptOutStatusDate),
+                    IsActive = organization.IsActive,
+                    RefId=organization.RefId,                   
+                    Language=organization.Languagename,
+                    Timezone=organization.Timezone,
+                    Currency=organization.Currency,                   
+                    VehicleDisplay=organization.Vehicledisplay,
+                    DateFormatType=organization.Dateformat,
+                    DriverId=organization.DriverId,
+                    TimeFormat=organization.Timeformat,
+                    LandingPageDisplay=organization.LandingpageDisplay,
+                    Unit=organization.Unit,
+                    PrefType=organization.PrefType
                 });                           
         }
     //      private AccountPreferenceComponent.CurrencyType GetCurrencyType(int value)

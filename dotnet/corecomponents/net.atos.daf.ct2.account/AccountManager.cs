@@ -21,7 +21,7 @@ namespace net.atos.daf.ct2.account
             auditlog = _auditlog;
             identity = _identity;
         }
-        public async Task<Account> Create(Account account)  
+        public async Task<Account> Create(Account account)
         {
             // create user in identity
             IdentityEntity.Identity identityEntity = new IdentityEntity.Identity();
@@ -29,27 +29,31 @@ namespace net.atos.daf.ct2.account
             identityEntity.FirstName = account.FirstName;
             identityEntity.LastName = account.LastName;
             var identityresult = await identity.CreateUser(identityEntity);
-
-            // user already exits in IDP.
-            if(identityresult.StatusCode == System.Net.HttpStatusCode.Conflict)
+            if (identityresult.StatusCode == System.Net.HttpStatusCode.Created)
             {
-               account.isDuplicate=true;
+                account = await repository.Create(account);
             }
-            if(identityresult.StatusCode == System.Net.HttpStatusCode.Created)
+            else // there is issues and need delete user from IDP. 
             {
-               account = await repository.Create(account);
-            }
-            else // there is issues delete user from IDP. 
-            {
-              identityresult  = await identity.DeleteUser(identityEntity);
-             if(identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
+                // user already exits in IDP.
+                if (identityresult.StatusCode == System.Net.HttpStatusCode.Conflict)
+                {
+                    account.isDuplicate = true;
+                }
+                // inter server error in IDP.
+                if (identityresult.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+                {
+                    account.isError = true;
+                }
+                identityresult = await identity.DeleteUser(identityEntity);
+                if (identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
                     // check to handle message
                 }
-            }            
+            }
             return account;
         }
-        public async Task<Account> Update(Account account)  
+        public async Task<Account> Update(Account account)
         {
             // create user in identity
             IdentityEntity.Identity identityEntity = new IdentityEntity.Identity();
@@ -58,30 +62,30 @@ namespace net.atos.daf.ct2.account
             identityEntity.LastName = account.LastName;
             var identityresult = await identity.UpdateUser(identityEntity);
 
-            if(identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
+            if (identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
-               account = await repository.Update(account);
-            }            
+                account = await repository.Update(account);
+            }
             return account;
         }
         public async Task<bool> Delete(Account account)
         {
-            bool result=false;
+            bool result = false;
             // create user in identity
             IdentityEntity.Identity identityEntity = new IdentityEntity.Identity();
             identityEntity.UserName = account.EmailId;
             identityEntity.FirstName = account.FirstName;
             identityEntity.LastName = account.LastName;
             var identityresult = await identity.DeleteUser(identityEntity);
-            if(identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
+            if (identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
-               result = await repository.Delete(account.Id,account.Organization_Id);
-            }       
+                result = await repository.Delete(account.Id, account.Organization_Id);
+            }
             return result;
         }
-        public async Task<bool> ChangePassword(Account account)  
+        public async Task<bool> ChangePassword(Account account)
         {
-            bool result=false;
+            bool result = false;
             // create user in identity
             IdentityEntity.Identity identityEntity = new IdentityEntity.Identity();
             identityEntity.UserName = account.EmailId;
@@ -89,9 +93,9 @@ namespace net.atos.daf.ct2.account
             identityEntity.LastName = account.LastName;
             identityEntity.Password = account.Password;
             var identityresult = await identity.ChangeUserPassword(identityEntity);
-            if(identityresult.StatusCode == System.Net.HttpStatusCode.OK)
+            if (identityresult.StatusCode == System.Net.HttpStatusCode.OK)
             {
-               result = true;
+                result = true;
             }
             return result;
         }
@@ -107,30 +111,39 @@ namespace net.atos.daf.ct2.account
         {
             return await repository.UpdateAccessRelationship(entity);
         }
-        public async Task<bool> DeleteAccessRelationship(int accountGroupId)
+        public async Task<bool> DeleteAccessRelationship(int accountGroupId,int vehicleGroupId)
         {
-            return await repository.DeleteAccessRelationship(accountGroupId);
+            return await repository.DeleteAccessRelationship(accountGroupId,vehicleGroupId);
         }
         public async Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter)
         {
             return await repository.GetAccessRelationship(filter);
         }
-        public async  Task<bool> AddRole(List<AccountRole> accountRoles)
+        public async Task<bool> AddRole(AccountRole accountRoles)
         {
             return await repository.AddRole(accountRoles);
         }
-        public async  Task<bool> RemoveRole(AccountRole accountRoles)
+        public async Task<bool> RemoveRole(AccountRole accountRoles)
         {
             return await repository.RemoveRole(accountRoles);
         }
-        public async  Task<List<string>> GetRoles(AccountRole accountRoles)
+        public async Task<List<KeyValue>> GetRoles(AccountRole accountRoles)
         {
             return await repository.GetRoles(accountRoles);
-        }   
-        public async  Task<List<int>> GetRoleAccounts(int roleId)
+        }
+        public async Task<List<int>> GetRoleAccounts(int roleId)
         {
             return await repository.GetRoleAccounts(roleId);
-        }   
-        
+        }
+
+        public async Task<List<KeyValue>> GetAccountOrg(int accountId)
+        {
+            return await repository.GetAccountOrg(accountId);
+        }
+        public async Task<List<KeyValue>> GetAccountRole(int accountId)
+        {
+            return await repository.GetAccountRole(accountId);
+        }
+
     }
 }

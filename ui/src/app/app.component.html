@@ -11,15 +11,21 @@
                 <div fxLayoutAlign="start center" class='half-width titleText'>{{ currentTitle | titlecase }}
                 </div>
                 <div fxLayoutAlign="end" class='half-width'>
-                    <!-- <a class="navIcon">
-                        <mat-icon aria-hidden="false" aria-label="fullscreen" matTooltip="Full Screen">fullscreen</mat-icon>
-                    </a> -->
+                     <a class="navIcon">
+                        <mat-icon aria-hidden="false" aria-label="fullscreen" (click)="fullScreen()" matTooltip="Full Screen">fullscreen</mat-icon>
+                    </a> 
                     <!-- <img class="navIcon countryflag" mat-card-avatar src="{{fileUploadedPath}}"> -->
-                    <!-- <a class="navIcon">
+                    <a class="navIcon">
                         <mat-icon aria-hidden="false" aria-label="notifications" matTooltip="Notifications">notifications_none</mat-icon>
                         <span class="badge">0</span>
                     </a>
-                    <a class="navIcon">
+                    <!-- TODO : language selection(dropdown) -->
+                    <mat-select *ngIf="language" class="matSelect" [value]="language.val[language.selectedIndex]">
+                        <mat-option *ngFor="let lang of language.val"  [value]="lang">
+                            &nbsp;{{lang}}
+                        </mat-option>
+                    </mat-select>
+                    <!-- <a class="navIcon">
                         <mat-icon aria-hidden="false" aria-label="setting" matTooltip="Setting">settings</mat-icon>
                     </a> -->
                 </div>
@@ -28,7 +34,7 @@
     </mat-toolbar>
     <div class="dashboardMenu" id="sideNavConteiner" [ngClass]="menuCollapsed ? 'menuCollapsed' : ''" *ngIf="isLogedIn">
         <div class='userBgImg'>
-            <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="5px">
+            <div class="userImageContainer" fxLayout="row" fxLayoutAlign="start" fxLayoutGap="5px">
                 <div fxLayout="column">
                     <img class="userIcon" mat-card-avatar src="{{fileUploadedPath}}">
                 </div>
@@ -37,13 +43,51 @@
                     <span class='display-flex align-items-center'>
                         <span class='userRole'>Fleet Admin</span>
                         <span>
-                            <mat-icon class='font-size-20'>keyboard_arrow_down</mat-icon>
+                            <mat-icon style="cursor: pointer;" (click)="onClickUserRole()" class='font-size-20'>{{ openUserRoleDialog ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
                         </span>
                     </span>
                 </div>
             </div>
+            <!-- --------------------------------------------------------------------------------------------------- -->
+            <div *ngIf="openUserRoleDialog" class="userRoleDialogContainer">
+                <mat-card class='mat-elevation-z margin-bottom-xlg no-padding'>
+                    <mat-card-content>
+                    <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="0px" 
+                        style='padding: 10px !important; background: #ECF7FE;'>
+                        <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                        <mat-label>Select Organization</mat-label>
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-select [(ngModel)]="organization" [value]="'DAF Connect'">
+                            <mat-option *ngFor="let org of organizations" [value]="org.value">
+                                {{org.viewValue}}
+                            </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <!-- <mat-error *ngIf="loginDialogForm.get('organization').hasError('required')">Organization is required
+                        </mat-error> -->
+                        </div>
+                    </div>
+            
+                    <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="0px" 
+                        style='padding: 10px !important; background:#BEE3F8;'>
+                        <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                        <mat-label>Select Role</mat-label>
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-select [(ngModel)]="role" [value]="'Fleet Admin'">
+                            <mat-option *ngFor="let role of roles" [value]="role.value">
+                                {{role.viewValue}}
+                            </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <!-- <mat-error *ngIf="loginDialogForm.get('role').hasError('required')">Role is required</mat-error> -->
+                        </div>
+                    </div>
+                    </mat-card-content>
+                </mat-card>
+            </div>    
+            <!-- -------------------------------------------------------------------------------------------- -->
             <div fxLayout="row" fxLayoutAlign="end">
-                <div fxLayout="column">
+                <div class="logoutButton" fxLayout="column">
                     <button mat-icon-button (click)="logOut()" class="menuToggler display-flex align-items-center">
                         <mat-icon class='logoutIcon'>exit_to_app</mat-icon>
                     </button>
@@ -53,13 +97,19 @@
         <div style="clear: both"></div>
         <ul>
             <li #menuName *ngFor='let menu of menuPages; index as i' class="menuItem" [ngClass]="{'active': pageName === menu.mainRoute}" [attr.menuName]="menu.mainRoute">
-                <a class='selectedManu' *ngIf='!menu.subMenuFlag; else elseBlock' [routerLink]="[ '/'+ menu.mainRoute]" (click)='navigateToPage(menu.mainRoute)'>
-                    <mat-icon class="box-svg-css margin-right-lg">dashboard</mat-icon>
+               <span *ngIf="!menu.subMenuFlag; else elseBlock">
+                <a matTooltip='{{menu.mainMenu | titlecase}}' class='selectedManu' *ngIf="menu.mainMenu=='Dashboard'" [routerLink]="[ '/'+ menu.mainRoute]" (click)='navigateToPage(menu.mainRoute)'> 
+                    <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
                     <span class="menuLabel">{{menu.mainMenu | titlecase}}</span>
                 </a>
+                <a target="_blank" href="{{menu.mainRoute}}" matTooltip='{{menu.mainMenu | titlecase}}' class='selectedManu' *ngIf="menu.mainMenu!='Dashboard'" (click)='navigateToPage(menu.mainRoute)'>
+                    <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
+                    <span class="menuLabel">{{menu.mainMenu | titlecase}}</span>
+                </a>
+            </span>   
                 <ng-template #elseBlock>
-                    <a class='selectedManu' (click)="menuSelected(menu.mainRoute)">
-                        <mat-icon class="box-svg-css margin-right-lg">directions_car</mat-icon>
+                    <a matTooltip='{{menu.mainMenu | titlecase}}' class='selectedManu' (click)="menuSelected(menu.mainRoute)">
+                        <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
                         <span class="menuLabel">{{menu.mainMenu | titlecase}}</span>
                         <span *ngIf="!menuCollapsed && menu.mainMenu === 'Live Fleet'" [ngClass]="{'fleetCount': menu.mainMenu === 'Live Fleet' }">0</span>
                         <mat-icon class="navigationArrow">
@@ -68,7 +118,7 @@
                     <ul class="subMenuItems slider" [ngClass]="{'closed' : !menuStatus[menu.mainRoute].open}">
                         <!-- <li *ngFor='let subMenuItem of menu.subMenu; index as j' [ngClass]="{'active': subpage === subMenuItem.subRoute}"> -->
                             <li *ngFor='let subMenuItem of menu.subMenu; index as j' [ngClass]="{'linkActive': subpage === subMenuItem.subRoute}">
-                            <a [routerLink]="[ '/'+menu.mainRoute+'/'+subMenuItem.subRoute ]" (click)="navigateToPage(subMenuItem.subRoute)">
+                            <a matTooltip='{{subMenuItem.name | titlecase}}' [routerLink]="[ '/'+menu.mainRoute+'/'+subMenuItem.subRoute ]" (click)="navigateToPage(subMenuItem.subRoute)">
                                 <mat-icon class='box-svg-css margin-right-10'>stop_circle</mat-icon>
                                 <span class='font-size-0-9'>{{subMenuItem.name | titlecase}}</span>
                             </a>

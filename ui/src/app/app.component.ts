@@ -4,6 +4,8 @@ import * as data from './shared/menuData.json';
 import { DataInterchangeService } from './services/data-interchange.service';
 import { TranslationService } from './services/translation.service';
 import { DeviceDetectorService } from 'ngx-device-detector';
+import { EmployeeService } from './services/employee.service';
+import { Organization, Role } from 'src/app/authentication/login/login.component'
 
 @Component({
   selector: 'app-root',
@@ -27,6 +29,12 @@ export class AppComponent {
   public fileUploadedPath: any;
   isLogedIn: boolean = false;
   menuPages: any = (data as any).default;
+  language: any;
+  openUserRoleDialog= false;
+  organizations: Organization[];
+  roles: Role[];
+  organization: any;
+  role: any;
   private pagetTitles = {
     livefleet: 'live fleet',
     logbook: 'log book',
@@ -107,8 +115,12 @@ export class AppComponent {
   }
 
 
-  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService) {
+  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, private userService: EmployeeService) {
     this.defaultTranslation();
+    this.userService.getDefaultSetting().subscribe((data)=>{
+      this.language = data['language'];
+      console.log(this.language);
+    });
     this.dataInterchangeService.dataInterface$.subscribe(data => {
       this.isLogedIn = data;
       this.getTranslationLabels()
@@ -272,5 +284,30 @@ private setPageTitle() {
 
   logOut() {
     this.router.navigate(["/auth/login"]);
+  }
+
+  fullScreen() {
+    let elem = document.documentElement;
+    let methodToBeInvoked = elem.requestFullscreen || elem['mozRequestFullscreen'] || elem['msRequestFullscreen'];
+    if (methodToBeInvoked){
+       methodToBeInvoked.call(elem);
+    }
+  }
+
+  onClickUserRole(){
+    this.openUserRoleDialog = !this.openUserRoleDialog;
+    if(this.openUserRoleDialog){
+      this.organizations = [
+        { value: 'daf-0', viewValue: 'DAF Connect' },
+        { value: 'conti-1', viewValue: 'Conti' },
+        { value: 'daf-2', viewValue: 'DAF CT 2.0' }
+      ];
+
+      this.roles = [
+        { value: 'fleetadmin-0', viewValue: 'Fleet Admin' },
+        { value: 'fleetmanager-1', viewValue: 'Fleet Manager' },
+        { value: 'user-2', viewValue: 'Fleet User' }
+      ];
+    }
   }
 }

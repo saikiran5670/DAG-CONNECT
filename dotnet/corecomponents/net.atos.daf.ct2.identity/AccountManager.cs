@@ -110,7 +110,7 @@ namespace net.atos.daf.ct2.identity
                             client = new HttpClient();
                             client = PrepareClientHeader(token.access_token);
                             var contentData = new StringContent(GetUserBody(user,keycloakUserId,actionType),System.Text.Encoding.UTF8, "application/json");
-                            HttpResponseMessage httpResponse = client.PutAsync(_settings.UserMgmUrl.Replace("{{realm}}",_settings.Realm) +"/"+keycloakUserId,contentData).Result;
+                            HttpResponseMessage httpResponse = client.PutAsync(_settings.UserMgmUrl.Replace("{{realm}}",_settings.Realm) +"/"+keycloakUserId +"/"+"reset-password",contentData).Result;
                             if(httpResponse.IsSuccessStatusCode && httpResponse.StatusCode == System.Net.HttpStatusCode.NoContent)
                             {
                                 objResponse.StatusCode=httpResponse .StatusCode;
@@ -219,9 +219,9 @@ namespace net.atos.daf.ct2.identity
                                 stringData.Append("\"enabled\": \"false\"");                
                                 break;
                 case "CHANGEPASSWORD":  
-                                stringData.Append("\"type\": \"password"+",");
-                                stringData.Append("\"value\": \"" + user.Password+ "\",");
-                                stringData.Append("\"temporary\": \"false" );
+                                stringData.Append("\"type\":\"password\""+",");
+                                stringData.Append("\"value\":\"" + user.Password + "\"" + ",");
+                                stringData.Append("\"temporary\": false");
                                 break;
             } 
             stringData.Append("}");

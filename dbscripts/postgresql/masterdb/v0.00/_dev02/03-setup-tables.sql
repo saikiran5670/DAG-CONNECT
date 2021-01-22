@@ -267,7 +267,8 @@ CREATE TABLE if not exists  master.role
 	created_by int,
 	updated_date bigint,
 	updated_by int,
-	description varchar(120)
+	description varchar(120),
+	feature_set_id int
 )
 TABLESPACE pg_default;
 
@@ -300,6 +301,22 @@ then
 	begin
 		ALTER TABLE  master.role 
 			ADD CONSTRAINT fk_role_organizationid_organization_id FOREIGN KEY (organization_id) REFERENCES  master.organization (id);
+			--USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='fk_role_featuresetid_featureset_id' AND table_name='role'
+		and constraint_type='FOREIGN KEY')
+then	
+	begin
+		ALTER TABLE  master.role
+			ADD CONSTRAINT fk_role_featuresetid_featureset_id FOREIGN KEY (feature_set_id) REFERENCES  master.featureset (id);
 			--USING INDEX TABLESPACE pg_default;
 	end;
 end if;
@@ -637,64 +654,64 @@ end if;
 end;
 $$;
 
---rolefeatureset (Master data is also required)
-CREATE TABLE if not exists  master.rolefeatureset 
-(
-	feature_set_id int not null,
-	role_id int not null
-)
-TABLESPACE pg_default;
+-- --rolefeatureset (Master data is also required)
+-- CREATE TABLE if not exists  master.rolefeatureset 
+-- (
+	-- feature_set_id int not null,
+	-- role_id int not null
+-- )
+-- TABLESPACE pg_default;
 
-ALTER TABLE  master.rolefeatureset 
-    OWNER to pgdbadmin;
+-- ALTER TABLE  master.rolefeatureset 
+    -- OWNER to pgdbadmin;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='pk_rolefeatureset_featuresetid_roleid' AND table_name='rolefeatureset'
-		and constraint_type='PRIMARY KEY')
-then	
-	begin
-		ALTER TABLE  master.rolefeatureset 
-			ADD CONSTRAINT pk_rolefeatureset_featuresetid_roleid PRIMARY KEY (feature_set_id, role_id)
-			USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+-- Do $$
+-- begin
+-- if not exists(
+	-- SELECT 1 FROM information_schema.table_constraints 
+	-- WHERE constraint_name='pk_rolefeatureset_featuresetid_roleid' AND table_name='rolefeatureset'
+		-- and constraint_type='PRIMARY KEY')
+-- then	
+	-- begin
+		-- ALTER TABLE  master.rolefeatureset 
+			-- ADD CONSTRAINT pk_rolefeatureset_featuresetid_roleid PRIMARY KEY (feature_set_id, role_id)
+			-- USING INDEX TABLESPACE pg_default;
+	-- end;
+-- end if;
+-- end;
+-- $$;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_rolefeatureset_featuresetid_featureset_id' AND table_name='rolefeatureset'
-		and constraint_type='FOREIGN KEY')
-then	
-	begin
-		ALTER TABLE  master.rolefeatureset 
-			ADD CONSTRAINT fk_rolefeatureset_featuresetid_featureset_id FOREIGN KEY (feature_set_id) REFERENCES  master.featureset (id);
-			--USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+-- Do $$
+-- begin
+-- if not exists(
+	-- SELECT 1 FROM information_schema.table_constraints 
+	-- WHERE constraint_name='fk_rolefeatureset_featuresetid_featureset_id' AND table_name='rolefeatureset'
+		-- and constraint_type='FOREIGN KEY')
+-- then	
+	-- begin
+		-- ALTER TABLE  master.rolefeatureset 
+			-- ADD CONSTRAINT fk_rolefeatureset_featuresetid_featureset_id FOREIGN KEY (feature_set_id) REFERENCES  master.featureset (id);
+			-- --USING INDEX TABLESPACE pg_default;
+	-- end;
+-- end if;
+-- end;
+-- $$;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='fk_rolefeatureset_roleid_role_id' AND table_name='rolefeatureset'
-		and constraint_type='FOREIGN KEY')
-then	
-	begin
-		ALTER TABLE  master.rolefeatureset 
-			ADD CONSTRAINT fk_rolefeatureset_roleid_role_id FOREIGN KEY (role_id) REFERENCES  master.role (id);
-			--USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+-- Do $$
+-- begin
+-- if not exists(
+	-- SELECT 1 FROM information_schema.table_constraints 
+	-- WHERE constraint_name='fk_rolefeatureset_roleid_role_id' AND table_name='rolefeatureset'
+		-- and constraint_type='FOREIGN KEY')
+-- then	
+	-- begin
+		-- ALTER TABLE  master.rolefeatureset 
+			-- ADD CONSTRAINT fk_rolefeatureset_roleid_role_id FOREIGN KEY (role_id) REFERENCES  master.role (id);
+			-- --USING INDEX TABLESPACE pg_default;
+	-- end;
+-- end if;
+-- end;
+-- $$;
 
 --menu (Master data is also required)
 CREATE TABLE if not exists  master.menu 
@@ -1476,28 +1493,28 @@ $$;
 
 ------------------------------------------------------------
 --languages (Master data is also required)
-CREATE TABLE if not exists  translation.languages 
+CREATE TABLE if not exists  translation.language
 (
 	id serial NOT NULL,  
 	name varchar (50) NOT NULL,  
 	code varchar (8) NOT NULL, 
-	key varchar (100) NOT NULL, 
+	key varchar (250) NOT NULL, 
 	description varchar (100) 
 )
 TABLESPACE pg_default;
 
-ALTER TABLE  translation.languages 
+ALTER TABLE  translation.language 
     OWNER to pgdbadmin;
 
 Do $$
 begin
 if not exists(
 	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='pk_languages_id' AND table_name='languages'
+	WHERE constraint_name='pk_languages_id' AND table_name='language'
 		and constraint_type='PRIMARY KEY')
 then	
 	begin
-		ALTER TABLE  translation.languages 
+		ALTER TABLE  translation.language
 			ADD CONSTRAINT pk_languages_id PRIMARY KEY (id)
 			USING INDEX TABLESPACE pg_default;
 	end;
@@ -1509,11 +1526,11 @@ Do $$
 begin
 if not exists(
 	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='uk_languages_code' AND table_name='languages'
+	WHERE constraint_name='uk_languages_code' AND table_name='language'
 		and constraint_type='UNIQUE')
 then	
 	begin
-		ALTER TABLE  translation.languages 
+		ALTER TABLE  translation.language
 			ADD CONSTRAINT uk_languages_code UNIQUE  (code)
 			USING INDEX TABLESPACE pg_default;
 	end;
@@ -1563,7 +1580,7 @@ if not exists(
 then	
 	begin
 		ALTER TABLE  translation.translation 
-			ADD CONSTRAINT fk_translation_code_languages_code FOREIGN KEY (code) REFERENCES  translation.languages (code);
+			ADD CONSTRAINT fk_translation_code_languages_code FOREIGN KEY (code) REFERENCES  translation.language (code);
 			--USING INDEX TABLESPACE pg_default;
 	end;
 end if;
@@ -1574,7 +1591,7 @@ $$;
 CREATE TABLE if not exists  translation.translationgrouping 
 (
 	id serial NOT NULL,    
-	name varchar (100)NOT NULL,     
+	name varchar (250)NOT NULL,     
 	ref_id int NOT NULL,    
 	type char(1) NOT NULL    
 )
@@ -1678,7 +1695,7 @@ if not exists(
 then	
 	begin
 		ALTER TABLE  master.accountpreference 
-			ADD CONSTRAINT fk_accountpreference_languageid_languages_id FOREIGN KEY (language_id) REFERENCES  translation.languages (id);
+			ADD CONSTRAINT fk_accountpreference_languageid_languages_id FOREIGN KEY (language_id) REFERENCES  translation.language (id);
 			--USING INDEX TABLESPACE pg_default;
 	end;
 end if;

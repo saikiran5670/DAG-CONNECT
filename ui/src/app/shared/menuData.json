@@ -2,11 +2,13 @@
     {
       "mainMenu": "Dashboard",
       "mainRoute": "dashboard",
+      "icon": "speed",
       "subMenuFlag": false
     },
     {
       "mainMenu": "Live Fleet",
       "mainRoute": "livefleet",
+      "icon": "directions_car",
       "subMenuFlag": true,
       "subMenu": [
         {
@@ -22,6 +24,7 @@
     {
       "mainMenu": "Report",
       "mainRoute": "report",
+      "icon": "leaderboard",
       "subMenuFlag": true,
       "subMenu": [
         {
@@ -37,6 +40,7 @@
     {
       "mainMenu": "Configuration",
       "mainRoute": "configuration",
+      "icon": "settings",
       "subMenuFlag": true,
       "subMenu": [
         {
@@ -56,6 +60,7 @@
     {
       "mainMenu": "Admin",
       "mainRoute": "admin",
+      "icon": "person",
       "subMenuFlag": true,
       "subMenu": [
         {
@@ -82,22 +87,32 @@
     },
     {
       "mainMenu": "Tachograph",
-      "mainRoute": "tachograph",
+      "mainRoute": "https://www.my-fis.com/fleetservices/default.aspx",
+      "icon": "show_chart",
       "subMenuFlag": false
     },
     {
       "mainMenu": "Mobile Portal",
-      "mainRoute": "mobileportal",
+      "mainRoute": "https://driverapp-cert.daf.com/DAFConnectDashboard/MessageOverview.aspx",
+      "icon": "phone_android",
       "subMenuFlag": false
     },
     {
       "mainMenu": "Shop",
       "mainRoute": "shop",
+      "icon": "shopping_cart",
       "subMenuFlag": false
     },
     {
       "mainMenu": "Information",
-      "mainRoute": "information",
+      "mainRoute": "https://www.daf.com/en/sites-landing",
+      "icon": "info",
+      "subMenuFlag": false
+    },
+    {
+      "mainMenu": "Legal Notices",
+      "mainRoute": "https://styleguide.daf.com/en/legal/legal-notice",
+      "icon": "gavel",
       "subMenuFlag": false
     }
 ]
