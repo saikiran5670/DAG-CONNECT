@@ -426,6 +426,52 @@ namespace net.atos.daf.ct2.account
             return Roles;
         }
         // End Add Account to Role
+
+        // Begig - Account rendering
+
+        public async Task<List<KeyValue>> GetAccountOrg(int accountId)
+        {
+            List<KeyValue> keyValueList = null;
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                if (accountId > 0)
+                {
+                    parameter.Add("@account_id", accountId);
+                    query = @"select o.id,o.name from master.organization o inner join master.accountorg ao on o.id=ao.organization_id and ao.is_active=true where ao.account_id=@account_id";                    
+                    keyValueList = await dataAccess.ExecuteScalarAsync<List<KeyValue>>(query, parameter);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return keyValueList;
+        }
+        public async Task<List<KeyValue>> GetAccountRole(int accountId)
+        {
+            List<KeyValue> keyValueList = null;
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                if (accountId > 0)
+                {
+                    parameter.Add("@account_id", accountId);
+                    query = @"select r.id,r.name from master.role r inner join master.accountrole ac on r.id=ac.role_id and r.is_active=true where ac.account_id=@account_id";
+                    keyValueList = await dataAccess.ExecuteScalarAsync<List<KeyValue>>(query, parameter);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return keyValueList;
+        }
+        // End - Account Rendering
+
+
         private Account Map(dynamic record)
         {
             Account account = new Account();
