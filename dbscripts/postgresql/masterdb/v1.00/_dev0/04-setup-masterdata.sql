@@ -907,3 +907,36 @@ WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE nam
 
 
 
+INSERT INTO master.menu (id, name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 0,'Dummy',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Dummy');	
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Dashboard',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Dashboard');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Live Fleet',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Live Fleet');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Live Fleet',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Live Fleet');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Log Book',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Log Book');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Report');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Trip Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Trip Report');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Trip Tracing',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Trip Tracing');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Advanced Fleet Fuel Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Advanced Fleet Fuel Report');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Fleet Fuel Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Fleet Fuel Report');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Fleet Utilisation',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Fleet Utilisation');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Fuel Benchmarking',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Fuel Benchmarking');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Fuel Deviation Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Fuel Deviation Report');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Vehicle Performance Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Vehicle Performance Report');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Drive Time Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Drive Time Management');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'ECO Score Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'ECO Score Report');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Configuration',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Configuration');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Alerts',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Alerts');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Landmarks',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Landmarks');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Vehicle Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Vehicle Management');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Report Scheduler',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Report Scheduler');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Admin',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Admin');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Orgnization Details',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Orgnization Details');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'User Group Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'User Group Management');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'User Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'User Management');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'User Role Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'User Role Management');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Driver Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Driver Management');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Package Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Package Management');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Tachograph',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Tachograph');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Mobile Portal',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Mobile Portal');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Shop',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Shop');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Information',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Information');
+
