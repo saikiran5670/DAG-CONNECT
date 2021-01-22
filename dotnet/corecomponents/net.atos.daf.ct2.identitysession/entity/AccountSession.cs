@@ -9,9 +9,9 @@ namespace net.atos.daf.ct2.identitysession.entity
          public int AccountId { get; set; }
         public string UserName { get; set; }
         public string IpAddress { get; set; }
-        public int LastSessionRefresh { get; set; }
-        public int SessionStartedAt { get; set; }
-        public int SessionExpiredAt { get; set; }
-        public int CreatedAt { get; set; }
+        public long LastSessionRefresh { get; set; }
+        public long SessionStartedAt { get; set; }
+        public long SessionExpiredAt { get; set; }
+        public long CreatedAt { get; set; }
     }
 }

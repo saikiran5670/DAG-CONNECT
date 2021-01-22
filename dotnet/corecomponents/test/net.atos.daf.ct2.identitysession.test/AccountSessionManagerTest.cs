@@ -8,9 +8,11 @@ using net.atos.daf.ct2.identitysession.entity;
 using net.atos.daf.ct2.data;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.identitysession.repository;
+using Dapper;
 
 namespace net.atos.daf.ct2.identitysession.test
 {
+    [TestClass]
     public class AccountSessionManagerTest 
     {
         private readonly IAccountSessionManager _accountSessionManager;
@@ -19,8 +21,8 @@ namespace net.atos.daf.ct2.identitysession.test
         private readonly AccountSessionRepository _accountSessionRepository;
         public AccountSessionManagerTest()
         { 
-            string connectionString = "Server = 127.0.0.1; Port = 5432; Database = DAF; User Id = postgres; Password = Abcd@1234; CommandTimeout = 90; ";                  
-            //string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+            //string connectionString = "Server = localhost; Port = 5432; Database = DAF; User Id = postgres; Password = Abcd@1234; CommandTimeout = 90; ";
+            string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             _dataAccess = new PgSQLDataAccess(connectionString);
             _accountSessionRepository = new AccountSessionRepository(_dataAccess);   
             _accountSessionManager=new AccountSessionManager(_accountSessionRepository) ;
@@ -36,8 +38,8 @@ namespace net.atos.daf.ct2.identitysession.test
             accountsession.LastSessionRefresh = 235;
             accountsession.SessionStartedAt = 23;
             accountsession.SessionExpiredAt = 234;
-            accountsession.AccountId =12;
-            accountsession.CreatedAt = 12;
+            accountsession.AccountId =4;
+            accountsession.CreatedAt = 1;
 
             int result= await _accountSessionManager.InsertSession(accountsession);
             Assert.IsNotNull(result);
@@ -49,13 +51,14 @@ namespace net.atos.daf.ct2.identitysession.test
         [TestMethod]
         public async Task UnT_identitysession_AccountSessionManager_UpdateSession()
         { 
-            AccountSession accountsession = new AccountSession();     
+            AccountSession accountsession = new AccountSession();   
+            accountsession.Id=2;  
             accountsession.IpAddress = "12.123.46.12";
             accountsession.LastSessionRefresh = 232;
             accountsession.SessionStartedAt = 21;
             accountsession.SessionExpiredAt = 21;
-            accountsession.AccountId =12;
-            accountsession.CreatedAt = 12;
+            accountsession.AccountId =4;
+            accountsession.CreatedAt = 1;
 
             int result= await _accountSessionManager.UpdateSession(accountsession);
             Assert.IsNotNull(result);
@@ -67,12 +70,13 @@ namespace net.atos.daf.ct2.identitysession.test
         [TestMethod]
         public async Task UnT_identitysession_AccountSessionManager_DeleteSession()
         { 
-            AccountSession accountsession = new AccountSession();     
+            AccountSession accountsession = new AccountSession();  
+            accountsession.Id=2;   
             accountsession.IpAddress = "12.123.46.12";
             accountsession.LastSessionRefresh = 232;
             accountsession.SessionStartedAt = 21;
             accountsession.SessionExpiredAt = 21;
-            accountsession.AccountId =12;
+            accountsession.AccountId =4;
             accountsession.CreatedAt = 12;
 
             int result= await _accountSessionManager.DeleteSession(accountsession);
@@ -83,10 +87,9 @@ namespace net.atos.daf.ct2.identitysession.test
         [TestCategory("Unit-Test-Case")]
         [Description("Test for Get account session")]
         [TestMethod]
-        public async Task UnT_identitysession_AccountAssertionManager_GetAccountSession()
-        { 
-            AccountAssertion accountAssertion =new AccountAssertion();            
-            int AccountId=12;           
+        public async Task UnT_identitysession_AccountSessionManager_GetAccountSession()
+        {                      
+            int AccountId=4;           
             var result= await _accountSessionManager.GetAccountSession(AccountId);            
             Assert.IsNotNull(result);
             Assert.IsTrue(result!=null);       

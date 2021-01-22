@@ -43,11 +43,49 @@
                     <span class='display-flex align-items-center'>
                         <span class='userRole'>Fleet Admin</span>
                         <span>
-                            <mat-icon class='font-size-20'>keyboard_arrow_down</mat-icon>
+                            <mat-icon style="cursor: pointer;" (click)="onClickUserRole()" class='font-size-20'>{{ openUserRoleDialog ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
                         </span>
                     </span>
                 </div>
             </div>
+            <!-- --------------------------------------------------------------------------------------------------- -->
+            <div *ngIf="openUserRoleDialog" class="userRoleDialogContainer">
+                <mat-card class='mat-elevation-z margin-bottom-xlg no-padding'>
+                    <mat-card-content>
+                    <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="0px" 
+                        style='padding: 10px !important; background: #ECF7FE;'>
+                        <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                        <mat-label>Select Organization</mat-label>
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-select [(ngModel)]="organization" [value]="'DAF Connect'">
+                            <mat-option *ngFor="let org of organizations" [value]="org.value">
+                                {{org.viewValue}}
+                            </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <!-- <mat-error *ngIf="loginDialogForm.get('organization').hasError('required')">Organization is required
+                        </mat-error> -->
+                        </div>
+                    </div>
+            
+                    <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="0px" 
+                        style='padding: 10px !important; background:#BEE3F8;'>
+                        <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                        <mat-label>Select Role</mat-label>
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-select [(ngModel)]="role" [value]="'Fleet Admin'">
+                            <mat-option *ngFor="let role of roles" [value]="role.value">
+                                {{role.viewValue}}
+                            </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <!-- <mat-error *ngIf="loginDialogForm.get('role').hasError('required')">Role is required</mat-error> -->
+                        </div>
+                    </div>
+                    </mat-card-content>
+                </mat-card>
+            </div>    
+            <!-- -------------------------------------------------------------------------------------------- -->
             <div fxLayout="row" fxLayoutAlign="end">
                 <div class="logoutButton" fxLayout="column">
                     <button mat-icon-button (click)="logOut()" class="menuToggler display-flex align-items-center">
@@ -59,10 +97,16 @@
         <div style="clear: both"></div>
         <ul>
             <li #menuName *ngFor='let menu of menuPages; index as i' class="menuItem" [ngClass]="{'active': pageName === menu.mainRoute}" [attr.menuName]="menu.mainRoute">
-                <a matTooltip='{{menu.mainMenu | titlecase}}' class='selectedManu' *ngIf='!menu.subMenuFlag; else elseBlock' [routerLink]="[ '/'+ menu.mainRoute]" (click)='navigateToPage(menu.mainRoute)'>
+               <span *ngIf="!menu.subMenuFlag; else elseBlock">
+                <a matTooltip='{{menu.mainMenu | titlecase}}' class='selectedManu' *ngIf="menu.mainMenu=='Dashboard'" [routerLink]="[ '/'+ menu.mainRoute]" (click)='navigateToPage(menu.mainRoute)'> 
                     <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
                     <span class="menuLabel">{{menu.mainMenu | titlecase}}</span>
                 </a>
+                <a target="_blank" href="{{menu.mainRoute}}" matTooltip='{{menu.mainMenu | titlecase}}' class='selectedManu' *ngIf="menu.mainMenu!='Dashboard'" (click)='navigateToPage(menu.mainRoute)'>
+                    <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
+                    <span class="menuLabel">{{menu.mainMenu | titlecase}}</span>
+                </a>
+            </span>   
                 <ng-template #elseBlock>
                     <a matTooltip='{{menu.mainMenu | titlecase}}' class='selectedManu' (click)="menuSelected(menu.mainRoute)">
                         <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>

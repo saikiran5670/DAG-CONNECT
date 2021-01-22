@@ -40,7 +40,7 @@ namespace net.atos.daf.ct2.role
                 //    int featuresetid = 4;
                     if (featuresetid > 0)
                     {
-                        await roleRepository.Addrolefeatureset(RoleId,featuresetid);
+                        await roleRepository.Updaterolefeatureset(RoleId,featuresetid);
                     }
                }
 

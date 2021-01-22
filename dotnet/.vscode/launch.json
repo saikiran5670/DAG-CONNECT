@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/dataservices/net.atos.daf.ct2.authenticationservicerest/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.authenticationservicerest.dll",
+            "program": "${workspaceFolder}/commonservices/net.atos.daf.ct2.auditservice/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.auditservice.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/dataservices/net.atos.daf.ct2.authenticationservicerest",
+            "cwd": "${workspaceFolder}/commonservices/net.atos.daf.ct2.auditservice",
             "stopAtEntry": false,
             "serverReadyAction": {
                 "action": "openExternally",

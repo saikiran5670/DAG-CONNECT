@@ -39,6 +39,7 @@ service AccountService {
   // Add Role
    rpc AddRoles (AccountRoleRequest) returns (AccountRoleResponse);
   rpc RemoveRoles (AccountRoleDeleteRequest) returns (AccountRoleResponse);
+  rpc GetRoles (AccountRoleDeleteRequest) returns (AccountRoles);
 }
 enum AccountType
     {
@@ -278,6 +279,15 @@ message AccountRole {
 message AccountRoleDeleteRequest {
   int32 AccountId=1;
   int32 OrganizationId=2;  
+}
+message NameIdResponse {
+  int32 Id=1;
+  string Name=2;  
+}
+message AccountRoles{
+  repeated NameIdResponse Roles=1;
+  Responcecode Code=2;
+  string Message = 3; 
 }
 
 message AccountRoleRequest {

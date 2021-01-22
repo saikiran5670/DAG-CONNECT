@@ -39,6 +39,7 @@ namespace net.atos.daf.ct2.roleservice
                 ObjRole.Name = request.Name;
                 ObjRole.Createdby = request.CreatedBy;
                 ObjRole.Description = request.Description;
+                ObjRole.Feature_set_id=0;
                 ObjRole.FeatureSet = new FeatureSet();
                 ObjRole.FeatureSet.Features = new List<Feature>();
                 foreach(var item in request.Features)

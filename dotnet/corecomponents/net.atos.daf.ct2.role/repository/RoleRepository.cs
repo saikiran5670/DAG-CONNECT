@@ -24,8 +24,8 @@ namespace net.atos.daf.ct2.role.repository
         {
 
             var RoleQueryStatement = @" INSERT INTO master.role
-                                    (organization_id,name,is_active,created_date,created_by,description) 
-	                                VALUES (@organization_id,@name,@is_active,@created_date,@created_by,@description)
+                                    (organization_id,name,is_active,created_date,created_by,description,feature_set_id) 
+	                                VALUES (@organization_id,@name,@is_active,@created_date,@created_by,@description,@feature_set_id)
 	                                RETURNING id";
 
             var Roleparameter = new DynamicParameters();
@@ -35,6 +35,7 @@ namespace net.atos.daf.ct2.role.repository
             Roleparameter.Add("@created_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
             Roleparameter.Add("@created_by", roleMaster.Createdby);
             Roleparameter.Add("@description", roleMaster.Description);
+            Roleparameter.Add("@feature_set_id", roleMaster.Feature_set_id);
 
             int InsertedRoleId = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, Roleparameter);
             // if (roleMaster.FeatureSetID > 0)
@@ -57,11 +58,15 @@ namespace net.atos.daf.ct2.role.repository
             return InsertedRoleId;
         }
 
-        public async Task<int>  Addrolefeatureset(int RoleId,int FeatureSetId)
+        public async Task<int>  Updaterolefeatureset(int RoleId,int FeatureSetId)
         {
-             var RoleQueryStatement = @"INSERT INTO master.rolefeatureset(
-                                        feature_set_id, role_id)
-                                        VALUES (@feature_set_id, @role_id);";
+             var RoleQueryStatement = @"UPDATE master.role
+                                    SET feature_set_id = @feature_set_id
+                                    ,updated_date = @updated_date
+                                    ,updated_by = @updated_by
+                                    WHERE id = @role_id
+                                    RETURNING id;";
+
 
             var Roleparameter = new DynamicParameters();
             Roleparameter.Add("@feature_set_id", FeatureSetId);
@@ -131,12 +136,10 @@ namespace net.atos.daf.ct2.role.repository
                                 role.updated_by,
                                 fsf.featurescount as featurescount
 	                            FROM master.role role
-                                LEFT JOIN master.rolefeatureset roleFeatureSet								
-                                ON role.id=roleFeatureSet.role_id
 								LEFT JOIN (Select Count(feature_id) as featurescount,feature_set_id
 										   from master.featuresetfeature
 										  group by feature_set_id) fsf
-								on roleFeatureSet.feature_set_id = fsf.feature_set_id
+								on role.feature_set_id = fsf.feature_set_id
                                 WHERE  1=1";
 
 

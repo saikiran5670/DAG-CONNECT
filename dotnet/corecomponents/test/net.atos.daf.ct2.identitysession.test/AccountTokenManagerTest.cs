@@ -8,9 +8,10 @@ using net.atos.daf.ct2.identitysession.entity;
 using net.atos.daf.ct2.data;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.identitysession.repository;
-
+using Dapper;
 namespace net.atos.daf.ct2.identitysession.test
 {
+    [TestClass]
     public class AccountTokenManagerTest 
     {
         private readonly IAccountTokenManager _accountTokenManager;
@@ -20,8 +21,8 @@ namespace net.atos.daf.ct2.identitysession.test
         private readonly AccountTokenRepository _accountTokenRepository;
         public AccountTokenManagerTest()
         {   
-            string connectionString = "Server = 127.0.0.1; Port = 5432; Database = DAF; User Id = postgres; Password = Abcd@1234; CommandTimeout = 90; ";        
-            //string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+            //string connectionString = "Server = 127.0.0.1; Port = 5432; Database = DAF; User Id = postgres; Password = Abcd@1234; CommandTimeout = 90; ";        
+            string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             _dataAccess = new PgSQLDataAccess(connectionString);
             _accountTokenRepository = new AccountTokenRepository(_dataAccess);   
             _accountTokenManager=new AccountTokenManager(_accountTokenRepository) ;
@@ -33,17 +34,17 @@ namespace net.atos.daf.ct2.identitysession.test
         public async Task UnT_identitysession_AccountTokenManager_InsertToken()
         { 
             AccountToken accountToken = new AccountToken();     
-            accountToken.User_Name = "Test1";
+            accountToken.UserName = "Test1";
             accountToken.AccessToken = "abcd";
-            accountToken.ExpiresIn = 12;
-            accountToken.Refresh_Token = "asdf";
-            accountToken.Refresh_Expire_In = 1;
-            accountToken.Account_Id = 12;                                    
-            accountToken.TokenType = "asdr";
-            accountToken.Session_Id = 12;
-            accountToken.Idp_Type = "asdf";
+            accountToken.ExpireIn = 12;
+            accountToken.RefreshToken = "asdf";
+            accountToken.RefreshExpireIn = 1;
+            accountToken.AccountId = 4;                                    
+            accountToken.TokenType = "A";
+            accountToken.SessionState = "2";
+            accountToken.IdpType = "A";
             accountToken.SessionState = "asdsf2332";
-            accountToken.Created_At = 23;
+            accountToken.CreatedAt = 4;
             accountToken.Scope = "asd";
             accountToken.Error = "test";
 
@@ -58,17 +59,17 @@ namespace net.atos.daf.ct2.identitysession.test
         public async Task UnT_identitysession_AccountTokenManager_DeleteToken()
         { 
             AccountToken accountToken = new AccountToken();     
-            accountToken.User_Name = "Test1";
+            accountToken.UserName = "Test1";
             accountToken.AccessToken = "abcd";
-            accountToken.ExpiresIn = 12;
-            accountToken.Refresh_Token = "asdf";
-            accountToken.Refresh_Expire_In = 1;
-            accountToken.Account_Id = 12;                                    
-            accountToken.TokenType = "asdr";
-            accountToken.Session_Id = 12;
-            accountToken.Idp_Type = "asdf";
+            accountToken.ExpireIn = 12;
+            accountToken.RefreshToken = "asdf";
+            accountToken.RefreshExpireIn = 1;
+            accountToken.AccountId = 4;                                    
+            accountToken.TokenType = "B";
+            accountToken.SessionState = "2";
+            accountToken.IdpType = "B";
             accountToken.SessionState = "asdsf2332";
-            accountToken.Created_At = 23;
+            accountToken.CreatedAt = 4;
             accountToken.Scope = "asd";
             accountToken.Error = "test";
 
@@ -82,7 +83,7 @@ namespace net.atos.daf.ct2.identitysession.test
         [TestMethod]
         public async Task UnT_identitysession_AccountTokenManager_GetTokenDetails()
         {                      
-            int AccountId=12;           
+            int AccountId=4;           
             var result= await _accountTokenManager.GetTokenDetails(AccountId);            
             Assert.IsNotNull(result);
             Assert.IsTrue(result!=null);       
@@ -93,7 +94,7 @@ namespace net.atos.daf.ct2.identitysession.test
         [TestMethod]
         public async Task UnT_identitysession_AccountTokenManager_GetTokenDetailsbyAccessToken()
         {                      
-            string AccessToken="test1";           
+            string AccessToken="abcd";           
             var result= await _accountTokenManager.GetTokenDetails(AccessToken);            
             Assert.IsNotNull(result);
             Assert.IsTrue(result!=null);       
@@ -104,18 +105,19 @@ namespace net.atos.daf.ct2.identitysession.test
         [TestMethod]
         public async Task UnT_identitysession_AccountTokenManager_ValidateToken()
         {                      
-            AccountToken accountToken = new AccountToken();     
-            accountToken.User_Name = "Test1";
+            AccountToken accountToken = new AccountToken();   
+            accountToken.Id=1;  
+            accountToken.UserName = "Test1";
             accountToken.AccessToken = "abcd";
-            accountToken.ExpiresIn = 12;
-            accountToken.Refresh_Token = "asdf";
-            accountToken.Refresh_Expire_In = 1;
-            accountToken.Account_Id = 12;                                    
+            accountToken.ExpireIn = 12;
+            accountToken.RefreshToken = "asdf";
+            accountToken.RefreshExpireIn = 1;
+            accountToken.AccountId = 4;                                    
             accountToken.TokenType = "asdr";
-            accountToken.Session_Id = 12;
-            accountToken.Idp_Type = "asdf";
+            accountToken.SessionState = "2";
+            accountToken.IdpType = "asdf";
             accountToken.SessionState = "asdsf2332";
-            accountToken.Created_At = 23;
+            accountToken.CreatedAt = 4;
             accountToken.Scope = "asd";
             accountToken.Error = "test";         
             bool result= await _accountTokenManager.ValidateToken(accountToken);  
