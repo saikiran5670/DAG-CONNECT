@@ -57,6 +57,8 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
         public async Task<IActionResult> update(Customer customer)
         {
          
+           // var OrgId= await organizationtmanager.UpdateCustomer(customer);
+           // return Ok("done");
             string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
             bool valid=false;
             try 
@@ -72,6 +74,23 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                      valid = await accountIdentityManager.ValidateToken(token);
                      if(valid)
                      {
+                        if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.ID))
+                        {
+                             return StatusCode(400,"Please provide company ID:");
+                        } 
+                        else if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.type))
+                        {
+                             return StatusCode(400,"Please provide company type:");
+                        }
+                        else if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.Name))
+                        {
+                             return StatusCode(400,"Please provide company name:");
+                        }
+                        else  if ((customer.CompanyUpdatedEvent.Company.ReferenceDateTime == null) && (DateTime.Compare(DateTime.MinValue, customer.CompanyUpdatedEvent.Company.ReferenceDateTime)< 0))
+                        {
+                             return StatusCode(400,"Please provide company reference date:");
+                        }
+
                         var OrgId= await organizationtmanager.UpdateCustomer(customer);
                         logger.LogInformation("Customer data has been updated, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
                         return Ok(OrgId);
@@ -96,6 +115,8 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
         [Route("keyhandover")]
         public async Task<IActionResult> keyhandover(KeyHandOver keyHandOver)
         {
+            //   var OrgId= await organizationtmanager.KeyHandOverEvent(keyHandOver);
+            //   return Ok("done");
            string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
             bool valid=false;
             try 
@@ -110,6 +131,26 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                      valid = await accountIdentityManager.ValidateToken(token);
                      if(valid)
                      {
+                        if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.VIN))
+                        {
+                             return StatusCode(400,"Please provide VIN:");
+                        } 
+                        else if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.TCUID))
+                        {
+                             return StatusCode(400,"Please provide TCUID:");
+                        }
+                        else if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.EndCustomer.ID))
+                        {
+                             return StatusCode(400,"Please provide company name:");
+                        }
+                        else  if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.ReferenceDateTime))
+                        {
+                             return StatusCode(400,"Please provide company reference date:");
+                        }
+                        else  if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.TCUActivation))
+                        {
+                             return StatusCode(400,"Please provide TCU Activation status:");
+                        }
                         var OrgId= await organizationtmanager.KeyHandOverEvent(keyHandOver);
                         logger.LogInformation("KeyHandOverEvent executed successfully, company ID -" + keyHandOver.KeyHandOverEvent.EndCustomer.ID);
                         return Ok(OrgId);
