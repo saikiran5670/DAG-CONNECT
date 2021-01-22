@@ -89,9 +89,9 @@ message GetOrganizationResponce {
     google.protobuf.StringValue PostalCode=8;    
     google.protobuf.StringValue City=9;
     google.protobuf.StringValue CountryCode=10;   
-    google.protobuf.StringValue ReferencedDate=11;
+    google.protobuf.StringValue Referenced=11;
     bool OptOutStatus=12;  
-    google.protobuf.StringValue OptOutStatusChangedDate=13;
+    google.protobuf.StringValue OptOutStatusChanged=13;
     bool IsActive=14;
     int32 RefId=15;
     google.protobuf.StringValue PrefType=16;
