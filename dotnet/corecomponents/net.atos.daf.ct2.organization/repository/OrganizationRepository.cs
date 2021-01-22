@@ -197,6 +197,7 @@ namespace net.atos.daf.ct2.organization.repository
         
                if (iscustomerexist>0)
                  {
+                Int64 referenceDateTime;
                 var parameterUpdate = new DynamicParameters();
                 parameterUpdate.Add("@org_id", customer.CompanyUpdatedEvent.Company.ID);
                 parameterUpdate.Add("@Name",  customer.CompanyUpdatedEvent.Company.Name);
@@ -207,8 +208,17 @@ namespace net.atos.daf.ct2.organization.repository
                 parameterUpdate.Add("@PostalCode", customer.CompanyUpdatedEvent.Company.Address.PostalCode);  
                 parameterUpdate.Add("@City", customer.CompanyUpdatedEvent.Company.Address.City);
                 parameterUpdate.Add("@CountryCode", customer.CompanyUpdatedEvent.Company.Address.CountryCode);    
-                parameterUpdate.Add("@reference_date", customer.CompanyUpdatedEvent.Company.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(customer.CompanyUpdatedEvent.Company.ReferenceDateTime.ToString()) : 0);    
+                //parameterUpdate.Add("@reference_date", customer.CompanyUpdatedEvent.Company.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(customer.CompanyUpdatedEvent.Company.ReferenceDateTime.ToString()) : 0);    
+                 if ((customer.CompanyUpdatedEvent.Company.ReferenceDateTime != null) && (DateTime.Compare(DateTime.MinValue, customer.CompanyUpdatedEvent.Company.ReferenceDateTime)< 0))
+                {
+                   referenceDateTime=UTCHandling.GetUTCFromDateTime(customer.CompanyUpdatedEvent.Company.ReferenceDateTime);
+                }   
+                else
+                {
+                    referenceDateTime=0;
+                }
                 
+                parameterUpdate.Add("@reference_date", referenceDateTime);
                 var queryUpdate = @"update master.organization set name=@Name,type=@Type,
                  address_type=@AddressType, street=@AddressStreet, street_number=@AddressStreetNumber,
                   postal_code=@PostalCode, city=@City,country_code=@CountryCode,reference_date=@reference_date                               
@@ -218,6 +228,7 @@ namespace net.atos.daf.ct2.organization.repository
             }    
             else
             {                     
+                Int64 referenceDateTime;
                 var parameterInsert = new DynamicParameters();
                 parameterInsert.Add("@org_id", customer.CompanyUpdatedEvent.Company.ID);
                 parameterInsert.Add("@Name",  customer.CompanyUpdatedEvent.Company.Name);
@@ -227,9 +238,18 @@ namespace net.atos.daf.ct2.organization.repository
                 parameterInsert.Add("@AddressStreetNumber", customer.CompanyUpdatedEvent.Company.Address.StreetNumber);
                 parameterInsert.Add("@PostalCode", customer.CompanyUpdatedEvent.Company.Address.PostalCode);  
                 parameterInsert.Add("@City", customer.CompanyUpdatedEvent.Company.Address.City);
-                parameterInsert.Add("@CountryCode", customer.CompanyUpdatedEvent.Company.Address.CountryCode);    
-                parameterInsert.Add("@reference_date", customer.CompanyUpdatedEvent.Company.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(customer.CompanyUpdatedEvent.Company.ReferenceDateTime.ToString()) : 0);                
-               
+                parameterInsert.Add("@CountryCode", customer.CompanyUpdatedEvent.Company.Address.CountryCode); 
+
+                if ((customer.CompanyUpdatedEvent.Company.ReferenceDateTime != null) && (DateTime.Compare(DateTime.MinValue, customer.CompanyUpdatedEvent.Company.ReferenceDateTime)< 0))
+                {
+                   referenceDateTime=UTCHandling.GetUTCFromDateTime(customer.CompanyUpdatedEvent.Company.ReferenceDateTime);
+                }   
+                else
+                {
+                    referenceDateTime=0;
+                }
+               // parameterInsert.Add("@reference_date", customer.CompanyUpdatedEvent.Company.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(customer.CompanyUpdatedEvent.Company.ReferenceDateTime.ToString()) : 0);                
+                parameterInsert.Add("@reference_date", referenceDateTime);
                 string queryInsert= "insert into master.organization(org_id, name,type ,address_type, street, street_number, postal_code, city,country_code,reference_date) " +
                               "values(@org_id, @Name,@Type ,@AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@reference_date) RETURNING id";
 
@@ -301,7 +321,7 @@ namespace net.atos.daf.ct2.organization.repository
                 parameterVehUpdate.Add("@tcu_id",keyHandOver.KeyHandOverEvent.TCUID);
                 parameterVehUpdate.Add("@is_tcu_register",istcuactive);
                 parameterVehUpdate.Add("@reference_date",keyHandOver.KeyHandOverEvent.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(keyHandOver.KeyHandOverEvent.ReferenceDateTime) : 0);
-            
+                //(keyHandOver.KeyHandOverEvent.ReferenceDateTime != null && DateTime.Compare(DateTime.MinValue, keyHandOver.KeyHandOverEvent.ReferenceDateTime) > 0)  ? UTCHandling.GetUTCFromDateTime(customer.CompanyUpdatedEvent.Company.ReferenceDateTime.ToString()) : 0);
                 var queryUpdate = @"update master.vehicle set tcu_id=@tcu_id,is_tcu_register=@is_tcu_register,reference_date=@reference_date WHERE vin=@vin RETURNING id;";
                 int vehid = await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameterVehUpdate); 
                 return keyHandOver;  
