@@ -55,11 +55,11 @@ steps:
     dockerFile: dotnet/AuthenticationServiceRest_Dockerfile
     imageName: authenticationservicerest
 
-- task: Docker@0
-  displayName: 'Push an image'
-  inputs:
-    azureSubscription: $(Subscription)
-    azureContainerRegistry: $(ContainerRegistry)
-    action: 'Push an image'
-    imageName: authenticationservicerest
+#- task: Docker@0
+  #displayName: 'Push an image'
+  #inputs:
+    #azureSubscription: $(Subscription)
+    #azureContainerRegistry: $(ContainerRegistry)
+    #action: 'Push an image'
+    #imageName: authenticationservicerest
 
