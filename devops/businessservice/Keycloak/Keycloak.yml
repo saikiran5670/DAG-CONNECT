@@ -62,11 +62,11 @@ spec:
         - name: DB_VENDOR
           value: "postgres"
         - name: DB_USER
-          value: "pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-master"
+          value: "#{PGDAFCONNECTMASTERDATABASEUSER}#"
         - name: DB_PASSWORD
-          value: '9RQkJM2hwfe!'
+          value: '#{PGDAFCONNECTMASTERDATABASEPASSWORD}#'
         - name: DB_ADDR
-          value: "dafct-lan1-d-euwe-cdp-pgsql-master.postgres.database.azure.com" 
+          value: "#{PGDBADDR}#" 
         ports:
           - containerPort: 8080
       nodeSelector:
