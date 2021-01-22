@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-deployment
+  labels:
+    keycloak.kubernetes.io/name: keycloak
+    keycloak.kubernetes.io/type: businessservice
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+      labels:
+        keycloak.kubernetes.io/name: keycloak
+        keycloak.kubernetes.io/type: businessservice
+    spec:
+      automountServiceAccountToken: false
+      #securityContext:
+        #runAsUser: 10001
+        #runAsGroup: 3000
+        #runAsNonRoot: true
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: keycloak.kubernetes.io/name
+                operator: In
+                values:
+                - keycloak
+              - key: keycloak.kubernetes.io/type
+                operator: In
+                values:
+                - businessservice
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: keycloak-container
+        #image: jboss/keycloak:11.0.3
+        image: acrakspzfu3h3wyefhu.azurecr.io/keycloak
+        imagePullPolicy: "Always"
+        #securityContext:
+          #allowPrivilegeEscalation: false
+          #readOnlyRootFilesystem: true
+          #capabilities:
+            #drop:
+             #- all
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 2000Mi
+          requests:
+            cpu: 750m
+            memory: 750Mi
+        env:
+        - name: KEYCLOAK_USER
+          value: "admin"
+        - name: KEYCLOAK_PASSWORD
+          value: "admin"
+        - name: PROXY_ADDRESS_FORWARDING
+          value:  "true"
+        - name: DB_VENDOR
+          value: "postgres"
+        - name: DB_USER
+          value: "pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-master"
+        - name: DB_PASSWORD
+          value: '9RQkJM2hwfe!'
+        - name: DB_ADDR
+          value: "dafct-lan1-d-euwe-cdp-pgsql-master.postgres.database.azure.com" 
+        ports:
+          - containerPort: 8080
+      nodeSelector:
+        agentpool: npuser01         
+  selector:
+    matchLabels:
+        keycloak.kubernetes.io/name: keycloak
+        keycloak.kubernetes.io/type: businessservice
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloakservice
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+  selector:
+    keycloak.kubernetes.io/name: keycloak
+    keycloak.kubernetes.io/type: businessservice
