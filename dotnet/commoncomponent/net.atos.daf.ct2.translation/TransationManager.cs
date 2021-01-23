@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.translation
             }
         }
 
-         public async Task<IEnumerable<translations>> GetKeyTranslationByLanguageCode(string langaguecode,string key)
+         public async Task<IEnumerable<Translations>> GetKeyTranslationByLanguageCode(string langaguecode,string key)
         {
             try
             {
@@ -44,7 +44,7 @@ namespace net.atos.daf.ct2.translation
             }
         }
 
-        public async Task<IEnumerable<translations>> GetLangagugeTranslationByKey(string key, TranslationType Type)
+        public async Task<IEnumerable<Translations>> GetLangagugeTranslationByKey(string key, TranslationType Type)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace net.atos.daf.ct2.translation
         }
 
 
-        public async Task<IEnumerable<translations>> GetTranslationsByMenu(int  MenuId, MenuType type)
+        public async Task<IEnumerable<Translations>> GetTranslationsByMenu(int  MenuId, MenuType type)
         {
             try
             {
