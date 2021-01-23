@@ -11,9 +11,11 @@ namespace net.atos.daf.ct2.translation.repository
     {
           Task<IEnumerable<Langauge>> GetAllLanguageCode();
           Task<IEnumerable<Translations>> GetKeyTranslationByLanguageCode(string langaguecode,string key);
-           Task<IEnumerable<Translations>> GetLangagugeTranslationByKey(string key, string Type);
+           Task<IEnumerable<Translations>> GetLangagugeTranslationByKey(string key);
         //   Task<IEnumerable<translations>> GetTranslationsByMenu(int  MenuId);
-          Task<IEnumerable<Translations>> GetTranslationsByMenu(int  MenuId, string type);
+          Task<IEnumerable<Translations>> GetTranslationsByMenu(int  MenuId, string type,string langaguecode);
+
+          Task<IEnumerable<Translations>> GetTranslationsForDropDowns(string Dropdownname, string langagugecode);
           
     }
 }

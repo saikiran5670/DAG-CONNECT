@@ -44,11 +44,11 @@ namespace net.atos.daf.ct2.translation
             }
         }
 
-        public async Task<IEnumerable<Translations>> GetLangagugeTranslationByKey(string key, TranslationType Type)
+        public async Task<IEnumerable<Translations>> GetLangagugeTranslationByKey(string key)
         {
             try
             {
-                var result = await Translationrepository.GetKeyTranslationByLanguageCode(key,((char)Type).ToString());
+                var result = await Translationrepository.GetLangagugeTranslationByKey(key);
                 return result;
             }
             catch(Exception ex)
@@ -58,11 +58,24 @@ namespace net.atos.daf.ct2.translation
         }
 
 
-        public async Task<IEnumerable<Translations>> GetTranslationsByMenu(int  MenuId, MenuType type)
+        public async Task<IEnumerable<Translations>> GetTranslationsByMenu(int  MenuId, MenuType type,string langaguecode)
         {
             try
             {
-                var result = await Translationrepository.GetTranslationsByMenu(MenuId,((char)type).ToString());
+                var result = await Translationrepository.GetTranslationsByMenu(MenuId,((char)type).ToString(),langaguecode);
+                return result;
+            }
+            catch(Exception ex)
+            {
+                    throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<Translations>> GetTranslationsForDropDowns(string Dropdownname, string langagugecode)
+        {
+             try
+            {
+                var result = await Translationrepository.GetTranslationsForDropDowns(Dropdownname,langagugecode);
                 return result;
             }
             catch(Exception ex)

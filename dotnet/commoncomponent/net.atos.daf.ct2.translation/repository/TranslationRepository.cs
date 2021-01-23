@@ -62,9 +62,9 @@ namespace net.atos.daf.ct2.translation.repository
                 return translations;
         }
 
-        public async Task<IEnumerable<Translations>> GetLangagugeTranslationByKey(string key, string Type)
+        public async Task<IEnumerable<Translations>> GetLangagugeTranslationByKey(string key)
         {
-                string LangagugeQuery= @"select  t.id,t.name,t.value,t.type from translation.translation t
+                string LangagugeQuery= @"select  t.id,t.name,t.code,t.value,t.type from translation.translation t
                                         where 1=1";
 
                                         
@@ -75,47 +75,42 @@ namespace net.atos.daf.ct2.translation.repository
                         LangagugeQuery = LangagugeQuery + " and  t.name = @key";
 
                     }
-
-                if (Type!= null && Type.Length > 0)
-                    {
-                        parameter.Add("@type", Type);
-                        LangagugeQuery = LangagugeQuery + " and  t.type = @type";
-
-                    }
-
-                parameter.Add("@key", key);
-                IEnumerable<Translations> Translations = await dataAccess.QueryAsync<Translations>(LangagugeQuery, parameter);
+                 IEnumerable<Translations> Translations = await dataAccess.QueryAsync<Translations>(LangagugeQuery, parameter);
                 return Translations;
         }
 
-        public async Task<IEnumerable<Translations>> GetTranslationsByMenu(int  MenuId, string type)
+        public async Task<IEnumerable<Translations>> GetTranslationsByMenu(int  MenuId, string type,string langaguecode)
         {
-                string LangagugeQuery= @"select tg.id,t.name,t.value,t.type from translation.translation t
+                string LangagugeQuery= @"select tg.id,t.name,t.value,t.type,t.code,tg.ref_id from translation.translation t
                                         inner join translation.translationgrouping tg
-                                        on t.name = tg.name where 1=1";
+                                        on t.name = tg.name where t.code=@langaguecode";
 
                     var parameter = new DynamicParameters();
-                    if (MenuId > 0)
-                    {
+                    parameter.Add("@langaguecode", langaguecode);
+                   
                         parameter.Add("@menuid", MenuId);
                         LangagugeQuery = LangagugeQuery + " and tg.ref_id  = @menuid";
 
-                    }
 
                     if (type != null)
                     {
                         parameter.Add("@type", type.ToString());
                         LangagugeQuery = LangagugeQuery + " and tg.type  = @type";
 
-                    }                      
-                IEnumerable<Translations> Translations = await dataAccess.QueryAsync<Translations>(LangagugeQuery, parameter);
-                var names =  Translations.Where(T=>T.Type == ((char)TranslationType.Dropdown).ToString()).SelectMany(p=> p.Name.Split('_')).Distinct().Where(K=> K[0] == 'd');
+                    }  
+                    List<Translations> list=  new      List<Translations>();               
+                var Translations = await dataAccess.QueryAsync<dynamic>(LangagugeQuery, parameter);
+                foreach(var item in Translations)
+                {
+                        list.Add(Map(item));
+                }
+                var names =  list.Where(T=>T.Type == ((char)TranslationType.Dropdown).ToString()).SelectMany(p=> p.Name.Split('_')).Distinct().Where(K=> K[0] == 'd');
                 foreach(var name in names)
                 {
-                    IEnumerable<Translations> dropdowntranslation = GetTranslationsForDropDowns(name.Substring(1),"EN-GB") ;
+                    IEnumerable<Translations> dropdowntranslation = await GetTranslationsForDropDowns(name.Substring(1),langaguecode) ;
                     foreach(var item in dropdowntranslation)
                     {
-                        Translations.Where(P=>P.Name == item.Name).ToList().ForEach(i=>
+                        list.Where(P=>P.Name == item.Name).ToList().ForEach(i=>
                                                                                     {
                                                                                         i.Id = item.Id;
                                                                                         i.Filter = name.Substring(1);
@@ -124,32 +119,46 @@ namespace net.atos.daf.ct2.translation.repository
                     
                 }
                 
-                return Translations;
+                return list;
         }
 
-        public IEnumerable<Translations> GetTranslationsForDropDowns(string Dropdownname, string langagugeid)
+        public async Task<IEnumerable<Translations>> GetTranslationsForDropDowns(string Dropdownname, string langagugecode)
         {
             try
             {
                 string LangagugeQuery = "";
                 if(Dropdownname == "language")
-                LangagugeQuery= @"select tc.id,t.name,t.value,t.type from translation.language tc inner join translation.translation t on tc.key = t.name ";
+                LangagugeQuery= @"select tc.id,t.name,t.code,t.value,t.type from translation.language tc inner join translation.translation t on tc.key = t.name ";
                 else
                 {
-                    LangagugeQuery= @"select tc.id,t.name,t.value,t.type from master." + Dropdownname +" tc inner join translation.translation t on tc.key = t.name ";
+                    LangagugeQuery= @"select tc.id,t.name,t.code,t.value,t.type from master." + Dropdownname +" tc inner join translation.translation t on tc.key = t.name ";
                 }   
                                         
                 var parameter = new DynamicParameters();
-                parameter.Add("@code", langagugeid);
+                parameter.Add("@code", langagugecode);
                 LangagugeQuery = LangagugeQuery + " Where t.code=  @code";
-                IEnumerable<Translations> Translations =  dataAccess.Query<Translations>(LangagugeQuery,parameter);
+                IEnumerable<Translations> Translations = await  dataAccess.QueryAsync<Translations>(LangagugeQuery,parameter);
                 return Translations;
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
-                throw ex;
+               return Enumerable.Empty<Translations>();
             }
             
         }
+
+            private Translations Map(dynamic record)
+            {
+                Translations Entity = new Translations();
+                Entity.Id= record.id;
+                Entity.Code = record.code;
+                Entity.Type = record.type;
+                Entity.Name =  record.name;
+                Entity.Value = record.value;
+                Entity.Filter =  record.filter;
+                Entity.MenuId =  record.ref_id;
+                return Entity;
+            }   
 
     }
 }

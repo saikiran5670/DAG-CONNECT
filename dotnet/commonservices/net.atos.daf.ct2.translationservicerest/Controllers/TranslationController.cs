@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.Enum;
 using net.atos.daf.ct2.translation.entity;
+using static net.atos.daf.ct2.translation.Enum.translationenum;
 
 namespace net.atos.daf.ct2.translationservicerest.Controllers
 {
@@ -27,30 +28,91 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
             translationmanager=_TranslationManager;
         }
 
-        [HttpPost]
-        [Route("GetTranslations")]
+        [HttpGet]
+        [Route("GetMenuTranslations")]
          public async  Task<IActionResult> GetTranslations(Translations request)
         {
              List<Translations> responce = new List<Translations>();
             // var translations =  translationmanager.GetTranslationsByMenu(request.ID,(translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString().ToUpper())).Result;
-            var translations = await translationmanager.GetTranslationsByMenu(request.MenuId,(translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString()));
-            // foreach(var item in translations)
-            // {
-            //         Translations obj = new Translations();
-            //         // string Type =  (translationenum.TranslationType)Enum.Parse(typeof(translationenum.TranslationType),item.Type.ToString()).ToString();
-            //         obj.Name = item.Name;
-            //         obj.Code = item.Code  == null ? "" : item.Code;
-            //         obj.Value = item.Value == null ? "" :item.Value;
-            //         obj.Type = Contenttype.Dropdown;
-            //         // obj.Type=item.Type;
-            //         obj.ID = item.Id;
-            //         obj.Filter = item.Filter == null ? "" : item.Filter;
-            //         obj.MenuId = item.MenuId;
-            //         responce.Translations.Add(obj);
-            // }   
+            var translations = await translationmanager.GetTranslationsByMenu(request.MenuId,(translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString()),request.Code);
+            
 
           return Ok(translations);
         }
+
+        [HttpGet]
+        [Route("GetCommonTranslations")]
+        public async  Task<IActionResult> GetCommonTranslations(string LanguageCode)
+        {
+          try
+          {
+             List<Translations> responce = new List<Translations>();
+            // var translations =  translationmanager.GetTranslationsByMenu(request.ID,(translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString().ToUpper())).Result;
+            var translations = await translationmanager.GetTranslationsByMenu(0,translationenum.MenuType.Menu,LanguageCode);
+            
+
+          return Ok(translations);
+          }
+          catch(Exception ex)
+          {
+                    _logger.LogError(ex.Message +" " +ex.StackTrace);
+                    return StatusCode(500,"Internal Server Error.");
+          }
+        }
+
+        [HttpPost]
+        [Route("GetAlltranslatonByKey")]
+        public async Task<IActionResult> GetLangagugeTranslationByKey(string key)
+        {
+          try
+          {
+             var translation = await translationmanager.GetLangagugeTranslationByKey(key);
+             return Ok(translation);
+          }
+          catch(Exception ex)
+          {
+                    _logger.LogError(ex.Message +" " +ex.StackTrace);
+                    return StatusCode(500,"Internal Server Error.");
+          }
+         
+
+        }
+
+        [HttpGet]
+        [Route("GetKeyTranslationByLanguageCode")]
+         public async  Task<IActionResult> GetKeyTranslationByLanguageCode(string langaguecode,string key)
+        {
+            try
+            {
+              var translation = await translationmanager.GetKeyTranslationByLanguageCode(langaguecode,key);
+              return Ok(translation);
+            }
+            catch(Exception ex)
+            {
+                      _logger.LogError(ex.Message +" " +ex.StackTrace);
+                      return StatusCode(500,"Internal Server Error.");
+            }
+
+        }
+
+        [HttpGet]
+        [Route("GetTranslationsForDropDowns")]
+         public async  Task<IActionResult> GetTranslationsForDropDowns(string Dropdownname, string langagugecode)
+        {
+            try
+            {
+              var translation = await translationmanager.GetTranslationsForDropDowns(Dropdownname,langagugecode);
+              return Ok(translation);
+            }
+            catch(Exception ex)
+            {
+                      _logger.LogError(ex.Message +" " +ex.StackTrace);
+                      return StatusCode(500,"Internal Server Error.");
+            }
+
+        }
+
+
         [HttpGet]
         [Route("GetAllLangaugecodes")]
          public async  Task<IActionResult> GetAllLangaugecodes()
