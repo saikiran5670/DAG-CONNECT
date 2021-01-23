@@ -58,8 +58,16 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             try 
             {       
                 logger.LogInformation("Organization create function called ");
+                if (string.IsNullOrEmpty(organization.OrganizationId))
+                {
+                     return StatusCode(400,"Please provide organization ID:");
+                }
+                if (string.IsNullOrEmpty(organization.Name))
+                {
+                     return StatusCode(400,"Please provide organization name:");
+                }
                 var OrgId= await organizationtmanager.Create(organization);   
-                return Ok(OrgId);      
+                return Ok("Organization Created :"+OrgId);      
              }
             catch(Exception ex)
             {
@@ -76,13 +84,15 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             try 
             {   
                 logger.LogInformation("Organization update function called ");    
+                if (organization.Id<1)
+                {
+                     return StatusCode(400,"Please provide organization ID:");
+                }
                 var OrgId= await organizationtmanager.Update(organization);   
-                return Ok("done");    
-
+                return Ok("Organization updated :"+OrgId);    
              }
             catch(Exception ex)
-            {
-              //  valid = false;
+            {         
                 logger.LogError(ex.Message +" " +ex.StackTrace);
                 //return StatusCode(500,"Internal Server Error.");
                 return StatusCode(500,ex.Message +" " +ex.StackTrace);
@@ -96,13 +106,15 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             try 
             {      
                 logger.LogInformation("Organization delete function called "); 
+                if (organizationId<1)
+                {
+                     return StatusCode(400,"Please provide organization ID:");
+                }
                 var OrgId= await organizationtmanager.Delete(organizationId);   
-                return Ok("done");    
-
+                return Ok("Organization Deleted : " +organizationId);    
              }
             catch(Exception ex)
-            {
-              //  valid = false;
+            {            
                 logger.LogError(ex.Message +" " +ex.StackTrace);
                 //return StatusCode(500,"Internal Server Error.");
                 return StatusCode(500,ex.Message +" " +ex.StackTrace);
@@ -116,58 +128,18 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             try 
             {      
                 logger.LogInformation("Organization get function called "); 
-                var OrgId= await organizationtmanager.Get(organizationId);   
-                return Ok("done");    
-
+                if (organizationId<1)
+                {
+                     return StatusCode(400,"Please provide organization ID:");
+                }              
+                return Ok(await organizationtmanager.Get(organizationId));
              }
             catch(Exception ex)
-            {
-              //  valid = false;
+            {            
                 logger.LogError(ex.Message +" " +ex.StackTrace);
                 //return StatusCode(500,"Internal Server Error.");
                 return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }   
-        }     
-            //     if(string.IsNullOrEmpty(token))
-            //     {
-            //         logger.LogInformation("UpdateCustomerData function called with empty token, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
-            //         return StatusCode(400,"Bad Request:");
-            //     }
-            //     else
-            //     {  
-            //          logger.LogInformation("UpdateCustomerData function called , company ID -" + customer.CompanyUpdatedEvent.Company.ID);
-            //          valid = await accountIdentityManager.ValidateToken(token);
-            //          if(valid)
-            //          {
-            //             if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.ID))
-            //             {
-            //                  return StatusCode(400,"Please provide company ID:");
-            //             } 
-            //             else if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.type))
-            //             {
-            //                  return StatusCode(400,"Please provide company type:");
-            //             }
-            //             else if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.Name))
-            //             {
-            //                  return StatusCode(400,"Please provide company name:");
-            //             }
-            //             else  if ((customer.CompanyUpdatedEvent.Company.ReferenceDateTime == null) && (DateTime.Compare(DateTime.MinValue, customer.CompanyUpdatedEvent.Company.ReferenceDateTime)< 0))
-            //             {
-            //                  return StatusCode(400,"Please provide company reference date:");
-            //             }
-
-            //             var OrgId= await organizationtmanager.UpdateCustomer(customer);
-            //             logger.LogInformation("Customer data has been updated, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
-            //             return Ok(OrgId);
-            //         }
-            //          else
-            //          {
-            //              logger.LogInformation("Customer data not updated, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
-            //              return StatusCode(401,"Forbidden:");
-            //          }
-            //    }
-                            
-        //}  
-
+        }    
     }
 }
