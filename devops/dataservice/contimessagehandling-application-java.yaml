@@ -37,9 +37,9 @@ jobs:
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
       inputs:
-        SourceFolder: '$(system.defaultworkingdirectory)'
+        SourceFolder: '$(system.defaultworkingdirectory)/java/commoncomponent/daf.common/target'
         Contents: '**/*.jar'
-        TargetFolder: '/home/adminroot/.m2/repository/net/atos/daf.common/0.0.1'
+        TargetFolder: '/home/adminroot/.m2/repository/net/atos/daf.common/0.0.1/'
         CleanTargetFolder: true
       condition: succeededOrFailed()
 
