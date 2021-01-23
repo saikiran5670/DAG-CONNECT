@@ -17,7 +17,7 @@ export class AuthService {
             headers: new HttpHeaders({
                 'Content-Type': 'application/json',
                 //'Authorization': 'Basic ' + btoa('username:password')
-                'Authorization': 'Bearer ' + btoa(`${userInfo.username}:${userInfo.password}`)
+                'Authorization': 'Basic ' + btoa(`${userInfo.username}:${userInfo.password}`)
             }),
             observe: "response" as 'body',
         };
