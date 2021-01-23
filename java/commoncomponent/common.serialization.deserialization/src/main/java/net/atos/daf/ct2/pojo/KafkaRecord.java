@@ -15,6 +15,8 @@ public class KafkaRecord<T> implements Serializable {
   private T value;
   private Long timeStamp;
 
+  private static final long serialVersionUID = 1L;
+
   @Override
   public String toString() {
     return "KafkaRecord{" +

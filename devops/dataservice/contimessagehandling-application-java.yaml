@@ -29,6 +29,26 @@ jobs:
 - job: Build
   steps:
     - task: Maven@3
+      displayName: 'Maven java/commoncomponent/daf.common/pom.xml'
+      inputs:
+        mavenPomFile: java/commoncomponent/daf.common/pom.xml
+        publishJUnitResults: false
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder: '$(system.defaultworkingdirectory)/java/commoncomponent/daf.common/target'
+        Contents: '**/*.jar'
+        TargetFolder: '/home/adminroot/.m2/repository/net/atos/daf.common/0.0.1/'
+        CleanTargetFolder: true
+      condition: succeededOrFailed()
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+        PathtoPublish: '/home/adminroot/.m2/repository/net/atos/daf.common/0.0.1'
+      condition: succeededOrFailed()
+    - task: Maven@3
       displayName: 'Maven java/commoncomponent/common.serialization.deserialization/pom.xml'
       inputs:
         mavenPomFile: java/commoncomponent/common.serialization.deserialization/pom.xml
@@ -40,6 +60,7 @@ jobs:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
+        CleanTargetFolder: true
       condition: succeededOrFailed()
 
     - task: PublishBuildArtifacts@1
@@ -60,6 +81,7 @@ jobs:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
+        CleanTargetFolder: true
       condition: succeededOrFailed()
 
     - task: PublishBuildArtifacts@1
@@ -80,6 +102,7 @@ jobs:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
+        CleanTargetFolder: true
       condition: succeededOrFailed()
 
     - task: PublishBuildArtifacts@1
@@ -100,6 +123,7 @@ jobs:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
+        CleanTargetFolder: true
       condition: succeededOrFailed()
 
     - task: PublishBuildArtifacts@1

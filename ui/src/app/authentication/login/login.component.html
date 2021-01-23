@@ -1,3 +1,11 @@
+<div *ngIf='cookiesFlag' class='disableOverlay'></div>
+<div *ngIf='maintenancePopupFlag' fxLayout="row" fxLayoutAlign="space-between" class='maintenancePopup'>
+    <div fxLayout="column" fxLayoutAlign="left"><span style='display: flex; align-items: center;'><mat-icon>warning</mat-icon>&nbsp; &nbsp;Portal will be down on Monday, 07 April 2021, between 1.0 am to 9.0 am for maintenance.</span></div>
+    <div fxLayout="column" fxLayoutAlign="center flex-end">
+        <mat-icon (click)='onCancel()' style='cursor: pointer;'>close</mat-icon>
+    </div>
+</div>
+
 <div fxLayout="row" fxLayoutAlign="stretch" class="loginPageContainer">
     <div fxLayout="column" fxLayoutAlign="stretch" class='full-width loginPageBg'>
         <div fxLayout="row" fxLayoutAlign="end end" class='logo-icon'>
@@ -29,9 +37,12 @@
                                     </div>
                                     <div fxLayout="column" fxLayoutAlign="start" class='full-width'>
                                         <mat-form-field appearance="fill">
-                                            <input matInput placeholder="User name" formControlName="username" required>
+                                            <input maxlength="120" matInput placeholder="User name" formControlName="username" pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}" required>
                                             <mat-error *ngIf="loginForm.get('username').hasError('required')">
                                               User name is required
+                                            </mat-error>
+                                            <mat-error *ngIf="loginForm.get('username').hasError('email')">
+                                                Please enter valid user name
                                             </mat-error>
                                         </mat-form-field>
                                     </div>
@@ -81,6 +92,9 @@
                                             <mat-error *ngIf="forgotPasswordForm.get('email').hasError('required')">
                                               Email id is required
                                             </mat-error>
+                                            <mat-error *ngIf="forgotPasswordForm.get('email').hasError('email')">
+                                                Please enter valid user name
+                                            </mat-error>
                                         </mat-form-field>
                                     </div>
                                   </div> 
@@ -97,12 +111,12 @@
     </div>
 </div>
 <footer>
-    <div *ngIf='cookiesFlag' fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="45px" class='cookieContainer'>
+    <div *ngIf='cookiesFlag' fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="100px" class='cookieContainer'>
         <div fxLayout="column">
-            <span>This site uses cookies to offer you a better browsing experience. No third party cookies are used on this site.</span>
+            <span>This site uses cookies to offer you a better browsing experience. No third party cookies are used on this site.<br><a href='https://www.daf.com/' target="_blank">Click here</a> to view the full details. By clicking accept you are accepting the policy.</span>
         </div>
         <div fxLayout="column">
-            <button mat-raised-button color="primary" class="cookieBtn" (click)='acceptCookies()'>I Understand</button>
+            <button mat-raised-button color="primary" class="cookieBtn" (click)='acceptCookies()'>Accept</button>
         </div>
     </div>
     <div fxLayout="row" fxLayoutAlign="space-between" class='loginFooter'>

@@ -12,6 +12,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class Warning  implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty(value = "WarningTimestamp")
     private Integer warningTimestamp;
     @JsonProperty(value = "WarningClass")

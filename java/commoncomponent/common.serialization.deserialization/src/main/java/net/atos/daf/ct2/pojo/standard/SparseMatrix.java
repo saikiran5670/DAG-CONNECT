@@ -8,6 +8,8 @@ import java.io.Serializable;
 @Data
 public class SparseMatrix  implements Serializable {
 
+  private static final long serialVersionUID = 1L;
+
   @JsonProperty(value = "abs")
   private Integer abs;
   @JsonProperty(value = "ord")

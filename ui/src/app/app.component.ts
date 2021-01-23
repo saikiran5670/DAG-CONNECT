@@ -31,8 +31,8 @@ export class AppComponent {
   menuPages: any = (data as any).default;
   language: any;
   openUserRoleDialog= false;
-  organizations: Organization[];
-  roles: Role[];
+  organizations: any;
+  roles: any;
   organization: any;
   role: any;
   private pagetTitles = {
