@@ -65,15 +65,20 @@ namespace net.atos.daf.ct2.audit.repository
                   
        }
 
-       public IEnumerable<AuditTrail> GetAuditLogs(int Userorgid)
+       public async Task<IEnumerable<AuditTrail>> GetAuditLogs(int performed_by)
         {
             try
             {
-                return dataAccess.Query<AuditTrail>("SELECT userorgid, eventid, eventperformed, activitydescription, component, eventtime, eventstatus, createddate, createdby FROM dafconnectmaster.auditlog WHERE userorgid=@userorgid ", new { userorgid = @Userorgid });
+               
+                 var parameter = new DynamicParameters();
+                  parameter.Add("@performed_by", performed_by);
+
+                   return await dataAccess.QueryAsync<AuditTrail>(@"SELECT id, performed_by, component_name, service_name,  message, sourceobject_id, targetobject_id, updated_data
+	                        FROM logs.audittrail where performed_by = @performed_by order by 1 desc", parameter);
+                            
             }
             catch (System.Exception)
             {
-
                 throw;
             }
 

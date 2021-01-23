@@ -11,6 +11,6 @@ namespace net.atos.daf.ct2.audit.repository
     public interface IAuditLogRepository
     {
          Task<int> AddLogs(AuditTrail auditTrail);
-         IEnumerable<AuditTrail> GetAuditLogs(int Userorgid);
+         Task<IEnumerable<AuditTrail>> GetAuditLogs(int performed_by);
     }
 }

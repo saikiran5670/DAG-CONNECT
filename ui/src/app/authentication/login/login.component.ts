@@ -25,9 +25,10 @@ export class LoginComponent implements OnInit {
   public forgotPasswordForm: FormGroup;
   hide: boolean = true;
   invalidUserMsg: boolean = false;
-  cookiesFlag: boolean = false;
+  cookiesFlag: boolean = true;
   forgotPwdFlag: boolean = false;
   dialogRefLogin: MatDialogRef<LoginDialogComponent>;
+  maintenancePopupFlag: boolean = false;
 
   constructor(public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog) {
     this.loginForm = this.fb.group({
@@ -48,16 +49,9 @@ export class LoginComponent implements OnInit {
       /* this.authService.signIn(this.loginForm.value).subscribe((data:any) => {
          console.log("data:: ", data)
          if(data.status === 200){
-           if(data.body.error === null){  
-             this.invalidUserMsg = false;
-             this.cookiesFlag = true;
-           }
-           else if(data.body.error === "invalid_grant"){
-             this.invalidUserMsg = true;
-             this.cookiesFlag = false;
-           }
-         }
-         else{
+           this.invalidUserMsg = false;
+            //this.cookiesFlag = true;
+            this.showOrganizationPopup();
          }
        },
        (error)=> {
@@ -83,7 +77,11 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  public acceptCookies() {
+  public acceptCookies(){
+    this.cookiesFlag = false;
+  }
+
+  public showOrganizationPopup() {
     let organization: Organization[] = [
       { value: 'daf-0', viewValue: 'DAF Connect' },
       { value: 'conti-1', viewValue: 'Conti' },
@@ -96,7 +94,6 @@ export class LoginComponent implements OnInit {
       { value: 'user-2', viewValue: 'Fleet User' }
     ];
 
-    this.cookiesFlag = false;
     const options = {
       title: 'Welcome to DAF Connect Mr. John Rutherford',
       cancelText: 'Cancel',
@@ -122,11 +119,15 @@ export class LoginComponent implements OnInit {
   }
 
   onForgetPassword() {
-    this.forgotPwdFlag = true;
+    //this.forgotPwdFlag = true;
   }
 
   onBackToLogin() {
     this.forgotPwdFlag = false;
+  }
+
+  onCancel(){
+    this.maintenancePopupFlag = false;
   }
 
 }
