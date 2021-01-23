@@ -8,8 +8,8 @@ metadata:
 spec:
   template:
     metadata:
-      annotations:
-        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+      #annotations:
+        #seccomp.security.alpha.kubernetes.io/pod: runtime/default
       labels:
         app.kubernetes.io/name: uimanagement
         app.kubernetes.io/type: frontend
