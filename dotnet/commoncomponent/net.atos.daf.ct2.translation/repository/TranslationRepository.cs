@@ -41,7 +41,7 @@ namespace net.atos.daf.ct2.translation.repository
         public async Task<IEnumerable<Langauge>> GetAllLanguageCode()
         {
                 string LangagugeQuery= @"SELECT id, name, code, key, description
-	                                    FROM translation.languages";
+	                                    FROM translation.language";
 
                                         
             var parameter = new DynamicParameters();
@@ -49,7 +49,7 @@ namespace net.atos.daf.ct2.translation.repository
             return LangagugeCodes;
         }
 
-        public async Task<IEnumerable<translations>> GetKeyTranslationByLanguageCode(string langaguecode,string key)
+        public async Task<IEnumerable<Translations>> GetKeyTranslationByLanguageCode(string langaguecode,string key)
         {
                 string LangagugeQuery= @"select  t.id,t.name,t.value,t.type from translation.translation t
                                         where t.code = @langaguecode and t.name = @key";
@@ -58,11 +58,11 @@ namespace net.atos.daf.ct2.translation.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@langaguecode", langaguecode);
                 parameter.Add("@key", key);
-                IEnumerable<translations> translations = await dataAccess.QueryAsync<translations>(LangagugeQuery, parameter);
+                IEnumerable<Translations> translations = await dataAccess.QueryAsync<Translations>(LangagugeQuery, parameter);
                 return translations;
         }
 
-        public async Task<IEnumerable<translations>> GetLangagugeTranslationByKey(string key, string Type)
+        public async Task<IEnumerable<Translations>> GetLangagugeTranslationByKey(string key, string Type)
         {
                 string LangagugeQuery= @"select  t.id,t.name,t.value,t.type from translation.translation t
                                         where 1=1";
@@ -84,11 +84,11 @@ namespace net.atos.daf.ct2.translation.repository
                     }
 
                 parameter.Add("@key", key);
-                IEnumerable<translations> Translations = await dataAccess.QueryAsync<translations>(LangagugeQuery, parameter);
+                IEnumerable<Translations> Translations = await dataAccess.QueryAsync<Translations>(LangagugeQuery, parameter);
                 return Translations;
         }
 
-        public async Task<IEnumerable<translations>> GetTranslationsByMenu(int  MenuId, string type)
+        public async Task<IEnumerable<Translations>> GetTranslationsByMenu(int  MenuId, string type)
         {
                 string LangagugeQuery= @"select tg.id,t.name,t.value,t.type from translation.translation t
                                         inner join translation.translationgrouping tg
@@ -108,11 +108,11 @@ namespace net.atos.daf.ct2.translation.repository
                         LangagugeQuery = LangagugeQuery + " and tg.type  = @type";
 
                     }                      
-                IEnumerable<translations> Translations = await dataAccess.QueryAsync<translations>(LangagugeQuery, parameter);
+                IEnumerable<Translations> Translations = await dataAccess.QueryAsync<Translations>(LangagugeQuery, parameter);
                 var names =  Translations.Where(T=>T.Type == ((char)TranslationType.Dropdown).ToString()).SelectMany(p=> p.Name.Split('_')).Distinct().Where(K=> K[0] == 'd');
                 foreach(var name in names)
                 {
-                    IEnumerable<translations> dropdowntranslation = GetTranslationsForDropDowns(name.Substring(1),"EN-GB") ;
+                    IEnumerable<Translations> dropdowntranslation = GetTranslationsForDropDowns(name.Substring(1),"EN-GB") ;
                     foreach(var item in dropdowntranslation)
                     {
                         Translations.Where(P=>P.Name == item.Name).ToList().ForEach(i=>
@@ -127,7 +127,7 @@ namespace net.atos.daf.ct2.translation.repository
                 return Translations;
         }
 
-        public IEnumerable<translations> GetTranslationsForDropDowns(string Dropdownname, string langagugeid)
+        public IEnumerable<Translations> GetTranslationsForDropDowns(string Dropdownname, string langagugeid)
         {
             try
             {
@@ -142,7 +142,7 @@ namespace net.atos.daf.ct2.translation.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@code", langagugeid);
                 LangagugeQuery = LangagugeQuery + " Where t.code=  @code";
-                IEnumerable<translations> Translations =  dataAccess.Query<translations>(LangagugeQuery,parameter);
+                IEnumerable<Translations> Translations =  dataAccess.Query<Translations>(LangagugeQuery,parameter);
                 return Translations;
             }catch (Exception ex)
             {
