@@ -39,7 +39,7 @@ namespace net.atos.daf.ct2.audit
             {
                 AuditTrail logs = new AuditTrail();
                 logs.Created_at = Created_at;
-                logs.Performed_at = DateTime.Now;
+                logs.Performed_at = Performed_at;
                 logs.Performed_by=Performed_by;
                 logs.Component_name= Component_name;
                 logs.Service_name = Service_name;                
