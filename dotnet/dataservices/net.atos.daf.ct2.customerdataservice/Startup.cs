@@ -100,7 +100,7 @@ namespace net.atos.daf.ct2.customerdataservice
 
             app.UseSwagger(c =>
             {
-                c.RouteTemplate = "customer-data/swagger/v1/swagger.json";
+                c.RouteTemplate = "customer-data/swagger/{document}/swagger.json";
             });
 
 
