@@ -66,10 +66,16 @@ namespace net.atos.daf.ct2.organizationservicerest
             services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();   
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             
+            services.AddCors(c =>  
+            {  
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());  
+            });
+         
             services.AddSwaggerGen(c =>
             {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Organization Service", Version = "v1" });
             });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -83,6 +89,12 @@ namespace net.atos.daf.ct2.organizationservicerest
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseCors(builder => 
+            {
+                builder.WithOrigins("*");
+                builder.AllowAnyMethod();
+                builder.AllowAnyHeader();
+            });  
 
             app.UseAuthorization();
 
@@ -90,6 +102,7 @@ namespace net.atos.daf.ct2.organizationservicerest
             {
                 endpoints.MapControllers();
             });
+            
             app.UseSwagger();
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
