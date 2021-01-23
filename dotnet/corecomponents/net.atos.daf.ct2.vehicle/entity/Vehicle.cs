@@ -11,17 +11,18 @@ namespace net.atos.daf.ct2.vehicle.entity
         public string Name { get; set; }
         public string VIN { get; set; }       
         public string License_Plate_Number { get; set; }
-        public DateTime ManufactureDate { get; set; }
-        public string ChassisNo { get; set; } 
+        //public DateTime ManufactureDate { get; set; }
+        // public string ChassisNo { get; set; } 
         public VehicleStatusType Status { get; set; }
         public DateTime Status_Changed_Date { get; set; }
-        public DateTime Termination_Date { get; set; } 
+        public DateTime ? Termination_Date { get; set; } 
         public bool  IsActive { get; set; }
        // public int Account_Id { get; set; }
        // public OptInOptOutType Type { get; set; } 
-        public VehicleProperty vehicleProperty { get; set; }
-        public List<VehicleOptInOptOut> vehicleOptInOptOut { get; set; }
-
+      //  public VehicleProperty vehicleProperty { get; set; }
+      //  public List<VehicleOptInOptOut> vehicleOptInOptOut { get; set; }
+        public bool IsVehicleGroup { get; set; }
+        public int VehicleCount { get; set; }
         public string Model { get; set; }
         public string Vid { get; set; }
         public VehicleType Type { get; set; }
