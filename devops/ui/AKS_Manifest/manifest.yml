@@ -85,23 +85,3 @@ spec:
     app.kubernetes.io/name: uimanagement
     app.kubernetes.io/type: frontend
   
----
-kind: HorizontalPodAutoscaler 
-apiVersion: autoscaling/v2beta1 
-metadata: 
-  name: uimanagement-hpa
-  labels:
-    hpa.kubernetes.io/name: uimanagement
-    hpa.kubernetes.io/type: frontend 
-spec: 
-  maxReplicas: 5 
-  minReplicas: 2
-  scaleTargetRef: 
-    apiVersion: apps/v1 
-    kind: Deployment 
-    name: uimanagement-deployment 
-  metrics: 
-  - type: Resource 
-    resource: 
-      name: cpu 
-      targetAverageUtilization: 70
