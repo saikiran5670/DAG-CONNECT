@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -111,15 +110,7 @@ namespace net.atos.daf.ct2.identity
                             client = new HttpClient();
                             client = PrepareClientHeader(token.access_token);
                             var contentData = new StringContent(GetUserBody(user,keycloakUserId,actionType),System.Text.Encoding.UTF8, "application/json");
-                            HttpResponseMessage httpResponse = new HttpResponseMessage();
-                            if(actionType=="UPDATE" || actionType=="DELETE")
-                            {
-                                httpResponse = client.PutAsync(_settings.UserMgmUrl.Replace("{{realm}}",_settings.Realm) +"/"+keycloakUserId,contentData).Result;
-                            }
-                            if(actionType=="CHANGEPASSWORD")
-                            {
-                                httpResponse = client.PutAsync(_settings.UserMgmUrl.Replace("{{realm}}",_settings.Realm) +"/"+keycloakUserId +"/"+"reset-password",contentData).Result;
-                            }
+                            HttpResponseMessage httpResponse = client.PutAsync(_settings.UserMgmUrl.Replace("{{realm}}",_settings.Realm) +"/"+keycloakUserId +"/"+"reset-password",contentData).Result;
                             if(httpResponse.IsSuccessStatusCode && httpResponse.StatusCode == System.Net.HttpStatusCode.NoContent)
                             {
                                 objResponse.StatusCode=httpResponse .StatusCode;
@@ -183,88 +174,58 @@ namespace net.atos.daf.ct2.identity
             client = PrepareClientHeader(accesstoken);            
             return await client.GetAsync(_settings.UserMgmUrl.Replace("{{realm}}",_settings.Realm) + "?username=" + user.UserName);
         }
-               
         private string GetUserBody(Identity user, string keycloakUserid = null, string actiontype="")
         {
-            string stringData = string.Empty;
+            StringBuilder stringData = new StringBuilder();
+            stringData.Append("{");
             switch(actiontype.ToUpper())
             {
                 case "INSERT":  
-                                keycloakCreateUserModel modelCreate= new keycloakCreateUserModel ();
-                                modelCreate.username=user.UserName;
-                                modelCreate.email=user.EmailId;
-                                modelCreate.firstName=user.FirstName;
-                                modelCreate.lastName=user.LastName;
-                                modelCreate.enabled=true;
-                                
-                                keycloakPwdChangeModel modelChangePwd = new keycloakPwdChangeModel();
-                                modelChangePwd.type="password";
+                                stringData.Append("\"username\": \"" + user.UserName + "\",");
+                                stringData.Append("\"email\": \"" + user.EmailId + "\",");
+                                stringData.Append("\"firstName\": \"" + user.FirstName+ "\",");
+                                stringData.Append("\"lastName\": \"" + user.LastName+ "\"," );
+                                stringData.Append("\"enabled\": \"true\"");       
                                 if(!string.IsNullOrEmpty(user.Password))
-                                {
-                                    modelChangePwd.value=user.Password;
+                                {         
+                                    stringData.Append(",");
+                                    stringData.Append("\"credentials\": [");
+                                    stringData.Append("{");
+                                    stringData.Append("\"type\": \"password\",");
+                                    stringData.Append("\"value\": \"" + user.Password + "\"");
+                                    stringData.Append("}");
+                                    stringData.Append("]");
                                 }
-                                else 
-                                {
-                                    modelChangePwd.value="123456";
-                                }
-                                modelChangePwd.temporary=false;
-                                List<keycloakPwdChangeModel> pwdList= new List<keycloakPwdChangeModel>();
-                                pwdList.Add(modelChangePwd);
-                                modelCreate.credentials=pwdList;
-                                stringData= JsonConvert.SerializeObject(modelCreate,Formatting.Indented); 
+                                // stringData.Append(",");
+                                // stringData.Append("\"attributes\": [");
+                                // stringData.Append("{");
+                                // stringData.Append("\"dafroles\": \"" + userModel.dafroles + "\""  );
+                                // stringData.Append("}");
+                                // stringData.Append("]");
                                 break;
                 case "UPDATE":  
-                                keycloakUpdateUserModel  modelUpdate= new keycloakUpdateUserModel();
-                                modelUpdate.id=keycloakUserid;
-                                // modelCreate.EmailId=user.EmailId;
-                                modelUpdate.firstName=user.FirstName;
-                                modelUpdate.lastName=user.LastName;
-                                // modelUpdate.enabled=true;
-                                stringData=JsonConvert.SerializeObject(modelUpdate,Formatting.Indented); 
+                                stringData.Append("\"id\": \"" + keycloakUserid + "\",");
+                                stringData.Append("\"firstName\": \"" + user.FirstName+ "\",");
+                                stringData.Append("\"lastName\": \"" + user.LastName+ "\"" );
+                                // stringData.Append(",");
+                                // stringData.Append("\"attributes\": [");
+                                // stringData.Append("{");
+                                // stringData.Append("\"dafroles\": \"" + userModel.dafroles + "\""  );
+                                // stringData.Append("}");
+                                // stringData.Append("]");
                                 break;
                 case "DELETE":  
-                                keycloakDeleteUserModel  modelDelete= new keycloakDeleteUserModel();
-                                modelDelete.id= keycloakUserid;
-                                modelDelete.enabled=false;
-                                // modelCreate.EmailId=user.EmailId;
-                                // modelUpdate.FirstName=user.FirstName;
-                                // modelUpdate.LastName=user.LastName;
-                                stringData=JsonConvert.SerializeObject(modelDelete,Formatting.Indented); 
+                                stringData.Append("\"id\": \"" + keycloakUserid + "\",");
+                                stringData.Append("\"enabled\": \"false\"");                
                                 break;
                 case "CHANGEPASSWORD":  
-                                keycloakPwdChangeModel modelUserChangePwd = new keycloakPwdChangeModel();
-                                modelUserChangePwd.type="password";
-                                modelUserChangePwd.value=user.Password;
-                                modelUserChangePwd.temporary=false;
-                                stringData=JsonConvert.SerializeObject(modelUserChangePwd,Formatting.Indented);
+                                stringData.Append("\"type\":\"password\""+",");
+                                stringData.Append("\"value\":\"" + user.Password + "\"" + ",");
+                                stringData.Append("\"temporary\": false");
                                 break;
             } 
-            return stringData;
+            stringData.Append("}");
+            return stringData.ToString();
         }
-
-                         
-    }
-    public class keycloakPwdChangeModel    
-    {
-        public string type { get; set; } 
-        public string value { get; set; } 
-        public bool temporary { get; set; } 
-    }
-    public class keycloakCreateUserModel {
-        public string username { get; set; } 
-        public string email { get; set; } 
-        public string firstName { get; set; } 
-        public string lastName { get; set; } 
-        public bool enabled { get; set; } 
-        public List<keycloakPwdChangeModel> credentials { get; set; } 
-    }
-	public class keycloakUpdateUserModel {
-        public string id { get; set; } 
-        public string firstName { get; set; } 
-        public string lastName { get; set; } 
-    }
-    public class keycloakDeleteUserModel {
-        public string id { get; set; } 
-        public bool enabled { get; set; } 
     }
 }

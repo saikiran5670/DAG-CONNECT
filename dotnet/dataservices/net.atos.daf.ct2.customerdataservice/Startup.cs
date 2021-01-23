@@ -91,11 +91,23 @@ namespace net.atos.daf.ct2.customerdataservice
             {
                 endpoints.MapControllers();
             });
-            app.UseSwagger();
+            /*app.UseSwagger();
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-               c.SwaggerEndpoint("/customer-data/swagger/v1/swagger.json", "Customer Data Service V1");
+               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer Data Service V1");
+            });*/
+
+            app.UseSwagger(c =>
+            {
+                c.RouteTemplate = "customer-data/swagger/v1/swagger.json";
+            });
+
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/customer-data/swagger/v1/swagger.json", "Customer Data Service V1");
+                //c.RoutePrefix = "customer-data/swagger";
             });
         }
     }

@@ -1,7 +1,7 @@
 using net.atos.daf.ct2.audit;
-using System;
+using System.Linq;
 using System.Collections.Generic;
-using System.Text;
+using System;
 using System.Threading.Tasks;
 using Identity = net.atos.daf.ct2.identity;
 using IdentityEntity = net.atos.daf.ct2.identity.entity;
@@ -26,11 +26,16 @@ namespace net.atos.daf.ct2.account
             // create user in identity
             IdentityEntity.Identity identityEntity = new IdentityEntity.Identity();
             identityEntity.UserName = account.EmailId;
+            identityEntity.EmailId = account.EmailId;            
             identityEntity.FirstName = account.FirstName;
             identityEntity.LastName = account.LastName;
+
+            //TODO: If created in IDP, but have exception while create in DB.
             var identityresult = await identity.CreateUser(identityEntity);
+
             if (identityresult.StatusCode == System.Net.HttpStatusCode.Created)
             {
+                // if this fails
                 account = await repository.Create(account);
             }
             else // there is issues and need delete user from IDP. 
@@ -39,13 +44,37 @@ namespace net.atos.daf.ct2.account
                 if (identityresult.StatusCode == System.Net.HttpStatusCode.Conflict)
                 {
                     account.isDuplicate = true;
+                    // get account by email , if not exists in DB-- create it
+                    AccountFilter filter = new AccountFilter();
+                    filter.Email = account.EmailId;
+                    filter.OrganizationId =0 ;        
+                    filter.AccountType = AccountType.None;
+                    filter.AccountIds = string.Empty;
+                    filter.Name = string.Empty;
+                    var result = await repository.Get(filter);
+                    var accountGet = result.FirstOrDefault();
+                    if (accountGet == null)
+                    {
+                        account = await repository.Create(account);
+                    }
+                    // else 
+                    // {
+                    //     if ( Convert.ToInt32(accountGet.Id) <=0 )
+                    //     {
+                    //         account = await repository.Create(account);
+                    //     }
+                    // }
                 }
                 // inter server error in IDP.
-                if (identityresult.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+                else if (identityresult.StatusCode == System.Net.HttpStatusCode.InternalServerError)
                 {
                     account.isError = true;
                 }
-                identityresult = await identity.DeleteUser(identityEntity);
+                else if (identityresult.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    account.isError = true;
+                }
+                //identityresult = await identity.DeleteUser(identityEntity);
                 if (identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
                     // check to handle message
@@ -58,6 +87,7 @@ namespace net.atos.daf.ct2.account
             // create user in identity
             IdentityEntity.Identity identityEntity = new IdentityEntity.Identity();
             identityEntity.UserName = account.EmailId;
+            //identityEntity.EmailId = account.EmailId;    
             identityEntity.FirstName = account.FirstName;
             identityEntity.LastName = account.LastName;
             var identityresult = await identity.UpdateUser(identityEntity);
@@ -74,8 +104,9 @@ namespace net.atos.daf.ct2.account
             // create user in identity
             IdentityEntity.Identity identityEntity = new IdentityEntity.Identity();
             identityEntity.UserName = account.EmailId;
-            identityEntity.FirstName = account.FirstName;
-            identityEntity.LastName = account.LastName;
+            // identityEntity.EmailId = account.EmailId;
+            // identityEntity.FirstName = account.FirstName;
+            // identityEntity.LastName = account.LastName;
             var identityresult = await identity.DeleteUser(identityEntity);
             if (identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
@@ -89,11 +120,12 @@ namespace net.atos.daf.ct2.account
             // create user in identity
             IdentityEntity.Identity identityEntity = new IdentityEntity.Identity();
             identityEntity.UserName = account.EmailId;
-            identityEntity.FirstName = account.FirstName;
-            identityEntity.LastName = account.LastName;
+            //identityEntity.EmailId = account.EmailId;
+            // identityEntity.FirstName = account.FirstName;
+            // identityEntity.LastName = account.LastName;
             identityEntity.Password = account.Password;
             var identityresult = await identity.ChangeUserPassword(identityEntity);
-            if (identityresult.StatusCode == System.Net.HttpStatusCode.OK)
+            if (identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
                 result = true;
             }

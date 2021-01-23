@@ -13,6 +13,9 @@ using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
+using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
+
 
 namespace net.atos.daf.ct2.translationservicerest
 {
@@ -29,6 +32,8 @@ namespace net.atos.daf.ct2.translationservicerest
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+<<<<<<< HEAD
+=======
             var connectionString= "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             // Identity configuration
@@ -36,6 +41,17 @@ namespace net.atos.daf.ct2.translationservicerest
             
             services.AddTransient<ITranslationManager, TranslationManager>();
              services.AddTransient<ITranslationRepository, TranslationRepository>();
+
+            services.AddCors(c =>  
+            {  
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());  
+            });
+             services.AddSwaggerGen(c =>
+            {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Translation Service", Version = "v1" });
+            });
+
+>>>>>>> cbf30a3006b9eadcf71b791c4051467ab5e916cf
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,8 +62,14 @@ namespace net.atos.daf.ct2.translationservicerest
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseSwagger();
             app.UseHttpsRedirection();
-
+             app.UseCors(builder => 
+            {
+                builder.WithOrigins("*");
+                builder.AllowAnyMethod();
+                builder.AllowAnyHeader();
+            });  
             app.UseRouting();
 
             app.UseAuthorization();
@@ -56,6 +78,12 @@ namespace net.atos.daf.ct2.translationservicerest
             {
                 endpoints.MapControllers();
             });
+
+            app.UseSwaggerUI(c =>
+            {
+               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Translation Service V1");
+            });
+
         }
     }
 }

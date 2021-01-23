@@ -21,11 +21,6 @@ namespace net.atos.daf.ct2.translationservicerest
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                }).ConfigureLogging(builder =>
-                        {
-                            builder.SetMinimumLevel(LogLevel.Trace);
-                            builder.AddLog4Net("log4net.config");
-                        });
-
+                });
     }
 }
