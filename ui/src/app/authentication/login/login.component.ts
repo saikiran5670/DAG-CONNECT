@@ -46,8 +46,8 @@ export class LoginComponent implements OnInit {
   public onLogin(values: Object) {
     if (this.loginForm.valid) {
       //console.log("values:: ", values)
-      /* this.authService.signIn(this.loginForm.value).subscribe((data:any) => {
-         console.log("data:: ", data)
+       this.authService.signIn(this.loginForm.value).subscribe((data:any) => {
+         //console.log("data:: ", data)
          if(data.status === 200){
            this.invalidUserMsg = false;
             //this.cookiesFlag = true;
@@ -55,17 +55,19 @@ export class LoginComponent implements OnInit {
          }
        },
        (error)=> {
-         console.log("Error: " + error);
-       }) */
+          console.log("Error: " + error);
+          this.invalidUserMsg = true;
+          //this.cookiesFlag = false;
+        }) 
 
        //--------- For Mock------//
-       if(this.loginForm.value.username === 'testuser@atos.net' && this.loginForm.value.password === '123456'){
-        this.invalidUserMsg = false;
-        this.acceptCookies();
-       }
-       else{
-        this.invalidUserMsg = true;
-       }
+      //  if(this.loginForm.value.username === 'testuser@atos.net' && this.loginForm.value.password === '123456'){
+      //   this.invalidUserMsg = false;
+      //   this.acceptCookies();
+      //  }
+      //  else{
+      //   this.invalidUserMsg = true;
+      //  }
        //------------------------//
     }
   }
