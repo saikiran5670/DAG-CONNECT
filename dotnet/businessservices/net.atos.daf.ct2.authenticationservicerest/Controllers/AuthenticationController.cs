@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
             {
                 if (!string.IsNullOrEmpty(Request.Headers["Authorization"]))  
                 {  
-                var authHeader = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");  
+                var authHeader = Request.Headers["Authorization"].ToString().Replace("Basic ", "");  
                 var identity = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(authHeader));
                 var arrUsernamePassword = identity.Split(':');  
                 if(string.IsNullOrEmpty(arrUsernamePassword[0]))
@@ -53,13 +53,13 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                     {
                         if(response.AccountToken==null)
                         {
-                            return StatusCode(404,"Account is not configured.");
+                            return StatusCode(401,"Account is not configured.");
                         }
                         return Ok(response);
                     }
                     else 
                     {
-                        return StatusCode(404,"Account is not configured.");
+                        return StatusCode(401,"Account is not configured.");
                     }
                 }
             }
@@ -121,7 +121,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                     }
                     else 
                     {
-                        return StatusCode(404,"Account is not configured.");
+                        return StatusCode(401,"Account is not configured.");
                     }
                 }
             }
