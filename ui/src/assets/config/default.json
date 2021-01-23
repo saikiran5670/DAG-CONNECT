@@ -1,7 +1,7 @@
 {
     "authentication": {
       "loginUrl": "http://51.124.52.90/api",
-      "authRESTServiceURL": "http://51.124.138.94"
+      "authRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#"
     },
     "foundationServices": {
       "userServiceUrl": "http://localhost:3000",
