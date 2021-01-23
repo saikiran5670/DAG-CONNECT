@@ -68,7 +68,7 @@ namespace net.atos.daf.ct2.organizationservicerest
             
             services.AddSwaggerGen(c =>
             {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Customer Data Service", Version = "v1" });
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Organization Service", Version = "v1" });
             });
         }
 
@@ -94,7 +94,7 @@ namespace net.atos.daf.ct2.organizationservicerest
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer Data Service V1");
+               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Organization Service V1");
             });
         }
     }
