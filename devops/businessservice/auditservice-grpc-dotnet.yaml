@@ -35,7 +35,7 @@ variables:
 steps:
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/commonservices/net.atos.daf.ct2.auditservice/appsettings.json'
+    targetFiles: 'dotnet/commonservices/net.atos.daf.ct2.auditservicerest/appsettings.json'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -49,7 +49,7 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/commonservices/net.atos.daf.ct2.auditservice/appsettings.json
+      cat dotnet/commonservices/net.atos.daf.ct2.auditservicerest/appsettings.json
   condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01')
 
 - task: Docker@0
@@ -57,7 +57,7 @@ steps:
   inputs:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
-    dockerFile: dotnet/AuditService_Dockerfile
+    dockerFile: dotnet/AuditServiceRest_Dockerfile
     imageName: auditservice
   condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01')
 
