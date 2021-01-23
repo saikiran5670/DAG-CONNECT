@@ -16,7 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginatorIntl, MatPaginatorModule,MatPaginator } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
@@ -41,9 +41,10 @@ import { MaterialFileInputModule } from 'ngx-material-file-input';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { CommonFilterComponent } from './common-filter/common-filter.component';
 import { RemoveDuplicatesPipe } from './pipes/remove-duplicates.pipe';
+import { CustomPaginationComponent } from './custom-pagination/custom-pagination.component';
 
 @NgModule({
-  declarations: [CommonFilterComponent, RemoveDuplicatesPipe],
+  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, CustomPaginationComponent],
   imports: [
     CommonModule,
     FlexLayoutModule,
@@ -127,7 +128,8 @@ import { RemoveDuplicatesPipe } from './pipes/remove-duplicates.pipe';
     DragDropModule,
     MaterialFileInputModule,
     CommonFilterComponent,
-    RemoveDuplicatesPipe
-  ]
+    RemoveDuplicatesPipe,
+  ],
+  providers: [{ provide: MatPaginatorIntl, useClass: CustomPaginationComponent}],
 })
 export class SharedModule { }
