@@ -16,6 +16,8 @@ import java.util.Date;
 @AllArgsConstructor
 public class Monitor implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty(value = "receivedTimestamp")
     private Long receivedTimestamp;
     @JsonProperty(value = "storedTimestamp")

@@ -13,6 +13,8 @@ import java.util.Date;
 @AllArgsConstructor
 public class ROEventData  implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty(value = "Network_Cell")
     private String networkCell;
     @JsonProperty(value = "Network_RSSI")

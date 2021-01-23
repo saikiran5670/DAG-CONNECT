@@ -12,6 +12,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ROEvent  implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty(value = "ROEvtTimestamp")
     private Integer roEvtTimestamp;
     @JsonProperty(value = "ROEvtID")

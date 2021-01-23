@@ -13,6 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 public class MonitorDocument implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty(value = "VEvtCause")
     private Integer vEvtCause;
     @JsonProperty(value = "VEvtExtraInfo")

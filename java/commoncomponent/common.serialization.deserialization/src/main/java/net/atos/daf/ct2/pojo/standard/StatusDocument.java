@@ -12,6 +12,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class StatusDocument implements Serializable {
 
+  private static final long serialVersionUID = 1L;
+
   @JsonProperty(value = "VEvtCause")
   private Integer vEvtCause;
 

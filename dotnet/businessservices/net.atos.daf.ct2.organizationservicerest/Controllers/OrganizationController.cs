@@ -67,13 +67,13 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                      return StatusCode(400,"Please provide organization name:");
                 }
                 var OrgId= await organizationtmanager.Create(organization);   
-                return Ok("Organization Created :"+OrgId);      
+                return Ok("Organization Created :");      
              }
             catch(Exception ex)
             {
                  logger.LogError(ex.Message +" " +ex.StackTrace);
-                //return StatusCode(500,"Internal Server Error.");
-                return StatusCode(500,ex.Message +" " +ex.StackTrace);
+                 return StatusCode(500,"Internal Server Error.");
+                //return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }   
         } 
 
@@ -89,13 +89,13 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                      return StatusCode(400,"Please provide organization ID:");
                 }
                 var OrgId= await organizationtmanager.Update(organization);   
-                return Ok("Organization updated :"+OrgId);    
+                return Ok("Organization updated :");    
              }
             catch(Exception ex)
             {         
                 logger.LogError(ex.Message +" " +ex.StackTrace);
-                //return StatusCode(500,"Internal Server Error.");
-                return StatusCode(500,ex.Message +" " +ex.StackTrace);
+                return StatusCode(500,"Internal Server Error.");
+                //return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }           
         }       
 
@@ -116,8 +116,8 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             catch(Exception ex)
             {            
                 logger.LogError(ex.Message +" " +ex.StackTrace);
-                //return StatusCode(500,"Internal Server Error.");
-                return StatusCode(500,ex.Message +" " +ex.StackTrace);
+                return StatusCode(500,"Internal Server Error.");
+                //return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }   
         }     
      

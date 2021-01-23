@@ -32,7 +32,7 @@ pool: $(PRIVATEAGENT)
 steps:
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.vehicleservice/appsettings.json'
+    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.vehicleservicerest/appsettings.json'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -45,13 +45,13 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/businessservices/net.atos.daf.ct2.vehicleservice/appsettings.json
+      cat dotnet/businessservices/net.atos.daf.ct2.vehicleservicerest/appsettings.json
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
-    dockerFile: dotnet/VehicleService_Dockerfile
+    dockerFile: dotnet/VehicleServiceRest_Dockerfile
     imageName: vehicleservice
 
 - task: Docker@0
