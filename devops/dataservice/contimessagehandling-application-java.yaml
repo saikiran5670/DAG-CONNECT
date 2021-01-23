@@ -1,0 +1,110 @@
+
+trigger:
+- none
+
+parameters:
+- name: ENV
+  displayName: ENV
+  type: string
+  default: DEV0
+  values:
+  - DEV0
+  - DEV01
+  - DEV02
+  - TEST01
+
+pool: $(PRIVATEAGENT)
+
+variables:
+- ${{ if eq(parameters.ENV, 'DEV0') }}:
+  - group: DEV0-Build-Variables
+- ${{ if eq(parameters.ENV, 'DEV01') }}:
+  - group: DEV01-Build-Variables
+- ${{ if eq(parameters.ENV, 'DEV02') }}:
+  - group: DEV02-Build-Variables
+- ${{ if eq(parameters.ENV, 'TEST01') }}:
+  - group: TEST01-Build-Variables
+
+jobs:
+- job: Build
+  steps:
+    - task: Maven@3
+      displayName: 'Maven java/commoncomponent/common.serialization.deserialization/pom.xml'
+      inputs:
+        mavenPomFile: java/commoncomponent/common.serialization.deserialization/pom.xml
+        publishJUnitResults: false
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder: '$(system.defaultworkingdirectory)'
+        Contents: '**/*.jar'
+        TargetFolder: '$(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/streaming.masterdata.messages/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/streaming.masterdata.messages/pom.xml
+        publishJUnitResults: false
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder: '$(system.defaultworkingdirectory)'
+        Contents: '**/*.jar'
+        TargetFolder: '$(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/streaming.conti.messages/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/streaming.conti.messages/pom.xml
+        publishJUnitResults: false
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder: '$(system.defaultworkingdirectory)'
+        Contents: '**/*.jar'
+        TargetFolder: '$(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/sinking.externally.messages/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/sinking.externally.messages
+        publishJUnitResults: false
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder: '$(system.defaultworkingdirectory)'
+        Contents: '**/*.jar'
+        TargetFolder: '$(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
+    
