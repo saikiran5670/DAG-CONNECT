@@ -39,14 +39,14 @@ jobs:
       inputs:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/*.jar'
-        TargetFolder: '$(build.artifactstagingdirectory)'
+        TargetFolder: '/home/adminroot/.m2/repository/net/atos/daf.common/0.0.1'
         CleanTargetFolder: true
       condition: succeededOrFailed()
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: drop'
       inputs:
-        PathtoPublish: '$(build.artifactstagingdirectory)'
+        PathtoPublish: '/home/adminroot/.m2/repository/net/atos/daf.common/0.0.1'
       condition: succeededOrFailed()
     - task: Maven@3
       displayName: 'Maven java/commoncomponent/common.serialization.deserialization/pom.xml'
