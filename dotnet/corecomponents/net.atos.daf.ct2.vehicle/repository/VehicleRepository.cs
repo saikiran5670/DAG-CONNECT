@@ -83,7 +83,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@status", (char)VehicleStatusType.OptIn);
             }
             parameter.Add("@status_changed_date", (vehicle.Status_Changed_Date != null && DateTime.Compare(DateTime.MinValue, vehicle.Status_Changed_Date) > 0) ? UTCHandling.GetUTCFromDateTime(vehicle.Status_Changed_Date.ToString()) : 0);
-            parameter.Add("@termination_date", (vehicle.Termination_Date != null && DateTime.Compare(DateTime.MinValue, vehicle.Termination_Date) > 0)  ? UTCHandling.GetUTCFromDateTime(vehicle.Termination_Date.ToString()) : 0);
+            parameter.Add("@termination_date", vehicle.Termination_Date != null  ? UTCHandling.GetUTCFromDateTime(vehicle.Termination_Date.ToString()) : (long ?)null);
             parameter.Add("@vid", vehicle.Vid);
             parameter.Add("@type", (char)vehicle.Type);
             parameter.Add("@model", vehicle.Model);
@@ -92,7 +92,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@tcu_brand", vehicle.Tcu_Brand);
             parameter.Add("@tcu_version", vehicle.Tcu_Version);
             parameter.Add("@is_tcu_register", vehicle.Is_Tcu_Register);
-            parameter.Add("@reference_date", (vehicle.Reference_Date != null && DateTime.Compare(DateTime.MinValue, vehicle.Termination_Date) > 0)  ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : 0);
+            parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : (long ?)null);
            
             parameter.Add("@id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
             int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
@@ -200,7 +200,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         public async Task<Vehicle> Update(Vehicle vehicle)
         {
-            if (vehicle.Tcu_Id == null || vehicle.Tcu_Id.Length == 0)
+            if (vehicle.Tcu_Id == null || vehicle.Tcu_Id.Length == 0 || vehicle.Tcu_Id == "string" )
             {
                 var QueryStatement = @" UPDATE master.vehicle
                                         SET 
@@ -279,10 +279,10 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
 
             parameter.Add("@status", (char)vehicleOptInOptOut.Status);
-            parameter.Add("@status_changed_date", vehicleOptInOptOut.Date != null ? UTCHandling.GetUTCFromDateTime(vehicleOptInOptOut.Date) : 0);
+            parameter.Add("@status_changed_date", vehicleOptInOptOut.Date != null ? UTCHandling.GetUTCFromDateTime(vehicleOptInOptOut.Date.ToString()) : 0);
             if(vehicleOptInOptOut.Status.ToString()==VehicleStatusType.Terminate.ToString())
             {
-            parameter.Add("@termination_date", vehicleOptInOptOut.Date != null ? UTCHandling.GetUTCFromDateTime(vehicleOptInOptOut.Date) : 0);
+            parameter.Add("@termination_date", vehicleOptInOptOut.Date != null ? UTCHandling.GetUTCFromDateTime(vehicleOptInOptOut.Date.ToString()) : 0);
             }
             else
             {
@@ -309,7 +309,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 OptInOptOutparameter.Add("@ref_id", vehicleOptInOptOut.RefId);
                 OptInOptOutparameter.Add("@account_id", vehicleOptInOptOut.AccountId);
                 OptInOptOutparameter.Add("@status", (char)vehicleOptInOptOut.Status);
-                OptInOptOutparameter.Add("@status_changed_date", vehicleOptInOptOut.Date != null ? UTCHandling.GetUTCFromDateTime(vehicleOptInOptOut.Date) : 0);
+                OptInOptOutparameter.Add("@status_changed_date", vehicleOptInOptOut.Date != null ? UTCHandling.GetUTCFromDateTime(vehicleOptInOptOut.Date.ToString()) : 0);
                 OptInOptOutparameter.Add("@type", (char)vehicleOptInOptOut.Type);
 
                 int Id = await dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, OptInOptOutparameter);
