@@ -40,6 +40,7 @@ jobs:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
+        CleanTargetFolder: true
       condition: succeededOrFailed()
 
     - task: PublishBuildArtifacts@1
@@ -60,6 +61,7 @@ jobs:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
+        CleanTargetFolder: true
       condition: succeededOrFailed()
 
     - task: PublishBuildArtifacts@1
@@ -80,6 +82,7 @@ jobs:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
+        CleanTargetFolder: true
       condition: succeededOrFailed()
 
     - task: PublishBuildArtifacts@1
@@ -100,6 +103,7 @@ jobs:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
+        CleanTargetFolder: true
       condition: succeededOrFailed()
 
     - task: PublishBuildArtifacts@1
