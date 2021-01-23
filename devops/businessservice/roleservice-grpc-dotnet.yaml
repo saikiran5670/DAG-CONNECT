@@ -32,7 +32,7 @@ variables:
 steps:
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.roleservice/appsettings.json'
+    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.roleservicerest/appsettings.json'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -45,14 +45,14 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/businessservices/net.atos.daf.ct2.roleservice/appsettings.json
+      cat dotnet/businessservices/net.atos.daf.ct2.roleservicerest/appsettings.json
 
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
-    dockerFile: dotnet/RoleService_Dockerfile
+    dockerFile: dotnet/RoleServiceRest_Dockerfile
     imageName: roleservice
 
 - task: Docker@0
