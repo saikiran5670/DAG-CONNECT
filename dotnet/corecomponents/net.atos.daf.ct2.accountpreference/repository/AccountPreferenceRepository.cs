@@ -68,12 +68,11 @@ namespace net.atos.daf.ct2.accountpreference
                 parameter.Add("@landing_page_display_id", preference.LandingPageDisplayId);
                 parameter.Add("@driver_id", preference.DriverId);
 
-                var query = @"update master.accountpreference set ref_id=@ref_id,language_id=@language_id,
-                            timezone_id=@timezone_id, currency_id=@currency_id,unit_id=@unit_id,
+                var query = @"update master.accountpreference set language_id=@language_id,
+                            timezone_id=@timezone_id,currency_id=@currency_id,unit_id=@unit_id,
                             vehicle_display_id=@vehicle_display_id,
                             date_format_id=@date_format_id,is_active=true,time_format_id=@time_format_id,landing_page_display_id=@landing_page_display_id
-	                                WHERE id = @id and type=@type
-                                    RETURNING id;";
+	                         WHERE ref_id=@ref_id and type=@type RETURNING id;";
                 var Id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
             catch (Exception ex)
