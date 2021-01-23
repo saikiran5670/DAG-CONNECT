@@ -43,7 +43,7 @@ spec:
           mountPath: /tmp
         securityContext:
           allowPrivilegeEscalation: false
-          #readOnlyRootFilesystem: true
+          readOnlyRootFilesystem: true
           capabilities:
             drop:
              - all
