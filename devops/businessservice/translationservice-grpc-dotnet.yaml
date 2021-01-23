@@ -1,0 +1,65 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- none
+
+parameters:
+- name: ENV
+  displayName: ENV
+  type: string
+  default: DEV0
+  values:
+  - DEV0
+  - DEV01
+  - DEV02
+  - TEST01
+
+pool: $(PRIVATEAGENT)
+
+variables:
+- ${{ if eq(parameters.ENV, 'DEV0') }}:
+  - group: DEV0-Build-Variables
+- ${{ if eq(parameters.ENV, 'DEV01') }}:
+  - group: DEV01-Build-Variables
+- ${{ if eq(parameters.ENV, 'DEV02') }}:
+  - group: DEV02-Build-Variables
+- ${{ if eq(parameters.ENV, 'TEST01') }}:
+  - group: TEST01-Build-Variables
+  
+steps:
+- task: replacetokens@3
+  inputs:
+    targetFiles: 'dotnet/commonservices/net.atos.daf.ct2.translationservicerest/appsettings.json'
+    encoding: 'auto'
+    writeBOM: true
+    actionOnMissing: 'warn'
+    keepToken: false
+    tokenPrefix: '#{'
+    tokenSuffix: '}#'
+    useLegacyPattern: false
+    enableTelemetry: true
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      cat dotnet/commonservices/net.atos.daf.ct2.translationservicerest/appsettings.json
+
+- task: Docker@0
+  displayName: 'Build an image'
+  inputs:
+    azureSubscription:  $(Subscription)
+    azureContainerRegistry: $(ContainerRegistry)
+    dockerFile: dotnet/TranslationServiceRest_Dockerfile
+    imageName: translationservice
+
+- task: Docker@0
+  displayName: 'Push an image'
+  inputs:
+    azureSubscription: $(Subscription)
+    azureContainerRegistry: $(ContainerRegistry)
+    action: 'Push an image'
+    imageName: translationservice
+
