@@ -7,12 +7,12 @@ import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 
 export interface Organization {
-  value: string;
-  viewValue: string;
+  id: number ;
+  name: string;
 }
 export interface Role {
-  value: string;
-  viewValue: string;
+  id: number;
+  name: string;
 }
 
 @Component({
@@ -32,11 +32,11 @@ export class LoginComponent implements OnInit {
 
   constructor(public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog) {
     this.loginForm = this.fb.group({
-      'username': [null, Validators.compose([Validators.required])],
+      'username': [null, Validators.compose([Validators.required, Validators.email])],
       'password': [null, Validators.compose([Validators.required, Validators.minLength(6)])]
     });
     this.forgotPasswordForm = this.fb.group({
-      'email': [null, Validators.compose([Validators.required])]
+      'email': [null, Validators.compose([Validators.required, Validators.email])]
     });
   }
 
@@ -51,8 +51,11 @@ export class LoginComponent implements OnInit {
          if(data.status === 200){
            this.invalidUserMsg = false;
             //this.cookiesFlag = true;
-            this.showOrganizationPopup();
+            this.showOrganizationRolePopup(data.body);
          }
+         else if(data.status === 401){
+          this.invalidUserMsg = true;
+        }
        },
        (error)=> {
           console.log("Error: " + error);
@@ -83,19 +86,29 @@ export class LoginComponent implements OnInit {
     this.cookiesFlag = false;
   }
 
-  public showOrganizationPopup() {
-    let organization: Organization[] = [
-      { value: 'daf-0', viewValue: 'DAF Connect' },
-      { value: 'conti-1', viewValue: 'Conti' },
-      { value: 'daf-2', viewValue: 'DAF CT 2.0' }
-    ];
+  public showOrganizationRolePopup(data: any) {
+    data.accountOrganization = [
+    {
+      id: 10,
+      name: "DAF CONNECT"
+    },
+    {
+      id: 35,
+      name: "ATOS"
+    }];
 
-    let role: Role[] = [
-      { value: 'fleetadmin-0', viewValue: 'Fleet Admin' },
-      { value: 'fleetmanager-1', viewValue: 'Fleet Manager' },
-      { value: 'user-2', viewValue: 'Fleet User' }
-    ];
+    data.accountRole = [
+    {
+      id: 10,
+      name: "Fleet Admin"
+    },
+    {
+      id: 35,
+      name: "Fleet Execute"
+    }];
 
+    let organization: Organization[] = data.accountOrganization;
+    let role: Role[] = data.accountRole;
     const options = {
       title: 'Welcome to DAF Connect Mr. John Rutherford',
       cancelText: 'Cancel',
@@ -103,10 +116,6 @@ export class LoginComponent implements OnInit {
       organization: organization,
       role: role
     };
-    this.loginPopupOpen(options);
-  }
-
-  public loginPopupOpen(options: any) {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;

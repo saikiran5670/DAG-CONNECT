@@ -17,8 +17,8 @@
             <mat-label>Select Organization</mat-label>
             <mat-form-field appearance="outline" class="full-width">
               <mat-select formControlName="organization">
-                <mat-option *ngFor="let org of data.organization" [value]="org.value">
-                  {{org.viewValue}}
+                <mat-option *ngFor="let org of data.organization" [value]="org.name">
+                  {{ org.name }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -33,8 +33,8 @@
             <mat-label>Select Role</mat-label>
             <mat-form-field appearance="outline" class="full-width">
               <mat-select formControlName="role">
-                <mat-option *ngFor="let role of data.role" [value]="role.value">
-                  {{role.viewValue}}
+                <mat-option *ngFor="let role of data.role" [value]="role.name">
+                  {{ role.name }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
