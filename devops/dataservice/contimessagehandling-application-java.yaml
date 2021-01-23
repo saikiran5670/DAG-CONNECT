@@ -57,7 +57,7 @@ jobs:
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
       inputs:
-        SourceFolder: '$(system.defaultworkingdirectory)'
+        SourceFolder: '$(system.defaultworkingdirectory)/java/commoncomponent/common.serialization.deserialization/target'
         Contents: '**/*.jar'
         TargetFolder: '/home/adminroot/.m2/repository/net/atos/daf/ct2/common.serialization.deserialization/1.0-SNAPSHOT'
         CleanTargetFolder: true
