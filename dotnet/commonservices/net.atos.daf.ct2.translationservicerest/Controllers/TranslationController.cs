@@ -55,10 +55,20 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
         [Route("GetAllLangaugecodes")]
          public async  Task<IActionResult> GetAllLangaugecodes()
          {
+             try
+             {
                  _logger.LogInformation("All langauges method get");
             // var translations =  translationmanager.GetTranslationsByMenu(request.ID,(translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString().ToUpper())).Result;
             var translations = await translationmanager.GetAllLanguageCode();
             return Ok(translations);
+
+             }
+             catch(Exception ex)
+             {
+                    _logger.LogError("All langauges method get failed " + ex.ToString());
+                       return StatusCode(500, "Internal server error."); 
+             }
+         
          }
         
 

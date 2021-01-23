@@ -13,6 +13,9 @@ using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
+using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
+
 
 namespace net.atos.daf.ct2.translationservicerest
 {
@@ -36,6 +39,16 @@ namespace net.atos.daf.ct2.translationservicerest
             
             services.AddTransient<ITranslationManager, TranslationManager>();
              services.AddTransient<ITranslationRepository, TranslationRepository>();
+
+            services.AddCors(c =>  
+            {  
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());  
+            });
+             services.AddSwaggerGen(c =>
+            {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Translation Service", Version = "v1" });
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,8 +59,14 @@ namespace net.atos.daf.ct2.translationservicerest
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseSwagger();
             app.UseHttpsRedirection();
-
+             app.UseCors(builder => 
+            {
+                builder.WithOrigins("*");
+                builder.AllowAnyMethod();
+                builder.AllowAnyHeader();
+            });  
             app.UseRouting();
 
             app.UseAuthorization();
@@ -56,6 +75,12 @@ namespace net.atos.daf.ct2.translationservicerest
             {
                 endpoints.MapControllers();
             });
+
+            app.UseSwaggerUI(c =>
+            {
+               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Translation Service V1");
+            });
+
         }
     }
 }
