@@ -62,13 +62,14 @@ namespace net.atos.daf.ct2.auditservicerest
             }
 
             app.UseHttpsRedirection();
+            app.UseRouting();
             app.UseCors(builder => 
             {
                 builder.WithOrigins("*");
                 builder.AllowAnyMethod();
                 builder.AllowAnyHeader();
             });  
-            app.UseRouting();
+            
             
            app.UseSwagger();
 

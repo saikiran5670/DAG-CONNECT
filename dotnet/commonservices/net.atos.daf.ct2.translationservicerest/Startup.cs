@@ -32,9 +32,8 @@ namespace net.atos.daf.ct2.translationservicerest
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-<<<<<<< HEAD
-=======
-            var connectionString= "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+
+            var connectionString = Configuration.GetConnectionString("ConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             // Identity configuration
             services.AddSingleton(dataAccess);
@@ -51,7 +50,6 @@ namespace net.atos.daf.ct2.translationservicerest
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Translation Service", Version = "v1" });
             });
 
->>>>>>> cbf30a3006b9eadcf71b791c4051467ab5e916cf
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,13 +62,14 @@ namespace net.atos.daf.ct2.translationservicerest
 
             app.UseSwagger();
             app.UseHttpsRedirection();
+    
+            app.UseRouting();
              app.UseCors(builder => 
             {
                 builder.WithOrigins("*");
                 builder.AllowAnyMethod();
                 builder.AllowAnyHeader();
             });  
-            app.UseRouting();
 
             app.UseAuthorization();
 
