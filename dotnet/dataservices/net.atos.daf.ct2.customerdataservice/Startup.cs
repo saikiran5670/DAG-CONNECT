@@ -76,6 +76,7 @@ namespace net.atos.daf.ct2.customerdataservice
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            private readonly string swaggerBasePath = "customer-data";
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -91,11 +92,22 @@ namespace net.atos.daf.ct2.customerdataservice
             {
                 endpoints.MapControllers();
             });
-            app.UseSwagger();
+           /* app.UseSwagger();
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
                c.SwaggerEndpoint("/customer-data/swagger/v1/swagger.json", "Customer Data Service V1");
+            });*/
+            
+            app.UseSwagger(c =>
+            {
+                c.RouteTemplate = swaggerBasePath+"/swagger/v1/swagger.json";
+            });
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", "Customer Data Service V1");
+                c.RoutePrefix = $"{swaggerBasePath}/swagger";
             });
         }
     }
