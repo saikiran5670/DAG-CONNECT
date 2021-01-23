@@ -67,3 +67,43 @@ jobs:
       inputs:
         PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/streaming.conti.messages/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/streaming.conti.messages/pom.xml
+        publishJUnitResults: false
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder: '$(system.defaultworkingdirectory)'
+        Contents: '**/*.jar'
+        TargetFolder: '$(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/sinking.externally.messages/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/sinking.externally.messages
+        publishJUnitResults: false
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder: '$(system.defaultworkingdirectory)'
+        Contents: '**/*.jar'
+        TargetFolder: '$(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
