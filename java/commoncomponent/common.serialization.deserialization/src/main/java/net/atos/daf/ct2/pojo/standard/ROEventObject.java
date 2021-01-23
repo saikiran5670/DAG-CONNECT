@@ -13,6 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ROEventObject  implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
    @JsonProperty(value = "ROEvtList")
     private List<ROEvent> roEvtList;
 

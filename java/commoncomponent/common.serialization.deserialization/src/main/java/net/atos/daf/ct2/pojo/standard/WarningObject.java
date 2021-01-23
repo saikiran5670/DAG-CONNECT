@@ -13,6 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class WarningObject  implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty(value = "WarningList")
     private List<Warning> warningList;
 
