@@ -3,22 +3,22 @@
     <mat-card class='mat-elevation-z margin-bottom-xlg no-padding'>
       <mat-card-content>
         <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start space-around"
-          style='padding: 10px 20px !important; background: #d4d4d4;'>
+          style='padding: 10px 20px !important; color: #fff; background: #65c3f8;'>
           <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <span class='custom-font'>{{ data.title }}</span>
           </div>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
-            <mat-icon (click)='cancel()' style='cursor: pointer;'>close</mat-icon>
+            <mat-icon (click)='cancel()' style='cursor: pointer; color: #000;'>close</mat-icon>
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="10px" class='margin-20'
-          style='padding: 10px 20px !important; background: #d4d4d4;'>
+          style='padding: 10px 20px !important; background: #ecf7fe;'>
           <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-label>Select Organization</mat-label>
             <mat-form-field appearance="outline" class="full-width">
               <mat-select formControlName="organization">
-                <mat-option *ngFor="let org of data.organization" [value]="org.value">
-                  {{org.viewValue}}
+                <mat-option *ngFor="let org of data.organization" [value]="org.name">
+                  {{ org.name }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -28,13 +28,13 @@
         </div>
 
         <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="0px" class='margin-20'
-          style='padding: 10px 20px !important; background:#f1f1f1;'>
+          style='padding: 10px 20px !important; background: #d1edfe;'>
           <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-label>Select Role</mat-label>
             <mat-form-field appearance="outline" class="full-width">
               <mat-select formControlName="role">
-                <mat-option *ngFor="let role of data.role" [value]="role.value">
-                  {{role.viewValue}}
+                <mat-option *ngFor="let role of data.role" [value]="role.name">
+                  {{ role.name }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -44,9 +44,9 @@
       </mat-card-content>
       <mat-card-actions fxLayoutAlign="end end" class='no-margin' style="padding: 0px 20px;">
         <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
-          <button type="button" class='margin-right-10' mat-raised-button color="warn"
+          <button style='background: #ebf2f8; color: #000;' type="button" class='margin-right-10' mat-raised-button color="warn"
             (click)='cancel()'>Cancel</button>
-          <button [disabled]="!loginDialogForm.valid" type="submit" class='no-margin' mat-raised-button
+          <button style='background: #2e5fa3;' [disabled]="!loginDialogForm.valid" type="submit" class='no-margin' mat-raised-button
             color="primary">Confirm</button>
         </div>
       </mat-card-actions>

@@ -10,6 +10,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.role.repository; 
+using net.atos.daf.ct2.role;
+using net.atos.daf.ct2.features;
+using net.atos.daf.ct2.features.repository;
+
 
 namespace net.atos.daf.ct2.roleservicerest
 {
@@ -22,10 +30,30 @@ namespace net.atos.daf.ct2.roleservicerest
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        // This method gets called by the runtime. Use this method to add services to the container.       
+
+         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers();            
+            var connectionString = Configuration.GetConnectionString("ConnectionString");
+            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
+
+            services.AddTransient<IRoleManagement,RoleManagement>();
+            services.AddTransient<IRoleRepository, RoleRepository>();
+            services.AddTransient<IFeatureManager,FeatureManager>();
+            services.AddTransient<IFeatureRepository,FeatureRepository>();
+
+            // Identity configuration
+            services.AddSingleton(dataAccess);
+
+            services.AddCors(c =>  
+            {  
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());  
+            });
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Role Service", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,12 +68,27 @@ namespace net.atos.daf.ct2.roleservicerest
 
             app.UseRouting();
 
+            app.UseCors(builder => 
+            {
+                builder.WithOrigins("*");
+                builder.AllowAnyMethod();
+                builder.AllowAnyHeader();
+            });  
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+            app.UseSwagger();
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Identity Service V1");
+            });
+
         }
     }
 }

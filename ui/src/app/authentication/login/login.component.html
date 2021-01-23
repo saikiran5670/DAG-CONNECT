@@ -37,9 +37,12 @@
                                     </div>
                                     <div fxLayout="column" fxLayoutAlign="start" class='full-width'>
                                         <mat-form-field appearance="fill">
-                                            <input matInput placeholder="User name" formControlName="username" required>
+                                            <input maxlength="120" matInput placeholder="User name" formControlName="username" pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}" required>
                                             <mat-error *ngIf="loginForm.get('username').hasError('required')">
                                               User name is required
+                                            </mat-error>
+                                            <mat-error *ngIf="loginForm.get('username').hasError('email')">
+                                                Please enter valid user name
                                             </mat-error>
                                         </mat-form-field>
                                     </div>
@@ -88,6 +91,9 @@
                                             <input matInput placeholder="Enter your registered Email Id" formControlName="email" required>
                                             <mat-error *ngIf="forgotPasswordForm.get('email').hasError('required')">
                                               Email id is required
+                                            </mat-error>
+                                            <mat-error *ngIf="forgotPasswordForm.get('email').hasError('email')">
+                                                Please enter valid user name
                                             </mat-error>
                                         </mat-form-field>
                                     </div>

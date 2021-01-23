@@ -12,6 +12,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class Distribution implements Serializable {
 
+  private static final long serialVersionUID = 1L;
+
   @JsonProperty(value = "DistrMinRangeInt")
   private Integer distrMinRangeInt;
   @JsonProperty(value = "DistrMaxRangeInt")
