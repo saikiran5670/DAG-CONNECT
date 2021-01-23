@@ -49,7 +49,8 @@ export class LoginComponent implements OnInit {
          //console.log("data:: ", data)
          if(data.status === 200){
            this.invalidUserMsg = false;
-            this.cookiesFlag = true;
+            //this.cookiesFlag = true;
+            this.acceptCookies();
          }
         //  else{
         //   this.invalidUserMsg = true;
@@ -59,7 +60,7 @@ export class LoginComponent implements OnInit {
        (error)=> {
         console.log("Error: " + error);
         this.invalidUserMsg = true;
-        this.cookiesFlag = false;
+        //this.cookiesFlag = false;
        })
 
        //--------- For Mock------//
