@@ -3,7 +3,7 @@ using static net.atos.daf.ct2.translation.Enum.translationenum;
 
 namespace net.atos.daf.ct2.translation.entity
 {
-    public class translations
+    public class Translations
     {
 
         public int Id { get; set; }

@@ -38,9 +38,9 @@ spec:
         image: #{acrurl}#/uiservice
         #image: acrakspzfu3h3wyefhu.azurecr.io/uiservice
         imagePullPolicy: "Always"
-        volumeMounts:
-        - name: tmp
-          mountPath: /tmp
+        #volumeMounts:
+        #- name: tmp
+          #mountPath: /tmp
         securityContext:
           allowPrivilegeEscalation: false
           #readOnlyRootFilesystem: true
@@ -56,9 +56,9 @@ spec:
             memory: 128Mi
         ports:
           - containerPort: 8080
-      volumes:
-      - name: tmp
-        emptyDir: {} 
+      #volumes:
+      #- name: tmp
+        #emptyDir: {} 
       nodeSelector:
         agentpool: npuser01         
   selector:
