@@ -10,10 +10,10 @@ namespace net.atos.daf.ct2.translation.repository
     public interface ITranslationRepository
     {
           Task<IEnumerable<Langauge>> GetAllLanguageCode();
-          Task<IEnumerable<translations>> GetKeyTranslationByLanguageCode(string langaguecode,string key);
-           Task<IEnumerable<translations>> GetLangagugeTranslationByKey(string key, string Type);
+          Task<IEnumerable<Translations>> GetKeyTranslationByLanguageCode(string langaguecode,string key);
+           Task<IEnumerable<Translations>> GetLangagugeTranslationByKey(string key, string Type);
         //   Task<IEnumerable<translations>> GetTranslationsByMenu(int  MenuId);
-          Task<IEnumerable<translations>> GetTranslationsByMenu(int  MenuId, string type);
+          Task<IEnumerable<Translations>> GetTranslationsByMenu(int  MenuId, string type);
           
     }
 }

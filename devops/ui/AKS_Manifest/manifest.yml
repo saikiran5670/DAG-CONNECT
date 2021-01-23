@@ -8,8 +8,8 @@ metadata:
 spec:
   template:
     metadata:
-      annotations:
-        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+      #annotations:
+        #seccomp.security.alpha.kubernetes.io/pod: runtime/default
       labels:
         app.kubernetes.io/name: uimanagement
         app.kubernetes.io/type: frontend
@@ -38,12 +38,12 @@ spec:
         image: #{acrurl}#/uiservice
         #image: acrakspzfu3h3wyefhu.azurecr.io/uiservice
         imagePullPolicy: "Always"
-        volumeMounts:
-        - name: tmp
-          mountPath: /tmp
+        #volumeMounts:
+        #- name: tmp
+          #mountPath: /tmp
         securityContext:
           allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
+          #readOnlyRootFilesystem: true
           capabilities:
             drop:
              - all
@@ -56,9 +56,9 @@ spec:
             memory: 128Mi
         ports:
           - containerPort: 8080
-      volumes:
-      - name: tmp
-        emptyDir: {} 
+      #volumes:
+      #- name: tmp
+        #emptyDir: {} 
       nodeSelector:
         agentpool: npuser01         
   selector:
@@ -85,23 +85,3 @@ spec:
     app.kubernetes.io/name: uimanagement
     app.kubernetes.io/type: frontend
   
----
-kind: HorizontalPodAutoscaler 
-apiVersion: autoscaling/v2beta1 
-metadata: 
-  name: uimanagement-hpa
-  labels:
-    hpa.kubernetes.io/name: uimanagement
-    hpa.kubernetes.io/type: frontend 
-spec: 
-  maxReplicas: 5 
-  minReplicas: 2
-  scaleTargetRef: 
-    apiVersion: apps/v1 
-    kind: Deployment 
-    name: uimanagement-deployment 
-  metrics: 
-  - type: Resource 
-    resource: 
-      name: cpu 
-      targetAverageUtilization: 70

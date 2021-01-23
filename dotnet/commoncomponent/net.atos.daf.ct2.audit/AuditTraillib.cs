@@ -58,9 +58,9 @@ namespace net.atos.daf.ct2.audit
             }
         }       
 
-        public IEnumerable<AuditTrail> GetAuditLogs(int Userorgid)
+        public async Task<IEnumerable<AuditTrail>> GetAuditLogs(int performed_by)
         {
-            return repository.GetAuditLogs(Userorgid);
+            return await repository.GetAuditLogs(performed_by);
         }
     }
 }
