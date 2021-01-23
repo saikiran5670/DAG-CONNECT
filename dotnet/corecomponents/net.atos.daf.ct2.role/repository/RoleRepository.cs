@@ -182,7 +182,7 @@ namespace net.atos.daf.ct2.role.repository
 
             var RoleQueryStatement = @" UPDATE master.role
                                             SET name=@name,
-                                            SET description= @Description
+                                            description= @Description,
                                             updated_by=@updatedby,
                                             updated_date=@updateddate  
                                         WHERE id = @id

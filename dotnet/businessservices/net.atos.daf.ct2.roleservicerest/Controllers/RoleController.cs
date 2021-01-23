@@ -63,8 +63,10 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
                     RoleEntity.RoleMaster ObjRole = new RoleEntity.RoleMaster();                   
                     ObjRole.Name = roleMaster.Name;
                     ObjRole.Id = roleMaster.Id;
+                    ObjRole.Description=roleMaster.Description;
                     ObjRole.Updatedby = roleMaster.Updatedby;                    
                     int roleId = await roleManager.UpdateRole(ObjRole);
+                    logger.LogInformation(roleId+"Role Master Updated");
                     return Ok(roleId);
                } 
                catch(Exception ex)
@@ -76,11 +78,11 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
         
         [HttpPost]      
         [Route("Delete")]
-        public async Task<IActionResult> Delete(int roleId, int accountId)
+        public async Task<IActionResult> Delete(int roleId, int updatedby)
         {    
                try
                {                           
-                    int role_Id = await roleManager.DeleteRole(roleId,accountId);
+                    int role_Id = await roleManager.DeleteRole(roleId,updatedby);
                     return Ok(role_Id);
                } 
                catch(Exception ex)
