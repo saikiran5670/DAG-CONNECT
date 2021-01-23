@@ -95,7 +95,7 @@ namespace net.atos.daf.ct2.customerdataservice
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer Data Service V1");
+               c.SwaggerEndpoint("/customer-data/swagger/v1/swagger.json", "Customer Data Service V1");
             });
         }
     }
