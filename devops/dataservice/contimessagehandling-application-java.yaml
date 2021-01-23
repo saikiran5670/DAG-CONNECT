@@ -57,16 +57,16 @@ jobs:
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
       inputs:
-        SourceFolder: '$(system.defaultworkingdirectory)'
+        SourceFolder: '$(system.defaultworkingdirectory)/java/commoncomponent/common.serialization.deserialization/target'
         Contents: '**/*.jar'
-        TargetFolder: '$(build.artifactstagingdirectory)'
+        TargetFolder: '/home/adminroot/.m2/repository/net/atos/daf/ct2/common.serialization.deserialization/1.0-SNAPSHOT'
         CleanTargetFolder: true
       condition: succeededOrFailed()
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: drop'
       inputs:
-        PathtoPublish: '$(build.artifactstagingdirectory)'
+        PathtoPublish: '/home/adminroot/.m2/repository/net/atos/daf/ct2/common.serialization.deserialization/1.0-SNAPSHOT'
       condition: succeededOrFailed()
 
     - task: Maven@3

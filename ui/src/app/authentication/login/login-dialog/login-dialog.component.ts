@@ -22,6 +22,12 @@ export class LoginDialogComponent {
       'organization': [null, Validators.compose([Validators.required])],
       'role': [null, Validators.compose([Validators.required])]
     });
+    this.setDropdownValues();
+  }
+
+  setDropdownValues(){
+    this.loginDialogForm.get('organization').setValue(this.data.organization[0].name);
+    this.loginDialogForm.get('role').setValue(this.data.role[0].name);
   }
 
   public cancel() {

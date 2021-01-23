@@ -105,7 +105,7 @@ namespace net.atos.daf.ct2.organization.repository
                 parameter.Add("@OptOutStatusChangedDate", organization.OptOutStatusChangedDate);
                 parameter.Add("@IsActive", organization.IsActive);  
 
-                var query = @"update master.organization set type=@OrganizationType, name=@Name,
+                var query = @"update master.organization set org_id=@OrganizationId, type=@OrganizationType, name=@Name,
                  address_type=@AddressType, street=@AddressStreet, street_number=@AddressStreetNumber,
                   postal_code=@PostalCode, city=@City,country_code=@CountryCode,reference_date=@ReferencedDate,
                   optout_status=@OptOutStatus,optout_status_changed_date=@OptOutStatusChangedDate,is_active=@IsActive
@@ -219,7 +219,7 @@ namespace net.atos.daf.ct2.organization.repository
                 }
                 
                 parameterUpdate.Add("@reference_date", referenceDateTime);
-                var queryUpdate = @"update master.organization set name=@Name,type=@Type,
+                var queryUpdate = @"update master.organization set org_id=@org_id, name=@Name,type=@Type,
                  address_type=@AddressType, street=@AddressStreet, street_number=@AddressStreetNumber,
                   postal_code=@PostalCode, city=@City,country_code=@CountryCode,reference_date=@reference_date                               
 	                                 WHERE org_id = @org_id RETURNING id;";
@@ -297,7 +297,7 @@ namespace net.atos.daf.ct2.organization.repository
                 parameterOrgUpdate.Add("@City",keyHandOver.KeyHandOverEvent.EndCustomer.Address.City);
                 parameterOrgUpdate.Add("@CountryCode", keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode);    
                 
-                var queryOrgUpdate = @"update master.organization set name=@Name,
+                var queryOrgUpdate = @"update master.organization set org_id=@org_id,name=@Name,
                  address_type=@AddressType,street=@AddressStreet,street_number=@AddressStreetNumber,
                   postal_code=@PostalCode,city=@City,country_code=@CountryCode                 
 	                                 WHERE org_id=@org_id RETURNING id;";
@@ -416,7 +416,7 @@ namespace net.atos.daf.ct2.organization.repository
                 parameterOrgUpdate.Add("@City",keyHandOver.KeyHandOverEvent.EndCustomer.Address.City);
                 parameterOrgUpdate.Add("@CountryCode", keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode);
                
-                 var queryOrgUpdate = @"update master.organization set name=@Name,
+                 var queryOrgUpdate = @"update master.organization set org_id=@org_id, name=@Name,
                  address_type=@AddressType, street=@AddressStreet, street_number=@AddressStreetNumber,
                   postal_code=@PostalCode,city=@City,country_code=@CountryCode                 
 	                                 WHERE org_id = @org_id RETURNING id;";

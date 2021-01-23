@@ -31,20 +31,16 @@ namespace net.atos.daf.ct2.role
         {
             try
             {
-                int RoleId= await roleRepository.CreateRole(roleMaster);
-               // auditlog.AddLogs(roleMaster.Createdby,roleMaster.Createdby,1,"Add Role",RoleId > 0,"Role Management", "Role Added With Role Id " + RoleId.ToString());
-               if(RoleId > 0)
-               {
-                   roleMaster.FeatureSet.Name = "FeatureSet_" + RoleId;
-                   int featuresetid = await FeatureManager.AddFeatureSet(roleMaster.FeatureSet);
-                //    int featuresetid = 4;
-                    if (featuresetid > 0)
-                    {
-                        await roleRepository.Updaterolefeatureset(RoleId,featuresetid);
-                    }
-               }
 
-               
+                   roleMaster.FeatureSet.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds();
+                   int RoleId = 0;
+                   int featuresetid = await FeatureManager.AddFeatureSet(roleMaster.FeatureSet);
+                   if(featuresetid > 0 )
+                   {
+                        roleMaster.Feature_set_id = featuresetid;
+                         RoleId= await roleRepository.CreateRole(roleMaster);
+                   }             
+                              
                 return RoleId;
             }
             catch (Exception ex)

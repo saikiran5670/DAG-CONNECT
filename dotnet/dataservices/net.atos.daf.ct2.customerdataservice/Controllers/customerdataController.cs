@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
     {
         //private readonly ILogger _logger;       
         private readonly ILogger<customerdataController> logger; 
-        private readonly IAuditLogRepository _IAuditLogRepository;       
+       // private readonly IAuditLogRepository _IAuditLogRepository;       
         private readonly IAuditTraillib _AuditTrail;      
         private readonly IOrganizationManager organizationtmanager;
         private readonly IPreferenceManager preferencemanager;
@@ -57,8 +57,8 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
         public async Task<IActionResult> update(Customer customer)
         {
          
-           // var OrgId= await organizationtmanager.UpdateCustomer(customer);
-           // return Ok("done");
+        //    var OrgId= await organizationtmanager.UpdateCustomer(customer);
+        //    return Ok("done");
             string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
             bool valid=false;
             try 
@@ -106,7 +106,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
             {
                 valid = false;
                 logger.LogError(ex.Message +" " +ex.StackTrace);
-                //return StatusCode(500,"Internal Server Error.");
+               // return StatusCode(500,"Internal Server Error.");
                 return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }                        
         }  
@@ -166,8 +166,8 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
             {
                 valid = false;
                 logger.LogError(ex.Message +" " +ex.StackTrace);
-               // return StatusCode(500,"Internal Server Error.");
-                 return StatusCode(500,ex.Message +" " +ex.StackTrace);
+                //return StatusCode(500,"Internal Server Error.");
+                return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }   
         }       
     }

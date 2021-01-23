@@ -25,6 +25,23 @@ variables:
   - group: TEST01-Build-Variables
 
 steps:
+- task: replacetokens@3
+  inputs:
+    targetFiles: 'ui/src/assets/config/default.json'
+    encoding: 'auto'
+    writeBOM: true
+    actionOnMissing: 'warn'
+    keepToken: false
+    tokenPrefix: '#{'
+    tokenSuffix: '}#'
+    useLegacyPattern: false
+    enableTelemetry: true
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      cat ui/src/assets/config/default.json
+
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
