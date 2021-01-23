@@ -107,7 +107,7 @@ namespace net.atos.daf.ct2.customerdataservice
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/customer-data/swagger/v1/swagger.json", "Customer Data Service V1");
-                c.RoutePrefix = "customer-data/swagger";
+                //c.RoutePrefix = "customer-data/swagger";
             });
         }
     }
