@@ -87,25 +87,29 @@ export class LoginComponent implements OnInit {
   }
 
   public showOrganizationRolePopup(data: any) {
-    data.accountOrganization = [
-    {
-      id: 10,
-      name: "DAF CONNECT"
-    },
-    {
-      id: 35,
-      name: "ATOS"
-    }];
+    if(data.accountOrganization.length === 0){
+      data.accountOrganization = [
+      {
+        id: 10,
+        name: "DAF CONNECT"
+      },
+      {
+        id: 35,
+        name: "ATOS"
+      }];
+    }
 
-    data.accountRole = [
-    {
-      id: 10,
-      name: "Fleet Admin"
-    },
-    {
-      id: 35,
-      name: "Fleet Execute"
-    }];
+    if(data.accountRole.length === 0){
+      data.accountRole = [
+      {
+        id: 1,
+        name: "Fleet Admin"
+      },
+      {
+        id: 2,
+        name: "Fleet Execute"
+      }];
+    }
 
     let organization: Organization[] = data.accountOrganization;
     let role: Role[] = data.accountRole;
