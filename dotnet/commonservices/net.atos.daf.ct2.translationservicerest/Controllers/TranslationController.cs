@@ -32,12 +32,21 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
         [Route("GetMenuTranslations")]
          public async  Task<IActionResult> GetTranslations(Translations request)
         {
+          try
+          {
              List<Translations> responce = new List<Translations>();
             // var translations =  translationmanager.GetTranslationsByMenu(request.ID,(translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString().ToUpper())).Result;
             var translations = await translationmanager.GetTranslationsByMenu(request.MenuId,(translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString()),request.Code);
             
 
           return Ok(translations);
+           return Ok(translations);
+          }
+          catch(Exception ex)
+          {
+                    _logger.LogError(ex.Message +" " +ex.StackTrace);
+                    return StatusCode(500,"Internal Server Error.");
+          }
         }
 
         [HttpGet]
@@ -61,7 +70,7 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
         }
 
         [HttpPost]
-        [Route("GetAlltranslatonByKey")]
+        [Route("GetAlltranslationByKey")]
         public async Task<IActionResult> GetLangagugeTranslationByKey(string key)
         {
           try
@@ -80,11 +89,11 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
 
         [HttpGet]
         [Route("GetKeyTranslationByLanguageCode")]
-         public async  Task<IActionResult> GetKeyTranslationByLanguageCode(string langaguecode,string key)
+         public async  Task<IActionResult> GetKeyTranslationByLanguageCode(string languagecode,string key)
         {
             try
             {
-              var translation = await translationmanager.GetKeyTranslationByLanguageCode(langaguecode,key);
+              var translation = await translationmanager.GetKeyTranslationByLanguageCode(languagecode,key);
               return Ok(translation);
             }
             catch(Exception ex)
@@ -97,11 +106,11 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
 
         [HttpGet]
         [Route("GetTranslationsForDropDowns")]
-         public async  Task<IActionResult> GetTranslationsForDropDowns(string Dropdownname, string langagugecode)
+         public async  Task<IActionResult> GetTranslationsForDropDowns(string Dropdownname, string languagecode)
         {
             try
             {
-              var translation = await translationmanager.GetTranslationsForDropDowns(Dropdownname,langagugecode);
+              var translation = await translationmanager.GetTranslationsForDropDowns(Dropdownname,languagecode);
               return Ok(translation);
             }
             catch(Exception ex)
