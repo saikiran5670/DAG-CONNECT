@@ -29,9 +29,29 @@ jobs:
 - job: Build
   steps:
     - task: Maven@3
-      displayName: 'Maven java/commoncomponent/daf.common/pom.xml'
+      displayName: 'Maven java/commoncomponent/common.serialization.deserialization/pom.xml'
       inputs:
-        mavenPomFile: java/commoncomponent/daf.common/pom.xml
+        mavenPomFile: java/commoncomponent/common.serialization.deserialization/pom.xml
+        publishJUnitResults: false
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder: '$(system.defaultworkingdirectory)'
+        Contents: '**/*.jar'
+        TargetFolder: '$(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
+
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/streaming.masterdata.messages/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/streaming.masterdata.messages/pom.xml
         publishJUnitResults: false
 
     - task: CopyFiles@2
