@@ -7,7 +7,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
   name: customerdataservice-ingress
-  namespace: dafdev01
+  #namespace: dafdev01
 spec:
   rules:
   - host: services-00.aks-ingress.dev1.ct2.atos.net
