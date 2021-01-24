@@ -28,13 +28,20 @@ variables:
 jobs:
 - deployment: Copy_file_to_VM
   pool: $(PRIVATEAGENT)
-  environment: Flink Dev 1
+  environment: 
+   name: Flink Dev 1
+   resourceType: VirtualMachine
   strategy:
    runOnce:
      deploy:
        steps:
-       - bash: |
-          mv $(system.defaultworkingdirectory)/java/corecomponents/common_configuration.properties /home/flinkhuser
+       - task: CopyFiles@2
+         displayName: 'Copy Files to: Flink VM'
+         inputs:
+          SourceFolder: '$(Build.Repository.LocalPath)/java/corecomponents'
+          Contents: 'common_configuration.properties'
+          TargetFolder: '/home/flinkhuser'
+         condition: succeededOrFailed()
 
 - job: Build
   steps:
