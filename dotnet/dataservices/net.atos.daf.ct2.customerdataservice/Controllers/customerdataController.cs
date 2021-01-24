@@ -167,7 +167,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 valid = false;
                 logger.LogError(ex.Message +" " +ex.StackTrace);
                 return StatusCode(500,"Internal Server Error.");
-                //return StatusCode(500,ex.Message +" " +ex.StackTrace);
+               // return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }   
         }       
     }

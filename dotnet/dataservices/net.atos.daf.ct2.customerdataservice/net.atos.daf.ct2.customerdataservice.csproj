@@ -16,13 +16,8 @@
   <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.organization\net.atos.daf.ct2.organization.csproj" />
 </ItemGroup>
 <ItemGroup>
-  <PackageReference Include="LowercaseDashedRoute" Version="1.0.14" />
   <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="5.0.0" />
   <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
-  <PackageReference Include="NLog" Version="4.7.6" />
-  <PackageReference Include="NLog.Targets.ElasticSearch" Version="7.5.0" />
-  <PackageReference Include="NLog.Web" Version="4.10.0" />
-  <PackageReference Include="NLog.Web.AspNetCore" Version="4.10.0" />
   <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
 </ItemGroup>
   
