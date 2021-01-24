@@ -60,7 +60,6 @@ jobs:
         SourceFolder: '$(system.defaultworkingdirectory)/java/commoncomponent/common.serialization.deserialization/target'
         Contents: '**/*.jar'
         TargetFolder: '/home/adminroot/.m2/repository/net/atos/daf/ct2/common.serialization.deserialization/1.0-SNAPSHOT'
-        CleanTargetFolder: true
       condition: succeededOrFailed()
 
     - task: PublishBuildArtifacts@1
@@ -81,7 +80,6 @@ jobs:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
-        CleanTargetFolder: true
       condition: succeededOrFailed()
 
     - task: PublishBuildArtifacts@1
@@ -102,7 +100,6 @@ jobs:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
-        CleanTargetFolder: true
       condition: succeededOrFailed()
 
     - task: PublishBuildArtifacts@1
@@ -123,7 +120,6 @@ jobs:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
-        CleanTargetFolder: true
       condition: succeededOrFailed()
 
     - task: PublishBuildArtifacts@1
