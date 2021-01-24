@@ -144,7 +144,7 @@ namespace net.atos.daf.ct2.group
                     }
 
                     // Account Id list Filter                       
-                    if (groupFilter.GroupIds != null)
+                    if (groupFilter.GroupIds != null && groupFilter.GroupIds.Count()>0)
                     {
                         parameter.Add("@groupids", groupFilter.GroupIds);
                         query = query + " and id=ANY(@groupids)";

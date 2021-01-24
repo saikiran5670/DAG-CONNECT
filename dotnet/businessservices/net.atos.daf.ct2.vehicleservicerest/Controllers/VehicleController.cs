@@ -266,6 +266,14 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 ObjGroupFilter.ObjectType = ObjectType.VehicleGroup;
                 ObjGroupFilter.GroupType = GroupType.Group;
                 ObjGroupFilter.FunctionEnum = FunctionEnum.All;
+               
+                ObjGroupFilter.GroupIds = new List<int>();
+                foreach (var item in groupFilter.GroupIds)
+                {     
+                    if(item>0)
+                      ObjGroupFilter.GroupIds.Add(item);
+                }
+                
                 List<Vehicle> ObjVehicleList=new List<Vehicle>();
                 if (groupFilter.IsGroup==true)
                 {
@@ -279,11 +287,12 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                         ObjGroupRef.Name = item.Name;
                         ObjGroupRef.VehicleCount = item.GroupRefCount;
                         ObjGroupRef.IsVehicleGroup = true;
+                        ObjGroupRef.Organization_Id=item.OrganizationId;
                         ObjVehicleList.Add(ObjGroupRef);
                     }
                 }
 
-                if (ObjGroupFilter.GroupRef == true)
+                if (ObjGroupFilter.GroupRef == true && groupFilter.OrganizationId>0)
                 {
                     VehicleFilter ObjVehicleFilter = new VehicleFilter();
                     ObjVehicleFilter.OrganizationId =  groupFilter.OrganizationId;
@@ -300,6 +309,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                         ObjGroupRef.Status = (VehicleStatusType)Enum.Parse(typeof(VehicleStatusType), item.Status.ToString());
                         ObjGroupRef.IsVehicleGroup = false;
                         ObjGroupRef.Model = item.Model == null ? "" : item.Model;
+                        ObjGroupRef.Organization_Id=item.Organization_Id;
                         ObjVehicleList.Add(ObjGroupRef);
                     }
                 }
