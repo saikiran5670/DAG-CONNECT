@@ -23,6 +23,8 @@ namespace net.atos.daf.ct2.roleservicerest
 {
     public class Startup
     {
+        
+        private readonly string swaggerBasePath = "role";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -36,6 +38,7 @@ namespace net.atos.daf.ct2.roleservicerest
         {
             services.AddControllers();            
             var connectionString = Configuration.GetConnectionString("ConnectionString");
+            
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
 
             services.AddTransient<IRoleManagement,RoleManagement>();
@@ -82,12 +85,18 @@ namespace net.atos.daf.ct2.roleservicerest
                 endpoints.MapControllers();
             });
 
-            app.UseSwagger();
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+             app.UseSwagger(c =>
+            {
+                c.RouteTemplate = swaggerBasePath+"/swagger/{documentName}/swagger.json";
+            });
+
             app.UseSwaggerUI(c =>
             {
-               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Identity Service V1");
+                c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
+                c.RoutePrefix = $"{swaggerBasePath}/swagger";
             });
+
 
         }
     }
