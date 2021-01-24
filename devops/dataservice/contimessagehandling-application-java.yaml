@@ -110,7 +110,7 @@ jobs:
         PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
 
-- deployment: Copy file to VM
+- deployment: Copy_file_to_VM
   pool: $(PRIVATEAGENT)
   environment: Flink Dev 1
   strategy:
