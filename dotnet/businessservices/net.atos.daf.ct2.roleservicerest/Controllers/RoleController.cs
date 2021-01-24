@@ -122,16 +122,13 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
                }
         }
 
-        [HttpPost]      
-        [Route("get")]
+        [HttpGet]      
+        [Route("roles")]
         public async Task<IActionResult> Get(RoleEntity.RoleFilter roleFilter)
         {    
                try
                { 
-                 if (roleFilter.RoleId == 0 && roleFilter.Organization_Id == 0) 
-                {
-                    return StatusCode(400, "Role or organization Id required ");
-                }
+                 
                     var role = await roleManager.GetRoles(roleFilter); 
                     List<Rolerequest> roleList =new List<Rolerequest>();
                     foreach(var roleitem in role)
@@ -155,27 +152,27 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
                }
         }
 
-        [HttpGet]      
-        [Route("getfeatures")]
-        public async Task<IActionResult> GetFeatures(char featuretype,bool active)
-        {    
-               try
-               { 
-                    var feature = await featuresManager.GetFeatures(featuretype,active);  
+        // [HttpGet]      
+        // [Route("getfeatures")]
+        // public async Task<IActionResult> GetFeatures(char featuretype,bool active)
+        // {    
+        //        try
+        //        { 
+        //             var feature = await featuresManager.GetFeatures(featuretype,active);  
 
-                    List<Feature> featureList =new List<Feature>();
-                    foreach(var featureitem in feature)
-                    {
-                         featureList.Add(featureitem);
-                    }               
+        //             List<Feature> featureList =new List<Feature>();
+        //             foreach(var featureitem in feature)
+        //             {
+        //                  featureList.Add(featureitem);
+        //             }               
                   
-                    return Ok(featureList);
-               } 
-               catch(Exception ex)
-               {
-                    logger.LogError(ex.Message +" " +ex.StackTrace);
-                    return StatusCode(500,"Internal Server Error.");
-               }
-        }
+        //             return Ok(featureList);
+        //        } 
+        //        catch(Exception ex)
+        //        {
+        //             logger.LogError(ex.Message +" " +ex.StackTrace);
+        //             return StatusCode(500,"Internal Server Error.");
+        //        }
+        // }
     }
 }

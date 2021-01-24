@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.features.repository
         Task<int> UpdateFeatureSet(FeatureSet featureSet);
         Task<int> DeleteFeatureSet(int FeatureSetId, int Userid);
         Task<IEnumerable<FeatureSet>> GetFeatureSet(int FeatureSetId,bool Active);
-         Task<IEnumerable<Feature>> GetFeatures(char Featuretype,bool Active);
+         Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, char? Featuretype);
         Task<int> CheckFeatureSetExist(string FeatureSetName);
         Task<IEnumerable<FeatureSet>> GetFeatureSetFeature(int FeatureSetId);
          Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int feature_set_id);

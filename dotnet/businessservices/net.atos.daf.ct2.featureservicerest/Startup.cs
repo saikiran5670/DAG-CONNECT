@@ -10,11 +10,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.features;
+using net.atos.daf.ct2.features.repository;
+
+
 
 namespace net.atos.daf.ct2.featureservicerest
 {
     public class Startup
     {
+        
+        private readonly string swaggerBasePath = "feature";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -25,7 +34,27 @@ namespace net.atos.daf.ct2.featureservicerest
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers();            
+            var connectionString = Configuration.GetConnectionString("ConnectionString");
+            
+            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
+
+            // services.AddTransient<IRoleManagement,RoleManagement>();
+            // services.AddTransient<IRoleRepository, RoleRepository>();
+            services.AddTransient<IFeatureManager,FeatureManager>();
+            services.AddTransient<IFeatureRepository,FeatureRepository>();
+
+             // Identity configuration
+            services.AddSingleton(dataAccess);
+
+            services.AddCors(c =>  
+            {  
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());  
+            });
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Feature Service", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,9 +65,17 @@ namespace net.atos.daf.ct2.featureservicerest
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+          
+             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(builder => 
+            {
+                builder.WithOrigins("*");
+                builder.AllowAnyMethod();
+                builder.AllowAnyHeader();
+            });  
 
             app.UseAuthorization();
 
@@ -46,6 +83,19 @@ namespace net.atos.daf.ct2.featureservicerest
             {
                 endpoints.MapControllers();
             });
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+             app.UseSwagger(c =>
+            {
+                c.RouteTemplate = swaggerBasePath+"/swagger/{documentName}/swagger.json";
+            });
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
+                c.RoutePrefix = $"{swaggerBasePath}/swagger";
+            });
+
         }
     }
 }

@@ -13,6 +13,8 @@ namespace net.atos.daf.ct2.features.entity
         [JsonPropertyName("IsFeatureActive")]
         public bool Is_Active { get; set; }
         public int Data_attribute_Set_id { get; set; }
+        public int RoleId { get; set; }
+        public int Organization_Id { get; set; }
 
     }
 }
