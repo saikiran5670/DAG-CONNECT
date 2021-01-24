@@ -12,7 +12,7 @@ using net.atos.daf.ct2.features.entity;
 namespace net.atos.daf.ct2.roleservicerest.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[role]")]
     public class RoleController : ControllerBase
     {
         private readonly ILogger logger;
@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
         } 
        
         [HttpPost]      
-        [Route("Create")]
+        [Route("create")]
         public async Task<IActionResult> Create(RoleEntity.RoleMaster roleMaster)
         {    
                try
@@ -55,7 +55,7 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
         }
 
         [HttpPost]      
-        [Route("Update")]
+        [Route("update")]
         public async Task<IActionResult> Update(RoleEntity.RoleMaster roleMaster)
         {    
                try
@@ -77,7 +77,7 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
         }
         
         [HttpPost]      
-        [Route("Delete")]
+        [Route("delete")]
         public async Task<IActionResult> Delete(int roleId, int updatedby)
         {    
                try
@@ -93,7 +93,7 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
         }
 
         [HttpPost]      
-        [Route("Get")]
+        [Route("get")]
         public async Task<IActionResult> Get(RoleEntity.RoleFilter roleFilter)
         {    
                try
@@ -116,7 +116,7 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
         }
 
         [HttpGet]      
-        [Route("GetFeatures")]
+        [Route("getfeatures")]
         public async Task<IActionResult> GetFeatures(char featuretype,bool active)
         {    
                try
