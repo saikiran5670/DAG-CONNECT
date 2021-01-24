@@ -109,3 +109,14 @@ jobs:
       inputs:
         PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
+
+- deployment: Copy file to VM
+  pool: $(PRIVATEAGENT)
+  environment: Flink Dev 1
+  strategy:
+   runOnce:
+     deploy:
+       steps:
+       - script: Script for copying file
+       - bash: |
+         mv '$(system.defaultworkingdirectory)/java/corecomponents/common_configuration.properties' '/home/flinkhuser'
