@@ -25,6 +25,10 @@ spec:
           servicePort: 80
         path: /auth
       - backend:
+          serviceName: authenticationservice
+          servicePort: 80
+        path: /login
+      - backend:
           serviceName: accountservice
           servicePort: 80
         path: /account
