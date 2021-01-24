@@ -39,7 +39,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             try
             {
                 // Validation 
-                if ((string.IsNullOrEmpty(request.EmailId)) || (string.IsNullOrEmpty(request.Salutation)) || (string.IsNullOrEmpty(request.FirstName)) || (string.IsNullOrEmpty(request.LastName)))
+                if ((string.IsNullOrEmpty(request.EmailId)) || (string.IsNullOrEmpty(request.FirstName)) || (string.IsNullOrEmpty(request.LastName)))
                 {
                     return StatusCode(400, "The EmailId address, first name, last name is required.");
                 }
@@ -50,6 +50,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 account.isDuplicate = false;
                 account.isError = false;
                 account.EndDate = null;
+                account.Password = request.Password;
                 account = await accountmanager.Create(account);
                 if (account.isDuplicate)
                 {
@@ -79,7 +80,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             try
             {
                 // Validation 
-                if ((string.IsNullOrEmpty(request.EmailId)) || (string.IsNullOrEmpty(request.Salutation)) || (string.IsNullOrEmpty(request.FirstName)) || (string.IsNullOrEmpty(request.LastName)))
+                if ((string.IsNullOrEmpty(request.EmailId)) || (string.IsNullOrEmpty(request.FirstName)) || (string.IsNullOrEmpty(request.LastName)))
                 {
                     return StatusCode(400, "The EmailId address, first name, last name is required.");
                 }
@@ -118,23 +119,16 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
         {
             try
             {
-                // Validation 
-                //if ((string.IsNullOrEmpty(request.EmailId)) || (string.IsNullOrEmpty(request.Salutation)) || (string.IsNullOrEmpty(request.FirstName)) || (string.IsNullOrEmpty(request.LastName)))
-                if ((string.IsNullOrEmpty(request.EmailId)))
+                // Validation                 
+                if ((string.IsNullOrEmpty(request.EmailId)) || (Convert.ToInt32(request.Id) <=0 ) || (Convert.ToInt32(request.Organization_Id) <=0 ))
                 {
-                    //return StatusCode(400, "The Email address, first name, last name is required.");
-                    return StatusCode(400, "The Email address is required.");
+                    return StatusCode(400, "The Email address, account id and organization id is required.");
                 }
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
                 account = _mapper.ToAccountEntity(request);
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
                 account.StartDate = DateTime.Now;
-                account.EndDate = null;
-                // // Validation 
-                // if((string.IsNullOrEmpty(account.EmailId)) || (account.Id <=0) ) 
-                // { 
-                //     return StatusCode(404, "The Email address, and account id is required.");
-                // }
+                account.EndDate = null;                
                 var result = await accountmanager.Delete(account);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Service", "Account Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Account Delete", 1, 2, account.Id.ToString());
                 return Ok(account);
@@ -563,6 +557,49 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
         }
         // End - AccessRelationshhip
 
+        // Begin - Account Group
+
+        // [HttpPost]
+        // [Route("AccountGroup/Create")]
+        // public async Task<IActionResult> CreateAccountGroup(AccessRelationshipRequest request)
+        // {
+        //     try
+        //     {
+        //         // Validation                 
+        //         if ((request.AccountGroupId <= 0) || (request.VehicleGroupId <= 0) || (string.IsNullOrEmpty(Convert.ToString(request.AccessRelationType))))
+        //         {
+        //             return StatusCode(400, "The AccountGroupId,VehicleGroupId and AccessRelationshipType is required");
+        //         }
+        //         else if ((Convert.ToChar(request.AccessRelationType)) != 'R' || ((Convert.ToChar(request.AccessRelationType))) != 'W')
+        //         {
+        //             return StatusCode(400, "The AccessRelationshipType should be ReadOnly and ReadWrite (R/W) only.");
+        //         }
+        //         AccountComponent.entity.AccessRelationship accessRelationship = new AccountComponent.entity.AccessRelationship();
+        //         accessRelationship.Id = request.Id;
+        //         accessRelationship.AccountGroupId = request.AccountGroupId;
+        //         accessRelationship.VehicleGroupId = request.VehicleGroupId;
+        //         if (request.AccessRelationType == 'R')
+        //         {
+        //             accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadOnly;
+        //         }
+        //         if (request.AccessRelationType == 'W')
+        //         {
+        //             accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadWrite;
+        //         }
+        //         accessRelationship.StartDate = DateTime.Now;
+        //         accessRelationship.EndDate = null;
+        //         accessRelationship = await accountmanager.CreateAccessRelationship(accessRelationship);
+        //         var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Access Relationship", 1, 2, Convert.ToString(accessRelationship.AccountGroupId)).Result;
+        //         return Ok(accessRelationship);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
+        //         return StatusCode(500, "Internal Server Error.");
+        //     }
+        // }
+
+        // End - Account Group
 
     }
 }

@@ -29,6 +29,7 @@ namespace net.atos.daf.ct2.account
             identityEntity.EmailId = account.EmailId;            
             identityEntity.FirstName = account.FirstName;
             identityEntity.LastName = account.LastName;
+            identityEntity.Password = account.Password;
 
             //TODO: If created in IDP, but have exception while create in DB.
             var identityresult = await identity.CreateUser(identityEntity);
