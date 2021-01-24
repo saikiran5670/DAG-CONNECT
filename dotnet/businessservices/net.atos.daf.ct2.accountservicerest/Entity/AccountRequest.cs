@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.accountservicerest
     public class AccessRelationshipRequest
     {
         public int Id { get; set; }
-        public char AccessRelationType { get; set; }
+        public string AccessRelationType { get; set; }
         public int AccountGroupId { get; set; }
         public int VehicleGroupId { get; set; }        
     }

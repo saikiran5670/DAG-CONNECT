@@ -16,9 +16,10 @@ namespace net.atos.daf.ct2.group
         Task<Group> Update(Group group);
         Task<bool> Delete(long groupid);
         Task<List<Group>> Get(GroupFilter groupFilter);
-        Task<bool> AddRefToGroups(Group group);
+        Task<bool> AddRefToGroups(List<GroupRef> groupRef);
         Task<bool> UpdateRef(Group group);
         Task<List<GroupRef>> GetRef(int groupid);
+        Task<bool> RemoveRef(int groupid);
         
         
     }

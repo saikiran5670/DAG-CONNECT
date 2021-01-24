@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.audit.repository
 {
     public class AuditLogRepository:IAuditLogRepository
     {
-        private readonly IConfiguration  _config;
+        //private readonly IConfiguration  _config;
        
     //     private readonly IDataAccess dataAccess;
        
