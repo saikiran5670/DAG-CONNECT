@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.authenticationservicerest
         {
             Configuration = configuration;
         }
-
+         private readonly string swaggerBasePath = "authentication";
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -98,11 +98,22 @@ namespace net.atos.daf.ct2.authenticationservicerest
                 endpoints.MapControllers();
             });
 
-            app.UseSwagger();
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+            // app.UseSwagger();
+            // // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+            // app.UseSwaggerUI(c =>
+            // {
+            //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Authentication Service");
+            // });
+
+             app.UseSwagger(c =>
+            {
+                c.RouteTemplate = swaggerBasePath+"/swagger/{documentName}/swagger.json";
+            });
+
             app.UseSwaggerUI(c =>
             {
-               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Authentication Service");
+                c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
+                c.RoutePrefix = $"{swaggerBasePath}/swagger";
             });
 
         }

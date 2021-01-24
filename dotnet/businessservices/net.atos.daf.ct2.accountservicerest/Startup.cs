@@ -26,6 +26,7 @@ namespace net.atos.daf.ct2.accountservicerest
 {
     public class Startup
     {
+        private readonly string swaggerBasePath = "account";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -59,9 +60,9 @@ namespace net.atos.daf.ct2.accountservicerest
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Account  Service", Version = "v1" });
             });
-            services.AddCors(c =>  
-            {  
-                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());  
+            services.AddCors(c =>
+            {
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
             });
         }
 
@@ -76,12 +77,12 @@ namespace net.atos.daf.ct2.accountservicerest
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            app.UseCors(builder => 
+            app.UseCors(builder =>
             {
                 builder.WithOrigins("*");
                 builder.AllowAnyMethod();
                 builder.AllowAnyHeader();
-            });  	
+            });
 
             app.UseAuthorization();
 
@@ -89,12 +90,27 @@ namespace net.atos.daf.ct2.accountservicerest
             {
                 endpoints.MapControllers();
             });
-            app.UseSwagger();
+            
+            //app.UseSwagger();
+
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+            // app.UseSwaggerUI(c =>
+            // {
+            //     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Account Service");
+            // });
+
+            app.UseSwagger(c =>
+            {
+                c.RouteTemplate = swaggerBasePath+"/swagger/{documentName}/swagger.json";
+            });
+
             app.UseSwaggerUI(c =>
             {
-               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Account Service");
+                c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
+                c.RoutePrefix = $"{swaggerBasePath}/swagger";
             });
+
         }
+            
     }
 }
