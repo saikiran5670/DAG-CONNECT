@@ -38,7 +38,7 @@ jobs:
        - task: CopyFiles@2
          displayName: 'Copy Files to: Flink VM'
          inputs:
-          SourceFolder: '$(system.defaultworkingdirectory)/java/corecomponents'
+          SourceFolder: '$(Build.Repository.LocalPath)/java/corecomponents'
           Contents: 'common_configuration.properties'
           TargetFolder: '/home/flinkhuser'
          condition: succeededOrFailed()
