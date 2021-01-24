@@ -11,7 +11,7 @@ using net.atos.daf.ct2.audit.Enum;
 namespace net.atos.daf.ct2.auditservicerest.Controllers
 {
      [ApiController]
-    [Route("[audit]")]
+    [Route("audit")]
     public class AuditController :ControllerBase
     {
         private readonly ILogger _logger;
