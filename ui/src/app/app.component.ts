@@ -308,6 +308,8 @@ private setPageTitle() {
         { value: 'fleetmanager-1', viewValue: 'Fleet Manager' },
         { value: 'user-2', viewValue: 'Fleet User' }
       ];
+      this.organization = this.organizations[0].viewValue;
+      this.role = this.roles[0].viewValue;
     }
   }
 }

@@ -48,6 +48,13 @@
                     </span>
                 </div>
             </div>
+            <div fxLayout="row" fxLayoutAlign="end">
+                <div class="logoutButton" fxLayout="column">
+                    <button mat-icon-button (click)="logOut()" class="menuToggler display-flex align-items-center">
+                        <mat-icon class='logoutIcon'>exit_to_app</mat-icon>
+                    </button>
+                </div>
+            </div>
             <!-- --------------------------------------------------------------------------------------------------- -->
             <div *ngIf="openUserRoleDialog" class="userRoleDialogContainer">
                 <mat-card class='mat-elevation-z margin-bottom-xlg no-padding'>
@@ -57,7 +64,7 @@
                         <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                         <mat-label>Select Organization</mat-label>
                         <mat-form-field appearance="outline" class="full-width">
-                            <mat-select [(ngModel)]="organization" [value]="'DAF Connect'">
+                            <mat-select [(ngModel)]="organization" [value]="organization">
                             <mat-option *ngFor="let org of organizations" [value]="org.value">
                                 {{org.viewValue}}
                             </mat-option>
@@ -69,11 +76,11 @@
                     </div>
             
                     <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="0px" 
-                        style='padding: 10px !important; background:#BEE3F8;'>
+                        style='padding: 10px !important; background:#c3f1f7;'>
                         <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                         <mat-label>Select Role</mat-label>
                         <mat-form-field appearance="outline" class="full-width">
-                            <mat-select [(ngModel)]="role" [value]="'Fleet Admin'">
+                            <mat-select [(ngModel)]="role" [value]="role">
                             <mat-option *ngFor="let role of roles" [value]="role.value">
                                 {{role.viewValue}}
                             </mat-option>
@@ -86,13 +93,7 @@
                 </mat-card>
             </div>    
             <!-- -------------------------------------------------------------------------------------------- -->
-            <div fxLayout="row" fxLayoutAlign="end">
-                <div class="logoutButton" fxLayout="column">
-                    <button mat-icon-button (click)="logOut()" class="menuToggler display-flex align-items-center">
-                        <mat-icon class='logoutIcon'>exit_to_app</mat-icon>
-                    </button>
-                </div>
-            </div>
+            
         </div>
         <div style="clear: both"></div>
         <ul>

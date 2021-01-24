@@ -19,6 +19,7 @@ export class EmployeeService {
   vehicleGroupServiceUrl: string = '';
   roleServiceUrl: string = '';
   userGroupServiceUrl: string = '';
+  roleRESTServiceURL: string = '';
   private serviceUrl = 'https://jsonplaceholder.typicode.com/users';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
@@ -26,6 +27,7 @@ export class EmployeeService {
     this.userGroupServiceUrl = config.getSettings("foundationServices").userGroupServiceUrl;
     this.vehicleGroupServiceUrl = config.getSettings("foundationServices").vehicleGroupServiceUrl;
     this.roleServiceUrl = config.getSettings("foundationServices").roleServiceUrl;
+    this.roleRESTServiceURL = config.getSettings("foundationServices").roleRESTServiceURL;
   }
   private listEmployee: Employee[] = [
     {
@@ -256,11 +258,13 @@ export class EmployeeService {
       .pipe(catchError(this.handleError));
   }
 
-  getUserRoles(): Observable<any[]> {
+  getUserRoles(data): Observable<any[]> {
     return this.httpClient
-      .get<any[]>(
-        `${this.roleServiceUrl}/GetRoles`
-      )
+      // .get<any[]>(
+      //   `${this.roleServiceUrl}/GetRoles`
+      // )
+      .post<any[]>(
+        `${this.roleRESTServiceURL}/Get`, data)
       .pipe(catchError(this.handleError));
   }
 

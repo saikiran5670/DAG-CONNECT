@@ -48,7 +48,7 @@ namespace net.atos.daf.ct2.audit
                 logs.Message = Message;  
                 logs.Sourceobject_id = Sourceobject_id;  
                 logs.Targetobject_id = Targetobject_id;  
-                logs.Updated_data = Updated_data;                
+                logs.Updated_data = Newtonsoft.Json.JsonConvert.SerializeObject(Updated_data);                
                 return await AddLogs(logs);
                
             }
@@ -58,9 +58,9 @@ namespace net.atos.daf.ct2.audit
             }
         }       
 
-        public async Task<IEnumerable<AuditTrail>> GetAuditLogs(int performed_by)
+        public async Task<IEnumerable<AuditTrail>> GetAuditLogs(int performed_by,string component_name)
         {
-            return await repository.GetAuditLogs(performed_by);
+            return await repository.GetAuditLogs(performed_by,component_name);
         }
     }
 }
