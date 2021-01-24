@@ -22,6 +22,8 @@ namespace net.atos.daf.ct2.auditservicerest
 {
     public class Startup
     {
+        
+        private readonly string swaggerBasePath = "audit";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -70,9 +72,7 @@ namespace net.atos.daf.ct2.auditservicerest
                 builder.AllowAnyHeader();
             });  
             
-            
-           app.UseSwagger();
-
+           
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -82,11 +82,16 @@ namespace net.atos.daf.ct2.auditservicerest
 
             
 
-             app.UseSwaggerUI(c =>
+            app.UseSwagger(c =>
             {
-               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Translation Service V1");
+                c.RouteTemplate = swaggerBasePath+"/swagger/{documentName}/swagger.json";
             });
 
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
+                c.RoutePrefix = $"{swaggerBasePath}/swagger";
+            });
         }
     }
 }

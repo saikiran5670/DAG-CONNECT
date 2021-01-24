@@ -49,7 +49,7 @@ public class SinkMessages<T> {
 
       SinkMessages sinkMessages = new SinkMessages();
       Properties properties = configuration();
-      sinkMessages.auditTrail(properties);
+      //sinkMessages.auditTrail(properties);
 
       sinkMessages.flinkConnection();
 

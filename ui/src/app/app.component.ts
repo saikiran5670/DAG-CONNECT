@@ -283,6 +283,7 @@ private setPageTitle() {
   }
 
   logOut() {
+    localStorage.removeItem('accountOrganizationId');
     this.router.navigate(["/auth/login"]);
   }
 

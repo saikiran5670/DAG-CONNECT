@@ -33,7 +33,7 @@ public class PostgresCdc {
 
       PostgresCdc postgresCdc = new PostgresCdc();
       Properties properties = postgresCdc.configuration(FILE_PATH);
-      postgresCdc.auditTrail(properties);
+      //postgresCdc.auditTrail(properties);
 
       Configuration configuration = postgresCdc.connectingPostgreSQL(properties);
 

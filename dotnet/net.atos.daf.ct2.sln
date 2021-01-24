@@ -111,6 +111,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.translatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.features", "corecomponents\net.atos.daf.ct2.features\net.atos.daf.ct2.features.csproj", "{9D3B67EE-D1C9-4B4F-809F-7C18336B5EF0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.featureservicerest", "businessservices\net.atos.daf.ct2.featureservicerest\net.atos.daf.ct2.featureservicerest.csproj", "{92DF3F86-9589-4AD1-9B09-B7EB4A9BFECC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -676,6 +678,18 @@ Global
 		{9D3B67EE-D1C9-4B4F-809F-7C18336B5EF0}.Release|x64.Build.0 = Release|Any CPU
 		{9D3B67EE-D1C9-4B4F-809F-7C18336B5EF0}.Release|x86.ActiveCfg = Release|Any CPU
 		{9D3B67EE-D1C9-4B4F-809F-7C18336B5EF0}.Release|x86.Build.0 = Release|Any CPU
+		{92DF3F86-9589-4AD1-9B09-B7EB4A9BFECC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92DF3F86-9589-4AD1-9B09-B7EB4A9BFECC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92DF3F86-9589-4AD1-9B09-B7EB4A9BFECC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{92DF3F86-9589-4AD1-9B09-B7EB4A9BFECC}.Debug|x64.Build.0 = Debug|Any CPU
+		{92DF3F86-9589-4AD1-9B09-B7EB4A9BFECC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{92DF3F86-9589-4AD1-9B09-B7EB4A9BFECC}.Debug|x86.Build.0 = Debug|Any CPU
+		{92DF3F86-9589-4AD1-9B09-B7EB4A9BFECC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92DF3F86-9589-4AD1-9B09-B7EB4A9BFECC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92DF3F86-9589-4AD1-9B09-B7EB4A9BFECC}.Release|x64.ActiveCfg = Release|Any CPU
+		{92DF3F86-9589-4AD1-9B09-B7EB4A9BFECC}.Release|x64.Build.0 = Release|Any CPU
+		{92DF3F86-9589-4AD1-9B09-B7EB4A9BFECC}.Release|x86.ActiveCfg = Release|Any CPU
+		{92DF3F86-9589-4AD1-9B09-B7EB4A9BFECC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3B76D23F-3BCE-4CB2-9A75-B50AEEFFB647} = {2783CFF0-6071-4B9E-8414-18ACB95D1997}
@@ -727,5 +741,6 @@ Global
 		{6E2AF781-F905-4733-8EF0-DA9231AD594B} = {05D9A3A5-02DB-44AC-8E17-030995037356}
 		{FB7FEAAB-50AA-4C10-8F0D-461E8D07FA62} = {05D9A3A5-02DB-44AC-8E17-030995037356}
 		{9D3B67EE-D1C9-4B4F-809F-7C18336B5EF0} = {2783CFF0-6071-4B9E-8414-18ACB95D1997}
+		{92DF3F86-9589-4AD1-9B09-B7EB4A9BFECC} = {E42B6632-428F-4BDE-BB14-D8FA9DD42E87}
 	EndGlobalSection
 EndGlobal

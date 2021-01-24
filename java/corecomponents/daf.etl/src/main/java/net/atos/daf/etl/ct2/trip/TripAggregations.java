@@ -61,6 +61,7 @@ public class TripAggregations implements Serializable{
 		return tripIndxClmns;
 	}
 	
+	//TODO make this method private after testing
 	public static DataStream<Tuple5<String, String, String, Integer, Double>> getTripIndexAggregatedData(SingleOutputStreamOperator<TripStatusData> hbaseStsData, StreamTableEnvironment tableEnv, SingleOutputStreamOperator<Tuple7<String, String, String, Integer, Integer, String, Long>> indxData)
 	{
 		tableEnv.createTemporaryView("indexData", indxData);
@@ -75,6 +76,22 @@ public class TripAggregations implements Serializable{
 		
 		return tableEnv
 				.toRetractStream(indxTblAggrResult, Row.class).map(new MapRowToTuple());
+	}
+	
+	public static DataStream<Trip> getConsolidatedTripData(SingleOutputStreamOperator<TripStatusData> hbaseStsData, SingleOutputStreamOperator<Tuple7<String, String, String, Integer, Integer, String, Long>> indxData, StreamTableEnvironment tableEnv)
+	{
+		DataStream<Tuple5<String, String, String, Integer, Double>> secondLevelAggrData = TripAggregations
+				.getTripIndexAggregatedData(hbaseStsData, tableEnv, indxData);
+		
+		tableEnv.createTemporaryView("aggrIndxData", secondLevelAggrData);
+		tableEnv.createTemporaryView("hbaseStsData", hbaseStsData);
+
+		// tripCalC02Emission (VUsedFuel * Master table(CO2 Coefficient Fuel))/1000
+		Table tripTblData = tableEnv.sqlQuery(ETLQueries.CONSOLIDATED_TRIP_QRY);
+
+		// TODO yet To include getcurrentUTCTime() , tripCalC02Emission (VUsedFuel * Master table(CO2 Coefficient Fuel))/1000 , tripCalAvgGrossWtComb
+
+		return tableEnv.toRetractStream(tripTblData, Trip.class).map(rec -> rec.f1);
 	}
 	
 	public static DataStream<Trip> getConsolidatedTripData(SingleOutputStreamOperator<TripStatusData> hbaseStsData,DataStream<Tuple5<String, String, String, Integer, Double>> secondLevelAggrData, StreamTableEnvironment tableEnv)

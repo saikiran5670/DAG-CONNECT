@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
 {
 
     [ApiController]
-    [Route("[controller]")]
+    [Route("translation")]
     public class TranslationController : ControllerBase
     {
          private readonly ILogger<TranslationController> _logger;
@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
         }
 
         [HttpPost]
-        [Route("GetMenuTranslations")]
+        [Route("getmenutranslations")]
          public async  Task<IActionResult> GetTranslations(Translations request)
         {
           try
@@ -50,7 +50,7 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
         }
 
         [HttpGet]
-        [Route("GetCommonTranslations")]
+        [Route("getcommontranslations")]
         public async  Task<IActionResult> GetCommonTranslations(string LanguageCode)
         {
           try
@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
         }
 
         [HttpGet]
-        [Route("GetAlltranslationByKey")]
+        [Route("getlanguagetranslationsbykey")]
         public async Task<IActionResult> GetLangagugeTranslationByKey(string key)
         {
           try
@@ -91,7 +91,7 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
         }
 
         [HttpGet]
-        [Route("GetKeyTranslationByLanguageCode")]
+        [Route("getkeytranslationbylanguagecode")]
          public async  Task<IActionResult> GetKeyTranslationByLanguageCode(string languagecode,string key)
         {
             try
@@ -109,7 +109,7 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
         }
 
         [HttpGet]
-        [Route("GetTranslationsForDropDowns")]
+        [Route("gettranslationsfordropdowns")]
          public async  Task<IActionResult> GetTranslationsForDropDowns(string Dropdownname, string languagecode)
         {
             try
@@ -128,7 +128,7 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
 
 
         [HttpGet]
-        [Route("GetAllLangaugecodes")]
+        [Route("getallanguagecodes")]
          public async  Task<IActionResult> GetAllLangaugecodes()
          {
                  _logger.LogInformation("All langauges method get");

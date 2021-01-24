@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.flink.api.java.tuple.Tuple5;
 import org.apache.flink.api.java.tuple.Tuple7;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.core.fs.FileSystem;
@@ -16,7 +15,7 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.atos.daf.common.AuditETLJobClient;
+import net.atos.daf.common.ct2.audittrail.TripAuditTrail;
 import net.atos.daf.common.ct2.exception.FailureException;
 import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.etl.ct2.common.bo.Trip;
@@ -31,8 +30,6 @@ public class TripETLJob {
 
 	public static void main(String[] args) throws Exception {
 
-		Map<String, String> auditMap = null;
-		AuditETLJobClient auditing = null;
 		ParameterTool envParams = null;
 
 		try {
@@ -71,16 +68,21 @@ public class TripETLJob {
 
 			SingleOutputStreamOperator<Tuple7<String, String, String, Integer, Integer, String, Long>> indxData = TripAggregations
 					.getTripIndexData(hbaseStsData, tableEnv, envParams);
-			DataStream<Tuple5<String, String, String, Integer, Double>> secondLevelAggrData = TripAggregations
+			/*DataStream<Tuple5<String, String, String, Integer, Double>> secondLevelAggrData = TripAggregations
 					.getTripIndexAggregatedData(hbaseStsData, tableEnv, indxData);
 			DataStream<Trip> finalTripData = TripAggregations.getConsolidatedTripData(hbaseStsData, secondLevelAggrData,
+					tableEnv);*/
+			DataStream<Trip> finalTripData = TripAggregations.getConsolidatedTripData(hbaseStsData, indxData,
 					tableEnv);
 
 			// TODO read master data
 			finalTripData.addSink(new TripSink());
 
 			// Call Audit Trail
-			try {
+			TripAuditTrail.auditTrail(envParams, ETLConstants.AUDIT_EVENT_STATUS_START, ETLConstants.TRIP_JOB_NAME, "Trip ETL Job Started",
+					ETLConstants.AUDIT_CREATE_EVENT_TYPE);
+			
+			/*try {
 				auditing = new AuditETLJobClient(envParams.get(ETLConstants.GRPC_SERVER),
 						Integer.valueOf(envParams.get(ETLConstants.GRPC_PORT)));
 				auditMap = createAuditMap(ETLConstants.AUDIT_EVENT_STATUS_START, "Trip ETL Job Started");
@@ -89,13 +91,13 @@ public class TripETLJob {
 			} catch (Exception e) {
 				// TODO cross check - Need not abort the job on GRPC failure
 				logger.error("Issue while auditing :: " + e.getMessage());
-			}
+			}*/
 
-			env.execute(" Daf Connect");
+			env.execute("Trip ETL Job");
 
 		} catch (Exception e) {
 
-			try {
+			/*try {
 				auditMap = createAuditMap(ETLConstants.AUDIT_EVENT_STATUS_FAIL,
 						"Trip ETL Job Failed, reason :: " + e.getMessage());
 
@@ -105,7 +107,10 @@ public class TripETLJob {
 				auditing.closeChannel();
 			} catch (Exception ex) {
 				logger.error("Issue while auditing :: " + ex.getMessage());
-			}
+			}*/
+			
+			TripAuditTrail.auditTrail(envParams, ETLConstants.AUDIT_EVENT_STATUS_START, ETLConstants.TRIP_JOB_NAME, "Trip ETL Job Failed :: "+e.getMessage(),
+					ETLConstants.AUDIT_CREATE_EVENT_TYPE);
 
 			// TODO pass appropriate error message
 			// ExceptionUtils.getRootCauseMessage(e)

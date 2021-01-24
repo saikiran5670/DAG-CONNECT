@@ -113,9 +113,6 @@ public class TestTripETLJob {
         // verify your results
        int sz = CollectSink.values.size();
        Assert.assertEquals(CollectSink.values.get(sz-1).getTripCalUsedFuel(), Long.valueOf(110));
-		
-        
-
 	}
 
 	

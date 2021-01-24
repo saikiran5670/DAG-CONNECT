@@ -25,6 +25,14 @@ spec:
           servicePort: 80
         path: /auth
       - backend:
+          serviceName: authenticationservice
+          servicePort: 80
+        path: /login
+      - backend:
+          serviceName: authenticationservice
+          servicePort: 80
+        path: /validate
+      - backend:
           serviceName: accountservice
           servicePort: 80
         path: /account
@@ -40,6 +48,14 @@ spec:
           serviceName: roleservice 
           servicePort: 80
         path: /role   
+      - backend:
+          serviceName: translationservice 
+          servicePort: 80
+        path: /translation
+      - backend:
+          serviceName: auditservice 
+          servicePort: 80
+        path: /audit
       - backend:
           serviceName: uimanagement-service
           servicePort: 80

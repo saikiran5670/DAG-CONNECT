@@ -80,7 +80,19 @@ namespace net.atos.daf.ct2.role
             try
             {
                 //var Roles = roleRepository.GetRoles(rolefilter);
-                return await roleRepository.GetRoles(rolefilter);
+                var role = await roleRepository.GetRoles(rolefilter);
+                foreach(var item in role)
+                {
+                    var features = await FeatureManager.GetFeatureIdsForFeatureSet(item.Feature_set_id ?? 0);
+                    item.FeatureSet   = new FeatureSet();
+                    item.FeatureSet.Features = new List<Feature>();
+                    foreach(var t in features)
+                    {
+                            item.FeatureSet.Features.Add(new Feature{ Id = t.Id});
+                    }
+                    
+                }
+                return role;
             }
             catch (Exception ex)
             {
@@ -92,8 +104,16 @@ namespace net.atos.daf.ct2.role
         {
             try
             {
-                int RoleId= await roleRepository.UpdateRole(roleMaster);
+                   roleMaster.FeatureSet.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds();
+                   int RoleId = 0;
+                   int featuresetid = await FeatureManager.AddFeatureSet(roleMaster.FeatureSet);
+                   if(featuresetid > 0 )
+                   {
+                       roleMaster.Feature_set_id = featuresetid;
+                        RoleId= await roleRepository.UpdateRole(roleMaster);
                // auditlog.AddLogs(roleMaster.Updatedby,roleMaster.modifiedby,1,"Update Role", RoleId > 0,"Role Management", "Role Updated With Role Id " + RoleId.ToString());
+                   }
+               
                 return RoleId;
             }
             catch (Exception ex)

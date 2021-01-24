@@ -156,23 +156,59 @@ namespace net.atos.daf.ct2.features.repository
 
         }
 
-        public async Task<IEnumerable<Feature>> GetFeatures(char Featuretype,bool Active)
+        public async Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, char? Featuretype)
         {
 
-            var QueryStatement = @"SELECT id, name, 
-                                description, type, is_active,
-                                data_attribute_set_id
-                                FROM master.feature
-                                    Where is_active= @Active
-                                    and (type=@type OR @type='0')";
-
+            var QueryStatement = @"SELECT f.id, f.name, 
+                                f.description, f.type, f.is_active,r.id as roleid  ,   r.organization_id                        
+                                FROM master.feature f
+								 join master.featuresetfeature fsf
+								on fsf.feature_id= f.id
+								 join master.Role r
+								on r.feature_set_id = fsf.feature_set_id";
+            
+            
             var parameter = new DynamicParameters();
-            parameter.Add("@type", Featuretype);
-            parameter.Add("@Active", Active);
-            IEnumerable<Feature> FeatureSetDetails = await dataAccess.QueryAsync<Feature>(QueryStatement, parameter);
+            if (RoleId > 0)
+            {
+                parameter.Add("@RoleId", RoleId);
+                QueryStatement = QueryStatement + " and r.id  = @RoleId";
+
+            }
+            // organization id filter
+            if (Organizationid > 0)
+            {
+                parameter.Add("@organization_id", Organizationid);
+                QueryStatement = QueryStatement + " and r.organization_id  = @organization_id";
+
+            }
+            if (Featuretype != 0)
+            {
+                 parameter.Add("@type", Featuretype);
+                QueryStatement = QueryStatement + " and f.type  = @type";
+
+            }
+
+           
+           IEnumerable<Feature> FeatureSetDetails = await dataAccess.QueryAsync<Feature>(QueryStatement, parameter);
             return FeatureSetDetails;
 
         }
+
+         public async Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int feature_set_id)
+         {
+             var QueryStatement = @"SELECT feature_id as id
+                                   FROM master.featuresetfeature
+                                    Where feature_set_id = @feature_set_id
+                                    ";
+
+            var parameter = new DynamicParameters();
+            parameter.Add("@feature_set_id", feature_set_id);
+            IEnumerable<Feature> FeatureSetDetails = await dataAccess.QueryAsync<Feature>(QueryStatement, parameter);
+            return FeatureSetDetails;
+
+
+         }
 
         public async Task<int> CheckFeatureSetExist(string FeatureSetName)
         {

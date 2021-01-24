@@ -27,6 +27,7 @@ namespace net.atos.daf.ct2.customerdataservice
 {
     public class Startup
     {
+        private readonly string swaggerBasePath = "customer-data";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -38,12 +39,12 @@ namespace net.atos.daf.ct2.customerdataservice
         public void ConfigureServices(IServiceCollection services)
         {
              services.AddControllers();
-
             var connectionString = Configuration.GetConnectionString("ConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
+            
             //services.AddControllers();
-            //var connectionString="Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
-           // IDataAccess dataAccess = new PgSQLDataAccess(connectionString);           
+        //    var connectionString="Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+        //    IDataAccess dataAccess = new PgSQLDataAccess(connectionString);           
            services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration")); 
            
             services.AddSingleton(dataAccess); 
@@ -91,24 +92,17 @@ namespace net.atos.daf.ct2.customerdataservice
             {
                 endpoints.MapControllers();
             });
-            app.UseSwagger();
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer Data Service V1");
-            });
 
-          /*  app.UseSwagger(c =>
+            app.UseSwagger(c =>
             {
-                c.RouteTemplate = "customer-data/swagger/{documentName}/swagger.json";
+                c.RouteTemplate = swaggerBasePath+"/swagger/{documentName}/swagger.json";
             });
-
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/customer-data/swagger/v1/swagger.json", "Customer Data Service V1");
-                c.RoutePrefix = "customer-data";
-            });*/
+                c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
+                c.RoutePrefix = $"{swaggerBasePath}/swagger";
+            });
         }
     }
 }
