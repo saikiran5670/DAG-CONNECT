@@ -33,39 +33,41 @@ jobs:
       inputs:
         mavenPomFile: java/commoncomponent/daf.common/pom.xml
         publishJUnitResults: false
+        goals: Clean Install
 
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
       inputs:
-        SourceFolder: '$(system.defaultworkingdirectory)/java/commoncomponent/daf.common/target'
+        SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/*.jar'
-        TargetFolder: '/home/adminroot/.m2/repository/net/atos/daf.common/0.0.1/'
+        TargetFolder: '$(build.artifactstagingdirectory)'
         CleanTargetFolder: true
       condition: succeededOrFailed()
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: drop'
       inputs:
-        PathtoPublish: '/home/adminroot/.m2/repository/net/atos/daf.common/0.0.1'
+        PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
     - task: Maven@3
       displayName: 'Maven java/commoncomponent/common.serialization.deserialization/pom.xml'
       inputs:
         mavenPomFile: java/commoncomponent/common.serialization.deserialization/pom.xml
         publishJUnitResults: false
+        goals: Clean Install
 
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
       inputs:
-        SourceFolder: '$(system.defaultworkingdirectory)/java/commoncomponent/common.serialization.deserialization/target'
+        SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/*.jar'
-        TargetFolder: '/home/adminroot/.m2/repository/net/atos/daf/ct2/common.serialization.deserialization/1.0-SNAPSHOT'
+        TargetFolder: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: drop'
       inputs:
-        PathtoPublish: '/home/adminroot/.m2/repository/net/atos/daf/ct2/common.serialization.deserialization/1.0-SNAPSHOT'
+        PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
 
     - task: Maven@3
@@ -73,6 +75,7 @@ jobs:
       inputs:
         mavenPomFile: java/corecomponents/streaming.masterdata.messages/pom.xml
         publishJUnitResults: false
+        goals: Clean Install
 
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
@@ -93,6 +96,7 @@ jobs:
       inputs:
         mavenPomFile: java/corecomponents/streaming.conti.messages/pom.xml
         publishJUnitResults: false
+        goals: Clean Install
 
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
@@ -111,8 +115,9 @@ jobs:
     - task: Maven@3
       displayName: 'Maven java/corecomponents/sinking.externally.messages/pom.xml'
       inputs:
-        mavenPomFile: java/corecomponents/sinking.externally.messages
+        mavenPomFile: java/corecomponents/sinking.externally.messages/pom.xml
         publishJUnitResults: false
+        goals: Clean Install
 
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
