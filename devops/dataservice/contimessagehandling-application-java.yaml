@@ -26,6 +26,16 @@ variables:
   - group: TEST01-Build-Variables
 
 jobs:
+- deployment: Copy_file_to_VM
+  pool: $(PRIVATEAGENT)
+  environment: Flink Dev 1
+  strategy:
+   runOnce:
+     deploy:
+       steps:
+       - bash: |
+          mv $(system.defaultworkingdirectory)/java/corecomponents/common_configuration.properties /home/flinkhuser
+
 - job: Build
   steps:
     - task: Maven@3
@@ -110,12 +120,3 @@ jobs:
         PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
 
-- deployment: Copy_file_to_VM
-  pool: $(PRIVATEAGENT)
-  environment: Flink Dev 1
-  strategy:
-   runOnce:
-     deploy:
-       steps:
-       - bash: |
-          mv $(system.defaultworkingdirectory)/java/corecomponents/common_configuration.properties /home/flinkhuser
