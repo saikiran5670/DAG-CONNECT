@@ -65,17 +65,22 @@ namespace net.atos.daf.ct2.audit.repository
                   
        }
 
-       public async Task<IEnumerable<AuditTrail>> GetAuditLogs(int performed_by)
+       public async Task<IEnumerable<AuditTrail>> GetAuditLogs(int performed_by,string component_name)
         {
             try
             {
                
                  var parameter = new DynamicParameters();
                   parameter.Add("@performed_by", performed_by);
-
-                   return await dataAccess.QueryAsync<AuditTrail>(@"SELECT id, performed_by, component_name, service_name,  message, sourceobject_id, targetobject_id, updated_data
-	                        FROM logs.audittrail where performed_by = @performed_by order by 1 desc", parameter);
-                            
+                  parameter.Add("@component_name", component_name);
+                List<AuditTrail> list =  new List<AuditTrail>();
+                   var result = await dataAccess.QueryAsync<dynamic>(@"SELECT id,created_at, performed_at, performed_by, component_name, service_name,  message, sourceobject_id, targetobject_id, updated_data
+	                        FROM logs.audittrail where performed_by = @performed_by and component_name = @component_name order by 1 desc", parameter);
+                foreach(var item in result)
+                {
+                        list.Add(Map(item));
+                }
+                return list;
             }
             catch (System.Exception)
             {
@@ -83,6 +88,24 @@ namespace net.atos.daf.ct2.audit.repository
             }
 
         }
+
+         private AuditTrail Map(dynamic record)
+            {
+                AuditTrail Entity = new AuditTrail();
+                Entity.Audittrailid= record.id;
+                if (record.created_at != null)
+                Entity.Created_at = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.created_at,"America/New_York", "yyyy-MM-ddTHH:mm:ss"));
+                if (record.performed_at != null)
+                Entity.Performed_at = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.performed_at,"America/New_York", "yyyy-MM-ddTHH:mm:ss"));
+                Entity.Performed_by = record.performed_by;
+                Entity.Component_name =  record.component_name;
+                Entity.Service_name = record.service_name;
+                Entity.Message =  record.message;
+                Entity.Sourceobject_id =  record.sourceobject_id;
+                Entity.Targetobject_id = record.targetobject_id;
+                Entity.Updated_data = record.updated_data;
+                return Entity;
+            }   
 
   }
 

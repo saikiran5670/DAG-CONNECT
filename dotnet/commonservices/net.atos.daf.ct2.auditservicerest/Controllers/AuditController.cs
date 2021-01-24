@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.auditservicerest.Controllers
                 // logs.Sourceobject_id = request.SourceobjectId;  
                 // logs.Targetobject_id = request.TargetobjectId;  
                 // logs.Updated_data = request.UpdatedData;     
-                request.Updated_data = null;
+                request.Updated_data = request.Updated_data;
                 var result = await _AuditTrail.AddLogs(request);
                
                  return Ok(result);
@@ -61,13 +61,13 @@ namespace net.atos.daf.ct2.auditservicerest.Controllers
 
         [HttpGet]
         [Route("GetLogs")]
-         public async  Task<IActionResult> GetAllLangaugecodes(int PerformedBy)
+         public async  Task<IActionResult> GetAllLangaugecodes(int PerformedBy, string component_name)
          {
              try
              {
                  _logger.LogInformation("All langauges method get");
             // var translations =  translationmanager.GetTranslationsByMenu(request.ID,(translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString().ToUpper())).Result;
-            var translations = await _AuditTrail.GetAuditLogs(PerformedBy);
+            var translations = await _AuditTrail.GetAuditLogs(PerformedBy,component_name);
             return Ok(translations);
 
              }
