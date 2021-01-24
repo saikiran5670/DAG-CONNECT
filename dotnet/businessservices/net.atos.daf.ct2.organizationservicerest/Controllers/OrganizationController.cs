@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
     public class OrganizationController: ControllerBase
     {
         private readonly ILogger<OrganizationController> logger; 
-        private readonly IAuditLogRepository _IAuditLogRepository;       
+      //  private readonly IAuditLogRepository _IAuditLogRepository;       
         private readonly IAuditTraillib _AuditTrail;      
         private readonly IOrganizationManager organizationtmanager;
         private readonly IPreferenceManager preferencemanager;

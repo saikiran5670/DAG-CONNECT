@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.organizationservicerest
 {
     public class Startup
     {
-        private readonly string swaggerBasePath = "account";
+        private readonly string swaggerBasePath = "organization";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
