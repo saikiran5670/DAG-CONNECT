@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
         }
 
         [HttpPost]
-        [Route("Create")]
+        [Route("create")]
         public async Task<IActionResult> Create(AccountRequest request)
         {
             try
@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
         }
 
         [HttpPost]
-        [Route("Update")]
+        [Route("update")]
         public async Task<IActionResult> Update(AccountRequest request)
         {
             try
@@ -114,7 +114,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
         }
 
         [HttpPost]
-        [Route("Delete")]
+        [Route("delete")]
         public async Task<IActionResult> Delete(AccountRequest request)
         {
             try
@@ -141,7 +141,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
         }
 
         [HttpPost]
-        [Route("ChangePassword")]
+        [Route("changepassword")]
         public async Task<IActionResult> ChangePassword(AccountRequest request)
         {
             try
@@ -174,7 +174,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             }
         }
         [HttpPost]
-        [Route("Get")]
+        [Route("get")]
         public async Task<IActionResult> Get(AccountComponent.entity.AccountFilter accountFilter)
         {
             try
@@ -198,7 +198,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
         }
 
         [HttpPost]
-        [Route("GetAccountDetail")]
+        [Route("getaccountdetail")]
         public async Task<IActionResult> GetAccountDetail(AccountDetailRequest request)
         {
             try
@@ -317,7 +317,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
 
         // Begin Account Preference
         [HttpPost]
-        [Route("Preference/Create")]
+        [Route("preference/create")]
         public async Task<IActionResult> CreateAccountPreference(AccountPreferenceRequest request)
         {
             try
@@ -343,7 +343,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             }
         }
         [HttpPost]
-        [Route("Preference/Update")]
+        [Route("preference/update")]
         public async Task<IActionResult> UpdateAccountPreference(AccountPreferenceRequest request)
         {
             try
@@ -370,7 +370,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
         }
 
         [HttpDelete]
-        [Route("Preference/Delete")]
+        [Route("preference/delete")]
         public async Task<IActionResult> DeleteAccountPreference(int accountId)
         {
             try
@@ -392,7 +392,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
         }
 
         [HttpGet]
-        [Route("Preference/Get")]
+        [Route("preference/get")]
         public async Task<IActionResult> GetAccountPreference(int accountId)
         {
             try
@@ -426,7 +426,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
 
         // Begin - AccessRelationship
         [HttpPost]
-        [Route("AccessRelationship/Create")]
+        [Route("accessrelationship/create")]
         public async Task<IActionResult> CreateAccessRelationship(AccessRelationshipRequest request)
         {
             try
@@ -466,7 +466,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
         }
 
         [HttpPost]
-        [Route("AccessRelationship/Update")]
+        [Route("accessrelationship/update")]
         public async Task<IActionResult> UpdateAccessRelationship(AccessRelationshipRequest request)
         {
             try
@@ -506,7 +506,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
         }
 
         [HttpPost]
-        [Route("AccessRelationship/Delete")]
+        [Route("accessrelationship/delete")]
         public async Task<IActionResult> DeleteAccessRelationship(AccessRelationshipRequest request)
         {
             try
@@ -528,7 +528,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
         }
 
         [HttpGet]
-        [Route("AccessRelationship/Get")]
+        [Route("accessrelationship/get")]
         public async Task<IActionResult> GetAccessRelationship(int AccountId, int AccountGroupId)
         {
             try
