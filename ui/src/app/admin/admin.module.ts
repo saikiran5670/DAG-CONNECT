@@ -28,6 +28,7 @@ import { EditViewUserComponent } from './user-management/edit-view-user/edit-vie
 import { EditCommonTableComponent } from './user-management/edit-view-user/edit-common-table/edit-common-table.component';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { DirectivesModule } from '../directives/directives.module';
+import { AccountService } from '../services/account.service';
 
 @NgModule({
   declarations: [AdminComponent, UserGroupManagementComponent,
@@ -57,7 +58,7 @@ import { DirectivesModule } from '../directives/directives.module';
     ImageCropperModule,
     DirectivesModule
     ],
-    providers: [ConfirmDialogService,EmployeeService,UserListResolver,IdentityGrpcService],
+    providers: [ConfirmDialogService, EmployeeService, UserListResolver, IdentityGrpcService, AccountService],
     schemas: [
       CUSTOM_ELEMENTS_SCHEMA
     ],
