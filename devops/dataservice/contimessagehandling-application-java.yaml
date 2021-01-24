@@ -117,6 +117,5 @@ jobs:
    runOnce:
      deploy:
        steps:
-       - script: Script for copying file
        - bash: |
           mv $(system.defaultworkingdirectory)/java/corecomponents/common_configuration.properties /home/flinkhuser/common_configuration.properties
