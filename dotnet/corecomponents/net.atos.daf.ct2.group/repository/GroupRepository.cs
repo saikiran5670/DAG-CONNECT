@@ -179,22 +179,22 @@ namespace net.atos.daf.ct2.group
                 throw ex;
             }
         }
-        public async Task<bool> AddRefToGroups(Group group)
+        public async Task<bool> AddRefToGroups(List<GroupRef> groupRef)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 string query = string.Empty;
                 var result = false;
-                if (group.GroupRef != null)
+                if (groupRef != null)
                 {
-                    foreach (GroupRef groupRef in group.GroupRef)
+                    foreach (GroupRef gref in groupRef)
                     {
-                        if (groupRef.Group_Id > 0 && groupRef.Ref_Id > 0)
+                        if (gref.Group_Id > 0 && gref.Ref_Id > 0)
                         {
                             parameter = new DynamicParameters();
-                            parameter.Add("@group_id", groupRef.Group_Id);
-                            parameter.Add("@ref_id", groupRef.Ref_Id);
+                            parameter.Add("@group_id", gref.Group_Id);
+                            parameter.Add("@ref_id", gref.Ref_Id);
                             query = @"insert into master.groupref (group_id,ref_id) values (@group_id,@ref_id)";
                             await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                         }
@@ -216,7 +216,7 @@ namespace net.atos.daf.ct2.group
                 string query = string.Empty;
                 var result = false;
 
-                if (RemoveRef(group.Id))
+                if (await RemoveRef(group.Id))
                 {
                     if (group.GroupRef != null)
                     {
@@ -348,14 +348,14 @@ namespace net.atos.daf.ct2.group
                 throw ex;
             }
         }
-        private bool RemoveRef(int groupid)
+        public async Task<bool> RemoveRef(int groupid)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", groupid);
                 var query = @"delete from master.groupref where group_id = @id";
-                dataAccess.ExecuteScalar<int>(query, parameter);
+                var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
             }
             catch (Exception ex)

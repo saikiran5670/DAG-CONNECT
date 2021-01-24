@@ -113,6 +113,10 @@ namespace net.atos.daf.ct2.account
             {
                 result = await repository.Delete(account.Id, account.Organization_Id);
             }
+            else if (identityresult.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                    //TODO:  need to handle this -- is there in DB but not is IDP.
+            }
             return result;
         }
         public async Task<bool> ChangePassword(Account account)
