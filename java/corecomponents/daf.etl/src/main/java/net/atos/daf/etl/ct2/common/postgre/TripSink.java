@@ -15,9 +15,9 @@ import net.atos.daf.etl.ct2.common.util.ETLConstants;
 public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 	
 
-	   /**
-	 * 
-	 */
+	/**
+	* 
+	*/
 	private static final long serialVersionUID = 1L;
 	private PreparedStatement statement;
 	private Connection connection;
@@ -461,6 +461,15 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 				envParams.get(ETLConstants.DATAMART_POSTGRE_USER),
 				envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
 		connection = PostgreDataSourceConnection.getDataSourceConnection(dataSource);
+		
+		//TODOonly for testing remove
+		System.out.println("envParams.get(ETLConstants.POSTGRE_SQL_SERVER_NAME) :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME));
+		System.out.println("envParams.get(ETLConstants.POSTGRE_SQL_PORT) :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_PORT));
+		System.out.println("envParams.get(ETLConstants.POSTGRE_SQL_DATABASE_NAME) :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME));
+		System.out.println("envParams.get(ETLConstants.POSTGRE_SQL_USER) :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_USER));
+		System.out.println("envParams.get(ETLConstants.POSTGRE_SQL_PASSWORD) :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
+		System.out.println("Connectio ======="+connection);
+		
 		
 		statement = connection.prepareStatement(query);
 	}
