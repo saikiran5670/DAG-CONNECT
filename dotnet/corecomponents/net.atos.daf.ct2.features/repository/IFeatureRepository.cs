@@ -18,6 +18,7 @@ namespace net.atos.daf.ct2.features.repository
          Task<IEnumerable<Feature>> GetFeatures(char Featuretype,bool Active);
         Task<int> CheckFeatureSetExist(string FeatureSetName);
         Task<IEnumerable<FeatureSet>> GetFeatureSetFeature(int FeatureSetId);
+         Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int feature_set_id);
         
         #endregion
     }

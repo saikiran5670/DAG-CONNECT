@@ -174,6 +174,21 @@ namespace net.atos.daf.ct2.features.repository
 
         }
 
+         public async Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int feature_set_id)
+         {
+             var QueryStatement = @"SELECT feature_id as id
+                                   FROM master.featuresetfeature
+                                    Where feature_set_id = @feature_set_id
+                                    ";
+
+            var parameter = new DynamicParameters();
+            parameter.Add("@feature_set_id", feature_set_id);
+            IEnumerable<Feature> FeatureSetDetails = await dataAccess.QueryAsync<Feature>(QueryStatement, parameter);
+            return FeatureSetDetails;
+
+
+         }
+
         public async Task<int> CheckFeatureSetExist(string FeatureSetName)
         {
             var QueryStatement = @"SELECT CASE WHEN featuresetid IS NULL THEN 0 ELSE featuresetid END

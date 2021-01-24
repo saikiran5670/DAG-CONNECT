@@ -31,5 +31,10 @@ namespace net.atos.daf.ct2.features
         {
             return await FeatureRepository.GetFeatures(Featuretype, Active);
         }
+
+        public async Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int GetFeatureIdsForFeatureSet)
+        {
+            return await FeatureRepository.GetFeatureIdsForFeatureSet(GetFeatureIdsForFeatureSet);
+        }
     }
 }

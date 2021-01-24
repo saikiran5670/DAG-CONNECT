@@ -130,17 +130,19 @@ namespace net.atos.daf.ct2.role.repository
                                 role.organization_id, 
                                 role.name, 
                                 role.is_active, 
+                                role.description,
                                 role.created_date, 
                                 role.created_by, 
                                 role.updated_date,
                                 role.updated_by,
+                                role.feature_set_id,
                                 fsf.featurescount as featurescount
 	                            FROM master.role role
 								LEFT JOIN (Select Count(feature_id) as featurescount,feature_set_id
 										   from master.featuresetfeature
 										  group by feature_set_id) fsf
-								on role.feature_set_id = fsf.feature_set_id
-                                WHERE  1=1";
+								on role.feature_set_id = fsf.feature_set_id 
+                                WHERE  is_active = true";
 
 
             var parameter = new DynamicParameters();
@@ -158,17 +160,13 @@ namespace net.atos.daf.ct2.role.repository
 
             }
 
-            // Status Filter
-            if (roleFilter.Is_Active != null)
-            {
-                parameter.Add("@is_active", roleFilter.Is_Active);
-                QueryStatement = QueryStatement + " and is_active = @is_active";
-
-            }                    
+                   
             IEnumerable<RoleMaster> roledetails = await dataAccess.QueryAsync<RoleMaster>(QueryStatement, parameter);
             return roledetails;
 
         }
+
+
 
         public async Task<int> UpdateRole(RoleMaster roleMaster)
         {
@@ -176,6 +174,7 @@ namespace net.atos.daf.ct2.role.repository
             parameter.Add("@id", roleMaster.Id);
             parameter.Add("@organization_id", roleMaster.Organization_Id);
             parameter.Add("@name", roleMaster.Name);
+            parameter.Add("@feature_set_id", roleMaster.Feature_set_id);
             parameter.Add("@updatedby", roleMaster.Updatedby);
             parameter.Add("@updateddate", UTCHandling.GetUTCFromDateTime(DateTime.Now));            
             parameter.Add("@description", roleMaster.Description);
@@ -183,6 +182,7 @@ namespace net.atos.daf.ct2.role.repository
             var RoleQueryStatement = @" UPDATE master.role
                                             SET name=@name,
                                             description= @Description,
+                                             feature_set_id = @feature_set_id,
                                             updated_by=@updatedby,
                                             updated_date=@updateddate  
                                         WHERE id = @id
