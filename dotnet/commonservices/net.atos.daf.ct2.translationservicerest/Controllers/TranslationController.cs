@@ -28,19 +28,19 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
             translationmanager=_TranslationManager;
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("GetMenuTranslations")]
          public async  Task<IActionResult> GetTranslations(Translations request)
         {
           try
           {
+            _logger.LogInformation("Get translation Common  method get "  + request.Code + " "+ request.MenuId);
              List<Translations> responce = new List<Translations>();
             // var translations =  translationmanager.GetTranslationsByMenu(request.ID,(translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString().ToUpper())).Result;
             var translations = await translationmanager.GetTranslationsByMenu(request.MenuId,(translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString()),request.Code);
             
 
-          return Ok(translations);
-           return Ok(translations);
+            return Ok(translations);
           }
           catch(Exception ex)
           {
@@ -55,6 +55,8 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
         {
           try
           {
+            _logger.LogInformation("Get translation Common  method get "  + LanguageCode);
+
              List<Translations> responce = new List<Translations>();
             // var translations =  translationmanager.GetTranslationsByMenu(request.ID,(translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString().ToUpper())).Result;
             var translations = await translationmanager.GetTranslationsByMenu(0,translationenum.MenuType.Menu,LanguageCode);
@@ -69,12 +71,13 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
           }
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("GetAlltranslationByKey")]
         public async Task<IActionResult> GetLangagugeTranslationByKey(string key)
         {
           try
           {
+            _logger.LogInformation("Get translation key method get "  + key);
              var translation = await translationmanager.GetLangagugeTranslationByKey(key);
              return Ok(translation);
           }
@@ -93,6 +96,7 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
         {
             try
             {
+              _logger.LogInformation("Get translation key lan code method get " + languagecode +" " + key);
               var translation = await translationmanager.GetKeyTranslationByLanguageCode(languagecode,key);
               return Ok(translation);
             }
@@ -110,6 +114,7 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
         {
             try
             {
+              _logger.LogInformation("Drop down method get" + Dropdownname + languagecode);
               var translation = await translationmanager.GetTranslationsForDropDowns(Dropdownname,languagecode);
               return Ok(translation);
             }
