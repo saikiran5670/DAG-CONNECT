@@ -2,12 +2,6 @@ package net.atos.daf.etl.ct2.common.util;
 
 public class ETLConstants {
 	
-	public static final String DAF_ENV = "DAF_ENV";
-	public static final String DOT_PROPERTIES = ".properties";
-	public static final String BOOTSTRAP_SERVERS = "bootstrap.servers";
-	public static final String LOCAL_BOOTSTRAP_SERVERS = "local_bootstrap_servers";
-	public static final String GROUP_ID = "group.id";
-	
 	//Streaming environment 
 	public static final String PARALLELISM = "parallelism";
 	public static final String CHECKPOINT_INTERVAL = "checkpoint_interval";
@@ -17,7 +11,6 @@ public class ETLConstants {
 	public static final String CHECKPOINT_DIRECTORY = "checkpoint_directory";
 	public static final String RESTART_ATTEMPS = "restart_attempts";
 	public static final String RESTART_INTERVAL = "restart_interval";
-	
 		
 	//HBase
 	public static final String HBASE_ZOOKEEPER_QUORUM = "hbase.zookeeper.quorum";
@@ -190,7 +183,23 @@ public class ETLConstants {
 	public static final String TRIP_JOB_NAME ="tripEtlJob";
 	public static final String DEFAULT_OBJECT_ID ="00";
 
+	//Kafka parameter
 	
+	public static final String BOOTSTRAP_SERVERS="bootstrap.servers";
+	public static final String WN0_KAFKA_INTERNAL_9092 = "wn0-kafka.c0kbh01dsx0uhhbdv5oig221gb.ax.internal.cloudapp.net:9092";
+	public static final String ZOOKEEPER_CONNECT= "zookeeper.connect";
+	public static final String WN0_KAFKA_INTERNAL_2181 = "wn0-kafka.c0kbh01dsx0uhhbdv5oig221gb.ax.internal.cloudapp.net:2181";
+	public static final String GROUP_ID="group.id";
+	public static final String INDEX_TOPIC="Index_Topic";
+	public static final String MONITORING_TOPIC="Monitoring_Topic";
+	public static final String STATUS_TOPIC = "Status_Topic";
+	public static final String EVENT_HUB_CONFIG = "event.hub.config";
+	public static final String EVENT_HUB_BOOTSTRAP = "event.hub.bootstrap";
+	public static final String SECURITY_PROTOCOL = "security.protocol";
+	public static final String SASL_MECHANISM = "sasl.mechanism";
+	public static final String SASL_JAAS_CONFIG = "sasl.jaas.config";
+	public static final String AUTO_OFFSET_RESET_CONFIG ="auto.offset.reset.config";
+		
 
 	//Testing parameter
 	public static final String WRITE_OUTPUT = "write_output";

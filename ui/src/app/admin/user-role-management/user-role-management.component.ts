@@ -79,10 +79,10 @@ export class UserRoleManagementComponent implements OnInit {
   ngOnInit() {
     let langCode = 'EN-GB';
     let labelList = 'lblFilter,lblCreate,lblNew,lblCancel,lblSearch,lblReset,lblConfirm,lblYes,lblNo,lblAction,lblUserRoleManagement,lblAllUserRoleDetails,lblNewUserRole,lblRoleName,lblRoleDescription,lblCreateNewUserRole,lblNewUserRoleName,lblUserRoleType,lblUserRoleDescriptionOptional,lblEnterUserRoleName,lblEnterAboutUserRole,lblHintMessage,lblSelectRoleAccess,lblSelectedRoleAccess,lblFeatureName,lblAccess,lbl120CharMax,lblUserRoleCreatedSuccessfully,lblDeleteAccount,lblAreyousureyouwanttodeleterole,lblUserRoleName,lblEditUserRoleDetails,lblPleaseentertheUserRolename,lblUserRolealreadyexistsPleasechooseadifferentname,lblCreateUserRoleAPIFailedMessage,lblUserRoledetailssuccessfullyupdated,lblUpdateUserRoleAPIFailedMessage,lblUserRoleDelete,lblDeleteUserRoleAPIFailedMessage';
-    this.translationService.getTranslationLabel(labelList, langCode).subscribe( (data) => {
-      this.processTranslation(data);
-      this.loadInitData();
-    });
+    // this.translationService.getTranslationLabel(labelList, langCode).subscribe( (data) => {
+    //   this.processTranslation(data);
+       this.loadInitData();
+    // });
   }
 
   processTranslation(transData: any){   

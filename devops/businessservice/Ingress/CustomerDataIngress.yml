@@ -49,6 +49,14 @@ spec:
           servicePort: 80
         path: /role   
       - backend:
+          serviceName: translationservice 
+          servicePort: 80
+        path: /translation
+      - backend:
+          serviceName: auditservice 
+          servicePort: 80
+        path: /audit
+      - backend:
           serviceName: uimanagement-service
           servicePort: 80
         path: /  

@@ -52,6 +52,23 @@ steps:
       cat dotnet/commonservices/net.atos.daf.ct2.auditservicerest/appsettings.json
   condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01')
 
+- task: replacetokens@3
+  inputs:
+    targetFiles: 'dotnet/commonservices/net.atos.daf.ct2.auditservicerest/log4net.config'
+    encoding: 'auto'
+    writeBOM: true
+    actionOnMissing: 'warn'
+    keepToken: false
+    tokenPrefix: '#{'
+    tokenSuffix: '}#'
+    useLegacyPattern: false
+    enableTelemetry: true
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      cat dotnet/commonservices/net.atos.daf.ct2.auditservicerest/log4net.config
+
 - task: Docker@0
   displayName: 'Build an image'
   inputs:

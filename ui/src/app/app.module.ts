@@ -20,9 +20,11 @@ import { PreferencesComponent } from './preferences/preferences.component';
 import { PreferencesModule } from './preferences/preferences.module';
 import { DataInterchangeService } from './services/data-interchange.service';
 import { IdentityGrpcService } from './services/identity-grpc.service';
+import { AccountService } from './services/account.service';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
+  //return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
 }
 
 @NgModule({
@@ -45,7 +47,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     PreferencesModule
     //RouterModule.forRoot(appRoute)
   ],
-  providers: [EmployeeService, DataInterchangeService],
+  providers: [EmployeeService, DataInterchangeService, AccountService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

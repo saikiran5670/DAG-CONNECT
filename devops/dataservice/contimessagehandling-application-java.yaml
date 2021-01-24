@@ -49,7 +49,7 @@ jobs:
       inputs:
         mavenPomFile: java/commoncomponent/common.serialization.deserialization/pom.xml
         publishJUnitResults: false
-        goals: install
+        goals: clean install
 
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
@@ -64,7 +64,7 @@ jobs:
       inputs:
         mavenPomFile: java/corecomponents/streaming.masterdata.messages/pom.xml
         publishJUnitResults: false
-        goals: install
+        goals: clean install
 
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
@@ -79,7 +79,7 @@ jobs:
       inputs:
         mavenPomFile: java/corecomponents/streaming.conti.messages/pom.xml
         publishJUnitResults: false
-        goals: install
+        goals: clean install
 
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
@@ -94,7 +94,7 @@ jobs:
       inputs:
         mavenPomFile: java/corecomponents/sinking.externally.messages/pom.xml
         publishJUnitResults: false
-        goals: install
+        goals: clean install
 
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
@@ -104,11 +104,33 @@ jobs:
         TargetFolder: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
     
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/daf.etl/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/daf.etl/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
       inputs:
-        SourceFolder: 'java/corecomponents/common_configuration.properties'
-        Contents: 'common_configuration.properties'
+        SourceFolder: '$(system.defaultworkingdirectory)'
+        Contents: '**/*.jar'
+        TargetFolder: '$(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
+    
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/net.atos.daf.ct2/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/net.atos.daf.ct2/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder: '$(system.defaultworkingdirectory)'
+        Contents: '**/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
     
@@ -117,3 +139,4 @@ jobs:
       inputs:
         PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
+
