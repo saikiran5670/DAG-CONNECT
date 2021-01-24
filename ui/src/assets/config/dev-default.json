@@ -1,0 +1,20 @@
+{
+    "authentication": {
+      "loginUrl": "http://51.124.52.90/api",
+      "authRESTServiceURL": "http://51.124.138.94"
+    },
+    "foundationServices": {
+      "userServiceUrl": "http://localhost:3000",
+      "userServiceUrl_bkp": "http://51.144.184.19/UserManagement",
+      "userGroupServiceUrl_bkp": "http://51.144.184.19/UserGroup",
+      "userGroupServiceUrl": "http://localhost:3000",
+      "vehicleGroupServiceUrl_bkp": "http://51.145.183.2/VehicleManagement",
+      "vehicleGroupServiceUrl": "http://localhost:3000",
+      "roleServiceUrl": "http://localhost:3000",
+      "roleServiceUrl_bkp": "http://20.50.164.200/RoleManagement",
+      "translationServiceUrl": "http://localhost:3000",
+      "translationServiceUrl_bkp": "http://51.105.154.162/Translation",
+      "backendGrpcServiceUrl": "https://localhost:5001",
+      "accountGrpcServiceUrl": "http://20.54.198.157:80"
+    }
+}

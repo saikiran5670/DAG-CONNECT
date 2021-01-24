@@ -27,32 +27,35 @@ namespace net.atos.daf.ct2.account
         public async Task<AccountIdentity> Login(IdentityEntity.Identity user)
         {
             AccountIdentity accIdentity = new AccountIdentity();
-
-            IdentityEntity.Response idpResponse = await autheticator.AccessToken(user);
-            if(idpResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            int accountId= GetAccountByEmail(user.UserName);
+            if(accountId>0)
             {
-                IdentityEntity.IDPToken token = JsonConvert.DeserializeObject<IdentityEntity.IDPToken>(Convert.ToString(idpResponse.Result));
-                IdentityEntity.AccountIDPClaim accIDPclaims= tokenManager.DecodeToken(token.access_token);
-
-                accIDPclaims.TokenExpiresIn=token.expires_in;
-
-                IdentityEntity.AccountToken accToken = tokenManager.CreateToken(accIDPclaims);
-                accIdentity.AccountToken=accToken;
-                int accountId= GetAccountByEmail(user.UserName);
-                if(accountId>0)
+                IdentityEntity.Response idpResponse = await autheticator.AccessToken(user);
+                if(idpResponse.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    AccountPreferenceFilter filter=new AccountPreferenceFilter();
-                    filter.Ref_Id=accountId;
-                    //filter.Ref_Id =PreferenceType.Ref_id;
-                    filter.PreferenceType=PreferenceType.Account;
-                    IEnumerable<AccountPreference> preferences = preferenceManager.Get(filter).Result;
-                    foreach(var pref in preferences) 
-                    {
-                        accIdentity.AccountPreference=pref;
-                        break; //get only first preference
-                    }
-                    accIdentity.AccountOrganization = accountManager.GetAccountOrg(accountId).Result;
-                    accIdentity.AccountRole = accountManager.GetAccountRole(accountId).Result;
+                    IdentityEntity.IDPToken token = JsonConvert.DeserializeObject<IdentityEntity.IDPToken>(Convert.ToString(idpResponse.Result));
+                    IdentityEntity.AccountIDPClaim accIDPclaims= tokenManager.DecodeToken(token.access_token);
+
+                    accIDPclaims.TokenExpiresIn=token.expires_in;
+
+                    IdentityEntity.AccountToken accToken = tokenManager.CreateToken(accIDPclaims);
+                    accIdentity.AccountToken=accToken;
+                    // int accountId= GetAccountByEmail(user.UserName);
+                    // if(accountId>0)
+                    // {
+                        AccountPreferenceFilter filter=new AccountPreferenceFilter();
+                        filter.Ref_Id=accountId;
+                        //filter.Ref_Id =PreferenceType.Ref_id;
+                        filter.PreferenceType=PreferenceType.Account;
+                        IEnumerable<AccountPreference> preferences = preferenceManager.Get(filter).Result;
+                        foreach(var pref in preferences) 
+                        {
+                            accIdentity.AccountPreference=pref;
+                            break; //get only first preference
+                        }
+                        accIdentity.AccountOrganization = accountManager.GetAccountOrg(accountId).Result;
+                        accIdentity.AccountRole = accountManager.GetAccountRole(accountId).Result;
+                    // }
                 }
             }
             return await Task.FromResult(accIdentity);
