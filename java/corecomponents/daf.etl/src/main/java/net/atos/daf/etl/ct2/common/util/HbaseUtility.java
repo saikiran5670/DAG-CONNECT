@@ -90,11 +90,12 @@ public class HbaseUtility implements Serializable {
 		conf.set(ETLConstants.HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT,
 				envParams.get(ETLConstants.HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT));
 		conf.set(ETLConstants.ZOOKEEPER_ZNODE_PARENT, envParams.get(ETLConstants.ZOOKEEPER_ZNODE_PARENT));
-		//TODO Check this parameter
-		conf.set(ETLConstants.HBASE_REGIONSERVER, envParams.get(ETLConstants.HBASE_REGIONSERVER));
-		conf.set(ETLConstants.HBASE_REGIONSERVER_PORT, envParams.get(ETLConstants.HBASE_REGIONSERVER_PORT));
 		conf.set(ETLConstants.HBASE_MASTER, envParams.get(ETLConstants.HBASE_MASTER));
 		conf.set(ETLConstants.HBASE_ROOTDIR, envParams.get(ETLConstants.HBASE_ROOTDIR));
+
+		// TODO Check this parameter
+		// conf.set(ETLConstants.HBASE_REGIONSERVER, envParams.get(ETLConstants.HBASE_REGIONSERVER));
+		// conf.set(ETLConstants.HBASE_REGIONSERVER_PORT, envParams.get(ETLConstants.HBASE_REGIONSERVER_PORT));
 
 		return conf;
 
