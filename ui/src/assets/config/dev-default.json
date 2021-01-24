@@ -11,11 +11,12 @@
       "vehicleGroupServiceUrl_bkp": "http://51.145.183.2/VehicleManagement",
       "vehicleGroupServiceUrl": "http://localhost:3000",
       "roleServiceUrl_bkp1": "http://localhost:3000",
-      "roleRESTServiceURL":"http://20.73.217.14/Role",
       "roleServiceUrl_bkp": "http://20.50.164.200/RoleManagement",
       "translationServiceUrl": "http://localhost:3000",
       "translationServiceUrl_bkp": "http://51.105.154.162/Translation",
       "backendGrpcServiceUrl": "https://localhost:5001",
-      "accountGrpcServiceUrl": "http://20.54.198.157:80"
+      "accountGrpcServiceUrl": "http://20.54.198.157:80",
+      "roleRESTServiceURL": "http://20.73.217.14/Role",
+      "accountRESTServiceURL": "http://20.54.198.157/account"
     }
 }

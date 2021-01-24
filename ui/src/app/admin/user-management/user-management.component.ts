@@ -17,6 +17,7 @@ import { ConfigService } from '@ngx-config/core';
 import { Greeter, GreeterClient, ServiceError } from 'src/app/protos/Greet/greet_pb_service';
 import { HelloReply, HelloRequest } from 'src/app/protos/Greet/greet_pb';
 import { grpc } from '@improbable-eng/grpc-web';
+import { AccountService } from '../../services/account.service';
 
 @Component({
   selector: 'app-user-management',
@@ -27,8 +28,8 @@ export class UserManagementComponent implements OnInit {
   displayedColumns: string[] = [
     'firstName',
     'emailId',
-    'role',
-    'userGroup',
+    'roles',
+    'accountGroups',
     'action'
   ];
   //products: any[] = [];
@@ -65,6 +66,7 @@ export class UserManagementComponent implements OnInit {
     private translationService: TranslationService,
     private dialog: MatDialog,
     private config: ConfigService,
+    private accountService: AccountService
     //private accountGrpcService: AccountGrpcService
   ) {
     // const resolvedData:any[] = actr.snapshot.data['resl'];
@@ -301,14 +303,30 @@ export class UserManagementComponent implements OnInit {
     // });
     
     // Rest code
-    this.userService.getUsers().subscribe((usrlist)=>{
+    let obj: any = {
+      "accountId": 0,
+      "organizationId": parseInt(localStorage.getItem('accountOrganizationId')),
+      "groupId": 0,
+      "roleId": 0,
+      "name": ""
+    }
+    this.accountService.getAccountDetails(obj).subscribe((usrlist)=>{
       this.filterFlag = true;
-      usrlist = this.getNewTagData(usrlist);
       this.initData = usrlist;
       this.dataSource = new MatTableDataSource(usrlist);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
+
+
+    // this.userService.getUsers().subscribe((usrlist)=>{
+    //   this.filterFlag = true;
+    //   usrlist = this.getNewTagData(usrlist);
+    //   this.initData = usrlist;
+    //   this.dataSource = new MatTableDataSource(usrlist);
+    //   this.dataSource.paginator = this.paginator;
+    //   this.dataSource.sort = this.sort;
+    // });
     
   }
 

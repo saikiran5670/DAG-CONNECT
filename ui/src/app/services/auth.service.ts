@@ -21,6 +21,6 @@ export class AuthService {
             }),
             observe: "response" as 'body',
         };
-        return this.httpClient.post(`${this.domainUrl}/login`, null, httpOptions);
+        return this.httpClient.post(`${this.domainUrl}/auth`, null, httpOptions);
     }
 }
