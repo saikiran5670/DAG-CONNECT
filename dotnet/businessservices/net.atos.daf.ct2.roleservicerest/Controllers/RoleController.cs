@@ -12,7 +12,7 @@ using net.atos.daf.ct2.features.entity;
 namespace net.atos.daf.ct2.roleservicerest.Controllers
 {
     [ApiController]
-    [Route("[role]")]
+    [Route("role")]
     public class RoleController : ControllerBase
     {
         private readonly ILogger logger;

@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
 {
 
     [ApiController]
-    [Route("[translation]")]
+    [Route("translation")]
     public class TranslationController : ControllerBase
     {
          private readonly ILogger<TranslationController> _logger;

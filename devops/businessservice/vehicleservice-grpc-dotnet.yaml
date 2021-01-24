@@ -46,6 +46,24 @@ steps:
   inputs:
     script: |
       cat dotnet/businessservices/net.atos.daf.ct2.vehicleservicerest/appsettings.json
+
+- task: replacetokens@3
+  inputs:
+    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.vehicleservicerest/log4net.config'
+    encoding: 'auto'
+    writeBOM: true
+    actionOnMissing: 'warn'
+    keepToken: false
+    tokenPrefix: '#{'
+    tokenSuffix: '}#'
+    useLegacyPattern: false
+    enableTelemetry: true
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      cat dotnet/businessservices/net.atos.daf.ct2.vehicleservicerest/log4net.config
+
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
