@@ -58,7 +58,7 @@ public class ContiMessageProcessing {
 
       ContiMessageProcessing contiMessageProcessing = new ContiMessageProcessing();
       Properties properties = configuration();
-      contiMessageProcessing.auditTrail(properties);
+      //contiMessageProcessing.auditTrail(properties);
 
       contiMessageProcessing.flinkConnection();
 
