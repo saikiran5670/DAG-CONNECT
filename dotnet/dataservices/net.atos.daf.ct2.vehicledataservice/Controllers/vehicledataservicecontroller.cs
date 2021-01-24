@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
         }
 
         [HttpPut]
-        [Route("Update")]
+        [Route("update")]
         public async Task<IActionResult> UpdateVehicleProperties(Root vehicleData)
         {
             try

@@ -16,7 +16,7 @@ using System.Text;
 namespace net.atos.daf.ct2.vehicleservicerest.Controllers
 {
     [ApiController]
-    [Route("Vehicle")]
+    [Route("vehicle")]
     public class VehicleController : ControllerBase
     {
         private readonly ILogger<VehicleController> _logger;
@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
         }
 
         [HttpPut]
-        [Route("Update")]
+        [Route("update")]
         public async Task<IActionResult> Update(Vehicle vehicle)
         {
             try
@@ -59,7 +59,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateStatus")]
+        [Route("updatestatus")]
         public async Task<IActionResult> Update(VehicleOptInOptOut vehicleOptInOut)
         {
             try
@@ -86,7 +86,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
         }
 
         [HttpPost]
-        [Route("Get")]
+        [Route("get")]
         public async Task<IActionResult> Get(VehicleFilterRequest vehicleFilter)
         {
             try
@@ -121,16 +121,16 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
         }
 
         [HttpPost]
-        [Route("CreateGroup")]
+        [Route("group/create")]
         public async Task<IActionResult> CreateGroup(GroupRequest group)
         {
             try
             {
                 _logger.LogInformation("Create Group method in vehicle API called.");
                 
-                if(string.IsNullOrEmpty(group.Name))
+                if(string.IsNullOrEmpty(group.Name) || group.Name =="string")
                 {
-                    return StatusCode(401,"invalid Vehicle Group name: The Vehicle group name is Empty.");
+                    return StatusCode(401,"invalid vehicle group name: The vehicle group name is Empty.");
                 }
 
                 Group objGroup=new Group();
@@ -146,12 +146,13 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 objGroup.GroupRef = new List<GroupRef>();
                 foreach (var item in group.GroupRef)
                 {    
+                    if(item.Ref_Id !=0)
                      objGroup.GroupRef.Add(new GroupRef() { Ref_Id = item.Ref_Id });
                 }
                 
                 Group VehicleGroupResponce = await _groupManager.Create(objGroup);
 
-                if (VehicleGroupResponce.Id > 0)
+                if (VehicleGroupResponce.Id > 0 &&  objGroup.GroupRef.Count()>0)
                 {
                     bool AddvehicleGroupRef = await _groupManager.UpdateRef(objGroup);
                 }
@@ -169,7 +170,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateGroup")]
+        [Route("group/update")]
         public async Task<IActionResult> UpdateGroup(GroupRequest group)
         {
             try
@@ -180,10 +181,10 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 {
                     return StatusCode(401,"invalid Vehicle Group Id: The Vehicle group id is Empty.");
                 }
-
-                if(string.IsNullOrEmpty(group.Name))
+                
+                if(string.IsNullOrEmpty(group.Name) || group.Name =="string")
                 {
-                    return StatusCode(401,"invalid Vehicle Group name: The Vehicle group name is Empty.");
+                    return StatusCode(401,"invalid vehicle group name: The vehicle group name is Empty.");
                 }
 
                 Group objGroup=new Group();
@@ -196,15 +197,16 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 objGroup.FunctionEnum=FunctionEnum.All;
                 objGroup.Argument=null;
                 objGroup.RefId=null;
+               
                 objGroup.GroupRef = new List<GroupRef>();
                 foreach (var item in group.GroupRef)
-                {   
+                {   if(item.Ref_Id !=0)
                      objGroup.GroupRef.Add(new GroupRef() { Ref_Id = item.Ref_Id });
                 }
                 
                 Group VehicleGroupResponce = await _groupManager.Update(objGroup);
 
-                if (VehicleGroupResponce.Id > 0)
+                if (VehicleGroupResponce.Id > 0 &&  objGroup.GroupRef.Count()>0)
                 {
                     bool AddvehicleGroupRef = await _groupManager.UpdateRef(objGroup);
                 }
@@ -222,7 +224,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
         }
 
         [HttpDelete]
-        [Route("DeleteGroup")]
+        [Route("group/delete")]
         public async Task<IActionResult> DeleteGroup(long GroupId)
         {
             try
@@ -251,7 +253,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
 
 
         [HttpPost]
-        [Route("GetGroupDetails")]
+        [Route("group/getgroupdetails")]
         public async Task<IActionResult> GetGroupDetails(GroupFilterRequest groupFilter)
         {
             try
@@ -266,6 +268,14 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 ObjGroupFilter.ObjectType = ObjectType.VehicleGroup;
                 ObjGroupFilter.GroupType = GroupType.Group;
                 ObjGroupFilter.FunctionEnum = FunctionEnum.All;
+               
+                ObjGroupFilter.GroupIds = new List<int>();
+                foreach (var item in groupFilter.GroupIds)
+                {     
+                    if(item>0)
+                      ObjGroupFilter.GroupIds.Add(item);
+                }
+                
                 List<Vehicle> ObjVehicleList=new List<Vehicle>();
                 if (groupFilter.IsGroup==true)
                 {
@@ -279,11 +289,12 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                         ObjGroupRef.Name = item.Name;
                         ObjGroupRef.VehicleCount = item.GroupRefCount;
                         ObjGroupRef.IsVehicleGroup = true;
+                        ObjGroupRef.Organization_Id=item.OrganizationId;
                         ObjVehicleList.Add(ObjGroupRef);
                     }
                 }
 
-                if (ObjGroupFilter.GroupRef == true)
+                if (ObjGroupFilter.GroupRef == true && groupFilter.OrganizationId>0)
                 {
                     VehicleFilter ObjVehicleFilter = new VehicleFilter();
                     ObjVehicleFilter.OrganizationId =  groupFilter.OrganizationId;
@@ -300,11 +311,15 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                         ObjGroupRef.Status = (VehicleStatusType)Enum.Parse(typeof(VehicleStatusType), item.Status.ToString());
                         ObjGroupRef.IsVehicleGroup = false;
                         ObjGroupRef.Model = item.Model == null ? "" : item.Model;
+                        ObjGroupRef.Organization_Id=item.Organization_Id;
                         ObjVehicleList.Add(ObjGroupRef);
                     }
                 }
 
-        
+                if(ObjVehicleList.Count()==0)
+                {
+                    return StatusCode(401,"vehicle details not exist for pass parameter");
+                }
                 //_logger.LogInformation("Vehicle group name is deleted."+ GroupId);
                 
                 return Ok(ObjVehicleList);
@@ -318,13 +333,18 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
         }
 
         [HttpGet]
-        [Route("GetVehicleListByGroupId")]
+        [Route("group/getvehiclelist")]
         public async Task<IActionResult> GetVehiclesByVehicleGroup(int GroupId)
         {
             try
             {
                 _logger.LogInformation("Get vehicle list by group id method in vehicle API called.");
                 
+                 if(GroupId==null)
+                {
+                    return StatusCode(401,"invalid Vehicle Group Id: The Vehicle group id is Empty.");
+                }
+
                 List<GroupRef> VehicleDetails = await _groupManager.GetRef(GroupId);
                 StringBuilder VehicleIdList = new StringBuilder();
                 foreach (var item in VehicleDetails)
@@ -339,9 +359,9 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 List<Vehicle> ObjVehicleList = new List<Vehicle>();
                 if(VehicleIdList.Length >0)
                 {
-                VehicleFilter ObjVehicleFilter = new VehicleFilter();
-                ObjVehicleFilter.VehicleIdList = VehicleIdList.ToString();
-                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.Get(ObjVehicleFilter);
+                    VehicleFilter ObjVehicleFilter = new VehicleFilter();
+                    ObjVehicleFilter.VehicleIdList = VehicleIdList.ToString();
+                    IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.Get(ObjVehicleFilter);
                 
                     foreach (var item in ObjRetrieveVehicleList)
                     {
@@ -356,6 +376,10 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                         ObjVehicleList.Add(ObjGroupRef);
                     }
                 }
+                else
+                {
+                    return StatusCode(401,"vehicle details not exist for passed parameter.");
+                }
         
                 return Ok(ObjVehicleList);
                 
@@ -367,5 +391,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
             }
         }
     
+
+
     }
 }

@@ -28,6 +28,7 @@ namespace net.atos.daf.ct2.organizationservicerest
 {
     public class Startup
     {
+        private readonly string swaggerBasePath = "account";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -70,12 +71,11 @@ namespace net.atos.daf.ct2.organizationservicerest
             {  
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());  
             });
-         
+            
             services.AddSwaggerGen(c =>
             {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Organization Service", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Organization Service", Version = "v1" });
             });
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -102,12 +102,16 @@ namespace net.atos.daf.ct2.organizationservicerest
             {
                 endpoints.MapControllers();
             });
-            
-            app.UseSwagger();
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+        
+            app.UseSwagger(c =>
+            {
+                c.RouteTemplate = swaggerBasePath+"/swagger/{documentName}/swagger.json";
+            });
+
             app.UseSwaggerUI(c =>
             {
-               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Organization Service V1");
+                c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
+                c.RoutePrefix = $"{swaggerBasePath}/swagger";
             });
         }
     }

@@ -177,6 +177,7 @@ namespace net.atos.daf.ct2.account
 
                     foreach (dynamic record in result)
                     {
+                        
                         accounts.Add(Map(record));
                     }
                 }

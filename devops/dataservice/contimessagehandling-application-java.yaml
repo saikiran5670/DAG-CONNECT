@@ -44,11 +44,6 @@ jobs:
         CleanTargetFolder: true
       condition: succeededOrFailed()
 
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: drop'
-      inputs:
-        PathtoPublish: '$(build.artifactstagingdirectory)'
-      condition: succeededOrFailed()
     - task: Maven@3
       displayName: 'Maven java/commoncomponent/common.serialization.deserialization/pom.xml'
       inputs:
@@ -62,12 +57,6 @@ jobs:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
-      condition: succeededOrFailed()
-
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: drop'
-      inputs:
-        PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
 
     - task: Maven@3
@@ -85,12 +74,6 @@ jobs:
         TargetFolder: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
 
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: drop'
-      inputs:
-        PathtoPublish: '$(build.artifactstagingdirectory)'
-      condition: succeededOrFailed()
-
     - task: Maven@3
       displayName: 'Maven java/corecomponents/streaming.conti.messages/pom.xml'
       inputs:
@@ -104,12 +87,6 @@ jobs:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
-      condition: succeededOrFailed()
-
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: drop'
-      inputs:
-        PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
 
     - task: Maven@3
@@ -126,10 +103,9 @@ jobs:
         Contents: '**/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
-
+    
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: drop'
       inputs:
         PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
-    

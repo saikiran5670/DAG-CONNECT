@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
         }
         
         [HttpPost]        
-        [Route("Auth")]
+        [Route("login")]
         public async Task<IActionResult> Login()
         {
             try 
@@ -77,7 +77,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
         }
 
         [HttpPost]        
-        [Route("Validate")]
+        [Route("validate")]
         public async Task<IActionResult> Validate([FromBody] string token)
         {
             bool valid=false;
@@ -101,7 +101,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
             return Ok(valid); 
         }
         [HttpPost]        
-        [Route("Login")]
+        [Route("auth")]
         public async Task<IActionResult> Auth()
         {
             try 
