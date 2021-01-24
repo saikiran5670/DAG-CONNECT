@@ -119,4 +119,4 @@ jobs:
        steps:
        - script: Script for copying file
        - bash: |
-         mv $(system.defaultworkingdirectory)/java/corecomponents/common_configuration.properties /home/flinkhuser
+          mv $(system.defaultworkingdirectory)/java/corecomponents/common_configuration.properties /home/flinkhuser
