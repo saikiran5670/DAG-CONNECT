@@ -11,7 +11,7 @@ using net.atos.daf.ct2.audit.Enum;
 namespace net.atos.daf.ct2.auditservicerest.Controllers
 {
      [ApiController]
-    [Route("[controller]")]
+    [Route("[audit]")]
     public class AuditController :ControllerBase
     {
         private readonly ILogger _logger;
@@ -23,8 +23,8 @@ namespace net.atos.daf.ct2.auditservicerest.Controllers
              _AuditTrail = AuditTrail;
         }
          [HttpPost]
-        [Route("Addlogs")]
-         public async Task<IActionResult> Addlogs(AuditTrail request)
+        [Route("addlogs")]
+         public async Task<IActionResult> addlogs(AuditTrail request)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace net.atos.daf.ct2.auditservicerest.Controllers
         }
 
         [HttpGet]
-        [Route("GetLogs")]
+        [Route("getlogs")]
          public async  Task<IActionResult> GetAllLangaugecodes(int PerformedBy, string component_name)
          {
              try
