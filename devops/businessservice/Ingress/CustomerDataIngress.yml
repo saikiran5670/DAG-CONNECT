@@ -23,11 +23,23 @@ spec:
       - backend:
           serviceName: authenticationservice
           servicePort: 80
-        path: /Auth
+        path: /auth
       - backend:
           serviceName: accountservice
           servicePort: 80
-        path: /Account
+        path: /account
+      - backend:
+          serviceName: organizationservice
+          servicePort: 80
+        path: /organization   
+      - backend:
+          serviceName: vehicleservice
+          servicePort: 80
+        path: /vehicle   
+      - backend:
+          serviceName: roleservice 
+          servicePort: 80
+        path: /role   
       - backend:
           serviceName: uimanagement-service
           servicePort: 80
