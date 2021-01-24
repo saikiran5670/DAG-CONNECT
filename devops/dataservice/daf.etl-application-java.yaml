@@ -13,7 +13,7 @@ jobs:
     - task: Maven@3
       displayName: 'Maven java/corecomponents/daf.etl/pom.xml'
       inputs:
-        mavenPomFile: java/commoncomponent/daf.common/pom.xml
+        mavenPomFile: java/commoncomponent/daf.etl/pom.xml
         publishJUnitResults: false
 
     - task: CopyFiles@2
