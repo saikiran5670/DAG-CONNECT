@@ -7,10 +7,9 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
   name: customerdataservice-ingress
-  #namespace: dafdev01
 spec:
   rules:
-  - host: services-00.aks-ingress.dev1.ct2.atos.net
+  - host: api-00.aks-ingress.test1.ct2.atos.net
     http:
       paths:
       - backend:
@@ -21,7 +20,14 @@ spec:
           serviceName: customerdataservice
           servicePort: 80
         path: /customer-data
+      - backend:
+          serviceName: authenticationservice
+          servicePort: 80
+        path: /Auth
+      - backend:
+          serviceName: uimanagement-service
+          servicePort: 80
+        path: /  
   tls:
   - hosts:
-    - services-00.aks-ingress.dev1.ct2.atos.net
-
+    - api-00.aks-ingress.test1.ct2.atos.net
