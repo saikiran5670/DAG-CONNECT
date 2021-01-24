@@ -118,4 +118,4 @@ jobs:
      deploy:
        steps:
        - bash: |
-          mv $(system.defaultworkingdirectory)/java/corecomponents/common_configuration.properties /home/flinkhuser/common_configuration.properties
+          mv $(system.defaultworkingdirectory)/java/corecomponents/common_configuration.properties /home/flinkhuser
