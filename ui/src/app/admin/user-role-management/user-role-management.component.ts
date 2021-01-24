@@ -91,8 +91,15 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   loadInitData() {
-    this.userService.getUserRoles().subscribe((data) => {
-      this.initData = this.getNewTagData(data);
+    let objData = { 
+      "roleId": 0,
+      "organization_Id": 0,
+      "accountId": 0,
+      "is_Active": true
+    };
+    this.userService.getUserRoles(objData).subscribe((data) => {
+      //this.initData = this.getNewTagData(data); //no createdDate present in API response
+      this.initData = data; //temporary 
       setTimeout(()=>{
         this.dataSource = new MatTableDataSource(this.initData);
         this.dataSource.paginator = this.paginator;

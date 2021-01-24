@@ -214,7 +214,13 @@ export class UserManagementComponent implements OnInit {
   newUser() {
     this.isCreateFlag = true;
     //this._router.navigate(["createuser"]);
-    forkJoin(this.userService.getUserRoles(),
+    let objData = { 
+      "roleId": 0,
+      "organization_Id": 0,
+      "accountId": 0,
+      "is_Active": true
+    };
+    forkJoin(this.userService.getUserRoles(objData),
             this.userService.getUserGroup(1, true),
             //this.userService.getVehicleGroupByID(),
             this.userService.getDefaultSetting()
@@ -229,7 +235,10 @@ export class UserManagementComponent implements OnInit {
   }
 
   editViewUser(element: any, type: any) {
-    forkJoin(this.userService.getUserRoles(),
+    forkJoin(this.userService.getUserRoles( {"roleId": 0,
+    "organization_Id": 0,
+    "accountId": 0,
+    "is_Active": true}),
             this.userService.getUserGroup(1, true),
             //this.userService.getVehicleGroupByID(),
             this.userService.getDefaultSetting(),

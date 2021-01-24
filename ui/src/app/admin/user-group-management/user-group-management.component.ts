@@ -264,8 +264,14 @@ export class UserGroupManagementComponent implements OnInit {
           else if (res.type == 'createContinue') {
             this.userService.createUserGroup(this.usrgrp).subscribe((d) => {
               this.loadUserGroupData(1);
+              let objData = { 
+                "roleId": 0,
+                "organization_Id": 0,
+                "accountId": 0,
+                "is_Active": true
+              };
               forkJoin(
-                this.userService.getUserRoles(),
+                this.userService.getUserRoles(objData),
                 this.userService.getVehicleGroupByID()
               ).subscribe(
                 (_data) => {
