@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.auditservicerest
     public class Startup
     {
         
-        private readonly string swaggerBasePath = "translation";
+        private readonly string swaggerBasePath = "audit";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;

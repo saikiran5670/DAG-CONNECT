@@ -11,7 +11,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "translation/swagger",
+      "launchUrl": "audit/swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -19,7 +19,7 @@
     "net.atos.daf.ct2.auditservicerest": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "translation/swagger",
+      "launchUrl": "audit/swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
