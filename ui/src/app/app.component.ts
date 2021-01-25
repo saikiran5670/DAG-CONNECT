@@ -208,13 +208,13 @@ export class AppComponent {
 
   getTranslationLabels(){
     let translationObj = {
-      "id": 0,
-      "code": "EN-GB", //-- TODO: Lang code based on account 
-      "type": "Menu",
-      "name": "",
-      "value": "",
-      "filter": "",
-      "menuId": 0 //-- for common & user preference
+      id: 0,
+      code: "EN-GB", //-- TODO: Lang code based on account 
+      type: "Menu",
+      name: "",
+      value: "",
+      filter: "",
+      menuId: 0 //-- for common & user preference
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);

@@ -143,16 +143,23 @@ export class UserGroupManagementComponent implements OnInit {
   }
 
   ngOnInit() {
-    let langCode = 'EN-GB';
-    let labelList = 'lblUserGroupManagement,lblGroupDetails,lblNewUserGroup,lblGroupName,lblVehicles,lblUsers,lblAction,lblNewUserGroupName,lblCreate,lblCreateContinue,lblNewUserGroupPopupInfo,lblUserGroupCreatedSuccessfully,lblCancel,lblNext,lblPrevious,lblSearch,lblAll,lblUserRole,lblServices,lblServicesName,lblType,lblStep,lblSelectUserRole,lblSelectVehicleGroupVehicle,lblSummary,lblVehicleGroup,lblVehicle,lblVIN,lblRegistrationNumber,lblVehicleName,lblGroup,lblBoth,lblSelectedUserRoles,lblSelectedVehicleGroupsVehicles,lblBack,lblReset,lblNew,lblDeleteGroup,lblAreyousureyouwanttodeleteusergroup,lblNo,lblYes,lblUserGroupalreadyexists,lblPleaseenterUserGroupname,lblSpecialcharactersnotallowed,lblCreateUserGroupAPIFailedMessage,lblUserGroupDelete,lblDeleteUserGroupAPIFailedMessage,lblFilter,lblConfirm,lblUpdate,lblUserGroupName';
-    this.translationService.getTranslationLabel(labelList, langCode).subscribe((data) => {
+    let translationObj = {
+      id: 0,
+      code: "EN-GB", //-- TODO: Lang code based on account 
+      type: "Menu",
+      name: "",
+      value: "",
+      filter: "",
+      menuId: 24 //-- for user grp mgnt
+    }
+    this.translationService.getMenuTranslations(translationObj).subscribe((data) => {
       this.processTranslation(data);
       this.loadUserGroupData(1);
     });
   }
 
   processTranslation(transData: any) {
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.code]: cur.translation }), {});
+    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
   }
 

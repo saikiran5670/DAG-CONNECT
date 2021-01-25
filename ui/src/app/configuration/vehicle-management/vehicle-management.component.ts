@@ -142,20 +142,24 @@ export class VehicleManagementComponent implements OnInit {
   ngAfterViewInit() {}
 
   ngOnInit() {
-    let langCode = 'EN-GB';
-    let labelList =
-      'lblConfirm,lblFilter,lblVehicleGroup,lblVehicle,lblVIN,lblRegistrationNumber,lblAction,lblGroup,lblBoth,lblSearch,lblBack,lblReset,lblCancel,lblNo,lblYes,lbl120CharMax,lblVehicleName,lblCreate,lblNew,lblGroupName,lblAll,lblVehicleManagement,lblAllVehicleGroupVehicleDetails,lblNewVehicleGroup,lblModel,lblDetails,lblEditVehicleGroupDetails,lblVehicleModel,lblAssociatedGroups,lblVehicleIdentificationNumber,lblNewVehicleGroupCreatedSuccessfully,lblSave,lblDeleteVehicleGroup,lblAreyousureyouwanttodeletevehiclegroup,lblCreateNewVehicleGroup,lblGroupDescriptionOptional,lblNewGroupName,lblEnterVehicleGroupName,lblEnterVehicleGroupDescription,lblSelectVehicleListOptional,lblHintMessage,lblConsent,lblVehicleGroupalreadyexistsPleasechooseadifferentname,lblPleaseenterthenewvehiclegroupname,lblCreateVehicleGroupAPIFailedMessage,lblEditHintMessage,lblVehicleGroupdetailssuccessfullyupdated,lblUpdateVehicleGroupAPIFailedMessage,lblConsentStatus,lblVehicleGroupDeleted,lblDeleteVehicleGroupAPIFailedMessage,lblVehicleConsent,lblEnteredvehiclenamealreadyexistsPleasechooseadifferentname,lblPleaseenterVehicleRegistrationnumberinthecorrectformat,lblVehiclesettingssuccessfullyupdated,lblUpdateVehicleSettingAPIFailedMessage,lblVehicleNameisrequired,lblRegistrationNumberisrequired';
-    this.translationService
-      .getTranslationLabel(labelList, langCode)
-      .subscribe((data) => {
-        this.processTranslation(data);
-        this.loadVehicleData();
-      });
+    let translationObj = {
+      id: 0,
+      code: "EN-GB", //-- TODO: Lang code based on account 
+      type: "Menu",
+      name: "",
+      value: "",
+      filter: "",
+      menuId: 21 //-- for vehicle mgnt
+    }
+    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+      this.processTranslation(data);
+      this.loadVehicleData();
+    });
   }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce(
-      (acc, cur) => ({ ...acc, [cur.code]: cur.translation }),
+      (acc, cur) => ({ ...acc, [cur.name]: cur.value }),
       {}
     );
   }
