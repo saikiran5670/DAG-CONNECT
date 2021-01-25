@@ -77,7 +77,7 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             }   
         } 
 
-     [HttpPost]      
+       [HttpPut]     
      [Route("update")]
      public async Task<IActionResult> Update(Organization organization)
         {              
@@ -99,7 +99,7 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             }           
         }       
 
-     [HttpPost]      
+     [HttpDelete]   
      [Route("delete")]
      public async Task<IActionResult> Delete(int organizationId)
         {              

@@ -74,15 +74,15 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                      valid = await accountIdentityManager.ValidateToken(token);
                      if(valid)
                      {
-                        if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.ID))
+                        if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.ID) || (customer.CompanyUpdatedEvent.Company.ID.Trim().Length<1))
                         {
                              return StatusCode(400,"Please provide company ID:");
                         } 
-                        else if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.type))
+                        else if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.type) || (customer.CompanyUpdatedEvent.Company.type.Trim().Length<1))
                         {
                              return StatusCode(400,"Please provide company type:");
                         }
-                        else if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.Name))
+                        else if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.Name) || (customer.CompanyUpdatedEvent.Company.Name.Trim().Length<1))
                         {
                              return StatusCode(400,"Please provide company name:");
                         }
@@ -100,7 +100,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                          logger.LogInformation("Customer data not updated, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
                          return StatusCode(401,"Forbidden:");
                      }
-               }
+              }
             }
             catch(Exception ex)
             {
@@ -131,26 +131,30 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                      valid = await accountIdentityManager.ValidateToken(token);
                      if(valid)
                      {
-                        if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.VIN))
+                        if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.VIN)  || (keyHandOver.KeyHandOverEvent.VIN.Trim().Length<1))
                         {
                              return StatusCode(400,"Please provide VIN:");
                         } 
-                        else if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.TCUID))
+                        else if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.TCUID) || (keyHandOver.KeyHandOverEvent.TCUID.Trim().Length<1))
                         {
                              return StatusCode(400,"Please provide TCUID:");
                         }
-                        else if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.EndCustomer.ID))
+                        else if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.EndCustomer.ID) || (keyHandOver.KeyHandOverEvent.EndCustomer.ID.Trim().Length<1))
+                        {
+                             return StatusCode(400,"Please provide company ID:");
+                        }
+                        else if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.EndCustomer.Name) || (keyHandOver.KeyHandOverEvent.EndCustomer.Name.Trim().Length<1))
                         {
                              return StatusCode(400,"Please provide company name:");
                         }
-                        else  if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.ReferenceDateTime))
+                        else  if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.ReferenceDateTime) || (keyHandOver.KeyHandOverEvent.ReferenceDateTime.Trim().Length<1))
                         {
                              return StatusCode(400,"Please provide company reference date:");
                         }
-                        else  if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.TCUActivation))
-                        {
-                             return StatusCode(400,"Please provide TCU Activation status:");
-                        }
+                        else  if (!((keyHandOver.KeyHandOverEvent.TCUActivation.ToUpper()=="YES") || (keyHandOver.KeyHandOverEvent.TCUActivation.ToUpper()=="NO")))
+                            {
+                                return StatusCode(400,"Please provide correct TCU Activation status:");
+                            }                             
                         var OrgId= await organizationtmanager.KeyHandOverEvent(keyHandOver);
                         logger.LogInformation("KeyHandOverEvent executed successfully, company ID -" + keyHandOver.KeyHandOverEvent.EndCustomer.ID);
                         return Ok(OrgId);
