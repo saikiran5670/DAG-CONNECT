@@ -69,8 +69,8 @@ steps:
   inputs:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
-    dockerFile: dotnet/AccountServiceRest_Dockerfile
-    imageName: accountservice
+    dockerFile: dotnet/FeatureServiceRest_Dockerfile
+    imageName: featureservice
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -78,5 +78,5 @@ steps:
     azureSubscription: $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
-    imageName: accountservice
+    imageName: featureservice
 
