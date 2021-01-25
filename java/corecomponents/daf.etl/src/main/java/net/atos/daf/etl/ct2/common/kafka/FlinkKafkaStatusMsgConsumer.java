@@ -1,5 +1,6 @@
 package net.atos.daf.etl.ct2.common.kafka;
 
+import java.io.Serializable;
 import java.util.Properties;
 
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -13,7 +14,7 @@ import net.atos.daf.ct2.pojo.standard.Status;
 import net.atos.daf.ct2.serde.KafkaMessageDeSerializeSchema;
 import net.atos.daf.etl.ct2.common.util.ETLConstants;
 
-public class FlinkKafkaStatusMsgConsumer {
+public class FlinkKafkaStatusMsgConsumer implements Serializable{
 
 	/**
 	 * 

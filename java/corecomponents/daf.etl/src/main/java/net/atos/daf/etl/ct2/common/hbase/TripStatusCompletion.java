@@ -362,6 +362,11 @@ public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusD
 			if (tripStsData.getStartDateTime() != null && tripStsData.getEndDateTime() != null)
 				tripStsData.setTripCalGpsVehTimeDiff(TimeFormatter
 						.subPastUtcTmFrmCurrentUtcTm(tripStsData.getStartDateTime(), tripStsData.getEndDateTime()));
+			
+			if(tripStsData.getTripCalGpsVehTimeDiff() != null){
+				double timeDiff = (tripStsData.getTripCalGpsVehTimeDiff()).doubleValue() /3600000;
+				tripStsData.setTripCalVehTimeDiffInHr(timeDiff);
+			}
 
 			if (tripStsData.getGpsStopVehDist() != null && tripStsData.getGpsStartVehDist() != null)
 				tripStsData
