@@ -2,6 +2,8 @@ package net.atos.daf.common.ct2.utc;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Test;
 
 import junit.framework.Assert;
@@ -54,9 +56,23 @@ public class TimeFormaterTest {
 		Assert.assertEquals(1611064208919L,
 				TimeFormatter.convertUTCToEpochMilli("2021-01-19T13:50:08.919Z", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 	}
+	
 
 	@Test
 	public void testGetTimeDiffInMilli() throws Exception {
+		System.out.println(TimeFormatter.getTimeDiffInMilli("2021-01-19T13:50:06.919Z",
+				"2021-01-19T13:50:08.919Z", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+		
+		System.out.println("converted 2 secs to hours :: "+TimeUnit.HOURS.convert(TimeFormatter.getTimeDiffInMilli("2021-01-19T13:50:06.919Z",
+				"2021-01-19T13:50:08.919Z", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),TimeUnit.MILLISECONDS));
+		
+		System.out.println("converted 2 secs to hours :: "+TimeUnit.MILLISECONDS.toHours(TimeFormatter.getTimeDiffInMilli("2021-01-19T13:50:06.919Z",
+				"2021-01-19T13:50:08.919Z", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")));
+		Long aa= TimeFormatter.getTimeDiffInMilli("2021-01-19T13:50:06.919Z",
+				"2021-01-19T13:50:08.919Z", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+		double bb = aa.doubleValue();
+		System.out.println("hr is :: "+bb/3600000);
+		
 		Assert.assertEquals(2000L, TimeFormatter.getTimeDiffInMilli("2021-01-19T13:50:06.919Z",
 				"2021-01-19T13:50:08.919Z", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 	}
