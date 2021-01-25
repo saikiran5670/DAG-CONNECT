@@ -59,7 +59,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 else if (account.isError)
                 {
                     return StatusCode(500, "There is an error creating account.");
-                }
+                }               
                 else
                 {
                     await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Account Create", 1, 2, account.EmailId);
@@ -144,17 +144,20 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
 
         [HttpPost]
         [Route("changepassword")]
-        public async Task<IActionResult> ChangePassword(AccountRequest request)
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
         {
             try
             {
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
-                account = _mapper.ToAccountEntity(request);
+
+                //account = _mapper.ToAccountEntity(request);
+                account.EmailId= request.EmailId;
+                account.Password= request.Password;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
                 // Validation 
-                if (string.IsNullOrEmpty(account.EmailId) || string.IsNullOrEmpty(account.Password) || (account.Id <= 0))
+                if (string.IsNullOrEmpty(account.EmailId) || string.IsNullOrEmpty(account.Password))
                 {
                     return StatusCode(404, "The Email address, and account id and password is required.");
                 }
@@ -177,10 +180,16 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
         }
         [HttpPost]
         [Route("get")]
-        public async Task<IActionResult> Get(AccountComponent.entity.AccountFilter accountFilter)
+        public async Task<IActionResult> Get(AccountFilterRequest request)
         {
             try
             {
+                AccountComponent.AccountFilter accountFilter = new  AccountComponent.AccountFilter();
+                accountFilter.Id=request.Id;
+                accountFilter.OrganizationId =request.OrganizationId;
+                accountFilter.Email =request.Email;
+                accountFilter.AccountIds =request.AccountIds;
+                accountFilter.Name =request.Name;
                 accountFilter.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
                 // Validation 
                 if (string.IsNullOrEmpty(accountFilter.Email) && string.IsNullOrEmpty(accountFilter.Name)
@@ -189,6 +198,10 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     return StatusCode(404, "The get parameters for account is required (one of them).");
                 }
                 var result = await accountmanager.Get(accountFilter);
+                if( Convert.ToInt32(result.Count()) <=0 )
+                {
+                    return StatusCode(404, "The Account is not configured.");                    
+                }
                 _logger.LogInformation("Account Service - Get.");
                 return Ok(result);
             }
@@ -210,7 +223,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 {
                     return StatusCode(400, "The organization is required");
                 }
-                AccountComponent.entity.AccountFilter filter = new AccountComponent.entity.AccountFilter();
+                AccountComponent.AccountFilter filter = new AccountComponent.AccountFilter();
 
                 List<AccountComponent.entity.Account> accounts = new List<AccountComponent.entity.Account>();
                 List<int> accountIds = new List<int>();
@@ -318,9 +331,9 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     response.Add(accountDetails);
                     _logger.LogInformation("Get account details.");
                 }
-                if ((response == null) && (Convert.ToInt16(response.Count) <= 0))
+                if ((Convert.ToInt16(response.Count()) <= 0))                
                 {
-                    return StatusCode(404, "Account Details with for provided filter not available / not configured.");
+                    return StatusCode(404, "Account not found.");
                 }
                 return Ok(response);
             }
