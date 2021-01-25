@@ -35,7 +35,7 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 		table = HBaseConfigUtil.getTable(HBaseConfigUtil.getHbaseClientConnection(HBaseConfigUtil.createConf(envParams)),
 				envParams.get(DafConstants.HBASE_TABLE_NAME));
-
+						
 		System.out.println("table_name -- " +table);
 	}
 	

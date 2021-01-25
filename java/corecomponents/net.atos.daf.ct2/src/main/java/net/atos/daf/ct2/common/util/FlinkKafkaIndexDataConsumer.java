@@ -35,14 +35,17 @@ public class FlinkKafkaIndexDataConsumer {
 		 * new IndexMsgDeserializer(), properties));
 		 */
 		 
+		properties.setProperty(DafConstants.BOOTSTRAP_SERVERS,envParams.get(DafConstants.BOOTSTRAP_SERVERS));
+		properties.setProperty(DafConstants.ZOOKEEPER_CONNECT,envParams.get(DafConstants.ZOOKEEPER_CONNECT));
+		properties.setProperty(DafConstants.GROUP_ID,envParams.get(DafConstants.INDEX_TOPIC));
 		
 		
 		
 		
-		  properties.setProperty("client.id","conti_ct2_ingress_client");
+		  properties.setProperty("client.id",envParams.get(DafConstants.EVENT_HUB_CLIENTID));
 		  //properties.setProperty(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG,"6000");
 		  properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");
-		  properties.setProperty("group.id","ct2contiprocessing_group9901");
+		  properties.setProperty("group.id",envParams.get(DafConstants.EVENT_HUB_GROUPID));
 		  properties.setProperty("bootstrap.servers",envParams.get(DafConstants.
 		  EVENT_HUB_BOOTSTRAP));
 		  properties.setProperty("security.protocol","SASL_SSL");
