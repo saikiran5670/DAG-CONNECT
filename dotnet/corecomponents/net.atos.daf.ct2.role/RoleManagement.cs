@@ -49,17 +49,6 @@ namespace net.atos.daf.ct2.role
             }
         }
 
-        public async Task<int> CheckRoleNameExist(string roleName)
-        {
-            try
-            {
-                return await roleRepository.CheckRoleNameExist(roleName);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
 
         public async Task<int> DeleteRole(int roleid, int Accountid)
         {
@@ -120,6 +109,11 @@ namespace net.atos.daf.ct2.role
             {
                 throw ex;
             }
+        }
+
+        public int CheckRoleNameExist(string roleName,int Organization_Id)
+        {
+            return  roleRepository.CheckRoleNameExist( roleName, Organization_Id);
         }
     }
 }

@@ -43,7 +43,8 @@ namespace net.atos.daf.ct2.featureservicerest.Controllers
                         obj.Description = featureitem.Description;
                         obj.RoleId = featureitem.RoleId;
                         obj.OrganizationId = featureitem.Organization_Id;
-                         featureList.Add(obj);
+                        obj.FeatureType = featureitem.Type;
+                        featureList.Add(obj);
                     }               
                   
                     return Ok(featureList);

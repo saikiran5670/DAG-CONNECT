@@ -35,14 +35,19 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
                try
                {
 
-                 if ((string.IsNullOrEmpty(roleMaster.RoleName)) || (roleMaster.OrganizationId == 0) )
+                 if ((string.IsNullOrEmpty(roleMaster.RoleName)) )
                 {
-                    return StatusCode(400, "Role name and organization Id required.");
+                    return StatusCode(400, "Role name.");
                 }
                 if(roleMaster.FeatureIds.Length ==  0 )
                 {
                       return StatusCode(400, "Feature Ids required.");
                 }
+                int Rid=  roleManager.CheckRoleNameExist(roleMaster.RoleName,roleMaster.OrganizationId);
+                    if(Rid > 0)
+                    {
+                            return StatusCode(400, "Role name allready exist.");
+                    }
                     RoleEntity.RoleMaster ObjRole = new RoleEntity.RoleMaster();
                     ObjRole.Organization_Id =roleMaster.OrganizationId;
                     ObjRole.Name = roleMaster.RoleName;
