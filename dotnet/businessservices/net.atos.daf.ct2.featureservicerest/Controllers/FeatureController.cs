@@ -11,7 +11,7 @@ using net.atos.daf.ct2.featureservicerest.Entity;
 namespace net.atos.daf.ct2.featureservicerest.Controllers
 {
      [ApiController]
-    [Route("role")]
+    [Route("feature")]
 
     public class FeatureController :ControllerBase
     {

@@ -13,7 +13,7 @@ using net.atos.daf.ct2.audit.Enum;
 namespace net.atos.daf.ct2.accountservicerest.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("account")]
     public class AccountController : ControllerBase
     {
         private readonly ILogger<AccountController> _logger;
@@ -59,7 +59,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 else if (account.isError)
                 {
                     return StatusCode(500, "There is an error creating account.");
-                }
+                }               
                 else
                 {
                     await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Account Create", 1, 2, account.EmailId);
@@ -113,22 +113,24 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpDelete]
         [Route("delete")]
-        public async Task<IActionResult> Delete(AccountRequest request)
+        public async Task<IActionResult> Delete(string EmailId, int AccountId, int OrganizationId)
         {
             try
             {
                 // Validation                 
-                if ((string.IsNullOrEmpty(request.EmailId)) || (Convert.ToInt32(request.Id) <=0 ) || (Convert.ToInt32(request.Organization_Id) <=0 ))
+                if ((string.IsNullOrEmpty(EmailId)) || (Convert.ToInt32(AccountId) <= 0) || (Convert.ToInt32(OrganizationId) <= 0))
                 {
                     return StatusCode(400, "The Email address, account id and organization id is required.");
                 }
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
-                account = _mapper.ToAccountEntity(request);
+                account.Id = AccountId;
+                account.Organization_Id = OrganizationId;
+                account.EmailId = EmailId;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
                 account.StartDate = DateTime.Now;
-                account.EndDate = null;                
+                account.EndDate = null;
                 var result = await accountmanager.Delete(account);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Service", "Account Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Account Delete", 1, 2, account.Id.ToString());
                 return Ok(account);
@@ -142,17 +144,20 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
 
         [HttpPost]
         [Route("changepassword")]
-        public async Task<IActionResult> ChangePassword(AccountRequest request)
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
         {
             try
             {
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
-                account = _mapper.ToAccountEntity(request);
+
+                //account = _mapper.ToAccountEntity(request);
+                account.EmailId= request.EmailId;
+                account.Password= request.Password;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
                 // Validation 
-                if (string.IsNullOrEmpty(account.EmailId) || string.IsNullOrEmpty(account.Password) || (account.Id <= 0))
+                if (string.IsNullOrEmpty(account.EmailId) || string.IsNullOrEmpty(account.Password))
                 {
                     return StatusCode(404, "The Email address, and account id and password is required.");
                 }
@@ -175,10 +180,16 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
         }
         [HttpPost]
         [Route("get")]
-        public async Task<IActionResult> Get(AccountComponent.entity.AccountFilter accountFilter)
+        public async Task<IActionResult> Get(AccountFilterRequest request)
         {
             try
             {
+                AccountComponent.AccountFilter accountFilter = new  AccountComponent.AccountFilter();
+                accountFilter.Id=request.Id;
+                accountFilter.OrganizationId =request.OrganizationId;
+                accountFilter.Email =request.Email;
+                accountFilter.AccountIds =request.AccountIds;
+                accountFilter.Name =request.Name;
                 accountFilter.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
                 // Validation 
                 if (string.IsNullOrEmpty(accountFilter.Email) && string.IsNullOrEmpty(accountFilter.Name)
@@ -187,6 +198,10 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     return StatusCode(404, "The get parameters for account is required (one of them).");
                 }
                 var result = await accountmanager.Get(accountFilter);
+                if( Convert.ToInt32(result.Count()) <=0 )
+                {
+                    return StatusCode(404, "The Account is not configured.");                    
+                }
                 _logger.LogInformation("Account Service - Get.");
                 return Ok(result);
             }
@@ -208,7 +223,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 {
                     return StatusCode(400, "The organization is required");
                 }
-                AccountComponent.entity.AccountFilter filter = new AccountComponent.entity.AccountFilter();
+                AccountComponent.AccountFilter filter = new AccountComponent.AccountFilter();
 
                 List<AccountComponent.entity.Account> accounts = new List<AccountComponent.entity.Account>();
                 List<int> accountIds = new List<int>();
@@ -219,9 +234,12 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 {
                     Group.GroupFilter groupFilter = new Group.GroupFilter();
                     groupFilter.Id = request.GroupId;
-                    groupFilter.OrganizationId = filter.OrganizationId;
-                    groupFilter.ObjectType = group.ObjectType.AccountGroup;
+                    groupFilter.OrganizationId = request.OrganizationId;
+                    groupFilter.ObjectType = Group.ObjectType.AccountGroup;
+                    groupFilter.GroupType = Group.GroupType.Group;
+                    groupFilter.FunctionEnum = Group.FunctionEnum.None;
                     groupFilter.GroupRef = true;
+
                     var groups = groupmanager.Get(groupFilter).Result;
                     foreach (Group.Group group in groups)
                     {
@@ -243,11 +261,22 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 }
                 else if (request.RoleId > 0)
                 {
-                    accountIds = accountmanager.GetRoleAccounts(request.AccountId).Result;
+                    accountIds = accountmanager.GetRoleAccounts(request.RoleId).Result;
                     filter.Id = 0;
                     filter.OrganizationId = request.OrganizationId;
                     filter.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
                     filter.AccountIds = string.Join(",", accountIds);
+                    // list of account for organization 
+                    accounts = accountmanager.Get(filter).Result.ToList();
+                }
+                else if (!string.IsNullOrEmpty(request.Name))
+                {
+                    filter.Id = 0;
+                    filter.Id = request.AccountId;
+                    filter.OrganizationId = request.OrganizationId;
+                    filter.Name = request.Name;
+                    filter.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
+                    filter.AccountIds = null;
                     // list of account for organization 
                     accounts = accountmanager.Get(filter).Result.ToList();
                 }
@@ -302,9 +331,9 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     response.Add(accountDetails);
                     _logger.LogInformation("Get account details.");
                 }
-                if ((response == null) && (Convert.ToInt16(response.Count) <=0))
+                if ((Convert.ToInt16(response.Count()) <= 0))                
                 {
-                    return StatusCode(404, "Account Details with for provided filter not available / not configured.");
+                    return StatusCode(404, "Account not found.");
                 }
                 return Ok(response);
             }
@@ -329,10 +358,10 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     )
                 {
                     return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
-                }                
+                }
                 accountpreference.AccountPreference preference = new Preference.AccountPreference();
                 preference = _mapper.ToAccountPreference(request);
-                preference = await preferencemanager.Create(preference );
+                preference = await preferencemanager.Create(preference);
                 var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Preference Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Preference", 1, 2, Convert.ToString(preference.RefId));
                 return Ok(preference);
             }
@@ -355,10 +384,10 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     )
                 {
                     return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
-                }                
+                }
                 accountpreference.AccountPreference preference = new Preference.AccountPreference();
                 preference = _mapper.ToAccountPreference(request);
-                preference = await preferencemanager.Update(preference );
+                preference = await preferencemanager.Update(preference);
                 var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Preference Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Preference", 1, 2, Convert.ToString(preference.RefId));
                 return Ok(preference);
             }
@@ -381,8 +410,8 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     return StatusCode(400, "The Account Id is required");
                 }
                 var result = await preferencemanager.Delete(accountId);
-                var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Preference Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Preference", 1, 2, Convert.ToString(accountId));                
-                return Ok(result);                
+                var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Preference Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Preference", 1, 2, Convert.ToString(accountId));
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -407,16 +436,16 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 preferenceFilter.Ref_Id = accountId;
                 preferenceFilter.PreferenceType = Preference.PreferenceType.Account;
                 var result = await preferencemanager.Get(preferenceFilter);
-                if ( (result == null) || Convert.ToInt16(result.Count()) <=0 )
+                if ((result == null) || Convert.ToInt16(result.Count()) <= 0)
                 {
                     return StatusCode(404, "Account Preference for this account is not configured.");
                 }
                 _logger.LogInformation("Get account preference.");
-                return Ok(result);                
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                 _logger.LogError("Error in account service:get account preference with exception - " + ex.Message + ex.StackTrace);
+                _logger.LogError("Error in account service:get account preference with exception - " + ex.Message + ex.StackTrace);
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -436,7 +465,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 {
                     return StatusCode(400, "The AccountGroupId,VehicleGroupId and AccessRelationshipType is required");
                 }
-                else if ((Convert.ToChar(request.AccessRelationType)) != 'R' || ((Convert.ToChar(request.AccessRelationType))) != 'W')
+                else if ((!request.AccessRelationType.Equals("R")) && (!request.AccessRelationType.Equals("W")))
                 {
                     return StatusCode(400, "The AccessRelationshipType should be ReadOnly and ReadWrite (R/W) only.");
                 }
@@ -444,11 +473,11 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 accessRelationship.Id = request.Id;
                 accessRelationship.AccountGroupId = request.AccountGroupId;
                 accessRelationship.VehicleGroupId = request.VehicleGroupId;
-                if (request.AccessRelationType == 'R')
+                if (request.AccessRelationType.Equals("R"))
                 {
                     accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadOnly;
                 }
-                if (request.AccessRelationType == 'W')
+                if (request.AccessRelationType.Equals("W"))
                 {
                     accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadWrite;
                 }
@@ -472,11 +501,11 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             try
             {
                 // Validation                 
-                if ((request.AccountGroupId <= 0) || (request.VehicleGroupId <= 0) || (string.IsNullOrEmpty(Convert.ToString(request.AccessRelationType))))
+                if ((request.Id <= 0) || (request.AccountGroupId <= 0) || (request.VehicleGroupId <= 0) || (string.IsNullOrEmpty(Convert.ToString(request.AccessRelationType))))
                 {
                     return StatusCode(400, "The AccountGroupId,VehicleGroupId and AccessRelationshipType is required");
                 }
-                else if ((Convert.ToChar(request.AccessRelationType)) != 'R' || ((Convert.ToChar(request.AccessRelationType))) != 'W')
+                else if ((!request.AccessRelationType.Equals("R")) && (!request.AccessRelationType.Equals("W")))
                 {
                     return StatusCode(400, "The AccessRelationshipType should be ReadOnly and ReadWrite (R/W) only.");
                 }
@@ -484,11 +513,11 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 accessRelationship.Id = request.Id;
                 accessRelationship.AccountGroupId = request.AccountGroupId;
                 accessRelationship.VehicleGroupId = request.VehicleGroupId;
-                if (request.AccessRelationType == 'R')
+                if (request.AccessRelationType.Equals("R"))
                 {
                     accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadOnly;
                 }
-                if (request.AccessRelationType == 'W')
+                if (request.AccessRelationType.Equals("W"))
                 {
                     accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadWrite;
                 }
@@ -512,11 +541,11 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             try
             {
                 // Validation                 
-                if ((request.AccountGroupId <= 0) || (request.VehicleGroupId <= 0))
+                if ((request.Id <= 0))
                 {
                     return StatusCode(400, "The AccountGroupId,VehicleGroupId is required");
                 }
-                var result = await accountmanager.DeleteAccessRelationship(request.AccountGroupId, request.VehicleGroupId);
+                var result = await accountmanager.DeleteAccessRelationship(request.Id, request.VehicleGroupId);
                 var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Access Relationship", 1, 2, Convert.ToString(request.AccountGroupId)).Result;
                 return Ok(result);
             }
@@ -559,46 +588,356 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
 
         // Begin - Account Group
 
-        // [HttpPost]
-        // [Route("AccountGroup/Create")]
-        // public async Task<IActionResult> CreateAccountGroup(AccessRelationshipRequest request)
-        // {
-        //     try
-        //     {
-        //         // Validation                 
-        //         if ((request.AccountGroupId <= 0) || (request.VehicleGroupId <= 0) || (string.IsNullOrEmpty(Convert.ToString(request.AccessRelationType))))
-        //         {
-        //             return StatusCode(400, "The AccountGroupId,VehicleGroupId and AccessRelationshipType is required");
-        //         }
-        //         else if ((Convert.ToChar(request.AccessRelationType)) != 'R' || ((Convert.ToChar(request.AccessRelationType))) != 'W')
-        //         {
-        //             return StatusCode(400, "The AccessRelationshipType should be ReadOnly and ReadWrite (R/W) only.");
-        //         }
-        //         AccountComponent.entity.AccessRelationship accessRelationship = new AccountComponent.entity.AccessRelationship();
-        //         accessRelationship.Id = request.Id;
-        //         accessRelationship.AccountGroupId = request.AccountGroupId;
-        //         accessRelationship.VehicleGroupId = request.VehicleGroupId;
-        //         if (request.AccessRelationType == 'R')
-        //         {
-        //             accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadOnly;
-        //         }
-        //         if (request.AccessRelationType == 'W')
-        //         {
-        //             accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadWrite;
-        //         }
-        //         accessRelationship.StartDate = DateTime.Now;
-        //         accessRelationship.EndDate = null;
-        //         accessRelationship = await accountmanager.CreateAccessRelationship(accessRelationship);
-        //         var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Access Relationship", 1, 2, Convert.ToString(accessRelationship.AccountGroupId)).Result;
-        //         return Ok(accessRelationship);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
-        //         return StatusCode(500, "Internal Server Error.");
-        //     }
-        // }
+        [HttpPost]
+        [Route("accountgroup/create")]
+        public async Task<IActionResult> CreateAccountGroup(AccountGroupRequest request)
+        {
+            try
+            {
+                // Validation                 
+                if ((string.IsNullOrEmpty(request.Name)))
+                {
+                    return StatusCode(400, "The AccountGroup name is required");
+                }
+                Group.Group group = new Group.Group();
+                group.Name = request.Name;
+                group.Description = request.Description;
+                group.OrganizationId = request.OrganizationId;
+                group.FunctionEnum = Group.FunctionEnum.None;
+                group.GroupType = Group.GroupType.Group;
+                group.ObjectType = Group.ObjectType.AccountGroup;
+                var result = await groupmanager.Create(group);
+                group.Id = result.Id;
+                if (result.Id > 0 && request.Accounts != null)
+                {
+                    group.GroupRef = new List<Group.GroupRef>();
+                    foreach (var item in request.Accounts)
+                    {
+                        if (item.AccountId > 0)
+                            group.GroupRef.Add(new Group.GroupRef() { Ref_Id = item.AccountId, Group_Id = group.Id });
+                    }
+                    if (Convert.ToInt32(group.GroupRef.Count) > 0)
+                    {
+                        bool AddvehicleGroupRef = await groupmanager.UpdateRef(group);
+                    }
+                }
+                var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Account Group", 1, 2, Convert.ToString(group.Name));
+                return Ok(group);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:create account group with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
 
+        [HttpPost]
+        [Route("accountgroup/update")]
+        public async Task<IActionResult> UpdateAccountGroup(AccountGroupRequest request)
+        {
+            try
+            {
+                // Validation                 
+                if ((string.IsNullOrEmpty(request.Name)))
+                {
+                    return StatusCode(400, "The AccountGroup name is required");
+                }
+                Group.Group group = new Group.Group();
+                group.Id = request.Id;
+                group.Name = request.Name;
+                group.Description = request.Description;
+                group.OrganizationId = request.OrganizationId;
+                group.FunctionEnum = Group.FunctionEnum.None;
+                group.GroupType = Group.GroupType.Group;
+                group.ObjectType = Group.ObjectType.AccountGroup;
+                var result = await groupmanager.Update(group);
+                group.Id = result.Id;
+                if (result.Id > 0 && request.Accounts != null)
+                {
+                    group.GroupRef = new List<Group.GroupRef>();
+                    foreach (var item in request.Accounts)
+                    {
+                        if (item.AccountId > 0)
+                            group.GroupRef.Add(new Group.GroupRef() { Ref_Id = item.AccountId, Group_Id = group.Id });
+                    }
+                    if (Convert.ToInt32(group.GroupRef.Count) > 0)
+                    {
+                        bool AddvehicleGroupRef = await groupmanager.UpdateRef(group);
+                    }
+                }
+                var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Account Group", 1, 2, Convert.ToString(group.Name));
+                return Ok(group);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:create account group with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+
+        [HttpPut]
+        [Route("accountgroup/delete")]
+        public async Task<IActionResult> DeleteAccountGroup(int id)
+        {
+            try
+            {
+                // Validation                 
+                if ((Convert.ToInt32(id) <= 0))
+                {
+                    return StatusCode(400, "The account group id is required.");
+                }
+                bool result = await groupmanager.Delete(id);
+                var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Account Group ", 1, 2, Convert.ToString(id));
+                return Ok(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in delete account group :DeleteGroup with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+
+        [HttpPost]
+        [Route("accountgroup/addaccounts")]
+        public async Task<IActionResult> AddAccountsToGroup(AccountGroupAccount request)
+        {
+            try
+            {
+                // Validation  
+                if (request == null)
+                {
+                    return StatusCode(400, "The AccountGroup account is required");
+                }
+                bool result = false;
+                List<Group.GroupRef> groupRef = null;
+                if (request != null && request.Accounts != null)
+                {
+                    groupRef = new List<Group.GroupRef>();
+                    foreach (var groupref in request.Accounts)
+                    {
+                        groupRef.Add(new Group.GroupRef() { Group_Id = groupref.AccountGroupId, Ref_Id = groupref.AccountId });
+                    }
+                    result = await groupmanager.AddRefToGroups(groupRef);
+                }
+                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Acccount Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Account Group ", 1, 2, "");
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in delete account group :DeleteGroup with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+        [HttpPut]
+        [Route("accountgroup/deleteaccounts")]
+        public async Task<IActionResult> DeleteAccountFromGroup(int id)
+        {
+            try
+            {
+                // Validation  
+                if (id <= 0)
+                {
+                    return StatusCode(400, "The AccountGroup Id is required");
+                }
+                bool result = false;
+                result = await groupmanager.RemoveRef(id);
+                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Acccount Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Account Group References", 1, 2, "");
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in delete account group reference :DeleteAccountsGroupReference with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+
+        [HttpPost]
+        [Route("accountgroup/get")]
+        public async Task<IActionResult> GetAccountGroup(AccountGroupFilterRequest request)
+        {
+            try
+            {
+                // Validation  
+                if (request.OrganizationId <= 0)
+                {
+                    return StatusCode(400, "The Organization id is required");
+                }
+                Group.GroupFilter group = new Group.GroupFilter();
+                group.Id = request.AccountGroupId;
+                group.OrganizationId = request.OrganizationId;
+                group.GroupRef = request.Accounts;
+                group.GroupRefCount = request.AccountCount;
+                group.FunctionEnum = Group.FunctionEnum.None;
+                group.ObjectType = Group.ObjectType.AccountGroup;
+                group.GroupType = Group.GroupType.Group;
+                var groups = await groupmanager.Get(group);
+                _logger.LogInformation("Get account group.");
+                return Ok(groups);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:get account group with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+
+        [HttpPost]
+        [Route("accountgroup/getdetails")]
+        public async Task<IActionResult> GetAccountGroupDetails(AccountGroupFilterRequest request)
+        {
+            try
+            {
+                // Validation  
+                if (request.OrganizationId <= 0)
+                {
+                    return StatusCode(400, "The Organization id is required");
+                }
+                Group.GroupFilter groupFilter = new Group.GroupFilter();
+                List<AccountGroupDetailRequest> response = new List<AccountGroupDetailRequest>();
+                AccountGroupDetailRequest accountDetail = null;
+                groupFilter.OrganizationId = request.OrganizationId;
+                groupFilter.GroupType = Group.GroupType.Group;
+                groupFilter.FunctionEnum = Group.FunctionEnum.None;
+                groupFilter.ObjectType = Group.ObjectType.AccountGroup;
+                groupFilter.GroupRefCount = true;
+
+                // all account group of organization with account count
+                var groups = await groupmanager.Get(groupFilter);
+                // get access relationship 
+                AccountComponent.entity.AccessRelationshipFilter accessFilter = new AccountComponent.entity.AccessRelationshipFilter();
+
+                foreach (Group.Group group in groups)
+                {
+                    accountDetail = new AccountGroupDetailRequest();
+                    accountDetail.Id = group.Id;
+                    accountDetail.Name = group.Name;
+                    accountDetail.AccountCount = group.GroupRefCount;
+                    accessFilter.AccountGroupId = group.Id;
+                    var accessList = accountmanager.GetAccessRelationship(accessFilter).Result;
+                    List<Int32> groupId = new List<int>();
+                    accountDetail.VehicleCount = 0;
+
+                    // vehicle group 
+                    if (Convert.ToInt32(accessList.Count) > 0)
+                    {
+                        groupId.AddRange(accessList.Select(c => c.VehicleGroupId).ToList());
+                        groupFilter = new Group.GroupFilter();
+                        groupFilter.GroupIds = groupId;
+                        groupFilter.GroupRefCount = true;
+                        groupFilter.ObjectType = Group.ObjectType.None;
+                        groupFilter.GroupType = Group.GroupType.None;
+                        groupFilter.FunctionEnum = Group.FunctionEnum.None;
+                        var vehicleGroups = groupmanager.Get(groupFilter).Result;
+                        Int32 count = 0;
+                        // Get vehicles count
+                        foreach (Group.Group vGroup in vehicleGroups)
+                        {
+                            count = count + vGroup.GroupRefCount;
+                        }
+                        accountDetail.VehicleCount = count;
+                    }
+                    response.Add(accountDetail);
+                }
+                _logger.LogInformation("Get account group details.");
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:get account group details with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+
+        [HttpPost]
+        [Route("addroles")]
+        public async Task<IActionResult> AddRoles(AccountRoleRequest request)
+        {
+            try
+            {
+                // Validation  
+                if (request.OrganizationId <= 0)
+                {
+                    return StatusCode(400, "The Organization id is required");
+                }
+                bool result = false;
+                AccountComponent.entity.AccountRole role = new AccountComponent.entity.AccountRole();
+                //AccountRoleResponse response = new AccountRoleResponse();
+                if ((request != null) && (request.Roles != null) && Convert.ToInt16(request.Roles.Count) > 0)
+                {
+                    role.OrganizationId = request.OrganizationId;
+                    role.AccountId = request.AccountId;
+                    role.RoleIds = new List<int>();
+                    foreach (int roleid in request.Roles)
+                    {
+                        role.RoleIds.Add(roleid);
+                    }
+                    role.StartDate = DateTime.UtcNow;
+                    role.EndDate = null;
+                    result = await accountmanager.AddRole(role);
+                }
+                _logger.LogInformation("Get account group details.");
+                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Add Roles to accoount", 1, 2, Convert.ToString(request.AccountId)).Result;
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:get account group details with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+        [HttpPost]
+        [Route("deleteroles")]
+        public async Task<IActionResult> RemoveRoles(AccountRoleRequest request)
+        {
+            try
+            {
+                // Validation  
+                if (request == null && request.OrganizationId <= 0 || request.AccountId <= 0)
+                {
+                    return StatusCode(400, "The Organization id and account id is required");
+                }
+                AccountComponent.entity.AccountRole accountRole = new AccountComponent.entity.AccountRole();
+                accountRole.OrganizationId = request.OrganizationId;
+                accountRole.AccountId = request.AccountId;
+                var result = await accountmanager.RemoveRole(accountRole);
+                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Remove Roles from accoount id", 1, 2, Convert.ToString(request.AccountId)).Result;
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:get account group details with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+        [HttpPost]
+        [Route("getroles")]
+        public async Task<IActionResult> GetRoles(AccountRoleRequest request)
+        {
+            try
+            {
+                // Validation 
+                List<AccountRoleResponse> response = new List<AccountRoleResponse>();
+                AccountComponent.entity.AccountRole accountRole = new AccountComponent.entity.AccountRole();
+                if (request == null && request.OrganizationId <= 0 || request.AccountId <= 0)
+                {
+                    return StatusCode(400, "The Organization id and account id is required");
+                }
+                accountRole.OrganizationId = request.OrganizationId;
+                accountRole.AccountId = request.AccountId;
+                var roles = await accountmanager.GetRoles(accountRole);
+                foreach (AccountComponent.entity.KeyValue role in roles)
+                {
+                    //response.Roles = new NameIdResponse();
+                    response.Add(new AccountRoleResponse() { Id = role.Id, Name = role.Name });
+                }
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:get account roles with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
         // End - Account Group
 
     }

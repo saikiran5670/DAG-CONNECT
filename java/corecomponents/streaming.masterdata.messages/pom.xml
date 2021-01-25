@@ -3,11 +3,11 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-<!--    <parent>
-        <artifactId>DAF_CT2</artifactId>
-        <groupId>net.atos.daf.ct2</groupId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>-->
+    <!--    <parent>
+            <artifactId>DAF_CT2</artifactId>
+            <groupId>net.atos.daf.ct2</groupId>
+            <version>1.0-SNAPSHOT</version>
+        </parent>-->
 
     <groupId>net.atos.daf.ct2</groupId>
     <version>1.0-SNAPSHOT</version>
@@ -33,16 +33,22 @@
 
     <dependencies>
 
-        <!--        <dependency>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-actuator</artifactId>
-                    <version>2.1.4.RELEASE</version>
-                </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+            <version>2.1.4.RELEASE</version>
+        </dependency>
 
         <dependency>
             <groupId>net.atos</groupId>
             <artifactId>daf.common</artifactId>
             <version>0.0.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

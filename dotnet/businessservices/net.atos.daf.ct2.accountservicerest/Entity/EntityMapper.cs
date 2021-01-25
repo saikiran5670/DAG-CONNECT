@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using AccountComponent = net.atos.daf.ct2.account;
 using Preference = net.atos.daf.ct2.accountpreference;
 using Group = net.atos.daf.ct2.group;
@@ -49,6 +50,25 @@ namespace net.atos.daf.ct2.accountservicerest
             preference.TimeFormatId = request.TimeFormatId;
             preference.LandingPageDisplayId = request.LandingPageDisplayId;
             return preference;
+        }
+        public Group.Group ToAccountGroup(AccountGroupRequest request)
+        {
+            Group.Group group = new Group.Group();
+            group.GroupRef=null;
+            group.Id= request.Id;
+            group.Name = request.Name;
+            group.Description = request.Description;
+            group.Argument = "";     
+            group.OrganizationId = request.OrganizationId;
+            if(request.Accounts != null)
+            {
+                group.GroupRef = new List<Group.GroupRef>();
+                foreach (var groupref in request.Accounts)
+                {
+                    group.GroupRef.Add(new Group.GroupRef() { Group_Id= groupref.AccountGroupId, Ref_Id = groupref.AccountId});
+                }
+            }
+            return group;
         }
     }
 }

@@ -1320,4 +1320,22 @@ INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)  
 INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'dlandingpagedisplay_VehicleManagement',(select id from master.menu where name = 'User Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'dlandingpagedisplay_VehicleManagement' and ref_id=(select id from master.menu where name = 'User Management'));
 
 
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.CO2EmissionChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.CO2EmissionChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.DistanceChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.DistanceChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.DrivingTimeChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.DrivingTimeChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.IdlingTimeChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.IdlingTimeChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.FuelConsumedChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.FuelConsumedChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.FuelWastedByIdlingChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.FuelWastedByIdlingChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.OverSpeedChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.OverSpeedChart');
 

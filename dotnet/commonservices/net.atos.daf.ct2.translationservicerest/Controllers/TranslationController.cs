@@ -29,12 +29,16 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
         }
 
         [HttpPost]
-        [Route("getmenutranslations")]
+        [Route("menutranslations")]
          public async  Task<IActionResult> GetTranslations(Translations request)
         {
           try
           {
-            _logger.LogInformation("Get translation Common  method get "  + request.Code + " "+ request.MenuId);
+            if(string.IsNullOrEmpty(request.Code) || string.IsNullOrEmpty(request.Type))
+            {
+                return StatusCode(400, "Langauge code and type required..");
+            }
+            _logger.LogInformation("Get translation Menu  method get "  + request.Code + " "+ request.MenuId);
              List<Translations> responce = new List<Translations>();
             // var translations =  translationmanager.GetTranslationsByMenu(request.ID,(translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString().ToUpper())).Result;
             var translations = await translationmanager.GetTranslationsByMenu(request.MenuId,(translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString()),request.Code);
@@ -50,11 +54,15 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
         }
 
         [HttpGet]
-        [Route("getcommontranslations")]
+        [Route("commontranslations")]
         public async  Task<IActionResult> GetCommonTranslations(string LanguageCode)
         {
           try
           {
+            if(string.IsNullOrEmpty(LanguageCode))
+            {
+                return StatusCode(400, "Langauge code  required..");
+            }
             _logger.LogInformation("Get translation Common  method get "  + LanguageCode);
 
              List<Translations> responce = new List<Translations>();
@@ -72,7 +80,7 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
         }
 
         [HttpGet]
-        [Route("getlanguagetranslationsbykey")]
+        [Route("languagetranslationsbykey")]
         public async Task<IActionResult> GetLangagugeTranslationByKey(string key)
         {
           try
@@ -91,11 +99,15 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
         }
 
         [HttpGet]
-        [Route("getkeytranslationbylanguagecode")]
+        [Route("keytranslationbylanguagecode")]
          public async  Task<IActionResult> GetKeyTranslationByLanguageCode(string languagecode,string key)
         {
             try
             {
+              if(string.IsNullOrEmpty(languagecode) || string.IsNullOrEmpty(key))
+            {
+                return StatusCode(400, "Langauge code  and key required..");
+            }
               _logger.LogInformation("Get translation key lan code method get " + languagecode +" " + key);
               var translation = await translationmanager.GetKeyTranslationByLanguageCode(languagecode,key);
               return Ok(translation);
@@ -109,11 +121,15 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
         }
 
         [HttpGet]
-        [Route("gettranslationsfordropdowns")]
+        [Route("translationsfordropdowns")]
          public async  Task<IActionResult> GetTranslationsForDropDowns(string Dropdownname, string languagecode)
         {
             try
             {
+              if(string.IsNullOrEmpty(languagecode) || string.IsNullOrEmpty(Dropdownname))
+              {
+                  return StatusCode(400, "Langauge code and dropdown  required..");
+              }
               _logger.LogInformation("Drop down method get" + Dropdownname + languagecode);
               var translation = await translationmanager.GetTranslationsForDropDowns(Dropdownname,languagecode);
               return Ok(translation);
@@ -128,7 +144,7 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
 
 
         [HttpGet]
-        [Route("getallanguagecodes")]
+        [Route("languagecodes")]
          public async  Task<IActionResult> GetAllLangaugecodes()
          {
                  _logger.LogInformation("All langauges method get");

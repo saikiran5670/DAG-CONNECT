@@ -72,12 +72,12 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             catch(Exception ex)
             {
                  logger.LogError(ex.Message +" " +ex.StackTrace);
-                 return StatusCode(500,"Internal Server Error.");
-                //return StatusCode(500,ex.Message +" " +ex.StackTrace);
+                 //return StatusCode(500,"Internal Server Error.");
+                 return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }   
         } 
 
-     [HttpPost]      
+       [HttpPut]     
      [Route("update")]
      public async Task<IActionResult> Update(Organization organization)
         {              
@@ -94,12 +94,12 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             catch(Exception ex)
             {         
                 logger.LogError(ex.Message +" " +ex.StackTrace);
-                return StatusCode(500,"Internal Server Error.");
-                //return StatusCode(500,ex.Message +" " +ex.StackTrace);
+                //return StatusCode(500,"Internal Server Error.");
+                return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }           
         }       
 
-     [HttpPost]      
+     [HttpDelete]   
      [Route("delete")]
      public async Task<IActionResult> Delete(int organizationId)
         {              
@@ -116,8 +116,8 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             catch(Exception ex)
             {            
                 logger.LogError(ex.Message +" " +ex.StackTrace);
-                return StatusCode(500,"Internal Server Error.");
-                //return StatusCode(500,ex.Message +" " +ex.StackTrace);
+               // return StatusCode(500,"Internal Server Error.");
+                return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }   
         }     
      
