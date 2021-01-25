@@ -1321,9 +1321,9 @@ INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)  
 
 
 INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard');
+SELECT 'Dashboard',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard');
 INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard.FleetKPI',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI');
+SELECT 'Dashboard.FleetKPI',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI');
 INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
 SELECT 'Dashboard.FleetKPI.CO2EmissionChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.CO2EmissionChart');
 INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
