@@ -207,15 +207,22 @@ export class AppComponent {
   }
 
   getTranslationLabels(){
-    let langCode = 'EN-GB';
-    let labelList = 'lblDashboard,lblReports,lblVehicleManagement,lblServiceSubscriberDetails,lblUserGroupManagement,lblUserManagement,lblUserRoleManagement,lblDriverManagement,lblLiveFleet,lblLogBook,lblTripReport,lblTripTracing,lblConfiguration,lblAlerts,lblLandmarks,lblTachograph,lblMobilePortal,lblShop,lblInformation,lblAdmin';
-    this.translationService.getTranslationLabel(labelList, langCode).subscribe( (data) => {
+    let translationObj = {
+      "id": 0,
+      "code": "EN-GB", //-- TODO: Lang code based on account 
+      "type": "Menu",
+      "name": "",
+      "value": "",
+      "filter": "",
+      "menuId": 0 //-- for common & user preference
+    }
+    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
     });
   }
 
   processTranslation(transData: any){
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.code]: cur.translation }), {});
+    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("app process translationData:: ", this.translationData)
   }
 
