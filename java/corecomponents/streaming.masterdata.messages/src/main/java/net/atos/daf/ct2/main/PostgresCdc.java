@@ -21,19 +21,19 @@ import java.util.Properties;
 
 public class PostgresCdc {
 
-  private static AuditETLJobClient auditETLJobClient;
   private static final Logger log = LogManager.getLogger(PostgresCdc.class);
+  private static AuditETLJobClient auditETLJobClient;
   private static String FILE_PATH;// = "src/main/resources/configuration.properties";
   private static Properties properties;
 
   public static void main(String[] args) {
 
     try {
-       FILE_PATH = args[0];
+      FILE_PATH = args[0];
 
       PostgresCdc postgresCdc = new PostgresCdc();
       Properties properties = postgresCdc.configuration(FILE_PATH);
-      //postgresCdc.auditTrail(properties);
+      // postgresCdc.auditTrail(properties);
 
       Configuration configuration = postgresCdc.connectingPostgreSQL(properties);
 
@@ -43,35 +43,17 @@ public class PostgresCdc {
     } catch (DAFCT2Exception e) {
       log.error("Exception: ", e);
 
-    }finally{
-      //auditETLJobClient.closeChannel();
+    } finally {
+      // auditETLJobClient.closeChannel();
     }
-
-  }
-
-  public Properties configuration(String filePath) throws DAFCT2Exception {
-
-    Properties properties = new Properties();
-    properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-    properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-
-    try {
-      properties.load(new FileReader(filePath));
-      log.info("Configuration Loaded for Connecting Kafka.");
-
-    } catch (IOException e) {
-      log.error("Unable to Find the File " + filePath, e);
-      throw new DAFCT2Exception("Unable to Find the File " + filePath, e);
-    }
-    return properties;
   }
 
   public static void auditTrail(Properties properties) {
 
     auditETLJobClient =
-            new AuditETLJobClient(
-                    properties.getProperty(DAFCT2Constant.GRPC_SERVER),
-                    Integer.valueOf(properties.getProperty(DAFCT2Constant.GRPC_PORT)));
+        new AuditETLJobClient(
+            properties.getProperty(DAFCT2Constant.GRPC_SERVER),
+            Integer.valueOf(properties.getProperty(DAFCT2Constant.GRPC_PORT)));
 
     Map<String, String> auditMap = new HashMap<String, String>();
 
@@ -90,6 +72,23 @@ public class PostgresCdc {
     auditETLJobClient.auditTrialGrpcCall(auditMap);
 
     log.info("Audit Trial Started");
+  }
+
+  public Properties configuration(String filePath) throws DAFCT2Exception {
+
+    Properties properties = new Properties();
+    properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+    properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+
+    try {
+      properties.load(new FileReader(filePath));
+      log.info("Configuration Loaded for Connecting Kafka.");
+
+    } catch (IOException e) {
+      log.error("Unable to Find the File " + filePath, e);
+      throw new DAFCT2Exception("Unable to Find the File " + filePath, e);
+    }
+    return properties;
   }
 
   public Configuration connectingPostgreSQL(Properties properties) throws DAFCT2Exception {
@@ -126,6 +125,9 @@ public class PostgresCdc {
               .with(
                   PostgresConnectorConfig.PASSWORD,
                   properties.getProperty(DAFCT2Constant.POSTGRE_PASSWORD))
+              .with(
+                  PostgresConnectorConfig.SSL_MODE,
+                  properties.getProperty(DAFCT2Constant.POSTGRE_SSL))
               .with(
                   PostgresConnectorConfig.DATABASE_NAME,
                   properties.getProperty(DAFCT2Constant.POSTGRE_DATABASE_NAME))

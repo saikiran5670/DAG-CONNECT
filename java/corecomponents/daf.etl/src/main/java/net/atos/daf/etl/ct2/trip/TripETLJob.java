@@ -72,43 +72,19 @@ public class TripETLJob {
 					.getTripIndexAggregatedData(hbaseStsData, tableEnv, indxData);
 			DataStream<Trip> finalTripData = TripAggregations.getConsolidatedTripData(hbaseStsData, secondLevelAggrData,
 					tableEnv);*/
-			DataStream<Trip> finalTripData = TripAggregations.getConsolidatedTripData(hbaseStsData, indxData,
-					tableEnv);
+			DataStream<Trip> finalTripData = TripAggregations.getConsolidatedTripData(hbaseStsData, indxData, tableEnv);
 
 			// TODO read master data
 			finalTripData.addSink(new TripSink());
 
 			// Call Audit Trail
-			TripAuditTrail.auditTrail(envParams, ETLConstants.AUDIT_EVENT_STATUS_START, ETLConstants.TRIP_JOB_NAME, "Trip ETL Job Started",
-					ETLConstants.AUDIT_CREATE_EVENT_TYPE);
-			
-			/*try {
-				auditing = new AuditETLJobClient(envParams.get(ETLConstants.GRPC_SERVER),
-						Integer.valueOf(envParams.get(ETLConstants.GRPC_PORT)));
-				auditMap = createAuditMap(ETLConstants.AUDIT_EVENT_STATUS_START, "Trip ETL Job Started");
-				auditing.auditTrialGrpcCall(auditMap);
-				auditing.closeChannel();
-			} catch (Exception e) {
-				// TODO cross check - Need not abort the job on GRPC failure
-				logger.error("Issue while auditing :: " + e.getMessage());
-			}*/
+			TripAuditTrail.auditTrail(envParams, ETLConstants.AUDIT_EVENT_STATUS_START, ETLConstants.TRIP_JOB_NAME,
+					"Trip ETL Job Started", ETLConstants.AUDIT_CREATE_EVENT_TYPE);
 
 			env.execute("Trip ETL Job");
 
 		} catch (Exception e) {
 
-			/*try {
-				auditMap = createAuditMap(ETLConstants.AUDIT_EVENT_STATUS_FAIL,
-						"Trip ETL Job Failed, reason :: " + e.getMessage());
-
-				auditing = new AuditETLJobClient(envParams.get(ETLConstants.GRPC_SERVER),
-						Integer.valueOf(envParams.get(ETLConstants.GRPC_PORT)));
-				auditing.auditTrialGrpcCall(auditMap);
-				auditing.closeChannel();
-			} catch (Exception ex) {
-				logger.error("Issue while auditing :: " + ex.getMessage());
-			}*/
-			
 			TripAuditTrail.auditTrail(envParams, ETLConstants.AUDIT_EVENT_STATUS_START, ETLConstants.TRIP_JOB_NAME, "Trip ETL Job Failed :: "+e.getMessage(),
 					ETLConstants.AUDIT_CREATE_EVENT_TYPE);
 
@@ -166,23 +142,5 @@ public class TripETLJob {
 
 		return tripStsClmns;
 	}
-
-	private static Map<String, String> createAuditMap(String jobStatus, String message) {
-		Map<String, String> auditMap = new HashMap<>();
-
-		auditMap.put(ETLConstants.JOB_EXEC_TIME, String.valueOf(TimeFormatter.getCurrentUTCTime()));
-		auditMap.put(ETLConstants.AUDIT_PERFORMED_BY, ETLConstants.TRIP_JOB_NAME);
-		auditMap.put(ETLConstants.AUDIT_COMPONENT_NAME, ETLConstants.TRIP_JOB_NAME);
-		auditMap.put(ETLConstants.AUDIT_SERVICE_NAME, ETLConstants.AUDIT_SERVICE);
-		auditMap.put(ETLConstants.AUDIT_EVENT_TYPE, ETLConstants.AUDIT_CREATE_EVENT_TYPE);// check
-		auditMap.put(ETLConstants.AUDIT_EVENT_TIME, String.valueOf(TimeFormatter.getCurrentUTCTime()));
-		auditMap.put(ETLConstants.AUDIT_EVENT_STATUS, jobStatus);
-		auditMap.put(ETLConstants.AUDIT_MESSAGE, message);
-		auditMap.put(ETLConstants.AUDIT_SOURCE_OBJECT_ID, ETLConstants.DEFAULT_OBJECT_ID);
-		auditMap.put(ETLConstants.AUDIT_TARGET_OBJECT_ID, ETLConstants.DEFAULT_OBJECT_ID);
-		auditMap.put(ETLConstants.AUDIT_UPDATED_DATA, null);
-
-		return auditMap;
-	}
-
+	
 }

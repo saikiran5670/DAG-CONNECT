@@ -111,7 +111,14 @@ export class LoginComponent implements OnInit {
       }];
     }
 
-    localStorage.setItem('accountOrganizationId',  data.accountOrganization[0].id)
+    localStorage.setItem('accountOrganizationId', data.accountOrganization[0].id);
+    if(data.accountId){
+      data.accountId = data.accountId;
+    }
+    else{
+      data.accountId = 0;
+    }
+    localStorage.setItem('accountId', data.accountId);
 
     let organization: Organization[] = data.accountOrganization;
     let role: Role[] = data.accountRole;

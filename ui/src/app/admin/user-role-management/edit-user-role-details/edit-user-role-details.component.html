@@ -13,17 +13,17 @@
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <!-- <mat-label>{{ translationData.lblSalutation }}</mat-label> -->
                   <mat-label>{{ translationData.lblUserRoleName || 'User Role Name' }}</mat-label>
-                  <mat-label class='custom-font'>{{ this.gridData[0].name  }}</mat-label>
+                  <mat-label class='custom-font'>{{ this.gridData[0].roleName  }}</mat-label>
                 </div>
                 <div *ngIf="loggedInUser == 'admin'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <!-- <mat-label>{{ translationData.lblFirstName }}</mat-label> -->
                     <mat-label>{{ translationData.lblUserRoleType || 'Role Type' }}</mat-label>
-                    <mat-label class='custom-font'>{{ this.gridData[0].roleType  }}</mat-label>
+                    <mat-label class='custom-font'>{{ this.gridData[0].organizationId == 0 ? 'Global' : 'Regular'  }}</mat-label>
                 </div>
                 <div [ngClass]="loggedInUser == 'admin' ? 'areaWidth min-width-30-per' : 'areaWidth min-width-60-per'" fxLayout="column" fxLayoutAlign="left">
                     <!-- <mat-label>{{ translationData.lblLastName }}</mat-label> -->
                     <mat-label>{{ translationData.lblUserRoleDescriptionOptional || 'User Role Description' }}</mat-label>
-                    <mat-label class='custom-font'>{{ this.gridData[0].roleDescription ? this.gridData[0].roleDescription : '--' }}</mat-label>
+                    <mat-label class='custom-font'>{{ this.gridData[0].description ? this.gridData[0].description : '--' }}</mat-label>
                 </div>
             </div>  
         </mat-card-content>
@@ -108,9 +108,9 @@
         <div fxLayout="row" class='margin-top-xlg'>
             <div fxLayout="column" class='full-width'>
                 <mat-table [dataSource]="dataSource" matSort>      
-                    <ng-container matColumnDef="name">
+                    <ng-container matColumnDef="featureName">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatureName || 'Feature Name'}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row; let index"> {{row.name}} </mat-cell>
+                        <mat-cell *matCellDef="let row; let index"> {{row.featureName}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="select">
                         <!-- <mat-header-cell *matHeaderCellDef>

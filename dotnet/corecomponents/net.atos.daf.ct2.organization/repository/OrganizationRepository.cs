@@ -45,9 +45,9 @@ namespace net.atos.daf.ct2.organization.repository
                 parameter.Add("@PostalCode", organization.PostalCode);  
                 parameter.Add("@City", organization.City);
                 parameter.Add("@CountryCode", organization.CountryCode);    
-                parameter.Add("@ReferencedDate", organization.ReferencedDate);               
+                parameter.Add("@ReferencedDate",organization.reference_date != null ? UTCHandling.GetUTCFromDateTime(organization.reference_date.ToString()) : (long ?)null);               
                 parameter.Add("@OptOutStatus", organization.OptOutStatus);
-                parameter.Add("@OptOutStatusChangedDate", organization.OptOutStatusChangedDate);
+                parameter.Add("@OptOutStatusChangedDate",organization.optout_status_changed_date != null ? UTCHandling.GetUTCFromDateTime(organization.optout_status_changed_date.ToString()) : (long ?)null); 
                 parameter.Add("@IsActive", organization.IsActive);               
 
                 string query= "insert into master.organization(org_id, type, name, address_type, street, street_number, postal_code, city,country_code,reference_date,optout_status,optout_status_changed_date,is_active) " +
@@ -100,9 +100,9 @@ namespace net.atos.daf.ct2.organization.repository
                 parameter.Add("@PostalCode", organization.PostalCode);  
                 parameter.Add("@City", organization.City);
                 parameter.Add("@CountryCode", organization.CountryCode);    
-                parameter.Add("@ReferencedDate", organization.ReferencedDate);               
+                parameter.Add("@ReferencedDate",organization.reference_date != null ? UTCHandling.GetUTCFromDateTime(organization.reference_date.ToString()) : (long ?)null);               
                 parameter.Add("@OptOutStatus", organization.OptOutStatus);
-                parameter.Add("@OptOutStatusChangedDate", organization.OptOutStatusChangedDate);
+                parameter.Add("@OptOutStatusChangedDate",organization.optout_status_changed_date != null ? UTCHandling.GetUTCFromDateTime(organization.optout_status_changed_date.ToString()) : (long ?)null); 
                 parameter.Add("@IsActive", organization.IsActive);  
 
                 var query = @"update master.organization set org_id=@OrganizationId, type=@OrganizationType, name=@Name,
@@ -114,65 +114,39 @@ namespace net.atos.daf.ct2.organization.repository
             }
             catch (Exception ex)
             {
-                log.Info("Update Organization method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                log.Info("Update Organization method in repository failed :");
                 log.Error(ex.ToString());
                 throw ex;
             }
             return organization;
         }
-        public async Task<Organization> Get(int organizationId)
+
+        public async Task<OrganizationResponse> Get(int organizationId)
         {
             log.Info("Get Organization method called in repository");     
             try
             {                
                 var parameter = new DynamicParameters();
-                // var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date, optout_status, optout_status_changed_date, is_active
-	            //             FROM master.organization where id=@Id";
-                var query = @"SELECT o.id,c.name currency,t.name timezone ,tf.name timeformat,vd.name vehicledisplay,
-                            df.name dateformat,lp.name landingpagedisplay,l.description Languagename,u.name unit,a.type PrefType,a.ref_id RefId,org_id OrganizationId,o.type, o.name, address_type AddressType, street AddressStreet, street_number AddressStreetNumber, postal_code PostalCode, city, country_code CountryCode, reference_date ReferencedDate , optout_status OptOutStatus, optout_status_changed_date OptOutStatusChangedDate, O.is_active IsActive
-                            FROM master.organization o
-                            left join  master.accountpreference a on o.id=a.ref_id
-                            left join  master.currency c on c.id=a.currency_id
-                            left join  master.timezone t on t.id=a.timezone_id
-                            left join  master.timeformat tf on tf.id=a.time_format_id
-                            left join  master.vehicledisplay vd on vd.id=a.vehicle_display_id
-                            left join  master.dateformat df on df.id=a.date_format_id
-                            left join  master.landingpagedisplay lp on lp.id=a.landing_page_display_id
-                            left join  master.unit u on u.id=a.unit_id
-                            left join  translation.language l on l.id=a.language_id
-                            where o.id=@Id";
+                var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date , optout_status, optout_status_changed_date, is_active
+	                        FROM master.organization where id=@Id";               
                 parameter.Add("@Id", organizationId);
-                IEnumerable<Organization> OrganizationDetails = await dataAccess.QueryAsync<Organization>(query, parameter);
-                Organization objOrganization=new Organization();
+                IEnumerable<OrganizationResponse> OrganizationDetails = await dataAccess.QueryAsync<OrganizationResponse>(query, parameter);
+                OrganizationResponse objOrganization=new OrganizationResponse();
                 foreach (var item in OrganizationDetails)
                     {         
                          objOrganization.Id=item.Id;
-                         objOrganization.OrganizationId=item.OrganizationId;
-                         objOrganization.Type=item.Type;
-                         objOrganization.Name=item.Name;
-                         objOrganization.AddressType=item.AddressType;
-                         objOrganization.AddressStreet=item.AddressStreet;
-                         objOrganization.AddressStreetNumber=item.AddressStreetNumber;
-                         objOrganization.PostalCode=item.PostalCode;
-                         objOrganization.City=item.City;
-                         objOrganization.CountryCode=item.CountryCode;
-                        // objOrganization.ReferencedDate=item.ReferencedDate;      
-                         objOrganization.OptOutStatus=item.OptOutStatus;
-                        // objOrganization.OptOutStatusChangedDate=item.OptOutStatusChangedDate;
-                         objOrganization.IsActive=item.IsActive;
-                         objOrganization.Currency=item.Currency;
-                         objOrganization.Timezone=item.Timezone;
-                         objOrganization.Timeformat=item.Timeformat;
-                         objOrganization.Vehicledisplay=item.Vehicledisplay;
-                         objOrganization.Dateformat=item.Dateformat;
-                         objOrganization.LandingpageDisplay=item.LandingpageDisplay;
-                         objOrganization.Languagename=item.Languagename;
-                         objOrganization.Unit=item.Unit;
-                         objOrganization.PrefType=item.PrefType;
-                         objOrganization.RefId=item.RefId;
-                         //objOrganization.Referenced=item.Referenced; 
-                         objOrganization.Referenced=Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(item.ReferencedDate,"America/New_York", "yyyy-MM-ddTHH:mm:ss"));
-                         objOrganization.OptOutStatusDate=Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(item.OptOutStatusChangedDate,"America/New_York", "yyyy-MM-ddTHH:mm:ss"));
+                         objOrganization.org_id=item.org_id;
+                         objOrganization.type=item.type;
+                         objOrganization.name=item.name;
+                         objOrganization.address_type=item.address_type;
+                         objOrganization.street=item.street;
+                         objOrganization.street_number=item.street_number;
+                         objOrganization.postal_code=item.postal_code;
+                         objOrganization.city=item.city;
+                         objOrganization.country_code=item.country_code;         
+                         objOrganization.is_active=item.is_active;                                
+                         objOrganization.reference_date=UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(item.reference_date),"America/New_York", "yyyy-MM-ddTHH:mm:ss");
+                         objOrganization.optout_status_changed_date=UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(item.optout_status_changed_date),"America/New_York", "yyyy-MM-ddTHH:mm:ss");
                     }            
                 return objOrganization;
             }
@@ -183,6 +157,66 @@ namespace net.atos.daf.ct2.organization.repository
                 throw ex;
             }
         }
+        // public async Task<Organization> Get(int organizationId)
+        // {
+        //     log.Info("Get Organization method called in repository");     
+        //     try
+        //     {                
+        //         var parameter = new DynamicParameters();
+        //         // var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date, optout_status, optout_status_changed_date, is_active
+	    //         //             FROM master.organization where id=@Id";
+        //         var query = @"SELECT o.id,c.name currency,t.name timezone ,tf.name timeformat,vd.name vehicledisplay,
+        //                     df.name dateformat,lp.name landingpagedisplay,l.description Languagename,u.name unit,a.type PrefType,a.ref_id RefId,org_id OrganizationId,o.type, o.name, address_type AddressType, street AddressStreet, street_number AddressStreetNumber, postal_code PostalCode, city, country_code CountryCode, reference_date ReferencedDate , optout_status OptOutStatus, optout_status_changed_date OptOutStatusChangedDate, O.is_active IsActive
+        //                     FROM master.organization o
+        //                     left join  master.accountpreference a on o.id=a.ref_id
+        //                     left join  master.currency c on c.id=a.currency_id
+        //                     left join  master.timezone t on t.id=a.timezone_id
+        //                     left join  master.timeformat tf on tf.id=a.time_format_id
+        //                     left join  master.vehicledisplay vd on vd.id=a.vehicle_display_id
+        //                     left join  master.dateformat df on df.id=a.date_format_id
+        //                     left join  master.landingpagedisplay lp on lp.id=a.landing_page_display_id
+        //                     left join  master.unit u on u.id=a.unit_id
+        //                     left join  translation.language l on l.id=a.language_id
+        //                     where o.id=@Id";
+        //         parameter.Add("@Id", organizationId);
+        //         IEnumerable<Organization> OrganizationDetails = await dataAccess.QueryAsync<Organization>(query, parameter);
+        //         Organization objOrganization=new Organization();
+        //         foreach (var item in OrganizationDetails)
+        //             {         
+        //                  objOrganization.Id=item.Id;
+        //                  objOrganization.OrganizationId=item.OrganizationId;
+        //                  objOrganization.Type=item.Type;
+        //                  objOrganization.Name=item.Name;
+        //                  objOrganization.AddressType=item.AddressType;
+        //                  objOrganization.AddressStreet=item.AddressStreet;
+        //                  objOrganization.AddressStreetNumber=item.AddressStreetNumber;
+        //                  objOrganization.PostalCode=item.PostalCode;
+        //                  objOrganization.City=item.City;
+        //                  objOrganization.CountryCode=item.CountryCode;                        
+        //                  objOrganization.OptOutStatus=item.OptOutStatus;                     
+        //                  objOrganization.IsActive=item.IsActive;
+        //                  objOrganization.Currency=item.Currency;
+        //                  objOrganization.Timezone=item.Timezone;
+        //                  objOrganization.Timeformat=item.Timeformat;
+        //                  objOrganization.Vehicledisplay=item.Vehicledisplay;
+        //                  objOrganization.Dateformat=item.Dateformat;
+        //                  objOrganization.LandingpageDisplay=item.LandingpageDisplay;
+        //                  objOrganization.Languagename=item.Languagename;
+        //                  objOrganization.Unit=item.Unit;
+        //                  objOrganization.PrefType=item.PrefType;
+        //                  objOrganization.RefId=item.RefId;          
+        //                  objOrganization.Referenced=Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(item.ReferencedDate,"America/New_York", "yyyy-MM-ddTHH:mm:ss"));
+        //                  objOrganization.OptOutStatusDate=Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(item.OptOutStatusChangedDate,"America/New_York", "yyyy-MM-ddTHH:mm:ss"));
+        //             }            
+        //         return objOrganization;
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         log.Info("Get Organization method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+        //         log.Error(ex.ToString());
+        //         throw ex;
+        //     }
+        // }
       
 
         public async Task<Customer> UpdateCustomer(Customer customer)

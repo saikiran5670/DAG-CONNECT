@@ -53,27 +53,19 @@ public class TripStreamingJob {
 							try {
 								TripStatusData tripStsData = new TripStatusData();
 								Status stsMsg = kafkaRec.getValue();
-								// setters
+
 								tripStsData.setDriverId(stsMsg.getDriverID());
 								tripStsData.setTripId(stsMsg.getDocument().getTripID());
 								tripStsData.setVid(stsMsg.getVid());
 								// tripStsData.setIncrement(stsMsg.getIncrement());
+
+								SimpleDateFormat newDateStrFmt = new SimpleDateFormat(ETLConstants.DATE_FORMAT);
 
 								// TODO only for testing
 								System.out.println(" Format of stsMsg.getEventDateTimeFirstIndex() :: "
 										+ stsMsg.getEventDateTimeFirstIndex());
 								System.out.println(
 										" Format of stsMsg.getGpsStartDateTime() :: " + stsMsg.getGpsStartDateTime());
-
-								SimpleDateFormat newDateStrFmt = new SimpleDateFormat(ETLConstants.DATE_FORMAT);
-								try {
-
-									String output = newDateStrFmt.format(stsMsg.getGpsStartDateTime());
-									System.out.println(" output converted getGpsStartDateTime :: " + output);
-								} catch (Exception e) {
-									System.out.println("Date while converting  ==== " + e);
-								}
-
 								System.out.println(" output converted getEventDateTimeFirstIndex :: "
 										+ newDateStrFmt.format(stsMsg.getEventDateTimeFirstIndex()));
 								System.out.println(" output converted getGpsStartDateTime :: "
@@ -128,7 +120,7 @@ public class TripStreamingJob {
 
 								tripStsData.setVTripMotionDuration(stsMsg.getDocument().getVTripMotionDuration());
 								tripStsData.setReceivedTimestamp(stsMsg.getReceivedTimestamp());
-
+								tripStsData.setVIdleDuration(stsMsg.getVIdleDuration());
 								tripStsData.setVPTODuration(stsMsg.getVptoDuration());
 								tripStsData.setVHarshBrakeDuration(stsMsg.getVHarshBrakeDuration());
 								tripStsData.setVBrakeDuration(stsMsg.getVBrakeDuration());
@@ -155,10 +147,19 @@ public class TripStreamingJob {
 								if (tripStsData.getGpsStopVehDist() != null && tripStsData.getGpsStartVehDist() != null)
 									tripStsData.setTripCalGpsVehDistDiff(
 											tripStsData.getGpsStopVehDist() - tripStsData.getGpsStartVehDist());
+								
+								if(tripStsData.getTripCalGpsVehTimeDiff() != null){
+									double timeDiff = (tripStsData.getTripCalGpsVehTimeDiff()).doubleValue() /3600000;
+									tripStsData.setTripCalVehTimeDiffInHr(timeDiff);
+								}
 
 								// TODO Insert Kafka processing record time
 								// tripStsData.set(hbaseInsertionTS);
 								tripStsData.setEtlProcessingTS(TimeFormatter.getCurrentUTCTime());
+								
+								System.out.println("tripStsData.getTripCalVehTimeDiffInHr ======= "+tripStsData.getTripCalVehTimeDiffInHr());
+								
+								System.out.println("driving Time ======= "+tripStsData.getTripCalGpsVehTimeDiff() +" idle: "+tripStsData.getVIdleDuration());
 
 								return tripStsData;
 							} catch (Exception e) {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, of, throwError } from 'rxjs';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
 import { delay, catchError } from 'rxjs/internal/operators';
 
@@ -10,7 +10,7 @@ import { delay, catchError } from 'rxjs/internal/operators';
 export class TranslationService {
     private translationUrl: string;
     constructor(private httpClient: HttpClient, private config: ConfigService) {
-        this.translationUrl = config.getSettings("foundationServices").translationServiceUrl;
+        this.translationUrl = config.getSettings("foundationServices").translationRESTServiceURL;
     }
 
     getTranslationLabel(labelList:any, langCode: string): Observable<any[]> {
@@ -19,6 +19,24 @@ export class TranslationService {
                 //`${this.translationUrl}/GetLabelTranslation?LabelList=${labelList}&languageCode=${langCode}`
                 `${this.translationUrl}/GetLabelTranslation`
                 )
+            .pipe(catchError(this.handleError));
+    }
+
+    getMenuTranslations(dataObj: any): Observable<any[]> {
+        const headers = {
+            headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+        };
+        return this.httpClient
+            .post<any[]>(`${this.translationUrl}/menutranslations`, dataObj, headers)
+            .pipe(catchError(this.handleError));
+    }
+
+    getTranslationsForDropdowns(dataObj: any): Observable<any[]> {
+        const headers = {
+            headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+        };
+        return this.httpClient
+            .post<any[]>(`${this.translationUrl}/translationsfordropdowns`, dataObj, headers)
             .pipe(catchError(this.handleError));
     }
 
