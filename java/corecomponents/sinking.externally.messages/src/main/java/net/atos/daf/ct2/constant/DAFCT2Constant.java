@@ -45,8 +45,10 @@ public class DAFCT2Constant {
     public static final String POSTGRE_SERVER_ID = "postgre.server.id";
     public static final String POSTGRE_HOSTNAME = "postgre.host.name";
     public static final String POSTGRE_PORT = "postgre.port";
+    public static final String POSTGRE_DRIVER = "postgre.driver";
     public static final String POSTGRE_USER = "postgre.user.name";
-    public static final String POSTGRE_PASSWORD="postgre.password";
+    public static final String POSTGRE_PASSWORD = "postgre.password";
+    public static final String POSTGRE_SSL = "postgre.ssl";
     public static final String POSTGRE_DATABASE_NAME = "postgre.database.name";
     public static final String POSTGRE_TABLE_WHITELIST = "postgre.table.name";
     public static final String POSTGRE_PLUGIN_NAME = "postgre.plugin.name";
