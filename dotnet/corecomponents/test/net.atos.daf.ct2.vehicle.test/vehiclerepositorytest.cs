@@ -37,8 +37,8 @@ namespace net.atos.daf.ct2.vehicle.test
             Objvehicle.Name = "Vehicle 34";
             Objvehicle.VIN = "V8770uuu";
             Objvehicle.License_Plate_Number = "REG3264";
-            Objvehicle.ManufactureDate = DateTime.Now;
-            Objvehicle.ChassisNo = "123545";
+           // Objvehicle.ManufactureDate = DateTime.Now;
+           // Objvehicle.ChassisNo = "123545";
             Objvehicle.Status_Changed_Date = DateTime.Now;
             Objvehicle.Status = VehicleStatusType.OptIn;
             Objvehicle.Termination_Date = DateTime.Now;
@@ -68,8 +68,8 @@ namespace net.atos.daf.ct2.vehicle.test
             Objvehicle.Name = "Vehicle 34";
             Objvehicle.VIN = "NJH54855";
             Objvehicle.License_Plate_Number = "REG3264";
-            Objvehicle.ManufactureDate = DateTime.Now;
-            Objvehicle.ChassisNo = "123545";
+          //  Objvehicle.ManufactureDate = DateTime.Now;
+          //  Objvehicle.ChassisNo = "123545";
             Objvehicle.Status_Changed_Date = DateTime.Now;
             Objvehicle.Status = VehicleStatusType.OptIn;
             Objvehicle.Termination_Date = DateTime.Now;
@@ -223,6 +223,15 @@ namespace net.atos.daf.ct2.vehicle.test
         {
             var result = _groupRepository.Delete(7).Result;
             Assert.IsTrue(result == true);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for get organization group details")]
+        [TestMethod]
+        public void GetOrganizationVehicleGroupdetails()
+        {
+            var result = _vehicleRepository.GetOrganizationVehicleGroupdetails(7).Result;
+            Assert.IsTrue(result.Count() > 0);
         }
 
 

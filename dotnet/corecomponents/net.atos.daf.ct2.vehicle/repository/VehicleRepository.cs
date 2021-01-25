@@ -317,6 +317,34 @@ namespace net.atos.daf.ct2.vehicle.repository
             return vehicleOptInOptOut;
         }
 
+        public async Task<IEnumerable<VehicleGroupRequest>> GetOrganizationVehicleGroupdetails(long OrganizationId)
+        {
+
+            var QueryStatement = @"select vehiclegroupid,VehicleGroupName,vehicleCount,count(account) as usercount from 
+                                    (select 
+                                    grp.id as vehiclegroupid
+                                    ,grp.name as VehicleGroupName
+                                    ,count(distinct vgrpref.ref_id) as vehicleCount 
+                                    --, accrel.account_group_id
+                                    ,agrpref.ref_id as account
+                                    from master.group grp 
+                                    inner join master.groupref vgrpref
+                                    on  grp.id=vgrpref.group_id
+                                    inner join master.accessrelationship accrel
+                                    on  accrel.vehicle_group_id=grp.id
+                                    inner join master.groupref agrpref
+                                    on  accrel.account_group_id=agrpref.group_id
+                                    where grp.organization_id = @organization_id
+                                    group by grp.id,grp.name,accrel.account_group_id,agrpref.ref_id) vdetail
+                                    group by vehiclegroupid,VehicleGroupName,vehicleCount";
+            var parameter = new DynamicParameters();
+
+            parameter.Add("@organization_id",OrganizationId);
+            IEnumerable<VehicleGroupRequest> OrgVehicleGroupDetails= await dataAccess.QueryAsync<VehicleGroupRequest>(QueryStatement, parameter);
+            return OrgVehicleGroupDetails;
+        }
+
+
         #endregion
 
 

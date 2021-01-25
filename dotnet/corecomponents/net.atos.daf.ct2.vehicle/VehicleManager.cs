@@ -81,6 +81,20 @@ namespace net.atos.daf.ct2.vehicle
                 throw ex;
             }
         }
+
+        public async Task<IEnumerable<VehicleGroupRequest>> GetOrganizationVehicleGroupdetails(long OrganizationId)
+        {
+            try
+            {
+                return await vehicleRepository.GetOrganizationVehicleGroupdetails(OrganizationId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
         //   public async Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime)
         // {
         //     try
