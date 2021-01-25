@@ -85,7 +85,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
             {
                 if(string.IsNullOrEmpty(token))
                 {
-                    return StatusCode(401,"invalid_grant: The username is Empty.");
+                    return StatusCode(401,"invalid_grant: The token is Empty.");
                 }
                 else
                 {

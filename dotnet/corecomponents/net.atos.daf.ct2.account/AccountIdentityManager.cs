@@ -30,6 +30,7 @@ namespace net.atos.daf.ct2.account
             int accountId= GetAccountByEmail(user.UserName);
             if(accountId>0)
             {
+                accIdentity.AccountId =accountId;
                 IdentityEntity.Response idpResponse = await autheticator.AccessToken(user);
                 if(idpResponse.StatusCode == System.Net.HttpStatusCode.OK)
                 {
