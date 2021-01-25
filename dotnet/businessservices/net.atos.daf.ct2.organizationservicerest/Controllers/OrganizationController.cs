@@ -72,8 +72,8 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             catch(Exception ex)
             {
                  logger.LogError(ex.Message +" " +ex.StackTrace);
-                 return StatusCode(500,"Internal Server Error.");
-                //return StatusCode(500,ex.Message +" " +ex.StackTrace);
+                 //return StatusCode(500,"Internal Server Error.");
+                 return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }   
         } 
 
@@ -94,8 +94,8 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             catch(Exception ex)
             {         
                 logger.LogError(ex.Message +" " +ex.StackTrace);
-                return StatusCode(500,"Internal Server Error.");
-                //return StatusCode(500,ex.Message +" " +ex.StackTrace);
+                //return StatusCode(500,"Internal Server Error.");
+                return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }           
         }       
 
@@ -116,8 +116,8 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             catch(Exception ex)
             {            
                 logger.LogError(ex.Message +" " +ex.StackTrace);
-                return StatusCode(500,"Internal Server Error.");
-                //return StatusCode(500,ex.Message +" " +ex.StackTrace);
+               // return StatusCode(500,"Internal Server Error.");
+                return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }   
         }     
      

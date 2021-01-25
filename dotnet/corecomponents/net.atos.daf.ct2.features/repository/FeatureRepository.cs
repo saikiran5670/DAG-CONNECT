@@ -188,6 +188,19 @@ namespace net.atos.daf.ct2.features.repository
                 QueryStatement = QueryStatement + " and f.type  = @type";
 
             }
+            if(RoleId == 0  && Organizationid ==0)
+            {
+                 QueryStatement = @"SELECT f.id, f.name, 
+                                f.description, f.type, f.is_active                       
+                                FROM master.feature f where 1=1";
+               if (Featuretype != 0)
+                {
+                    parameter.Add("@type", Featuretype);
+                    QueryStatement = QueryStatement + " and f.type  = @type";
+
+                }
+
+            }
 
            
            IEnumerable<Feature> FeatureSetDetails = await dataAccess.QueryAsync<Feature>(QueryStatement, parameter);

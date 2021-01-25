@@ -10,6 +10,7 @@ using net.atos.daf.ct2.features;
 using net.atos.daf.ct2.features.entity;
 using net.atos.daf.ct2.roleservicerest.Entity;
 using System.Linq;
+using net.atos.daf.ct2.role.entity;
 
 namespace net.atos.daf.ct2.roleservicerest.Controllers
 {
@@ -124,22 +125,24 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
 
         [HttpGet]      
         [Route("roles")]
-        public async Task<IActionResult> Get(RoleEntity.RoleFilter roleFilter)
+        public async Task<IActionResult> Get(int Roleid, int Organizationid)
         {    
                try
                { 
-                 
-                    var role = await roleManager.GetRoles(roleFilter); 
+                    RoleFilter obj = new RoleFilter();
+                    obj.RoleId = Roleid;
+                    obj.Organization_Id = Organizationid;
+                    var role = await roleManager.GetRoles(obj); 
                     List<Rolerequest> roleList =new List<Rolerequest>();
                     foreach(var roleitem in role)
                     {
-                         Rolerequest obj = new Rolerequest();
-                         obj.RoleId = roleitem.Id;
-                         obj.RoleName = roleitem.Name;
-                         obj.Description = roleitem.Description;
-                         obj.OrganizationId = roleitem.Organization_Id ?? 0;
-                         obj.FeatureIds = roleitem.FeatureSet.Features.Select(i=> i.Id).ToArray();
-                         roleList.Add(obj);
+                         Rolerequest Robj = new Rolerequest();
+                         Robj.RoleId = roleitem.Id;
+                         Robj.RoleName = roleitem.Name;
+                         Robj.Description = roleitem.Description;
+                         Robj.OrganizationId = roleitem.Organization_Id ?? 0;
+                         Robj.FeatureIds = roleitem.FeatureSet.Features.Select(i=> i.Id).ToArray();
+                         roleList.Add(Robj);
                     }
                                  
                   
