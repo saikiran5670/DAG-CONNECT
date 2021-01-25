@@ -30,7 +30,12 @@ namespace net.atos.daf.ct2.accountservicerest
     public class AccessRelationshipFilter
     {
         public int AccountId { get; set; }
-        public char AccountGroupId { get; set; }
+        public int AccountGroupId { get; set; }
+    }
+    public class ChangePasswordRequest
+    {
+        public string EmailId { get; set; }
+        public string Password { get; set; }
     }
 
 }
