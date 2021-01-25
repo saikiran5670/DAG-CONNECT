@@ -29,7 +29,17 @@
 			<AppenderRef ref="RollingFile" />
 		</Root>
 
+		<Logger name="net.atos" level="trace" additivity="false">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="RollingFile" />
+		</Logger>
+
 		<Logger name="io.debezium" level="trace">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="RollingFile" />
+		</Logger>
+
+		<Logger name="org.apache.kafka" level="trace">
 			<AppenderRef ref="Console" />
 			<AppenderRef ref="RollingFile" />
 		</Logger>
