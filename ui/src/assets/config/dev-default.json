@@ -17,6 +17,7 @@
       "backendGrpcServiceUrl": "https://localhost:5001",
       "accountGrpcServiceUrl": "http://20.54.198.157:80",
       "roleRESTServiceURL": "http://20.73.217.14/Role",
-      "accountRESTServiceURL": "http://20.54.198.157/account"
+      "accountRESTServiceURL": "http://20.54.198.157/account",
+      "translationRESTServiceURL": "http://20.71.11.150/translation"
     }
 }
