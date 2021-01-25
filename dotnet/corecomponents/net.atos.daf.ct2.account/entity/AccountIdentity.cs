@@ -7,6 +7,7 @@ namespace net.atos.daf.ct2.account.entity
 {
     public class AccountIdentity
     {
+        public int AccountId {get;set;}
         public AccountToken AccountToken {get;set;}
         public AccountPreference AccountPreference {get;set;}
         public List<KeyValue> AccountOrganization {get;set;}
