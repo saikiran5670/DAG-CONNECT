@@ -14,6 +14,7 @@ import net.atos.daf.ct2.common.realtime.postgresql.LiveFleetDriverActivityPostgr
 import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.ct2.common.util.FlinkKafkaIndexDataConsumer;
 import net.atos.daf.common.AuditETLJobClient;
+import net.atos.daf.common.ct2.exception.TechnicalException;
 import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.common.realtime.hbase.IndexDataHbaseSink;
 
@@ -84,6 +85,8 @@ public class IndexDataProcess {
 			
 			System.out.println("after addsink");
 			
+			
+						
 			try { 
 				auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),Integer.valueOf(envParams.get(DafConstants.GRPC_PORT))); 
 				//auditing = new AuditETLJobClient("52.236.153.224",80);
@@ -103,7 +106,7 @@ public class IndexDataProcess {
 			
 			//System.out.println("In MAIN CATCH");
 			
-			log.error("Error" +e.getMessage() );
+			log.error("Error in Index Data Process" + e.getMessage() );
 			
 			try { auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL,
 					  "Realtime Data Monitoring processing Job Failed, reason :: " +

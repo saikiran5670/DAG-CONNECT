@@ -11,15 +11,10 @@ import org.apache.hadoop.hbase.client.Table;
 import net.atos.daf.ct2.common.util.DafConstants;
 
 public class HBaseConfigUtil {
-	
-
-	
+		
 	private static Connection connection = null;
-	 private  static Configuration conf = null;
-	
-
-    
-    
+	private  static Configuration conf = null;
+   
     public static Table getTable(Connection conn, String tableName) throws Exception {
 		Table table = null;
 		try {
@@ -70,25 +65,5 @@ public class HBaseConfigUtil {
 		
 	}
 	
-
-    
-	/*
-	 * public static Configuration getHBaseConfiguration() { Configuration
-	 * configuration = HBaseConfiguration.create();
-	 * 
-	 * configuration.set("hbase.zookeeper.quorum",
-	 * "zk3-hbase.c0kbh01dsx0uhhbdv5oig221gb.ax.internal.cloudapp.net,zk4-hbase.c0kbh01dsx0uhhbdv5oig221gb.ax.internal.cloudapp.net,zk5-hbase.c0kbh01dsx0uhhbdv5oig221gb.ax.internal.cloudapp.net"
-	 * ); configuration.set("hbase.zookeeper.property.clientPort","2181");
-	 * configuration.set("zookeeper.znode.parent","/hbase-unsecure");
-	 * configuration.set("hbase.regionserver",
-	 * "wn1-hbase.c0kbh01dsx0uhhbdv5oig221gb.ax.internal.cloudapp.net,wn2-hbase.c0kbh01dsx0uhhbdv5oig221gb.ax.internal.cloudapp.net,wn3-hbase.c0kbh01dsx0uhhbdv5oig221gb.ax.internal.cloudapp.net"
-	 * ); configuration.set("hbase.master",
-	 * "zk3-hbase.c0kbh01dsx0uhhbdv5oig221gb.ax.internal.cloudapp.net:16000");
-	 * configuration.set("hbase.regionserver.port","16020");
-	 * 
-	 * 
-	 * 
-	 * return configuration; }
-	 */
 	
 }

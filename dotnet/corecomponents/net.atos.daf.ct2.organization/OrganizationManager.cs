@@ -30,7 +30,7 @@ namespace net.atos.daf.ct2.organization
         {
             return await organizationRepository.Delete(organizationId);
         }
-        public async Task<Organization> Get(int organizationId)
+        public async Task<OrganizationResponse> Get(int organizationId)
         {
             return await organizationRepository.Get(organizationId);
         }

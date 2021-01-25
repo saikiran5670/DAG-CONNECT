@@ -34,18 +34,18 @@
                                 <mat-icon *ngIf="row.newTag" inline="true" color="warn"> fiber_new </mat-icon>
                             </mat-cell>
                         </ng-container> -->
-                        <ng-container matColumnDef="name">
+                        <ng-container matColumnDef="roleName">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRoleName || 'Role Name'}}</mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
                                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-                                <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{row.name}}</span> &nbsp;
+                                <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{row.roleName}}</span> &nbsp;
                                 <mat-icon *ngIf="row.organization_Id == 0" inline="true"> public </mat-icon>
                             </mat-cell>
                         </ng-container>
-                        <ng-container matColumnDef="roleDescription">
+                        <ng-container matColumnDef="description">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRoleDescription || 'Role Description'}}</mat-header-cell>
-                            <mat-cell *matCellDef="let row"> {{row.roleDescription}} </mat-cell>
+                            <mat-cell *matCellDef="let row"> {{row.description}} </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="action">
                             <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action' }}</mat-header-cell>

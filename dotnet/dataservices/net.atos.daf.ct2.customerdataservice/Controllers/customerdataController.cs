@@ -88,7 +88,11 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                         }
                         else  if ((customer.CompanyUpdatedEvent.Company.ReferenceDateTime == null) && (DateTime.Compare(DateTime.MinValue, customer.CompanyUpdatedEvent.Company.ReferenceDateTime)< 0))
                         {
-                             return StatusCode(400,"Please provide company reference date:");
+                             return StatusCode(400,"Please provide company reference date:");                            
+                        }
+                        else if (customer.CompanyUpdatedEvent.Company.ReferenceDateTime.ToUniversalTime() >System.DateTime.Now.ToUniversalTime() )
+                        {
+                             return StatusCode(400,"Future date time is not allowed in company reference date, please provide company reference date time less then toaday :");
                         }
 
                         var OrgId= await organizationtmanager.UpdateCustomer(customer);
@@ -100,7 +104,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                          logger.LogInformation("Customer data not updated, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
                          return StatusCode(401,"Forbidden:");
                      }
-              }
+             }
             }
             catch(Exception ex)
             {
@@ -117,7 +121,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
         {
             //   var OrgId= await organizationtmanager.KeyHandOverEvent(keyHandOver);
             //   return Ok("done");
-           string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
+            string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
             bool valid=false;
             try 
             {
@@ -151,10 +155,14 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                         {
                              return StatusCode(400,"Please provide company reference date:");
                         }
+                        else  if (Convert.ToDateTime(keyHandOver.KeyHandOverEvent.ReferenceDateTime).ToUniversalTime()>System.DateTime.Now.ToUniversalTime())
+                        {
+                            return StatusCode(400,"Future date time is not allowed in company reference date, please provide company reference date time less then toaday :");
+                        }
                         else  if (!((keyHandOver.KeyHandOverEvent.TCUActivation.ToUpper()=="YES") || (keyHandOver.KeyHandOverEvent.TCUActivation.ToUpper()=="NO")))
-                            {
-                                return StatusCode(400,"Please provide correct TCU Activation status:");
-                            }                             
+                        {
+                              return StatusCode(400,"Please provide correct TCU Activation status:");
+                         }                             
                         var OrgId= await organizationtmanager.KeyHandOverEvent(keyHandOver);
                         logger.LogInformation("KeyHandOverEvent executed successfully, company ID -" + keyHandOver.KeyHandOverEvent.EndCustomer.ID);
                         return Ok(OrgId);

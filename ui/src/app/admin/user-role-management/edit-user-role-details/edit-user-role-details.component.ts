@@ -5,6 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { EmployeeService } from 'src/app/services/employee.service';
+import { RoleService } from 'src/app/services/role.service';
 
 @Component({
   selector: 'app-edit-user-role-details',
@@ -15,7 +16,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   loggedInUser : string = 'admin';
   userRoleFormGroup: FormGroup;
   @Output() backToPage = new EventEmitter<any>();
-  featureDisplayedColumns: string[] = ['name', 'select'];
+  featureDisplayedColumns: string[] = ['featureName', 'select'];
   @Input() gridData: any;
   @Input() title: string;
   @Input() createStatus: boolean;
@@ -35,7 +36,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   //access: any = '';
   //disabled : boolean = true;
 
-  constructor(private _formBuilder: FormBuilder, private userService: EmployeeService) { }
+  constructor(private _formBuilder: FormBuilder, private roleService: RoleService, private userService: EmployeeService) { }
 
   ngAfterViewInit() {}
 
@@ -46,7 +47,10 @@ export class EditUserRoleDetailsComponent implements OnInit {
       userRoleDescription: []
     });
 
-    this.userService.getFeatures().subscribe((data) => {
+    let objData = {
+      "organization_Id": 32
+    }
+    this.roleService.getFeatures(objData).subscribe((data) => {
       setTimeout(()=>{
         this.dataSource = new MatTableDataSource(data);
         this.dataSource.paginator = this.paginator;
@@ -54,21 +58,6 @@ export class EditUserRoleDetailsComponent implements OnInit {
 
         if(!this.createStatus || this.duplicateFlag || this.viewFlag){
           this.onReset();
-          // this.featuresSelected = this.gridData[0].features;
-          // this.userRoleFormGroup.patchValue({
-          //   userRoleName: this.gridData[0].name,
-          //   userRoleDescription: this.gridData[0].roleDescription,
-          //   roleType: (this.loggedInUser == 'admin'? this.gridData[0].roleType : 'Regular')
-          // })
-          // this.dataSource.data.forEach(row => {
-          //   if(this.featuresSelected){
-          //     this.featuresSelected.forEach(selectedFeature => {
-          //       if(row.name == selectedFeature.name){
-          //         this.selectionForFeatures.select(row);
-          //       }
-          //     })
-          //   }
-          // })
         }
       });
       this.featuresData = data;
@@ -83,22 +72,24 @@ export class EditUserRoleDetailsComponent implements OnInit {
   }
 
   onReset(){
-    this.featuresSelected = this.gridData[0].features;
+    this.featuresSelected = this.gridData[0].featureIds;
       this.userRoleFormGroup.patchValue({
-        userRoleName: this.gridData[0].name,
-        userRoleDescription: this.gridData[0].roleDescription,
-        roleType: (this.loggedInUser == 'admin'? this.gridData[0].roleType : 'Regular')
+        userRoleName: this.gridData[0].roleName,
+        userRoleDescription: this.gridData[0].description,
+        roleType: (this.loggedInUser == 'admin'? (this.gridData[0].organizationId==0? 'Global' : 'Regular') : 'Regular')
       })
+      
       this.dataSource.data.forEach(row => {
         if(this.featuresSelected){
-          this.featuresSelected.forEach(selectedFeature => {
-            if(row.name == selectedFeature.name){
+          for(let selectedFeature of this.featuresSelected){
+            if(selectedFeature == row.id){
               this.selectionForFeatures.select(row);
+              break;
             }
             else{
               this.selectionForFeatures.deselect(row);
             }
-          })
+          }
         }
       })
   }
@@ -113,15 +104,15 @@ export class EditUserRoleDetailsComponent implements OnInit {
         this.updateUserRole();
       }
       else{
-        this.userService.checkUserRoleExist(UserRoleInputvalues).subscribe((data: any) => {
-          if (data.length >= 1) {
-            this.isUserRoleExist = true;
-            this.doneFlag = false;
-          }
-          else{
-            this.updateUserRole();
-          }
-        }, (error) => { });
+        // this.roleService.checkUserRoleExist(UserRoleInputvalues).subscribe((data: any) => {
+        //   if (data.length >= 1) {
+        //     this.isUserRoleExist = true;
+        //     this.doneFlag = false;
+        //   }
+        //   else{
+             this.updateUserRole();
+        //   }
+        // }, (error) => { });
       }
     }
   }
@@ -133,54 +124,81 @@ export class EditUserRoleDetailsComponent implements OnInit {
   }
 
   createUserRole(enteredUserRoleValue: any) {//create func
-    this.userService.checkUserRoleExist(enteredUserRoleValue).subscribe((data: any) => {
-      if (data.length >= 1) {
-        this.isUserRoleExist = true;
-        this.doneFlag = false;
-      }
-      else {
+    this.roleService.checkUserRoleExist(enteredUserRoleValue).subscribe((data: any) => {
+      // if (data.length >= 1) {
+      //   this.isUserRoleExist = true;
+      //   this.doneFlag = false;
+      // }
+      // else {
         this.isUserRoleExist = false;
         this.doneFlag = true;
-        let mockVarForID = Math.random(); //id for mock api
+        // let mockVarForID = Math.random(); //id for mock api
+        // let objData = {
+        //   id: mockVarForID,  //id for mock api
+        //   roleMasterId: mockVarForID,
+        //   name: this.userRoleFormGroup.controls.userRoleName.value,
+        //   roleDescription: this.userRoleFormGroup.controls.userRoleDescription.value,
+        //   createdby: 5,
+        //   modifiedby: 0,
+        //   createddate: new Date(),
+        //   modifieddate: "0001-01-01T00:00:00",
+        //   isactive: true,
+        //   services: 2, // 2 hardcoded value for mock
+        //   roleType: this.userRoleFormGroup.controls.roleType.value,
+        //   features: this.selectionForFeatures.selected
+        // }
+
+        let featureIds = [];
+        this.selectionForFeatures.selected.forEach(feature => {
+          featureIds.push(feature.id);
+        })
         let objData = {
-          id: mockVarForID,  //id for mock api
-          roleMasterId: mockVarForID,
-          name: this.userRoleFormGroup.controls.userRoleName.value,
-          roleDescription: this.userRoleFormGroup.controls.userRoleDescription.value,
-          createdby: 5,
-          modifiedby: 0,
-          createddate: new Date(),
-          modifieddate: "0001-01-01T00:00:00",
-          isactive: true,
-          services: 2, // 2 hardcoded value for mock
-          roleType: this.userRoleFormGroup.controls.roleType.value,
-          features: this.selectionForFeatures.selected
+          "organizationId": this.userRoleFormGroup.controls.roleType.value=='Global'? 0 : 32,
+          "roleId": 0,
+          "roleName": this.userRoleFormGroup.controls.userRoleName.value,
+          "description": this.userRoleFormGroup.controls.userRoleDescription.value,
+          "featureIds": featureIds,
+          "createdby": 0
         }
-        this.userService.createUserRole(objData).subscribe((res) => {
+        this.roleService.createUserRole(objData).subscribe((res) => {
           this.backToPage.emit({ editFlag: false, editText: 'create' });
         }, (error) => { });
-      }
+      //}
     }, (error) => { });
   }
 
   updateUserRole(){  // edit func
     this.isUserRoleExist = false;
     this.doneFlag = true;
+    // let objData = {
+    //   id: this.gridData[0].id,   //id for mock api
+    //   roleMasterId: this.gridData[0].roleMasterId,
+    //   name: this.userRoleFormGroup.controls.userRoleName.value,
+    //   roleDescription: this.userRoleFormGroup.controls.userRoleDescription.value,
+    //   createdby: this.gridData[0].createdby,
+    //   modifiedby: this.gridData[0].modifiedby,
+    //   createddate: this.gridData[0].createddate,
+    //   modifieddate: this.gridData[0].modifieddate,
+    //   isactive: this.gridData[0].isActive,
+    //   services:this.gridData[0].services, 
+    //   roleType: this.userRoleFormGroup.controls.roleType.value,
+    //   features: this.selectionForFeatures.selected
+    // }
+
+    let featureIds = [];
+        this.selectionForFeatures.selected.forEach(feature => {
+          featureIds.push(feature.id);
+    })
     let objData = {
-      id: this.gridData[0].id,   //id for mock api
-      roleMasterId: this.gridData[0].roleMasterId,
-      name: this.userRoleFormGroup.controls.userRoleName.value,
-      roleDescription: this.userRoleFormGroup.controls.userRoleDescription.value,
-      createdby: this.gridData[0].createdby,
-      modifiedby: this.gridData[0].modifiedby,
-      createddate: this.gridData[0].createddate,
-      modifieddate: this.gridData[0].modifieddate,
-      isactive: this.gridData[0].isActive,
-      services:this.gridData[0].services, 
-      roleType: this.userRoleFormGroup.controls.roleType.value,
-      features: this.selectionForFeatures.selected
+      "organizationId": this.gridData[0].organizationId,
+      "roleId": this.gridData[0].roleId,
+      "roleName": this.userRoleFormGroup.controls.userRoleName.value,
+      "description": this.userRoleFormGroup.controls.userRoleDescription.value,
+      "featureIds": featureIds,
+      "createdby": 0,
+      "updatedby": 0
     }
-    this.userService.updateUserRole(objData).subscribe((res) => {
+    this.roleService.updateUserRole(objData).subscribe((res) => {
       this.backToPage.emit({ editFlag: false, editText: 'edit'});
     }, (error) => { });
   }
@@ -206,39 +224,39 @@ export class EditUserRoleDetailsComponent implements OnInit {
 
   onCheckboxChange(event, row){
     if(event.checked){  
-      if(row.name.includes(" _fullAccess")){
+      if(row.featureName.includes(" _fullAccess")){
         this.dataSource.data.forEach(item => {
-          if(item.name.includes(row.name.split(" _")[0])){
+          if(item.featureName.includes(row.featureName.split(" _")[0])){
             this.selectionForFeatures.select(item);
           }
         })
       }
-      else if(row.name.includes(" _create") || row.name.includes(" _edit") || row.name.includes(" _delete") ){
+      else if(row.featureName.includes(" _create") || row.featureName.includes(" _edit") || row.featureName.includes(" _delete") ){
         this.dataSource.data.forEach(item => {
-          if(item.name.includes(row.name.split(" _")[0]+" _view")){
+          if(item.featureName.includes(row.featureName.split(" _")[0]+" _view")){
             this.selectionForFeatures.select(item);
           }
         })
       }
     }
     else {
-      if(row.name.includes(" _fullAccess")){
+      if(row.featureName.includes(" _fullAccess")){
         this.dataSource.data.forEach(item => {
-          if(item.name.includes(row.name.split(" _")[0])){
+          if(item.featureName.includes(row.featureName.split(" _")[0])){
             this.selectionForFeatures.deselect(item);
           }
         })
       }
-      else if(row.name.includes(" _view")){
+      else if(row.featureName.includes(" _view")){
         this.dataSource.data.forEach(item => {
-          if(item.name.includes(row.name.split(" _")[0])){
+          if(item.featureName.includes(row.featureName.split(" _")[0])){
             this.selectionForFeatures.deselect(item);
           }
         })
       }
-      else if(!row.name.includes(" _fullAccess")){
+      else if(!row.featureName.includes(" _fullAccess")){
         this.dataSource.data.forEach(item => {
-          if(item.name.includes(row.name.split(" _")[0]+" _fullAccess")){
+          if(item.featureName.includes(row.featureName.split(" _")[0]+" _fullAccess")){
             this.selectionForFeatures.deselect(item);
           }
         })

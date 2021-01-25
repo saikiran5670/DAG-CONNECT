@@ -23,7 +23,7 @@ public class PostgreDataSourceConnection {
 			dSource = new Jdbc3PoolingDataSource();
 			dSource.setUrl(url);
 			System.out.println("URL submitted to DataSource  " + url);
-			dSource.setMaxConnections(Integer.valueOf(10));
+			dSource.setMaxConnections(Integer.valueOf(30));
 		} catch (TechnicalException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -36,7 +36,7 @@ public class PostgreDataSourceConnection {
 
 		try {
 			if (null == conn)
-				System.out.println("Connection is null");
+				//System.out.println("Connection is null");
 			conn = dataSource.getConnection();
 			System.out.println("Connection is created" + dataSource.getMaxConnections());
 		} catch (SQLException e) {

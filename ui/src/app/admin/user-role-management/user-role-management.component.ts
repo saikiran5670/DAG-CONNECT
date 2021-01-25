@@ -6,6 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { TranslationService } from '../../services/translation.service';
+import { RoleService } from 'src/app/services/role.service';
 
 @Component({
   selector: 'app-user-role-management',
@@ -17,7 +18,7 @@ export class UserRoleManagementComponent implements OnInit {
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  roleDisplayedColumns: string[] = ['name', 'roleDescription', 'action'];
+  roleDisplayedColumns: string[] = ['roleName', 'description', 'action'];
   editFlag: boolean = false;
   duplicateFlag: boolean = false;
   viewFlag: boolean = false;
@@ -27,8 +28,9 @@ export class UserRoleManagementComponent implements OnInit {
   titleText: string;
   translationData: any;
 
-  constructor(private translationService: TranslationService, private userService: EmployeeService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar) {
+  constructor(private translationService: TranslationService, private roleService: RoleService, private userService: EmployeeService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar) {
     this.defaultTranslation();
+    this.getTranslationLabels();
   }
 
   defaultTranslation(){
@@ -76,6 +78,21 @@ export class UserRoleManagementComponent implements OnInit {
     }
   }
 
+  getTranslationLabels(){
+    let translationObj = {
+      "id": 0,
+      "code": "EN-GB", //-- TODO: Lang code based on account 
+      "type": "Menu",
+      "name": "",
+      "value": "",
+      "filter": "",
+      "menuId": 25 //-- for common & user preference
+    }
+    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+      this.processTranslation(data);
+    });
+  }
+
   ngOnInit() {
     let langCode = 'EN-GB';
     let labelList = 'lblFilter,lblCreate,lblNew,lblCancel,lblSearch,lblReset,lblConfirm,lblYes,lblNo,lblAction,lblUserRoleManagement,lblAllUserRoleDetails,lblNewUserRole,lblRoleName,lblRoleDescription,lblCreateNewUserRole,lblNewUserRoleName,lblUserRoleType,lblUserRoleDescriptionOptional,lblEnterUserRoleName,lblEnterAboutUserRole,lblHintMessage,lblSelectRoleAccess,lblSelectedRoleAccess,lblFeatureName,lblAccess,lbl120CharMax,lblUserRoleCreatedSuccessfully,lblDeleteAccount,lblAreyousureyouwanttodeleterole,lblUserRoleName,lblEditUserRoleDetails,lblPleaseentertheUserRolename,lblUserRolealreadyexistsPleasechooseadifferentname,lblCreateUserRoleAPIFailedMessage,lblUserRoledetailssuccessfullyupdated,lblUpdateUserRoleAPIFailedMessage,lblUserRoleDelete,lblDeleteUserRoleAPIFailedMessage';
@@ -86,18 +103,15 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   processTranslation(transData: any){   
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.code]: cur.translation }), {});
+    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
   }
 
   loadInitData() {
     let objData = { 
-      "roleId": 0,
-      "organization_Id": 0,
-      "accountId": 0,
-      "is_Active": true
+      "organization_Id": 32,
     };
-    this.userService.getUserRoles(objData).subscribe((data) => {
+    this.roleService.getUserRoles(objData).subscribe((data) => {
       //this.initData = this.getNewTagData(data); //no createdDate present in API response
       this.initData = data; //temporary 
       setTimeout(()=>{
@@ -162,12 +176,12 @@ export class UserRoleManagementComponent implements OnInit {
       cancelText: this.translationData.lblNo || 'No',
       confirmText: this.translationData.lblYes || 'Yes'
     };
-    let name = row.name;
+    let name = row.roleName;
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
      if (res) {
-       this.userService
-         .deleteUserRole(row.roleMasterId)
+       this.roleService
+         .deleteUserRole(row.roleId)
          .subscribe((d) => {
            //console.log(d);
            this.openSnackBar('Item delete', 'dismiss');

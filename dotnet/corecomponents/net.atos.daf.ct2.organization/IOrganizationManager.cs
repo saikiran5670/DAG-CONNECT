@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.organization
          Task<Organization> Create(Organization organization);
          Task<Organization> Update(Organization group);
          Task<bool> Delete(int organizationId);
-         Task<Organization> Get(int organizationId);  
+         Task<OrganizationResponse> Get(int organizationId);  
          Task<Customer> UpdateCustomer(Customer customer);   
          Task<KeyHandOver> KeyHandOverEvent(KeyHandOver keyHandOver);  
          Task<int> CreateVehicleParty(List<Customer> customers);
