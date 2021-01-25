@@ -33,7 +33,8 @@ namespace net.atos.daf.ct2.organization.entity
 
          public DateTime OptOutStatusDate  { get; set; }   
          public DateTime Referenced  { get; set; }   
-           
+         public   DateTime ? reference_date  { get; set; }   
+         public   DateTime ? optout_status_changed_date  { get; set; }           
 
     }
 }

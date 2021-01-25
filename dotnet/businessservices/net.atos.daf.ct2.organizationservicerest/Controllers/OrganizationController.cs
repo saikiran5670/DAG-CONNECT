@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using AccountComponent = net.atos.daf.ct2.account;
+using net.atos.daf.ct2.organizationservicerest.entity;
+using OrganizationComponent = net.atos.daf.ct2.organization;
 using AccountEntity = net.atos.daf.ct2.account.entity;
 using IdentityComponent = net.atos.daf.ct2.identity;
 using IdentityEntity = net.atos.daf.ct2.identity.entity;
@@ -49,23 +51,36 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
            _httpContextAccessor=httpContextAccessor;
             accountIdentityManager=_accountIdentityManager;
         } 
-
-
      [HttpPost]      
      [Route("create")]
-     public async Task<IActionResult> create(Organization organization)
+     public async Task<IActionResult> create(OrganizationRequest request)
         {             
             try 
-            {       
+            {   
+                OrganizationComponent.entity.Organization organization = new  OrganizationComponent.entity.Organization();    
+                
                 logger.LogInformation("Organization create function called ");
-                if (string.IsNullOrEmpty(organization.OrganizationId))
+                if (string.IsNullOrEmpty(request.org_id) || (request.org_id.Trim().Length<1))
                 {
-                     return StatusCode(400,"Please provide organization ID:");
+                     return StatusCode(400,"Please provide organization org_id:");
                 }
-                if (string.IsNullOrEmpty(organization.Name))
+                if (string.IsNullOrEmpty(request.name)|| (request.name.Trim().Length<1))
                 {
                      return StatusCode(400,"Please provide organization name:");
                 }
+                organization.OrganizationId=request.org_id;
+                organization.Name=request.name;
+                organization.Type=request.type;
+                organization.AddressType=request.address_type;
+                organization.AddressStreet=request.street_number;
+                organization.AddressStreetNumber=request.street_number;
+                organization.City=request.city;
+                organization.CountryCode=request.country_code;
+                organization.reference_date=request.reference_date;
+                organization.OptOutStatus=request.optout_status;
+                organization.optout_status_changed_date=request.optout_status_changed_date;
+                organization.IsActive=request.is_active;
+              
                 var OrgId= await organizationtmanager.Create(organization);   
                 return Ok("Organization Created :");      
              }
@@ -77,17 +92,41 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             }   
         } 
 
-       [HttpPut]     
+     [HttpPut]     
      [Route("update")]
-     public async Task<IActionResult> Update(Organization organization)
+     public async Task<IActionResult> Update(OrganizationRequest request)
         {              
             try 
             {   
+                OrganizationComponent.entity.Organization organization = new  OrganizationComponent.entity.Organization();    
+               
                 logger.LogInformation("Organization update function called ");    
-                if (organization.Id<1)
+                if (request.Id<1)
                 {
                      return StatusCode(400,"Please provide organization ID:");
                 }
+                if (string.IsNullOrEmpty(request.org_id) || (request.org_id.Trim().Length<1))
+                {
+                     return StatusCode(400,"Please provide organization org_id:");
+                }
+                if (string.IsNullOrEmpty(request.name) || (request.name.Trim().Length<1))
+                {
+                     return StatusCode(400,"Please provide organization name:");
+                }
+
+                organization.Id=request.Id;
+                organization.OrganizationId=request.org_id;
+                organization.Name=request.name;
+                organization.Type=request.type;
+                organization.AddressType=request.address_type;
+                organization.AddressStreet=request.street_number;
+                organization.AddressStreetNumber=request.street_number;
+                organization.City=request.city;
+                organization.CountryCode=request.country_code;
+                organization.reference_date=request.reference_date;
+                organization.OptOutStatus=request.optout_status;
+                organization.optout_status_changed_date=request.optout_status_changed_date;
+                organization.IsActive=request.is_active;
                 var OrgId= await organizationtmanager.Update(organization);   
                 return Ok("Organization updated :");    
              }
@@ -98,6 +137,7 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }           
         }       
+
 
      [HttpDelete]   
      [Route("delete")]

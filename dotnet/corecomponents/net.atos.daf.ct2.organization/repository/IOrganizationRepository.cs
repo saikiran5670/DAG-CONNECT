@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.organization.repository
        Task<Organization> Create(Organization organization);
         Task<Organization> Update(Organization organization);
         Task<bool> Delete(int organizationId);        
-        Task<Organization> Get(int organizationId);
+        Task<OrganizationResponse> Get(int organizationId);
         //Task<Organization> UpdateCustomer(Organization organization);
         Task<Customer> UpdateCustomer(Customer customer);
         Task<KeyHandOver> KeyHandOverEvent(KeyHandOver keyHandOver);
