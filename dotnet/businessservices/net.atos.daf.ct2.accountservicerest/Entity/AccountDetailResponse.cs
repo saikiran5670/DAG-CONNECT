@@ -1,5 +1,5 @@
 using System;
-
+using System.Collections.Generic;
 namespace net.atos.daf.ct2.accountservicerest
 {
     public class AccountDetailsResponse
@@ -10,8 +10,13 @@ namespace net.atos.daf.ct2.accountservicerest
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public int OrganizationId { get; set; }
-        public string Roles { get; set; }
-        public string AccountGroups { get; set; }      
+        public List<KeyValue> Roles { get; set; }
+        public List<KeyValue> AccountGroups { get; set; }      
+    }
+    public class KeyValue
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }       
     }
 }
  

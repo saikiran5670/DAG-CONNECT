@@ -59,7 +59,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 else if (account.isError)
                 {
                     return StatusCode(500, "There is an error creating account.");
-                }               
+                }
                 else
                 {
                     await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Account Create", 1, 2, account.EmailId);
@@ -133,7 +133,8 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 account.EndDate = null;
                 var result = await accountmanager.Delete(account);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Service", "Account Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Account Delete", 1, 2, account.Id.ToString());
-                return Ok(account);
+                if (result) return Ok(account);
+                else return StatusCode(404, "Account not configured.");
             }
             catch (Exception ex)
             {
@@ -149,10 +150,9 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             try
             {
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
-
                 //account = _mapper.ToAccountEntity(request);
-                account.EmailId= request.EmailId;
-                account.Password= request.Password;
+                account.EmailId = request.EmailId;
+                account.Password = request.Password;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
                 account.StartDate = DateTime.Now;
                 account.EndDate = null;
@@ -165,11 +165,11 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 if (result)
                 {
                     await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Account Delete", 1, 2, account.Id.ToString());
-                    return Ok(account);
+                    return Ok("Password has been changed");
                 }
                 else
                 {
-                    return StatusCode(500, "There is some issues in changing password, Please try again.");
+                    return StatusCode(404, "Account not configured.");
                 }
             }
             catch (Exception ex)
@@ -184,23 +184,67 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
         {
             try
             {
-                AccountComponent.AccountFilter accountFilter = new  AccountComponent.AccountFilter();
-                accountFilter.Id=request.Id;
-                accountFilter.OrganizationId =request.OrganizationId;
-                accountFilter.Email =request.Email;
-                accountFilter.AccountIds =request.AccountIds;
-                accountFilter.Name =request.Name;
+                AccountComponent.AccountFilter accountFilter = new AccountComponent.AccountFilter();
+                accountFilter.Id = request.Id;
+                accountFilter.OrganizationId = request.OrganizationId;
+                accountFilter.Email = request.Email;
+                accountFilter.AccountIds = request.AccountIds;
+                accountFilter.Name = request.Name;
                 accountFilter.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
+                accountFilter.AccountGroupId = request.AccountGroupId;
                 // Validation 
                 if (string.IsNullOrEmpty(accountFilter.Email) && string.IsNullOrEmpty(accountFilter.Name)
                     && (accountFilter.Id <= 0) && (accountFilter.OrganizationId <= 0) && (string.IsNullOrEmpty(accountFilter.AccountIds)))
                 {
-                    return StatusCode(404, "The get parameters for account is required (one of them).");
+                    return StatusCode(404, "One of the parameter to filter account is required.");
+                }
+                // Filter for group id
+                if (accountFilter.AccountGroupId > 0)
+                {
+
+                    // Get group ref   
+                    Group.GroupFilter groupFilter = new Group.GroupFilter();
+                    groupFilter.OrganizationId = request.OrganizationId;
+                    groupFilter.Id = accountFilter.AccountGroupId;
+                    groupFilter.ObjectType = Group.ObjectType.AccountGroup;
+                    groupFilter.FunctionEnum = Group.FunctionEnum.None;
+                    groupFilter.GroupType = Group.GroupType.Group;
+                    groupFilter.RefId = 0;
+                    groupFilter.GroupIds = null;
+                    groupFilter.GroupRef = true;
+                    groupFilter.GroupRefCount=true;
+
+                    var accountGroupList = await groupmanager.Get(groupFilter);
+                    var group = accountGroupList.FirstOrDefault();
+                    List<int> accountIds = null;
+                    if (group != null && group.GroupRef != null)
+                    {
+                        accountIds = new List<int>();
+                        foreach (Group.GroupRef account in group.GroupRef)
+                        {
+                            if (account.Ref_Id > 0)
+                            {
+                                accountIds.Add(account.Ref_Id);
+                            }
+                        }
+                    }
+                    if (accountIds != null && Convert.ToInt32(accountIds.Count()) > 0)
+                    {
+                        string accountIdList = string.Join(",", accountIds);
+                        if (string.IsNullOrEmpty(accountFilter.AccountIds)) 
+                        {
+                            accountFilter.AccountIds = accountIdList;
+                        }
+                        else 
+                        {
+                            accountFilter.AccountIds = accountFilter.AccountIds + accountIdList;
+                        }                        
+                    }
                 }
                 var result = await accountmanager.Get(accountFilter);
-                if( Convert.ToInt32(result.Count()) <=0 )
+                if (Convert.ToInt32(result.Count()) <= 0)
                 {
-                    return StatusCode(404, "The Account is not configured.");                    
+                    return StatusCode(404, "Accounts found not configured for passed filter parameters.");
                 }
                 _logger.LogInformation("Account Service - Get.");
                 return Ok(result);
@@ -229,7 +273,8 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 List<int> accountIds = new List<int>();
                 List<AccountDetailsResponse> response = new List<AccountDetailsResponse>();
                 AccountDetailsResponse accountDetails = new AccountDetailsResponse();
-                List<string> accountGroupName = null;
+                accountDetails.AccountGroups = new List<KeyValue>();
+                accountDetails.Roles = new List<KeyValue>();
                 if (request.GroupId > 0)
                 {
                     Group.GroupFilter groupFilter = new Group.GroupFilter();
@@ -307,31 +352,30 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
 
                     if (accountGroupList != null)
                     {
-                        accountGroupName = new List<string>();
                         foreach (Group.Group aGroup in accountGroupList)
                         {
-                            accountGroupName.Add(aGroup.Name);
+                            //accountGroupName.Add(aGroup.Name);
+                            accountDetails.AccountGroups.Add(new KeyValue() { Id = aGroup.Id, Name = aGroup.Name });
                         }
-                    }
-                    if (accountGroupName != null)
-                    {
-                        accountDetails.AccountGroups = string.Join(",", accountGroupName);
                     }
                     // Get roles   
                     AccountComponent.entity.AccountRole accountRole = new AccountComponent.entity.AccountRole();
                     accountRole.AccountId = entity.Id;
                     accountRole.OrganizationId = request.OrganizationId;
                     var roles = await accountmanager.GetRoles(accountRole);
-                    accountDetails.Roles = string.Empty;
                     if (roles != null && Convert.ToInt32(roles.Count) > 0)
                     {
-                        accountDetails.Roles = string.Join(",", roles.Select(role => role.Name).ToArray());
+                        foreach (AccountComponent.entity.KeyValue role in roles)
+                        {
+                            //accountGroupName.Add(aGroup.Name);
+                            accountDetails.Roles.Add(new KeyValue() { Id = role.Id, Name = role.Name });
+                        }
                     }
                     // End Get Roles
                     response.Add(accountDetails);
                     _logger.LogInformation("Get account details.");
                 }
-                if ((Convert.ToInt16(response.Count()) <= 0))                
+                if ((Convert.ToInt16(response.Count()) <= 0))
                 {
                     return StatusCode(404, "Account not found.");
                 }
@@ -767,9 +811,13 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 group.OrganizationId = request.OrganizationId;
                 group.GroupRef = request.Accounts;
                 group.GroupRefCount = request.AccountCount;
+                // filter based on account id
+                group.RefId = request.AccountId;
+
                 group.FunctionEnum = Group.FunctionEnum.None;
                 group.ObjectType = Group.ObjectType.AccountGroup;
                 group.GroupType = Group.GroupType.Group;
+
                 var groups = await groupmanager.Get(group);
                 _logger.LogInformation("Get account group.");
                 return Ok(groups);
