@@ -129,7 +129,7 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
         }
 
         [HttpGet]      
-        [Route("roles")]
+        [Route("get")]
         public async Task<IActionResult> Get(int Roleid, int Organizationid)
         {    
                try
