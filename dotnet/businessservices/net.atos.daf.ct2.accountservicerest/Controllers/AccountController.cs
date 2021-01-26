@@ -22,6 +22,8 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
         private readonly Group.IGroupManager groupmanager;
         private readonly IAuditTraillib auditlog;
         private readonly EntityMapper _mapper;
+
+        private string FK_Constraint = "violates foreign key constraint";
         public AccountController(ILogger<AccountController> logger, AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, IAuditTraillib _auditlog)
         {
             _logger = logger;
@@ -39,9 +41,10 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             try
             {
                 // Validation 
-                if ((string.IsNullOrEmpty(request.EmailId)) || (string.IsNullOrEmpty(request.FirstName)) || (string.IsNullOrEmpty(request.LastName)))
+                if ((string.IsNullOrEmpty(request.EmailId)) || (string.IsNullOrEmpty(request.FirstName)) 
+                || (string.IsNullOrEmpty(request.LastName)) || (request.Organization_Id <=0 ))
                 {
-                    return StatusCode(400, "The EmailId address, first name, last name is required.");
+                    return StatusCode(400, "The EmailId address, first name, last name and organization is required.");
                 }
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
                 account = _mapper.ToAccountEntity(request);
@@ -69,6 +72,11 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Account Service:Create : " + ex.Message + " " + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -109,6 +117,11 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Account Service:Update : " + ex.Message + " " + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }                
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -194,7 +207,9 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 accountFilter.AccountGroupId = request.AccountGroupId;
                 // Validation 
                 if (string.IsNullOrEmpty(accountFilter.Email) && string.IsNullOrEmpty(accountFilter.Name)
-                    && (accountFilter.Id <= 0) && (accountFilter.OrganizationId <= 0) && (string.IsNullOrEmpty(accountFilter.AccountIds)))
+                    && (accountFilter.Id <= 0) && (accountFilter.OrganizationId <= 0) && (string.IsNullOrEmpty(accountFilter.AccountIds))
+                    && (accountFilter.AccountGroupId <= 0)
+                    )
                 {
                     return StatusCode(404, "One of the parameter to filter account is required.");
                 }
@@ -209,6 +224,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     groupFilter.ObjectType = Group.ObjectType.AccountGroup;
                     groupFilter.FunctionEnum = Group.FunctionEnum.None;
                     groupFilter.GroupType = Group.GroupType.Group;
+                    
                     groupFilter.RefId = 0;
                     groupFilter.GroupIds = null;
                     groupFilter.GroupRef = true;
@@ -244,7 +260,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 var result = await accountmanager.Get(accountFilter);
                 if (Convert.ToInt32(result.Count()) <= 0)
                 {
-                    return StatusCode(404, "Accounts found not configured for passed filter parameters.");
+                    return StatusCode(404, "Accounts not configured.");
                 }
                 _logger.LogInformation("Account Service - Get.");
                 return Ok(result);
@@ -324,13 +340,13 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     accounts = accountmanager.Get(filter).Result.ToList();
                 }
                 // Filter based on Vehicle Group Id
-                else if (request.VehicleGroupGroupId > 0)
+                else if (request.VehicleGroupId > 0)
                 {
                     // Get Access Relationship
                     AccountComponent.entity.AccessRelationshipFilter accessFilter = new AccountComponent.entity.AccessRelationshipFilter();
                     accessFilter.AccountId = 0;
                     accessFilter.AccountGroupId = 0;
-                    accessFilter.VehicleGroupId = request.VehicleGroupGroupId;
+                    accessFilter.VehicleGroupId = request.VehicleGroupId;
                     var accessResult = await accountmanager.GetAccessRelationship(accessFilter);
                     if (Convert.ToInt32(accessResult.Count) > 0)
                     {
@@ -346,7 +362,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                         groupFilter.GroupType = Group.GroupType.None;
                         groupFilter.FunctionEnum = Group.FunctionEnum.None;
                         var vehicleGroups = await groupmanager.Get(groupFilter);
-                        // Get vehicles count
+                        // Get group reference
                         foreach (Group.Group vGroup in vehicleGroups)
                         {
                             foreach (Group.GroupRef groupRef in vGroup.GroupRef)
@@ -361,11 +377,10 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                             filter.OrganizationId = request.OrganizationId;
                             filter.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
                             filter.AccountIds = string.Join(",", accountIdList);                            
-                            // list of account for organization 
+                            // get accounts details
                             accounts = accountmanager.Get(filter).Result.ToList();
                         }
                     }
-
                 }
                 else
                 {
@@ -377,7 +392,6 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     // list of account for organization 
                     accounts = accountmanager.Get(filter).Result.ToList();
                 }
-
                 // account group details                 
                 foreach (AccountComponent.entity.Account entity in accounts)
                 {
@@ -393,7 +407,6 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     groupFilter.FunctionEnum = Group.FunctionEnum.None;
                     groupFilter.GroupType = Group.GroupType.Group;
                     var accountGroupList = await groupmanager.Get(groupFilter);
-
                     if (accountGroupList != null)
                     {
                         foreach (Group.Group aGroup in accountGroupList)
@@ -421,7 +434,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 }
                 if ((Convert.ToInt16(response.Count()) <= 0))
                 {
-                    return StatusCode(404, "Account not configured.");
+                    return StatusCode(404, "Accounts not configured.");
                 }
                 return Ok(response);
             }
@@ -449,13 +462,31 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 }
                 accountpreference.AccountPreference preference = new Preference.AccountPreference();
                 preference = _mapper.ToAccountPreference(request);
+                preference.Exists=false;
                 preference = await preferencemanager.Create(preference);
+                // check for exists
+                if (preference.Exists)
+                {
+                    return StatusCode(409, "Duplicate Account Preference.");
+                }
+                // check for exists
+                else if (preference.RefIdNotValid)
+                {
+                    return StatusCode(400, "The Ref_Id not valid or created.");
+                }
+
                 var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Preference Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Preference", 1, 2, Convert.ToString(preference.RefId));
+
                 return Ok(preference);
             }
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }                
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -482,6 +513,11 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -504,6 +540,11 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -537,8 +578,6 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 return StatusCode(500, "Internal Server Error.");
             }
         }
-
-
         // End - Account Preference
 
         // Begin - AccessRelationship
@@ -578,6 +617,11 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
                 return StatusCode(500, "Internal Server Error.");
             }
         }

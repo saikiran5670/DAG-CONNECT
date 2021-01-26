@@ -22,6 +22,7 @@ namespace net.atos.daf.ct2.accountpreference
             try
             {
                 var parameter = new DynamicParameters();
+                int Id=0;
                 parameter.Add("@ref_id", preference.RefId);
                 parameter.Add("@type", (char)preference.PreferenceType);
                 parameter.Add("@language_id", preference.LanguageId);
@@ -34,6 +35,37 @@ namespace net.atos.daf.ct2.accountpreference
                 parameter.Add("@landing_page_display_id", preference.LandingPageDisplayId);
                 parameter.Add("@driver_id", preference.DriverId);
                 //parameter.Add("@is_active", preference.Active);
+
+                // check if preference does not exists 
+                string queryCheck = "select id from master.accountpreference where is_active=true and ref_id=@ref_id and type=@type";
+                Id = await dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
+                if (Id > 0)
+                {
+                    preference.Exists = true;
+                    return preference;
+                }
+                // check the ref_id must be account id or organization id                
+                if (preference.PreferenceType == PreferenceType.Account)
+                {
+                    queryCheck = "select a.id from master.account a join master.accountorg ag on a.id = ag.account_id and ag.is_active=true where a.id=@ref_id";
+                    Id = await dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
+                    if (Id <= 0)
+                    {
+                        preference.RefIdNotValid = true;                        
+                        return preference;
+                    }
+                }
+                // check the ref_id must be account id or organization id                
+                if (preference.PreferenceType == PreferenceType.Organization)
+                {
+                    queryCheck = "select id from master.organization where is_active=true and id=@ref_id";
+                    Id = await dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
+                    if (Id <= 0)
+                    {
+                        preference.RefIdNotValid = true;                        
+                        return preference;
+                    }
+                }
 
                 string query = @"insert into master.accountpreference
                                 (ref_id,type,language_id,timezone_id,
@@ -138,26 +170,26 @@ namespace net.atos.daf.ct2.accountpreference
             catch (Exception ex)
             {
                 throw ex;
-            }            
-        }
-    private AccountPreference Map(dynamic record)
-            {
-                AccountPreference entity = new AccountPreference();
-                entity.Id = record.id;
-                entity.RefId  = record.ref_id;
-                entity.PreferenceType = (PreferenceType)Convert.ToChar(record.type);
-                entity.LanguageId = record.language_id;
-                entity.TimezoneId = record.timezone_id;
-                entity.CurrencyId = record.currency_id;
-                entity.UnitId = record.unit_id;
-                entity.VehicleDisplayId= record.vehicle_display_id;
-                entity.DateFormatTypeId = record.date_format_id;                
-                if(Convert.ToString(record.driver_id)!=null) entity.DriverId = record.driver_id;
-                entity.TimeFormatId = record.time_format_id;
-                entity.LandingPageDisplayId  = record.landing_page_display_id;
-                record.isActive  = record.is_active;                
-                return entity;
             }
+        }
+        private AccountPreference Map(dynamic record)
+        {
+            AccountPreference entity = new AccountPreference();
+            entity.Id = record.id;
+            entity.RefId = record.ref_id;
+            entity.PreferenceType = (PreferenceType)Convert.ToChar(record.type);
+            entity.LanguageId = record.language_id;
+            entity.TimezoneId = record.timezone_id;
+            entity.CurrencyId = record.currency_id;
+            entity.UnitId = record.unit_id;
+            entity.VehicleDisplayId = record.vehicle_display_id;
+            entity.DateFormatTypeId = record.date_format_id;
+            if (Convert.ToString(record.driver_id) != null) entity.DriverId = record.driver_id;
+            entity.TimeFormatId = record.time_format_id;
+            entity.LandingPageDisplayId = record.landing_page_display_id;
+            record.isActive = record.is_active;
+            return entity;
+        }
 
     }
 }
