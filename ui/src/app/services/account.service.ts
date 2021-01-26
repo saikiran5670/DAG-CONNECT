@@ -70,6 +70,7 @@ export class AccountService {
   changeAccountPassword(data): Observable<any[]> {
     const headers = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      responseType: 'text' as 'json'
     };
     return this.httpClient
       .post<any[]>(
