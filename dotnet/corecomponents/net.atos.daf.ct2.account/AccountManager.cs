@@ -57,6 +57,8 @@ namespace net.atos.daf.ct2.account
                     if (accountGet == null)
                     {
                         account = await repository.Create(account);
+                        await identity.UpdateUser(identityEntity);
+                        account.isDuplicate = false;
                     }
                     // else 
                     // {

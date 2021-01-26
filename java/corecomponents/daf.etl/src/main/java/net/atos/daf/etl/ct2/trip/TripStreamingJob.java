@@ -149,8 +149,9 @@ public class TripStreamingJob {
 											tripStsData.getGpsStopVehDist() - tripStsData.getGpsStartVehDist());
 								
 								if(tripStsData.getTripCalGpsVehTimeDiff() != null){
-									double timeDiff = (tripStsData.getTripCalGpsVehTimeDiff()).doubleValue() /3600000;
-									tripStsData.setTripCalVehTimeDiffInHr(timeDiff);
+									double timeDiffInHr = (tripStsData.getTripCalGpsVehTimeDiff()).doubleValue() /3600000;
+									//double timeDiffInsec = (tripStsData.getTripCalGpsVehTimeDiff()).doubleValue() /1000;
+									tripStsData.setTripCalVehTimeDiffInHr(timeDiffInHr);
 								}
 
 								// TODO Insert Kafka processing record time

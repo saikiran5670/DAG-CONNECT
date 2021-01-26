@@ -16,7 +16,8 @@ namespace net.atos.daf.ct2.accountservicerest
     {
         public int AccountId { get; set; }
         public int OrganizationId { get; set; }
-        public int GroupId { get; set; }
+        public int AccountGroupId { get; set; }
+        public int VehicleGroupId { get; set; }
         public int RoleId { get; set; }
         public string Name { get; set; }
     }

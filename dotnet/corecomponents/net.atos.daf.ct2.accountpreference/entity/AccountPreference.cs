@@ -17,6 +17,8 @@ namespace net.atos.daf.ct2.accountpreference
         public int LandingPageDisplayId { get; set; }
          public string DriverId { get; set; }
         public bool Active { get; set; }
+        public bool Exists { get; set; }
+        public bool RefIdNotValid { get; set; }
        
     }
 }

@@ -13,6 +13,7 @@ import { EmployeeService } from '../services/employee.service';
 import { CommonTableComponent } from '../shared/common-table/common-table.component';
 import { CreateEditVehicleDetailsComponent } from './vehicle-management/create-edit-vehicle-details/create-edit-vehicle-details.component';
 import { EditVINSettingComponent } from './vehicle-management/edit-vin-setting/edit-vin-setting.component';
+import { VehicleService } from '../services/vehicle.service';
 
 @NgModule({
   declarations: [ConfigurationComponent,  LandmarksComponent,
@@ -25,7 +26,7 @@ import { EditVINSettingComponent } from './vehicle-management/edit-vin-setting/e
     SharedModule,
     ChartsModule
     ],
-    providers: [ConfirmDialogService,EmployeeService],
+    providers: [ConfirmDialogService,EmployeeService,VehicleService],
     schemas: [
       CUSTOM_ELEMENTS_SCHEMA
     ],

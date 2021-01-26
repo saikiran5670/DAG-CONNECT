@@ -15,7 +15,7 @@ public class ETLQueries {
 			+ ", stsData.receivedTimestamp, ((((stsData.vUsedFuel * 0.00086) * 74.3)/1000) * 0.00000085) as tripCalC02Emission"
 			+ ", if(0 <> stsData.tripCalGpsVehDistDiff, (CAST(stsData.vUsedFuel as Double)/stsData.tripCalGpsVehDistDiff)*100, stsData.tripCalGpsVehDistDiff) as tripCalFuelConsumption"
 			+ ", indxData.f3 as vTachographSpeed, 0 as tripCalAvgGrossWtComb"
-			+ ", if(0 <> stsData.tripCalGpsVehTimeDiff, (CAST(stsData.vPTODuration as Double)/stsData.tripCalGpsVehTimeDiff)*100, stsData.tripCalGpsVehTimeDiff) as tripCalPtoDuration"
+			+ ", if(0 <> stsData.tripCalGpsVehTimeDiff, (CAST(stsData.vPTODuration as Double)/(stsData.tripCalGpsVehTimeDiff * 0.001))*100, stsData.tripCalGpsVehTimeDiff) as tripCalPtoDuration"
 			+ ", if(0 <> stsData.vBrakeDuration, (CAST(stsData.vHarshBrakeDuration as Double)/stsData.vBrakeDuration)*100, stsData.vBrakeDuration) as triCalHarshBrakeDuration"
 			+ ", if(0 <> stsData.vTripAccelerationTime, (CAST(stsData.vMaxThrottlePaddleDuration as Double)/stsData.vTripAccelerationTime)*100, stsData.vTripAccelerationTime) as tripCalHeavyThrottleDuration"
 			+ ", if((stsData.vCruiseControlDist > 30 AND stsData.vCruiseControlDist < 50), if(0 <> stsData.tripCalGpsVehDistDiff, CAST(stsData.vCruiseControlDist as Double)/stsData.tripCalGpsVehDistDiff, stsData.tripCalGpsVehDistDiff), 0) as tripCalCrsCntrlDistBelow50"

@@ -13,10 +13,11 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
 
 import { EmployeeService } from 'src/app/services/employee.service';
 
-import { Product, UserGroup } from 'src/app/models/users.model';
+import { AccountGroup, Product, UserGroup } from 'src/app/models/users.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, forkJoin } from 'rxjs';
 import { TranslationService } from '../../services/translation.service';
+import { AccountService } from '../../services/account.service';
 
 @Component({
   selector: 'app-user-group-management',
@@ -24,6 +25,16 @@ import { TranslationService } from '../../services/translation.service';
   styleUrls: ['./user-group-management.component.less'],
 })
 export class UserGroupManagementComponent implements OnInit {
+  accountgrp: AccountGroup = {
+    id: 1  ,
+    name: '',
+    description: '',
+    accountGroupId : 0,
+    organizationId : 1,
+    accountId : 0,
+    accounts : true,
+    accountCount : true,
+  }
   usrgrp: UserGroup = {
     organizationId: null,
     name: null,
@@ -71,7 +82,8 @@ export class UserGroupManagementComponent implements OnInit {
     private userService: EmployeeService,
     private dialogService: ConfirmDialogService,
     private _snackBar: MatSnackBar,
-    private translationService: TranslationService
+    private translationService: TranslationService,
+    private accountService: AccountService
   ) {
     this.defaultTranslation();
   }
@@ -143,16 +155,23 @@ export class UserGroupManagementComponent implements OnInit {
   }
 
   ngOnInit() {
-    let langCode = 'EN-GB';
-    let labelList = 'lblUserGroupManagement,lblGroupDetails,lblNewUserGroup,lblGroupName,lblVehicles,lblUsers,lblAction,lblNewUserGroupName,lblCreate,lblCreateContinue,lblNewUserGroupPopupInfo,lblUserGroupCreatedSuccessfully,lblCancel,lblNext,lblPrevious,lblSearch,lblAll,lblUserRole,lblServices,lblServicesName,lblType,lblStep,lblSelectUserRole,lblSelectVehicleGroupVehicle,lblSummary,lblVehicleGroup,lblVehicle,lblVIN,lblRegistrationNumber,lblVehicleName,lblGroup,lblBoth,lblSelectedUserRoles,lblSelectedVehicleGroupsVehicles,lblBack,lblReset,lblNew,lblDeleteGroup,lblAreyousureyouwanttodeleteusergroup,lblNo,lblYes,lblUserGroupalreadyexists,lblPleaseenterUserGroupname,lblSpecialcharactersnotallowed,lblCreateUserGroupAPIFailedMessage,lblUserGroupDelete,lblDeleteUserGroupAPIFailedMessage,lblFilter,lblConfirm,lblUpdate,lblUserGroupName';
-    this.translationService.getTranslationLabel(labelList, langCode).subscribe((data) => {
+    let translationObj = {
+      id: 0,
+      code: "EN-GB", //-- TODO: Lang code based on account 
+      type: "Menu",
+      name: "",
+      value: "",
+      filter: "",
+      menuId: 24 //-- for user grp mgnt
+    }
+    this.translationService.getMenuTranslations(translationObj).subscribe((data) => {
       this.processTranslation(data);
       this.loadUserGroupData(1);
     });
   }
 
   processTranslation(transData: any) {
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.code]: cur.translation }), {});
+    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
   }
 
@@ -209,7 +228,8 @@ export class UserGroupManagementComponent implements OnInit {
   }
 
   loadUserGroupData(orgid) {
-    this.userService.getUserGroup(orgid, true).subscribe((grp) => {
+    // this.userService.getUserGroup(orgid, true).subscribe((grp) => {
+      this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp)=>{
       this.products = grp;
       this.initData = grp;
       this.onUpdateDataSource(grp);
@@ -246,6 +266,18 @@ export class UserGroupManagementComponent implements OnInit {
             users: options.users,
             userGroupDescriptions: options.userGroupDescriptions
           };
+          
+          this.accountgrp = {
+              id: options.id,
+              name: res.inputValue,
+              organizationId: 1,
+              description : options.userGroupDescriptions,
+              accountCount: true,
+              accounts : true,
+              accountGroupId : 0,
+              accountId : 0,
+          }
+
 
           //check if its a new or update request
           if (options.button2Text == 'Update') {
@@ -257,8 +289,9 @@ export class UserGroupManagementComponent implements OnInit {
             this.loadUserGroupData(1);
           }
           else if (res.type == 'create') {
-            this.userService.createUserGroup(this.usrgrp).subscribe((d) => {
-              this.loadUserGroupData(1);
+            // this.userService.createUserGroup(this.usrgrp).subscribe((d) => {
+            this.accountService.createAccountGroup(this.accountgrp).subscribe((d) => {
+              this.loadUserGroupData(this.accountgrp);
             });
           }
           else if (res.type == 'createContinue') {

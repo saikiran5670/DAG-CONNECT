@@ -1,32 +1,17 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.audit;
-using net.atos.daf.ct2.organization.entity;
-using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.organization;
-using net.atos.daf.ct2.audit.repository;  
 using net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.vehicle;
-using net.atos.daf.ct2.vehicle.repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Net.Http.Headers;
 using AccountComponent = net.atos.daf.ct2.account;
 using net.atos.daf.ct2.organizationservicerest.entity;
 using OrganizationComponent = net.atos.daf.ct2.organization;
-using AccountEntity = net.atos.daf.ct2.account.entity;
-using IdentityComponent = net.atos.daf.ct2.identity;
-using IdentityEntity = net.atos.daf.ct2.identity.entity;
-
-
+using Preference = net.atos.daf.ct2.accountpreference;
 namespace net.atos.daf.ct2.organizationservicerest.Controllers
 {
     [ApiController]
@@ -41,7 +26,9 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
         private readonly IVehicleManager vehicleManager;
          AccountComponent.IAccountIdentityManager accountIdentityManager;
         private IHttpContextAccessor _httpContextAccessor;
-        public OrganizationController(ILogger<OrganizationController> _logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager,IHttpContextAccessor httpContextAccessor,AccountComponent.IAccountIdentityManager _accountIdentityManager)
+         private readonly IAuditTraillib auditlog;
+        private readonly EntityMapper _mapper;
+        public OrganizationController(ILogger<OrganizationController> _logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager,IHttpContextAccessor httpContextAccessor,AccountComponent.IAccountIdentityManager _accountIdentityManager, IAuditTraillib _auditlog)
         {
             logger = _logger;
            _AuditTrail = AuditTrail;
@@ -50,6 +37,8 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             vehicleManager=_vehicleManager;
            _httpContextAccessor=httpContextAccessor;
             accountIdentityManager=_accountIdentityManager;
+            auditlog = _auditlog;
+            _mapper = new EntityMapper();
         } 
      [HttpPost]      
      [Route("create")]
@@ -82,7 +71,14 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 organization.IsActive=request.is_active;
               
                 var OrgId= await organizationtmanager.Create(organization);   
-                return Ok("Organization Created :");      
+                if (OrgId.Id<1)
+                {
+                    return StatusCode(400,"This organization is already exist :" + request.org_id);
+                }
+                else
+                {
+                    return Ok("Organization Created :" +OrgId.Id);    
+                }  
              }
             catch(Exception ex)
             {
@@ -105,6 +101,10 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 {
                      return StatusCode(400,"Please provide organization ID:");
                 }
+                // if (request.Id.GetType()!=typeof(int))
+                // {
+                //      return StatusCode(400,"Please provide numeric value for organization ID:");
+                // }           
                 if (string.IsNullOrEmpty(request.org_id) || (request.org_id.Trim().Length<1))
                 {
                      return StatusCode(400,"Please provide organization org_id:");
@@ -128,7 +128,18 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 organization.optout_status_changed_date=request.optout_status_changed_date;
                 organization.IsActive=request.is_active;
                 var OrgId= await organizationtmanager.Update(organization);   
-                return Ok("Organization updated :");    
+                if(OrgId.Id==0)
+                {
+                    return StatusCode(400,"Organization ID not exist: "+ request.Id); 
+                }
+                else if(OrgId.Id==-1)
+                {
+                    return StatusCode(400,"This organization is already exist :"+ request.org_id); 
+                }
+                else
+                {
+                   return Ok("Organization updated :"+ OrgId.Id);    
+                }
              }
             catch(Exception ex)
             {         
@@ -150,8 +161,14 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 {
                      return StatusCode(400,"Please provide organization ID:");
                 }
-                var OrgId= await organizationtmanager.Delete(organizationId);   
-                return Ok("Organization Deleted : " +organizationId);    
+                var OrgId= await organizationtmanager.Delete(organizationId);  
+                if (OrgId)   
+                {
+                     return Ok("Organization Deleted : " +organizationId);   
+                } 
+                else{
+                 return StatusCode(400,"Organization ID not exist: "+organizationId); 
+                } 
              }
             catch(Exception ex)
             {            
@@ -171,8 +188,16 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 if (organizationId<1)
                 {
                      return StatusCode(400,"Please provide organization ID:");
-                }              
-                return Ok(await organizationtmanager.Get(organizationId));
+                }  
+                 var onjRetun=await organizationtmanager.Get(organizationId);
+                 if(onjRetun.Id<1)
+                 {
+                     return StatusCode(400,"Organization ID not exist :" + organizationId);
+                 }  
+                 else
+                 {  
+                     return Ok(await organizationtmanager.Get(organizationId));
+                 }
              }
             catch(Exception ex)
             {            
@@ -180,6 +205,114 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 //return StatusCode(500,"Internal Server Error.");
                 return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }   
-        }    
+        }
+
+         // Begin Account Preference
+        [HttpPost]
+        [Route("preference/create")]
+        public async Task<IActionResult> CreateAccountPreference(AccountPreferenceRequest request)
+        {
+            try
+            {
+                // Validation                 
+                if ((request.OrgId <= 0) || (request.LanguageId <= 0) || (request.TimezoneId <= 0) || (request.CurrencyId <= 0) ||
+                    (request.UnitId <= 0) || (request.VehicleDisplayId <= 0) || (request.DateFormatTypeId <= 0) || (request.TimeFormatId <= 0) ||
+                    (request.LandingPageDisplayId <= 0)
+                    )
+                {
+                    return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
+                }
+                accountpreference.AccountPreference preference = new Preference.AccountPreference();
+                preference = _mapper.ToAccountPreference(request);
+                preference = await preferencemanager.Create(preference);
+               // var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Preference Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Preference", 1, 2, Convert.ToString(preference.RefId));
+                return Ok("Preference Created : " +preference.Id);                
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+
+        [HttpPut]
+        [Route("preference/update")]
+        public async Task<IActionResult> UpdateAccountPreference(AccountPreferenceRequest request)
+        {
+            try
+            {
+                // Validation                 
+                if ((request.OrgId <= 0) || (request.LanguageId <= 0) || (request.TimezoneId <= 0) || (request.CurrencyId <= 0) ||
+                    (request.UnitId <= 0) || (request.VehicleDisplayId <= 0) || (request.DateFormatTypeId <= 0) || (request.TimeFormatId <= 0) ||
+                    (request.LandingPageDisplayId <= 0)
+                    )
+                {
+                    return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
+                }
+                accountpreference.AccountPreference preference = new Preference.AccountPreference();
+                preference = _mapper.ToAccountPreference(request);
+                preference = await preferencemanager.Update(preference);
+                //var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Preference Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Preference", 1, 2, Convert.ToString(preference.RefId));
+                return Ok("Preference Updated : " +preference.Id); 
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+
+        [HttpDelete]
+        [Route("preference/delete")]
+        public async Task<IActionResult> DeleteAccountPreference(int accountId)
+        {
+            try
+            {
+                // Validation                 
+                if ((accountId <= 0))
+                {
+                    return StatusCode(400, "The Account Id is required");
+                }
+                var result = await preferencemanager.Delete(accountId);
+                //var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Preference Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Preference", 1, 2, Convert.ToString(accountId));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+
+        [HttpGet]
+        [Route("preference/get")]
+        public async Task<IActionResult> GetAccountPreference(int accountId)
+        {
+            try
+            {
+                // Validation                 
+                if ((accountId <= 0))
+                {
+                    return StatusCode(400, "The Account Id is required");
+                }
+                Preference.AccountPreferenceFilter preferenceFilter = new Preference.AccountPreferenceFilter();
+                preferenceFilter.Id = 0;
+                preferenceFilter.Ref_Id = accountId;
+                preferenceFilter.PreferenceType = Preference.PreferenceType.Account;
+                var result = await preferencemanager.Get(preferenceFilter);
+                if ((result == null) || Convert.ToInt16(result.Count()) <= 0)
+                {
+                    return StatusCode(404, "Account Preference for this account is not configured.");
+                }
+                logger.LogInformation("Get account preference.");
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Error in account service:get account preference with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+        // End - Account Preference    
     }
 }

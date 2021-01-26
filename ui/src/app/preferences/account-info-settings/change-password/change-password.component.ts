@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { CustomValidators } from '../../../shared/custom.validators';
+import { AccountService } from '../../../services/account.service';
 
 @Component({
   selector: 'app-change-password',
@@ -13,17 +14,25 @@ import { CustomValidators } from '../../../shared/custom.validators';
 export class ChangePasswordComponent implements OnInit {
   public changePasswordForm : FormGroup
   password: string;
+  minCharacterTxt: any;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
-    translationData: any
-  },private mdDialogRef: MatDialogRef<ChangePasswordComponent>, public router: Router, public fb: FormBuilder, private userService: EmployeeService) {
+    translationData: any,
+    accountInfo: any
+  },private mdDialogRef: MatDialogRef<ChangePasswordComponent>, public router: Router, public fb: FormBuilder, private userService: EmployeeService, private accountService: AccountService) {
     this.changePasswordForm = this.fb.group({
-      'currentPassword': [null, Validators.compose([Validators.required])],
+     // 'currentPassword': [null, Validators.compose([Validators.required])],
       'newPassword': [null, Validators.compose([Validators.required, Validators.minLength(8)])],
       'confirmPassword': [null, Validators.compose([Validators.required])],
     },{
-      validator : [CustomValidators.mustMatchNewAndConfirmPassword('newPassword', 'confirmPassword'), CustomValidators.validatePassword('newPassword'), CustomValidators.checkForCurrentPassword('currentPassword', this.password, this.userService)]
+      validator : [CustomValidators.mustMatchNewAndConfirmPassword('newPassword', 'confirmPassword'), CustomValidators.validatePassword('newPassword')//, CustomValidators.checkForCurrentPassword('currentPassword', this.password, this.userService)
+    ]
     });
+    
+    if(data.translationData.lblcharactersmin)
+      this.minCharacterTxt = data.translationData.lblcharactersmin.replace('$', '8');
+    else
+      this.minCharacterTxt =  ("'$' characters min").replace('$', '8');
   }
 
   ngOnInit(): void {
@@ -41,7 +50,13 @@ export class ChangePasswordComponent implements OnInit {
   public onChangePassword(formValue) {
     if (this.changePasswordForm.valid) {
       let selectedValues = formValue;
-      this.close(false);
+      let objData: any = {
+        emailId: this.data.accountInfo.emailId,
+        password: formValue.newPassword
+      }
+      this.accountService.changeAccountPassword(objData).subscribe(()=>{
+        this.close(false);   
+      });
     }
   }
 

@@ -31,9 +31,9 @@ export class RoleService {
     );
   }
 
-  getUserRoles(data): Observable<any[]> {
+  getUserRoles(id): Observable<any[]> {
     return this.httpClient
-      .get<any[]>(`${this.roleServiceUrl}/roles`,{params:data})
+      .get<any[]>(`${this.roleServiceUrl}/get?Organizationid=${id}`)
       .pipe(catchError(this.handleError));
   }
 

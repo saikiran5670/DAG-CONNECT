@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/dataservices/net.atos.daf.ct2.customerdataservice/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.customerdataservice.dll",
+            "program": "${workspaceFolder}/businessservices/net.atos.daf.ct2.organizationservicerest/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.organizationservicerest.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/dataservices/net.atos.daf.ct2.customerdataservice",
+            "cwd": "${workspaceFolder}/businessservices/net.atos.daf.ct2.organizationservicerest",
             "stopAtEntry": false,
             "serverReadyAction": {
                 "action": "openExternally",

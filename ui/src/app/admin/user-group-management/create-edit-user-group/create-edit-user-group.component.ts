@@ -17,7 +17,8 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { TranslationService } from '../../../../app/services/translation.service';
 import { VehicleGroup } from 'src/app/models/vehicle.model';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
-import { Product, UserGroup } from 'src/app/models/users.model';
+import { Product, UserGroup,AccountGroup, createAccountGroup } from 'src/app/models/users.model';
+import { AccountService } from '../../../services/account.service';
 
 export interface vehGrpCreation {
   groupName: null;
@@ -39,6 +40,29 @@ export class CreateEditUserGroupComponent implements OnInit {
     users: null,
     userGroupDescriptions: null,
   };
+  accountgrp: AccountGroup = {
+    id: 1  ,
+    name: '',
+    description: '',
+    accountGroupId : 0,
+    organizationId : 1,
+    accountId : 0,
+    accounts : true,
+    accountCount : true,
+  }
+  createaccountgrp = {
+    id: 0,
+    name: "",
+    organizationId : 1,
+    description : "",
+     accountCount : 0,
+     accounts : [
+      {
+        "accountGroupId": 0,
+        "accountId": 0
+      }
+    ]
+  }  
 
   @Output() backToPage = new EventEmitter<any>();
   UsrGrpColumns: string[] = [
@@ -92,6 +116,7 @@ export class CreateEditUserGroupComponent implements OnInit {
     private userService: EmployeeService,
     private translationService: TranslationService,
     private _snackBar: MatSnackBar,
+    private accountService: AccountService,
     private dialogService: ConfirmDialogService) { }
 
 
@@ -137,18 +162,32 @@ export class CreateEditUserGroupComponent implements OnInit {
     let create = document.getElementById("createUpdateButton");
 
     // mockData added for API
-    let randomMockId = Math.random();
-    let id = randomMockId;
-    this.usrgrp = {
-      organizationId: 1,
+    // let randomMockId = Math.random();
+    // let id = randomMockId;
+    // this.usrgrp = {
+    //   organizationId: 1,
+    //   name: this.UserGroupForm.controls.userGroupName.value,
+    //   isActive: true,
+    //   id: id,
+    //   usergroupId: id,
+    //   vehicles: "05",
+    //   users: "04",
+    //   userGroupDescriptions: this.UserGroupForm.controls.userGroupDescription.value,
+    // }
+    this.createaccountgrp = {
+      id: 130  ,
       name: this.UserGroupForm.controls.userGroupName.value,
-      isActive: true,
-      id: id,
-      usergroupId: id,
-      vehicles: "05",
-      users: "04",
-      userGroupDescriptions: this.UserGroupForm.controls.userGroupDescription.value,
+      description: this.UserGroupForm.controls.userGroupDescription.value,
+      organizationId : 1,
+      accounts : [
+        {
+          "accountGroupId": 0,
+          "accountId": 0
+        }
+      ],
+      accountCount : 0,
     }
+
     this.userCreatedMsg = this.getUserCreatedMessage();
     this.createStatus = false;
     this.editUserContent = false;
@@ -156,18 +195,35 @@ export class CreateEditUserGroupComponent implements OnInit {
     this.viewDisplayFlag = false;
 
     if (create.innerText == "Confirm") {
-      this.usrgrp = {
-        organizationId: this.selectedRowData.organizationId,
+      // this.usrgrp = {
+      //   organizationId: this.selectedRowData.organizationId,
+      //   name: this.UserGroupForm.controls.userGroupName.value,
+      //   isActive: true,
+      //   id: this.selectedRowData.id,
+      //   usergroupId: this.selectedRowData.id,
+      //   vehicles: "05",
+      //   users: "04",
+      //   userGroupDescriptions: this.UserGroupForm.controls.userGroupDescription.value,
+      // }
+
+      this.createaccountgrp = {
+        id: 130,
         name: this.UserGroupForm.controls.userGroupName.value,
-        isActive: true,
-        id: this.selectedRowData.id,
-        usergroupId: this.selectedRowData.id,
-        vehicles: "05",
-        users: "04",
-        userGroupDescriptions: this.UserGroupForm.controls.userGroupDescription.value,
+        description: this.UserGroupForm.controls.userGroupDescription.value,
+        organizationId : this.selectedRowData.organizationId,
+        accounts : [
+          {
+            "accountGroupId": 0,
+            "accountId": 0
+          }
+        ],
+        accountCount : 0,
       }
+
       this.userService.updateUserGroup(this.usrgrp).subscribe((result) => {
         this.userService.getUserGroup(1, true).subscribe((grp) => {
+        // this.accountService.createAccountGroup(this.accountgrp).subscribe((d) => {
+        // this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp) => {
           this.products = grp;
           this.initData = grp;
           this.dataSource = new MatTableDataSource(grp);
@@ -177,8 +233,8 @@ export class CreateEditUserGroupComponent implements OnInit {
         });
       });
     } else if (create.innerText == "Create") {
-      this.userService.createUserGroup(this.usrgrp).subscribe((d) => {
-        this.userService.getUserGroup(1, true).subscribe((grp) => {
+      this.accountService.createAccountGroup(this.createaccountgrp).subscribe((d) => {
+      this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp) => {
           // this.products = grp;
           // this.initData = grp;
           // this.dataSource = new MatTableDataSource(grp);
@@ -206,15 +262,15 @@ export class CreateEditUserGroupComponent implements OnInit {
     }
   }
 
-  loadUserGroupData(orgid) {
-    this.userService.getUserGroup(orgid, true).subscribe((grp) => {
-      this.products = grp;
-      this.initData = grp;
-      this.dataSource = new MatTableDataSource(grp);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
-  }
+  // loadUserGroupData(orgid) {
+  //   this.accountService.getAccountGroupDetails(orgid).subscribe((grp) => {
+  //     this.products = grp;
+  //     this.initData = grp;
+  //     this.dataSource = new MatTableDataSource(grp);
+  //     this.dataSource.paginator = this.paginator;
+  //     this.dataSource.sort = this.sort;
+  //   });
+  // }
 
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
@@ -249,7 +305,7 @@ export class CreateEditUserGroupComponent implements OnInit {
     this.editUserContent = true;
     this.UserGroupForm.patchValue({
       userGroupName: this.selectedRowData.name,
-      userGroupDescription: this.selectedRowData.userGroupDescriptions,
+      userGroupDescription: this.selectedRowData.description,
     })
   }
 

@@ -10,5 +10,6 @@ namespace net.atos.daf.ct2.account
         public AccountType AccountType { get; set; }
         public string AccountIds { get; set; }
         public string Name { get; set; }
+        public int AccountGroupId { get; set; }
     }    
 }
