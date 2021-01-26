@@ -19,6 +19,7 @@
       "roleRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/role",
       "featureRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/feature",
       "accountRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/account",
-      "translationRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/translation"
+      "translationRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/translation",
+      "organizationRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/vehicle"
     }
 }

@@ -23,6 +23,13 @@ namespace net.atos.daf.ct2.group
         {
             try
             {
+                // check for exists
+                bool result = await Exists(group);
+                if(result) 
+                {
+                    group.Exists = true;
+                    return group;
+                }
                 var parameter = new DynamicParameters();
                 parameter.Add("@object_type", (char)group.ObjectType);
                 parameter.Add("@group_type", (char)group.GroupType);
@@ -49,6 +56,13 @@ namespace net.atos.daf.ct2.group
         {
             try
             {
+                // check for exists
+                bool result = await Exists(group);
+                if(result) 
+                {
+                    group.Exists = true;
+                    return group;
+                }
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", group.Id);
                 parameter.Add("@object_type", (char)group.ObjectType);
@@ -102,7 +116,7 @@ namespace net.atos.daf.ct2.group
                 var parameter = new DynamicParameters();
                 List<Group> groupList = new List<Group>();
                 var query = @"select id,object_type,group_type,argument,function_enum,organization_id,ref_id,name,description from master.group where 1=1 ";
-                
+
                 if (groupFilter != null)
                 {
                     // group id filter
@@ -144,7 +158,7 @@ namespace net.atos.daf.ct2.group
                     }
 
                     // Account Id list Filter                       
-                    if (groupFilter.GroupIds != null && groupFilter.GroupIds.Count()>0)
+                    if (groupFilter.GroupIds != null && groupFilter.GroupIds.Count() > 0)
                     {
                         parameter.Add("@groupids", groupFilter.GroupIds);
                         query = query + " and id=ANY(@groupids)";
@@ -179,6 +193,7 @@ namespace net.atos.daf.ct2.group
                 throw ex;
             }
         }
+
         public async Task<bool> AddRefToGroups(List<GroupRef> groupRef)
         {
             try
@@ -247,6 +262,51 @@ namespace net.atos.daf.ct2.group
         #endregion
 
         #region private methods
+        private async Task<bool> Exists(Group groupRequest)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                List<Group> groupList = new List<Group>();
+                var query = @"select id from master.group where 1=1 ";
+                if (groupRequest != null)
+                {
+
+                    // id
+                    if ( Convert.ToInt32(groupRequest.Id) > 0)
+                    {
+                        parameter.Add("@id", groupRequest.Id);
+                        query = query + " and id!=@id";
+                    }              
+                    // name
+                    if (!string.IsNullOrEmpty(groupRequest.Name))
+                    {
+                        parameter.Add("@name", groupRequest.Name);
+                        query = query + " and name=@name";
+                    }   
+                    // organization id filter
+                    if (groupRequest.OrganizationId > 0)
+                    {
+                        parameter.Add("@organization_id", groupRequest.OrganizationId);
+                        query = query + " and organization_id=@organization_id ";
+                    }                   
+                     // object type filter
+                    if (((char)groupRequest.ObjectType) != ((char)ObjectType.None))
+                    {
+
+                        parameter.Add("@object_type", (char)groupRequest.ObjectType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                        query = query + " and object_type=@object_type ";
+                    }             
+                }
+                var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                if (groupid >0 ) return true;
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         private Group Map(dynamic record)
         {
             Group entity = new Group();
@@ -321,9 +381,9 @@ namespace net.atos.daf.ct2.group
                         {
                             group.GroupRefCount = GetRefCount(group.Id).Result;
                         }
-                     }
+                    }
                     groupList.Add(group);
-                }               
+                }
                 return groupList;
             }
             catch (Exception ex)

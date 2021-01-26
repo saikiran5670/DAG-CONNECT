@@ -27,6 +27,9 @@ export class UserRoleManagementComponent implements OnInit {
   createStatus: boolean;
   titleText: string;
   translationData: any;
+  grpTitleVisible : boolean = false;
+  displayMessage: any;
+  organizationId: any;
 
   constructor(private translationService: TranslationService, private roleService: RoleService, private userService: EmployeeService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar) {
     this.defaultTranslation();
@@ -78,6 +81,7 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.organizationId = localStorage.getItem("accountOrganizationId");
     let translationObj = {
       id: 0,
       code: "EN-GB", //-- TODO: Lang code based on account 
@@ -99,10 +103,10 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   loadInitData() {
-    let objData = { 
-      "organization_Id": 32,
-    };
-    this.roleService.getUserRoles(objData).subscribe((data) => {
+    // let objData = { 
+       //let organizationId= 32;
+    // };
+    this.roleService.getUserRoles(this.organizationId).subscribe((data) => {
       //this.initData = this.getNewTagData(data); //no createdDate present in API response
       this.initData = data; //temporary 
       setTimeout(()=>{
@@ -175,12 +179,31 @@ export class UserRoleManagementComponent implements OnInit {
          .deleteUserRole(row.roleId)
          .subscribe((d) => {
            //console.log(d);
-           this.openSnackBar('Item delete', 'dismiss');
+           //this.openSnackBar('Item deleted', 'dismiss');
+           this.successMsgBlink(this.getDeletMsg(name));
            this.loadInitData();
          });
      }
    });
   }
+
+
+
+  getDeletMsg(roleName: any){
+    if(this.translationData.lblUseraccountwassuccessfullydeleted)
+      return this.translationData.lblUserRoleDelete.replace('$', roleName);
+    else
+      return ("User role '$' was successfully deleted").replace('$', roleName);
+  }
+
+  successMsgBlink(msg: any){
+    this.grpTitleVisible = true;
+    this.displayMessage = msg;
+    setTimeout(() => {  
+      this.grpTitleVisible = false;
+    }, 5000);
+  }
+
 
   openSnackBar(message: string, action: string) {
     let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
@@ -198,13 +221,30 @@ export class UserRoleManagementComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
+  getCreateEditMsg(editText, name){
+    if(editText == 'create'){
+      if(this.translationData.lblUserRoleCreatedSuccessfully)
+        return this.translationData.lblUserRoleCreatedSuccessfully.replace('$', name);
+      else
+        return ("User Role '$' Created Successfully").replace('$', name);
+    }
+    else if(editText == 'edit'){
+      if(this.translationData.lblUserRoledetailssuccessfullyupdated)
+        return this.translationData.lblUserRoledetailssuccessfullyupdated.replace('$', name);
+      else
+        return ("User Role '$' details successfully updated").replace('$', name);
+    }
+  }
+
   editData(item: any) {
     this.editFlag = item.editFlag;
     this.viewFlag = item.viewFlag;
     if(item.editText == 'create'){
-      this.openSnackBar('Item created', 'dismiss');
+      //this.openSnackBar('Item created', 'dismiss');
+      this.successMsgBlink(this.getCreateEditMsg(item.editText, item.rolename));
     }else if(item.editText == 'edit'){
-      this.openSnackBar('Item edited', 'dismiss');
+      //this.openSnackBar('Item edited', 'dismiss');
+      this.successMsgBlink(this.getCreateEditMsg(item.editText, item.rolename));
     }
     this.initData = this.loadInitData();
     setTimeout(()=>{
@@ -212,5 +252,9 @@ export class UserRoleManagementComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
+  }
+
+  onClose(){
+    this.grpTitleVisible = false;
   }
 }

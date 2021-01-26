@@ -21,6 +21,8 @@ import { PreferencesModule } from './preferences/preferences.module';
 import { DataInterchangeService } from './services/data-interchange.service';
 import { IdentityGrpcService } from './services/identity-grpc.service';
 import { AccountService } from './services/account.service';
+import { RoleService } from './services/role.service';
+import { OrganizationService } from './services/organization.service';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
@@ -47,7 +49,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     PreferencesModule
     //RouterModule.forRoot(appRoute)
   ],
-  providers: [EmployeeService, DataInterchangeService, AccountService],
+  providers: [EmployeeService, DataInterchangeService, AccountService, RoleService, OrganizationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

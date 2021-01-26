@@ -18,11 +18,12 @@ export class ChangePasswordComponent implements OnInit {
     translationData: any
   },private mdDialogRef: MatDialogRef<ChangePasswordComponent>, public router: Router, public fb: FormBuilder, private userService: EmployeeService) {
     this.changePasswordForm = this.fb.group({
-      'currentPassword': [null, Validators.compose([Validators.required])],
+     // 'currentPassword': [null, Validators.compose([Validators.required])],
       'newPassword': [null, Validators.compose([Validators.required, Validators.minLength(8)])],
       'confirmPassword': [null, Validators.compose([Validators.required])],
     },{
-      validator : [CustomValidators.mustMatchNewAndConfirmPassword('newPassword', 'confirmPassword'), CustomValidators.validatePassword('newPassword'), CustomValidators.checkForCurrentPassword('currentPassword', this.password, this.userService)]
+      validator : [CustomValidators.mustMatchNewAndConfirmPassword('newPassword', 'confirmPassword'), CustomValidators.validatePassword('newPassword')//, CustomValidators.checkForCurrentPassword('currentPassword', this.password, this.userService)
+    ]
     });
   }
 

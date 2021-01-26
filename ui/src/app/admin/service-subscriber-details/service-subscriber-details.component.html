@@ -8,14 +8,14 @@
     </div>
     <div class="example-container">
       <mat-table [dataSource]="dataSource" matSort>
-        <ng-container matColumnDef="vehiclegroups">
+        <ng-container matColumnDef="vehicleGroupName">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}/{{ translationData.lblVehicle || 'Vehicle' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row" (click)="onVehClick(row)" class="row-hover"><a>{{row.vehiclegroups}}</a> </mat-cell>
+          <mat-cell *matCellDef="let row" (click)="onVehClick(row)" class="row-hover"><a>{{row.vehicleGroupName}}</a> </mat-cell>
         </ng-container>
-        <ng-container matColumnDef="users">
+        <ng-container matColumnDef="userCount">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Users' }}</mat-header-cell>
           <mat-cell *matCellDef="let row" (click)="onUserClick(row)"  class="row-hover">
-          <a > {{row.users}}</a>
+          <a > {{row.userCount}}</a>
            </mat-cell>
         </ng-container>
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
