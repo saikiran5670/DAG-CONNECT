@@ -8,6 +8,6 @@ namespace net.atos.daf.ct2.vehicleservicerest.Entity
         public string Name { get; set; }
         public string Description { get; set; }
         public int OrganizationId { get; set; }
-        public List<GroupRefRequest> GroupRef { get; set; }
+        public List<GroupRefRequest> Vehicles { get; set; }
     }
 }

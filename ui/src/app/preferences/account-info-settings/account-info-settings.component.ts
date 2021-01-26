@@ -1,10 +1,13 @@
 import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { CustomValidators } from 'src/app/shared/custom.validators';
+import { AccountService } from '../../services/account.service';
+import { TranslationService } from '../../services/translation.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-account-info-settings',
@@ -27,8 +30,30 @@ export class AccountInfoSettingsComponent implements OnInit {
   droppedImage:any = '';
   defaultSetting: any = [];
   accountInfo: any = [];
+  accountPreferenceData: any;
 
-  selectList: any = [
+  languageDropdownData: any = [];
+  timezoneDropdownData: any = [];
+  unitDropdownData: any = [];
+  currencyDropdownData: any = [];
+  dateFormatDropdownData: any = [];
+  timeFormatDropdownData: any = [];
+  vehicleDisplayDropdownData: any = [];
+  landingPageDisplayDropdownData: any = [];
+
+  languageData: any;
+  timezoneData: any;
+  unitData: any;
+  currencyData: any;
+  dateFormatData: any;
+  timeFormatData: any;
+  vehicleDisplayData: any;
+  landingPageDisplayData: any;
+  orgName: any;
+  accountId: any;
+  organizationId: any;
+
+  salutationList: any = [
     {
       name: 'Mr.'
     },
@@ -44,7 +69,7 @@ export class AccountInfoSettingsComponent implements OnInit {
     return date > now;
   }
 
-  constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private userService: EmployeeService) { }
+  constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private userService: EmployeeService, private accountService: AccountService, private translationService: TranslationService) { }
 
   ngOnInit(): void {
     this.accountSettingsForm = this._formBuilder.group({
@@ -52,13 +77,14 @@ export class AccountInfoSettingsComponent implements OnInit {
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
       loginEmail: ['', [Validators.required, Validators.email]],
-      organization: ['', []],
+      organization: new FormControl({value: null, disabled: true}),
       //birthDate: ['', []]
     },{
-      validator : [CustomValidators.specialCharValidationForName('firstName'),
-                   CustomValidators.numberValidationForName('firstName'),
-                   CustomValidators.specialCharValidationForName('lastName'), 
-                   CustomValidators.numberValidationForName('lastName')]
+      validator : [
+        CustomValidators.specialCharValidationForName('firstName'),
+        CustomValidators.numberValidationForName('firstName'),
+        CustomValidators.specialCharValidationForName('lastName'), 
+        CustomValidators.numberValidationForName('lastName')]
     });
 
     this.userSettingsForm = this._formBuilder.group({
@@ -71,43 +97,90 @@ export class AccountInfoSettingsComponent implements OnInit {
       vehDisplay: ['',[]],
       landingPage: ['', []]
     });
-
-    this.userService.getAccountInfo().subscribe((data)=>{
-      this.accountInfo = data[0];
-      this.setAccountInfo();
-    })
-
-    this.userService.getDefaultSetting().subscribe((data)=>{
-      //console.log("data:: ", data)
-      this.defaultSetting = data;
-      this.setDefaultSetting();
-    });
-    
     //Mock data changes
     this.changePictureFlag = true;
     this.isSelectPictureConfirm = true;
     this.croppedImage='../../assets/images/Account_pic.png';
-    
+    this.orgName = 'DAF CONNECT';
+    this.accountId = parseInt(localStorage.getItem('accountId'));
+    this.organizationId = parseInt(localStorage.getItem('accountOrganizationId'));
+    this.loadAccountData();  
+    this.loadGeneralSettingData();
   }
 
-  setAccountInfo(){
-    this.accountSettingsForm.get('salutation').setValue(this.accountInfo.salutation);
-    this.accountSettingsForm.get('firstName').setValue(this.accountInfo.firstName);
-    this.accountSettingsForm.get('lastName').setValue(this.accountInfo.lastName);
-    this.accountSettingsForm.get('loginEmail').setValue(this.accountInfo.emailId);
-    //this.accountSettingsForm.get('birthDate').setValue(this.accountInfo.birthDate);
-    this.accountSettingsForm.get('organization').setValue(this.accountInfo.organization);
+  loadAccountData(){
+    let userObjData = {
+      id: this.accountId,
+      organizationId: this.organizationId,
+      email: "",
+      accountType: 0,
+      name: ""
+    }
+    this.accountService.getAccount(userObjData).subscribe((_data)=>{
+      this.accountInfo = _data;
+      this.editAccountSettingsFlag = false;
+      this.isSelectPictureConfirm = true;
+      this.setDefaultAccountInfo();
+    });
   }
 
-  setDefaultSetting(){
-    this.userSettingsForm.get('language').setValue(this.defaultSetting.language.val[this.defaultSetting.language.selectedIndex]);
-    this.userSettingsForm.get('timeZone').setValue(this.defaultSetting.timeZone.val[this.defaultSetting.timeZone.selectedIndex]);
-    this.userSettingsForm.get('unit').setValue(this.defaultSetting.unit.val[this.defaultSetting.unit.selectedIndex]);
-    this.userSettingsForm.get('currency').setValue(this.defaultSetting.currency.val[this.defaultSetting.currency.selectedIndex]);
-    this.userSettingsForm.get('dateFormat').setValue(this.defaultSetting.dateFormat.val[this.defaultSetting.dateFormat.selectedIndex]);
-    this.userSettingsForm.get('timeFormat').setValue(this.defaultSetting.timeFormat.val[this.defaultSetting.timeFormat.selectedIndex]);
-    this.userSettingsForm.get('vehDisplay').setValue(this.defaultSetting.vehDisplay.val[this.defaultSetting.vehDisplay.selectedIndex]);
-    this.userSettingsForm.get('landingPage').setValue(this.defaultSetting.landingPage.val[this.defaultSetting.landingPage.selectedIndex]);
+  loadGeneralSettingData(){
+    forkJoin(
+      this.accountService.getAccountPreference(this.accountId),
+      this.translationService.getTranslationsForDropdowns('EN-GB','language'),
+      this.translationService.getTranslationsForDropdowns('EN-GB','timezone'),
+      this.translationService.getTranslationsForDropdowns('EN-GB','unit'),
+      this.translationService.getTranslationsForDropdowns('EN-GB','currency'),
+      this.translationService.getTranslationsForDropdowns('EN-GB','dateformat'),
+      this.translationService.getTranslationsForDropdowns('EN-GB','timeformat'),
+      this.translationService.getTranslationsForDropdowns('EN-GB','vehicledisplay'),
+      this.translationService.getTranslationsForDropdowns('EN-GB','landingpagedisplay')
+    ).subscribe((data) => {
+      this.accountPreferenceData = data[1][0];
+      this.languageDropdownData = data[1];
+      this.timezoneDropdownData = data[2];
+      this.unitDropdownData = data[3];
+      this.currencyDropdownData = data[4];
+      this.dateFormatDropdownData = data[5];
+      this.timeFormatDropdownData = data[6];
+      this.vehicleDisplayDropdownData = data[7];
+      this.landingPageDisplayDropdownData = data[8];
+      this.filterDefaultGeneralSetting();
+      this.setDefaultGeneralSetting();
+      this.editGeneralSettingsFlag = false;
+      }, (error) => {  });
+  }
+
+  setDefaultAccountInfo(){
+    this.accountSettingsForm.get('salutation').setValue(this.accountInfo.length > 0 ? this.accountInfo[0].salutation : '');
+    this.accountSettingsForm.get('firstName').setValue(this.accountInfo.length > 0 ? this.accountInfo[0].firstName : '');
+    this.accountSettingsForm.get('lastName').setValue(this.accountInfo.length > 0 ? this.accountInfo[0].lastName : '');
+    this.accountSettingsForm.get('loginEmail').setValue(this.accountInfo.length > 0 ? this.accountInfo[0].emailId : '');
+    this.accountSettingsForm.get('organization').setValue(this.orgName);
+  }
+
+  setDefaultGeneralSetting(){
+    setTimeout(()=>{
+      this.userSettingsForm.get('language').setValue(this.languageData.length > 0 ? this.languageData[0].id : 1 );
+      this.userSettingsForm.get('timeZone').setValue(this.timezoneData.length > 0 ? this.timezoneData[0].id : 1);
+      this.userSettingsForm.get('unit').setValue(this.unitData.length > 0 ? this.unitData[0].id : 1);
+      this.userSettingsForm.get('currency').setValue(this.currencyData.length > 0 ? this.currencyData[0].id : 1);
+      this.userSettingsForm.get('dateFormat').setValue(this.dateFormatData.length > 0 ? this.dateFormatData[0].id : 1);
+      this.userSettingsForm.get('timeFormat').setValue(this.timeFormatData.length > 0 ? this.timeFormatData[0].id : 1);
+      this.userSettingsForm.get('vehDisplay').setValue(this.vehicleDisplayData.length > 0 ? this.vehicleDisplayData[0].id : 1);
+      this.userSettingsForm.get('landingPage').setValue(this.landingPageDisplayData.length > 0 ? this.landingPageDisplayData[0].id : 1);
+    });
+  }
+
+  filterDefaultGeneralSetting(){
+    this.languageData = this.languageDropdownData.filter(resp => resp.id === this.accountPreferenceData.languageId);
+    this.timezoneData = this.timezoneDropdownData.filter(resp => resp.id === this.accountPreferenceData.timezoneId);
+    this.unitData = this.unitDropdownData.filter(resp => resp.id === this.accountPreferenceData.unitId);
+    this.currencyData = this.currencyDropdownData.filter(resp => resp.id === this.accountPreferenceData.currencyId);
+    this.dateFormatData = this.dateFormatDropdownData.filter(resp => resp.id === this.accountPreferenceData.dateFormatTypeId);
+    this.timeFormatData = this.timeFormatDropdownData.filter(resp => resp.id === this.accountPreferenceData.timeFormatId);
+    this.vehicleDisplayData = this.vehicleDisplayDropdownData.filter(resp => resp.id === this.accountPreferenceData.vehicleDisplayId);
+    this.landingPageDisplayData = this.landingPageDisplayDropdownData.filter(resp => resp.id === this.accountPreferenceData.landingPageDisplayId);
   }
 
   openChangePasswordPopup(){
@@ -127,29 +200,30 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   onAccountSettingsUpdate(){
-    if(this.accountSettingsForm.controls.loginEmail.value != this.accountInfo.emailId){
+    if(this.accountSettingsForm.controls.loginEmail.value != this.accountInfo[0].emailId){
       //TODO : Check if email id already exists in DB(API call).
     }
 
     let objData: any = {
-      salutation: this.accountSettingsForm.controls.salutation.value,
-      firstName: this.accountSettingsForm.controls.firstName.value,
-      lastName: this.accountSettingsForm.controls.lastName.value,
-      emailId: this.accountSettingsForm.controls.loginEmail.value,
-      //birthDate: this.accountSettingsForm.controls.birthDate.value,
-      organization: this.accountSettingsForm.controls.organization.value
+        id: this.accountId,
+        emailId: this.accountSettingsForm.controls.loginEmail.value,
+        salutation: this.accountSettingsForm.controls.salutation.value,
+        firstName: this.accountSettingsForm.controls.firstName.value,
+        lastName: this.accountSettingsForm.controls.lastName.value,
+        organization_Id: this.organizationId
     }
-    //TODO : API integration for edit account settings
-
-    this.editAccountSettingsFlag = false;
+    this.accountService.updateAccount(objData).subscribe((data)=>{
+      this.loadAccountData();
+    });
   }
 
   onEditAccountSettingsCancel(){
     this.editAccountSettingsFlag = false;
+    this.isSelectPictureConfirm = true;
   }
 
   onResetAccountSettings(){
-    this.setAccountInfo();
+    this.setDefaultAccountInfo();
   }
 
   editGeneralSettings(){
@@ -157,18 +231,22 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   onGeneralSettingsUpdate(){
-    let objData: any = {
-      language: this.userSettingsForm.controls.language.value,
-      timeZone: this.userSettingsForm.controls.timeZone.value,
-      unit: this.userSettingsForm.controls.unit.value,
-      currency: this.userSettingsForm.controls.currency.value,
-      dateFormat: this.userSettingsForm.controls.dateFormat.value,
-      timeFormat: this.userSettingsForm.controls.timeFormat.value,
-      vehDisplay: this.userSettingsForm.controls.vehDisplay.value,
-      landingPage: this.userSettingsForm.controls.landingPage.value
+    let objData: any ={
+      id: 0,
+      refId: this.accountId,
+      languageId: this.userSettingsForm.controls.language.value,
+      timezoneId: this.userSettingsForm.controls.timeZone.value,
+      currencyId: this.userSettingsForm.controls.currency.value,
+      unitId: this.userSettingsForm.controls.unit.value,
+      vehicleDisplayId: this.userSettingsForm.controls.vehDisplay.value,
+      dateFormatTypeId: this.userSettingsForm.controls.dateFormat.value,
+      timeFormatId: this.userSettingsForm.controls.timeFormat.value,
+      landingPageDisplayId: this.userSettingsForm.controls.landingPage.value,
+      driverId: ""
     }
-    //TODO : API integration for edit general settings
-    this.editGeneralSettingsFlag = false;
+    this.accountService.updateAccountPreference(objData).subscribe((data) => {
+      this.loadGeneralSettingData();
+    });
   }
 
   onEditGeneralSettingsCancel(){
@@ -176,7 +254,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   onResetGeneralSettings(){
-    this.setDefaultSetting();
+    this.setDefaultGeneralSetting();
   }
 
   onchangePictureClick(){

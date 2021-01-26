@@ -31,12 +31,9 @@ export class TranslationService {
             .pipe(catchError(this.handleError));
     }
 
-    getTranslationsForDropdowns(dataObj: any): Observable<any[]> {
-        const headers = {
-            headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-        };
+    getTranslationsForDropdowns(langCode:any, dropdownType: any): Observable<any[]> {
         return this.httpClient
-            .post<any[]>(`${this.translationUrl}/translationsfordropdowns`, dataObj, headers)
+            .get<any[]>(`${this.translationUrl}/translationsfordropdowns?Dropdownname=${dropdownType}&languagecode=${langCode}`)
             .pipe(catchError(this.handleError));
     }
 

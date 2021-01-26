@@ -30,22 +30,10 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@salutation", account.Salutation);
                 parameter.Add("@first_name", account.FirstName);
                 parameter.Add("@last_name", account.LastName);
-                // this can null  as well
-                // if (account.Dob.HasValue)
-                // {
-                //     //parameter.Add("@dob", UTCHandling.GetUTCFromDateTime(account.Dob.ToString()));
-                //     parameter.Add("@dob", account.Dob);
-                // }
-                // else
-                // {
-                //     parameter.Add("@dob", DBNull.Value);
-                // }
-
-
                 parameter.Add("@type", (char)account.AccountType);
 
-                string query = @"insert into master.account(email,salutation,first_name,last_name,type) " +
-                              "values(@email,@salutation,@first_name,@last_name,@type) RETURNING id";
+                string query = @"insert into master.account(email,salutation,first_name,last_name,type,is_active) " +
+                              "values(@email,@salutation,@first_name,@last_name,@type,true) RETURNING id";
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 account.Id = id;
@@ -83,11 +71,8 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@email", account.EmailId);
                 parameter.Add("@salutation", account.Salutation);
                 parameter.Add("@first_name", account.FirstName);
-                parameter.Add("@last_name", account.LastName);
-                //parameter.Add("@dob", account.Dob != null ? UTCHandling.GetUTCFromDateTime(account.Dob.ToString()) : 0);
-                //parameter.Add("@dob", account.Dob != null ? account.Dob : null);
+                parameter.Add("@last_name", account.LastName);                
                 parameter.Add("@type", (char)account.AccountType);
-
                 string query = @"update master.account set id = @id,email = @email,salutation = @salutation,
                                 first_name = @first_name,last_name = @last_name ,type = @type
                                 where id = @id RETURNING id";
@@ -108,7 +93,7 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@id", accountid);
                 parameter.Add("@organization_id", organization_id);
 
-                string query = @"update master.accountorg set is_active=false where account_id = @id and organization_id = @organization_id";
+                string query = @"update master.account set is_active=false where id = @id ;update master.accountorg set is_active=false where account_id = @id and organization_id = @organization_id";
 
                 var result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
@@ -171,8 +156,17 @@ namespace net.atos.daf.ct2.account
                         List<int> accountids = filter.AccountIds.Split(',').Select(int.Parse).ToList();
                         parameter.Add("@accountids", accountids);
                         query = query + " and a.id = ANY(@accountids)";
-
                     }
+                    // account group filter
+                    if ((!string.IsNullOrEmpty(filter.AccountIds)) && Convert.ToInt32(filter.AccountIds.Length) > 0)
+                    {
+                        // Account Id list Filter
+                        filter.AccountIds = filter.AccountIds.TrimEnd(',');
+                        List<int> accountids = filter.AccountIds.Split(',').Select(int.Parse).ToList();
+                        parameter.Add("@accountids", accountids);
+                        query = query + " and a.id = ANY(@accountids)";
+                    }
+
                     dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
 
                     foreach (dynamic record in result)

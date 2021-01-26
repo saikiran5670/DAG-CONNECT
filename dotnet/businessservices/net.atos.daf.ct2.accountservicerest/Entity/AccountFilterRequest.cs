@@ -9,5 +9,6 @@ namespace net.atos.daf.ct2.accountservicerest
         public string Email { get; set; }       
         public string AccountIds { get; set; }
         public string Name { get; set; }
+        public int AccountGroupId { get; set; }
     }
 }

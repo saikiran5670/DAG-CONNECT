@@ -203,15 +203,16 @@ namespace net.atos.daf.ct2.role.repository
             return resultUpdatedRole;
         }
 
-        public async Task<int> CheckRoleNameExist(string roleName)
+        public int CheckRoleNameExist(string roleName,int Organization_Id)
         {
-            var QueryStatement = @" SELECT CASE WHEN rolemasterid IS NULL THEN 0 ELSE rolemasterid END
-                                    FROM dafconnectmaster.rolemaster 
-                                    WHERE isactive=true
-                                    AND LOWER(name) = LOWER(@roleName)";
+            var QueryStatement = @" SELECT CASE WHEN id IS NULL THEN 0 ELSE id END
+                                    FROM master.role 
+                                    WHERE is_active=true
+                                    AND LOWER(name) = LOWER(@roleName) and (organization_id = @organization_id or organization_id is null)";
             var parameter = new DynamicParameters();
             parameter.Add("@roleName", roleName);
-            int resultRoleId = await dataAccess.QueryFirstAsync<int>(QueryStatement, parameter);
+            parameter.Add("@organization_id", Organization_Id);
+            int resultRoleId =  dataAccess.ExecuteScalar<int>(QueryStatement, parameter);
             return resultRoleId;
 
         }

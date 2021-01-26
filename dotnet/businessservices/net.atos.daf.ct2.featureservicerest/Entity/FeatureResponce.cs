@@ -10,5 +10,6 @@ namespace net.atos.daf.ct2.featureservicerest.Entity
         public int   RoleId { get; set; }
         public int OrganizationId { get; set; }
         public int CreatedBy { get; set; }
+        public char FeatureType { get; set; }
     }
 }

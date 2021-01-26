@@ -219,7 +219,7 @@ namespace net.atos.daf.ct2.identity
                                 // modelCreate.EmailId=user.EmailId;
                                 modelUpdate.firstName=user.FirstName;
                                 modelUpdate.lastName=user.LastName;
-                                // modelUpdate.enabled=true;
+                                modelUpdate.enabled=true;
                                 stringData=JsonConvert.SerializeObject(modelUpdate,Formatting.Indented); 
                                 break;
                 case "DELETE":  
@@ -262,6 +262,7 @@ namespace net.atos.daf.ct2.identity
         public string id { get; set; } 
         public string firstName { get; set; } 
         public string lastName { get; set; } 
+        public bool enabled { get; set; } 
     }
     public class keycloakDeleteUserModel {
         public string id { get; set; } 

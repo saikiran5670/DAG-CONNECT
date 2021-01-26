@@ -72,17 +72,21 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
     });
   }
   ngOnInit() {
-    let langCode = 'EN-GB';
-    let labelList =
-      'lblFilter,lblSearch,lblVehicleGroup,lblVehicle,lblUsers,lblVehicleName,lblVIN,lblRegistrationNumber,lblUserRole,lblServiceSubscriberDetails,lblUsersList,lblUserEmail,lblUserName';
-    this.translationService
-      .getTranslationLabel(labelList, langCode)
-      .subscribe((data) => {
-        this.processTranslation(data);
-        this.loadOrgData();
-      });
-    //this.loadGrpc();
+    let translationObj = {
+      id: 0,
+      code: "EN-GB", //-- TODO: Lang code based on account 
+      type: "Menu",
+      name: "",
+      value: "",
+      filter: "",
+      menuId: 23 //-- for ssb/org details
+    }
+    this.translationService.getMenuTranslations(translationObj).subscribe((data) => {
+      this.processTranslation(data);
+      this.loadOrgData();
+    });
   }
+
   loadOrgData() {
     this.userService.getOrgDetails().subscribe(
       (_data) => {
@@ -176,7 +180,7 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
   }
   processTranslation(transData: any) {
     this.translationData = transData.reduce(
-      (acc, cur) => ({ ...acc, [cur.code]: cur.translation }),
+      (acc, cur) => ({ ...acc, [cur.name]: cur.value }),
       {}
     );
     //console.log("process translationData:: ", this.translationData)

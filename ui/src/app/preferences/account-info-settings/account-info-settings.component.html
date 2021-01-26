@@ -6,7 +6,7 @@
           <!-- <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAccountInformation }}</span> -->
           <span
             style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAccountInformation || 'Account Information' }}
-            <mat-icon (click)="editAccountSettings()" style="cursor: pointer;">edit</mat-icon></span>
+            <mat-icon *ngIf='!editAccountSettingsFlag' (click)="editAccountSettings()" style="cursor: pointer;">edit</mat-icon></span>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
@@ -72,7 +72,7 @@
               <!-- original -->
                 <!-- {{confirmAccountInfoData.salutation ? confirmAccountInfoData.salutation.value : '--'}} -->
                 <!-- Mock data -->
-                {{ accountInfo.salutation }}
+                {{ accountInfo.length > 0 ? accountInfo[0].salutation : '--' }}
               </mat-label>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -80,7 +80,7 @@
               <mat-label>{{ translationData.lblFirstName || 'First Name' }}</mat-label>
               <mat-label class='custom-font'>
                 <!-- {{confirmAccountInfoData.firstName ? confirmAccountInfoData.firstName.value : '--'}} -->
-                {{ accountInfo.firstName }}
+                {{ accountInfo.length > 0 ? accountInfo[0].firstName : '--' }}
               </mat-label>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -88,7 +88,7 @@
               <mat-label>{{ translationData.lblLastName || 'Last Name' }}</mat-label>
               <mat-label class='custom-font'>
                 <!-- {{confirmAccountInfoData.lastName ? confirmAccountInfoData.lastName.value : '--'}} -->
-                {{ accountInfo.lastName }}
+                {{ accountInfo.length > 0 ? accountInfo[0].lastName : '--' }}
               </mat-label>
             </div>
           </div>
@@ -99,7 +99,7 @@
               <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}</mat-label>
               <mat-label class='custom-font'>
                 <!-- {{confirmAccountInfoData.loginEmail ? confirmAccountInfoData.loginEmail.value : '--'}} -->
-                {{ accountInfo.emailId }}
+                {{ accountInfo.length > 0 ? accountInfo[0].emailId : '--' }}
               </mat-label>
             </div>
             <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -113,7 +113,7 @@
               <mat-label>{{ translationData.lblOrganization || 'Organization' }}</mat-label>
               <mat-label class='custom-font'>
                 <!-- {{confirmAccountInfoData.organization ? confirmAccountInfoData.organization.value : '--'}} -->
-                {{ accountInfo.organization }}
+                {{ orgName ? orgName : '--' }}
               </mat-label>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
@@ -145,8 +145,8 @@
                                 </ngx-mat-select-search>
                               </mat-option> -->
                     <!-- <mat-option>--</mat-option> -->
-                    <mat-option *ngFor="let rer of selectList" [value]="rer.name">
-                      {{rer.name}}
+                    <mat-option *ngFor="let rer of salutationList" [value]="rer.name">
+                      {{ rer.name }}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
@@ -201,7 +201,7 @@
                 </mat-error>
               </div>
             </div>
-            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
               <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                 <!-- <mat-label>{{ translationData.lblLoginEmail }}<span class='mandatoryColor'>*</span></mat-label> -->
                 <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}<span class='mandatoryColor'>*</span>
@@ -261,7 +261,7 @@
         <span
           style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneralSettings || 'General Settings' }}
           ({{ translationData.lblDefaultorganizationbasedsettings || 'Default organization based settings' }})
-          <mat-icon (click)="editGeneralSettings()" style="cursor: pointer;">edit</mat-icon>
+          <mat-icon *ngIf='!editGeneralSettingsFlag' (click)="editGeneralSettings()" style="cursor: pointer;">edit</mat-icon>
         </span>
 
       </div>
@@ -274,7 +274,7 @@
           <!-- original -->
             <!-- {{confirmAccountInfoData.language ? confirmAccountInfoData.language.value : '--'}} -->
             <!-- Mock data -->
-            {{ defaultSetting.language ? defaultSetting.language.val[defaultSetting.language.selectedIndex] : '--' }}
+            {{ !languageData ? '--' : languageData.length > 0 ? languageData[0].value : '--' }}
           </mat-label>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -282,7 +282,7 @@
           <mat-label>{{ translationData.lblTimeZone || 'Time Zone' }}</mat-label>
           <mat-label class='custom-font'>
             <!-- {{confirmAccountInfoData.timeZone ? confirmAccountInfoData.timeZone.value : '--'}} -->
-            {{ defaultSetting.timeZone ? defaultSetting.timeZone.val[defaultSetting.timeZone.selectedIndex] : '--' }}
+            {{ !timezoneData ? '--' : timezoneData.length > 0 ? timezoneData[0].value : '--' }}
           </mat-label>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -290,7 +290,7 @@
           <mat-label>{{ translationData.lblUnit || 'Unit' }}</mat-label>
           <mat-label class='custom-font'>
               <!-- {{confirmAccountInfoData.unit ? confirmAccountInfoData.unit.value : '--'}} -->
-              {{ defaultSetting.unit ? defaultSetting.unit.val[defaultSetting.unit.selectedIndex] : '--' }}
+              {{ !unitData ? '--' : unitData.length > 0 ? unitData[0].value : '--' }}
           </mat-label>
         </div>
       </div>
@@ -301,7 +301,7 @@
           <mat-label>{{ translationData.lblCurrency || 'Currency' }}</mat-label>
           <mat-label class='custom-font'>
             <!-- {{confirmAccountInfoData.currency ? confirmAccountInfoData.currency.value : '--'}} -->
-            {{ defaultSetting.currency ? defaultSetting.currency.val[defaultSetting.currency.selectedIndex] : '--' }}
+            {{ !currencyData ? '--' : currencyData.length > 0 ? currencyData[0].value : '--' }}
           </mat-label>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -309,7 +309,7 @@
           <mat-label>{{ translationData.lblDateFormat || 'Date Format' }}</mat-label>
           <mat-label class='custom-font'>
             <!-- {{confirmAccountInfoData.dateFormat ? confirmAccountInfoData.dateFormat.value : '--'}} -->
-            {{ defaultSetting.dateFormat ? defaultSetting.dateFormat.val[defaultSetting.dateFormat.selectedIndex] : '--'}}
+            {{ !dateFormatData ? '--' : dateFormatData.length > 0 ? dateFormatData[0].value : '--' }}
           </mat-label>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -317,7 +317,7 @@
           <mat-label>{{ translationData.lblTimeFormat || 'Time Format' }}</mat-label>
           <mat-label class='custom-font'>
             <!-- {{ confirmAccountInfoData.timeFormat ? confirmAccountInfoData.timeFormat.value : '--'}} -->
-            {{ defaultSetting.timeFormat ? defaultSetting.timeFormat.val[defaultSetting.timeFormat.selectedIndex] : '--'}}
+            {{ !timeFormatData ? '--' : timeFormatData.length > 0 ? timeFormatData[0].value : '--' }}
           </mat-label>
         </div>
       </div>
@@ -328,7 +328,7 @@
           <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display (Default)' }}</mat-label>
           <mat-label class='custom-font'>
             <!-- {{confirmAccountInfoData.vehDisplay ? confirmAccountInfoData.vehDisplay.value : '--'}} -->
-           {{ defaultSetting.vehDisplay ? defaultSetting.vehDisplay.val[defaultSetting.vehDisplay.selectedIndex] : '--' }}
+            {{ !vehicleDisplayData ? '--' : vehicleDisplayData.length > 0 ? vehicleDisplayData[0].value : '--' }}
           </mat-label>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -336,7 +336,7 @@
           <mat-label>{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display (Default)' }}</mat-label>
           <mat-label class='custom-font'>
             <!-- {{ confirmAccountInfoData.landingPage ? confirmAccountInfoData.landingPage.value : '--'}} -->
-            {{ defaultSetting.landingPage ? defaultSetting.landingPage.val[defaultSetting.landingPage.selectedIndex] : '--' }}
+            {{ !landingPageDisplayData ? '--' : landingPageDisplayData.length > 0 ? landingPageDisplayData[0].value : '--' }}
           </mat-label>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
@@ -354,8 +354,8 @@
                         <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                         </ngx-mat-select-search>
                       </mat-option> -->
-                <mat-option *ngFor="let rer of defaultSetting.language.val" [value]="rer">
-                  {{rer}}
+                <mat-option *ngFor="let rer of languageDropdownData" [value]="rer.id">
+                  {{ rer.value }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -369,8 +369,8 @@
                         <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                         </ngx-mat-select-search>
                       </mat-option> -->
-                <mat-option *ngFor="let rer of defaultSetting.timeZone.val" [value]="rer">
-                  {{rer}}
+                <mat-option *ngFor="let rer of timezoneDropdownData" [value]="rer.id">
+                  {{ rer.value }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -384,8 +384,8 @@
                         <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                         </ngx-mat-select-search>
                       </mat-option> -->
-                <mat-option *ngFor="let rer of defaultSetting.unit.val" [value]="rer">
-                  {{rer}}
+                <mat-option *ngFor="let rer of unitDropdownData" [value]="rer.id">
+                  {{ rer.value }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -403,8 +403,8 @@
                         <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                         </ngx-mat-select-search>
                       </mat-option> -->
-                <mat-option *ngFor="let rer of defaultSetting.currency.val" [value]="rer">
-                  {{rer}}
+                <mat-option *ngFor="let rer of currencyDropdownData" [value]="rer.id">
+                  {{ rer.value }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -418,8 +418,8 @@
                         <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                         </ngx-mat-select-search>
                       </mat-option> -->
-                <mat-option *ngFor="let rer of defaultSetting.dateFormat.val" [value]="rer">
-                  {{rer}}
+                <mat-option *ngFor="let rer of dateFormatDropdownData" [value]="rer.id">
+                  {{ rer.value }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -432,8 +432,8 @@
                   <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                   </ngx-mat-select-search>
                 </mat-option> -->
-                <mat-option *ngFor="let rer of defaultSetting.timeFormat.val" [value]="rer">
-                  {{rer}}
+                <mat-option *ngFor="let rer of timeFormatDropdownData" [value]="rer.id">
+                  {{ rer.value }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -449,8 +449,8 @@
                         <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                         </ngx-mat-select-search>
                       </mat-option> -->
-                <mat-option *ngFor="let rer of defaultSetting.vehDisplay.val" [value]="rer">
-                  {{rer}}
+                <mat-option *ngFor="let rer of vehicleDisplayDropdownData" [value]="rer.id">
+                  {{ rer.value }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -464,8 +464,8 @@
                   <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                   </ngx-mat-select-search>
                 </mat-option> -->
-                <mat-option *ngFor="let rer of defaultSetting.landingPage.val" [value]="rer">
-                  {{rer}}
+                <mat-option *ngFor="let rer of landingPageDisplayDropdownData" [value]="rer.id">
+                  {{ rer.value }}
                 </mat-option>
               </mat-select>
             </mat-form-field>

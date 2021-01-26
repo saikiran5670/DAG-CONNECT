@@ -8,11 +8,11 @@ public class ETLQueries {
 	
 	public static final String CONSOLIDATED_TRIP_QRY = " select stsData.tripId, stsData.vid, stsData.startDateTime, stsData.endDateTime, stsData.gpsTripDist"
 			+ ", stsData.tripCalGpsVehDistDiff as tripCalDist, stsData.vIdleDuration, indxData.f4 vGrossWeightCombination"
-			+ ", if(stsData.tripCalGpsVehTimeDiff <> 0, (CAST(stsData.tripCalGpsVehDistDiff as Double)/stsData.tripCalGpsVehTimeDiff), stsData.tripCalGpsVehTimeDiff) as tripCalAvgSpeed"
+			+ ", if(stsData.tripCalGpsVehTimeDiff <> 0, (CAST(stsData.tripCalGpsVehDistDiff as Double)/stsData.tripCalVehTimeDiffInHr), stsData.tripCalGpsVehTimeDiff) as tripCalAvgSpeed"
 			+ ", stsData.gpsStartVehDist, stsData.gpsStopVehDist, stsData.gpsStartLatitude, stsData.gpsStartLongitude, stsData.gpsEndLatitude"
 			+ ", stsData.gpsEndLongitude, stsData.vUsedFuel, (stsData.vStopFuel - stsData.vStartFuel) as tripCalUsedFuel"
-			+ ", stsData.vTripMotionDuration, (stsData.tripCalGpsVehTimeDiff - stsData.vIdleDuration) as tripCalDrivingTm"
-			+ ", stsData.receivedTimestamp, (((stsData.vUsedFuel * 0.00086) * 0.00000085)/1000) as tripCalC02Emission"
+			+ ", stsData.vTripMotionDuration, ((stsData.tripCalGpsVehTimeDiff/1000) - stsData.vIdleDuration) as tripCalDrivingTm"
+			+ ", stsData.receivedTimestamp, ((((stsData.vUsedFuel * 0.00086) * 74.3)/1000) * 0.00000085) as tripCalC02Emission"
 			+ ", if(0 <> stsData.tripCalGpsVehDistDiff, (CAST(stsData.vUsedFuel as Double)/stsData.tripCalGpsVehDistDiff)*100, stsData.tripCalGpsVehDistDiff) as tripCalFuelConsumption"
 			+ ", indxData.f3 as vTachographSpeed, 0 as tripCalAvgGrossWtComb"
 			+ ", if(0 <> stsData.tripCalGpsVehTimeDiff, (CAST(stsData.vPTODuration as Double)/stsData.tripCalGpsVehTimeDiff)*100, stsData.tripCalGpsVehTimeDiff) as tripCalPtoDuration"
@@ -24,7 +24,7 @@ public class ETLQueries {
 			+ ", if(0 <> stsData.tripCalGpsVehDistDiff, (CAST(stsData.vTripDPABrakingCount as Double)+ stsData.vTripDPAAnticipationCount)/stsData.tripCalGpsVehDistDiff, stsData.tripCalGpsVehDistDiff) as tripCalAvgTrafficClsfn"
 			+ ", if(0 <> stsData.vCruiseControlDist, (CAST(stsData.vCruiseControlFuelConsumed as Double)/stsData.vCruiseControlDist)*100, stsData.vCruiseControlDist) as tripCalCCFuelConsumption"
 			+ ", stsData.vCruiseControlFuelConsumed , stsData.vCruiseControlDist, stsData.vIdleFuelConsumed"
-			+ ", (if( 0 <> (stsData.tripCalGpsVehDistDiff - stsData.vCruiseControlDist) ,(stsData.vUsedFuel - if(0 <> stsData.vCruiseControlDist, (CAST(stsData.vCruiseControlFuelConsumed as Double)/stsData.vCruiseControlDist), stsData.vCruiseControlDist) )/(stsData.tripCalGpsVehDistDiff - stsData.vCruiseControlDist) , (stsData.tripCalGpsVehDistDiff - stsData.vCruiseControlDist)))* 100 as tripCalfuelNonActiveCnsmpt"
+			+ ", (if( 0 <> (stsData.tripCalGpsVehDistDiff - stsData.vCruiseControlDist) ,(stsData.vUsedFuel - if(0 <> stsData.vCruiseControlDist, (CAST(stsData.vCruiseControlFuelConsumed as Double)/stsData.vCruiseControlDist), stsData.vCruiseControlDist) )/(stsData.tripCalGpsVehDistDiff - stsData.vCruiseControlDist)* 100 , 0)) as tripCalfuelNonActiveCnsmpt"
 			+ ", (CAST(stsData.vSumTripDPABrakingScore as Double) + stsData.vSumTripDPAAnticipationScore)/2 as tripCalDpaScore, stsData.driverId, indxData.f2 as driver2Id, stsData.tripCalGpsVehTimeDiff as tripCalGpsVehTime"
 			+ ", stsData.hbaseInsertionTS, stsData.etlProcessingTS"
 			+ " FROM hbaseStsData stsData LEFT JOIN aggrIndxData indxData ON stsData.tripId = indxData.f0 ";
