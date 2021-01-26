@@ -1414,3 +1414,8 @@ INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'nl-NL','L','lblVehicleGroupdetailssuccessfullyupdated','Voertuiggroep ''$'' gegevens succesvol bijgewerkt',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'nl-NL' and name = 'lblVehicleGroupdetailssuccessfullyupdated');
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'nl-NL','L','lblUpdateVehicleGroupAPIFailedMessage','Er is een fout opgetreden bij het bijwerken van de voertuiggroep ''$''',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'nl-NL' and name = 'lblUpdateVehicleGroupAPIFailedMessage');
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'nl-NL','L','lblConsentStatus','Toestemmingsstatus',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'nl-NL' and name = 'lblConsentStatus');
+
+ALTER USER pgrdm_dbcreator_tst1 WITH REPLICATION;
+GRANT USAGE ON SCHEMA MASTER TO pgrdm_dbcreator_tst1;
+GRANT ALL PRIVILEGES ON TABLE master.vehicle TO pgrdm_dbcreator_tst1;
+CREATE PUBLICATION dbz_publication FOR TABLE vehicle WITH (publish = 'insert, update'); 
