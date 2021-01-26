@@ -19,6 +19,7 @@
       "roleRESTServiceURL": "http://20.73.217.14/role",
       "featureRESTServiceURL": "http://20.73.203.148/feature",
       "accountRESTServiceURL": "http://20.54.198.157/account",
-      "translationRESTServiceURL": "http://20.71.11.150/translation"
+      "translationRESTServiceURL": "http://20.71.11.150/translation",
+      "organizationRESTServiceURL": "http://51.124.8.28/vehicle"
     }
 }
