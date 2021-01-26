@@ -35,6 +35,27 @@ export class UserGroup {
   userGroupDescriptions: string;
 }
 
+export class AccountGroup {
+    id: number;
+    name: string;
+    description: string;
+    accountGroupId : number;
+    organizationId : number;
+    accountId : number;
+    accounts : boolean;
+    accountCount : boolean;
+}
+
+export class createAccountGroup {
+  id: number;
+  name: string;
+  description: string;
+  accountGroupId : number;
+  organizationId : number;
+  accountId : number;
+  accounts : object;
+  accountCount : number;
+}
 
 export interface Product {
   id: number | null;
