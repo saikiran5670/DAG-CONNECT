@@ -117,12 +117,21 @@ export class DriverManagementComponent implements OnInit {
   }
 
   ngOnInit(){
-    let langCode = 'EN-GB';
-    let labelList = 'lblSearch,lblConsent,lblAction,lblCancel,lblConfirm,lblReset,lblNew,lblSave,lblDriverManagement,lblImportNewDrivers,lblDownloadaTemplate,lblDownloadaTemplateMessage,lblUploadupdateddriverdetailsandselectgroupfordefiningcategory,lblSelectUserGroupOptional,lblUploadUpdatedExcelFile,lblBrowse,lblImport,lblSelectUserGroup,lblDriverDetails,lblDrivers,lblDriverID,lblDriverName,lblEmailID,lblUserGroup,lblOptInAll,lblOptOutAll,lblOptIn,lblOptOut,lblImportedFileDetails,lblImportedUpdateddriverrecords,lblRejecteddriverrecordsduetofollowingerrors,lblRole,lblnewdrivers,lblEditDriverDetails,lblDriverIDConsentStatus,lblAlldetailsaremandatory,lblSalutation,lblFirstName,lblLastName,lblBirthDate,lblLanguage,lblUnits,lblTimeZone,lblCurrency,lblDriverIDConsent,lblOrganization,lblTotalDrivers,lblCurrentConsentStatusForSubscriber,lblOptOutMessage,lblOptInOutChangeMessage,lblConsentExtraMessage,lblConsentNote,lblName,lblDriverrecordupdated,lblErrorinupdatingdriverrecordPleasetryagain,lblDeleteDriver,lblAreyousureyouwanttodeletedriver,lblDriversuccessfullydeleted,lblErrordeletingdriver,lblThedriverwasoptedinsuccessfully,lblThedrivercouldnobeoptedin,lblThedriverwasoptedoutsuccessfully,lblThedrivercouldnobeoptedout,lblPleaseselectafile';
-    this.translationService.getTranslationLabel(labelList, langCode).subscribe( (data) => {
+    let translationObj = {
+      id: 0,
+      code: "EN-GB", //-- TODO: Lang code based on account 
+      type: "Menu",
+      name: "",
+      value: "",
+      filter: "",
+      menuId: 0 //-- for common & user preference. menuid for driver will be add later
+    }
+
+    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
       this.loadUserGroupData();
     });
+
     this.importDriverFormGroup = this._formBuilder.group({
       userGroup: [],
       uploadFile: [
@@ -133,7 +142,7 @@ export class DriverManagementComponent implements OnInit {
   }
 
   processTranslation(transData: any){
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.code]: cur.translation }), {});
+    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
   }
 

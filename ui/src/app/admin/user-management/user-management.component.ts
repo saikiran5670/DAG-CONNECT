@@ -171,16 +171,23 @@ export class UserManagementComponent implements OnInit {
   }
 
   ngOnInit() {
-    let langCode = 'EN-GB';
-    let labelList = 'lblFilter,lblReset,lblName,lblGroup,lblRole,lblUsers,lblEmailID,lblUserGroup,lblAction,lblCancel,lblCreate,lblCreateContinue,lblUpdate,lblStep,lblPrevious,lblSalutation,lblFirstName,lblLastName,lblBirthDate,lblOrganization,lblLanguage,lblTimeZone,lblCurrency,lblSelectUserRole,lblSelectUserGroup,lblSummary,lblSelectVehicleGroupVehicle,lblUserRole,lblSearch,lblServices,lblNext,lblGroupName,lblVehicles,lblAll,lblVehicle,lblBoth,lblVIN,lblRegistrationNumber,lblVehicleName,lblSelectedUserRoles,lblSelectedVehicleGroupsVehicles,lblNew,lblDeleteAccount,lblNo,lblYes,lblBack,lblConfirm,lblAlldetailsaremandatory,lblSelectedUserGroups,lblUserManagement,lblAllUserDetails,lblNewUser,lblAddNewUser,lblUpdateUser,lblAccountInformation,lblUserGeneralSetting,lblLoginEmail,lblUnit,lblDateFormat,lblVehicleDisplayDefault,lblUserAccountCreatedSuccessfully,lblUserAccountUpdatedSuccessfully,lblViewListDetails,lblAreyousureyouwanttodeleteuseraccount,lblCreateUserAPIFailedMessage,lblPleasechoosesalutation,lblSpecialcharactersnotallowed,lblPleaseenterFirstName,lblPleaseenterLastName,lblPleaseentervalidemailID,lblPleaseenteremailID,lblUsersbirthdatecannotbemorethan120yearsinthepast,lblUsercannotbelessthan18yearsatthetimeofregistration,lblUsersbirthdatecannotbeinthefuture,lblErrorupdatingAccountInformationforUser,lblErrorupdatingUserRolesassociations,lblErrorupdatingVehiclesVehiclegroupsassociations,lblErrorupdatingUserGroupsassociations,lblUseraccountwassuccessfullydeleted,lblErrordeletingUseraccount';
-    // this.translationService.getTranslationLabel(labelList, langCode).subscribe( (data) => {
-    //   this.processTranslation(data);
-        this.loadUsersData();
-    // });
+    let translationObj = {
+      id: 0,
+      code: "EN-GB", //-- TODO: Lang code based on account 
+      type: "Menu",
+      name: "",
+      value: "",
+      filter: "",
+      menuId: 3 //-- for user mgnt
+    }
+    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+      this.processTranslation(data);
+      this.loadUsersData();
+    });
   }
 
   processTranslation(transData: any){
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.code]: cur.translation }), {});
+    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
   }
 

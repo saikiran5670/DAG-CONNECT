@@ -30,7 +30,6 @@ export class UserRoleManagementComponent implements OnInit {
 
   constructor(private translationService: TranslationService, private roleService: RoleService, private userService: EmployeeService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar) {
     this.defaultTranslation();
-    this.getTranslationLabels();
   }
 
   defaultTranslation(){
@@ -78,28 +77,20 @@ export class UserRoleManagementComponent implements OnInit {
     }
   }
 
-  getTranslationLabels(){
+  ngOnInit() {
     let translationObj = {
-      "id": 0,
-      "code": "EN-GB", //-- TODO: Lang code based on account 
-      "type": "Menu",
-      "name": "",
-      "value": "",
-      "filter": "",
-      "menuId": 25 //-- for common & user preference
+      id: 0,
+      code: "EN-GB", //-- TODO: Lang code based on account 
+      type: "Menu",
+      name: "",
+      value: "",
+      filter: "",
+      menuId: 25 //-- for role mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
+      this.loadInitData();
     });
-  }
-
-  ngOnInit() {
-    let langCode = 'EN-GB';
-    let labelList = 'lblFilter,lblCreate,lblNew,lblCancel,lblSearch,lblReset,lblConfirm,lblYes,lblNo,lblAction,lblUserRoleManagement,lblAllUserRoleDetails,lblNewUserRole,lblRoleName,lblRoleDescription,lblCreateNewUserRole,lblNewUserRoleName,lblUserRoleType,lblUserRoleDescriptionOptional,lblEnterUserRoleName,lblEnterAboutUserRole,lblHintMessage,lblSelectRoleAccess,lblSelectedRoleAccess,lblFeatureName,lblAccess,lbl120CharMax,lblUserRoleCreatedSuccessfully,lblDeleteAccount,lblAreyousureyouwanttodeleterole,lblUserRoleName,lblEditUserRoleDetails,lblPleaseentertheUserRolename,lblUserRolealreadyexistsPleasechooseadifferentname,lblCreateUserRoleAPIFailedMessage,lblUserRoledetailssuccessfullyupdated,lblUpdateUserRoleAPIFailedMessage,lblUserRoleDelete,lblDeleteUserRoleAPIFailedMessage';
-    // this.translationService.getTranslationLabel(labelList, langCode).subscribe( (data) => {
-    //   this.processTranslation(data);
-       this.loadInitData();
-    // });
   }
 
   processTranslation(transData: any){   
