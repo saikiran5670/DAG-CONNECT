@@ -1,7 +1,6 @@
 package net.atos.daf.ct2.processing;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.atos.daf.ct2.constant.DAFCT2Constant;
 import net.atos.daf.ct2.pojo.KafkaRecord;
@@ -22,8 +21,6 @@ import java.util.Properties;
 
 public class MessageProcessing<U, T> {
 
-  private static ObjectMapper objectMapper;
-
   public void consumeContiMessage(
       DataStream<KafkaRecord<U>> messageDataStream,
       String messageType,
@@ -33,18 +30,17 @@ public class MessageProcessing<U, T> {
       Class<T> tClass,
       BroadcastStream<KafkaRecord<U>> broadcastStream) {
 
-    objectMapper = JsonMapper.configuring();
-    System.out.println("Object Mapper" +objectMapper);
     // SingleOutputStreamOperator<KafkaRecord<T>> singleOutputStreamOperator =
     messageDataStream
         .filter(
             new FilterFunction<KafkaRecord<U>>() {
               @Override
               public boolean filter(KafkaRecord<U> value) throws Exception {
-                System.out.println("Filter Record " + value.toString());
-                System.out.println("Mapper "+JsonMapper.configuring());
                 String transId =
-                        JsonMapper.configuring().readTree((String) value.getValue()).get("TransID").asText();
+                    JsonMapper.configuring()
+                        .readTree((String) value.getValue())
+                        .get("TransID")
+                        .asText();
                 System.out.println("Trans ID " + transId);
                 return transId.equalsIgnoreCase(messageType);
               }
@@ -63,10 +59,14 @@ public class MessageProcessing<U, T> {
               public void processElement(
                   KafkaRecord<U> value, ReadOnlyContext ctx, Collector<KafkaRecord<U>> out)
                   throws Exception {
+                boolean flag = false;
                 System.out.println("Single Record: " + value);
 
                 String valueRecord =
-                        JsonMapper.configuring().readTree((String) value.getValue()).get("VID").asText();
+                    JsonMapper.configuring()
+                        .readTree((String) value.getValue())
+                        .get("VID")
+                        .asText();
                 System.out.println("Record VID: " + valueRecord);
 
                 for (Map.Entry<Message<U>, KafkaRecord<U>> map :
@@ -79,7 +79,8 @@ public class MessageProcessing<U, T> {
 
                     String values = map.getValue().getValue().toString();
                     System.out.println("Broadcats Values: " + values);
-                    JsonNode jsonNode = JsonMapper.configuring().readTree(value.getValue().toString());
+                    JsonNode jsonNode =
+                        JsonMapper.configuring().readTree(value.getValue().toString());
                     ((ObjectNode) jsonNode).put("VIN", values);
 
                     KafkaRecord<U> kafkaRecord = new KafkaRecord<U>();
@@ -87,9 +88,11 @@ public class MessageProcessing<U, T> {
                     kafkaRecord.setValue((U) JsonMapper.configuring().writeValueAsString(jsonNode));
                     System.out.println("New Values: " + kafkaRecord);
                     out.collect(kafkaRecord);
+                    flag = true;
                     break;
                   }
                 }
+                if (!flag) out.collect(value);
               }
 
               @Override
