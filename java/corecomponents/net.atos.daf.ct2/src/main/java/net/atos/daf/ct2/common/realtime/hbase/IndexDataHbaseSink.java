@@ -6,6 +6,7 @@ import java.util.Arrays;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -17,6 +18,9 @@ import net.atos.daf.ct2.common.realtime.dataprocess.IndexDataProcess;
 import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Index;
+import net.atos.daf.hbase.connection.HbaseAdapter;
+import net.atos.daf.hbase.connection.HbaseConnection;
+import net.atos.daf.hbase.connection.HbaseConnectionPool;
 
 public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 
@@ -33,10 +37,52 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 		super.open(parameters);
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
-		table = HBaseConfigUtil.getTable(HBaseConfigUtil.getHbaseClientConnection(HBaseConfigUtil.createConf(envParams)),
-				envParams.get(DafConstants.HBASE_TABLE_NAME));
+		
+		/*
+		 * table = HBaseConfigUtil.getTable(HBaseConfigUtil.getHbaseClientConnection(
+		 * HBaseConfigUtil.createConf(envParams)),
+		 * envParams.get(DafConstants.HBASE_TABLE_NAME));
+		 */
+		HbaseAdapter hbaseAdapter = HbaseAdapter.getInstance();
+		
+		String tableName = envParams.get(DafConstants.HBASE_TABLE_NAME);
+		
+		HbaseConnectionPool connectionPool = hbaseAdapter.getConnection(
+		  envParams.get(DafConstants.HBASE_ZOOKEEPER_QUORUM),
+		  envParams.get(DafConstants.HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT),
+		  envParams.get(DafConstants.ZOOKEEPER_ZNODE_PARENT),
+		  envParams.get(DafConstants.HBASE_REGIONSERVER),
+		  envParams.get(DafConstants.HBASE_MASTER),
+		  envParams.get(DafConstants.HBASE_REGIONSERVER_PORT), tableName);
+		
+		
+		HbaseConnection conn = null;
+         
+		try{
+			conn = connectionPool.getHbaseConnection();
+			if (null == conn) {
+				log.warn("get connection from pool failed");  
+				
+			}
+			TableName tabName = TableName.valueOf(tableName);
+			table = conn.getConnection().getTable(tabName);
+
+			System.out.println("table_name anshu2 -- " + tableName );
+			
+		}catch(IOException e){
+	            log.error("create connection failed from the configuration" + e.toString());
+		}catch (Exception e) {
+			// TODO: handle exception
+            log.error("there is an exception" + e.toString());
+		}
+		finally {
+            if (conn != null) {
+                connectionPool.releaseConnection(conn);
+            }
+        } 
 						
-		System.out.println("table_name -- " +table);
+		System.out.println("Index table_name -- " + tableName );
+		
 	}
 	
 	
