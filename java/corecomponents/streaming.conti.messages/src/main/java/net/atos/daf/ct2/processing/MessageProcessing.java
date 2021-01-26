@@ -40,6 +40,8 @@ public class MessageProcessing<U, T> {
             new FilterFunction<KafkaRecord<U>>() {
               @Override
               public boolean filter(KafkaRecord<U> value) throws Exception {
+				                  System.out.println("Filter Record " + value.toString());
+                System.out.println("Mapper "+objectMapper);
                 String transId =
                     objectMapper.readTree((String) value.getValue()).get("TransID").asText();
                 System.out.println("Trans ID " + transId);
