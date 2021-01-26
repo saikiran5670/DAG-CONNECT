@@ -188,7 +188,8 @@ export class AccountInfoSettingsComponent implements OnInit {
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
-      translationData: this.translationData
+      translationData: this.translationData,
+      accountInfo: this.accountInfo[0]
     }
     this.dialogRefLogin = this.dialog.open(ChangePasswordComponent, dialogConfig);
   }
