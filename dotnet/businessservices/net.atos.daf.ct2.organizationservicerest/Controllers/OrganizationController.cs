@@ -117,7 +117,14 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 organization.optout_status_changed_date=request.optout_status_changed_date;
                 organization.IsActive=request.is_active;
                 var OrgId= await organizationtmanager.Update(organization);   
-                return Ok("Organization updated :"+ OrgId.Id);    
+                if(OrgId.Id<1)
+                {
+                    return StatusCode(400,"Organization ID not exist: "+ request.Id); 
+                }
+                else
+                {
+                   return Ok("Organization updated :"+ OrgId.Id);    
+                }
              }
             catch(Exception ex)
             {         
@@ -139,8 +146,14 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 {
                      return StatusCode(400,"Please provide organization ID:");
                 }
-                var OrgId= await organizationtmanager.Delete(organizationId);   
-                return Ok("Organization Deleted : " +organizationId);    
+                var OrgId= await organizationtmanager.Delete(organizationId);  
+                if (OrgId)   
+                {
+                     return Ok("Organization Deleted : " +organizationId);   
+                } 
+                else{
+                 return StatusCode(400,"Organization ID not exist: "+organizationId); 
+                } 
              }
             catch(Exception ex)
             {            
@@ -160,8 +173,16 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 if (organizationId<1)
                 {
                      return StatusCode(400,"Please provide organization ID:");
-                }              
-                return Ok(await organizationtmanager.Get(organizationId));
+                }  
+                 var onjRetun=await organizationtmanager.Get(organizationId);
+                 if(onjRetun.Id<1)
+                 {
+                     return StatusCode(400,"Organization ID not exiat :" + organizationId);
+                 }  
+                 else
+                 {  
+                     return Ok(await organizationtmanager.Get(organizationId));
+                 }
              }
             catch(Exception ex)
             {            
