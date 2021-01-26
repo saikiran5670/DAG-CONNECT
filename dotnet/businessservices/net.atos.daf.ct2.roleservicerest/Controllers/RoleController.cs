@@ -35,18 +35,18 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
                try
                {
 
-                 if ((string.IsNullOrEmpty(roleMaster.RoleName)) )
+                 if ((string.IsNullOrEmpty(roleMaster.RoleName.Trim())) )
                 {
-                    return StatusCode(400, "Role name.");
+                    return StatusCode(400, "Role name  is required");
                 }
                 if(roleMaster.FeatureIds.Length ==  0 )
                 {
-                      return StatusCode(400, "Feature Ids required.");
+                      return StatusCode(400, "Feature Ids are required.");
                 }
                 int Rid=  roleManager.CheckRoleNameExist(roleMaster.RoleName,roleMaster.OrganizationId);
                     if(Rid > 0)
                     {
-                            return StatusCode(400, "Role name allready exist.");
+                            return StatusCode(400, "Role name already exist.");
                     }
                     RoleEntity.RoleMaster ObjRole = new RoleEntity.RoleMaster();
                     ObjRole.Organization_Id =roleMaster.OrganizationId;
@@ -67,6 +67,10 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
                catch(Exception ex)
                {
                     logger.LogError(ex.Message +" " +ex.StackTrace);
+                     if (ex.Message.Contains("foreign key"))
+                    {
+                        return StatusCode(400, "The foreign key violation in one of dependant data.");
+                    } 
                     return StatusCode(500,"Internal Server Error.");
                }
         }
@@ -75,9 +79,9 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
         [Route("update")]
         public async Task<IActionResult> Update(Roleupdaterequest roleMaster)
         {    
-               if ((string.IsNullOrEmpty(roleMaster.RoleName)) || (roleMaster.OrganizationId == 0) ||(roleMaster.RoleId == 0)  )
+               if ((string.IsNullOrEmpty(roleMaster.RoleName.Trim()))  ||(roleMaster.RoleId == 0)  )
                 {
-                    return StatusCode(400, "Role name and organization Id required Roleid required");
+                    return StatusCode(400, "Role name and Role Id required Roleid required");
                 }
                 if(roleMaster.FeatureIds.Length ==  0 )
                 {
@@ -103,6 +107,10 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
                catch(Exception ex)
                {
                     logger.LogError(ex.Message +" " +ex.StackTrace);
+                     if (ex.Message.Contains("foreign key"))
+                    {
+                        return StatusCode(400, "The foreign key violation in one of dependant data.");
+                    } 
                     return StatusCode(500,"Internal Server Error.");
                }
         }
@@ -130,13 +138,24 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
 
         [HttpGet]      
         [Route("get")]
-        public async Task<IActionResult> Get(int Roleid, int Organizationid)
+        public async Task<IActionResult> Get(int Roleid, int? Organizationid,bool IsGlobal)
         {    
                try
                { 
+                   if(string.IsNullOrEmpty(IsGlobal.ToString()))
+                    {
+                         return StatusCode(400, "Is global role filter is required");
+                    }
+                   
                     RoleFilter obj = new RoleFilter();
                     obj.RoleId = Roleid;
-                    obj.Organization_Id = Organizationid;
+                    obj.Organization_Id = Organizationid == null ? 0 : Convert.ToInt32(Organizationid);
+                    obj.IsGlobal = IsGlobal;
+                    if(obj.Organization_Id == 0 && IsGlobal == false && obj.RoleId <= 0)
+                    {
+                         return StatusCode(400, "Organization id required ");
+                    }
+
                     var role = await roleManager.GetRoles(obj); 
                     List<Rolerequest> roleList =new List<Rolerequest>();
                     foreach(var roleitem in role)

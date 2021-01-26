@@ -7,5 +7,7 @@ namespace net.atos.daf.ct2.role.entity
 
     public int RoleId { get; set; }
     public int Organization_Id { get; set; }
+    
+    public bool IsGlobal { get; set; }
     }
 }

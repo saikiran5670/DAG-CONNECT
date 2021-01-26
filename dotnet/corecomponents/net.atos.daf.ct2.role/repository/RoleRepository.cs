@@ -135,21 +135,16 @@ namespace net.atos.daf.ct2.role.repository
                                 role.created_by, 
                                 role.updated_date,
                                 role.updated_by,
-                                role.feature_set_id,
-                                fsf.featurescount as featurescount
+                                role.feature_set_id
 	                            FROM master.role role
-								LEFT JOIN (Select Count(feature_id) as featurescount,feature_set_id
-										   from master.featuresetfeature
-										  group by feature_set_id) fsf
-								on role.feature_set_id = fsf.feature_set_id 
-                                WHERE  is_active = true";
+								WHERE  is_active = true";
 
 
             var parameter = new DynamicParameters();
             if (roleFilter.RoleId > 0)
             {
                 parameter.Add("@id", roleFilter.RoleId);
-                QueryStatement = QueryStatement + " and id  = @id";
+                QueryStatement = QueryStatement + " and id  = @id";                
 
             }
             // organization id filter
@@ -157,6 +152,22 @@ namespace net.atos.daf.ct2.role.repository
             {
                 parameter.Add("@organization_id", roleFilter.Organization_Id);
                 QueryStatement = QueryStatement + " and organization_id  = @organization_id";
+
+                if(roleFilter.IsGlobal == true)
+                {
+                    parameter.Add("@id", roleFilter.RoleId);
+                    QueryStatement = QueryStatement + " or  organization_id  is null";
+
+                }
+
+            }
+            else if(roleFilter.Organization_Id == 0)
+            {
+                 if(roleFilter.IsGlobal == true)
+                {
+                    QueryStatement = QueryStatement + " and  organization_id  is null";
+
+                }
 
             }
 
