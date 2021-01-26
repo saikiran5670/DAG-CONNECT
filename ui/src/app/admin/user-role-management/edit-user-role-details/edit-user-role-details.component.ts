@@ -23,6 +23,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   @Input() duplicateFlag: boolean;
   @Input() viewFlag: boolean;
   @Input() translationData: any;
+  @Input() roleData:any;
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -124,14 +125,16 @@ export class EditUserRoleDetailsComponent implements OnInit {
   }
 
   createUserRole(enteredUserRoleValue: any) {//create func
-    this.roleService.checkUserRoleExist(enteredUserRoleValue).subscribe((data: any) => {
-      // if (data.length >= 1) {
-      //   this.isUserRoleExist = true;
-      //   this.doneFlag = false;
-      // }
-      // else {
+   // this.roleService.checkUserRoleExist(enteredUserRoleValue).subscribe((data: any) => {
+      let duplicateRole = this.roleData.filter(response => response.roleName == this.userRoleFormGroup.controls.userRoleName.value);
+    if (duplicateRole.length > 0) {
+      this.isUserRoleExist = true;
+      this.doneFlag = false;
+    }
+    else {
         this.isUserRoleExist = false;
         this.doneFlag = true;
+        
         // let mockVarForID = Math.random(); //id for mock api
         // let objData = {
         //   id: mockVarForID,  //id for mock api
@@ -152,6 +155,10 @@ export class EditUserRoleDetailsComponent implements OnInit {
         this.selectionForFeatures.selected.forEach(feature => {
           featureIds.push(feature.id);
         })
+        if(featureIds.length == 0){
+          alert("Please select at least one feature for access");
+          return;
+        }
         let objData = {
           "organizationId": this.userRoleFormGroup.controls.roleType.value=='Global'? 0 : 32,
           "roleId": 0,
@@ -163,8 +170,8 @@ export class EditUserRoleDetailsComponent implements OnInit {
         this.roleService.createUserRole(objData).subscribe((res) => {
           this.backToPage.emit({ editFlag: false, editText: 'create' });
         }, (error) => { });
-      //}
-    }, (error) => { });
+      }
+   // }, (error) => { });
   }
 
   updateUserRole(){  // edit func
@@ -189,8 +196,12 @@ export class EditUserRoleDetailsComponent implements OnInit {
         this.selectionForFeatures.selected.forEach(feature => {
           featureIds.push(feature.id);
     })
+    if(featureIds.length == 0){
+      alert("Please select at least one feature for access");
+      return;
+    }
     let objData = {
-      "organizationId": this.gridData[0].organizationId,
+      "organizationId": this.userRoleFormGroup.controls.roleType.value=='Global'? 0 : this.gridData[0].organizationId,
       "roleId": this.gridData[0].roleId,
       "roleName": this.userRoleFormGroup.controls.userRoleName.value,
       "description": this.userRoleFormGroup.controls.userRoleDescription.value,
