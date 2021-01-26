@@ -168,7 +168,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
           "createdby": 0
         }
         this.roleService.createUserRole(objData).subscribe((res) => {
-          this.backToPage.emit({ editFlag: false, editText: 'create' });
+          this.backToPage.emit({ editFlag: false, editText: 'create',  rolename: this.userRoleFormGroup.controls.userRoleName.value });
         }, (error) => { });
       }
    // }, (error) => { });
@@ -210,7 +210,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
       "updatedby": 0
     }
     this.roleService.updateUserRole(objData).subscribe((res) => {
-      this.backToPage.emit({ editFlag: false, editText: 'edit'});
+      this.backToPage.emit({ editFlag: false, editText: 'edit', rolename: this.userRoleFormGroup.controls.userRoleName.value});
     }, (error) => { });
   }
 

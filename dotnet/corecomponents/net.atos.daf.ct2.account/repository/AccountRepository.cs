@@ -276,12 +276,19 @@ namespace net.atos.daf.ct2.account
                         parameter.Add("@ref_id", filter.AccountId);
                         query = query + " and gr.ref_id=@ref_id ";
                     }
-                    // organization id filter
+                    // account group id filter
                     else if (filter.AccountGroupId > 0)
                     {
                         query = @"select id,access_type,account_group_id,vehicle_group_id 
                                     from master.accessRelationship where account_group_id=@account_group_id";
                         parameter.Add("@account_group_id", filter.AccountGroupId);
+                    }
+                    // vehicle group filter 
+                    else if (filter.VehicleGroupId > 0)
+                    {
+                        query = @"select id,access_type,account_group_id,vehicle_group_id 
+                                    from master.accessRelationship where vehicle_group_id=@vehicle_group_id";
+                        parameter.Add("@vehicle_group_id", filter.VehicleGroupId);
                     }
                     dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
                     //Account account;

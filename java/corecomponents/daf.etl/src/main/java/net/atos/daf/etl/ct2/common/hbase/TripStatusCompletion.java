@@ -10,6 +10,7 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.source.RichParallelSourceFunction;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
+import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
@@ -23,7 +24,9 @@ import org.slf4j.LoggerFactory;
 import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.etl.ct2.common.bo.TripStatusData;
 import net.atos.daf.etl.ct2.common.util.ETLConstants;
-import net.atos.daf.etl.ct2.common.util.HbaseUtility;
+import net.atos.daf.hbase.connection.HbaseAdapter;
+import net.atos.daf.hbase.connection.HbaseConnection;
+import net.atos.daf.hbase.connection.HbaseConnectionPool;
 
 public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusData> {
 	private static final Logger logger = LoggerFactory.getLogger(TripStatusCompletion.class);
@@ -44,6 +47,7 @@ public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusD
 	private long lastTripUtcTime = 0;
 	private long etlMaxDuration = 0;
 	private long etlMinDuration = 0;
+	//private HbaseConnection conn = null;
 	
 	public TripStatusCompletion(String tblNm, Map<String, List<String>> colFamMap, FilterList filterList,
 			List<Long> timeRangeList) {
@@ -60,10 +64,43 @@ public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusD
 		isStreaming = Boolean.parseBoolean(envParams.get(ETLConstants.IS_TRIP_MINI_ETL_STREAMING));
 		etlMaxDuration = Integer.parseInt(envParams.get(ETLConstants.TRIP_ETL_MAX_TIME));
 		etlMinDuration = Integer.parseInt(envParams.get(ETLConstants.TRIP_ETL_MIN_TIME));
-	
+		
+		HbaseAdapter hbaseAdapter=HbaseAdapter.getInstance();
+		HbaseConnectionPool connectionPool = hbaseAdapter.getConnection(
+				envParams.get(ETLConstants.HBASE_ZOOKEEPER_QUORUM),
+				envParams.get(ETLConstants.HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT),
+				envParams.get(ETLConstants.ZOOKEEPER_ZNODE_PARENT),
+				envParams.get(ETLConstants.HBASE_REGIONSERVER),
+				envParams.get(ETLConstants.HBASE_MASTER),
+				envParams.get(ETLConstants.HBASE_REGIONSERVER_PORT), tableName);
+
+		HbaseConnection conn = null;
+		try{
+			conn = connectionPool.getHbaseConnection();
+			if (null == conn) {
+				logger.warn("get connection from pool failed");  
+				
+			}
+			TableName tabName = TableName.valueOf(tableName);
+			table = conn.getConnection().getTable(tabName);
+
+			System.out.println("table_name anshu2 -- " + tableName );
+			
+		}catch(IOException e){
+	            logger.error("create connection failed from the configuration" + e.toString());
+		}catch (Exception e) {
+			// TODO: handle exception
+            logger.error("there is an exception" + e.toString());
+		}
+		finally {
+            if (conn != null) {
+                connectionPool.releaseConnection(conn);
+            }
+        } 
+
 		//TODO need to integrate with common module and close connection
-		table = HbaseUtility.getTable(HbaseUtility.getHbaseClientConnection(HbaseUtility.createConf(envParams)),
-				tableName);
+//		table = HbaseUtility.getTable(HbaseUtility.getHbaseClientConnection(HbaseUtility.createConf(envParams)),
+//				tableName);
 
 		scan = new Scan();
 		

@@ -183,7 +183,11 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 }
                 
                 Group VehicleGroupResponce = await _groupManager.Create(objGroup);
-
+                 // check for exists
+                if(VehicleGroupResponce.Exists)
+                {
+                     return StatusCode(409, "Duplicate Vehicle Group.");
+                }
                 if (VehicleGroupResponce.Id > 0 &&  objGroup.GroupRef.Count()>0)
                 {
                     bool AddvehicleGroupRef = await _groupManager.UpdateRef(objGroup);
@@ -239,7 +243,11 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 }
                 
                 Group VehicleGroupResponce = await _groupManager.Update(objGroup);
-
+                 // check for exists
+                if(VehicleGroupResponce.Exists)
+                {
+                     return StatusCode(409, "Duplicate Vehicle Group.");
+                }
                 if (VehicleGroupResponce.Id > 0 &&  objGroup.GroupRef.Count()>0)
                 {
                     bool AddvehicleGroupRef = await _groupManager.UpdateRef(objGroup);

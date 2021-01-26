@@ -136,7 +136,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.translationService.getTranslationsForDropdowns('EN-GB','vehicledisplay'),
       this.translationService.getTranslationsForDropdowns('EN-GB','landingpagedisplay')
     ).subscribe((data) => {
-      this.accountPreferenceData = data[1][0];
+      this.accountPreferenceData = data[0][0];
       this.languageDropdownData = data[1];
       this.timezoneDropdownData = data[2];
       this.unitDropdownData = data[3];

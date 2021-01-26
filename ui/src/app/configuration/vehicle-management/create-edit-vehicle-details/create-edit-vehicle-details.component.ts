@@ -35,9 +35,9 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
   ];
   displayedColumns: string[] = [
     'select',
-    'vehicleName',
+    'name',
     'vin',
-    'registrationNo',
+    'license_Plate_Number',
     'model',
   ];
   dataSource: any;
