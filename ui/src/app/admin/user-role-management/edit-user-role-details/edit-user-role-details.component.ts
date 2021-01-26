@@ -34,6 +34,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   doneFlag = false;
   featuresSelected = [];
   featuresData = [];
+  organizationId: number;
   //access: any = '';
   //disabled : boolean = true;
 
@@ -42,6 +43,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   ngAfterViewInit() {}
 
   ngOnInit() {
+    this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.userRoleFormGroup = this._formBuilder.group({
       userRoleName: ['', [Validators.required]],
       roleType: ['Regular', [Validators.required]],
@@ -160,7 +162,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
           return;
         }
         let objData = {
-          "organizationId": this.userRoleFormGroup.controls.roleType.value=='Global'? 0 : 32,
+          "organizationId": this.userRoleFormGroup.controls.roleType.value=='Global'? 0 : this.organizationId,
           "roleId": 0,
           "roleName": this.userRoleFormGroup.controls.userRoleName.value,
           "description": this.userRoleFormGroup.controls.userRoleDescription.value,

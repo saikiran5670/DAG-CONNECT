@@ -29,7 +29,7 @@ export class UserRoleManagementComponent implements OnInit {
   translationData: any;
   grpTitleVisible : boolean = false;
   displayMessage: any;
-  organizationId: any;
+  organizationId: number;
 
   constructor(private translationService: TranslationService, private roleService: RoleService, private userService: EmployeeService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar) {
     this.defaultTranslation();
@@ -81,7 +81,7 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.organizationId = localStorage.getItem("accountOrganizationId");
+    this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     let translationObj = {
       id: 0,
       code: "EN-GB", //-- TODO: Lang code based on account 
