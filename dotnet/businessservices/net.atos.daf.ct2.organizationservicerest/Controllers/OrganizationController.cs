@@ -101,6 +101,10 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 {
                      return StatusCode(400,"Please provide organization ID:");
                 }
+                // if (request.Id.GetType()!=typeof(int))
+                // {
+                //      return StatusCode(400,"Please provide numeric value for organization ID:");
+                // }           
                 if (string.IsNullOrEmpty(request.org_id) || (request.org_id.Trim().Length<1))
                 {
                      return StatusCode(400,"Please provide organization org_id:");
@@ -188,7 +192,7 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                  var onjRetun=await organizationtmanager.Get(organizationId);
                  if(onjRetun.Id<1)
                  {
-                     return StatusCode(400,"Organization ID not exiat :" + organizationId);
+                     return StatusCode(400,"Organization ID not exist :" + organizationId);
                  }  
                  else
                  {  
