@@ -71,7 +71,14 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 organization.IsActive=request.is_active;
               
                 var OrgId= await organizationtmanager.Create(organization);   
-                return Ok("Organization Created :" +OrgId.Id);      
+                if (OrgId.Id<1)
+                {
+                    return StatusCode(400,"This organization is already exist :" + request.org_id);
+                }
+                else
+                {
+                    return Ok("Organization Created :" +OrgId.Id);    
+                }  
              }
             catch(Exception ex)
             {
@@ -117,9 +124,13 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 organization.optout_status_changed_date=request.optout_status_changed_date;
                 organization.IsActive=request.is_active;
                 var OrgId= await organizationtmanager.Update(organization);   
-                if(OrgId.Id<1)
+                if(OrgId.Id==0)
                 {
                     return StatusCode(400,"Organization ID not exist: "+ request.Id); 
+                }
+                else if(OrgId.Id==-1)
+                {
+                    return StatusCode(400,"This organization is already exist :"+ request.org_id); 
                 }
                 else
                 {

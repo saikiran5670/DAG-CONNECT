@@ -35,6 +35,19 @@ namespace net.atos.daf.ct2.organization.repository
            log.Info("Create Organization method called in repository");
             try
             {
+
+                var parameterduplicate = new DynamicParameters();
+                 parameterduplicate.Add("@org_id", organization.OrganizationId);               
+                var query = @"SELECT id FROM master.organization where org_id=@org_id";
+                int orgexist= await dataAccess.ExecuteScalarAsync<int>(query, parameterduplicate);                       
+        
+               if (orgexist>0)
+               {
+                  organization.Id = 0;
+                  return organization;
+               }
+               else{
+              
                 var parameter = new DynamicParameters();
                 parameter.Add("@OrganizationId",organization.OrganizationId);
                 parameter.Add("@OrganizationType",organization.Type);
@@ -50,11 +63,12 @@ namespace net.atos.daf.ct2.organization.repository
                 parameter.Add("@OptOutStatusChangedDate",organization.optout_status_changed_date != null ? UTCHandling.GetUTCFromDateTime(organization.optout_status_changed_date.ToString()) : (long ?)null); 
                 parameter.Add("@IsActive", organization.IsActive);               
 
-                string query= "insert into master.organization(org_id, type, name, address_type, street, street_number, postal_code, city,country_code,reference_date,optout_status,optout_status_changed_date,is_active) " +
+                string queryInsert= "insert into master.organization(org_id, type, name, address_type, street, street_number, postal_code, city,country_code,reference_date,optout_status,optout_status_changed_date,is_active) " +
                               "values(@OrganizationId, @OrganizationType, @Name, @AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@ReferencedDate, @OptOutStatus,@OptOutStatusChangedDate,@IsActive) RETURNING id";
 
-                var orgid =   await dataAccess.ExecuteScalarAsync<int>(query, parameter);                
+                var orgid =   await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);                
                 organization.Id = orgid;
+               }
             }
             catch (Exception ex)
             {
@@ -96,6 +110,16 @@ namespace net.atos.daf.ct2.organization.repository
             log.Info("Update Organization method called in repository");     
             try
             {
+                var parameterduplicate = new DynamicParameters();
+                parameterduplicate.Add("@org_id", organization.OrganizationId);               
+                var query = @"SELECT id FROM master.organization where org_id=@org_id";
+                int orgexist= await dataAccess.ExecuteScalarAsync<int>(query, parameterduplicate);     
+                if (orgexist>0)
+                {
+                  organization.Id = -1;
+                  return organization;
+                }
+                else{
                 var parameter = new DynamicParameters();
                 parameter.Add("@Id",organization.Id);
                 parameter.Add("@OrganizationId",organization.OrganizationId);
@@ -112,16 +136,17 @@ namespace net.atos.daf.ct2.organization.repository
                 parameter.Add("@OptOutStatusChangedDate",organization.optout_status_changed_date != null ? UTCHandling.GetUTCFromDateTime(organization.optout_status_changed_date.ToString()) : (long ?)null); 
                 parameter.Add("@IsActive", organization.IsActive);  
 
-                var query = @"update master.organization set org_id=@OrganizationId, type=@OrganizationType, name=@Name,
+                var queryUpdate = @"update master.organization set org_id=@OrganizationId, type=@OrganizationType, name=@Name,
                  address_type=@AddressType, street=@AddressStreet, street_number=@AddressStreetNumber,
                   postal_code=@PostalCode, city=@City,country_code=@CountryCode,reference_date=@ReferencedDate,
                   optout_status=@OptOutStatus,optout_status_changed_date=@OptOutStatusChangedDate,is_active=@IsActive
 	                                 WHERE id = @Id RETURNING id;";
-                var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);     
-                if (groupid<1)
+                var orgid = await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameter);     
+                if (orgid<1)
                 {
                     organization.Id=0;
-                }         
+                }   
+                }      
             }
             catch (Exception ex)
             {
