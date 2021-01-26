@@ -13,12 +13,12 @@ export class PreferencesComponent implements OnInit {
   public userPreferencesFlag : boolean = false;
   public selectedIndex: number = 0;
 
-  constructor(private translationService: TranslationService, private route: Router) { 
+  constructor(private translationService: TranslationService, private route: Router) {
     //this.defaultTranslation();
   }
 
   // defaultTranslation(){
-  //   this.translationData = { 
+  //   this.translationData = {
   //     lblAccountInformation: "Account Information",
   //     lblSalutation: "Salutation",
   //     lblFirstName: "First Name",
@@ -71,7 +71,7 @@ export class PreferencesComponent implements OnInit {
   ngOnInit() {
     let translationObj = {
       id: 0,
-      code: "EN-GB", //-- TODO: Lang code based on account 
+      code: "EN-GB", //-- TODO: Lang code based on account
       type: "Menu",
       name: "",
       value: "",
@@ -88,7 +88,7 @@ export class PreferencesComponent implements OnInit {
     //console.log("process translationData:: ", this.translationData)
   }
 
-  userPreferencesSetting(event){ 
+  userPreferencesSetting(event){
     this.userPreferencesFlag  = !this.userPreferencesFlag;
     if(this.userPreferencesFlag){
       let currentComponentUrl : String;
@@ -98,10 +98,10 @@ export class PreferencesComponent implements OnInit {
       else if(currentComponentUrl.substr(0, 8) == "/report/" )
         this.selectedIndex = 2;
       else if(currentComponentUrl.substr(0, 11) == "/livefleet/")
-        this.selectedIndex = 3;  
+        this.selectedIndex = 3;
       else
-        this.selectedIndex = 0;    
-    }   
+        this.selectedIndex = 0;
+    }
   }
 
 }

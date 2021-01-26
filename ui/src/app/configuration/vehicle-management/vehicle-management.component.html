@@ -36,16 +36,16 @@
         <div fxLayout="column" class='full-width'>
           <mat-table [dataSource]="dataSource" class="table-items" matSort>
             <ng-container *ngFor="let disCol of cols; let colIndex = index" matColumnDef="{{disCol}}">
-              <div *ngIf="disCol != 'action' && disCol!='Status'">
+              <div *ngIf="disCol != 'action' ">
                 <mat-header-cell *matHeaderCellDef>{{columnNames[colIndex]}}</mat-header-cell>
-                <mat-cell *matCellDef="let element "> {{element[disCol]}} </mat-cell>
-            </div>
-            <div *ngIf="disCol=='Status'">
+                <mat-cell *matCellDef="let element "> {{element[disCol]==null?'-':element[disCol]}} </mat-cell>
+              </div>
+              <!-- <div *ngIf="disCol=='status'">
               <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
               <mat-cell *matCellDef="let element ">
                 <img src={{element[disCol]}} style="width: 20px;height: 20px;"/>
               </mat-cell>
-            </div>
+            </div> -->
               <div *ngIf="disCol == 'action'">
                 <mat-header-cell *matHeaderCellDef>{{columnNames[colIndex]}}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
@@ -62,51 +62,11 @@
                 </mat-cell>
               </div>
             </ng-container>
-            <!-- Special extra column-->
-            <!-- <ng-container matColumnDef="Status1">
-              <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
-              <mat-cell *matCellDef="let row"> <button class='actionBtn' mat-flat-button matTooltip="Edit">
-                  <mat-icon>create</mat-icon>
-                </button> </mat-cell>
-            </ng-container> -->
+
             <mat-header-row *matHeaderRowDef="cols"></mat-header-row>
             <mat-row *matRowDef="let row; columns: cols;"></mat-row>
           </mat-table>
-          <!-- <mat-table [dataSource]="dataSource" matSort>
-                  <ng-container matColumnDef="vehicleGroupID">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header> vehicle Group ID </mat-header-cell>
-                      <mat-cell *matCellDef="let row"> {{row.vehicleGroupID}} </mat-cell>
-                  </ng-container>
-                  <ng-container matColumnDef="name">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
-                      <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
-                  </ng-container>
-                  <ng-container matColumnDef="isActive">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header> isActive </mat-header-cell>
-                      <mat-cell *matCellDef="let row"> {{row.isActive}} </mat-cell>
-                  </ng-container>
-                  <ng-container matColumnDef="createdDate">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header> createdDate </mat-header-cell>
-                    <mat-cell *matCellDef="let row"> {{row.createdDate}} </mat-cell>
-                  </ng-container>
-                  <ng-container matColumnDef="action">
-                      <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action' }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row">
-                        <button class='actionBtn' mat-flat-button matTooltip="View">
-                            <mat-icon>visibility</mat-icon>
-                          </button>
-                          <button class='actionBtn' mat-flat-button (click)="editVehicleDetails(row)" matTooltip="Edit">
-                              <mat-icon>create</mat-icon>
-                          </button>
-                          <button class='actionBtn' mat-flat-button (click)="deleteVehicleGroup(row)" matTooltip="Delete">
-                              <mat-icon>delete</mat-icon>
-                          </button>
-                      </mat-cell>
-                  </ng-container>
-                  <mat-header-row *matHeaderRowDef="vehicleDisplayedColumns"></mat-header-row>
-                  <mat-row *matRowDef="let row; columns: vehicleDisplayedColumns;">
-                  </mat-row>
-              </mat-table> -->
+
           <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
         </div>
       </div>

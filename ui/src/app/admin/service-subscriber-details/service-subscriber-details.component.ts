@@ -15,6 +15,7 @@ import { grpc } from '@improbable-eng/grpc-web';
 import { ConfigService } from '@ngx-config/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
+import { OrganizationService } from 'src/app/services/organization.service';
 
 @Component({
   selector: 'app-service-subscriber-details',
@@ -24,16 +25,17 @@ import { CommonTableComponent } from 'src/app/shared/common-table/common-table.c
 export class ServiceSubscriberDetailsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  displayedColumns: string[] = ['vehiclegroups', 'users'];
+  displayedColumns: string[] = ['vehicleGroupName', 'userCount'];
   dialogRef: MatDialogRef<CommonTableComponent>;
   products: any[] = [];
-
+  organizationId: any;
   dataSource: any = new MatTableDataSource([]);
   translationData: any;
   gRpcClient: CustomerClient;
   private backendGrpc: string;
   constructor(
     private translationService: TranslationService,
+    private orgService: OrganizationService,
     private userService: EmployeeService,
     private identityGrpcService: IdentityGrpcService,
     private config: ConfigService,
@@ -72,6 +74,7 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
     });
   }
   ngOnInit() {
+    this.organizationId = localStorage.getItem("accountOrganizationId")
     let translationObj = {
       id: 0,
       code: "EN-GB", //-- TODO: Lang code based on account 
@@ -88,7 +91,7 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
   }
 
   loadOrgData() {
-    this.userService.getOrgDetails().subscribe(
+    this.orgService.getOrganizationDetails(this.organizationId).subscribe(
       (_data) => {
         //console.log(' data : ' + _data[0]);
         this.updateDataSource(_data);
@@ -104,15 +107,15 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
     const colsList= ['firstName','emailId','role'];
     const colsName=['First Name','Email ID','Role'];
     const tableTitle="User List";
-    this.userService.getUsers().subscribe((data)=>{
-      this.callToCommonTable(data,colsList,colsName,tableTitle);
-    });
+    // this.userService.getUsers().subscribe((data)=>{
+    //   this.callToCommonTable(data,colsList,colsName,tableTitle);
+    // });
   }
   onVehClick(row:any){
     const colsList= ['vin','name','model'];
     const colsName=['VIN','Vehicle Name','Model'];
     const tableTitle="Vehicle List";
-    this.userService.getVehicleByID().subscribe((data)=>{
+    this.orgService.getVehicleList(row.vehicleGroupId).subscribe((data)=>{
       this.callToCommonTable(data,colsList,colsName,tableTitle);
     });
 
