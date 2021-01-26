@@ -185,7 +185,6 @@ public class TripStreamingJob {
 
 		} catch (Exception e) {
 			logger.error(" TripStreamingJob failed, reason :: " + e);
-			e.printStackTrace();
 		}
 
 	}

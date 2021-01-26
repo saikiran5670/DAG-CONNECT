@@ -20,6 +20,12 @@
 	</properties>
 
 	<dependencies>
+	
+  	<dependency>
+<groupId>net-atos</groupId>
+<artifactId>net.atos.daf.hbase.connection</artifactId>
+<version>0.0.1</version>
+ </dependency> 
 
 	<dependency>
 		<groupId>net.atos</groupId>
@@ -112,11 +118,11 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
+	<!--  	<dependency>
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-client</artifactId>
 			<version>${hbase.version}</version>
-		</dependency>
+		</dependency>  -->
 
 		<dependency>
 			<groupId>org.apache.flink</groupId>
