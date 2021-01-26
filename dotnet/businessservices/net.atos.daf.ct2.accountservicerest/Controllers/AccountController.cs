@@ -272,9 +272,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 List<AccountComponent.entity.Account> accounts = new List<AccountComponent.entity.Account>();
                 List<int> accountIds = new List<int>();
                 List<AccountDetailsResponse> response = new List<AccountDetailsResponse>();
-                AccountDetailsResponse accountDetails = new AccountDetailsResponse();
-                accountDetails.AccountGroups = new List<KeyValue>();
-                accountDetails.Roles = new List<KeyValue>();
+                AccountDetailsResponse accountDetails = new AccountDetailsResponse();                
                 if (request.GroupId > 0)
                 {
                     Group.GroupFilter groupFilter = new Group.GroupFilter();
@@ -339,8 +337,10 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 // account group details                 
                 foreach (AccountComponent.entity.Account entity in accounts)
                 {
-                    accountDetails = new AccountDetailsResponse();
+                    accountDetails = new AccountDetailsResponse();                   
                     accountDetails = _mapper.ToAccountDetail(entity);
+                    accountDetails.AccountGroups = new List<KeyValue>();
+                    accountDetails.Roles = new List<KeyValue>();
                     // group filter
                     Group.GroupFilter groupFilter = new Group.GroupFilter();
                     groupFilter.OrganizationId = request.OrganizationId;

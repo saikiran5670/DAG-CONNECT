@@ -99,10 +99,10 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   loadInitData() {
-    let objData = { 
-      "organization_Id": 32,
-    };
-    this.roleService.getUserRoles(objData).subscribe((data) => {
+    // let objData = { 
+       let organizationId= 32;
+    // };
+    this.roleService.getUserRoles(organizationId).subscribe((data) => {
       //this.initData = this.getNewTagData(data); //no createdDate present in API response
       this.initData = data; //temporary 
       setTimeout(()=>{
@@ -175,7 +175,7 @@ export class UserRoleManagementComponent implements OnInit {
          .deleteUserRole(row.roleId)
          .subscribe((d) => {
            //console.log(d);
-           this.openSnackBar('Item delete', 'dismiss');
+           this.openSnackBar('Item deleted', 'dismiss');
            this.loadInitData();
          });
      }
