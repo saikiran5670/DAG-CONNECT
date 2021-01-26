@@ -9,7 +9,7 @@
       "userGroupServiceUrl_bkp": "http://51.144.184.19/UserGroup",
       "userGroupServiceUrl": "http://localhost:3000",
       "vehicleGroupServiceUrl_bkp": "http://51.145.183.2/VehicleManagement",
-      "vehicleGroupServiceUrl": "http://localhost:3000",
+      "vehicleGroupServiceUrl": "http://51.124.8.28/vehicle",
       "roleServiceUrl_bkp1": "http://localhost:3000",
       "roleServiceUrl_bkp": "http://20.50.164.200/RoleManagement",
       "translationServiceUrl": "http://localhost:3000",

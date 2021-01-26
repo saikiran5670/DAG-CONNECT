@@ -69,7 +69,7 @@
                 <mat-table [dataSource]="dataSource" class="table-items" matSort>
                     <ng-container *ngFor="let disCol of displayedColumns; let colIndex = index" matColumnDef="{{disCol}}">
                       <div *ngIf="disCol == 'select'">
-                        <mat-header-cell *matHeaderCellDef>
+                        <mat-header-cell *matHeaderCellDef>{{displayColumnHeaders[colIndex]}}
                             <mat-checkbox (change)='$event ? masterToggleForVehGrp() : null'
                                 [checked]='selectionForVehGrp.hasValue() && isAllSelectedForVehGrp()'
                                 [indeterminate]='selectionForVehGrp.hasValue() && !isAllSelectedForVehGrp()'
@@ -85,50 +85,14 @@
                         </mat-cell>
                       </div>
                       <div *ngIf="disCol != 'select'">
-                        <mat-header-cell *matHeaderCellDef>{{disCol}}</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>{{displayColumnHeaders[colIndex]}}</mat-header-cell>
                         <mat-cell *matCellDef="let element "> {{element[disCol]}} </mat-cell>
                       </div>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
                 </mat-table>
-                <!-- <mat-table [dataSource]="dataSource" class="table-items" matSort>
-                    <ng-container matColumnDef="select">
-                        <mat-header-cell *matHeaderCellDef>
-                            <mat-checkbox (change)='$event ? masterToggleForVehGrp() : null'
-                                [checked]='selectionForVehGrp.hasValue() && isAllSelectedForVehGrp()'
-                                [indeterminate]='selectionForVehGrp.hasValue() && !isAllSelectedForVehGrp()'
-                                [aria-label]='checkboxLabelForVehGrp()'>
-                            </mat-checkbox>
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                            <mat-checkbox (click)='$event.stopPropagation()'
-                                (change)='$event ? selectionForVehGrp.toggle(row) : null'
-                                [checked]='selectionForVehGrp.isSelected(row)'
-                                [aria-label]='checkboxLabelForVehGrp(row)'>
-                            </mat-checkbox>
-                        </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="vehicleGroupID">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header> vehicleGroup ID </mat-header-cell>
-                        <mat-cell *matCellDef="let row"> {{row.vehicleGroupID}} </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="name">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header> name </mat-header-cell>
-                        <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="isActive">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header> isActive </mat-header-cell>
-                        <mat-cell *matCellDef="let row"> {{row.isActive}} </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="createdDate">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header> createdDate </mat-header-cell>
-                        <mat-cell *matCellDef="let row"> {{row.createdDate}} </mat-cell>
-                    </ng-container>
-                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumns;">
-                    </mat-row>
-                </mat-table> -->
+
 
                 <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
             </div>
