@@ -650,7 +650,14 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 group.FunctionEnum = Group.FunctionEnum.None;
                 group.GroupType = Group.GroupType.Group;
                 group.ObjectType = Group.ObjectType.AccountGroup;
+                
                 var result = await groupmanager.Create(group);
+                // check for exists
+                if(result.Exists)
+                {
+                     return StatusCode(409, "Duplicate Account Group.");
+                }
+                group.Id = result.Id;
                 group.Id = result.Id;
                 if (result.Id > 0 && request.Accounts != null)
                 {
@@ -682,9 +689,9 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             try
             {
                 // Validation                 
-                if ((string.IsNullOrEmpty(request.Name)))
+                if ( (request.Id <=0) ||  (string.IsNullOrEmpty(request.Name)))
                 {
-                    return StatusCode(400, "The AccountGroup name is required");
+                    return StatusCode(400, "The AccountGroup name and id is required");
                 }
                 Group.Group group = new Group.Group();
                 group.Id = request.Id;
@@ -696,6 +703,11 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 group.ObjectType = Group.ObjectType.AccountGroup;
                 var result = await groupmanager.Update(group);
                 group.Id = result.Id;
+                 // check for exists
+                if(result.Exists)
+                {
+                     return StatusCode(409, "Duplicate Account Group.");
+                }
                 if (result.Id > 0 && request.Accounts != null)
                 {
                     group.GroupRef = new List<Group.GroupRef>();
