@@ -34,16 +34,17 @@ public class MessageProcessing<U, T> {
       BroadcastStream<KafkaRecord<U>> broadcastStream) {
 
     objectMapper = JsonMapper.configuring();
+    System.out.println("Object Mapper" +objectMapper);
     // SingleOutputStreamOperator<KafkaRecord<T>> singleOutputStreamOperator =
     messageDataStream
         .filter(
             new FilterFunction<KafkaRecord<U>>() {
               @Override
               public boolean filter(KafkaRecord<U> value) throws Exception {
-				                  System.out.println("Filter Record " + value.toString());
-                System.out.println("Mapper "+objectMapper);
+                System.out.println("Filter Record " + value.toString());
+                System.out.println("Mapper "+JsonMapper.configuring());
                 String transId =
-                    objectMapper.readTree((String) value.getValue()).get("TransID").asText();
+                        JsonMapper.configuring().readTree((String) value.getValue()).get("TransID").asText();
                 System.out.println("Trans ID " + transId);
                 return transId.equalsIgnoreCase(messageType);
               }
@@ -65,7 +66,7 @@ public class MessageProcessing<U, T> {
                 System.out.println("Single Record: " + value);
 
                 String valueRecord =
-                    objectMapper.readTree((String) value.getValue()).get("VID").asText();
+                        JsonMapper.configuring().readTree((String) value.getValue()).get("VID").asText();
                 System.out.println("Record VID: " + valueRecord);
 
                 for (Map.Entry<Message<U>, KafkaRecord<U>> map :
@@ -78,12 +79,12 @@ public class MessageProcessing<U, T> {
 
                     String values = map.getValue().getValue().toString();
                     System.out.println("Broadcats Values: " + values);
-                    JsonNode jsonNode = objectMapper.readTree(value.getValue().toString());
+                    JsonNode jsonNode = JsonMapper.configuring().readTree(value.getValue().toString());
                     ((ObjectNode) jsonNode).put("VIN", values);
 
                     KafkaRecord<U> kafkaRecord = new KafkaRecord<U>();
                     kafkaRecord.setKey(key);
-                    kafkaRecord.setValue((U) objectMapper.writeValueAsString(jsonNode));
+                    kafkaRecord.setValue((U) JsonMapper.configuring().writeValueAsString(jsonNode));
                     System.out.println("New Values: " + kafkaRecord);
                     out.collect(kafkaRecord);
                     break;
@@ -106,7 +107,7 @@ public class MessageProcessing<U, T> {
               public KafkaRecord<T> map(KafkaRecord<U> value) throws Exception {
 
                 System.out.println("Class:" + tClass);
-                T record = objectMapper.readValue((String) value.getValue(), tClass);
+                T record = JsonMapper.configuring().readValue((String) value.getValue(), tClass);
 
                 KafkaRecord<T> kafkaRecord = new KafkaRecord<T>();
                 kafkaRecord.setKey(key);
