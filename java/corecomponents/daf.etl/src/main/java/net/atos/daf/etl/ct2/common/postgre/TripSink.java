@@ -10,10 +10,8 @@ import java.sql.PreparedStatement;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
-import org.postgresql.jdbc3.Jdbc3PoolingDataSource;
 
 import net.atos.daf.common.ct2.exception.TechnicalException;
-import net.atos.daf.common.ct2.postgre.PostgreDataSourceConnection;
 import net.atos.daf.common.ct2.util.DAFConstants;
 import net.atos.daf.etl.ct2.common.bo.Trip;
 import net.atos.daf.etl.ct2.common.util.ETLConstants;
@@ -462,13 +460,13 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 
-		Jdbc3PoolingDataSource dataSource = PostgreDataSourceConnection.getDataSource(
+		/*Jdbc3PoolingDataSource dataSource = PostgreDataSourceConnection.getDataSource(
 				envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME),
 				Integer.parseInt(envParams.get(ETLConstants.DATAMART_POSTGRE_PORT)),
 				envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME),
 				envParams.get(ETLConstants.DATAMART_POSTGRE_USER),
 				envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
-		connection = PostgreDataSourceConnection.getDataSourceConnection(dataSource);
+		connection = PostgreDataSourceConnection.getDataSourceConnection(dataSource);*/
 		
 		//TODOonly for testing remove
 		System.out.println("envParams.get(ETLConstants.POSTGRE_SQL_SERVER_NAME) :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME));
@@ -477,22 +475,14 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 		System.out.println("envParams.get(ETLConstants.POSTGRE_SQL_USER) :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_USER));
 		System.out.println("envParams.get(ETLConstants.POSTGRE_SQL_PASSWORD) :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
 		
-		
-		if(null == connection || "null".equals(connection))
-		{
-			System.out.println("Connect created by common component is null :: " + connection);
-
-			Class.forName(envParams.get(ETLConstants.POSTGRE_SQL_DRIVER));
-			String dbUrl = createValidUrlToConnectPostgreSql(envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME),
+		Class.forName(envParams.get(ETLConstants.POSTGRE_SQL_DRIVER));
+		String dbUrl = createValidUrlToConnectPostgreSql(envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME),
 					Integer.parseInt(envParams.get(ETLConstants.DATAMART_POSTGRE_PORT)),
 					envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME),
 					envParams.get(ETLConstants.DATAMART_POSTGRE_USER),
 					envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
-			connection = DriverManager.getConnection(dbUrl);
-			System.out.println("Connect created individually :: " + connection);
-		}
-		
-		System.out.println("Final Connection ======="+connection);
+		connection = DriverManager.getConnection(dbUrl);
+		System.out.println("Connect created individually ::: " + connection);
 		
 		statement = connection.prepareStatement(query);
 	}
