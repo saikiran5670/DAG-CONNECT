@@ -11,7 +11,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { EmployeeService } from 'src/app/services/employee.service';
+import { vehicleUpdateRequest } from 'src/app/models/vehicle.model';
+import { VehicleService } from 'src/app/services/vehicle.service';
 
 @Component({
   selector: 'app-create-edit-vehicle-details',
@@ -25,9 +26,11 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
   @Input() createStatus: boolean;
   @Input() translationData: any;
   @Input() groupInfo: any;
+  @Input() viewGroupMode: boolean;
   vehicleFormGroup: FormGroup;
+  orgId: number;
   displayColumnHeaders: string[] = [
-    'select',
+    'All',
     'Vehicle name',
     'VIN',
     'Registration Number',
@@ -49,7 +52,7 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
 
   constructor(
     private _formBuilder: FormBuilder,
-    private userService: EmployeeService
+    private vehService: VehicleService
   ) {}
 
   ngAfterViewInit() {
@@ -62,129 +65,100 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
       vehicleGroupName: ['', [Validators.required]],
       vehicleGroupDescription: [],
     });
-    //console.log(this.groupInfo );
-    this.vehGrpName = this.groupInfo !== null ? this.groupInfo.name : '';
+    //console.log(this.groupInfo);
+    this.vehGrpName = this.groupInfo ? this.groupInfo.name : '';
+
     this.dataSource = new MatTableDataSource(this.gridData);
+    if (localStorage.getItem('accountOrganizationId') != null) {
+      this.orgId = parseInt(localStorage.getItem('accountOrganizationId'));
+    }
+
+    if (this.viewGroupMode) {
+      this.vehicleFormGroup.get('vehicleGroupName').disable();
+      this.vehicleFormGroup.get('vehicleGroupDescription').disable();
+    }
+    //select associated vehicles of the vehicle group.
+    this.selectCheckBox(this.groupInfo.id);
   }
 
   onCancel() {
     this.backToPage.emit({ editFlag: false, editText: 'cancel' });
   }
-  onReset(){
+  onReset() {
     this.vehicleFormGroup.reset();
   }
-  getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+  selectCheckBox(vehGroupId) {
+    this.vehService.getVehicleListById(vehGroupId).subscribe((req) => {
+      this.dataSource.data.forEach((row) => {
+        let search = req.filter((item) => item.id === row.id);
+        if (search.length > 0) {
+          this.selectionForVehGrp.select(row);
+          
+        }
+      });
+    });
+  }
   onCreate() {
     if (this.createStatus) {
       // create func
+
       let objData = {
-        vehicleGroupID: this.getRandomInt(1, 500),
-        organizationID: 1,
+        id: 0,
         name: this.vehicleFormGroup.controls.vehicleGroupName.value,
-        parentID: 0,
-        isActive: true,
-        createdDate: '2020-12-14T06:19:33.111Z',
-        createdBy: 0,
-        updatedDate: '2020-12-14T06:19:33.111Z',
-        updatedBy: 0,
-        isDefaultGroup: true,
-        isUserDefindGroup: true,
-        vin: '-',
-        registrationNumber: '-',
-        model: '-',
-        Status:"assets/images/john.png",
-        isGroup: true,
+        description: this.vehicleFormGroup.controls.vehicleGroupDescription
+          .value,
+        organizationId: this.orgId ? this.orgId : 1,
         vehicles: [
           {
-            vehicleID: 0,
-            vin: 'VIN456',
-            registrationNo: 'NL J-229-FV',
-            chassisNo: null,
-            terminationDate: '2020-12-14T06:19:33.111Z',
-            isActive: true,
-            createdDate: '2020-12-14T06:19:33.111Z',
-            createdBy: 0,
-            updatedDate: '2020-12-14T06:19:33.111Z',
-            updatedBy: 0,
+            vehicleGroupId: 0,
+            vehicleId: 0,
           },
         ],
-        vehicleOrgIds: 'string',
       };
-      // let objData = {
-      //   name: this.vehicleFormGroup.controls.vehicleGroupName.value
-      // }
-      this.userService.createVehicleGroup(objData).subscribe(
+
+      this.vehService.createVehicleGroup(objData).subscribe(
         (res) => {
-          this.userService.getVehicleGroupByID().subscribe(
-            (data) => {
-              this.backToPage.emit({
-                editFlag: false,
-                editText: 'create',
-                gridData: data,
-              });
-            },
-            (error) => {}
-          );
+          // this.vehService.getVehicleGroupByID().subscribe(
+          //   (data) => {
+          this.backToPage.emit({
+            editFlag: false,
+            editText: 'create',
+            //gridData: data,
+          });
+          //   },
+          //   (error) => {}
+          // );
         },
         (error) => {}
       );
     } else {
       // edit func
 
-      let objData = {
-        id:this.groupInfo.id,
-        vehicleGroupID: this.gridData[0].vehicleGroupID,
-        organizationID: 1,
+      let objData: vehicleUpdateRequest = {
+        id: this.groupInfo.id,
         name: this.vehicleFormGroup.controls.vehicleGroupName.value,
-        parentID: 0,
-        isActive: true,
-        createdDate: '2020-12-14T06:19:33.111Z',
-        createdBy: 0,
-        updatedDate: '2020-12-14T06:19:33.111Z',
-        updatedBy: 0,
-        isDefaultGroup: true,
-        isUserDefindGroup: true,
-        vin: "-",
-        registrationNumber: "-",
-        model: "-",
-        Status:"assets/images/john.png",
-        isGroup: true,
+        description: this.vehicleFormGroup.controls.vehicleGroupDescription
+          .value,
+        organizationId: this.orgId ? this.orgId : 1,
         vehicles: [
           {
-            vehicleID: 0,
-            vin: null,
-            registrationNo: null,
-            chassisNo: null,
-            terminationDate: '2020-12-14T06:19:33.111Z',
-            isActive: true,
-            createdDate: '2020-12-14T06:19:33.111Z',
-            createdBy: 0,
-            updatedDate: '2020-12-14T06:19:33.111Z',
-            updatedBy: 0,
+            vehicleGroupId: this.groupInfo.id,
+            vehicleId: 0,
           },
         ],
-        vehicleOrgIds: 'string',
       };
-          // let objData = {
-      //   vehicleGroupID: this.gridData[0].vehicleGroupID,
-      //   name: this.vehicleFormGroup.controls.vehicleGroupName.value
-      // }
-      this.userService.updateVehicleGroup(objData).subscribe(
+
+      this.vehService.updateVehicleGroup(objData).subscribe(
         (res) => {
-          this.userService.getVehicleGroupByID().subscribe(
-            (data) => {
-              this.backToPage.emit({
-                editFlag: false,
-                editText: 'edit',
-                gridData: data,
-              });
-            },
-            (error) => {}
-          );
+          this.backToPage.emit({
+            editFlag: false,
+            editText: 'edit',
+            //gridData: data,
+          });
         },
-        (error) => {}
+        (error) => {
+          console.error(error);
+        }
       );
     }
   }

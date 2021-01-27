@@ -37,6 +37,14 @@ export class VehicleService {
       .post<any[]>(`${this.vehicleServiceUrl}/group/getgroupdetails`,JSON.stringify(data),headers)
       .pipe(catchError(this.handleError));
   }
+  getVehicleListById(groupId): Observable<any[]> {
+    const headers = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.vehicleServiceUrl}/group/getvehiclelist?GroupId=${groupId}`,headers)
+      .pipe(catchError(this.handleError));
+  }
 
   getVehicle(data): Observable<any[]> {
     const headers = {
@@ -47,37 +55,36 @@ export class VehicleService {
       .pipe(catchError(this.handleError));
   }
 
-  checkUserRoleExist(UserRoleInput: any): Observable<any[]> {
-    return this.httpClient
-      //.get<any[]>(`${this.roleServiceUrl}/CheckRoleNameExist?roleName=${UserRoleInput}`)
-
-      //Mock API to check if role already exists
-      .get<any[]>(`${this.vehicleServiceUrl}/roles?roleName=${UserRoleInput}`)
-      .pipe(catchError(this.handleError));
-  }
-
-  createUserRole(data): Observable<any> {
+  
+  createVehicleGroup(data): Observable<any> {
     const headers = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
-    return this.httpClient
-      .post<any>(`${this.vehicleServiceUrl}/create`, data, headers)
-      .pipe(catchError(this.handleError));
-  }
-
-  updateUserRole(data): Observable<any> {
-    const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-    };
-    return this.httpClient
-      .post<any>(`${this.vehicleServiceUrl}/update`, data, headers)
-      .pipe(catchError(this.handleError));
-  }
-
-  deleteVehicleGroup(roleId: number): Observable<void> {
-    let data = { roleId: roleId };
    return this.httpClient
-      .post<any>(`${this.vehicleServiceUrl}/delete?roleId=${roleId}`, data)
+      .post<any>(`${this.vehicleServiceUrl}/group/create`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+  updateVehicleGroup(data): Observable<any> {
+    const headers = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+    };
+    return this.httpClient
+      .put<any>(`${this.vehicleServiceUrl}/group/update`, JSON.stringify(data) , headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  updateVehicleSettings(data): Observable<any> {
+    const headers = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+    };
+    return this.httpClient
+     .put<any>(`${this.vehicleServiceUrl}/update`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+  deleteVehicleGroup(groupId: number): Observable<void> {
+    let data = { GroupId: groupId };
+   return this.httpClient
+      .delete<any>(`${this.vehicleServiceUrl}/group/delete?GroupId=${groupId}`)
       .pipe(catchError(this.handleError));
   }
   deleteVehicle(roleId: number): Observable<void> {

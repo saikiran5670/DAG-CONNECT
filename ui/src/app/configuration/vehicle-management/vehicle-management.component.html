@@ -36,20 +36,21 @@
         <div fxLayout="column" class='full-width'>
           <mat-table [dataSource]="dataSource" class="table-items" matSort>
             <ng-container *ngFor="let disCol of cols; let colIndex = index" matColumnDef="{{disCol}}">
-              <div *ngIf="disCol != 'action' ">
-                <mat-header-cell *matHeaderCellDef>{{columnNames[colIndex]}}</mat-header-cell>
-                <mat-cell *matCellDef="let element "> {{element[disCol]==null?'-':element[disCol]}} </mat-cell>
+              <div *ngIf="disCol != 'action' && disCol!='status' ">
+                <mat-header-cell *matHeaderCellDef >{{columnNames[colIndex]}}</mat-header-cell>
+                <mat-cell class="text-truncate" [ngClass]="{'tablemargin': element[disCol]==null }"
+                matTooltip={{element[disCol]}} *matCellDef="let element "> {{element[disCol]==null?'-':element[disCol]}} </mat-cell>
               </div>
-              <!-- <div *ngIf="disCol=='status'">
-              <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+              <div *ngIf="disCol=='status'">
+              <mat-header-cell *matHeaderCellDef style="width: 20px;">Status</mat-header-cell>
               <mat-cell *matCellDef="let element ">
-                <img src={{element[disCol]}} style="width: 20px;height: 20px;"/>
+                <img src='assets/images/john.png' style="width: 20px;height: 20px;"/>
               </mat-cell>
-            </div> -->
+            </div>
               <div *ngIf="disCol == 'action'">
                 <mat-header-cell *matHeaderCellDef>{{columnNames[colIndex]}}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                  <button class='actionBtn' mat-flat-button matTooltip="View">
+                  <button class='actionBtn' mat-flat-button (click)="viewFunc(row)" matTooltip="View">
                     <mat-icon>visibility</mat-icon>
                   </button>
                   <button class='actionBtn' mat-flat-button (click)="editFunc(row)" matTooltip="Edit">
@@ -74,11 +75,11 @@
   </div>
   <div *ngIf='editFlag'>
     <app-create-edit-vehicle-details [translationData]='translationData' [createStatus]='createStatus'
-      [title]='titleText' [gridData]='rowsData' [groupInfo]='groupInfo' (backToPage)='editData($event)'>
+      [title]='titleText' [gridData]='rowsData' [groupInfo]='groupInfo' [viewGroupMode]='viewGroupMode' (backToPage)='editData($event)'>
     </app-create-edit-vehicle-details>
   </div>
   <div *ngIf='viewFlag'>
-    <app-edit-vin-setting [translationData]='translationData' [vinData]='vinData' (backToPage)='onBackToPage($event)'>
+    <app-edit-vin-setting [translationData]='translationData' [vinData]='vinData' [viewMode]='viewMode' (backToPage)='onBackToPage($event)'>
     </app-edit-vin-setting>
   </div>
 </div>
