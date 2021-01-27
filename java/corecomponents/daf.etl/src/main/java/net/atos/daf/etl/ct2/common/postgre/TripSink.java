@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+import org.hamcrest.core.IsInstanceOf;
 import org.postgresql.jdbc3.Jdbc3PoolingDataSource;
 
 import net.atos.daf.common.ct2.exception.TechnicalException;
@@ -478,7 +479,7 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 		System.out.println("envParams.get(ETLConstants.POSTGRE_SQL_PASSWORD) :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
 		
 		
-		if(null == connection )
+		if(null == connection || "null".equals(connection))
 		{
 			System.out.println("Connect created by common component is null :: " + connection);
 
@@ -519,7 +520,7 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 		String url = serverNm + ":" + port + "/" + databaseNm + "?" + "user=" + userNm + "&" + "password="
 				+ encodedPassword + DAFConstants.POSTGRE_SQL_SSL_MODE;
 
-		System.out.println("url = " + url);
+		System.out.println("Valid Url = " + url);
 
 		return url;
 	}
