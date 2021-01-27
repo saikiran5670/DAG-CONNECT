@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             tokenRepository =_tokenRepository;
         }
-       public async Task<int> InsertToken(AccountToken accountToken)
+       public async Task<string> InsertToken(AccountToken accountToken)
         {
             try
             {
@@ -24,18 +24,30 @@ namespace net.atos.daf.ct2.identitysession
                 throw ex;
             }
         }
-        public async Task<int> DeleteToken(AccountToken accountToken)
+        public async Task<int> DeleteToken(List<string> token_Id)
         {
             try
             {
-                return await tokenRepository.DeleteToken(accountToken);
+                return await tokenRepository.DeleteToken(token_Id);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-           public async Task<IEnumerable<AccountToken>> GetTokenDetails(int AccountID)
+
+        public async Task<int> DeleteTokenbySessionId(string sessionID)
+        {
+            try
+            {
+                return await tokenRepository.DeleteTokenbySessionId(sessionID);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<IEnumerable<AccountToken>> GetTokenDetails(int AccountID)
         {
             try
             {
@@ -57,11 +69,11 @@ namespace net.atos.daf.ct2.identitysession
                 throw ex;
             }
         }
-          public async Task<bool> ValidateToken(AccountToken accountToken)
+          public async Task<bool> ValidateToken(string TokenId)
         {
             try
             {
-                return await tokenRepository.ValidateToken(accountToken);
+                return await tokenRepository.ValidateToken(TokenId);
             }
             catch (Exception ex)
             {

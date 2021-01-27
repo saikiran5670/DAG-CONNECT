@@ -18,55 +18,56 @@ namespace net.atos.daf.ct2.identitysession.repository
         {
             dataAccess = _dataAccess;
         }
-         public async Task<int> InsertToken(AccountToken accountToken)
+         public async Task<string> InsertToken(AccountToken accountToken)
         {
             try
             {
-            var QueryStatement = @"INSERT INTO  master.accounttoken 
-                                      (
-                                       user_name
-                                      ,access_token
-                                      ,expire_in
-                                      ,refresh_token
-                                      ,refresh_expire_in
-                                      ,account_id
-                                      ,type
-                                      ,session_id
-                                      ,scope
-                                      ,idp_type
-                                      ,created_at
-                                     ) 
-                            	VALUES(
-                                      @user_name
-                                      ,@access_token
-                                      ,@expire_in
-                                      ,@refresh_token
-                                      ,@refresh_expire_in
-                                      ,@account_id
-                                      ,@type
-                                      ,@session_id
-                                      ,@scope
-                                      ,@idp_type
-                                      ,@created_at)RETURNING Id";
+                var QueryStatement = @"INSERT INTO  master.accounttoken 
+                                        (
+                                        user_name
+                                        ,access_token
+                                        ,expire_in
+                                        ,refresh_token
+                                        ,refresh_expire_in
+                                        ,account_id
+                                        ,type
+                                        ,session_id
+                                        ,scope
+                                        ,idp_type
+                                        ,created_at
+                                        ,token_id
+                                        ) 
+                                    VALUES(
+                                        @user_name
+                                        ,@access_token
+                                        ,@expire_in
+                                        ,@refresh_token
+                                        ,@refresh_expire_in
+                                        ,@account_id
+                                        ,@type
+                                        ,@session_id
+                                        ,@scope
+                                        ,@idp_type
+                                        ,@created_at
+                                        ,@token_id)RETURNING token_id";
 
-
-            var parameter = new DynamicParameters();
-            
-            parameter.Add("@user_name", accountToken.UserName);
-            parameter.Add("@access_token", accountToken.AccessToken);
-            parameter.Add("@expire_in", accountToken.ExpireIn);
-            parameter.Add("@refresh_token", accountToken.RefreshToken);
-            parameter.Add("@refresh_expire_in", accountToken.RefreshExpireIn); 
-            parameter.Add("@account_id", accountToken.AccountId);
-            parameter.Add("@type", accountToken.TokenType);
-            parameter.Add("@session_id", accountToken.SessionState);
-            parameter.Add("@scope", accountToken.Scope);
-            parameter.Add("@idp_type", accountToken.IdpType);
-            parameter.Add("@created_at", accountToken.CreatedAt);
-            //parameter.Add("@status", ((char)vehicle.Status).ToString() != null ? (char)vehicle.Status:'P');
-            int Id = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
-            accountToken.Id = Id;
-            return Id;
+                var parameter = new DynamicParameters();
+                
+                parameter.Add("@user_name", accountToken.UserName);
+                parameter.Add("@access_token", accountToken.AccessToken);
+                parameter.Add("@expire_in", accountToken.ExpireIn);
+                parameter.Add("@refresh_token", accountToken.RefreshToken);
+                parameter.Add("@refresh_expire_in", accountToken.RefreshExpireIn); 
+                parameter.Add("@account_id", accountToken.AccountId);
+                parameter.Add("@type", accountToken.TokenType);
+                parameter.Add("@session_id", new Guid(accountToken.SessionState));
+                parameter.Add("@scope", accountToken.Scope);
+                parameter.Add("@idp_type", accountToken.IdpType);
+                parameter.Add("@created_at", accountToken.CreatedAt);
+                parameter.Add("@token_id", Guid.NewGuid());
+                
+                Guid tokenId = await dataAccess.ExecuteScalarAsync<Guid>(QueryStatement, parameter);            
+                return tokenId.ToString();
             }
             catch(Exception ex)
             {
@@ -74,17 +75,36 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             
         }
-        public async Task<int> DeleteToken(AccountToken accountToken)
+        public async Task<int> DeleteToken(List<string> token_Id)//DONE (testing pending) Parameter change list<token_id> 
         {
             try
             {
-             var QueryStatement = @"DELETE FROM
-                                    master.accounttoken 
-                                    where id=@id";
-            var parameter = new DynamicParameters();
-            parameter.Add("@id", accountToken.Id);
-            int Id= await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
-            return Id;
+                string spliteTokenId=String.Join(",", token_Id);
+                var QueryStatement = @"DELETE FROM
+                                        master.accounttoken 
+                                        where token_id in (@token_id)";
+                var parameter = new DynamicParameters();
+                parameter.Add("@token_id",spliteTokenId);
+                int Id= await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                return Id;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<int> DeleteTokenbySessionId(string sessionId)
+        {
+            try
+            {
+                var QueryStatement = @"DELETE FROM
+                                        master.accounttoken 
+                                        where session_id=@session_id";
+                var parameter = new DynamicParameters();
+                parameter.Add("@session_id",new Guid(sessionId));
+                int Id= await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                return Id;
             }
             catch(Exception ex)
             {
@@ -95,7 +115,7 @@ namespace net.atos.daf.ct2.identitysession.repository
         {
             try
             {
-                var QueryStatement = @"select id
+                var QueryStatement = @"select token_id
                                         ,user_name
                                         ,access_token
                                         ,expire_in
@@ -128,11 +148,11 @@ namespace net.atos.daf.ct2.identitysession.repository
                 throw ex;
             }
         }
-        public async Task<IEnumerable<AccountToken>> GetTokenDetails(string AccessToken)
+        public async Task<IEnumerable<AccountToken>> GetTokenDetails(string TokenId)
         {
             try 
             {
-                var QueryStatement = @"select id
+                var QueryStatement = @"select token_id
                                         ,user_name
                                         ,access_token
                                         ,expire_in
@@ -145,10 +165,10 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         ,idp_type
                                         ,created_at
                                         from master.accounttoken 
-                                        where access_token=@AccessToken";
+                                        where token_id=@token_id";
                 var parameter = new DynamicParameters();
             
-                parameter.Add("@AccessToken", AccessToken);
+                parameter.Add("@token_id",new Guid(TokenId));
                 dynamic accounttoken = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
 
                 List<AccountToken> accountTokenList = new List<AccountToken>();
@@ -164,17 +184,20 @@ namespace net.atos.daf.ct2.identitysession.repository
                 throw ex;
             }
         }
-        public async Task<bool> ValidateToken(AccountToken accountToken)
+        public async Task<bool> ValidateToken(string TokenId)
         {
             try
             {
+                long currentUTCFormate=UTCHandling.GetUTCFromDateTime(DateTime.Now);
                 var QueryStatement = @"select
                                        count(*)
                                        from master.accounttoken 
-                                       where access_token=@AccessToken";
+                                       where token_id=@token_id
+                                       AND expire_in < @expire_in;";//DONE (testing pending)utc time with grether than datetime.now() with expireat
                 var parameter = new DynamicParameters();
             
-                parameter.Add("@AccessToken", accountToken.AccessToken);
+                parameter.Add("@token_id",new Guid(TokenId));
+                parameter.Add("@expire_in",currentUTCFormate);
                 int accounttoken = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 bool isValideToken=accounttoken>0;
                 
@@ -189,7 +212,7 @@ namespace net.atos.daf.ct2.identitysession.repository
         private AccountToken Map(dynamic record)
         {
             AccountToken entity = new AccountToken();
-            entity.Id=record.id;
+            entity.TokenId=record.token_id;
             entity.UserName=record.user_name;
             entity.AccessToken=record.access_token;
             entity.ExpireIn=record.expire_in;
