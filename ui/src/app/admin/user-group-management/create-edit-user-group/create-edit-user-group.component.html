@@ -99,7 +99,7 @@
             
                 <div class="example-container">
             
-                  <mat-table [dataSource]="dataSourceUsers" class="table-items" matSort>
+                  <!-- <mat-table [dataSource]="dataSourceUsers" class="table-items" matSort>
                     
                     <ng-container *ngFor="let disCol of displayedColumns; let colIndex = index" matColumnDef="{{disCol}}">
                     <div *ngIf="disCol == 'select'">
@@ -128,7 +128,54 @@
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumns;">
                     </mat-row>
+                  </mat-table> -->
+                  
+                  
+                  
+                  <mat-table [dataSource]="dataSourceUsers" class="table-items" matSort>
+                    <ng-container matColumnDef="select">
+                    <div>
+                        <mat-header-cell *matHeaderCellDef>
+                            <mat-checkbox (change)='$event ? masterToggleForVehGrp() : null'
+                                [checked]='selectionForVehGrp.hasValue() && isAllSelectedForVehGrp()'
+                                [indeterminate]='selectionForVehGrp.hasValue() && !isAllSelectedForVehGrp()'
+                                [aria-label]='checkboxLabelForVehGrp()'>
+                            </mat-checkbox>
+                            <span style="margin: 5px 0px 0px 5px;"> All </span>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <mat-checkbox (click)='$event.stopPropagation()'
+                                (change)='$event ? selectionForVehGrp.toggle(row) : null'
+                                [checked]='selectionForVehGrp.isSelected(row)'
+                                [aria-label]='checkboxLabelForVehGrp(row)'>
+                            </mat-checkbox>
+                        </mat-cell>
+                      </div>
+                    </ng-container>
+                    <ng-container matColumnDef="firstName">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
+                      <mat-cell *matCellDef="let row">
+                        {{ row.firstName }}
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="emailId">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEmailID || 'Email ID' }}</mat-header-cell>
+                      <mat-cell *matCellDef="let row">{{ row.emailId }}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="roles">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRole || 'Role' }}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}">{{ row.roles.length > 0 ? row.roles[0].name : '-' }}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="accountGroups">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserGroup || 'User Group' }}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}">{{ row.accountGroups.length > 0 ? row.accountGroups[0].name : '-' }}</mat-cell>
+                    </ng-container>
+
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;">
+                    </mat-row>
                   </mat-table>
+                  
                   <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
                 </div>
               </mat-card>

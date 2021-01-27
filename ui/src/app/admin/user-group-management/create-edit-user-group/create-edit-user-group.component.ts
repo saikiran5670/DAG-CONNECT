@@ -73,13 +73,13 @@ export class CreateEditUserGroupComponent implements OnInit {
   }  
 
   @Output() backToPage = new EventEmitter<any>();
-  UsrGrpColumns: string[] = [
-    'All',
-    'User Name',
-    'Email ID',
-    'User Role',
-    'User Group',
-  ];
+  // UsrGrpColumns: string[] = [
+  //   'All',
+  //   'User Name',
+  //   'Email ID',
+  //   'User Role',
+  //   'User Group',
+  // ];
   displayedColumns: string[] = [
     'select',
     'firstName',
@@ -102,6 +102,8 @@ export class CreateEditUserGroupComponent implements OnInit {
   enteredUserGroupDescription: any;
   editUserContent: boolean = false;
   updatedRowData : object = {}
+  selectedAccounts =  new SelectionModel(true,[]);
+  accountSelected = [];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -119,6 +121,7 @@ export class CreateEditUserGroupComponent implements OnInit {
   initData: any;
   rowsData: any;
   titleText: string;
+  orgId: number;
 
   UserGroupForm: FormGroup;
   constructor(private _formBuilder: FormBuilder,
@@ -130,30 +133,49 @@ export class CreateEditUserGroupComponent implements OnInit {
 
 
   ngOnInit(): void {
+    this.orgId = 32;
     this.UserGroupForm = this._formBuilder.group({
       userGroupName: ['', [Validators.required]],
       userGroupDescription: [],
     });
 
     this.loadUsersData();
+ 
 
   }
 
+  makeRoleAccountGrpList(initdata){
+    initdata.forEach((element, index) => {
+      let roleTxt: any = '';
+      let accGrpTxt: any = '';
+      element.roles.forEach(resp => {
+        roleTxt += resp.name + ',';
+      });
+      element.accountGroups.forEach(resp => {
+        accGrpTxt += resp.name + ',';
+      });
+
+      if(roleTxt != ''){
+        roleTxt = roleTxt.slice(0, -1);
+      }
+      if(accGrpTxt != ''){
+        accGrpTxt = accGrpTxt.slice(0, -1);
+      }
+
+      initdata[index].roleList = roleTxt; 
+      initdata[index].accountGroupList = accGrpTxt;
+    });
+    
+    return initdata;
+  }
 
   loadUsersData() {
-
-    // this.getAccountGrp = {
-    //   accountGroupId : this.selectedRowData.id,
-    //   organizationId : 1,
-    //   accountId : 0,
-    //   accounts : true,
-    //   accountCount : true
-    // }
+  
     let getUserData: any = {
       "accountId": 0,
-      "organizationId": 32,
+      "organizationId": this.orgId,
       // "organizationId": this.selectedRowData.organizationId,
-      "accountGroupId": 137,
+      "accountGroupId": 0,
       // "accountGroupId": this.selectedRowData.id,
       "vehicleGroupId": 0,
       "roleId": 0,
@@ -162,13 +184,17 @@ export class CreateEditUserGroupComponent implements OnInit {
     // this.userService.getUsers().subscribe((usrlist) => {
       // console.log("--------getDataOld---",usrlist);
     this.accountService.getAccountDetails(getUserData).subscribe((usrlist) => {
-
+      usrlist = this.makeRoleAccountGrpList(usrlist);
       this.updatedRowData = usrlist;
+
       // this.filterFlag = true;
       this.initData = usrlist;
       this.dataSourceUsers = new MatTableDataSource(usrlist);
       this.dataSourceUsers.paginator = this.paginator;
       this.dataSourceUsers.sort = this.sort;
+      if(this.editFlag){
+        this.onReset();
+      }
     });
   // });
 }
@@ -177,10 +203,24 @@ export class CreateEditUserGroupComponent implements OnInit {
     this.createStatus = false;
     this.backToPage.emit({ editFlag: false, editText: 'cancel' });
   }
-  onReset() {
-    // this.newUserGroupName = '';
-    // this.enteredUserGroupDescription = '';
+  onReset(){
+    this.accountSelected = this.selectedRowData.groupRef;
+      
+      this.dataSourceUsers.data.forEach(row => {
+        if(this.accountSelected){
+          for(let element of this.accountSelected){
+            if(element.ref_Id == row.id){
+              this.selectionForVehGrp.select(row);
+              break;
+            }
+            else{
+              this.selectionForVehGrp.deselect(row);
+            }
+          }
+        }
+      })
   }
+
   onInputChange(event) {
 
     this.newUserGroupName = event.target.value;
@@ -191,6 +231,11 @@ export class CreateEditUserGroupComponent implements OnInit {
 
   onCreate(res) {
     let create = document.getElementById("createUpdateButton");
+
+    let accountList = [];
+    this.selectionForVehGrp.selected.forEach(element => {
+      accountList.push({ "accountGroupId" : (element.accountGroups.length > 0 ? element.accountGroups[0].id : 0 )  , "accountId": element.id})
+    });
 
     // mockData added for API
     // let randomMockId = Math.random();
@@ -205,17 +250,14 @@ export class CreateEditUserGroupComponent implements OnInit {
     //   users: "04",
     //   userGroupDescriptions: this.UserGroupForm.controls.userGroupDescription.value,
     // }
+
+    //-----------------------------------------
     this.createaccountgrp = {
       id: 50,
       name: this.UserGroupForm.controls.userGroupName.value,
       description: this.UserGroupForm.controls.userGroupDescription.value,
       organizationId : 1,
-      accounts : [
-        {
-          "accountGroupId": 0,
-          "accountId": 0
-        }
-      ],
+      accounts : accountList,
       accountCount : 0,
     }
 
@@ -226,6 +268,8 @@ export class CreateEditUserGroupComponent implements OnInit {
     this.viewDisplayFlag = false;
 
     if (create.innerText == "Confirm") {
+
+
       // this.usrgrp = {
       //   organizationId: this.selectedRowData.organizationId,
       //   name: this.UserGroupForm.controls.userGroupName.value,
@@ -241,12 +285,7 @@ export class CreateEditUserGroupComponent implements OnInit {
         name: this.UserGroupForm.controls.userGroupName.value,
         description: this.UserGroupForm.controls.userGroupDescription.value,
         organizationId : this.selectedRowData.organizationId,
-        accounts : [
-          {
-            "accountGroupId": 0,
-            "accountId": 0
-          }
-        ],
+        accounts : accountList,
         accountCount : 0,
       }
 
