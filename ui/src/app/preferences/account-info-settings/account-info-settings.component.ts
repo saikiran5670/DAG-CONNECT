@@ -55,10 +55,10 @@ export class AccountInfoSettingsComponent implements OnInit {
 
   salutationList: any = [
     {
-      name: 'Mr.'
+      name: 'Mr'
     },
     {
-      name: 'Ms.'
+      name: 'Ms'
     }
   ];
 
@@ -145,7 +145,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.timeFormatDropdownData = data[6];
       this.vehicleDisplayDropdownData = data[7];
       this.landingPageDisplayDropdownData = data[8];
-      this.filterDefaultGeneralSetting();
+      this.filterDefaultGeneralSetting(this.accountPreferenceData);
       this.setDefaultGeneralSetting();
       this.editGeneralSettingsFlag = false;
       }, (error) => {  });
@@ -172,15 +172,15 @@ export class AccountInfoSettingsComponent implements OnInit {
     });
   }
 
-  filterDefaultGeneralSetting(){
-    this.languageData = this.languageDropdownData.filter(resp => resp.id === this.accountPreferenceData.languageId);
-    this.timezoneData = this.timezoneDropdownData.filter(resp => resp.id === this.accountPreferenceData.timezoneId);
-    this.unitData = this.unitDropdownData.filter(resp => resp.id === this.accountPreferenceData.unitId);
-    this.currencyData = this.currencyDropdownData.filter(resp => resp.id === this.accountPreferenceData.currencyId);
-    this.dateFormatData = this.dateFormatDropdownData.filter(resp => resp.id === this.accountPreferenceData.dateFormatTypeId);
-    this.timeFormatData = this.timeFormatDropdownData.filter(resp => resp.id === this.accountPreferenceData.timeFormatId);
-    this.vehicleDisplayData = this.vehicleDisplayDropdownData.filter(resp => resp.id === this.accountPreferenceData.vehicleDisplayId);
-    this.landingPageDisplayData = this.landingPageDisplayDropdownData.filter(resp => resp.id === this.accountPreferenceData.landingPageDisplayId);
+  filterDefaultGeneralSetting(accountPreferenceData: any){
+    this.languageData = this.languageDropdownData.filter(resp => resp.id === accountPreferenceData.languageId);
+    this.timezoneData = this.timezoneDropdownData.filter(resp => resp.id === accountPreferenceData.timezoneId);
+    this.unitData = this.unitDropdownData.filter(resp => resp.id === accountPreferenceData.unitId);
+    this.currencyData = this.currencyDropdownData.filter(resp => resp.id === accountPreferenceData.currencyId);
+    this.dateFormatData = this.dateFormatDropdownData.filter(resp => resp.id === accountPreferenceData.dateFormatTypeId);
+    this.timeFormatData = this.timeFormatDropdownData.filter(resp => resp.id === accountPreferenceData.timeFormatId);
+    this.vehicleDisplayData = this.vehicleDisplayDropdownData.filter(resp => resp.id === accountPreferenceData.vehicleDisplayId);
+    this.landingPageDisplayData = this.landingPageDisplayDropdownData.filter(resp => resp.id === accountPreferenceData.landingPageDisplayId);
   }
 
   openChangePasswordPopup(){
@@ -214,7 +214,11 @@ export class AccountInfoSettingsComponent implements OnInit {
         organization_Id: this.organizationId
     }
     this.accountService.updateAccount(objData).subscribe((data)=>{
-      this.loadAccountData();
+      //this.loadAccountData();
+      this.accountInfo = [data];
+      this.editAccountSettingsFlag = false;
+      this.isSelectPictureConfirm = true;
+      this.setDefaultAccountInfo();
     });
   }
 
@@ -232,21 +236,24 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   onGeneralSettingsUpdate(){
-    let objData: any ={
+    let objData: any = {
       id: 0,
       refId: this.accountId,
-      languageId: this.userSettingsForm.controls.language.value,
-      timezoneId: this.userSettingsForm.controls.timeZone.value,
-      currencyId: this.userSettingsForm.controls.currency.value,
-      unitId: this.userSettingsForm.controls.unit.value,
-      vehicleDisplayId: this.userSettingsForm.controls.vehDisplay.value,
-      dateFormatTypeId: this.userSettingsForm.controls.dateFormat.value,
-      timeFormatId: this.userSettingsForm.controls.timeFormat.value,
-      landingPageDisplayId: this.userSettingsForm.controls.landingPage.value,
+      languageId: this.userSettingsForm.controls.language.value ? this.userSettingsForm.controls.language.value : 5,
+      timezoneId: this.userSettingsForm.controls.timeZone.value ? this.userSettingsForm.controls.timeZone.value : 45,
+      unitId: this.userSettingsForm.controls.unit.value ? this.userSettingsForm.controls.unit.value : 8,
+      currencyId: this.userSettingsForm.controls.currency.value ? this.userSettingsForm.controls.currency.value : 3,
+      dateFormatTypeId: this.userSettingsForm.controls.dateFormat.value ? this.userSettingsForm.controls.dateFormat.value : 10,
+      timeFormatId: this.userSettingsForm.controls.timeFormat.value ? this.userSettingsForm.controls.timeFormat.value : 8,
+      vehicleDisplayId: this.userSettingsForm.controls.vehDisplay.value ? this.userSettingsForm.controls.vehDisplay.value : 8,
+      landingPageDisplayId: this.userSettingsForm.controls.landingPage.value ? this.userSettingsForm.controls.landingPage.value : 10,
       driverId: ""
     }
     this.accountService.updateAccountPreference(objData).subscribe((data) => {
-      this.loadGeneralSettingData();
+      //this.loadGeneralSettingData();
+      this.filterDefaultGeneralSetting(data);
+      this.setDefaultGeneralSetting();
+      this.editGeneralSettingsFlag = false;
     });
   }
 
