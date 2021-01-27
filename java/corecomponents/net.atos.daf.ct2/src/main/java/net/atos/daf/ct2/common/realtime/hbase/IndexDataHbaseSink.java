@@ -32,6 +32,7 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 	private  Configuration conf = null;
 	  private  String tableName = null;
 	  private Table table = null;
+	  private HbaseConnection conn = null;
 	
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
@@ -56,7 +57,7 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 		  envParams.get(DafConstants.HBASE_REGIONSERVER_PORT), tableName);
 		
 		
-		HbaseConnection conn = null;
+//		HbaseConnection conn = null;
          
 		try{
 			conn = connectionPool.getHbaseConnection();
@@ -70,16 +71,18 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 			System.out.println("table_name anshu2 -- " + tableName );
 			
 		}catch(IOException e){
-	            log.error("create connection failed from the configuration" + e.toString());
+	            log.error("create connection failed from the configuration" + e.getMessage());
+	            throw e;
 		}catch (Exception e) {
 			// TODO: handle exception
-            log.error("there is an exception" + e.toString());
+            log.error("there is an exception" + e.getMessage());
+            throw e;
 		}
-		finally {
-            if (conn != null) {
-                connectionPool.releaseConnection(conn);
-            }
-        } 
+//		finally {
+//            if (conn != null) {
+//                connectionPool.releaseConnection(conn);
+//            }
+//        } 
 						
 		System.out.println("Index table_name -- " + tableName );
 		
@@ -201,9 +204,9 @@ table.put(put);
             if (table != null) {
                 table.close();
             }
-           /* if (conn != null) {
-                conn.close();
-            }*/
+            if (conn != null) {
+                conn.releaseConnection();
+            }
         } catch (IOException e) {
            log.error("Error in IndexDataHBase" + e.getMessage());
         }

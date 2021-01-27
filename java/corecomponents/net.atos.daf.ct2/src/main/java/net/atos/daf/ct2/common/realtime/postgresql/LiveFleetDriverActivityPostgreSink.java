@@ -52,11 +52,20 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 				envParams.get(DafConstants.DATAMART_POSTGRE_DATABASE_NAME),
 				envParams.get(DafConstants.DATAMART_POSTGRE_USER),
 				envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
+		
+		try {
+			
+			connection = PostgreDataSourceConnection.getDataSourceConnection(dataSource);
 
-		connection = PostgreDataSourceConnection.getDataSourceConnection(dataSource);
+			statement = connection.prepareStatement(livefleetdriver);
+			stmt = connection.prepareStatement(readquery);
+			
+		}catch(Exception e) {
+			logger.error("Error in Live fleet driver" + e.getMessage());
+			
+		}
 
-		statement = connection.prepareStatement(livefleetdriver);
-		stmt = connection.prepareStatement(readquery);
+		
 
 	}
 
