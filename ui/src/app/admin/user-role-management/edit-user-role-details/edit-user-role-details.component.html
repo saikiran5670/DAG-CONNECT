@@ -54,7 +54,7 @@
                         {{ translationData.lblUserRoleType || 'Role Type'}}<span class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-select formControlName="roleType">
+                        <mat-select formControlName="roleType" [disabled]="!createStatus && !duplicateFlag">
                             <mat-option *ngFor="let roleType of roleTypes" [value]="roleType">
                                 {{roleType}}
                             </mat-option>
