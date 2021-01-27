@@ -56,6 +56,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 Vehicle vehicle = new Vehicle();
                 vehicle.Name=vehicleRequest.Name;
                 vehicle.VIN=vehicleRequest.VIN;
+                vehicle.Organization_Id=vehicleRequest.Organization_Id;
                 vehicle.License_Plate_Number=vehicleRequest.License_Plate_Number;
                 vehicle.Status=vehicleRequest.Status;
                 vehicle.Vid=null;
