@@ -25,19 +25,29 @@ export class VehicleGroup {
     }
   ];
 }
-export class vehicleGrpGetRequest{
+export class vehicleGrpGetRequest {
   id: number;
   organizationID: number;
   vehicles: boolean;
   vehiclesGroup: boolean;
-  groupIds:[{
-
-  }]
+  groupIds: [{}];
 }
-export class vehicleGetRequest{
+export class vehicleGetRequest {
   vehicleId: number;
   organizationID: number;
   vehicleIdList: string;
   vin: string;
-  status:number
+  status: number;
+}
+export class vehicleUpdateRequest {
+  id: number;
+  name: string;
+  description: string;
+  organizationId: number;
+  vehicles: [
+    {
+      vehicleGroupId: number;
+      vehicleId: number;
+    }
+  ];
 }

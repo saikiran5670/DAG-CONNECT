@@ -41,9 +41,9 @@ namespace net.atos.daf.ct2.identitysession.test
             accountsession.AccountId =4;
             accountsession.CreatedAt = 1;
 
-            int result= await _accountSessionManager.InsertSession(accountsession);
+            string result= await _accountSessionManager.InsertSession(accountsession);
             Assert.IsNotNull(result);
-            Assert.IsTrue(result>0);           
+            Assert.IsTrue(string.IsNullOrEmpty(result));           
         }
 
         [TestCategory("Unit-Test-Case")]
@@ -52,7 +52,7 @@ namespace net.atos.daf.ct2.identitysession.test
         public async Task UnT_identitysession_AccountSessionManager_UpdateSession()
         { 
             AccountSession accountsession = new AccountSession();   
-            accountsession.Id=2;  
+            accountsession.Id=new Guid("201e8514-3fbb-4f1f-a64d-f8ec6a128fef");  
             accountsession.IpAddress = "12.123.46.12";
             accountsession.LastSessionRefresh = 232;
             accountsession.SessionStartedAt = 21;
@@ -60,9 +60,9 @@ namespace net.atos.daf.ct2.identitysession.test
             accountsession.AccountId =4;
             accountsession.CreatedAt = 1;
 
-            int result= await _accountSessionManager.UpdateSession(accountsession);
+            string result= await _accountSessionManager.UpdateSession(accountsession);
             Assert.IsNotNull(result);
-            Assert.IsTrue(result>0);           
+            Assert.IsTrue(string.IsNullOrEmpty(result));           
         }
 
         [TestCategory("Unit-Test-Case")]
@@ -71,7 +71,7 @@ namespace net.atos.daf.ct2.identitysession.test
         public async Task UnT_identitysession_AccountSessionManager_DeleteSession()
         { 
             AccountSession accountsession = new AccountSession();  
-            accountsession.Id=2;   
+            accountsession.Id=new Guid("201e8514-3fbb-4f1f-a64d-f8ec6a128fef");
             accountsession.IpAddress = "12.123.46.12";
             accountsession.LastSessionRefresh = 232;
             accountsession.SessionStartedAt = 21;
@@ -79,9 +79,9 @@ namespace net.atos.daf.ct2.identitysession.test
             accountsession.AccountId =4;
             accountsession.CreatedAt = 12;
 
-            int result= await _accountSessionManager.DeleteSession(accountsession);
+            string result= await _accountSessionManager.DeleteSession(accountsession);
             Assert.IsNotNull(result);
-            Assert.IsTrue(result>0);           
+            Assert.IsTrue(string.IsNullOrEmpty(result));            
         }
 
         [TestCategory("Unit-Test-Case")]

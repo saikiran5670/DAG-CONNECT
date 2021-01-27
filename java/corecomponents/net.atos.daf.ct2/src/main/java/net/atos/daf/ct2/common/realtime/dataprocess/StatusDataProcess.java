@@ -38,7 +38,7 @@ public class StatusDataProcess {
 
 			String outputFolder = params.get("output");
 
-			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(params);
+			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams,"StatusJob");
 			FlinkKafkaStatusDataConsumer FlinkKafkaStatusConsumer = new FlinkKafkaStatusDataConsumer();
 				
 			//DataStream<String> consumerStream = flinkKafkaConsumer.connectToKafkaTopic(params, env);

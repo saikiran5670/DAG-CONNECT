@@ -80,16 +80,6 @@ INSERT INTO master.timezone  (short_name,  name ,  ut_coff_set,   key)  SELECT n
 INSERT INTO master.timezone  (short_name,  name ,  ut_coff_set,   key)  SELECT null,'Europe/Amsterdam','UTC +01:00' ,'dtimezone_Europe/Amsterdam' WHERE NOT EXISTS  (   SELECT 1   FROM master.timezone   WHERE key ='dtimezone_Europe/Amsterdam');
 INSERT INTO master.timezone  (short_name,  name ,  ut_coff_set,   key)  SELECT null,'Europe/Moscow','UTC +03:00' ,'dtimezone_Europe/Moscow' WHERE NOT EXISTS  (   SELECT 1   FROM master.timezone   WHERE key ='dtimezone_Europe/Moscow');
 
-INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dtimezone_Europe/Dublin','Europe/Dublin',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dtimezone_Europe/Dublin');
-INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dtimezone_Europe/Brussels','Europe/Brussels',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dtimezone_Europe/Brussels');
-INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dtimezone_Europe/Luxembourg','Europe/Luxembourg',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dtimezone_Europe/Luxembourg');
-INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dtimezone_Asia/India','Asia/India',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dtimezone_Asia/India');
-INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dtimezone_Europe/Athens','Europe/Athens',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dtimezone_Europe/Athens');
-INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dtimezone_Europe/Saratov','Europe/Saratov',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dtimezone_Europe/Saratov');
-INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dtimezone_Europe/Amsterdam','Europe/Amsterdam',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dtimezone_Europe/Amsterdam');
-INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dtimezone_Europe/Moscow','Europe/Moscow',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dtimezone_Europe/Moscow');
-
-
 INSERT INTO translation.language (name ,    code ,   key ,   description) select 'Bulgarian','bg-BG','dlanguage_Bulgarian',null WHERE NOT EXISTS  (   SELECT 1   FROM translation.language  WHERE code = 'bg-BG');
 INSERT INTO translation.language (name ,    code ,   key ,   description) select 'Czech','cs-CZ','dlanguage_Czech',null WHERE NOT EXISTS  (   SELECT 1   FROM translation.language  WHERE code = 'cs-CZ');
 INSERT INTO translation.language (name ,    code ,   key ,   description) select 'Danish','da-DK','dlanguage_Danish',null WHERE NOT EXISTS  (   SELECT 1   FROM translation.language  WHERE code = 'da-DK');
@@ -113,6 +103,15 @@ INSERT INTO translation.language (name ,    code ,   key ,   description) select
 INSERT INTO translation.language (name ,    code ,   key ,   description) select 'Slovenian','sl-SI','dlanguage_Slovenian',null WHERE NOT EXISTS  (   SELECT 1   FROM translation.language  WHERE code = 'sl-SI');
 INSERT INTO translation.language (name ,    code ,   key ,   description) select 'Swedish','sv-SE','dlanguage_Swedish',null WHERE NOT EXISTS  (   SELECT 1   FROM translation.language  WHERE code = 'sv-SE');
 INSERT INTO translation.language (name ,    code ,   key ,   description) select 'Turkish','Tr-tr','dlanguage_Turkish',null WHERE NOT EXISTS  (   SELECT 1   FROM translation.language  WHERE code = 'Tr-tr');
+
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dtimezone_Europe/Dublin','Europe/Dublin',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dtimezone_Europe/Dublin');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dtimezone_Europe/Brussels','Europe/Brussels',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dtimezone_Europe/Brussels');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dtimezone_Europe/Luxembourg','Europe/Luxembourg',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dtimezone_Europe/Luxembourg');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dtimezone_Asia/India','Asia/India',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dtimezone_Asia/India');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dtimezone_Europe/Athens','Europe/Athens',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dtimezone_Europe/Athens');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dtimezone_Europe/Saratov','Europe/Saratov',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dtimezone_Europe/Saratov');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dtimezone_Europe/Amsterdam','Europe/Amsterdam',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dtimezone_Europe/Amsterdam');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dtimezone_Europe/Moscow','Europe/Moscow',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dtimezone_Europe/Moscow');
 
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dlanguage_Bulgarian','Bulgarian',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dlanguage_Bulgarian');
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dlanguage_Czech','Czech',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dlanguage_Czech');
@@ -685,7 +684,7 @@ INSERT INTO master.menu (name ,
 	is_active ,
 	parent_id  ,
 	feature_id) 
-select 'Admin',null,true,null,null 
+select 'Admin',null,true,null,1 
 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Admin');
 
 INSERT INTO master.menu (name ,
@@ -693,9 +692,41 @@ INSERT INTO master.menu (name ,
 	is_active ,
 	parent_id  ,
 	feature_id) 
-select 'User Management',null,true,(select id from master.menu where name = 'User Management'),null 
+select 'User Management',null,true,(select id from master.menu where name = 'User Management'),1 
 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'User Management');
 
+INSERT INTO master.menu (id, name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 0,'Dummy',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Dummy');	
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Dashboard',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Dashboard');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Live Fleet',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Live Fleet');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Live Fleet',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Live Fleet');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Log Book',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Log Book');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Report');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Trip Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Trip Report');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Trip Tracing',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Trip Tracing');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Advanced Fleet Fuel Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Advanced Fleet Fuel Report');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Fleet Fuel Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Fleet Fuel Report');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Fleet Utilisation',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Fleet Utilisation');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Fuel Benchmarking',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Fuel Benchmarking');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Fuel Deviation Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Fuel Deviation Report');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Vehicle Performance Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Vehicle Performance Report');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Drive Time Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Drive Time Management');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'ECO Score Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'ECO Score Report');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Configuration',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Configuration');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Alerts',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Alerts');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Landmarks',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Landmarks');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Vehicle Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Vehicle Management');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Report Scheduler',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Report Scheduler');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Admin',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Admin');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Orgnization Details',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Orgnization Details');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'User Group Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'User Group Management');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'User Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'User Management');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'User Role Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'User Role Management');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Driver Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Driver Management');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Package Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Package Management');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Tachograph',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Tachograph');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Mobile Portal',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Mobile Portal');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Shop',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Shop');
+INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Information',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Information');
 
 
 INSERT INTO translation.translationgrouping 
@@ -905,40 +936,6 @@ select 'dcurrency_Euro',(select id from master.menu where name = 'User Managemen
 WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'dcurrency_Euro');
 
 
-
-
-INSERT INTO master.menu (id, name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 0,'Dummy',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Dummy');	
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Dashboard',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Dashboard');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Live Fleet',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Live Fleet');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Live Fleet',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Live Fleet');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Log Book',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Log Book');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Report');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Trip Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Trip Report');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Trip Tracing',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Trip Tracing');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Advanced Fleet Fuel Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Advanced Fleet Fuel Report');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Fleet Fuel Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Fleet Fuel Report');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Fleet Utilisation',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Fleet Utilisation');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Fuel Benchmarking',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Fuel Benchmarking');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Fuel Deviation Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Fuel Deviation Report');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Vehicle Performance Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Vehicle Performance Report');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Drive Time Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Drive Time Management');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'ECO Score Report',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'ECO Score Report');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Configuration',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Configuration');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Alerts',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Alerts');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Landmarks',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Landmarks');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Vehicle Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Vehicle Management');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Report Scheduler',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Report Scheduler');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Admin',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Admin');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Orgnization Details',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Orgnization Details');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'User Group Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'User Group Management');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'User Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'User Management');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'User Role Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'User Role Management');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Driver Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Driver Management');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Package Management',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Package Management');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Tachograph',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Tachograph');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Mobile Portal',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Mobile Portal');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Shop',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Shop');
-INSERT INTO master.menu (name ,  description ,  is_active ,  parent_id  ,  feature_id)  select 'Information',null,true,null,1 WHERE NOT EXISTS  (   SELECT 1   FROM master.menu  WHERE name = 'Information');
 
 
 INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'lblFullScreen',0,'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'lblFullScreen' and ref_id=0);

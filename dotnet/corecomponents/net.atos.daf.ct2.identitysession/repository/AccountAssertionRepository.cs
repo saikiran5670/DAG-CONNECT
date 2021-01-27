@@ -17,12 +17,13 @@ namespace net.atos.daf.ct2.identitysession.repository
         {
             dataAccess = _dataAccess;
         }
-        public async Task<int> InsertAssertion(AccountAssertion accountAssertion)
+        public async Task<int> InsertAssertion(AccountAssertion accountAssertion)//TODO Use bulk insertion
         {
             try
-            {
+            {          
+
             //Insert query in account assertion
-              var QueryStatement = @"INSERT INTO master.accountassertion
+            var QueryStatement = @"INSERT INTO master.accountassertion
                                       (
                                         key,
                                         value,
@@ -35,17 +36,27 @@ namespace net.atos.daf.ct2.identitysession.repository
                                       ,@account_id
                                       ,@session_id
                                       ,@created_at                                      
-                                     ) RETURNING id";
+                                     ) RETURNING account_id";
 
             var parameter = new DynamicParameters();
             
             parameter.Add("@key", accountAssertion.Key);
             parameter.Add("@value", accountAssertion.Value);
             parameter.Add("@account_id", Convert.ToInt32(accountAssertion.AccountId));
-            parameter.Add("@session_id", Convert.ToInt32(accountAssertion.SessionState));           
-            parameter.Add("@created_at", Convert.ToInt64(accountAssertion.CreatedAt));           
-           
-            int InsertedAccountAssertionId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);          
+            parameter.Add("@session_id", new Guid(accountAssertion.SessionState));           
+            parameter.Add("@created_at", Convert.ToInt64(accountAssertion.CreatedAt)); 
+
+            int result_CheckDuplicate =await CheckDuplicateKeyValue(accountAssertion.Key,accountAssertion.Value,Convert.ToInt32(accountAssertion.AccountId));
+
+            int InsertedAccountAssertionId=0;   
+            if(result_CheckDuplicate>0)  
+            {
+               InsertedAccountAssertionId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);   
+            } 
+            else
+            {
+               InsertedAccountAssertionId=await UpdateAssertion(accountAssertion);
+            }          
            
             return InsertedAccountAssertionId;
             }
@@ -53,6 +64,26 @@ namespace net.atos.daf.ct2.identitysession.repository
             {
                 throw ex;
             }
+        }
+
+        private async Task<int> CheckDuplicateKeyValue(string Key,string Value,int AccountId)
+        {
+             //Query for check duplication value and key        
+            var QueryStatement_select = @"SELECT 
+                                    count(*)
+                                    FROM master.accountassertion
+                                    WHERE account_id=@account_id
+                                    AND key=@key
+                                    AND value=@value;";
+
+            var parameter = new DynamicParameters();            
+            parameter.Add("@key", Key);
+            parameter.Add("@value", Value);
+            parameter.Add("@account_id", AccountId);
+
+            int result_CheckDuplicate = await dataAccess.ExecuteScalarAsync<int>(QueryStatement_select, parameter); 
+
+            return result_CheckDuplicate;            
         }
 
         public async Task<int> UpdateAssertion(AccountAssertion accountAssertion)
@@ -66,15 +97,17 @@ namespace net.atos.daf.ct2.identitysession.repository
                                     account_id=@account_id, 
                                     session_id=@session_id, 
                                     created_at=@created_at
-                                    WHERE id=@id
-                                    RETURNING id;";
+                                    WHERE account_id=@account_id
+                                    AND session_id=@session_id
+                                    AND key=@key
+                                    AND value=@value
+                                    RETURNING account_id;";
 
-                var parameter = new DynamicParameters();
-                parameter.Add("@id", accountAssertion.Id);
+                var parameter = new DynamicParameters();                
                 parameter.Add("@key", accountAssertion.Key);
                 parameter.Add("@value", accountAssertion.Value);
                 parameter.Add("@account_id", Convert.ToInt32(accountAssertion.AccountId));
-                parameter.Add("@session_id", Convert.ToInt32(accountAssertion.SessionState));           
+                parameter.Add("@session_id", new Guid(accountAssertion.SessionState));           
                 parameter.Add("@created_at", Convert.ToInt64(accountAssertion.CreatedAt));                    
 
                 int accountassertionId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
@@ -92,11 +125,32 @@ namespace net.atos.daf.ct2.identitysession.repository
             try
             {
                 var QueryStatement=@"DELETE FROM master.accountassertion	                           
-                                    WHERE account_id=@account_id
-                                    RETURNING id;";
+                                    WHERE account_id=@account_id;";
+                                    //RETURNING id
 
                 var parameter = new DynamicParameters();
                 parameter.Add("@account_id", accountId);    
+                
+                int accountassertionId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+
+                return accountassertionId;
+            }
+            catch(Exception ex)
+            {
+                 throw ex;   
+            }
+        }
+
+        public async Task<int> DeleteAssertion(string sessionId)
+        {
+            try
+            {
+                var QueryStatement=@"DELETE FROM master.accountassertion	                           
+                                    WHERE session_id=@session_id;";
+                                    //RETURNING id
+
+                var parameter = new DynamicParameters();
+                parameter.Add("@session_id", new Guid(sessionId));    
                 
                 int accountassertionId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
 
@@ -112,8 +166,7 @@ namespace net.atos.daf.ct2.identitysession.repository
         {
             try
             {
-                var QueryStatement=@"SELECT 
-                                    id, 
+                var QueryStatement=@"SELECT                                     
                                     key, 
                                     value, 
                                     account_id, 
@@ -144,8 +197,7 @@ namespace net.atos.daf.ct2.identitysession.repository
 
         private AccountAssertion Map(dynamic record)
         {
-            AccountAssertion entity = new AccountAssertion();
-            entity.Id = record.id;
+            AccountAssertion entity = new AccountAssertion();            
             entity.Key = record.key;
             entity.Value = record.value;
             entity.AccountId =Convert.ToString(record.account_id);

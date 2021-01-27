@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.organizationservicerest.entity
         public  DateTime ?  reference_date { get; set; } 
         public bool optout_status  { get; set; } 
         public   DateTime ?  optout_status_changed_date  { get; set; } 
-         public bool is_active  { get; set; }  
+       //  public bool is_active  { get; set; }  
       
     }
 }

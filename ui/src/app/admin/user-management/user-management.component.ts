@@ -18,6 +18,7 @@ import { Greeter, GreeterClient, ServiceError } from 'src/app/protos/Greet/greet
 import { HelloReply, HelloRequest } from 'src/app/protos/Greet/greet_pb';
 import { grpc } from '@improbable-eng/grpc-web';
 import { AccountService } from '../../services/account.service';
+import { RoleService } from '../../services/role.service';
 
 @Component({
   selector: 'app-user-management',
@@ -54,6 +55,8 @@ export class UserManagementComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   filterFlag = false;
 
+  accountOrganizationId: any = 0;
+
   dialogRef: MatDialogRef<CommonTableComponent>;
   backendGrpc: any;
   gRpcClient: GreeterClient;
@@ -66,7 +69,8 @@ export class UserManagementComponent implements OnInit {
     private translationService: TranslationService,
     private dialog: MatDialog,
     private config: ConfigService,
-    private accountService: AccountService
+    private accountService: AccountService,
+    private roleService: RoleService
     //private accountGrpcService: AccountGrpcService
   ) {
     // const resolvedData:any[] = actr.snapshot.data['resl'];
@@ -171,6 +175,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
       id: 0,
       code: "EN-GB", //-- TODO: Lang code based on account 
@@ -222,23 +227,41 @@ export class UserManagementComponent implements OnInit {
 
   newUser() {
     this.isCreateFlag = true;
-    //this._router.navigate(["createuser"]);
-    let objData = { 
-      "roleId": 0,
-      "organization_Id": 0,
-      "accountId": 0,
-      "is_Active": true
-    };
-    forkJoin(this.userService.getUserRoles(objData),
-            this.userService.getUserGroup(1, true),
-            //this.userService.getVehicleGroupByID(),
-            this.userService.getDefaultSetting()
-      ).subscribe((_data) => {
-        //console.log(_data)
-        this.roleData = _data[0];
-        this.userGrpData = _data[1];
-        //this.vehGrpData = _data[2];
-        this.defaultSetting = _data[2];
+    let roleObj = { 
+      Organizationid : this.accountOrganizationId,
+      IsGlobal: true
+   };
+   let accountGrpObj = {
+      accountGroupId: 0,
+      organizationId: this.accountOrganizationId,
+      accountId: 0,
+      accounts: true,
+      accountCount: true
+   }
+    forkJoin(this.roleService.getUserRoles(roleObj),
+            this.accountService.getAccountGroupDetails(accountGrpObj),
+            this.translationService.getTranslationsForDropdowns('EN-GB','language'),
+            this.translationService.getTranslationsForDropdowns('EN-GB','timezone'),
+            this.translationService.getTranslationsForDropdowns('EN-GB','unit'),
+            this.translationService.getTranslationsForDropdowns('EN-GB','currency'),
+            this.translationService.getTranslationsForDropdowns('EN-GB','dateformat'),
+            this.translationService.getTranslationsForDropdowns('EN-GB','timeformat'),
+            this.translationService.getTranslationsForDropdowns('EN-GB','vehicledisplay'),
+            this.translationService.getTranslationsForDropdowns('EN-GB','landingpagedisplay')
+      ).subscribe((data) => {
+        //console.log(data)
+        this.roleData = data[0];
+        this.userGrpData = data[1];
+        this.defaultSetting = {
+          languageDropdownData: data[2],
+          timezoneDropdownData: data[3],
+          unitDropdownData: data[4],
+          currencyDropdownData: data[5],
+          dateFormatDropdownData: data[6],
+          timeFormatDropdownData: data[7],
+          vehicleDisplayDropdownData: data[8],
+          landingPageDisplayDropdownData: data[9]
+        }
         this.stepFlag = true;
     }, (error) => {  });
   }
@@ -311,12 +334,12 @@ export class UserManagementComponent implements OnInit {
     
     // Rest code
     let obj: any = {
-      "accountId": 0,
-      "organizationId": 32,
-      "accountGroupId": 0,
-      "vehicleGroupGroupId": 0,
-      "roleId": 0,
-      "name": ""
+      accountId: 0,
+      organizationId: this.accountOrganizationId,
+      accountGroupId: 0,
+      vehicleGroupGroupId: 0,
+      roleId: 0,
+      name: ""
     }
     this.accountService.getAccountDetails(obj).subscribe((usrlist)=>{
       this.filterFlag = true;
@@ -433,6 +456,7 @@ export class UserManagementComponent implements OnInit {
     }
     if(item.tableData){
       this.initData = this.getNewTagData(item.tableData);
+      this.initData = this.makeRoleAccountGrpList(this.initData);
     }
     setTimeout(()=>{
       this.dataSource = new MatTableDataSource(this.initData);
