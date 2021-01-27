@@ -23,7 +23,7 @@ export class AccountService {
     };
     return this.httpClient
       .post<any[]>(
-        `${this.accountServiceUrl}/GetAccountDetail`, data, headers
+        `${this.accountServiceUrl}/getaccountdetail`, data, headers
       )
       .pipe(catchError(this.handleError));
   }

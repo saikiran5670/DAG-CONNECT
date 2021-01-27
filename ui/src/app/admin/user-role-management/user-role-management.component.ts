@@ -30,6 +30,7 @@ export class UserRoleManagementComponent implements OnInit {
   grpTitleVisible : boolean = false;
   displayMessage: any;
   organizationId: number;
+  isGlobal: boolean;
 
   constructor(private translationService: TranslationService, private roleService: RoleService, private userService: EmployeeService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar) {
     this.defaultTranslation();
@@ -82,6 +83,7 @@ export class UserRoleManagementComponent implements OnInit {
 
   ngOnInit() {
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    this.isGlobal = true;
     let translationObj = {
       id: 0,
       code: "EN-GB", //-- TODO: Lang code based on account 
@@ -103,10 +105,12 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   loadInitData() {
-    // let objData = { 
-       //let organizationId= 32;
-    // };
-    this.roleService.getUserRoles(this.organizationId).subscribe((data) => {
+     let objData = { 
+        Organizationid : this.organizationId,
+        IsGlobal: this.isGlobal
+     };
+    
+    this.roleService.getUserRoles(objData).subscribe((data) => {
       //this.initData = this.getNewTagData(data); //no createdDate present in API response
       this.initData = data; //temporary 
       setTimeout(()=>{
