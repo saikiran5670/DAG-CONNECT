@@ -10,7 +10,8 @@ import { EmployeeService } from '../../../services/employee.service';
 import { AccountService } from '../../../services/account.service';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { CommonTableComponent } from '../../../shared/common-table/common-table.component';
+import { UserDetailTableComponent } from './user-detail-table/user-detail-table.component';
+import { map } from 'rxjs/internal/operators';
 
 @Component({
   selector: 'app-new-user-step',
@@ -46,10 +47,10 @@ export class NewUserStepComponent implements OnInit {
   selectionForVehGrp = new SelectionModel(true, []);
   selectionForUserGrp = new SelectionModel(true, []);
   
-  roleDisplayedColumns: string[] = ['select', 'name', 'services'];
+  roleDisplayedColumns: string[] = ['select', 'roleName', 'featureIds'];
   vehGrpDisplayedColumns: string[] = ['select', 'name', 'vehicles', 'registrationNumber'];
   //userGrpDisplayedColumns: string[] = ['select',  'name', 'vehicles', 'users'];
-  userGrpDisplayedColumns: string[] = ['select',  'name', 'users'];
+  userGrpDisplayedColumns: string[] = ['select',  'name', 'accountCount'];
 
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
@@ -71,7 +72,7 @@ export class NewUserStepComponent implements OnInit {
   croppedImage: any = '';
   summaryStepFlag: boolean = false;
   
-  dialogRef: MatDialogRef<CommonTableComponent>;
+  dialogRef: MatDialogRef<UserDetailTableComponent>;
   userData: any;
   accountOrganizationId: any = 0;
 
@@ -235,24 +236,71 @@ export class NewUserStepComponent implements OnInit {
   }
 
   onUpdateUserData(){
-    let objData: any = {
-      id: this.userData.id,
-      userID: this.userData.userID,
-      isActive: true,
-      salutation: this.firstFormGroup.controls.salutation.value,
-      firstName: this.firstFormGroup.controls.firstName.value,
-      lastName: this.firstFormGroup.controls.lastName.value,
-      emailId: this.firstFormGroup.controls.loginEmail.value,
-      userTypeid: 1,
-      createBy: 1,
-      role: this.userData.role,
-      userGroup: this.userData.userGroup,
-      dob: this.firstFormGroup.controls.birthDate.value,
-      createdOn: this.userData.createdOn
-    } 
-    this.userService.updateUser(objData).subscribe((res)=>{
-      this.updateTableData(false);
+    // let objData: any = {
+    //   id: this.userData.id,
+    //   userID: this.userData.userID,
+    //   isActive: true,
+    //   salutation: this.firstFormGroup.controls.salutation.value,
+    //   firstName: this.firstFormGroup.controls.firstName.value,
+    //   lastName: this.firstFormGroup.controls.lastName.value,
+    //   emailId: this.firstFormGroup.controls.loginEmail.value,
+    //   userTypeid: 1,
+    //   createBy: 1,
+    //   role: this.userData.role,
+    //   userGroup: this.userData.userGroup,
+    //   dob: this.firstFormGroup.controls.birthDate.value,
+    //   createdOn: this.userData.createdOn
+    // } 
+    // this.userService.updateUser(objData).subscribe((res)=>{
+    //   this.updateTableData(false);
+    // }, (error) => {  });
+    
+    //---- Role obj----------//
+    let mapRoleIds :any = this.selectionForRole.selected.map(resp => resp.roleId);
+    let mapRoleData: any = [];
+    
+    if(mapRoleIds.length > 0){
+      mapRoleData = mapRoleIds;
+    }
+    else{
+      mapRoleData = [0];
+    }
+
+    let roleObj = {
+      accountId: this.userData.id,
+      organizationId: this.userData.organization_Id,
+      roles: mapRoleData
+    }
+
+    //---- Accnt Grp obj----------//
+    let mapGrpData: any = [];
+    let mapGrpIds: any = this.selectionForUserGrp.selected.map(resp => resp.id);
+    if(mapGrpIds.length > 0)
+    {
+      mapGrpIds.forEach(element => {
+        mapGrpData.push({
+          accountGroupId: element,
+          accountId: this.userData.id
+        }); 
+      });
+    }
+    else{
+      mapGrpData = [{
+        accountGroupId: 0,
+        accountId: this.userData.id
+      }];  
+    }
+
+    let grpObj = {
+      accounts: mapGrpData 
+    }
+
+    this.accountService.addAccountRoles(roleObj).subscribe((data)=>{
+      this.accountService.addAccountGroups(grpObj).subscribe((data)=>{
+        this.updateTableData(false);
+      }, (error) => {  });
     }, (error) => {  });
+
   }
 
   updateTableData(status?: any){
@@ -502,9 +550,44 @@ export class NewUserStepComponent implements OnInit {
 
   viewUserGrpDetails(rowData: any){
     //console.log("rowData:: ", rowData);
-    this.userService.getUsers().subscribe((data)=>{
-      this.callToUserDetailTable(data);  
+    let objData = {
+      accountId: 0,
+      organizationId: rowData.organizationId, 
+      accountGroupId: rowData.id, 
+      vehicleGroupId: 0,
+      roleId: 0,
+      name: ""
+    }
+
+    this.accountService.getAccountDetails(objData).subscribe((data)=>{
+      let repsData = this.makeRoleAccountGrpList(data);
+      this.callToUserDetailTable(repsData);  
     });
+  }
+
+  makeRoleAccountGrpList(initdata){
+    initdata.forEach((element, index) => {
+      let roleTxt: any = '';
+      let accGrpTxt: any = '';
+      element.roles.forEach(resp => {
+        roleTxt += resp.name + ',';
+      });
+      element.accountGroups.forEach(resp => {
+        accGrpTxt += resp.name + ',';
+      });
+
+      if(roleTxt != ''){
+        roleTxt = roleTxt.slice(0, -1);
+      }
+      if(accGrpTxt != ''){
+        accGrpTxt = accGrpTxt.slice(0, -1);
+      }
+
+      initdata[index].roleList = roleTxt; 
+      initdata[index].accountGroupList = accGrpTxt;
+    });
+    
+    return initdata;
   }
 
   callToUserDetailTable(tableData: any){
@@ -513,11 +596,11 @@ export class NewUserStepComponent implements OnInit {
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
       tableData: tableData,
-      colsList: ['firstName','emailId','role'],
+      colsList: ['firstName','emailId','roles'],
       colsName: [this.translationData.lblFirstName || 'First Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblRole || 'Role'],
       tableTitle: this.translationData.lblUserDetails || 'User Details'
     }
-    this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
+    this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
   
 }
