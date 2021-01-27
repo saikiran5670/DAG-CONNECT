@@ -1,5 +1,6 @@
 package net.atos.daf.ct2.common.util;
 
+import org.apache.commons.collections.bag.SynchronizedSortedBag;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.runtime.state.StateBackend;
@@ -13,7 +14,7 @@ public class FlinkUtil {
 public static StreamExecutionEnvironment createStreamExecutionEnvironment(ParameterTool envParams, String jobName) {
 		
 		StreamExecutionEnvironment env;
-		
+		System.out.println("Start of FLINK UTIL...");
 			env = StreamExecutionEnvironment.getExecutionEnvironment();
 			/*
 			 * env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime); // TODO
@@ -39,35 +40,41 @@ public static StreamExecutionEnvironment createStreamExecutionEnvironment(Parame
 			 * restart attempts 20000 //time in milliseconds between restarts ));
 			 */
 			
+			System.out.println("envParams:: "+envParams);
 			env.setParallelism(Integer.parseInt(envParams.get(DafConstants.PARALLELISM)));
 			
-			// start a checkpoint every 1000 ms and mode set to EXACTLY_ONCE
+			/*// start a checkpoint every 1000 ms and mode set to EXACTLY_ONCE
 			env.enableCheckpointing(Long.parseLong(envParams.get(DafConstants.CHECKPOINT_INTERVAL)),
 					CheckpointingMode.EXACTLY_ONCE);
-			
+
 			// make sure 500 ms of progress happen between checkpoints
 			env.getCheckpointConfig().setMinPauseBetweenCheckpoints(
 					Long.parseLong(envParams.get(DafConstants.MINIMUM_PAUSE_BETWEEN_CHECKPOINTS)));
-			
+
 			// checkpoints have to complete within one minute, or are discarded
 			env.getCheckpointConfig()
 					.setCheckpointTimeout(Long.parseLong(envParams.get(DafConstants.CHECKPOINT_TIMEOUT)));
-			
+
 			// allow only one checkpoint to be in progress at the same time
 			env.getCheckpointConfig().setMaxConcurrentCheckpoints(
 					Integer.parseInt(envParams.get(DafConstants.MAX_CONCURRENT_CHECKPOINTS)));
-			
+
 //			env.setStateBackend(
 //					(StateBackend) new FsStateBackend(envParams.get(DafConstants.CHECKPOINT_DIRECTORY), true));
-
-				if("IndexJob".equals(jobName))
+			System.out.println("outside " + jobName);
+				if("IndexJob".equals(jobName)){
 					env.setStateBackend((StateBackend) new FsStateBackend(envParams.get(DafConstants.CHECKPOINT_DIRECTORY_INDEX), true));
-				else if("StatusJob".equals(jobName))
+					System.out.println("Index job" + jobName);
+				}
+				else if("StatusJob".equals(jobName)){
 					env.setStateBackend((StateBackend) new FsStateBackend(envParams.get(DafConstants.CHECKPOINT_DIRECTORY_STATUS), true));
-				else if("MonitorJob".equals(jobName))
+					System.out.println("StatusJob" + jobName);
+				}
+				else if("MonitorJob".equals(jobName)){
 					env.setStateBackend((StateBackend) new FsStateBackend(envParams.get(DafConstants.CHECKPOINT_DIRECTORY_MONITORING), true));
-				
-				
+				System.out.println("MonitorJob" + jobName);
+				}
+*/
 			
 			// TODO Need to check if restartStrategy enabled and the set
 			env.setRestartStrategy(

@@ -830,7 +830,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 {
                     return StatusCode(400, "The account group id is required.");
                 }
-                bool result = await groupmanager.Delete(id);
+                bool result = await groupmanager.Delete(id,Group.ObjectType.AccountGroup);
                 var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Account Group ", 1, 2, Convert.ToString(id));
                 return Ok(true);
             }

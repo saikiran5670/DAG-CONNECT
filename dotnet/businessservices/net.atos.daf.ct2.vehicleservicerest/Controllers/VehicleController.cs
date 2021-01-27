@@ -329,8 +329,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 {
                     return StatusCode(401,"invalid Vehicle Group Id: The Vehicle group id is Empty.");
                 }
-
-                 bool IsVehicleGroupDeleted = await _groupManager.Delete(GroupId);
+                bool IsVehicleGroupDeleted = await _groupManager.Delete(GroupId,ObjectType.VehicleGroup);
 
         
                 _logger.LogInformation("Vehicle group details is deleted."+ GroupId);

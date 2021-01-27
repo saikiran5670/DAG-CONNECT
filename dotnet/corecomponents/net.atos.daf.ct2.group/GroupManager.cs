@@ -26,9 +26,9 @@ namespace net.atos.daf.ct2.group
         {
             return await gropRepository.Update(group);
         }
-        public async Task<bool> Delete(long groupid)
+        public async Task<bool> Delete(long groupid,ObjectType objectType)
         {
-            return await gropRepository.Delete(groupid);
+            return await gropRepository.Delete(groupid,objectType);
         }
         public async Task<IEnumerable<Group>> Get(GroupFilter groupFilter)
         {

@@ -126,13 +126,45 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
         {
             try
             {
-              if(string.IsNullOrEmpty(languagecode) || string.IsNullOrEmpty(Dropdownname))
+              if(string.IsNullOrEmpty(languagecode.Trim()) || string.IsNullOrEmpty(Dropdownname.Trim()))
               {
                   return StatusCode(400, "Langauge code and dropdown  required..");
               }
               _logger.LogInformation("Drop down method get" + Dropdownname + languagecode);
               var translation = await translationmanager.GetTranslationsForDropDowns(Dropdownname,languagecode);
               return Ok(translation);
+            }
+            catch(Exception ex)
+            {
+                      _logger.LogError(ex.Message +" " +ex.StackTrace);
+                      return StatusCode(500,"Internal Server Error.");
+            }
+
+        }
+
+        [HttpPost]
+        [Route("multipledropdowns")]
+         public async  Task<IActionResult> GetTranslationsFormultipleDropDowns(string[] Dropdownname, string languagecode)
+        {
+            try
+            {
+              if(string.IsNullOrEmpty(languagecode.Trim()))
+              {
+                  return StatusCode(400, "Langauge code and dropdown  required..");
+              }
+               if(Dropdownname.Length ==  0 )
+                {
+                      return StatusCode(400, "Dropdown names are required.");
+                }
+              List<Translations> Dropdowns = new List<Translations>();
+              foreach(var item in Dropdownname)
+              {
+                _logger.LogInformation("Drop down method get" + item + languagecode);
+                 Dropdowns.AddRange(await translationmanager.GetTranslationsForDropDowns(item,languagecode));
+              }
+              
+              
+              return Ok(Dropdowns);
             }
             catch(Exception ex)
             {
