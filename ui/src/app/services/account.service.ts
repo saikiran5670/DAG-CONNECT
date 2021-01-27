@@ -92,6 +92,17 @@ export class AccountService {
       .pipe(catchError(this.handleError));
   }
 
+  getAccountDesc(data): Observable<any[]> {
+    const headers = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.accountServiceUrl}/accountgroup/get`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
   createAccountGroup(data): Observable<any> {
     const headers = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -111,6 +122,29 @@ export class AccountService {
       .pipe(catchError(this.handleError));
   }
 
+  updateAccountGroup(data): Observable<any> {
+    const headers = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+    };
+   return this.httpClient
+      // .post<any>(`${this.userGroupServiceUrl}/AddUserGroup`, data, headers)
+
+      //mock call for createUserGroup
+      .post<any>(`${this.accountServiceUrl}/accountgroup/update`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+  
+  deleteAccountGroup(data): Observable<any> {
+    const headers = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+    };
+   return this.httpClient
+      // .post<any>(`${this.userGroupServiceUrl}/AddUserGroup`, data, headers)
+
+      //mock call for createUserGroup
+      .put<any>(`${this.accountServiceUrl}/accountgroup/delete?id=${data.id}`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
   private handleError(errResponse: HttpErrorResponse) {
     if (errResponse.error instanceof ErrorEvent) {
       console.error('Client side error', errResponse.error.message);

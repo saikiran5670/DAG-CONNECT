@@ -25,8 +25,8 @@ import { RoleService } from './services/role.service';
 import { OrganizationService } from './services/organization.service';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
-  return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
-  //return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
+  // return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
+  return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
 }
 
 @NgModule({

@@ -57,6 +57,14 @@ export class createAccountGroup {
   accountCount : number;
 }
 
+export class GetAccountGrp {
+    accountGroupId : number;
+    organizationId: number;
+    accountId : number;
+    accounts : boolean;
+    accountCount : boolean;
+}
+
 export interface Product {
   id: number | null;
   productName: string;
