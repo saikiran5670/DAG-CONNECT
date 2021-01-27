@@ -37,7 +37,7 @@ public class MonitorDataProcess {
 
 			String outputFolder = params.get("output");
 
-			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(params);
+			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams,"MonitorJob");
 			FlinkKafkaMonitorDataConsumer flinkKafkaConsumer = new FlinkKafkaMonitorDataConsumer();
 			env.getConfig().setGlobalJobParameters(envParams);
 			

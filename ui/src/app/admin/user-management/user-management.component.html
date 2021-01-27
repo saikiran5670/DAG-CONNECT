@@ -48,11 +48,11 @@
         </ng-container>
         <ng-container matColumnDef="roles">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRole || 'Role' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row" matTooltip="{{row.role}}">{{ row.roles != '' ? row.roles : '-' }}</mat-cell>
+          <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}">{{ row.roles.length > 0 ? row.roles[0].name : '-' }}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="accountGroups">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserGroup || 'User Group' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row" (click)="viewUserGrpDetails(row)" [ngClass]="{'row-hover': row.accountGroups != '' }">{{ row.accountGroups != '' ? row.accountGroups : '-' }}</mat-cell>
+          <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}">{{ row.accountGroups.length > 0 ? row.accountGroups[0].name : '-' }}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="action">
           <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Action' }} </mat-header-cell>

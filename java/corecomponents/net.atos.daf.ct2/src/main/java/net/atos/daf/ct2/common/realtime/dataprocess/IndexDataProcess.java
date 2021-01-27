@@ -53,7 +53,7 @@ public class IndexDataProcess {
 
 			String outputFolder = params.get("output");
 
-			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(params);
+			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams,"IndexJob");
 			FlinkKafkaIndexDataConsumer flinkKafkaConsumer = new FlinkKafkaIndexDataConsumer();
 
 			env.getConfig().setGlobalJobParameters(envParams);

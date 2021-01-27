@@ -13,7 +13,7 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
 
 import { EmployeeService } from 'src/app/services/employee.service';
 
-import { AccountGroup, Product, UserGroup } from 'src/app/models/users.model';
+import { AccountGroup, Product, UserGroup,GetAccountGrp } from 'src/app/models/users.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, forkJoin } from 'rxjs';
 import { TranslationService } from '../../services/translation.service';
@@ -25,6 +25,14 @@ import { AccountService } from '../../services/account.service';
   styleUrls: ['./user-group-management.component.less'],
 })
 export class UserGroupManagementComponent implements OnInit {
+  getAccountGrp: GetAccountGrp  = {
+    accountGroupId : null,
+    organizationId : null,
+    accountId : null,
+    accounts : true,
+    accountCount : true
+}
+
   accountgrp: AccountGroup = {
     id: 1  ,
     name: '',
@@ -207,16 +215,39 @@ export class UserGroupManagementComponent implements OnInit {
   }
 
   Viewgroup(element) {
-    this.viewDisplayFlag = true;
+    
     this.selectedRowData = element;
+
+    this.getAccountGrp = {
+      accountGroupId : this.selectedRowData.id,
+      organizationId : 1,
+      accountId : 0,
+      accounts : true,
+      accountCount : true
+    }
+    this.accountService.getAccountDesc(this.getAccountGrp).subscribe((usrlist) => {
+      this.selectedRowData = usrlist[0];
+      this.viewDisplayFlag = true;
+    });
   }
 
 
   Editgroup(element) {
-    // this.stepper.selectedIndex = index; 
-    this.selectedRowData = element;
-    this.editFlag = true;
-    this.editSampleData = element;
+      this.selectedRowData = element;
+      this.getAccountGrp = {
+      accountGroupId : this.selectedRowData.id,
+      organizationId : 1,
+      accountId : 0,
+      accounts : true,
+      accountCount : true
+    }
+    this.accountService.getAccountDesc(this.getAccountGrp).subscribe((usrlist) => {
+      this.selectedRowData = usrlist[0];
+      this.editFlag = true;
+    });
+
+
+
   }
 
   onClose() {
@@ -281,42 +312,42 @@ export class UserGroupManagementComponent implements OnInit {
 
           //check if its a new or update request
           if (options.button2Text == 'Update') {
-            this.userService
-              .updateUserGroup(this.usrgrp)
-              .subscribe((result) => {
-                console.log(result);
-              });
-            this.loadUserGroupData(1);
+            // this.userService
+            //   .updateUserGroup(this.usrgrp)
+            //   .subscribe((result) => {
+            //     console.log(result);
+            //   });
+            // this.loadUserGroupData(1);
           }
           else if (res.type == 'create') {
-            // this.userService.createUserGroup(this.usrgrp).subscribe((d) => {
-            this.accountService.createAccountGroup(this.accountgrp).subscribe((d) => {
-              this.loadUserGroupData(this.accountgrp);
-            });
+            // // this.userService.createUserGroup(this.usrgrp).subscribe((d) => {
+            // this.accountService.createAccountGroup(this.accountgrp).subscribe((d) => {
+            //   this.loadUserGroupData(this.accountgrp);
+            // });
           }
           else if (res.type == 'createContinue') {
-            this.userService.createUserGroup(this.usrgrp).subscribe((d) => {
-              this.loadUserGroupData(1);
-              let objData = { 
-                "roleId": 0,
-                "organization_Id": 0,
-                "accountId": 0,
-                "is_Active": true
-              };
-              forkJoin(
-                this.userService.getUserRoles(objData),
-                this.userService.getVehicleGroupByID()
-              ).subscribe(
-                (_data) => {
-                  //console.log(_data)
-                  this.roleData = _data[0];
-                  this.vehGrpData = _data[1];
-                  this.stepFlag = true;
-                  this.newGroupName = res.inputValue;
-                },
-                (error) => { }
-              );
-            });
+            // this.userService.createUserGroup(this.usrgrp).subscribe((d) => {
+            //   this.loadUserGroupData(1);
+            //   let objData = { 
+            //     "roleId": 0,
+            //     "organization_Id": 0,
+            //     "accountId": 0,
+            //     "is_Active": true
+            //   };
+            //   forkJoin(
+            //     this.userService.getUserRoles(objData),
+            //     this.userService.getVehicleGroupByID()
+            //   ).subscribe(
+            //     (_data) => {
+            //       //console.log(_data)
+            //       this.roleData = _data[0];
+            //       this.vehGrpData = _data[1];
+            //       this.stepFlag = true;
+            //       this.newGroupName = res.inputValue;
+            //     },
+            //     (error) => { }
+            //   );
+            // });
           }
         }
       });
@@ -326,9 +357,9 @@ export class UserGroupManagementComponent implements OnInit {
       this.dialogService.DeleteModelOpen(options, name);
       this.dialogService.confirmedDel().subscribe((res) => {
         if (res) {
-          this.userService
-            .deleteUserGroup(item.usergroupId, item.organizationId)
-            .subscribe((d) => {
+          console.log("------item for deleted",item.id)
+          // this.userService.deleteUserGroup(item.usergroupId, item.organizationId).subscribe((d) => {
+          this.accountService.deleteAccountGroup(item).subscribe((d) => {
               console.log(d);
               this.openSnackBar('Item delete', 'dismiss');
             });

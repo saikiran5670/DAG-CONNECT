@@ -47,7 +47,7 @@ public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusD
 	private long lastTripUtcTime = 0;
 	private long etlMaxDuration = 0;
 	private long etlMinDuration = 0;
-	//private HbaseConnection conn = null;
+	private HbaseConnection conn = null;
 	
 	public TripStatusCompletion(String tblNm, Map<String, List<String>> colFamMap, FilterList filterList,
 			List<Long> timeRangeList) {
@@ -74,7 +74,6 @@ public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusD
 				envParams.get(ETLConstants.HBASE_MASTER),
 				envParams.get(ETLConstants.HBASE_REGIONSERVER_PORT), tableName);
 
-		HbaseConnection conn = null;
 		try{
 			conn = connectionPool.getHbaseConnection();
 			if (null == conn) {
@@ -84,20 +83,18 @@ public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusD
 			TableName tabName = TableName.valueOf(tableName);
 			table = conn.getConnection().getTable(tabName);
 
-			System.out.println("table_name anshu2 -- " + tableName );
+			logger.info("tableName " + tableName );
 			
 		}catch(IOException e){
-	            logger.error("create connection failed from the configuration" + e.toString());
+			// TODO: handle exception both logger and throw is not required
+	            logger.error("create connection failed from the configuration" + e.getMessage());
+	            throw e;
 		}catch (Exception e) {
-			// TODO: handle exception
-            logger.error("there is an exception" + e.toString());
+			// TODO: handle exception both logger and throw is not required
+            logger.error("there is an exception" + e.getMessage());
+			throw e;
 		}
-		finally {
-            if (conn != null) {
-                connectionPool.releaseConnection(conn);
-            }
-        } 
-
+		
 		//TODO need to integrate with common module and close connection
 //		table = HbaseUtility.getTable(HbaseUtility.getHbaseClientConnection(HbaseUtility.createConf(envParams)),
 //				tableName);
@@ -188,9 +185,9 @@ public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusD
 			if (table != null) {
 				table.close();
 			}
-			// if (conn != null) {
-			// conn.close();
-			// }
+			 if (conn != null) {
+			 conn.releaseConnection();
+			 }
 		} catch (IOException e) {
 			logger.error("Issue while Closing HBase table :: ", e.getMessage());
 			//TODO Need to throw an error

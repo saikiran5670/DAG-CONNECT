@@ -18,12 +18,13 @@ namespace net.atos.daf.ct2.identitysession.repository
         {
             dataAccess = _dataAccess;
         }
-         public async Task<int> InsertSession(AccountSession accountSession)
+         public async Task<string> InsertSession(AccountSession accountSession)
         {
             try
             {
                 var QueryStatement = @"INSERT INTO  master.accountsession 
                                         (
+                                        id,
                                         ip_address
                                         ,last_session_refresh
                                         ,session_started_at
@@ -32,6 +33,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         ,created_at
                                         ) 
                                     VALUES(
+                                        @id,
                                         @ip_address
                                         ,@last_session_refresh
                                         ,@session_started_at
@@ -41,17 +43,17 @@ namespace net.atos.daf.ct2.identitysession.repository
 
 
                 var parameter = new DynamicParameters();
-                
+                parameter.Add("@id", accountSession.Id);
                 parameter.Add("@ip_address", accountSession.IpAddress);
                 parameter.Add("@last_session_refresh", accountSession.LastSessionRefresh);
                 parameter.Add("@session_started_at", accountSession.SessionStartedAt);
                 parameter.Add("@sessoin_expired_at", accountSession.SessionExpiredAt);
-                parameter.Add("@account_id", accountSession.AccountId); // snehal
+                parameter.Add("@account_id", accountSession.AccountId); 
                 parameter.Add("@created_at", accountSession.CreatedAt);
-                //parameter.Add("@status", ((char)vehicle.Status).ToString() != null ? (char)vehicle.Status:'P');
-                int sessionID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                
+                Guid sessionID = await dataAccess.ExecuteScalarAsync<Guid>(QueryStatement, parameter);
                 accountSession.Id = sessionID;
-                return sessionID;
+                return sessionID.ToString();
             }
             catch(Exception ex)
             {
@@ -59,7 +61,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             
         }
-         public async Task<int> UpdateSession(AccountSession accountSession)
+         public async Task<string> UpdateSession(AccountSession accountSession)
         {
             try
             {
@@ -71,8 +73,8 @@ namespace net.atos.daf.ct2.identitysession.repository
                                       ,sessoin_expired_at = @sessoin_expired_at
                                       ,account_id = @account_id
                                       ,created_at = @created_at                                       
-                                        WHERE id = @Id
-                                         RETURNING Id;";
+                                      WHERE id = @Id
+                                      RETURNING Id;";
 
                 var parameter = new DynamicParameters();
                 parameter.Add("@Id", accountSession.Id);
@@ -82,26 +84,29 @@ namespace net.atos.daf.ct2.identitysession.repository
                 parameter.Add("@sessoin_expired_at", accountSession.SessionExpiredAt);
                 parameter.Add("@account_id", accountSession.AccountId); 
                 parameter.Add("@created_at", accountSession.CreatedAt);
-                int  sessionID= await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                Guid  sessionID= await dataAccess.ExecuteScalarAsync<Guid>(QueryStatement, parameter);
           
-                return sessionID;
+                return sessionID.ToString();
             }
             catch(Exception ex)
             {
                 throw ex;
             }
         }
-        public async Task<int> DeleteSession(AccountSession accountSession)
+        public async Task<string> DeleteSession(AccountSession accountSession)
         {
             try
             {
+                long currentUTCFormate=UTCHandling.GetUTCFromDateTime(DateTime.Now);
                 var QueryStatement = @"DELETE FROM
                                         master.accountsession 
-                                        where id=@id";
+                                        where id=@id
+                                        AND sessoin_expired_at < @sessoin_expired_at";//DONE (testing pending) expired at check for delete sesion
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", accountSession.Id);
-                int Id= await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
-                return Id;
+                parameter.Add("@sessoin_expired_at", currentUTCFormate);
+                Guid Id= await dataAccess.ExecuteScalarAsync<Guid>(QueryStatement, parameter);
+                return Id.ToString();
             }
             catch(Exception ex)
             {

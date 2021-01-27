@@ -48,7 +48,18 @@ namespace net.atos.daf.ct2.identitysession
                 throw ex;
             }
         }
-         public async Task<IEnumerable<AccountAssertion>> GetAssertion(int accountId)
+        public async Task<int> DeleteAssertion(string sessionId)
+        {
+             try
+            {
+                return await accountassertionRepository.DeleteAssertion(sessionId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<IEnumerable<AccountAssertion>> GetAssertion(int accountId)
         {
              try
             {
