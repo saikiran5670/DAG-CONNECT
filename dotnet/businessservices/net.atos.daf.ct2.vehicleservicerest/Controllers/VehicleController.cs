@@ -321,10 +321,14 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 }
                 
                 List<Vehicle> ObjVehicleList=new List<Vehicle>();
+                StringBuilder VehicleIdList = new StringBuilder();
+                IEnumerable<Group> ObjRetrieveGroupList=null ;
                 if (groupFilter.VehiclesGroup==true)
                 {
-                    IEnumerable<Group> ObjRetrieveGroupList = _groupManager.Get(ObjGroupFilter).Result;
-            
+                   ObjRetrieveGroupList = _groupManager.Get(ObjGroupFilter).Result;
+                    
+                if(ObjRetrieveGroupList.Count()>0)
+                {
                     foreach (var item in ObjRetrieveGroupList)
                     {
                         Vehicle ObjGroupRef = new Vehicle();
@@ -337,11 +341,26 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                         ObjVehicleList.Add(ObjGroupRef);
                     }
                 }
+                    if( ObjGroupFilter.GroupRef==true)
+                    {
+                        List<GroupRef> VehicleDetails = await _groupManager.GetRef(groupFilter.Id);
+                    
+                        foreach (var item in VehicleDetails)
+                        {
+                            if (VehicleIdList.Length > 0)
+                            {
+                                VehicleIdList.Append(",");
+                            }
+                            VehicleIdList.Append(item.Ref_Id);
+                        }
+                    }
+                }
 
-                if (ObjGroupFilter.GroupRef == true && groupFilter.OrganizationId>0)
+                if ((ObjGroupFilter.GroupRef == true && ObjRetrieveGroupList !=null && groupFilter.Id>0) || (ObjGroupFilter.GroupRef == true && groupFilter.OrganizationId>0 || VehicleIdList.Length>0))
                 {
                     VehicleFilter ObjVehicleFilter = new VehicleFilter();
                     ObjVehicleFilter.OrganizationId =  groupFilter.OrganizationId;
+                    ObjVehicleFilter.VehicleIdList =  VehicleIdList.ToString();
                     IEnumerable<Vehicle> ObjRetrieveVehicleList = _vehicelManager.Get(ObjVehicleFilter).Result;
 
                     foreach (var item in ObjRetrieveVehicleList)
