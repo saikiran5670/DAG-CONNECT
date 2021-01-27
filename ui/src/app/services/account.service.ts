@@ -6,6 +6,7 @@ import {
   HttpClient,
   HttpErrorResponse,
   HttpHeaders,
+  HttpParameterCodec
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
 
@@ -100,6 +101,13 @@ export class AccountService {
 
       //mock call for createUserGroup
       .post<any>(`${this.accountServiceUrl}/accountgroup/create`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteAccount(data): Observable<void> {
+    let emailId = encodeURIComponent(data.emailId); //-- encrypt special char. eg- @ -> %40
+    return this.httpClient
+      .delete<void>(`${this.accountServiceUrl}/delete?EmailId=${emailId}&AccountId=${data.id}&OrganizationId=${data.organizationId}`)
       .pipe(catchError(this.handleError));
   }
 

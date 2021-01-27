@@ -404,12 +404,11 @@ export class UserManagementComponent implements OnInit {
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
       if (res) {
-        this.userService.deleteUser(item.userID).subscribe(d=>{
+        this.accountService.deleteAccount(item).subscribe(d=>{
           //console.log(d);
           this.successMsgBlink(this.getDeletMsg(name));
+          this.loadUsersData();
         });
-        //this.openSnackBar('Item delete', 'dismiss');
-        this.loadUsersData();
       }
     });
   }
