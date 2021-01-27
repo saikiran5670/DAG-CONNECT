@@ -1,14 +1,20 @@
 package net.atos.daf.etl.ct2.common.postgre;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.postgresql.jdbc3.Jdbc3PoolingDataSource;
 
+import net.atos.daf.common.ct2.exception.TechnicalException;
 import net.atos.daf.common.ct2.postgre.PostgreDataSourceConnection;
+import net.atos.daf.common.ct2.util.DAFConstants;
 import net.atos.daf.etl.ct2.common.bo.Trip;
 import net.atos.daf.etl.ct2.common.util.ETLConstants;
 
@@ -445,6 +451,8 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 			statement.setLong(84, 0);
 
 		statement.setBoolean(85, Boolean.FALSE);
+		
+		System.out.println("Prepared data for trip :: "+rec.getTripId());
 
 		statement.addBatch();
 		statement.executeBatch();
@@ -468,8 +476,23 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 		System.out.println("envParams.get(ETLConstants.POSTGRE_SQL_DATABASE_NAME) :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME));
 		System.out.println("envParams.get(ETLConstants.POSTGRE_SQL_USER) :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_USER));
 		System.out.println("envParams.get(ETLConstants.POSTGRE_SQL_PASSWORD) :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
-		System.out.println("Connectio ======="+connection);
 		
+		
+		if(null == connection )
+		{
+			System.out.println("Connect created by common component is null :: " + connection);
+
+			Class.forName(envParams.get(ETLConstants.POSTGRE_SQL_DRIVER));
+			String dbUrl = createValidUrlToConnectPostgreSql(envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME),
+					Integer.parseInt(envParams.get(ETLConstants.DATAMART_POSTGRE_PORT)),
+					envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME),
+					envParams.get(ETLConstants.DATAMART_POSTGRE_USER),
+					envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
+			connection = DriverManager.getConnection(dbUrl);
+			System.out.println("Connect created individually :: " + connection);
+		}
+		
+		System.out.println("Final Connection ======="+connection);
 		
 		statement = connection.prepareStatement(query);
 	}
@@ -479,10 +502,33 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
         if (statement != null) {
         	statement.close();
         }
+        System.out.println("In close() of tripSink :: ");
+        
         if (connection != null) {
+        	System.out.println("Releasing connection ");
             connection.close();
         }
         super.close();
     }
 	
+	
+	private String createValidUrlToConnectPostgreSql(String serverNm, int port, String databaseNm, String userNm,
+			String password) throws TechnicalException {
+
+		String encodedPassword = encodeValue(password);
+		String url = serverNm + ":" + port + "/" + databaseNm + "?" + "user=" + userNm + "&" + "password="
+				+ encodedPassword + DAFConstants.POSTGRE_SQL_SSL_MODE;
+
+		System.out.println("url = " + url);
+
+		return url;
+	}
+	
+	private static String encodeValue(String value) {
+		try {
+			return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+		} catch (UnsupportedEncodingException ex) {
+			throw new RuntimeException(ex.getCause());
+		}
+	}
 }
