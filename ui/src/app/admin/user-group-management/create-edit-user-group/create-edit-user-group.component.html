@@ -66,7 +66,7 @@
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>{{translationData.lblUserGroupDescription || 'User Group Description' }}</div>
-                                <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedRowData.userGroupDescriptions }}</div>
+                                <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedRowData.description }}</div>
                         </div>
                         <div *ngIf="editFlag" fxLayout="column" fxLayoutAlign="right">
                             <button style='background:none' class='actionBtn' mat-flat-button (click)="editFunc()" matTooltip="Edit">

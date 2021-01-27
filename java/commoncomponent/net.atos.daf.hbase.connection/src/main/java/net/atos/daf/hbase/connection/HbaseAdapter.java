@@ -63,9 +63,9 @@ public class HbaseAdapter {
         	conf.set("hbase.zookeeper.quorum",quorum);
     		conf.set("hbase.zookeeper.property.clientPort",clientPort);
     		conf.set("zookeeper.znode.parent",parent); 
-    		conf.set("hbase.regionserver",regionserver);
     		conf.set("hbase.master",master);
-    		conf.set("hbase.regionserver.port",port);         
+    	/*	conf.set("hbase.regionserver",regionserver);
+    		conf.set("hbase.regionserver.port",port);   */      
     		setConfiguration(conf);
             HbaseConfig hbaseConfig = new HbaseConfig( poolSize,
                     waittime, healthCheckInterval, tableName, getConfiguration());

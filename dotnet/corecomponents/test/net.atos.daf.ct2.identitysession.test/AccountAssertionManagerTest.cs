@@ -51,7 +51,7 @@ namespace net.atos.daf.ct2.identitysession.test
         public async Task UnT_identitysession_AccountAssertionManager_UpdateAssertion()
         { 
             AccountAssertion accountAssertion =new AccountAssertion();
-            accountAssertion.Id=2;
+            //accountAssertion.Id=2;
             accountAssertion.Key="test";
             accountAssertion.Value="test2";
             accountAssertion.SessionState="2";

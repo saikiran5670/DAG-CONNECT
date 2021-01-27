@@ -51,7 +51,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
     });
 
     let objData = {
-      "organization_Id": 32
+      "organization_Id": this.organizationId
     }
     this.roleService.getFeatures(objData).subscribe((data) => {
       setTimeout(()=>{
@@ -128,8 +128,8 @@ export class EditUserRoleDetailsComponent implements OnInit {
 
   createUserRole(enteredUserRoleValue: any) {//create func
    // this.roleService.checkUserRoleExist(enteredUserRoleValue).subscribe((data: any) => {
-      let duplicateRole = this.roleData.filter(response => response.roleName == this.userRoleFormGroup.controls.userRoleName.value);
-    if (duplicateRole.length > 0) {
+      let existingRole = this.roleData.filter(response => response.roleName == this.userRoleFormGroup.controls.userRoleName.value);
+    if (existingRole.length > 0) {
       this.isUserRoleExist = true;
       this.doneFlag = false;
     }

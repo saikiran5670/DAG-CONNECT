@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import net.atos.daf.etl.ct2.common.bo.TripStatusData;
 import net.atos.daf.etl.ct2.common.util.ETLConstants;
-import net.atos.daf.etl.ct2.common.util.HbaseUtility;
 import net.atos.daf.hbase.connection.HbaseAdapter;
 import net.atos.daf.hbase.connection.HbaseConnection;
 import net.atos.daf.hbase.connection.HbaseConnectionPool;
@@ -41,8 +40,7 @@ public class TripIndexData
 	private FilterList filterLst = null;
 	private List<Long> timeRangeLst = null;
 	private Map<String, List<String>> colFamMap = null;
-	//private HbaseConnection conn = null;
-	
+	private HbaseConnection conn = null;
 
 	public TripIndexData(String tblNm, Map<String, List<String>> colFamMap, FilterList filterList) {
 		this.colFamMap = colFamMap;
@@ -54,47 +52,42 @@ public class TripIndexData
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 		super.open(parameters);
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
-		
-		HbaseAdapter hbaseAdapter=HbaseAdapter.getInstance();
+
+		HbaseAdapter hbaseAdapter = HbaseAdapter.getInstance();
 		HbaseConnectionPool connectionPool = hbaseAdapter.getConnection(
 				envParams.get(ETLConstants.HBASE_ZOOKEEPER_QUORUM),
 				envParams.get(ETLConstants.HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT),
-				envParams.get(ETLConstants.ZOOKEEPER_ZNODE_PARENT),
-				envParams.get(ETLConstants.HBASE_REGIONSERVER),
-				envParams.get(ETLConstants.HBASE_MASTER),
-				envParams.get(ETLConstants.HBASE_REGIONSERVER_PORT), tableName);
+				envParams.get(ETLConstants.ZOOKEEPER_ZNODE_PARENT), envParams.get(ETLConstants.HBASE_REGIONSERVER),
+				envParams.get(ETLConstants.HBASE_MASTER), envParams.get(ETLConstants.HBASE_REGIONSERVER_PORT),
+				tableName);
 
-		HbaseConnection conn = null;
-		try{
+		try {
 			conn = connectionPool.getHbaseConnection();
 			if (null == conn) {
-				logger.warn("get connection from pool failed");  
-				
+				logger.warn("get connection from pool failed");
+
 			}
 			TableName tabName = TableName.valueOf(tableName);
 			table = conn.getConnection().getTable(tabName);
 
-			System.out.println("table_name anshu2 -- " + tableName );
-			
-		}catch(IOException e){
-	            logger.error("create connection failed from the configuration" + e.toString());
-		}catch (Exception e) {
-			// TODO: handle exception
-            logger.error("there is an exception" + e.toString());
+			logger.info("tableName " + tableName );
+
+		} catch (IOException e) {
+			// TODO: handle exception both logger and throw is not required
+			logger.error("create connection failed from the configuration" + e.getMessage());
+			throw e;
+		} catch (Exception e) {
+			// TODO: handle exception both logger and throw is not required
+			logger.error("there is an exception" + e.getMessage());
+		throw e;
 		}
-		finally {
-            if (conn != null) {
-                connectionPool.releaseConnection(conn);
-            }
-        }
-		  
-		
-		
-//		table = HbaseUtility.getTable(HbaseUtility.getHbaseClientConnection(HbaseUtility.createConf(envParams)),
-//				tableName);
+
+		// table =
+		// HbaseUtility.getTable(HbaseUtility.getHbaseClientConnection(HbaseUtility.createConf(envParams)),
+		// tableName);
 
 		logger.info("Index tableName :: " + tableName);
-		
+
 		scan = new Scan();
 		if (colFamMap != null)
 			colFamMap.forEach((cf, colmns) -> {
@@ -112,9 +105,6 @@ public class TripIndexData
 			scan.setTimeRange(timeRangeLst.get(0), timeRangeLst.get(1));
 	}
 
-	
-	
-	
 	@Override
 	public void flatMap(TripStatusData stsData,
 			Collector<Tuple7<String, String, String, Integer, Integer, String, Long>> out) throws Exception {
@@ -124,12 +114,12 @@ public class TripIndexData
 		scan.setFilter(rowPrefixFilter);
 
 		logger.info("Index filter :: " + (ETLConstants.INDEX_MSG_TRANSID + "_" + stsData.getTripId()));
-		
+
 		ResultScanner rs = table.getScanner(scan);
 		Iterator<Result> iterator = rs.iterator();
 
 		while (iterator.hasNext()) {
-		
+
 			Result result = iterator.next();
 
 			String driver2Id = null;
@@ -139,7 +129,7 @@ public class TripIndexData
 			Integer vGrossWeightCombination = 0;
 			String jobNm = null;
 			Long increment = null;
-			
+
 			for (Cell cell : result.listCells()) {
 				try {
 					String family = Bytes.toString(CellUtil.cloneFamily(cell));
@@ -183,7 +173,7 @@ public class TripIndexData
 			}
 
 			logger.info(" Index tripId  :: " + tripId);
-			
+
 			Tuple7<String, String, String, Integer, Integer, String, Long> tuple7 = new Tuple7<>();
 			tuple7.setFields(tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination, jobNm, increment);
 
@@ -191,7 +181,20 @@ public class TripIndexData
 
 		}
 	}
-	
-	
+
+	@Override
+	public void close() {
+		try {
+			if (table != null) {
+				table.close();
+			}
+			if (conn != null) {
+				conn.releaseConnection();
+			}
+		} catch (IOException e) {
+			logger.error("Issue while Closing HBase table :: ", e.getMessage());
+			// TODO Need to throw an error
+		}
+	}
 
 }

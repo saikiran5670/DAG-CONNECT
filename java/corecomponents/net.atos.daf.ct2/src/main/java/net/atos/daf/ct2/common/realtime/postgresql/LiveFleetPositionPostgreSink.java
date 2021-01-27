@@ -8,8 +8,11 @@ import java.sql.Timestamp;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.postgresql.jdbc3.Jdbc3PoolingDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.atos.daf.common.ct2.postgre.PostgreDataSourceConnection;
+import net.atos.daf.ct2.common.realtime.dataprocess.IndexDataProcess;
 //import net.atos.daf.ct2.common.realtime.pojo.monitordata.MonitorMessage;
 import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.ct2.pojo.KafkaRecord;
@@ -21,6 +24,7 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	Logger log = LoggerFactory.getLogger(IndexDataProcess.class); 
 
 	// vehicledatamart
 	// livefleet_position_statistics
@@ -97,20 +101,29 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 		 * createValidUrlToConnectPostgreSql(envParams); connection =
 		 * DriverManager.getConnection(dbUrl);
 		 */
+		try {
+			Jdbc3PoolingDataSource dataSource = PostgreDataSourceConnection.getDataSource(
+					envParams.get(DafConstants.DATAMART_POSTGRE_SERVER_NAME),
+					Integer.parseInt(envParams.get(DafConstants.DATAMART_POSTGRE_PORT)),
+					envParams.get(DafConstants.DATAMART_POSTGRE_DATABASE_NAME),
+					envParams.get(DafConstants.DATAMART_POSTGRE_USER),
+					envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
 
-		Jdbc3PoolingDataSource dataSource = PostgreDataSourceConnection.getDataSource(
-				envParams.get(DafConstants.DATAMART_POSTGRE_SERVER_NAME),
-				Integer.parseInt(envParams.get(DafConstants.DATAMART_POSTGRE_PORT)),
-				envParams.get(DafConstants.DATAMART_POSTGRE_DATABASE_NAME),
-				envParams.get(DafConstants.DATAMART_POSTGRE_USER),
-				envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
+			connection = PostgreDataSourceConnection.getDataSourceConnection(dataSource);
 
-		connection = PostgreDataSourceConnection.getDataSourceConnection(dataSource);
+			// statement =
+			// connection.prepareStatement(DAFConstants.POSTGRE_QUERY_LIVEFLEET_POSITION);
+			// //QUERY EXECUTION
+			statement = connection.prepareStatement(livefleetposition); // QUERY EXECUTION
+			
+		} catch(Exception e) {
+			
+			log.error("Error in Live fleet position"+ e.getMessage());
+			
+			
+		}
 
-		// statement =
-		// connection.prepareStatement(DAFConstants.POSTGRE_QUERY_LIVEFLEET_POSITION);
-		// //QUERY EXECUTION
-		statement = connection.prepareStatement(livefleetposition); // QUERY EXECUTION
+		
 	}
 
 	

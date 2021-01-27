@@ -36,9 +36,9 @@ public class PostgreDataSourceConnection {
 
 		try {
 			if (null == conn)
-				//System.out.println("Connection is null");
-			conn = dataSource.getConnection();
-			System.out.println("Connection is created" + dataSource.getMaxConnections());
+				conn = dataSource.getConnection();
+			
+			System.out.println("Connection is created" + conn);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

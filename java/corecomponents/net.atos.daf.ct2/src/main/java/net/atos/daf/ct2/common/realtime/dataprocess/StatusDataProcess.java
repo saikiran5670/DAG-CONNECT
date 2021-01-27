@@ -38,7 +38,8 @@ public class StatusDataProcess {
 
 			String outputFolder = params.get("output");
 
-			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(params);
+			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams,"StatusJob");
+			System.out.println("env :: "+env);
 			FlinkKafkaStatusDataConsumer FlinkKafkaStatusConsumer = new FlinkKafkaStatusDataConsumer();
 				
 			//DataStream<String> consumerStream = flinkKafkaConsumer.connectToKafkaTopic(params, env);
@@ -74,6 +75,8 @@ public class StatusDataProcess {
 			  Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
 			  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel(); } catch
 			  (Exception ex) { log.error("Issue while auditing :: " + ex.getMessage()); }
+			  
+			  e.printStackTrace();
 			 
 		}
 	}

@@ -28,6 +28,7 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
         private IHttpContextAccessor _httpContextAccessor;
          private readonly IAuditTraillib auditlog;
         private readonly EntityMapper _mapper;
+        private string FK_Constraint = "violates foreign key constraint";
         public OrganizationController(ILogger<OrganizationController> _logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager,IHttpContextAccessor httpContextAccessor,AccountComponent.IAccountIdentityManager _accountIdentityManager, IAuditTraillib _auditlog)
         {
             logger = _logger;
@@ -68,7 +69,7 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 organization.reference_date=request.reference_date;
                 organization.OptOutStatus=request.optout_status;
                 organization.optout_status_changed_date=request.optout_status_changed_date;
-                organization.IsActive=request.is_active;
+                //organization.IsActive=request.is_active;
               
                 var OrgId= await organizationtmanager.Create(organization);   
                 if (OrgId.Id<1)
@@ -83,6 +84,10 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             catch(Exception ex)
             {
                  logger.LogError(ex.Message +" " +ex.StackTrace);
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
                  //return StatusCode(500,"Internal Server Error.");
                  return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }   
@@ -126,7 +131,7 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 organization.reference_date=request.reference_date;
                 organization.OptOutStatus=request.optout_status;
                 organization.optout_status_changed_date=request.optout_status_changed_date;
-                organization.IsActive=request.is_active;
+                // organization.IsActive=request.is_active;
                 var OrgId= await organizationtmanager.Update(organization);   
                 if(OrgId.Id==0)
                 {
@@ -144,6 +149,10 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             catch(Exception ex)
             {         
                 logger.LogError(ex.Message +" " +ex.StackTrace);
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
                 //return StatusCode(500,"Internal Server Error.");
                 return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }           
@@ -173,6 +182,10 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             catch(Exception ex)
             {            
                 logger.LogError(ex.Message +" " +ex.StackTrace);
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
                // return StatusCode(500,"Internal Server Error.");
                 return StatusCode(500,ex.Message +" " +ex.StackTrace);
             }   
@@ -231,6 +244,10 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             catch (Exception ex)
             {
                 logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
+               if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -258,6 +275,10 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             catch (Exception ex)
             {
                 logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
+               if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -280,6 +301,10 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             catch (Exception ex)
             {
                 logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
                 return StatusCode(500, "Internal Server Error.");
             }
         }

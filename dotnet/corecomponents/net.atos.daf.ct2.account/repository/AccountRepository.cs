@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
+using System.Transactions;
 using Dapper;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.data;
@@ -71,7 +71,7 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@email", account.EmailId);
                 parameter.Add("@salutation", account.Salutation);
                 parameter.Add("@first_name", account.FirstName);
-                parameter.Add("@last_name", account.LastName);                
+                parameter.Add("@last_name", account.LastName);
                 parameter.Add("@type", (char)account.AccountType);
                 string query = @"update master.account set id = @id,email = @email,salutation = @salutation,
                                 first_name = @first_name,last_name = @last_name ,type = @type
@@ -92,12 +92,30 @@ namespace net.atos.daf.ct2.account
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", accountid);
                 parameter.Add("@organization_id", organization_id);
+                string query = string.Empty;
+                int result = 0;
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    // Delete Account Group Reference
+                    query = @"delete from master.groupref gr
+                        using master.group g,master.accountorg ao 
+                        where gr.ref_id = @id and ao.organization_id = @organization_id 
+                         and g.id=gr.group_id and ao.is_active=true";
+                    result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    // Delete preference
+                    query = @"update master.accountpreference set is_active=false where ref_id = @id;";
+                    result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
-                string query = @"update master.account set is_active=false where id = @id ;update master.accountorg set is_active=false where account_id = @id and organization_id = @organization_id";
+                    // Delete account role
+                    query = @"delete from master.accountrole where account_id = @id and organization_id = @organization_id;";
+                    result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
-                var result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-
-                return true;
+                    // De-Activate Account and Account Org
+                    query = @"update master.account set is_active=false where id = @id ;update master.accountorg set is_active=false where account_id = @id and organization_id = @organization_id";
+                    result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    transactionScope.Complete();
+                    return true;                    
+                }
             }
             catch (Exception ex)
             {
@@ -398,7 +416,7 @@ namespace net.atos.daf.ct2.account
                     query = @"select a.id from master.account a inner join master.accountrole ac on  a.id=ac.account_id inner join master.role r on r.id=ac.role_id where ac.role_id=@role_id";
                     accountIds = new List<int>();
                     dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
-                     if (result is int)
+                    if (result is int)
                     {
                         accountIds.Add(result);
                     }

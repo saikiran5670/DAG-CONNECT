@@ -31,6 +31,8 @@ public class MonitorDataHbaseSink extends RichSinkFunction<KafkaRecord<Monitor>>
 	private Configuration conf = null;
 	private String tableName = null;
 	private Table table = null;
+	private HbaseConnection conn = null;
+
 
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
@@ -54,7 +56,7 @@ HbaseAdapter hbaseAdapter = HbaseAdapter.getInstance();
 		  envParams.get(DafConstants.HBASE_REGIONSERVER_PORT), tableName);
 		
 		
-		HbaseConnection conn = null;
+		//HbaseConnection conn = null;
          
 		try{
 			conn = connectionPool.getHbaseConnection();
@@ -65,19 +67,21 @@ HbaseAdapter hbaseAdapter = HbaseAdapter.getInstance();
 			TableName tabName = TableName.valueOf(tableName);
 			table = conn.getConnection().getTable(tabName);
 
-			System.out.println("table_name anshu2 -- " + tableName );
+			System.out.println("table_name -- " + tableName );
 			
 		}catch(IOException e){
-	            log.error("create connection failed from the configuration" + e.toString());
+	            log.error("create connection failed from the configuration" + e.getMessage());
+	            throw e;
 		}catch (Exception e) {
 			// TODO: handle exception
-            log.error("there is an exception" + e.toString());
+            log.error("there is an exception" + e.getMessage());
+            throw e;
 		}
-		finally {
-            if (conn != null) {
-                connectionPool.releaseConnection(conn);
-            }
-        } 
+//		finally {
+//            if (conn != null) {
+//                connectionPool.releaseConnection(conn);
+//            }
+//        } 
 
 		System.out.println("Monitoring table name - " + tableName);
 	}
@@ -227,9 +231,11 @@ HbaseAdapter hbaseAdapter = HbaseAdapter.getInstance();
 			if (table != null) {
 				table.close();
 			}
-			/*
-			 * if (conn != null) { conn.close(); }
-			 */
+			
+			  if (conn != null) { 
+				  conn.releaseConnection();
+				  }
+			 
 		} catch (IOException e) {
 			log.error("Error in MonitorDataHBase:", e.getMessage());
 		}

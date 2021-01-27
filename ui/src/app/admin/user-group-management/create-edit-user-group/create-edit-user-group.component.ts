@@ -17,7 +17,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { TranslationService } from '../../../../app/services/translation.service';
 import { VehicleGroup } from 'src/app/models/vehicle.model';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
-import { Product, UserGroup,AccountGroup, createAccountGroup } from 'src/app/models/users.model';
+import { Product, UserGroup,AccountGroup, GetAccountGrp } from 'src/app/models/users.model';
 import { AccountService } from '../../../services/account.service';
 
 export interface vehGrpCreation {
@@ -50,6 +50,14 @@ export class CreateEditUserGroupComponent implements OnInit {
     accounts : true,
     accountCount : true,
   }
+  getAccountGrp: GetAccountGrp  = {
+      accountGroupId : null,
+      organizationId : null,
+      accountId : null,
+      accounts : true,
+      accountCount : true
+  }
+
   createaccountgrp = {
     id: 0,
     name: "",
@@ -76,8 +84,8 @@ export class CreateEditUserGroupComponent implements OnInit {
     'select',
     'firstName',
     'emailId',
-    'role',
-    'userGroup',
+    'roles',
+    'accountGroups',
   ];
 
   vehGrp: VehicleGroup;
@@ -93,6 +101,7 @@ export class CreateEditUserGroupComponent implements OnInit {
   newUserGroupName: any;
   enteredUserGroupDescription: any;
   editUserContent: boolean = false;
+  updatedRowData : object = {}
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -121,7 +130,6 @@ export class CreateEditUserGroupComponent implements OnInit {
 
 
   ngOnInit(): void {
-
     this.UserGroupForm = this._formBuilder.group({
       userGroupName: ['', [Validators.required]],
       userGroupDescription: [],
@@ -133,14 +141,37 @@ export class CreateEditUserGroupComponent implements OnInit {
 
 
   loadUsersData() {
-    this.userService.getUsers().subscribe((usrlist) => {
+
+    // this.getAccountGrp = {
+    //   accountGroupId : this.selectedRowData.id,
+    //   organizationId : 1,
+    //   accountId : 0,
+    //   accounts : true,
+    //   accountCount : true
+    // }
+    let getUserData: any = {
+      "accountId": 0,
+      "organizationId": 32,
+      // "organizationId": this.selectedRowData.organizationId,
+      "accountGroupId": 137,
+      // "accountGroupId": this.selectedRowData.id,
+      "vehicleGroupId": 0,
+      "roleId": 0,
+      "name": ""
+    }
+    // this.userService.getUsers().subscribe((usrlist) => {
+      // console.log("--------getDataOld---",usrlist);
+    this.accountService.getAccountDetails(getUserData).subscribe((usrlist) => {
+
+      this.updatedRowData = usrlist;
       // this.filterFlag = true;
       this.initData = usrlist;
       this.dataSourceUsers = new MatTableDataSource(usrlist);
       this.dataSourceUsers.paginator = this.paginator;
       this.dataSourceUsers.sort = this.sort;
     });
-  }
+  // });
+}
 
   onCancel() {
     this.createStatus = false;
@@ -175,7 +206,7 @@ export class CreateEditUserGroupComponent implements OnInit {
     //   userGroupDescriptions: this.UserGroupForm.controls.userGroupDescription.value,
     // }
     this.createaccountgrp = {
-      id: 130  ,
+      id: 50,
       name: this.UserGroupForm.controls.userGroupName.value,
       description: this.UserGroupForm.controls.userGroupDescription.value,
       organizationId : 1,
@@ -205,9 +236,8 @@ export class CreateEditUserGroupComponent implements OnInit {
       //   users: "04",
       //   userGroupDescriptions: this.UserGroupForm.controls.userGroupDescription.value,
       // }
-
       this.createaccountgrp = {
-        id: 130,
+        id: this.selectedRowData.id,
         name: this.UserGroupForm.controls.userGroupName.value,
         description: this.UserGroupForm.controls.userGroupDescription.value,
         organizationId : this.selectedRowData.organizationId,
@@ -220,10 +250,10 @@ export class CreateEditUserGroupComponent implements OnInit {
         accountCount : 0,
       }
 
-      this.userService.updateUserGroup(this.usrgrp).subscribe((result) => {
-        this.userService.getUserGroup(1, true).subscribe((grp) => {
-        // this.accountService.createAccountGroup(this.accountgrp).subscribe((d) => {
-        // this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp) => {
+      // this.userService.updateUserGroup(this.usrgrp).subscribe((result) => {
+        // this.userService.getUserGroup(1, true).subscribe((grp) => {
+        this.accountService.updateAccountGroup(this.createaccountgrp).subscribe((d) => {
+        this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp) => {
           this.products = grp;
           this.initData = grp;
           this.dataSource = new MatTableDataSource(grp);

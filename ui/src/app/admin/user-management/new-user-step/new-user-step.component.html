@@ -80,8 +80,8 @@
                         </ngx-mat-select-search>
                       </mat-option> -->
                       <!-- <mat-option>--</mat-option> -->
-                      <mat-option *ngFor="let rer of selectList" [value]="rer.name">
-                        {{rer.name}}
+                      <mat-option *ngFor="let rer of solutationList" [value]="rer.name">
+                        {{ rer.name }}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
@@ -190,8 +190,8 @@
                     <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                     </ngx-mat-select-search>
                   </mat-option> -->
-                  <mat-option *ngFor="let rer of defaultSetting.language.val" [value]="rer">
-                    {{rer}}
+                  <mat-option *ngFor="let rer of defaultSetting.languageDropdownData" [value]="rer.id">
+                    {{ rer.value }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -205,8 +205,8 @@
                     <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                     </ngx-mat-select-search>
                   </mat-option> -->
-                  <mat-option *ngFor="let rer of defaultSetting.timeZone.val" [value]="rer">
-                    {{rer}}
+                  <mat-option *ngFor="let rer of defaultSetting.timezoneDropdownData" [value]="rer.id">
+                    {{ rer.value }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -220,8 +220,8 @@
                     <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                     </ngx-mat-select-search>
                   </mat-option> -->
-                  <mat-option *ngFor="let rer of defaultSetting.unit.val" [value]="rer">
-                    {{rer}}
+                  <mat-option *ngFor="let rer of defaultSetting.unitDropdownData" [value]="rer.id">
+                    {{ rer.value }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -237,8 +237,8 @@
                     <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                     </ngx-mat-select-search>
                   </mat-option> -->
-                  <mat-option *ngFor="let rer of defaultSetting.currency.val" [value]="rer">
-                    {{rer}}
+                  <mat-option *ngFor="let rer of defaultSetting.currencyDropdownData" [value]="rer.id">
+                    {{ rer.value }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -252,8 +252,8 @@
                     <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                     </ngx-mat-select-search>
                   </mat-option> -->
-                  <mat-option *ngFor="let rer of defaultSetting.dateFormat.val" [value]="rer">
-                    {{rer}}
+                  <mat-option *ngFor="let rer of defaultSetting.dateFormatDropdownData" [value]="rer.id">
+                    {{ rer.value }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -266,8 +266,8 @@
                     <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                     </ngx-mat-select-search>
                   </mat-option> -->
-                  <mat-option *ngFor="let rer of defaultSetting.timeFormat.val" [value]="rer">
-                    {{rer}}
+                  <mat-option *ngFor="let rer of defaultSetting.timeFormatDropdownData" [value]="rer.id">
+                    {{ rer.value }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -283,8 +283,8 @@
                     <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                     </ngx-mat-select-search>
                   </mat-option> -->
-                  <mat-option *ngFor="let rer of defaultSetting.vehDisplay.val" [value]="rer">
-                    {{rer}}
+                  <mat-option *ngFor="let rer of defaultSetting.vehicleDisplayDropdownData" [value]="rer.id">
+                    {{ rer.value }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -298,8 +298,8 @@
                     <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                     </ngx-mat-select-search>
                   </mat-option> -->
-                  <mat-option *ngFor="let rer of defaultSetting.landingPage.val" [value]="rer">
-                    {{rer}}
+                  <mat-option *ngFor="let rer of defaultSetting.landingPageDisplayDropdownData" [value]="rer.id">
+                    {{ rer.value }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>

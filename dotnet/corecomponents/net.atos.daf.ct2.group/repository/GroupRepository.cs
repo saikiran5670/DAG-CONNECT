@@ -1,12 +1,11 @@
 using System;
+using System.Transactions;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
 using Dapper;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.audit;
 
 namespace net.atos.daf.ct2.group
 {
@@ -25,7 +24,7 @@ namespace net.atos.daf.ct2.group
             {
                 // check for exists
                 bool result = await Exists(group);
-                if(result) 
+                if (result)
                 {
                     group.Exists = true;
                     return group;
@@ -58,7 +57,7 @@ namespace net.atos.daf.ct2.group
             {
                 // check for exists
                 bool result = await Exists(group);
-                if(result) 
+                if (result)
                 {
                     group.Exists = true;
                     return group;
@@ -89,19 +88,32 @@ namespace net.atos.daf.ct2.group
             return group;
         }
 
-        public async Task<bool> Delete(long groupid)
+        public async Task<bool> Delete(long groupid, ObjectType objectType)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", groupid);
-                var query = @"delete from master.groupref where group_id = @id";
-                await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                string query = string.Empty;
+                //TODO: Need to prepare this as single for delete all ref. of group
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    // delete access relation ship
+                    if (objectType == ObjectType.AccountGroup)
+                        query = @"delete from master.accessrelationship where account_group_id = @id";
+                    else query = @"delete from master.accessrelationship where vehicle_group_id = @id";
+                    await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
-                query = @"delete from master.group where id = @id";
-                await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    // delete group ref
+                    query = @"delete from master.groupref where group_id = @id";
+                    await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    // delete group 
+                    query = @"delete from master.group where id = @id";
+                    await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    transactionScope.Complete();
+                    return true;
+                }
 
-                return true;
             }
             catch (Exception ex)
             {
@@ -273,33 +285,33 @@ namespace net.atos.daf.ct2.group
                 {
 
                     // id
-                    if ( Convert.ToInt32(groupRequest.Id) > 0)
+                    if (Convert.ToInt32(groupRequest.Id) > 0)
                     {
                         parameter.Add("@id", groupRequest.Id);
                         query = query + " and id!=@id";
-                    }              
+                    }
                     // name
                     if (!string.IsNullOrEmpty(groupRequest.Name))
                     {
                         parameter.Add("@name", groupRequest.Name);
                         query = query + " and name=@name";
-                    }   
+                    }
                     // organization id filter
                     if (groupRequest.OrganizationId > 0)
                     {
                         parameter.Add("@organization_id", groupRequest.OrganizationId);
                         query = query + " and organization_id=@organization_id ";
-                    }                   
-                     // object type filter
+                    }
+                    // object type filter
                     if (((char)groupRequest.ObjectType) != ((char)ObjectType.None))
                     {
 
                         parameter.Add("@object_type", (char)groupRequest.ObjectType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and object_type=@object_type ";
-                    }             
+                    }
                 }
                 var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                if (groupid >0 ) return true;
+                if (groupid > 0) return true;
                 return false;
             }
             catch (Exception ex)
