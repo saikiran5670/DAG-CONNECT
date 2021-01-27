@@ -63,7 +63,7 @@ HbaseAdapter hbaseAdapter = HbaseAdapter.getInstance();
 			TableName tabName = TableName.valueOf(tableName);
 			table = conn.getConnection().getTable(tabName);
 
-			System.out.println("table_name anshu2 -- " + tableName );
+			System.out.println("table_name -- " + tableName );
 			
 		}catch(IOException e){
 	            log.error("create connection failed from the configuration" + e.getMessage());

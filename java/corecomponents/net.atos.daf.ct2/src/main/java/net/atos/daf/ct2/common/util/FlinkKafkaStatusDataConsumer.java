@@ -29,9 +29,9 @@ public class FlinkKafkaStatusDataConsumer {
 		 */
 		
 		
-		properties.setProperty(DafConstants.BOOTSTRAP_SERVERS,envParams.get(DafConstants.BOOTSTRAP_SERVERS));
+		/*properties.setProperty(DafConstants.BOOTSTRAP_SERVERS,envParams.get(DafConstants.BOOTSTRAP_SERVERS));
 		properties.setProperty(DafConstants.ZOOKEEPER_CONNECT,envParams.get(DafConstants.ZOOKEEPER_CONNECT));
-		properties.setProperty(DafConstants.GROUP_ID,envParams.get(DafConstants.MONITORING_TOPIC));
+		properties.setProperty(DafConstants.GROUP_ID,envParams.get(DafConstants.MONITORING_TOPIC));*/
 		
 		
 		properties.setProperty("client.id",envParams.get(DafConstants.EVENT_HUB_CLIENTID));

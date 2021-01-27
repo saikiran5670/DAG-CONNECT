@@ -35,9 +35,9 @@ public class FlinkKafkaIndexDataConsumer {
 		 * new IndexMsgDeserializer(), properties));
 		 */
 		 
-		properties.setProperty(DafConstants.BOOTSTRAP_SERVERS,envParams.get(DafConstants.BOOTSTRAP_SERVERS));
+		/*properties.setProperty(DafConstants.BOOTSTRAP_SERVERS,envParams.get(DafConstants.BOOTSTRAP_SERVERS));
 		properties.setProperty(DafConstants.ZOOKEEPER_CONNECT,envParams.get(DafConstants.ZOOKEEPER_CONNECT));
-		properties.setProperty(DafConstants.GROUP_ID,envParams.get(DafConstants.INDEX_TOPIC));
+		properties.setProperty(DafConstants.GROUP_ID,envParams.get(DafConstants.INDEX_TOPIC));*/
 		
 		
 		

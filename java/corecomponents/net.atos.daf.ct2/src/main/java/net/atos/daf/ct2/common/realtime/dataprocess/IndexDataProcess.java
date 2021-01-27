@@ -54,6 +54,7 @@ public class IndexDataProcess {
 			String outputFolder = params.get("output");
 
 			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams,"IndexJob");
+			System.out.println("env :: "+env);
 			FlinkKafkaIndexDataConsumer flinkKafkaConsumer = new FlinkKafkaIndexDataConsumer();
 
 			env.getConfig().setGlobalJobParameters(envParams);
@@ -117,7 +118,9 @@ public class IndexDataProcess {
 					  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel(); } catch
 					  (Exception ex) { 
 						  //System.out.println("In GRPC CATCH");
-						  log.error("Issue while auditing :: " + ex.getMessage()); }		
+						  log.error("Issue while auditing :: " + ex.getMessage()); }	
+			
+			e.printStackTrace();
 
 		}
 	}

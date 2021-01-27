@@ -38,6 +38,8 @@ public class MonitorDataProcess {
 			String outputFolder = params.get("output");
 
 			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams,"MonitorJob");
+			System.out.println("env  :: "+env);
+			
 			FlinkKafkaMonitorDataConsumer flinkKafkaConsumer = new FlinkKafkaMonitorDataConsumer();
 			env.getConfig().setGlobalJobParameters(envParams);
 			
@@ -77,7 +79,8 @@ public class MonitorDataProcess {
 			  Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
 			  auditing.auditTrialGrpcCall(auditMap); auditing.closeChannel(); } catch
 			  (Exception ex) { log.error("Issue while auditing :: " + ex.getMessage()); }
-			 
+			
+			  e.printStackTrace();
 
 		}
 	}
