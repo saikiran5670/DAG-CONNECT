@@ -1,6 +1,20 @@
 package net.atos.daf.ct2.common.util;
 
 public class DafConstants {
+	//Streaming environment 
+		public static final String PARALLELISM = "parallelism";
+		public static final String CHECKPOINT_INTERVAL = "checkpoint_interval";
+		public static final String MINIMUM_PAUSE_BETWEEN_CHECKPOINTS = "min_checkpoint_pause";
+		public static final String CHECKPOINT_TIMEOUT = "checkpoint_timeout";
+		public static final String MAX_CONCURRENT_CHECKPOINTS = "max_concurrent_checkpoints";
+		
+		public static final String CHECKPOINT_DIRECTORY_INDEX = "checkpoint_directory_index";
+		public static final String CHECKPOINT_DIRECTORY_STATUS = "checkpoint_directory_status";
+		public static final String CHECKPOINT_DIRECTORY_MONITORING = "checkpoint_directory_monitor";
+		
+		public static final String RESTART_ATTEMPS = "restart_attempts";
+		public static final String RESTART_INTERVAL = "restart_interval";
+	
 	public static final String HBASE_ZOOKEEPER_QUORUM = "hbase.zookeeper.quorum";
 	public static final String HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT = "hbase.zookeeper.property.clientPort";
 	public static final String ZOOKEEPER_ZNODE_PARENT = "zookeeper.znode.parent";
