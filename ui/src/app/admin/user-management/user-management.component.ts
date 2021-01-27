@@ -312,19 +312,20 @@ export class UserManagementComponent implements OnInit {
     // Rest code
     let obj: any = {
       "accountId": 0,
-      "organizationId": parseInt(localStorage.getItem('accountOrganizationId')),
-      "groupId": 0,
+      "organizationId": 32,
+      "accountGroupId": 0,
+      "vehicleGroupGroupId": 0,
       "roleId": 0,
       "name": ""
     }
     this.accountService.getAccountDetails(obj).subscribe((usrlist)=>{
       this.filterFlag = true;
-      this.initData = usrlist;
-      this.dataSource = new MatTableDataSource(usrlist);
+      //this.initData = usrlist;
+      this.initData = this.makeRoleAccountGrpList(usrlist);
+      this.dataSource = new MatTableDataSource(this.initData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
-
 
     // this.userService.getUsers().subscribe((usrlist)=>{
     //   this.filterFlag = true;
@@ -334,7 +335,31 @@ export class UserManagementComponent implements OnInit {
     //   this.dataSource.paginator = this.paginator;
     //   this.dataSource.sort = this.sort;
     // });
+  }
+
+  makeRoleAccountGrpList(initdata){
+    initdata.forEach((element, index) => {
+      let roleTxt: any = '';
+      let accGrpTxt: any = '';
+      element.roles.forEach(resp => {
+        roleTxt += resp.name + ',';
+      });
+      element.accountGroups.forEach(resp => {
+        accGrpTxt += resp.name + ',';
+      });
+
+      if(roleTxt != ''){
+        roleTxt = roleTxt.slice(0, -1);
+      }
+      if(accGrpTxt != ''){
+        accGrpTxt = accGrpTxt.slice(0, -1);
+      }
+
+      initdata[index].roleList = roleTxt; 
+      initdata[index].accountGroupList = accGrpTxt;
+    });
     
+    return initdata;
   }
 
   getGreeter(): Promise<any> {
