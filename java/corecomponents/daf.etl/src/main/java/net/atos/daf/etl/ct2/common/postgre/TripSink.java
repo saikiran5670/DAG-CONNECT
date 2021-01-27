@@ -10,7 +10,6 @@ import java.sql.PreparedStatement;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
-import org.hamcrest.core.IsInstanceOf;
 import org.postgresql.jdbc3.Jdbc3PoolingDataSource;
 
 import net.atos.daf.common.ct2.exception.TechnicalException;
