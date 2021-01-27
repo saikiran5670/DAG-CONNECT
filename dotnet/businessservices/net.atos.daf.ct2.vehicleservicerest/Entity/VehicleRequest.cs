@@ -7,7 +7,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Entity
         public int ID { get; set; }
         //public int ? Organization_Id { get; set; }
         public string Name { get; set; }
-        public string VIN { get; set; }       
+        //public string VIN { get; set; }       
         public string License_Plate_Number { get; set; }
         // public bool  IsActive { get; set; }
         // public string Vid { get; set; }

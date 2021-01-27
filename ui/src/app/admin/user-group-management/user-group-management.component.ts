@@ -246,6 +246,8 @@ export class UserGroupManagementComponent implements OnInit {
       this.editFlag = true;
     });
 
+    
+
 
 
   }

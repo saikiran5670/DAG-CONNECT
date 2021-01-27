@@ -31,6 +31,56 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
            
         }
 
+        [HttpPost]
+        [Route("create")]
+        public async Task<IActionResult> Create(VehicleCreateRequest vehicleRequest)
+        {
+            try
+            {
+                _logger.LogInformation("Create method in vehicle API called.");
+
+
+                if(string.IsNullOrEmpty(vehicleRequest.Name))
+                {
+                    return StatusCode(401,"invalid Vehicle Name: The Vehicle Name is Empty.");
+                }
+                if(string.IsNullOrEmpty(vehicleRequest.License_Plate_Number))
+                {
+                    return StatusCode(401,"invalid Vehicle License Plate Number: The Vehicle License Plate Number is Empty.");
+                }
+                   if(string.IsNullOrEmpty(vehicleRequest.VIN))
+                {
+                    return StatusCode(401,"invalid Vehicle VIN: The Vehicle VIN is Empty.");
+                }
+                Vehicle ObjvehicleResponse = new Vehicle();
+                Vehicle vehicle = new Vehicle();
+                vehicle.Name=vehicleRequest.Name;
+                vehicle.VIN=vehicleRequest.VIN;
+                vehicle.License_Plate_Number=vehicleRequest.License_Plate_Number;
+                vehicle.Status=vehicleRequest.Status;
+                vehicle.Vid=null;
+                vehicle.Type=VehicleType.None;
+                vehicle.Tcu_Id="";
+                vehicle.Tcu_Serial_Number=null;
+                vehicle.Tcu_Brand=null;
+                vehicle.Tcu_Version=null;
+                vehicle.Is_Tcu_Register=false;
+                vehicle.Reference_Date=null;
+
+                ObjvehicleResponse = await _vehicelManager.Create(vehicle);
+                vehicleRequest.ID=ObjvehicleResponse.ID;
+                _logger.LogInformation("vehicle details created with id."+ObjvehicleResponse.ID);
+                
+                return Ok(vehicleRequest);
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Vehicle Service:Update : " + ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+
         [HttpPut]
         [Route("update")]
         public async Task<IActionResult> Update(VehicleRequest vehicleRequest)
@@ -320,10 +370,14 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 }
                 
                 List<Vehicle> ObjVehicleList=new List<Vehicle>();
+                StringBuilder VehicleIdList = new StringBuilder();
+                IEnumerable<Group> ObjRetrieveGroupList=null ;
                 if (groupFilter.VehiclesGroup==true)
                 {
-                    IEnumerable<Group> ObjRetrieveGroupList = _groupManager.Get(ObjGroupFilter).Result;
-            
+                   ObjRetrieveGroupList = _groupManager.Get(ObjGroupFilter).Result;
+                    
+                if(ObjRetrieveGroupList.Count()>0)
+                {
                     foreach (var item in ObjRetrieveGroupList)
                     {
                         Vehicle ObjGroupRef = new Vehicle();
@@ -336,11 +390,26 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                         ObjVehicleList.Add(ObjGroupRef);
                     }
                 }
+                    if( ObjGroupFilter.GroupRef==true)
+                    {
+                        List<GroupRef> VehicleDetails = await _groupManager.GetRef(groupFilter.Id);
+                    
+                        foreach (var item in VehicleDetails)
+                        {
+                            if (VehicleIdList.Length > 0)
+                            {
+                                VehicleIdList.Append(",");
+                            }
+                            VehicleIdList.Append(item.Ref_Id);
+                        }
+                    }
+                }
 
-                if (ObjGroupFilter.GroupRef == true && groupFilter.OrganizationId>0)
+                if ((ObjGroupFilter.GroupRef == true && ObjRetrieveGroupList !=null && groupFilter.Id>0) || (ObjGroupFilter.GroupRef == true && groupFilter.OrganizationId>0 || VehicleIdList.Length>0))
                 {
                     VehicleFilter ObjVehicleFilter = new VehicleFilter();
                     ObjVehicleFilter.OrganizationId =  groupFilter.OrganizationId;
+                    ObjVehicleFilter.VehicleIdList =  VehicleIdList.ToString();
                     IEnumerable<Vehicle> ObjRetrieveVehicleList = _vehicelManager.Get(ObjVehicleFilter).Result;
 
                     foreach (var item in ObjRetrieveVehicleList)

@@ -50,9 +50,33 @@ namespace net.atos.daf.ct2.translation.repository
         }
 
         public async Task<IEnumerable<Translations>> GetKeyTranslationByLanguageCode(string langaguecode,string key)
-        {
-                string LangagugeQuery= @"select  t.id,t.name,t.value,t.type from translation.translation t
-                                        where t.code = @langaguecode and t.name = @key";
+        {       
+                 string LangagugeQuery= @"SELECT t.id,
+                                            t.name,
+                                            t.value,
+                                            t.type,
+                                            t.code,
+                                            tg.ref_id
+                                            FROM translation.translation t 
+                                            LEFT join translation.translationgrouping tg
+                                            on tg.name= t.name
+                                            where  (t.code= @langaguecode) and t.name = @key
+                                            union
+                                            SELECT t.id,
+                                            t.name,
+                                            t.value,
+                                            t.type,
+                                            t.code,
+                                            tg.ref_id
+                                            FROM translation.translation t 
+                                            LEFT join translation.translationgrouping tg
+                                            on tg.name= t.name
+                                            where  (t.code= 'EN-GB') and t.name = @key
+                                            and t.name not in (SELECT name
+                                            FROM translation.translation where code= @langaguecode and  t.name = @key )";
+
+                // string LangagugeQuery= @"select  t.id,t.name,t.value,t.type from translation.translation t
+                //                         where t.code = @langaguecode and t.name = @key";
 
                                         
                 var parameter = new DynamicParameters();
@@ -81,21 +105,49 @@ namespace net.atos.daf.ct2.translation.repository
 
         public async Task<IEnumerable<Translations>> GetTranslationsByMenu(int  MenuId, string type,string langaguecode)
         {
-                string LangagugeQuery= @"select tg.id,t.name,t.value,t.type,t.code,tg.ref_id from translation.translation t
-                                        inner join translation.translationgrouping tg
-                                        on t.name = tg.name where t.code=@langaguecode";
+                string LangagugeQuery= @"SELECT t.id,
+                                            t.name,
+                                            t.value,
+                                            t.type,
+                                            t.code,
+                                            tg.ref_id
+                                            FROM translation.translation t 
+                                            LEFT join translation.translationgrouping tg
+                                            on tg.name= t.name
+                                            where  tg.ref_id = @menuid
+                                            and (t.code= @langaguecode)
+                                            union
+                                            SELECT t.id,
+                                            t.name,
+                                            t.value,
+                                            t.type,
+                                            t.code,
+                                            tg.ref_id
+                                            FROM translation.translation t 
+                                            LEFT join translation.translationgrouping tg
+                                            on tg.name= t.name
+                                            where  tg.ref_id = @menuid
+                                            and (t.code= 'EN-GB')
+                                            and t.name not in (SELECT name
+                                            FROM translation.translation where code= @langaguecode and tg.ref_id =@menuid )";
 
+                    if(langaguecode == "EN-GB")
+                    {
+                          LangagugeQuery= @"select tg.id,t.name,t.value,t.type,t.code,tg.ref_id from translation.translation t
+                                        inner join translation.translationgrouping tg
+                                        on t.name = tg.name where t.code=@langaguecode and tg.ref_id= @menuid";
+                    }
                     var parameter = new DynamicParameters();
                     parameter.Add("@langaguecode", langaguecode);
                    
                         parameter.Add("@menuid", MenuId);
-                        LangagugeQuery = LangagugeQuery + " and tg.ref_id  = @menuid";
+                        // LangagugeQuery = LangagugeQuery + " and tg.ref_id  = @menuid";
 
 
                     if (type != null)
                     {
                         parameter.Add("@type", type.ToString());
-                        LangagugeQuery = LangagugeQuery + " and tg.type  = @type";
+                        // LangagugeQuery = LangagugeQuery + " and tg.type  = @type";
 
                     }  
                     List<Translations> list=  new      List<Translations>();               
@@ -107,7 +159,7 @@ namespace net.atos.daf.ct2.translation.repository
                 var names =  list.Where(T=>T.Type == ((char)TranslationType.Dropdown).ToString()).SelectMany(p=> p.Name.Split('_')).Distinct().Where(K=> K[0] == 'd');
                 foreach(var name in names)
                 {
-                    IEnumerable<Translations> dropdowntranslation = await GetTranslationsForDropDowns(name.Substring(1),langaguecode) ;
+                    IEnumerable<Translations> dropdowntranslation = await GetTranslationsForDropDowns(name.Substring(1),"") ;
                     foreach(var item in dropdowntranslation)
                     {
                         list.Where(P=>P.Name == item.Name).ToList().ForEach(i=>
@@ -127,18 +179,72 @@ namespace net.atos.daf.ct2.translation.repository
             try
             {
                 string LangagugeQuery = "";
-                if(Dropdownname == "language")
-                LangagugeQuery= @"select tc.id,t.name,t.code,t.value,t.type from translation.language tc inner join translation.translation t on tc.key = t.name ";
+                if(string.IsNullOrEmpty(langagugecode) || langagugecode == "EN-GB")
+                {
+                    if(Dropdownname == "language")
+                    LangagugeQuery= @"select tc.id,t.name,t.code,t.value,t.type from translation.language tc inner join translation.translation t on tc.key = t.name ";
+                    else
+                    {
+                        LangagugeQuery= @"select tc.id,t.name,t.code,t.value,t.type from master." + Dropdownname +" tc inner join translation.translation t on tc.key = t.name ";
+                    }   
+                                            
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@code", langagugecode);
+                    LangagugeQuery = LangagugeQuery + " Where t.code=  'EN-GB'";
+                    IEnumerable<Translations> Translations = await  dataAccess.QueryAsync<Translations>(LangagugeQuery,parameter);
+
+                    return Translations;
+                }
                 else
                 {
-                    LangagugeQuery= @"select tc.id,t.name,t.code,t.value,t.type from master." + Dropdownname +" tc inner join translation.translation t on tc.key = t.name ";
-                }   
-                                        
-                var parameter = new DynamicParameters();
-                parameter.Add("@code", langagugecode);
-                LangagugeQuery = LangagugeQuery + " Where t.code=  @code";
-                IEnumerable<Translations> Translations = await  dataAccess.QueryAsync<Translations>(LangagugeQuery,parameter);
-                return Translations;
+                    if(Dropdownname == "language")
+                    LangagugeQuery= @"SELECT  tc.id,
+                                        t.name,
+                                        t.code,
+                                        t.value,
+                                        t.type
+                                        from translation.language tc 
+                                        LEFT join translation.translation t
+                                        on tc.key = t.name 
+                                        where  
+                                        (t.code= @code)
+                                        union
+                                        SELECT  tc.id,t.name,t.code,t.value,t.type
+                                        from translation.language tc 
+                                        LEFT join translation.translation t
+                                        on tc.key = t.name 
+                                        where   (t.code= 'EN-GB')
+                                        and t.name not in (SELECT name
+                                        FROM translation.translation where code= @code ) ";
+                    else
+                    {
+                        LangagugeQuery= @"SELECT  tc.id,
+                                        t.name,
+                                        t.code,
+                                        t.value,
+                                        t.type from master." + Dropdownname + @" tc LEFT join translation.translation t
+                                        on tc.key = t.name 
+                                        where  
+                                        (t.code= @code)
+                                        union
+                                        SELECT  tc.id,t.name,t.code,t.value,t.type
+                                        from master." + Dropdownname + @" tc 
+                                        LEFT join translation.translation t
+                                        on tc.key = t.name 
+                                        where   (t.code= 'EN-GB')
+                                        and t.name not in (SELECT name
+                                        FROM translation.translation where code= @code ) ";
+                    }   
+                                            
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@code", langagugecode);
+                    
+                    IEnumerable<Translations> Translations = await  dataAccess.QueryAsync<Translations>(LangagugeQuery,parameter);
+                    return Translations;
+
+                }
+                
+                
             }
             catch (Exception ex)
             {
