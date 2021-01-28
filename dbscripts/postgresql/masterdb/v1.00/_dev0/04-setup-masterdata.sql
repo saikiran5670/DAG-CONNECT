@@ -678,6 +678,55 @@ INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblAll','All',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblAll');
 
 
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.CO2EmissionChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.CO2EmissionChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.DistanceChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.DistanceChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.DrivingTimeChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.DrivingTimeChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.IdlingTimeChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.IdlingTimeChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.FuelConsumedChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.FuelConsumedChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.FuelWastedByIdlingChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.FuelWastedByIdlingChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.OverSpeedChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.OverSpeedChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Configuration',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Configuration.Alerts',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration.Alerts');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Configuration.Landmarks',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration.Landmarks');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Configuration.VehicleManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration.VehicleManagement');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Configuration.ReportScheduler',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration.ReportScheduler');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin.OrgnizationDetails',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.OrgnizationDetails');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin.UserGroupManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.UserGroupManagement');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin.UserManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.UserManagement');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin.UserRoleManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.UserRoleManagement');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin.DriverManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.DriverManagement');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin.PackageManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.PackageManagement');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin#ReadOnly',null,'B',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin#ReadOnly');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin#Contributor',null,'B',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin#Contributor');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin#Admin',null,'B',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin#Admin');
+
 
 INSERT INTO master.menu (name ,
 	description ,
@@ -1320,56 +1369,6 @@ INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)  
 INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'dlandingpagedisplay_UserManagement',(select id from master.menu where name = 'User Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'dlandingpagedisplay_UserManagement' and ref_id=(select id from master.menu where name = 'User Management'));
 INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'dlandingpagedisplay_TripReport',(select id from master.menu where name = 'User Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'dlandingpagedisplay_TripReport' and ref_id=(select id from master.menu where name = 'User Management'));
 INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'dlandingpagedisplay_VehicleManagement',(select id from master.menu where name = 'User Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'dlandingpagedisplay_VehicleManagement' and ref_id=(select id from master.menu where name = 'User Management'));
-
-
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard.FleetKPI',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard.FleetKPI.CO2EmissionChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.CO2EmissionChart');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard.FleetKPI.DistanceChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.DistanceChart');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard.FleetKPI.DrivingTimeChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.DrivingTimeChart');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard.FleetKPI.IdlingTimeChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.IdlingTimeChart');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard.FleetKPI.FuelConsumedChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.FuelConsumedChart');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard.FleetKPI.FuelWastedByIdlingChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.FuelWastedByIdlingChart');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard.FleetKPI.OverSpeedChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.OverSpeedChart');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Configuration',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Configuration.Alerts',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration.Alerts');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Configuration.Landmarks',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration.Landmarks');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Configuration.VehicleManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration.VehicleManagement');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Configuration.ReportScheduler',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration.ReportScheduler');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin.OrgnizationDetails',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.OrgnizationDetails');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin.UserGroupManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.UserGroupManagement');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin.UserManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.UserManagement');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin.UserRoleManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.UserRoleManagement');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin.DriverManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.DriverManagement');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin.PackageManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.PackageManagement');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin#ReadOnly',null,'B',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin#ReadOnly');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin#Contributor',null,'B',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin#Contributor');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin#Admin',null,'B',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin#Admin');
 
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'nl-NL','D','dlanguage_UKEnglish','Brits Engels',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'nl-NL' and name = 'dlanguage_UKEnglish');
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'nl-NL','D','dlanguage_Dutch','Nederlands',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'nl-NL' and name = 'dlanguage_Dutch');
