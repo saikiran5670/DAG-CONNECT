@@ -72,6 +72,7 @@ export class UserRoleManagementComponent implements OnInit {
       lblEditUserRoleDetails: "Edit User Role Details", 
       lblUserRoleName: "User Role Name",
       lblPleaseentertheUserRolename: "Please enter the User Role name",
+      lblUserRoleNameShouldbeMax60Characters: "User Role name should be max. 60 characters",
       lblUserRolealreadyexistsPleasechooseadifferentname: "User Role already exists. Please choose a different name.",
       lblCreateUserRoleAPIFailedMessage: "Error encountered in creating new User Role '$'",
       lblUserRoledetailssuccessfullyupdated: "User Role '$' details successfully updated",
