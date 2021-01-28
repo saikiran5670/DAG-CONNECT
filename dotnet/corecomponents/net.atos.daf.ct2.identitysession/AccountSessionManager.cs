@@ -35,11 +35,11 @@ namespace net.atos.daf.ct2.identitysession
                 throw ex;
             }
         }
-         public async Task<string> DeleteSession(AccountSession accountSession)
+         public async Task<string> DeleteSession(string SessionId)
         {
             try
             {
-                return await sessionRepository.DeleteSession(accountSession);
+                return await sessionRepository.DeleteSession(SessionId);
             }
             catch (Exception ex)
             {

@@ -79,14 +79,13 @@ namespace net.atos.daf.ct2.identitysession.repository
         {
             try
             {
-                string spliteTokenId=String.Join(",", token_Id);
-                var QueryStatement = @"DELETE FROM
-                                        master.accounttoken 
-                                        where token_id in (@token_id)";
-                var parameter = new DynamicParameters();
-                parameter.Add("@token_id",spliteTokenId);
-                int Id= await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
-                return Id;
+                int accountID=0;
+                foreach(string item in token_Id)
+                {
+                   accountID=await DeleteTokenByTokenId( new Guid(item));
+                }
+              
+                return accountID;
             }
             catch(Exception ex)
             {
@@ -94,17 +93,30 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
         }
 
-        public async Task<int> DeleteTokenbySessionId(string sessionId)
+        private async Task<int> DeleteTokenByTokenId(Guid tokenID)
+        {
+            var QueryStatement = @"DELETE FROM
+                                        master.accounttoken 
+                                        where token_id in (@token_id)
+                                        RETURNING account_id";
+                var parameter = new DynamicParameters();
+                parameter.Add("@token_id",tokenID);
+                int Id= await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                return Id;
+        }
+
+        public async Task<string> DeleteTokenbySessionId(string sessionId)
         {
             try
             {
                 var QueryStatement = @"DELETE FROM
                                         master.accounttoken 
-                                        where session_id=@session_id";
+                                        where session_id=@session_id
+                                        RETURNING session_id";
                 var parameter = new DynamicParameters();
                 parameter.Add("@session_id",new Guid(sessionId));
-                int Id= await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
-                return Id;
+                Guid session_Id= await dataAccess.ExecuteScalarAsync<Guid>(QueryStatement, parameter);
+                return session_Id.ToString();
             }
             catch(Exception ex)
             {
@@ -212,7 +224,7 @@ namespace net.atos.daf.ct2.identitysession.repository
         private AccountToken Map(dynamic record)
         {
             AccountToken entity = new AccountToken();
-            entity.TokenId=record.token_id;
+            entity.TokenId=Convert.ToString(record.token_id);
             entity.UserName=record.user_name;
             entity.AccessToken=record.access_token;
             entity.ExpireIn=record.expire_in;

@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.identitysession
             }
         }
 
-        public async Task<int> DeleteTokenbySessionId(string sessionID)
+        public async Task<string> DeleteTokenbySessionId(string sessionID)
         {
             try
             {
@@ -58,11 +58,11 @@ namespace net.atos.daf.ct2.identitysession
                 throw ex;
             }
         }
-           public async Task<IEnumerable<AccountToken>> GetTokenDetails(string AccessToken)
+           public async Task<IEnumerable<AccountToken>> GetTokenDetails(string TokenId)
         {
             try
             {
-                return await tokenRepository.GetTokenDetails(AccessToken);
+                return await tokenRepository.GetTokenDetails(TokenId);
             }
             catch (Exception ex)
             {

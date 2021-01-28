@@ -93,7 +93,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 throw ex;
             }
         }
-        public async Task<string> DeleteSession(AccountSession accountSession)
+        public async Task<string> DeleteSession(string SessionId)
         {
             try
             {
@@ -101,9 +101,10 @@ namespace net.atos.daf.ct2.identitysession.repository
                 var QueryStatement = @"DELETE FROM
                                         master.accountsession 
                                         where id=@id
-                                        AND sessoin_expired_at < @sessoin_expired_at";//DONE (testing pending) expired at check for delete sesion
+                                        AND sessoin_expired_at < @sessoin_expired_at
+                                        RETURNING Id;";//DONE (testing pending) expired at check for delete sesion
                 var parameter = new DynamicParameters();
-                parameter.Add("@id", accountSession.Id);
+                parameter.Add("@id", new Guid(SessionId));
                 parameter.Add("@sessoin_expired_at", currentUTCFormate);
                 Guid Id= await dataAccess.ExecuteScalarAsync<Guid>(QueryStatement, parameter);
                 return Id.ToString();
