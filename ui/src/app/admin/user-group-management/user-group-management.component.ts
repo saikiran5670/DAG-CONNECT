@@ -26,9 +26,10 @@ import { AccountService } from '../../services/account.service';
 })
 export class UserGroupManagementComponent implements OnInit {
   OrgId:number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+  AccId:number = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
   getAccountGrp: GetAccountGrp  = {
     accountGroupId : null,
-    organizationId : this.OrgId,
+    organizationId : null,
     accountId : null,
     accounts : true,
     accountCount : true
@@ -40,7 +41,7 @@ export class UserGroupManagementComponent implements OnInit {
     description: '',
     accountGroupId : 0,
     organizationId : this.OrgId,
-    accountId : 0,
+    accountId : this.AccId,
     accounts : true,
     accountCount : true,
   }
@@ -226,7 +227,7 @@ export class UserGroupManagementComponent implements OnInit {
     this.getAccountGrp = {
       accountGroupId : this.selectedRowData.id,
       organizationId : this.OrgId,
-      accountId : 0,
+      accountId : this.AccId,
       accounts : true,
       accountCount : true
     }
@@ -242,7 +243,7 @@ export class UserGroupManagementComponent implements OnInit {
       this.getAccountGrp = {
       accountGroupId : this.selectedRowData.id,
       organizationId : this.OrgId,
-      accountId : 0,
+      accountId : this.AccId,
       accounts : true,
       accountCount : true
     }
@@ -313,7 +314,7 @@ export class UserGroupManagementComponent implements OnInit {
               accountCount: true,
               accounts : true,
               accountGroupId : 0,
-              accountId : 0,
+              accountId : this.AccId,
           }
 
 

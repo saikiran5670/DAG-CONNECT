@@ -30,6 +30,8 @@ export interface vehGrpCreation {
   styleUrls: ['./create-edit-user-group.component.css']
 })
 export class CreateEditUserGroupComponent implements OnInit {
+  OrgId:number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+  AccId:number = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
   usrgrp: UserGroup = {
     organizationId: null,
     name: null,
@@ -45,8 +47,8 @@ export class CreateEditUserGroupComponent implements OnInit {
     name: '',
     description: '',
     accountGroupId : 0,
-    organizationId : 1,
-    accountId : 0,
+    organizationId : this.OrgId,
+    accountId : this.AccId,
     accounts : true,
     accountCount : true,
   }
@@ -61,13 +63,13 @@ export class CreateEditUserGroupComponent implements OnInit {
   createaccountgrp = {
     id: 0,
     name: "",
-    organizationId : 1,
+    organizationId : this.OrgId,
     description : "",
      accountCount : 0,
      accounts : [
       {
         "accountGroupId": 0,
-        "accountId": 0
+        "accountId": this.AccId
       }
     ]
   }  
@@ -172,7 +174,7 @@ export class CreateEditUserGroupComponent implements OnInit {
   loadUsersData() {
   
     let getUserData: any = {
-      "accountId": 0,
+      "accountId": this.AccId,
       "organizationId": this.orgId,
       // "organizationId": this.selectedRowData.organizationId,
       "accountGroupId": 0,
@@ -256,7 +258,7 @@ export class CreateEditUserGroupComponent implements OnInit {
       id: 50,
       name: this.UserGroupForm.controls.userGroupName.value,
       description: this.UserGroupForm.controls.userGroupDescription.value,
-      organizationId : 1,
+      organizationId : this.OrgId,
       accounts : accountList,
       accountCount : 0,
     }
