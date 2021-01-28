@@ -235,11 +235,24 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 {
                     return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
                 }
-                accountpreference.AccountPreference preference = new Preference.AccountPreference();
-                preference = _mapper.ToAccountPreference(request);
+                accountpreference.AccountPreference preference = new Preference.AccountPreference();                
+                preference = _mapper.ToOrganizationPreference(request);
+                preference.Exists=false;
                 preference = await preferencemanager.Create(preference);
+                // check for exists
+                if (preference.Exists)
+                {
+                    return StatusCode(409, "Duplicate Organization Preference.");
+                }
+                // check for exists
+                else if (preference.RefIdNotValid)
+                {
+                    return StatusCode(400, "The Organization ID is not valid or created.");
+                }
+
                // var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Preference Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Preference", 1, 2, Convert.ToString(preference.RefId));
-                return Ok("Preference Created : " +preference.Id);                
+               return Ok("Organization Preference Created : " +preference.Id);
+                            
             }
             catch (Exception ex)
             {
@@ -265,9 +278,9 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                     )
                 {
                     return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
-                }
-                accountpreference.AccountPreference preference = new Preference.AccountPreference();
-                preference = _mapper.ToAccountPreference(request);
+                }               
+                accountpreference.AccountPreference preference = new Preference.AccountPreference();                
+                preference = _mapper.ToOrganizationPreference(request);
                 preference = await preferencemanager.Update(preference);
                 //var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Preference Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Preference", 1, 2, Convert.ToString(preference.RefId));
                 return Ok("Preference Updated : " +preference.Id); 

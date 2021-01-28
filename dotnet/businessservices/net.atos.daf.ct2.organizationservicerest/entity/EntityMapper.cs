@@ -4,14 +4,12 @@ namespace net.atos.daf.ct2.organizationservicerest.entity
 {
     public class EntityMapper
     {
-       
-        
-        public accountpreference.AccountPreference ToAccountPreference(AccountPreferenceRequest request)
+       public accountpreference.AccountPreference ToOrganizationPreference(AccountPreferenceRequest request)
         {
             accountpreference.AccountPreference preference = new accountpreference.AccountPreference();
             preference.Id = request.Id;
             preference.RefId = request.OrgId;
-            preference.PreferenceType = Preference.PreferenceType.Account;
+            preference.PreferenceType = Preference.PreferenceType.Organization;
             preference.LanguageId = request.LanguageId;
             preference.TimezoneId = request.TimezoneId;
             preference.CurrencyId = request.CurrencyId;
@@ -22,6 +20,6 @@ namespace net.atos.daf.ct2.organizationservicerest.entity
             preference.TimeFormatId = request.TimeFormatId;
             preference.LandingPageDisplayId = request.LandingPageDisplayId;
             return preference;
-        }      
+        }          
     }
 }
