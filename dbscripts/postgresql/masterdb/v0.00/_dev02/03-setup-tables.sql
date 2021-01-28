@@ -1591,7 +1591,7 @@ $$;
 CREATE TABLE if not exists  translation.translationgrouping 
 (
 	id serial NOT NULL,    
-	name varchar (250)NOT NULL,     
+	name varchar (250) NOT NULL,     
 	ref_id int NOT NULL,    
 	type char(1) NOT NULL    
 )

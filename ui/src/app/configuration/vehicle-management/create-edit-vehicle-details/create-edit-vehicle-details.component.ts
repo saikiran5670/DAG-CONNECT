@@ -67,18 +67,20 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
     });
     //console.log(this.groupInfo);
     this.vehGrpName = this.groupInfo ? this.groupInfo.name : '';
-
+   // this.vehicleFormGroup.controls.vehicleGroupDescription= this.groupInfo ? this.groupInfo.description : '';
     this.dataSource = new MatTableDataSource(this.gridData);
     if (localStorage.getItem('accountOrganizationId') != null) {
       this.orgId = parseInt(localStorage.getItem('accountOrganizationId'));
     }
-
+    //disable control in view mode
     if (this.viewGroupMode) {
       this.vehicleFormGroup.get('vehicleGroupName').disable();
       this.vehicleFormGroup.get('vehicleGroupDescription').disable();
     }
-    //select associated vehicles of the vehicle group.
-    this.selectCheckBox(this.groupInfo.id);
+     //select associated vehicles of the vehicle group.
+    if (this.groupInfo) {
+     this.selectCheckBox(this.groupInfo.id);
+    }
   }
 
   onCancel() {
@@ -103,11 +105,9 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
       let objData = {
         id: 0,
         name: this.vehicleFormGroup.controls.vehicleGroupName.value,
-        description: this.vehicleFormGroup.controls.vehicleGroupDescription
-          .value,
+        description: this.vehicleFormGroup.controls.vehicleGroupDescription.value,
         organizationId: this.orgId ? this.orgId : 1,
-        vehicles: [
-        ],
+        vehicles: [],
       };
       //select all vehicles which are selected for vehicle group.
       const numSelected = this.selectionForVehGrp.selected;
@@ -115,12 +115,12 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
       numSelected.forEach((row) => {
         // console.log(row.id);
         objData.vehicles.push({
-          vehicleGroupId: this.groupInfo.id,
+          vehicleGroupId: 0,
           vehicleId: row.id,
         });
       });
 
-      this.vehService.createVehicleGroup(objData).subscribe(
+      this.vehService.createVehicleGroup(JSON.stringify(objData)).subscribe(
         (res) => {
           // this.vehService.getVehicleGroupByID().subscribe(
           //   (data) => {
