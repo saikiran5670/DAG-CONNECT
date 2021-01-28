@@ -111,9 +111,9 @@ namespace net.atos.daf.ct2.role
             }
         }
 
-        public int CheckRoleNameExist(string roleName,int Organization_Id)
+        public int  CheckRoleNameExist(string roleName,int Organization_Id,int roleid)
         {
-            return  roleRepository.CheckRoleNameExist( roleName, Organization_Id);
+            return  roleRepository.CheckRoleNameExist( roleName, Organization_Id,roleid);
         }
     }
 }

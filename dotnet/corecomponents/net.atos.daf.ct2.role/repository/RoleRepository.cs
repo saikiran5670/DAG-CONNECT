@@ -156,7 +156,7 @@ namespace net.atos.daf.ct2.role.repository
                 if(roleFilter.IsGlobal == true)
                 {
                     parameter.Add("@id", roleFilter.RoleId);
-                    QueryStatement = QueryStatement + " or  organization_id  is null";
+                    QueryStatement = QueryStatement + " or (organization_id  is null and is_active =true)";
 
                 }
 
@@ -214,14 +214,20 @@ namespace net.atos.daf.ct2.role.repository
             return resultUpdatedRole;
         }
 
-        public int CheckRoleNameExist(string roleName,int Organization_Id)
+        public int CheckRoleNameExist(string roleName,int Organization_Id,int roleid)
         {
             var QueryStatement = @" SELECT CASE WHEN id IS NULL THEN 0 ELSE id END
                                     FROM master.role 
                                     WHERE is_active=true
                                     AND LOWER(name) = LOWER(@roleName) and (organization_id = @organization_id or organization_id is null)";
-            var parameter = new DynamicParameters();
-            parameter.Add("@roleName", roleName);
+           var parameter = new DynamicParameters();
+            if(roleid>0)
+            {
+                parameter.Add("@roleid", roleid);
+                QueryStatement = QueryStatement + " and id != @roleid";
+            }
+            
+            parameter.Add("@roleName", roleName.Trim());
             parameter.Add("@organization_id", Organization_Id);
             int resultRoleId =  dataAccess.ExecuteScalar<int>(QueryStatement, parameter);
             return resultRoleId;
