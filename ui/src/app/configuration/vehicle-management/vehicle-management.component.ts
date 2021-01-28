@@ -188,7 +188,10 @@ export class VehicleManagementComponent implements OnInit {
       vin: '',
       status: 73,
     };
-   
+    //clear the  table first
+    let tempData=[]
+    this.dataSource = new MatTableDataSource(tempData);
+    //*************** */
     this.vehService.getVehicle(this.veh).subscribe(
       (_data) => {
         this.vehicleData = _data;
