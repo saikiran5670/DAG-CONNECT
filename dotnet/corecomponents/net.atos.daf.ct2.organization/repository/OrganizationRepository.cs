@@ -191,66 +191,52 @@ namespace net.atos.daf.ct2.organization.repository
                 throw ex;
             }
         }
-        // public async Task<Organization> Get(int organizationId)
-        // {
-        //     log.Info("Get Organization method called in repository");     
-        //     try
-        //     {                
-        //         var parameter = new DynamicParameters();
-        //         // var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date, optout_status, optout_status_changed_date, is_active
-	    //         //             FROM master.organization where id=@Id";
-        //         var query = @"SELECT o.id,c.name currency,t.name timezone ,tf.name timeformat,vd.name vehicledisplay,
-        //                     df.name dateformat,lp.name landingpagedisplay,l.description Languagename,u.name unit,a.type PrefType,a.ref_id RefId,org_id OrganizationId,o.type, o.name, address_type AddressType, street AddressStreet, street_number AddressStreetNumber, postal_code PostalCode, city, country_code CountryCode, reference_date ReferencedDate , optout_status OptOutStatus, optout_status_changed_date OptOutStatusChangedDate, O.is_active IsActive
-        //                     FROM master.organization o
-        //                     left join  master.accountpreference a on o.id=a.ref_id
-        //                     left join  master.currency c on c.id=a.currency_id
-        //                     left join  master.timezone t on t.id=a.timezone_id
-        //                     left join  master.timeformat tf on tf.id=a.time_format_id
-        //                     left join  master.vehicledisplay vd on vd.id=a.vehicle_display_id
-        //                     left join  master.dateformat df on df.id=a.date_format_id
-        //                     left join  master.landingpagedisplay lp on lp.id=a.landing_page_display_id
-        //                     left join  master.unit u on u.id=a.unit_id
-        //                     left join  translation.language l on l.id=a.language_id
-        //                     where o.id=@Id";
-        //         parameter.Add("@Id", organizationId);
-        //         IEnumerable<Organization> OrganizationDetails = await dataAccess.QueryAsync<Organization>(query, parameter);
-        //         Organization objOrganization=new Organization();
-        //         foreach (var item in OrganizationDetails)
-        //             {         
-        //                  objOrganization.Id=item.Id;
-        //                  objOrganization.OrganizationId=item.OrganizationId;
-        //                  objOrganization.Type=item.Type;
-        //                  objOrganization.Name=item.Name;
-        //                  objOrganization.AddressType=item.AddressType;
-        //                  objOrganization.AddressStreet=item.AddressStreet;
-        //                  objOrganization.AddressStreetNumber=item.AddressStreetNumber;
-        //                  objOrganization.PostalCode=item.PostalCode;
-        //                  objOrganization.City=item.City;
-        //                  objOrganization.CountryCode=item.CountryCode;                        
-        //                  objOrganization.OptOutStatus=item.OptOutStatus;                     
-        //                  objOrganization.IsActive=item.IsActive;
-        //                  objOrganization.Currency=item.Currency;
-        //                  objOrganization.Timezone=item.Timezone;
-        //                  objOrganization.Timeformat=item.Timeformat;
-        //                  objOrganization.Vehicledisplay=item.Vehicledisplay;
-        //                  objOrganization.Dateformat=item.Dateformat;
-        //                  objOrganization.LandingpageDisplay=item.LandingpageDisplay;
-        //                  objOrganization.Languagename=item.Languagename;
-        //                  objOrganization.Unit=item.Unit;
-        //                  objOrganization.PrefType=item.PrefType;
-        //                  objOrganization.RefId=item.RefId;          
-        //                  objOrganization.Referenced=Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(item.ReferencedDate,"America/New_York", "yyyy-MM-ddTHH:mm:ss"));
-        //                  objOrganization.OptOutStatusDate=Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(item.OptOutStatusChangedDate,"America/New_York", "yyyy-MM-ddTHH:mm:ss"));
-        //             }            
-        //         return objOrganization;
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         log.Info("Get Organization method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
-        //         log.Error(ex.ToString());
-        //         throw ex;
-        //     }
-        // }
+        
+        public async Task<PreferenceResponse> GetPreference(int organizationId)
+        {
+            log.Info("Get Organization preference method called in repository");     
+            try
+            {                
+                var parameter = new DynamicParameters();               
+                var query = @"SELECT o.id OrganizatioId,a.id PreferenceId, c.name currency,t.name timezone ,tf.name timeformat,vd.name vehicledisplay,
+                            df.name DateFormatType,lp.name landingpagedisplay,l.name LanguageName, u.name unit
+                            FROM master.organization o
+                            left join  master.accountpreference a on o.id=a.ref_id
+                            left join  master.currency c on c.id=a.currency_id
+                            left join  master.timezone t on t.id=a.timezone_id
+                            left join  master.timeformat tf on tf.id=a.time_format_id
+                            left join  master.vehicledisplay vd on vd.id=a.vehicle_display_id
+                            left join  master.dateformat df on df.id=a.date_format_id
+                            left join  master.landingpagedisplay lp on lp.id=a.landing_page_display_id
+                            left join  master.unit u on u.id=a.unit_id
+                            left join  translation.language l on l.id=a.language_id
+                            where o.id=@Id";
+                parameter.Add("@Id", organizationId);
+                IEnumerable<PreferenceResponse> PreferenceDetails = await dataAccess.QueryAsync<PreferenceResponse>(query, parameter);
+                PreferenceResponse preferenceResponse=new PreferenceResponse();
+                foreach (var item in PreferenceDetails)
+                    {         
+                         preferenceResponse.PreferenceId=item.PreferenceId;
+                         preferenceResponse.OrganizatioId=item.OrganizatioId;
+                         preferenceResponse.LanguageName=item.LanguageName;
+                         preferenceResponse.Timezone=item.Timezone;
+                         preferenceResponse.TimeFormat=item.TimeFormat;                        
+                         preferenceResponse.Currency=item.Currency;                       
+                         preferenceResponse.Unit=item.Unit;
+                         preferenceResponse.VehicleDisplay=item.VehicleDisplay;
+                         preferenceResponse.DateFormatType=item.DateFormatType;
+                         preferenceResponse.LandingPageDisplay=item.LandingPageDisplay; 
+
+                    }            
+                   return preferenceResponse;
+            }
+            catch (Exception ex)
+            {
+                log.Info("Get Organization preference method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }
       
 
         public async Task<Customer> UpdateCustomer(Customer customer)
