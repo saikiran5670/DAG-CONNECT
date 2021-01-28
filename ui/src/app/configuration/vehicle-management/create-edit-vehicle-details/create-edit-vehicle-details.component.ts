@@ -93,7 +93,6 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
         let search = req.filter((item) => item.id === row.id);
         if (search.length > 0) {
           this.selectionForVehGrp.select(row);
-          
         }
       });
     });
@@ -101,7 +100,6 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
   onCreate() {
     if (this.createStatus) {
       // create func
-
       let objData = {
         id: 0,
         name: this.vehicleFormGroup.controls.vehicleGroupName.value,
@@ -109,12 +107,18 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
           .value,
         organizationId: this.orgId ? this.orgId : 1,
         vehicles: [
-          {
-            vehicleGroupId: 0,
-            vehicleId: 0,
-          },
         ],
       };
+      //select all vehicles which are selected for vehicle group.
+      const numSelected = this.selectionForVehGrp.selected;
+
+      numSelected.forEach((row) => {
+        // console.log(row.id);
+        objData.vehicles.push({
+          vehicleGroupId: this.groupInfo.id,
+          vehicleId: row.id,
+        });
+      });
 
       this.vehService.createVehicleGroup(objData).subscribe(
         (res) => {
@@ -129,26 +133,35 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
           //   (error) => {}
           // );
         },
-        (error) => {}
+        (error) => {
+          console.error(error);
+        }
       );
     } else {
-      // edit func
-
-      let objData: vehicleUpdateRequest = {
+      // edit function here
+      let objData = {
+        //vehicleUpdateRequest
         id: this.groupInfo.id,
         name: this.vehicleFormGroup.controls.vehicleGroupName.value,
         description: this.vehicleFormGroup.controls.vehicleGroupDescription
           .value,
         organizationId: this.orgId ? this.orgId : 1,
-        vehicles: [
-          {
-            vehicleGroupId: this.groupInfo.id,
-            vehicleId: 0,
-          },
-        ],
+        vehicles: [],
       };
+      //select all vehicles which are selected for vehicle group.
+      const numSelected = this.selectionForVehGrp.selected;
 
-      this.vehService.updateVehicleGroup(objData).subscribe(
+      numSelected.forEach((row) => {
+        // console.log(row.id);
+        objData.vehicles.push({
+          vehicleGroupId: this.groupInfo.id,
+          vehicleId: row.id,
+        });
+      });
+
+      //console.log(JSON.stringify(objData))
+
+      this.vehService.updateVehicleGroup(JSON.stringify(objData)).subscribe(
         (res) => {
           this.backToPage.emit({
             editFlag: false,
