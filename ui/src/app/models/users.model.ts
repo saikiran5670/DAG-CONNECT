@@ -36,9 +36,9 @@ export class UserGroup {
 }
 
 export class AccountGroup {
-    id: number;
-    name: string;
-    description: string;
+    // id: number;
+    // name: string;
+    // description: string;
     accountGroupId : number;
     organizationId : number;
     accountId : number;

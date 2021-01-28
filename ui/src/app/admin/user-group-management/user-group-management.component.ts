@@ -26,7 +26,6 @@ import { AccountService } from '../../services/account.service';
 })
 export class UserGroupManagementComponent implements OnInit {
   OrgId:number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-  AccId:number = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
   getAccountGrp: GetAccountGrp  = {
     accountGroupId : null,
     organizationId : null,
@@ -36,12 +35,12 @@ export class UserGroupManagementComponent implements OnInit {
 }
 
   accountgrp: AccountGroup = {
-    id: 1  ,
-    name: '',
-    description: '',
+    // id: 1  ,
+    // name: '',
+    // description: '',
     accountGroupId : 0,
     organizationId : this.OrgId,
-    accountId : this.AccId,
+    accountId : 0,
     accounts : true,
     accountCount : true,
   }
@@ -227,7 +226,7 @@ export class UserGroupManagementComponent implements OnInit {
     this.getAccountGrp = {
       accountGroupId : this.selectedRowData.id,
       organizationId : this.OrgId,
-      accountId : this.AccId,
+      accountId : 0,
       accounts : true,
       accountCount : true
     }
@@ -243,7 +242,7 @@ export class UserGroupManagementComponent implements OnInit {
       this.getAccountGrp = {
       accountGroupId : this.selectedRowData.id,
       organizationId : this.OrgId,
-      accountId : this.AccId,
+      accountId : 0,
       accounts : true,
       accountCount : true
     }
@@ -306,16 +305,16 @@ export class UserGroupManagementComponent implements OnInit {
             userGroupDescriptions: options.userGroupDescriptions
           };
           
-          this.accountgrp = {
-              id: options.id,
-              name: res.inputValue,
-              organizationId: this.OrgId,
-              description : options.userGroupDescriptions,
-              accountCount: true,
-              accounts : true,
-              accountGroupId : 0,
-              accountId : this.AccId,
-          }
+          // this.accountgrp = {
+          //     id: options.id,
+          //     name: res.inputValue,
+          //     organizationId: this.OrgId,
+          //     description : options.userGroupDescriptions,
+          //     accountCount: true,
+          //     accounts : true,
+          //     accountGroupId : 0,
+          //     accountId : 0,
+          // }
 
 
           //check if its a new or update request

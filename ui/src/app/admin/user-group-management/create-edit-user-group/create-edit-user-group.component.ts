@@ -31,34 +31,33 @@ export interface vehGrpCreation {
 })
 export class CreateEditUserGroupComponent implements OnInit {
   OrgId:number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-  AccId:number = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
-  usrgrp: UserGroup = {
-    organizationId: null,
-    name: null,
-    isActive: null,
-    id: null,
-    usergroupId: null,
-    vehicles: null,
-    users: null,
-    userGroupDescriptions: null,
-  };
+  // usrgrp: UserGroup = {
+  //   organizationId: null,
+  //   name: null,
+  //   isActive: null,
+  //   id: null,
+  //   usergroupId: null,
+  //   vehicles: null,
+  //   users: null,
+  //   userGroupDescriptions: null,
+  // };
   accountgrp: AccountGroup = {
-    id: 1  ,
-    name: '',
-    description: '',
+    // id: 1  ,
+    // name: '',
+    // description: '',
     accountGroupId : 0,
     organizationId : this.OrgId,
-    accountId : this.AccId,
+    accountId : 0,
     accounts : true,
     accountCount : true,
   }
-  getAccountGrp: GetAccountGrp  = {
-      accountGroupId : null,
-      organizationId : null,
-      accountId : null,
-      accounts : true,
-      accountCount : true
-  }
+  // getAccountGrp: GetAccountGrp  = {
+  //     accountGroupId : null,
+  //     organizationId : null,
+  //     accountId : null,
+  //     accounts : true,
+  //     accountCount : true
+  // }
 
   createaccountgrp = {
     id: 0,
@@ -69,7 +68,7 @@ export class CreateEditUserGroupComponent implements OnInit {
      accounts : [
       {
         "accountGroupId": 0,
-        "accountId": this.AccId
+        "accountId": 0
       }
     ]
   }  
@@ -174,7 +173,7 @@ export class CreateEditUserGroupComponent implements OnInit {
   loadUsersData() {
   
     let getUserData: any = {
-      "accountId": this.AccId,
+      "accountId": 0,
       "organizationId": this.orgId,
       // "organizationId": this.selectedRowData.organizationId,
       "accountGroupId": 0,
@@ -255,7 +254,7 @@ export class CreateEditUserGroupComponent implements OnInit {
 
     //-----------------------------------------
     this.createaccountgrp = {
-      id: 50,
+      id: 0,
       name: this.UserGroupForm.controls.userGroupName.value,
       description: this.UserGroupForm.controls.userGroupDescription.value,
       organizationId : this.OrgId,
