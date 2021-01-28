@@ -136,12 +136,12 @@
                     <ng-container matColumnDef="select">
                     <div>
                         <mat-header-cell *matHeaderCellDef>
-                            <mat-checkbox (change)='$event ? masterToggleForVehGrp() : null'
+                            <mat-checkbox *ngIf="!viewDisplayFlag" (change)='$event ? masterToggleForVehGrp() : null'
                                 [checked]='selectionForVehGrp.hasValue() && isAllSelectedForVehGrp()'
                                 [indeterminate]='selectionForVehGrp.hasValue() && !isAllSelectedForVehGrp()'
                                 [aria-label]='checkboxLabelForVehGrp()'>
                             </mat-checkbox>
-                            <span style="margin: 5px 0px 0px 5px;"> All </span>
+                            <span *ngIf="!viewDisplayFlag" style="margin: 5px 0px 0px 5px;"> All </span>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <mat-checkbox (click)='$event.stopPropagation()'
