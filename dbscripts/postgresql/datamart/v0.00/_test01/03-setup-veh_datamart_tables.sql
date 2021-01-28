@@ -443,7 +443,7 @@ CREATE TABLE if not exists livefleet.livefleet_trip_driver_activity
 	code  int not null,  
 	start_time  bigint not null, 
 	end_time  bigint, 
-	duration  int, 
+	duration  bigint, 
 	created_at_m2m  bigint, 
 	created_at_kafka   bigint, 
 	created_at_dm  bigint, 
