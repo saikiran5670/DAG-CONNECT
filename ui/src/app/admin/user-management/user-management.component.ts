@@ -48,6 +48,7 @@ export class UserManagementComponent implements OnInit {
   initData: any;
   translationData: any;
   userDataForEdit: any;
+  selectedPreference: any;
   isCreateFlag: boolean; 
   grpTitleVisible : boolean = false;
   userCreatedMsg : any;
@@ -320,7 +321,7 @@ export class UserManagementComponent implements OnInit {
         this.selectedRoleData = data[10];
         //console.log(element);
         this.userDataForEdit = element;
-        this.userDataForEdit.selectedPreference = data[11];
+        this.selectedPreference = data[11];
         // this.stepFlag = true;
         this.accountService.getAccountGroupDetails(selectedAccountGrpObj).subscribe((resp) => {
           this.selectedUserGrpData = resp;

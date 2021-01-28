@@ -44,6 +44,7 @@ export class EditViewUserComponent implements OnInit {
   @Input() accountInfoData: any;
   @Input() allRoleData: any;
   @Input() allUserGrpData: any;
+  @Input() selectedPreference: any;
 
   displayedColumnsRoleConfirm: string[] = ['roleName', 'featureIds'];
   //displayedColumnsUserGrpConfirm: string[] = ['name', 'vehicles', 'users'];
@@ -103,10 +104,10 @@ export class EditViewUserComponent implements OnInit {
         CustomValidators.numberValidationForName('lastName')
       ]
     });
-    this.accountInfoData.organization = 'DAF Connect';
+    this.accountInfoData.organization = 'DAF CONNECT';
     this.croppedImage = '../../assets/images/Account_pic.png';    
     this.setDefaultAccountInfo();
-    this.setDefaultGeneralSetting();
+    this.setDefaultGeneralSetting(this.selectedPreference);
     this.loadTable();
     this.breadcumMsg = this.getBreadcum(this.fromEdit);
   }
@@ -153,13 +154,13 @@ export class EditViewUserComponent implements OnInit {
       this.accountInfoForm.get('firstName').setValue(this.accountInfoData.firstName ? this.accountInfoData.firstName : '--');
       this.accountInfoForm.get('lastName').setValue(this.accountInfoData.lastName ? this.accountInfoData.lastName : '--');
       this.accountInfoForm.get('loginEmail').setValue(this.accountInfoData.emailId ? this.accountInfoData.emailId : '--');
-      this.accountInfoForm.get('organization').setValue(this.accountInfoData.organization ? this.accountInfoData.organization : '--');
+      this.accountInfoForm.get('organization').setValue(this.accountInfoData.organization ? this.accountInfoData.organization : 'DAF CONNECT');
       //this.accountInfoForm.get('birthDate').setValue(this.accountInfoData.dob);
     }
   }
 
-  setDefaultGeneralSetting(){
-    this.filterDefaultGeneralSetting(this.accountInfoData.selectedPreference);
+  setDefaultGeneralSetting(selectedPreference){
+    this.filterDefaultGeneralSetting(selectedPreference);
     if(this.defaultSetting){
       setTimeout(()=>{
         this.generalSettingForm.get('language').setValue(this.languageData.length > 0 ? this.languageData[0].id : 1 );
@@ -202,16 +203,30 @@ export class EditViewUserComponent implements OnInit {
   }
 
   onGeneralSettingsUpdate(){ 
-    //TODO: update general setting api
-    this.editGeneralSettingsFlag = false;
+    let objData: any = {
+      id: 0,
+      refId: this.accountInfoData.id,
+      languageId: this.generalSettingForm.controls.language.value ? this.generalSettingForm.controls.language.value : 5,
+      timezoneId: this.generalSettingForm.controls.timeZone.value ? this.generalSettingForm.controls.timeZone.value : 45,
+      unitId: this.generalSettingForm.controls.unit.value ? this.generalSettingForm.controls.unit.value : 8,
+      currencyId: this.generalSettingForm.controls.currency.value ? this.generalSettingForm.controls.currency.value : 3,
+      dateFormatTypeId: this.generalSettingForm.controls.dateFormat.value ? this.generalSettingForm.controls.dateFormat.value : 10,
+      timeFormatId: this.generalSettingForm.controls.timeFormat.value ? this.generalSettingForm.controls.timeFormat.value : 8,
+      vehicleDisplayId: this.generalSettingForm.controls.vehDisplay.value ? this.generalSettingForm.controls.vehDisplay.value : 8,
+      landingPageDisplayId: this.generalSettingForm.controls.landingPage.value ? this.generalSettingForm.controls.landingPage.value : 10,
+      driverId: ""
+    }
+
+    this.accountService.updateAccountPreference(objData).subscribe((data) => {
+      this.selectedPreference = data;
+      this.setDefaultGeneralSetting(this.selectedPreference);
+      this.editGeneralSettingsFlag = false;
+    }); 
   }
 
   editAccountInfo(){
     this.editAccountInfoFlag = true;
     this.isSelectPictureConfirm = false;
-    
-    //-- TODO: Existing Email Id check --//
-    /* if(this.accountInfoForm.controls.loginEmail.value){ } */
   }
 
   onEditAccountInfoCancel(){
@@ -224,13 +239,29 @@ export class EditViewUserComponent implements OnInit {
   }
 
   onEditGeneralSettingsReset(){
-    //console.log("General setting Reset...");
-    this.setDefaultGeneralSetting();
+    this.setDefaultGeneralSetting(this.selectedPreference);
   }
 
   onAccountInfoUpdate(){ 
-    //TODO: account update api
-    this.editAccountInfoFlag = false;
+    // if(this.accountInfoForm.controls.loginEmail.value != this.accountInfoData.emailId){
+    //   //TODO : Check if email id already exists in DB(API call).
+    // }
+
+    let objData: any = {
+        id: this.accountInfoData.id,
+        emailId: this.accountInfoForm.controls.loginEmail.value,
+        salutation: this.accountInfoForm.controls.salutation.value,
+        firstName: this.accountInfoForm.controls.firstName.value,
+        lastName: this.accountInfoForm.controls.lastName.value,
+        organization_Id: this.accountInfoData.organizationId  // 32
+    }
+    this.accountService.updateAccount(objData).subscribe((data)=>{
+      this.accountInfoData = data;
+      this.accountInfoData.organization = 'DAF CONNECT';
+      this.setDefaultAccountInfo();
+      // this.isSelectPictureConfirm = true;
+      this.editAccountInfoFlag = false;
+    });
   }
 
   myFilter = (d: Date | null): boolean => {
