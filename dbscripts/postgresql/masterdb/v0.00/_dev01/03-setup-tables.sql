@@ -267,7 +267,7 @@ CREATE TABLE if not exists  master.role
 	created_by int,
 	updated_date bigint,
 	updated_by int,
-	description varchar(120)),
+	description varchar(120),
 	feature_set_id int
 )
 TABLESPACE pg_default;
