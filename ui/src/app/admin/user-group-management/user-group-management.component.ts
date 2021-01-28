@@ -26,6 +26,7 @@ import { AccountService } from '../../services/account.service';
 })
 export class UserGroupManagementComponent implements OnInit {
   OrgId:number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+  // OrgId:number = 32;
   getAccountGrp: GetAccountGrp  = {
     accountGroupId : null,
     organizationId : null,

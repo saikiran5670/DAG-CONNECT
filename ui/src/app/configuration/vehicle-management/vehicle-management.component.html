@@ -36,17 +36,39 @@
         <div fxLayout="column" class='full-width'>
           <mat-table [dataSource]="dataSource" class="table-items" matSort>
             <ng-container *ngFor="let disCol of cols; let colIndex = index" matColumnDef="{{disCol}}">
-              <div *ngIf="disCol != 'action' && disCol!='status' ">
+              <div *ngIf="disCol != 'action' && disCol!='status' && columnNames[colIndex]!='Vehicle Group' ">
                 <mat-header-cell *matHeaderCellDef >{{columnNames[colIndex]}}</mat-header-cell>
-                <mat-cell class="text-truncate" [ngClass]="{'tablemargin': element[disCol]==null }"
+                <mat-cell  [ngClass]="{'tablemargin': element[disCol]==null }"
                 matTooltip={{element[disCol]}} *matCellDef="let element "> {{element[disCol]==null?'-':element[disCol]}} </mat-cell>
               </div>
-              <div *ngIf="disCol=='status'">
+              
+              <div *ngIf="columnNames[colIndex]=='Vehicle Group' ">
+                <mat-header-cell *matHeaderCellDef >{{columnNames[colIndex]}}</mat-header-cell>
+                <mat-cell *matCellDef="let element "  matTooltip={{element[disCol]}}> {{element[disCol]}}
+                  <img src='assets/images/group_icon.svg' style="width: 20px;height: 20px;"/> 
+               </mat-cell>
+              </div> 
+
+
+              <div *ngIf="columnNames[colIndex]=='Status'  ">
               <mat-header-cell *matHeaderCellDef style="width: 20px;">Status</mat-header-cell>
-              <mat-cell *matCellDef="let element ">
-                <img src='assets/images/john.png' style="width: 20px;height: 20px;"/>
+              <mat-cell *matCellDef="let element " >
+                <div *ngIf="element[disCol]==73 ">
+                  <img src='assets/images/Opt_in.svg' style="width: 20px;height: 20px;"/>
+                </div>
+                <div *ngIf="element[disCol]==79 ">
+                  <img src='assets/images/Ota.svg' style="width: 20px;height: 20px;"/>
+                </div>
+                <div *ngIf="element[disCol]==84 ">
+                  <img src='assets/images/terminated.svg' style="width: 20px;height: 20px;"/>
+                </div>
+                <div *ngIf="element[disCol]==85 ">
+                  <img src='assets/images/Opt_out.svg' style="width: 20px;height: 20px;"/>
+                </div>
+                 
               </mat-cell>
             </div>
+
               <div *ngIf="disCol == 'action'">
                 <mat-header-cell *matHeaderCellDef>{{columnNames[colIndex]}}</mat-header-cell>
                 <mat-cell *matCellDef="let row">

@@ -1,4 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
+import { isNull } from '@angular/compiler/src/output/output_ast';
 import {
   Component,
   EventEmitter,
@@ -63,7 +64,7 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
   ngOnInit() {
     this.vehicleFormGroup = this._formBuilder.group({
       vehicleGroupName: ['', [Validators.required]],
-      vehicleGroupDescription: [],
+      vehicleGroupDescription: [''],
     });
     //console.log(this.groupInfo);
     this.vehGrpName = this.groupInfo ? this.groupInfo.name : '';
@@ -87,7 +88,9 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
     this.backToPage.emit({ editFlag: false, editText: 'cancel' });
   }
   onReset() {
-    this.vehicleFormGroup.reset();
+    //this.vehicleFormGroup.reset();
+    this.vehGrpName =this.groupInfo ? this.groupInfo.name : '';
+    this.vehicleFormGroup.controls.vehicleGroupDescription= this.groupInfo.description ? this.groupInfo.description : '';
   }
   selectCheckBox(vehGroupId) {
     this.vehService.getVehicleListById(vehGroupId).subscribe((req) => {
@@ -104,7 +107,7 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
       // create func
       let objData = {
         id: 0,
-        name: this.vehicleFormGroup.controls.vehicleGroupName.value,
+        name: this.vehicleFormGroup.controls.vehicleGroupName.value.trim(),
         description: this.vehicleFormGroup.controls.vehicleGroupDescription.value,
         organizationId: this.orgId ? this.orgId : 1,
         vehicles: [],
@@ -119,7 +122,7 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
           vehicleId: row.id,
         });
       });
-
+      //console.log(objData);
       this.vehService.createVehicleGroup(JSON.stringify(objData)).subscribe(
         (res) => {
           // this.vehService.getVehicleGroupByID().subscribe(
@@ -136,15 +139,14 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
         (error) => {
           console.error(error);
         }
-      );
+      );  
     } else {
       // edit function here
       let objData = {
         //vehicleUpdateRequest
         id: this.groupInfo.id,
-        name: this.vehicleFormGroup.controls.vehicleGroupName.value,
-        description: this.vehicleFormGroup.controls.vehicleGroupDescription
-          .value,
+        name: this.vehicleFormGroup.controls.vehicleGroupName.value.trim(),
+        description: this.vehicleFormGroup.controls.vehicleGroupDescription.value,
         organizationId: this.orgId ? this.orgId : 1,
         vehicles: [],
       };
@@ -159,7 +161,7 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
         });
       });
 
-      //console.log(JSON.stringify(objData))
+      console.log(objData);
 
       this.vehService.updateVehicleGroup(JSON.stringify(objData)).subscribe(
         (res) => {

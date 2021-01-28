@@ -9,6 +9,7 @@ using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.Enum;
 using net.atos.daf.ct2.translation.entity;
 using static net.atos.daf.ct2.translation.Enum.translationenum;
+using net.atos.daf.ct2.translationservicerest.Entity;
 
 namespace net.atos.daf.ct2.translationservicerest.Controllers
 {
@@ -174,6 +175,92 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
 
         }
 
+
+        [HttpGet]
+        [Route("preferences")]
+         public async  Task<IActionResult> GetTranslationsPreferencDropDowns(string languagecode)
+        {
+            try
+            {
+              if(string.IsNullOrEmpty(languagecode.Trim()))
+              {
+                  return StatusCode(400, "Langauge code and dropdown  required..");
+              }
+              
+              PreferenceResponce Dropdowns = new PreferenceResponce();
+              
+              foreach(var item in Dropdowns.GetType().GetProperties())
+              {
+                _logger.LogInformation("Drop down method get" + item.Name + languagecode);
+                 var Translations = await translationmanager.GetTranslationsForDropDowns(item.Name,languagecode);
+
+                 switch (item.Name)
+                  {
+                    case "language":                    
+                     Dropdowns.language = new List<Translations>();                     
+                     Dropdowns.language.AddRange(Translations);
+                    // code block
+                    break;
+                    case "timezone":
+                    Dropdowns.timezone = new List<Translations>();
+                     
+                     Dropdowns.timezone.AddRange(Translations);
+                    // code block
+                    break;
+                    case "unit":
+                    Dropdowns.unit = new List<Translations>();
+                     
+                     Dropdowns.unit.AddRange(Translations);
+                    // code block
+                    break;
+                    case "currency":
+                    Dropdowns.currency = new List<Translations>();
+                     
+                     Dropdowns.currency.AddRange(Translations);
+                    // code block
+                    break;
+                    case "landingpagedisplay":
+                    Dropdowns.landingpagedisplay = new List<Translations>();
+                     
+                     Dropdowns.landingpagedisplay.AddRange(Translations);
+                    // code block
+                    break;
+                    case "dateformat":
+                    Dropdowns.dateformat = new List<Translations>();
+                     
+                     Dropdowns.dateformat.AddRange(Translations);
+                    // code block
+                    break;
+                    case "timeformat":
+                      Dropdowns.timeformat = new List<Translations>();
+                     
+                     Dropdowns.timeformat.AddRange(Translations);
+                    // code block
+                    break;
+                    case "vehicledisplay":
+                      Dropdowns.vehicledisplay = new List<Translations>();
+                     
+                     Dropdowns.vehicledisplay.AddRange(Translations);
+                    // code block
+                    break;
+                    default:
+                      // code block
+                      break;
+                  }
+              }
+              
+              
+              return Ok(Dropdowns);
+            }
+            catch(Exception ex)
+            {
+                      _logger.LogError(ex.Message +" " +ex.StackTrace);
+                      return StatusCode(500,"Internal Server Error.");
+            }
+
+        }
+
+       
 
         [HttpGet]
         [Route("languagecodes")]
