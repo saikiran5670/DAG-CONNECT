@@ -34,6 +34,11 @@ namespace net.atos.daf.ct2.organization
         {
             return await organizationRepository.Get(organizationId);
         }
+         public async Task<PreferenceResponse> GetPreference(int organizationId)
+        {
+            return await organizationRepository.GetPreference(organizationId);
+        }
+
        public async Task<Customer> UpdateCustomer(Customer customer)
         {
             return await organizationRepository.UpdateCustomer(customer);
