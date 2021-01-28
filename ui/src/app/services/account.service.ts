@@ -190,6 +190,28 @@ export class AccountService {
       .pipe(catchError(this.handleError));
   }
 
+  getAccountRoles(data): Observable<any[]> {
+    const headers = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.accountServiceUrl}/getroles`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+  
+  deleteAccountRoles(data): Observable<any[]> {
+    const headers = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.accountServiceUrl}/deleteroles`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(errResponse: HttpErrorResponse) {
     if (errResponse.error instanceof ErrorEvent) {
       console.error('Client side error', errResponse.error.message);

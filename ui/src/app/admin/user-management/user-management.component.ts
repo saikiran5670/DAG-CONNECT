@@ -267,29 +267,67 @@ export class UserManagementComponent implements OnInit {
   }
 
   editViewUser(element: any, type: any) {
-    forkJoin(this.userService.getUserRoles( {"roleId": 0,
-    "organization_Id": 0,
-    "accountId": 0,
-    "is_Active": true}),
-            this.userService.getUserGroup(1, true),
-            //this.userService.getVehicleGroupByID(),
-            this.userService.getDefaultSetting(),
-            this.userService.getSelectedRoles(),
-            this.userService.getSelectedUserGroups()
-      ).subscribe((_data) => {
-        //console.log(_data)
-        this.roleData = _data[0];
-        this.userGrpData = _data[1];
-        //this.vehGrpData = _data[2];
-        this.defaultSetting = _data[2];
-        this.selectedRoleData = _data[3];
-        this.selectedUserGrpData = _data[4];
-        this.isCreateFlag = false;
-        // this.stepFlag = true;
-        this.editFlag = (type == 'edit') ? true : false;
-        this.viewFlag = (type == 'view') ? true : false;
-        this.userDataForEdit = element;
+    let roleObj = { 
+      Organizationid : this.accountOrganizationId,
+      IsGlobal: true
+   };
+   let accountGrpObj = {
+      accountGroupId: 0,
+      organizationId: this.accountOrganizationId,
+      accountId: 0,
+      accounts: true,
+      accountCount: true
+   }
+   let selectedRoleObj = {
+    accountId: element.id, //159
+    organizationId: element.organizationId,
+    roles: [0]
+  }
+  let selectedAccountGrpObj = {
+    accountGroupId: 0,
+    organizationId: element.organizationId,
+    accountId: element.id,
+    accounts: true,
+    accountCount: true
+  };
+
+    forkJoin(this.roleService.getUserRoles(roleObj),
+            this.accountService.getAccountGroupDetails(accountGrpObj),
+            this.translationService.getTranslationsForDropdowns('EN-GB','language'),
+            this.translationService.getTranslationsForDropdowns('EN-GB','timezone'),
+            this.translationService.getTranslationsForDropdowns('EN-GB','unit'),
+            this.translationService.getTranslationsForDropdowns('EN-GB','currency'),
+            this.translationService.getTranslationsForDropdowns('EN-GB','dateformat'),
+            this.translationService.getTranslationsForDropdowns('EN-GB','timeformat'),
+            this.translationService.getTranslationsForDropdowns('EN-GB','vehicledisplay'),
+            this.translationService.getTranslationsForDropdowns('EN-GB','landingpagedisplay'),
+            this.accountService.getAccountRoles(selectedRoleObj),
+            this.accountService.getAccountPreference(element.id)
+      ).subscribe((data) => {
+        //console.log(data)
+        this.roleData = data[0];
+        this.userGrpData = data[1];
+        this.defaultSetting = {
+          languageDropdownData: data[2],
+          timezoneDropdownData: data[3],
+          unitDropdownData: data[4],
+          currencyDropdownData: data[5],
+          dateFormatDropdownData: data[6],
+          timeFormatDropdownData: data[7],
+          vehicleDisplayDropdownData: data[8],
+          landingPageDisplayDropdownData: data[9]
+        }
+        this.selectedRoleData = data[10];
         //console.log(element);
+        this.userDataForEdit = element;
+        this.userDataForEdit.selectedPreference = data[11];
+        // this.stepFlag = true;
+        this.accountService.getAccountGroupDetails(selectedAccountGrpObj).subscribe((resp) => {
+          this.selectedUserGrpData = resp;
+          this.editFlag = (type == 'edit') ? true : false;
+          this.viewFlag = (type == 'view') ? true : false;
+          this.isCreateFlag = false;
+        }, (error) => {  });
     }, (error) => {  });
   }
 
