@@ -43,16 +43,16 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
                 {
                       return StatusCode(400, "Feature Ids are required.");
                 }
-                int Rid=  roleManager.CheckRoleNameExist(roleMaster.RoleName,roleMaster.OrganizationId);
+                int Rid=  roleManager.CheckRoleNameExist(roleMaster.RoleName.Trim(),roleMaster.OrganizationId,0);
                     if(Rid > 0)
                     {
                             return StatusCode(400, "Role name already exist.");
                     }
                     RoleEntity.RoleMaster ObjRole = new RoleEntity.RoleMaster();
                     ObjRole.Organization_Id =roleMaster.OrganizationId;
-                    ObjRole.Name = roleMaster.RoleName;
+                    ObjRole.Name = roleMaster.RoleName.Trim();
                     ObjRole.Createdby = roleMaster.Createdby;
-                    ObjRole.Description = roleMaster.Description;
+                    ObjRole.Description = roleMaster.Description.Trim();
                     ObjRole.Feature_set_id=0;                  
                     
                     ObjRole.FeatureSet = new FeatureSet();
@@ -87,12 +87,17 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
                 {
                       return StatusCode(400, "Feature Ids required.");
                 }
+                int Rid=  roleManager.CheckRoleNameExist(roleMaster.RoleName.Trim(),roleMaster.OrganizationId,roleMaster.RoleId);
+                    if(Rid > 0)
+                    {
+                            return StatusCode(400, "Role name already exist.");
+                    }
                try
                {
                     RoleEntity.RoleMaster ObjRole = new RoleEntity.RoleMaster();                   
-                    ObjRole.Name = roleMaster.RoleName;
+                    ObjRole.Name = roleMaster.RoleName.Trim();
                     ObjRole.Id = roleMaster.RoleId;
-                    ObjRole.Description=roleMaster.Description;
+                    ObjRole.Description=roleMaster.Description.Trim();
                     ObjRole.Updatedby = roleMaster.Updatedby;        
                     ObjRole.FeatureSet = new FeatureSet();
                     ObjRole.FeatureSet.Features = new List<Feature>();
