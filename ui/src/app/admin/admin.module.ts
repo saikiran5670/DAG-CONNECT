@@ -29,6 +29,7 @@ import { EditCommonTableComponent } from './user-management/edit-view-user/edit-
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { DirectivesModule } from '../directives/directives.module';
 import { AccountService } from '../services/account.service';
+import { UserDetailTableComponent } from './user-management/new-user-step/user-detail-table/user-detail-table.component';
 
 @NgModule({
   declarations: [AdminComponent, UserGroupManagementComponent,
@@ -47,7 +48,8 @@ import { AccountService } from '../services/account.service';
     EditUserRoleDetailsComponent,
     CreateEditUserGroupComponent,
     EditViewUserComponent,
-    EditCommonTableComponent],
+    EditCommonTableComponent,
+    UserDetailTableComponent],
   imports: [
     CommonModule,
     AdminRoutingModule,

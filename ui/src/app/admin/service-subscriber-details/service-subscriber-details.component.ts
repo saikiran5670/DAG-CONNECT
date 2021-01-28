@@ -16,6 +16,7 @@ import { ConfigService } from '@ngx-config/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
 import { OrganizationService } from 'src/app/services/organization.service';
+import { AccountService } from 'src/app/services/account.service';
 
 @Component({
   selector: 'app-service-subscriber-details',
@@ -37,6 +38,7 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
     private translationService: TranslationService,
     private orgService: OrganizationService,
     private userService: EmployeeService,
+    private accountService: AccountService,
     private identityGrpcService: IdentityGrpcService,
     private config: ConfigService,
     private dialog: MatDialog
@@ -110,6 +112,19 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
     // this.userService.getUsers().subscribe((data)=>{
     //   this.callToCommonTable(data,colsList,colsName,tableTitle);
     // });
+
+    let obj: any = {
+      "accountId": 0,
+      "organizationId": this.organizationId,
+      "accountGroupId": 0,
+      "vehicleGroupId": row.vehicleGroupId,
+      "roleId": 0,
+      "name": ""
+    }
+    // this.accountService.getAccountDetails(obj).subscribe((data)=>{
+    //   data = this.makeRoleAccountGrpList(data);
+    //   this.callToCommonTable(data,colsList,colsName,tableTitle);
+    // });
   }
   onVehClick(row:any){
     const colsList= ['vin','name','model'];
@@ -132,6 +147,31 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
       tableTitle: tableTitle
     }
     this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
+  }
+
+  makeRoleAccountGrpList(initdata){
+    initdata.forEach((element, index) => {
+      let roleTxt: any = '';
+      let accGrpTxt: any = '';
+      element.roles.forEach(resp => {
+        roleTxt += resp.name + ',';
+      });
+      element.accountGroups.forEach(resp => {
+        accGrpTxt += resp.name + ',';
+      });
+
+      if(roleTxt != ''){
+        roleTxt = roleTxt.slice(0, -1);
+      }
+      if(accGrpTxt != ''){
+        accGrpTxt = accGrpTxt.slice(0, -1);
+      }
+
+      initdata[index].roleList = roleTxt; 
+      initdata[index].accountGroupList = accGrpTxt;
+    });
+    
+    return initdata;
   }
 
   loadGrpc() {

@@ -34,9 +34,9 @@ namespace net.atos.daf.ct2.identitysession.test
         public async Task UnT_identitysession_AccountAssertionManager_InsertAssertion()
         { 
             AccountAssertion accountAssertion =new AccountAssertion();
-            accountAssertion.Key="asdfgh";
-            accountAssertion.Value="test1";
-            accountAssertion.SessionState="2";
+            accountAssertion.Key="Unit";
+            accountAssertion.Value="Kg";
+            accountAssertion.SessionState="5e9c64fa-8cac-420c-8f7a-d7a12fe4c0b5";
             accountAssertion.AccountId="4";
             accountAssertion.CreatedAt="1";
 
@@ -52,9 +52,9 @@ namespace net.atos.daf.ct2.identitysession.test
         { 
             AccountAssertion accountAssertion =new AccountAssertion();
             //accountAssertion.Id=2;
-            accountAssertion.Key="test";
-            accountAssertion.Value="test2";
-            accountAssertion.SessionState="2";
+            accountAssertion.Key="Unit";
+            accountAssertion.Value="Mg";
+            accountAssertion.SessionState="5e9c64fa-8cac-420c-8f7a-d7a12fe4c0b5";
             accountAssertion.AccountId="4";
             accountAssertion.CreatedAt="4";
 
@@ -72,6 +72,17 @@ namespace net.atos.daf.ct2.identitysession.test
             int result= await _accountAssertionManager.DeleteAssertion(AccountId);
             Assert.IsNotNull(result);
             Assert.IsTrue(result>0);           
+        }
+
+         [TestCategory("Unit-Test-Case")]
+        [Description("Test for Delete account assertion")]
+        [TestMethod]
+        public async Task UnT_identitysession_AccountAssertionManager_DeleteAssertionBySessionId()
+        {                      
+            string SessionId="5e9c64fa-8cac-420c-8f7a-d7a12fe4c0b5";           
+            string result= await _accountAssertionManager.DeleteAssertion(SessionId);
+            Assert.IsNotNull(result);
+            Assert.IsTrue(!string.IsNullOrEmpty(result));           
         }
 
         [TestCategory("Unit-Test-Case")]

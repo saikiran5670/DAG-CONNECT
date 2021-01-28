@@ -88,14 +88,7 @@ namespace net.atos.daf.ct2.organization.repository
                 parameter.Add("@id", organizationId);
                 var query = @"update master.organization set is_active=false where id=@id";
                 int isdelete= await dataAccess.ExecuteScalarAsync<int>(query, parameter);    
-                if (isdelete>0)
-                {
-                      return true;
-                }
-                else
-                {
-                    return false;
-                }              
+                return true;         
             }
             catch (Exception ex)
             {

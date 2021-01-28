@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.identitysession.repository
     {
         Task<string> InsertToken(AccountToken accountToken);
         Task<int> DeleteToken(List<string> token_Id);
-        Task<int> DeleteTokenbySessionId(string sessionId);
+        Task<string> DeleteTokenbySessionId(string sessionId);
         Task<IEnumerable<AccountToken>> GetTokenDetails(int AccountID);
         Task<IEnumerable<AccountToken>> GetTokenDetails(string AccessToken);
         Task<bool> ValidateToken(string TokenId);

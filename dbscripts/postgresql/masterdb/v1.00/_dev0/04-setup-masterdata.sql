@@ -86,7 +86,7 @@ INSERT INTO translation.language (name ,    code ,   key ,   description) select
 INSERT INTO translation.language (name ,    code ,   key ,   description) select 'German','de-DE','dlanguage_German',null WHERE NOT EXISTS  (   SELECT 1   FROM translation.language  WHERE code = 'de-DE');
 INSERT INTO translation.language (name ,    code ,   key ,   description) select 'Spanish','es-ES','dlanguage_Spanish',null WHERE NOT EXISTS  (   SELECT 1   FROM translation.language  WHERE code = 'es-ES');
 INSERT INTO translation.language (name ,    code ,   key ,   description) select 'Estonian','et-EE','dlanguage_Estonian',null WHERE NOT EXISTS  (   SELECT 1   FROM translation.language  WHERE code = 'et-EE');
-INSERT INTO translation.language (name ,    code ,   key ,   description) select 'UK English','EN-GB','dlanguage_UK English',null WHERE NOT EXISTS  (   SELECT 1   FROM translation.language  WHERE code = 'EN-GB');
+INSERT INTO translation.language (name ,    code ,   key ,   description) select 'UK English','EN-GB','dlanguage_UKEnglish',null WHERE NOT EXISTS  (   SELECT 1   FROM translation.language  WHERE code = 'EN-GB');
 INSERT INTO translation.language (name ,    code ,   key ,   description) select 'Finnish','fi-FI','dlanguage_Finnish',null WHERE NOT EXISTS  (   SELECT 1   FROM translation.language  WHERE code = 'fi-FI');
 INSERT INTO translation.language (name ,    code ,   key ,   description) select 'French','fr-FR','dlanguage_French',null WHERE NOT EXISTS  (   SELECT 1   FROM translation.language  WHERE code = 'fr-FR');
 INSERT INTO translation.language (name ,    code ,   key ,   description) select 'Croatian','hr-HR','dlanguage_Croatian',null WHERE NOT EXISTS  (   SELECT 1   FROM translation.language  WHERE code = 'hr-HR');
@@ -119,7 +119,7 @@ INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dlanguage_German','German',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dlanguage_German');
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dlanguage_Spanish','Spanish',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dlanguage_Spanish');
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dlanguage_Estonian','Estonian',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dlanguage_Estonian');
-INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dlanguage_UK English','UK English',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dlanguage_UK English');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dlanguage_UKEnglish','UK English',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dlanguage_UKEnglish');
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dlanguage_Finnish','Finnish',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dlanguage_Finnish');
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dlanguage_French','French',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dlanguage_French');
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'EN-GB','D','dlanguage_Croatian','Croatian',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'dlanguage_Croatian');
@@ -677,6 +677,55 @@ INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblGroupName','Group Name',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblGroupName');
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'EN-GB','L','lblAll','All',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'EN-GB' and name = 'lblAll');
 
+
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.CO2EmissionChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.CO2EmissionChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.DistanceChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.DistanceChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.DrivingTimeChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.DrivingTimeChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.IdlingTimeChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.IdlingTimeChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.FuelConsumedChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.FuelConsumedChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.FuelWastedByIdlingChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.FuelWastedByIdlingChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Dashboard.FleetKPI.OverSpeedChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.OverSpeedChart');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Configuration',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Configuration.Alerts',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration.Alerts');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Configuration.Landmarks',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration.Landmarks');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Configuration.VehicleManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration.VehicleManagement');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Configuration.ReportScheduler',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration.ReportScheduler');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin.OrgnizationDetails',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.OrgnizationDetails');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin.UserGroupManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.UserGroupManagement');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin.UserManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.UserManagement');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin.UserRoleManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.UserRoleManagement');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin.DriverManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.DriverManagement');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin.PackageManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.PackageManagement');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin#ReadOnly',null,'B',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin#ReadOnly');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin#Contributor',null,'B',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin#Contributor');
+INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
+SELECT 'Admin#Admin',null,'B',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin#Admin');
 
 
 INSERT INTO master.menu (name ,
@@ -1281,7 +1330,7 @@ INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)  
 INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'dlanguage_Bulgarian',(select id from master.menu where name = 'User Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'dlanguage_Bulgarian' and ref_id=(select id from master.menu where name = 'User Management'));
 INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'dlanguage_Spanish',(select id from master.menu where name = 'User Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'dlanguage_Spanish' and ref_id=(select id from master.menu where name = 'User Management'));
 INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'dlanguage_Estonian',(select id from master.menu where name = 'User Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'dlanguage_Estonian' and ref_id=(select id from master.menu where name = 'User Management'));
-INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'dlanguage_UK English',(select id from master.menu where name = 'User Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'dlanguage_UK English' and ref_id=(select id from master.menu where name = 'User Management'));
+INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'dlanguage_UKEnglish',(select id from master.menu where name = 'User Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'dlanguage_UKEnglish' and ref_id=(select id from master.menu where name = 'User Management'));
 INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'dlanguage_Finnish',(select id from master.menu where name = 'User Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'dlanguage_Finnish' and ref_id=(select id from master.menu where name = 'User Management'));
 INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'dlanguage_French',(select id from master.menu where name = 'User Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'dlanguage_French' and ref_id=(select id from master.menu where name = 'User Management'));
 INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'dlanguage_Croatian',(select id from master.menu where name = 'User Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'dlanguage_Croatian' and ref_id=(select id from master.menu where name = 'User Management'));
@@ -1321,57 +1370,7 @@ INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)  
 INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'dlandingpagedisplay_TripReport',(select id from master.menu where name = 'User Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'dlandingpagedisplay_TripReport' and ref_id=(select id from master.menu where name = 'User Management'));
 INSERT INTO translation.translationgrouping  (name ,       ref_id ,      type)   SELECT 'dlandingpagedisplay_VehicleManagement',(select id from master.menu where name = 'User Management'),'M' WHERE NOT EXISTS  (   SELECT 1   FROM translation.translationgrouping  WHERE name = 'dlandingpagedisplay_VehicleManagement' and ref_id=(select id from master.menu where name = 'User Management'));
 
-
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard.FleetKPI',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard.FleetKPI.CO2EmissionChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.CO2EmissionChart');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard.FleetKPI.DistanceChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.DistanceChart');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard.FleetKPI.DrivingTimeChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.DrivingTimeChart');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard.FleetKPI.IdlingTimeChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.IdlingTimeChart');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard.FleetKPI.FuelConsumedChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.FuelConsumedChart');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard.FleetKPI.FuelWastedByIdlingChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.FuelWastedByIdlingChart');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Dashboard.FleetKPI.OverSpeedChart',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Dashboard.FleetKPI.OverSpeedChart');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Configuration',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Configuration.Alerts',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration.Alerts');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Configuration.Landmarks',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration.Landmarks');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Configuration.VehicleManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration.VehicleManagement');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Configuration.ReportScheduler',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Configuration.ReportScheduler');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin',null,'G',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin.OrgnizationDetails',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.OrgnizationDetails');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin.UserGroupManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.UserGroupManagement');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin.UserManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.UserManagement');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin.UserRoleManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.UserRoleManagement');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin.DriverManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.DriverManagement');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin.PackageManagement',null,'F',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin.PackageManagement');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin#ReadOnly',null,'B',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin#ReadOnly');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin#Contributor',null,'B',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin#Contributor');
-INSERT INTO master.feature  (name ,	description ,	type ,	is_active ,	data_attribute_set_id )  
-SELECT 'Admin#Admin',null,'B',true,null WHERE NOT EXISTS  (   SELECT 1   FROM master.feature   WHERE name ='Admin#Admin');
-
-INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'nl-NL','D','dlanguage_UK English','Brits Engels',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'nl-NL' and name = 'dlanguage_UK English');
+INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'nl-NL','D','dlanguage_UKEnglish','Brits Engels',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'nl-NL' and name = 'dlanguage_UKEnglish');
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'nl-NL','D','dlanguage_Dutch','Nederlands',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'nl-NL' and name = 'dlanguage_Dutch');
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'nl-NL','D','dunit_USImperial','Amerikaanse imperiale',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'nl-NL' and name = 'dunit_USImperial');
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)  SELECT 'nl-NL','D','ddateformat_mm-dd-yyyy','mm-dd-jjjj',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'nl-NL' and name = 'ddateformat_mm-dd-yyyy');
@@ -1412,7 +1411,3 @@ INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'nl-NL','L','lblUpdateVehicleGroupAPIFailedMessage','Er is een fout opgetreden bij het bijwerken van de voertuiggroep ''$''',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'nl-NL' and name = 'lblUpdateVehicleGroupAPIFailedMessage');
 INSERT INTO translation.translation  (code ,    type ,  name ,  value ,  created_at ,  modified_at)   SELECT 'nl-NL','L','lblConsentStatus','Toestemmingsstatus',(select extract(epoch from now()) * 1000),null WHERE NOT EXISTS  (   SELECT 1   FROM translation.translation   WHERE code = 'nl-NL' and name = 'lblConsentStatus');
 
-ALTER USER pgrdm_dbcreator_tst1 WITH REPLICATION;
-GRANT USAGE ON SCHEMA MASTER TO pgrdm_dbcreator_tst1;
-GRANT ALL PRIVILEGES ON TABLE master.vehicle TO pgrdm_dbcreator_tst1;
-CREATE PUBLICATION dbz_publication FOR TABLE vehicle WITH (publish = 'insert, update'); 

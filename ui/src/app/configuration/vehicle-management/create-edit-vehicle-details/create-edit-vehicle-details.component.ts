@@ -67,18 +67,20 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
     });
     //console.log(this.groupInfo);
     this.vehGrpName = this.groupInfo ? this.groupInfo.name : '';
-
+   // this.vehicleFormGroup.controls.vehicleGroupDescription= this.groupInfo ? this.groupInfo.description : '';
     this.dataSource = new MatTableDataSource(this.gridData);
     if (localStorage.getItem('accountOrganizationId') != null) {
       this.orgId = parseInt(localStorage.getItem('accountOrganizationId'));
     }
-
+    //disable control in view mode
     if (this.viewGroupMode) {
       this.vehicleFormGroup.get('vehicleGroupName').disable();
       this.vehicleFormGroup.get('vehicleGroupDescription').disable();
     }
-    //select associated vehicles of the vehicle group.
-    this.selectCheckBox(this.groupInfo.id);
+     //select associated vehicles of the vehicle group.
+    if (this.groupInfo) {
+     this.selectCheckBox(this.groupInfo.id);
+    }
   }
 
   onCancel() {
@@ -93,7 +95,6 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
         let search = req.filter((item) => item.id === row.id);
         if (search.length > 0) {
           this.selectionForVehGrp.select(row);
-          
         }
       });
     });
@@ -101,22 +102,25 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
   onCreate() {
     if (this.createStatus) {
       // create func
-
       let objData = {
         id: 0,
         name: this.vehicleFormGroup.controls.vehicleGroupName.value,
-        description: this.vehicleFormGroup.controls.vehicleGroupDescription
-          .value,
+        description: this.vehicleFormGroup.controls.vehicleGroupDescription.value,
         organizationId: this.orgId ? this.orgId : 1,
-        vehicles: [
-          {
-            vehicleGroupId: 0,
-            vehicleId: 0,
-          },
-        ],
+        vehicles: [],
       };
+      //select all vehicles which are selected for vehicle group.
+      const numSelected = this.selectionForVehGrp.selected;
 
-      this.vehService.createVehicleGroup(objData).subscribe(
+      numSelected.forEach((row) => {
+        // console.log(row.id);
+        objData.vehicles.push({
+          vehicleGroupId: 0,
+          vehicleId: row.id,
+        });
+      });
+
+      this.vehService.createVehicleGroup(JSON.stringify(objData)).subscribe(
         (res) => {
           // this.vehService.getVehicleGroupByID().subscribe(
           //   (data) => {
@@ -129,26 +133,35 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
           //   (error) => {}
           // );
         },
-        (error) => {}
+        (error) => {
+          console.error(error);
+        }
       );
     } else {
-      // edit func
-
-      let objData: vehicleUpdateRequest = {
+      // edit function here
+      let objData = {
+        //vehicleUpdateRequest
         id: this.groupInfo.id,
         name: this.vehicleFormGroup.controls.vehicleGroupName.value,
         description: this.vehicleFormGroup.controls.vehicleGroupDescription
           .value,
         organizationId: this.orgId ? this.orgId : 1,
-        vehicles: [
-          {
-            vehicleGroupId: this.groupInfo.id,
-            vehicleId: 0,
-          },
-        ],
+        vehicles: [],
       };
+      //select all vehicles which are selected for vehicle group.
+      const numSelected = this.selectionForVehGrp.selected;
 
-      this.vehService.updateVehicleGroup(objData).subscribe(
+      numSelected.forEach((row) => {
+        // console.log(row.id);
+        objData.vehicles.push({
+          vehicleGroupId: this.groupInfo.id,
+          vehicleId: row.id,
+        });
+      });
+
+      //console.log(JSON.stringify(objData))
+
+      this.vehService.updateVehicleGroup(JSON.stringify(objData)).subscribe(
         (res) => {
           this.backToPage.emit({
             editFlag: false,

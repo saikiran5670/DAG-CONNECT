@@ -45,7 +45,7 @@
                         </ng-container> -->
                         <ng-container matColumnDef="roleName">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRoleName || 'Role Name'}}</mat-header-cell>
-                            <mat-cell *matCellDef="let row">
+                            <mat-cell *matCellDef="let row" style="word-break: 'break-word'">
                                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
                                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
                                 <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{row.roleName}}</span> &nbsp;

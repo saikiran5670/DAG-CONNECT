@@ -12,7 +12,7 @@
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                         <input placeholder="{{ translationData.lblEnterVehicleGroupName || 'Enter Vehicle Group Name' }}" [(ngModel)]="createStatus ? '' : vehGrpName"
-                            matInput formControlName="vehicleGroupName" required>
+                            matInput formControlName="vehicleGroupName" required maxlength="60">
                     </mat-form-field>
                     <mat-error *ngIf="vehicleFormGroup.get('vehicleGroupName').hasError('required')">
                         {{ translationData.lblPleaseenterthenewvehiclegroupname || 'Please enter the new vehicle group name'}}

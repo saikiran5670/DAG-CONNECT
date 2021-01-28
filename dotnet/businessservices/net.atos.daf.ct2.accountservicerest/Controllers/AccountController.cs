@@ -869,6 +869,11 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in delete account group :DeleteGroup with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -891,6 +896,11 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in delete account group reference :DeleteAccountsGroupReference with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -1030,6 +1040,11 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:get account group details with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -1054,6 +1069,11 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:get account group details with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
                 return StatusCode(500, "Internal Server Error.");
             }
         }

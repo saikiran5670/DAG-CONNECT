@@ -9,6 +9,7 @@ using net.atos.daf.ct2.data;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.identitysession.repository;
 using Dapper;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.identitysession.test
 {
@@ -33,11 +34,14 @@ namespace net.atos.daf.ct2.identitysession.test
         [TestMethod]
         public async Task UnT_identitysession_AccountSessionManager_InsertSession()
         { 
-            AccountSession accountsession = new AccountSession();     
+            long iSessionStartedAt=UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            long iSessionExpireddAt=UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(30));
+            AccountSession accountsession = new AccountSession();  
+            accountsession.Id=Guid.NewGuid();   
             accountsession.IpAddress = "12.123.46.12";
             accountsession.LastSessionRefresh = 235;
-            accountsession.SessionStartedAt = 23;
-            accountsession.SessionExpiredAt = 234;
+            accountsession.SessionStartedAt = iSessionStartedAt;
+            accountsession.SessionExpiredAt = iSessionExpireddAt;
             accountsession.AccountId =4;
             accountsession.CreatedAt = 1;
 
@@ -52,11 +56,13 @@ namespace net.atos.daf.ct2.identitysession.test
         public async Task UnT_identitysession_AccountSessionManager_UpdateSession()
         { 
             AccountSession accountsession = new AccountSession();   
-            accountsession.Id=new Guid("201e8514-3fbb-4f1f-a64d-f8ec6a128fef");  
+            long iSessionStartedAt=UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            long iSessionExpireddAt=UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(1));
+            accountsession.Id=new Guid("d3101a3b-6704-468d-815f-6dd5f97848c3");  
             accountsession.IpAddress = "12.123.46.12";
             accountsession.LastSessionRefresh = 232;
-            accountsession.SessionStartedAt = 21;
-            accountsession.SessionExpiredAt = 21;
+            accountsession.SessionStartedAt = iSessionStartedAt;
+            accountsession.SessionExpiredAt = iSessionExpireddAt;
             accountsession.AccountId =4;
             accountsession.CreatedAt = 1;
 
@@ -70,16 +76,9 @@ namespace net.atos.daf.ct2.identitysession.test
         [TestMethod]
         public async Task UnT_identitysession_AccountSessionManager_DeleteSession()
         { 
-            AccountSession accountsession = new AccountSession();  
-            accountsession.Id=new Guid("201e8514-3fbb-4f1f-a64d-f8ec6a128fef");
-            accountsession.IpAddress = "12.123.46.12";
-            accountsession.LastSessionRefresh = 232;
-            accountsession.SessionStartedAt = 21;
-            accountsession.SessionExpiredAt = 21;
-            accountsession.AccountId =4;
-            accountsession.CreatedAt = 12;
-
-            string result= await _accountSessionManager.DeleteSession(accountsession);
+            
+            string SessionID="9d8fce48-b918-4e51-a030-4a781ed7e156";           
+            string result= await _accountSessionManager.DeleteSession(SessionID);
             Assert.IsNotNull(result);
             Assert.IsTrue(string.IsNullOrEmpty(result));            
         }

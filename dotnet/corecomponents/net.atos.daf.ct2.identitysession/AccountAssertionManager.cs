@@ -48,7 +48,7 @@ namespace net.atos.daf.ct2.identitysession
                 throw ex;
             }
         }
-        public async Task<int> DeleteAssertion(string sessionId)
+        public async Task<string> DeleteAssertion(string sessionId)
         {
              try
             {

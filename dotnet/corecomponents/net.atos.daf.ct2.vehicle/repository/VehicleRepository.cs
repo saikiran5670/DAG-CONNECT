@@ -73,15 +73,16 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@vin", vehicle.VIN);
             parameter.Add("@license_plate_number", vehicle.License_Plate_Number);
             //parameter.Add("@status", ((char)vehicle.Status).ToString() != null ? (char)vehicle.Status:'P');
-            if (vehicle.Organization_Id > 0)
-            {
-                bool QrgOptStatus = await dataAccess.QuerySingleAsync<bool>("SELECT optout_status FROM master.organization where id=@id", new { id = vehicle.Organization_Id });
-                parameter.Add("@status", QrgOptStatus == false ? (char)VehicleStatusType.OptIn : (char)VehicleStatusType.OptOut);
-            }
-            else
-            {
+            //TODO This needs to be fix
+            // if (vehicle.Organization_Id > 0)
+            // {
+            //     bool QrgOptStatus = await dataAccess.QuerySingleAsync<bool>("SELECT optout_status FROM master.organization where id=@id", new { id = vehicle.Organization_Id });
+            //     parameter.Add("@status", QrgOptStatus == false ? (char)VehicleStatusType.OptIn : (char)VehicleStatusType.OptOut);
+            // }
+            // else
+            // {
                 parameter.Add("@status", (char)VehicleStatusType.OptIn);
-            }
+            //}
             parameter.Add("@status_changed_date", (vehicle.Status_Changed_Date != null && DateTime.Compare(DateTime.MinValue, vehicle.Status_Changed_Date) > 0) ? UTCHandling.GetUTCFromDateTime(vehicle.Status_Changed_Date.ToString()) : 0);
             parameter.Add("@termination_date", vehicle.Termination_Date != null  ? UTCHandling.GetUTCFromDateTime(vehicle.Termination_Date.ToString()) : (long ?)null);
             parameter.Add("@vid", vehicle.Vid);

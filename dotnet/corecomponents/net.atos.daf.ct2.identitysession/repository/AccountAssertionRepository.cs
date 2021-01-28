@@ -49,7 +49,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             int result_CheckDuplicate =await CheckDuplicateKeyValue(accountAssertion.Key,accountAssertion.Value,Convert.ToInt32(accountAssertion.AccountId));
 
             int InsertedAccountAssertionId=0;   
-            if(result_CheckDuplicate>0)  
+            if(result_CheckDuplicate==0)  
             {
                InsertedAccountAssertionId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);   
             } 
@@ -125,15 +125,15 @@ namespace net.atos.daf.ct2.identitysession.repository
             try
             {
                 var QueryStatement=@"DELETE FROM master.accountassertion	                           
-                                    WHERE account_id=@account_id;";
-                                    //RETURNING id
+                                    WHERE account_id=@account_id
+                                    RETURNING account_id;";
 
                 var parameter = new DynamicParameters();
                 parameter.Add("@account_id", accountId);    
                 
-                int accountassertionId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int account_Id = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
 
-                return accountassertionId;
+                return account_Id;
             }
             catch(Exception ex)
             {
@@ -141,20 +141,21 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
         }
 
-        public async Task<int> DeleteAssertion(string sessionId)
+        public async Task<string> DeleteAssertion(string sessionId)
         {
             try
             {
                 var QueryStatement=@"DELETE FROM master.accountassertion	                           
-                                    WHERE session_id=@session_id;";
-                                    //RETURNING id
+                                    WHERE session_id=@session_id
+                                    RETURNING session_id;";
+                                    
 
                 var parameter = new DynamicParameters();
                 parameter.Add("@session_id", new Guid(sessionId));    
                 
-                int accountassertionId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                Guid session_Id = await dataAccess.ExecuteScalarAsync<Guid>(QueryStatement, parameter);
 
-                return accountassertionId;
+                return session_Id.ToString();
             }
             catch(Exception ex)
             {

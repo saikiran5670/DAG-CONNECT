@@ -12,7 +12,7 @@ namespace net.atos.daf.ct2.vehicle.entity
         public string VIN { get; set; }       
         public string License_Plate_Number { get; set; }
         //public DateTime ManufactureDate { get; set; }
-        // public string ChassisNo { get; set; } 
+        public string Description { get; set; } 
         public VehicleStatusType Status { get; set; }
         public DateTime Status_Changed_Date { get; set; }
         public DateTime ? Termination_Date { get; set; } 

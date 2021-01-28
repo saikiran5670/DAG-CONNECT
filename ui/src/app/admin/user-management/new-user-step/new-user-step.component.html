@@ -350,16 +350,19 @@
                     </mat-checkbox>
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="name">
+                <ng-container matColumnDef="roleName">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserRole || 'User Role' }}</mat-header-cell>
-                  <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
+                  <mat-cell *matCellDef="let row">{{ row.roleName }}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="services">
+                <ng-container matColumnDef="featureIds">
                   <mat-header-cell *matHeaderCellDef>{{ translationData.lblServices || 'Services' }}</mat-header-cell>
                   <mat-cell *matCellDef="let row">  
-                    <span *ngFor='let item of [].constructor(row.services); let i = index'>
-                      <img title="item" src="../../../assets/connected-logo-small.png" style="width: 20px;height: 20px;"/>&nbsp;
+                    <span *ngIf='row.featureIds.length > 0'>
+                      <span *ngFor='let item of [].constructor(row.featureIds[0]); let i = index'>
+                        <img title="item" src="../../../assets/connected-logo-small.png" style="width: 20px;height: 20px;"/>&nbsp;
+                      </span>
                     </span>
+                    <span *ngIf='row.featureIds.length == 0'>-</span>
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="roleDisplayedColumns"></mat-header-row>
@@ -424,9 +427,11 @@
                   <mat-header-cell *matHeaderCellDef> Vehicles </mat-header-cell>
                   <mat-cell *matCellDef="let row"> {{row.vehicles}} </mat-cell>
                 </ng-container> -->
-                <ng-container matColumnDef="users">
+                <ng-container matColumnDef="accountCount">
                   <mat-header-cell *matHeaderCellDef>{{ translationData.lblUsers || 'Users' }}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (click)="viewUserGrpDetails(row)" class="row-hover">{{ row.users }}</mat-cell>
+                  <mat-cell *matCellDef="let row">
+                    <span (click)="row.accountCount > 0 ? viewUserGrpDetails(row) : ''" [ngClass]="{'row-hover': row.accountCount > 0}">{{ row.accountCount }}</span>
+                  </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="userGrpDisplayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: userGrpDisplayedColumns;">
@@ -514,7 +519,7 @@
     <!-- <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 5: {{ translationData.lblSummary }}</ng-template> -->
     <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 4: {{ translationData.lblSummary || 'Summary' }}</ng-template>
     <ng-template matStepLabel></ng-template>
-    <app-summary-step *ngIf='summaryStepFlag' [profilePath]='croppedImage' [translationData]='translationData' [accountInfoData]='firstFormGroup.controls' [selectedRoleData]='selectionForRole.selected' [selectedUserGrpData]='selectionForUserGrp.selected' [selectedVehGrpData]='selectionForVehGrp.selected'></app-summary-step>
+    <app-summary-step *ngIf='summaryStepFlag' [defaultSetting]='defaultSetting' [profilePath]='croppedImage' [translationData]='translationData' [accountInfoData]='firstFormGroup.controls' [selectedRoleData]='selectionForRole.selected' [selectedUserGrpData]='selectionForUserGrp.selected' [selectedVehGrpData]='selectionForVehGrp.selected'></app-summary-step>
     <mat-card class='bg-theme mat-elevation-z'>
       <mat-card-actions fxLayoutAlign="end end">
         <div fxLayout="row" fxLayoutAlign="end end" class="full-width">

@@ -154,7 +154,8 @@ CREATE TABLE if not exists  master.account
 	first_name varchar(30) not null,
 	last_name varchar(20),
 	dob bigint,
-	type char(1) not null ----------------
+	type char(1) not null,
+	is_active boolean ----------------
 )
 TABLESPACE pg_default;
 
@@ -177,21 +178,22 @@ end if;
 end;
 $$;
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='uk_account_email' AND table_name='account'
-		and constraint_type='UNIQUE')
-then	
-	begin
-		ALTER TABLE  master.account 
-			ADD CONSTRAINT uk_account_email UNIQUE  (email)
-			USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+-- Do $$
+-- begin
+-- if not exists(
+	-- SELECT 1 FROM information_schema.table_constraints 
+	-- WHERE constraint_name='uk_account_email' AND table_name='account'
+		-- and constraint_type='UNIQUE')
+-- then	
+	-- begin
+		-- ALTER TABLE  master.account 
+			-- ADD CONSTRAINT uk_account_email UNIQUE  (email)
+			-- USING INDEX TABLESPACE pg_default;
+	-- end;
+-- end if;
+-- end;
+-- $$;
+
 
 --accountorg (Master data is also required)
 CREATE TABLE if not exists  master.accountorg 
@@ -261,13 +263,13 @@ CREATE TABLE if not exists  master.role
 (
 	id serial not null,
 	organization_id int,
-	name varchar(50) not null,
+	name varchar(60) not null,
 	is_active boolean not null default true, ----------
 	created_date bigint,
 	created_by int,
 	updated_date bigint,
 	updated_by int,
-	description varchar(120)),
+	description varchar(120),
 	feature_set_id int
 )
 TABLESPACE pg_default;
@@ -1467,7 +1469,7 @@ CREATE TABLE if not exists  logs.audittrail
     message character varying(1000), 
     sourceobject_id integer, 
     targetobject_id integer, 
-    updated_data json
+    updated_data varchar
 )
 TABLESPACE pg_default;
 
@@ -1765,7 +1767,7 @@ $$;
 --accountsession 
 CREATE TABLE if not exists  master.accountsession 
 (
-	id serial NOT NULL,      
+	id uuid NOT NULL,      
 	ip_address  varchar(20) NOT NULL,       
 	last_session_refresh bigint NOT NULL,
 	session_started_at bigint NOT NULL,      
@@ -1813,7 +1815,8 @@ $$;
 --accounttoken 
 CREATE TABLE if not exists  master.accounttoken 
 (
-	id serial NOT NULL,      
+	--id serial NOT NULL,      
+	session_id uuid NOT NULL,      
 	user_name varchar(100) NOT NULL,      
 	access_token varchar(200) NOT NULL,      
 	expire_in int NOT NULL,      
@@ -1821,10 +1824,10 @@ CREATE TABLE if not exists  master.accounttoken
 	refresh_expire_in int ,      
 	account_id int NOT NULL,      
 	type char(1) NOT NULL,      
-	session_id int NOT NULL,      
 	scope varchar(50)  NOT NULL,      
 	idp_type char(1) NOT NULL,      
-	created_at bigint NOT NULL
+	created_at bigint NOT NULL,
+	token_id uuid not null
 )
 TABLESPACE pg_default;
 
@@ -1832,21 +1835,21 @@ ALTER TABLE  master.accounttoken
     OWNER to pgdbadmin;
 
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='pk_accounttoken_id' AND table_name='accounttoken'
-		and constraint_type='PRIMARY KEY')
-then	
-	begin
-		ALTER TABLE  master.accounttoken 
-			ADD CONSTRAINT pk_accounttoken_id PRIMARY KEY (id)
-			USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+-- Do $$
+-- begin
+-- if not exists(
+	-- SELECT 1 FROM information_schema.table_constraints 
+	-- WHERE constraint_name='pk_accounttoken_id' AND table_name='accounttoken'
+		-- and constraint_type='PRIMARY KEY')
+-- then	
+	-- begin
+		-- ALTER TABLE  master.accounttoken 
+			-- ADD CONSTRAINT pk_accounttoken_id PRIMARY KEY (id)
+			-- USING INDEX TABLESPACE pg_default;
+	-- end;
+-- end if;
+-- end;
+-- $$;
 
 Do $$
 begin
@@ -1884,11 +1887,11 @@ $$;
 --accountassertion 
 CREATE TABLE if not exists  master.accountassertion 
 (
-	id serial NOT NULL,      
+	--id serial NOT NULL,      
+	session_id uuid NOT NULL,      
 	key varchar(20) NOT NULL,      
 	value varchar(100),      
 	account_id int NOT NULL,      
-	session_id int NOT NULL,      
 	created_at bigint NOT NULL
 )
 TABLESPACE pg_default;
@@ -1897,21 +1900,21 @@ ALTER TABLE  master.accountassertion
     OWNER to pgdbadmin;
 
 
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='pk_accountassertion_id' AND table_name='accountassertion'
-		and constraint_type='PRIMARY KEY')
-then	
-	begin
-		ALTER TABLE  master.accountassertion 
-			ADD CONSTRAINT pk_accountassertion_id PRIMARY KEY (id)
-			USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
+-- Do $$
+-- begin
+-- if not exists(
+	-- SELECT 1 FROM information_schema.table_constraints 
+	-- WHERE constraint_name='pk_accountassertion_id' AND table_name='accountassertion'
+		-- and constraint_type='PRIMARY KEY')
+-- then	
+	-- begin
+		-- ALTER TABLE  master.accountassertion 
+			-- ADD CONSTRAINT pk_accountassertion_id PRIMARY KEY (id)
+			-- USING INDEX TABLESPACE pg_default;
+	-- end;
+-- end if;
+-- end;
+-- $$;
 
 Do $$
 begin

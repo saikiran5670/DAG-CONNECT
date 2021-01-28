@@ -188,7 +188,10 @@ export class VehicleManagementComponent implements OnInit {
       vin: '',
       status: 73,
     };
-   
+    //clear the  table first
+    let tempData=[]
+    this.dataSource = new MatTableDataSource(tempData);
+    //*************** */
     this.vehService.getVehicle(this.veh).subscribe(
       (_data) => {
         this.vehicleData = _data;
@@ -221,8 +224,6 @@ export class VehicleManagementComponent implements OnInit {
           //const ob$: Observable<any> = of(this.vehicleGroupData).pipe(filter( _data => _data.isVehicleGroup == true));
 
           this.initData = _data;
-         
-
           this.selectedType =
             this.selectedType == '' ? 'group' : this.selectedType;
           if (this.selectedType === 'group') {
@@ -441,8 +442,7 @@ export class VehicleManagementComponent implements OnInit {
   onChange(event) {
     this.selectedType = event.value;
     if (event.value === 'group') {
-      
-      this.initData = this.vehicleGroupData;
+       this.initData = this.vehicleGroupData;
       this.loadVehicleGroupDataSource();
     } else if (event.value === 'vehicle') {
       
@@ -473,21 +473,26 @@ export class VehicleManagementComponent implements OnInit {
       'Actions',
     ];
     if (this.vehicleGroupData != null) {
-      this.updateDataSource(this.vehicleGroupData);
+     this.updateDataSource(this.vehicleGroupData);
     } else {
-      this.vehGrpRqst = {
-        id: 0,
-        organizationID: this.orgId ? this.orgId : 1,
-        vehicles: true,
-        vehiclesGroup: true,
-        groupIds: [0],
-      };
-      this.vehService.getVehicleGroup(this.vehGrpRqst).subscribe((_data) => {
-        this.vehicleGroupData = _data;
-        this.initData = this.vehicleGroupData;
-      });
-      this.updateDataSource(this.vehicleGroupData);
+      this.loadVehGroupTable();
     }
+  }
+  loadVehGroupTable(){
+    this.vehGrpRqst = {
+      id: 0,
+      organizationID: this.orgId ? this.orgId : 1,
+      vehicles: true,
+      vehiclesGroup: true,
+      groupIds: [0],
+    };
+    this.vehService.getVehicleGroup(this.vehGrpRqst)
+    .pipe(map((data) => data.filter((d) => d.isVehicleGroup == true)))
+    .subscribe((_data) => {
+      this.vehicleGroupData = _data;
+      this.initData = this.vehicleGroupData;
+    });
+    this.updateDataSource(this.vehicleGroupData);
   }
 
   loadVehicleDataSource() {
