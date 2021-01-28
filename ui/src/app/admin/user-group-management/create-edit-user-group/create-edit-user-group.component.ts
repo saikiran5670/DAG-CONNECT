@@ -133,7 +133,7 @@ export class CreateEditUserGroupComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.orgId = 32;
+    this.orgId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.UserGroupForm = this._formBuilder.group({
       userGroupName: ['', [Validators.required]],
       userGroupDescription: [],
