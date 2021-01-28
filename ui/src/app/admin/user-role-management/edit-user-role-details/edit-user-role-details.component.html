@@ -45,6 +45,9 @@
                     <mat-error *ngIf="userRoleFormGroup.get('userRoleName').hasError('required')">
                         {{ translationData.lblPleaseentertheUserRolename || 'Please enter the User Role name'}}
                     </mat-error>
+                    <mat-error *ngIf="userRoleFormGroup.get('userRoleName').hasError('maxlength')">
+                        {{ translationData.lblUserRoleNameShouldbeMax60Characters || 'User Role name should be max. 60 characters'}}
+                    </mat-error>
                     <mat-error #UserValueCheck *ngIf="isUserRoleExist" >
                         {{ translationData.lblUserRolealreadyexistsPleasechooseadifferentname || 'User Role already exists. Please choose a different name.'}}
                     </mat-error>

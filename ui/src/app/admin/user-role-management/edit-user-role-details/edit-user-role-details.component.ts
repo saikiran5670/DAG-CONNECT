@@ -45,7 +45,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   ngOnInit() {
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.userRoleFormGroup = this._formBuilder.group({
-      userRoleName: ['', [Validators.required]],
+      userRoleName: ['', [Validators.required, Validators.maxLength(60)]],
       roleType: ['Regular', [Validators.required]],
       userRoleDescription: []
     });
@@ -128,7 +128,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
 
   createUserRole(enteredUserRoleValue: any) {//create func
    // this.roleService.checkUserRoleExist(enteredUserRoleValue).subscribe((data: any) => {
-      let existingRole = this.roleData.filter(response => response.roleName == this.userRoleFormGroup.controls.userRoleName.value);
+      let existingRole = this.roleData.filter(response => (response.roleName).toLowerCase() == enteredUserRoleValue.trim().toLowerCase());
     if (existingRole.length > 0) {
       this.isUserRoleExist = true;
       this.doneFlag = false;
@@ -164,7 +164,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
         let objData = {
           "organizationId": this.userRoleFormGroup.controls.roleType.value=='Global'? 0 : this.organizationId,
           "roleId": 0,
-          "roleName": this.userRoleFormGroup.controls.userRoleName.value,
+          "roleName": (this.userRoleFormGroup.controls.userRoleName.value).trim(),
           "description": this.userRoleFormGroup.controls.userRoleDescription.value,
           "featureIds": featureIds,
           "createdby": 0
@@ -205,7 +205,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
     let objData = {
       "organizationId": this.userRoleFormGroup.controls.roleType.value=='Global'? 0 : this.gridData[0].organizationId,
       "roleId": this.gridData[0].roleId,
-      "roleName": this.userRoleFormGroup.controls.userRoleName.value,
+      "roleName": (this.userRoleFormGroup.controls.userRoleName.value).trim(),
       "description": this.userRoleFormGroup.controls.userRoleDescription.value,
       "featureIds": featureIds,
       "createdby": 0,
