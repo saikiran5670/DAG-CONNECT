@@ -263,7 +263,7 @@ CREATE TABLE if not exists  master.role
 (
 	id serial not null,
 	organization_id int ,
-	name varchar(50) not null,
+	name varchar(60) not null,
 	is_active boolean not null default true, ----------
 	created_date bigint,
 	created_by int,
