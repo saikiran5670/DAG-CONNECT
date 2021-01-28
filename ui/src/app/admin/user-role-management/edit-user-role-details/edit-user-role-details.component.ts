@@ -71,7 +71,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   }
 
   onCancel() {
-    this.backToPage.emit({ viewFlag: false, editFlag: false, editText: 'cancel' });
+    this.backToPage.emit({ viewFlag: false, editFlag: false, duplicateFlag: false, editText: 'cancel' });
   }
 
   onReset(){
@@ -103,19 +103,18 @@ export class EditUserRoleDetailsComponent implements OnInit {
       this.createUserRole(UserRoleInputvalues);
     }
     else{
-      if(this.gridData[0].name == this.userRoleFormGroup.controls.userRoleName.value){
+      if(this.gridData[0].roleName == this.userRoleFormGroup.controls.userRoleName.value){
         this.updateUserRole();
       }
       else{
-        // this.roleService.checkUserRoleExist(UserRoleInputvalues).subscribe((data: any) => {
-        //   if (data.length >= 1) {
-        //     this.isUserRoleExist = true;
-        //     this.doneFlag = false;
-        //   }
-        //   else{
-             this.updateUserRole();
-        //   }
-        // }, (error) => { });
+        let existingRole = this.roleData.filter(response => (response.roleName).toLowerCase() == UserRoleInputvalues.trim().toLowerCase());
+        if (existingRole.length > 0) {
+          this.isUserRoleExist = true;
+          this.doneFlag = false;
+        }
+        else {
+            this.updateUserRole();
+        }
       }
     }
   }
@@ -128,7 +127,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
 
   createUserRole(enteredUserRoleValue: any) {//create func
    // this.roleService.checkUserRoleExist(enteredUserRoleValue).subscribe((data: any) => {
-      let existingRole = this.roleData.filter(response => (response.roleName).toLowerCase() == enteredUserRoleValue.trim().toLowerCase());
+    let existingRole = this.roleData.filter(response => (response.roleName).toLowerCase() == enteredUserRoleValue.trim().toLowerCase());
     if (existingRole.length > 0) {
       this.isUserRoleExist = true;
       this.doneFlag = false;

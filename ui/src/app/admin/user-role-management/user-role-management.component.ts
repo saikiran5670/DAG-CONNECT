@@ -244,6 +244,7 @@ export class UserRoleManagementComponent implements OnInit {
   editData(item: any) {
     this.editFlag = item.editFlag;
     this.viewFlag = item.viewFlag;
+    this.duplicateFlag = item.duplicateFlag;
     if(item.editText == 'create'){
       //this.openSnackBar('Item created', 'dismiss');
       this.successMsgBlink(this.getCreateEditMsg(item.editText, item.rolename));
