@@ -497,7 +497,7 @@ namespace net.atos.daf.ct2.account
                 if (accountId > 0)
                 {
                     parameter.Add("@account_id", accountId);
-                    query = @"select r.id,r.name,r.id,r.organization_id as Organization_Id from master.role r inner join master.accountrole ac on r.id=ac.role_id and r.is_active=true where ac.account_id=@account_id";
+                    query = @"select r.id,r.name,r.id,ac.organization_id as Organization_Id from master.role r inner join master.accountrole ac on r.id=ac.role_id and r.is_active=true where ac.account_id=@account_id";
                     IEnumerable<AccountOrgRole> result = await dataAccess.QueryAsync<AccountOrgRole>(query, parameter);
                     AccountOrgRoleList = result.ToList();
                 }
