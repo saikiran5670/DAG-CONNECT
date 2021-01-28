@@ -65,8 +65,10 @@ export class EditVINSettingComponent implements OnInit {
   }
 
   onReset() {
-    this.vinSettingFormGroup.get('vehicleName').reset();
-    this.vinSettingFormGroup.get('registrationNumber').reset();
+    // this.vinSettingFormGroup.get('vehicleName').reset();
+    // this.vinSettingFormGroup.get('registrationNumber').reset();
+    this.vehicleData.vehicleName= this.vinData.name;
+    this.vehicleData.registrationNo= this.vinData.license_Plate_Number;
   }
 
   onSave() {
