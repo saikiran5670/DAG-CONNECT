@@ -25,9 +25,10 @@ import { AccountService } from '../../services/account.service';
   styleUrls: ['./user-group-management.component.less'],
 })
 export class UserGroupManagementComponent implements OnInit {
+  OrgId:number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
   getAccountGrp: GetAccountGrp  = {
     accountGroupId : null,
-    organizationId : null,
+    organizationId : this.OrgId,
     accountId : null,
     accounts : true,
     accountCount : true
@@ -38,13 +39,13 @@ export class UserGroupManagementComponent implements OnInit {
     name: '',
     description: '',
     accountGroupId : 0,
-    organizationId : 1,
+    organizationId : this.OrgId,
     accountId : 0,
     accounts : true,
     accountCount : true,
   }
   usrgrp: UserGroup = {
-    organizationId: null,
+    organizationId: this.OrgId,
     name: null,
     isActive: null,
     id: null,
@@ -163,6 +164,10 @@ export class UserGroupManagementComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    
+
+
     let translationObj = {
       id: 0,
       code: "EN-GB", //-- TODO: Lang code based on account 
@@ -220,7 +225,7 @@ export class UserGroupManagementComponent implements OnInit {
 
     this.getAccountGrp = {
       accountGroupId : this.selectedRowData.id,
-      organizationId : 1,
+      organizationId : this.OrgId,
       accountId : 0,
       accounts : true,
       accountCount : true
@@ -236,7 +241,7 @@ export class UserGroupManagementComponent implements OnInit {
       this.selectedRowData = element;
       this.getAccountGrp = {
       accountGroupId : this.selectedRowData.id,
-      organizationId : 1,
+      organizationId : this.OrgId,
       accountId : 0,
       accounts : true,
       accountCount : true
@@ -290,7 +295,7 @@ export class UserGroupManagementComponent implements OnInit {
         if (res.inputValue) {
           //save data here
           this.usrgrp = {
-            organizationId: 1,
+            organizationId: this.OrgId,
             name: res.inputValue,
             isActive: true,
             id: options.id,
@@ -303,7 +308,7 @@ export class UserGroupManagementComponent implements OnInit {
           this.accountgrp = {
               id: options.id,
               name: res.inputValue,
-              organizationId: 1,
+              organizationId: this.OrgId,
               description : options.userGroupDescriptions,
               accountCount: true,
               accounts : true,

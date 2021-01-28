@@ -9,7 +9,7 @@
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                         <input (keyup)="onInputChange($event)" placeholder="{{ translationData.lblEnterNewUserGroupName || 'Enter New User Group Name' }}"
-                            matInput formControlName="userGroupName" required>
+                            matInput formControlName="userGroupName" required maxlength="60">
                     </mat-form-field>
                     <mat-error *ngIf="UserGroupForm.get('userGroupName').hasError('required')">
                         {{translationData.lblErrorUserGroupName || 'Please enter any User Group name' }}
