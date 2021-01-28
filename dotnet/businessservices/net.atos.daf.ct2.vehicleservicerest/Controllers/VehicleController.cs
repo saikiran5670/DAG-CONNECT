@@ -23,6 +23,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
         private readonly IVehicleManager _vehicelManager;
         private readonly IGroupManager _groupManager;
 
+        private string FK_Constraint = "violates foreign key constraint";
         public VehicleController(ILogger<VehicleController> logger, IVehicleManager vehicelManager, IGroupManager groupManager)
         {
             _logger = logger;
@@ -78,6 +79,11 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Vehicle Service:Update : " + ex.Message + " " + ex.StackTrace);
+
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }     
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -125,6 +131,11 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Vehicle Service:Update : " + ex.Message + " " + ex.StackTrace);
+
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }     
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -159,6 +170,11 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Vehicle Service:UpdateStatus : " + ex.Message + " " + ex.StackTrace);
+
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }   
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -254,6 +270,12 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Vehicle Service:CreateGroup : " + ex.Message + " " + ex.StackTrace);
+
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }   
+
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -313,6 +335,12 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Vehicle Service:UpdateGroup : " + ex.Message + " " + ex.StackTrace);
+
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
+                   
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -388,6 +416,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                         ObjGroupRef.VehicleCount = item.GroupRefCount;
                         ObjGroupRef.IsVehicleGroup = true;
                         ObjGroupRef.Organization_Id=item.OrganizationId;
+                        ObjGroupRef.Description=item.Description;
                         ObjVehicleList.Add(ObjGroupRef);
                     }
                 }
