@@ -41,11 +41,19 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             try
             {
                 // Validation 
-                if ((string.IsNullOrEmpty(request.EmailId)) || (string.IsNullOrEmpty(request.FirstName)) 
+                if ((string.IsNullOrEmpty(request.EmailId)) || (string.IsNullOrEmpty(request.FirstName))
                 || (string.IsNullOrEmpty(request.LastName)) || (request.Organization_Id <=0 ))
                 {
-                    return StatusCode(400, "The EmailId address, first name, last name and organization is required.");
+                    return StatusCode(400, "The EmailId address, first name, last name and organization id is required.");
                 }
+                // Length validation
+                Int32 validOrgId=0; 
+                if ((request.EmailId.Length > 50 ) || (request.FirstName.Length > 30 ) 
+                || (request.LastName.Length>20) || !Int32.TryParse(request.Organization_Id.ToString(), out validOrgId))
+                {
+                    return StatusCode(400, "The EmailId address, first name, last name and organization id should be valid.");
+                }
+
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
                 account = _mapper.ToAccountEntity(request);
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
@@ -57,7 +65,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 account = await accountmanager.Create(account);
                 if (account.isDuplicate)
                 {
-                    return StatusCode(404, "The EmailId address is duplicate, please provide unique email address.");
+                    return StatusCode(409, "Duplicate Account.");
                 }
                 else if (account.isError)
                 {
@@ -92,6 +100,13 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 {
                     return StatusCode(400, "The EmailId address, first name, last name is required.");
                 }
+                // Length validation
+                Int32 validOrgId=0; 
+                if ((request.EmailId.Length > 50 ) || (request.FirstName.Length > 30 ) 
+                || (request.LastName.Length>20) || Int32.TryParse(request.Organization_Id.ToString(), out validOrgId))
+                {
+                    return StatusCode(400, "The EmailId address, first name, last name and organization id should be valid.");
+                }
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
                 account = _mapper.ToAccountEntity(request);
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
@@ -102,7 +117,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 account = await accountmanager.Update(account);
                 if (account.isDuplicate)
                 {
-                    return StatusCode(400, "The Provided account is duplicate, please provide unique email address.");
+                    return StatusCode(409, "Duplicate Account.");
                 }
                 else if (account.isError)
                 {
@@ -172,13 +187,13 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 // Validation 
                 if (string.IsNullOrEmpty(account.EmailId) || string.IsNullOrEmpty(account.Password))
                 {
-                    return StatusCode(404, "The Email address, and account id and password is required.");
+                    return StatusCode(404, "The Email address and password is required.");
                 }
                 var result = await accountmanager.ChangePassword(account);
                 if (result)
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Account Delete", 1, 2, account.Id.ToString());
-                    return Ok("Password has been changed");
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Password Change", 1, 2, account.Id.ToString());
+                    return Ok("Password has been changed.");
                 }
                 else
                 {
@@ -223,13 +238,12 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     groupFilter.Id = accountFilter.AccountGroupId;
                     groupFilter.ObjectType = Group.ObjectType.AccountGroup;
                     groupFilter.FunctionEnum = Group.FunctionEnum.None;
-                    groupFilter.GroupType = Group.GroupType.Group;
-                    
+                    groupFilter.GroupType = Group.GroupType.Group;                    
                     groupFilter.RefId = 0;
                     groupFilter.GroupIds = null;
                     groupFilter.GroupRef = true;
-                    groupFilter.GroupRefCount = true;
-
+                    groupFilter.GroupRefCount = false;
+                    // get account group accounts
                     var accountGroupList = await groupmanager.Get(groupFilter);
                     var group = accountGroupList.FirstOrDefault();
                     List<int> accountIds = null;
@@ -284,7 +298,6 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     return StatusCode(400, "The organization is required");
                 }
                 AccountComponent.AccountFilter filter = new AccountComponent.AccountFilter();
-
                 List<AccountComponent.entity.Account> accounts = new List<AccountComponent.entity.Account>();
                 List<int> accountIds = new List<int>();
                 List<AccountDetailsResponse> response = new List<AccountDetailsResponse>();
@@ -298,7 +311,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     groupFilter.GroupType = Group.GroupType.Group;
                     groupFilter.FunctionEnum = Group.FunctionEnum.None;
                     groupFilter.GroupRef = true;
-
+                    // get account group accounts
                     var groups = groupmanager.Get(groupFilter).Result;
                     foreach (Group.Group group in groups)
                     {
@@ -347,6 +360,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     accessFilter.AccountId = 0;
                     accessFilter.AccountGroupId = 0;
                     accessFilter.VehicleGroupId = request.VehicleGroupId;
+                    // get account group and vehicle group access relationship.
                     var accessResult = await accountmanager.GetAccessRelationship(accessFilter);
                     if (Convert.ToInt32(accessResult.Count) > 0)
                     {
@@ -355,7 +369,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                         vehicleGroupIds.AddRange(accessResult.Select(c => c.AccountGroupId).ToList());
                         var groupFilter = new Group.GroupFilter();
                         groupFilter.GroupIds = vehicleGroupIds;
-                        groupFilter.OrganizationId = request.OrganizationId;
+                        groupFilter.OrganizationId = request.OrganizationId;                        
                         groupFilter.GroupRefCount = false;
                         groupFilter.GroupRef = true;
                         groupFilter.ObjectType = Group.ObjectType.None;
@@ -535,7 +549,8 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 }
                 var result = await preferencemanager.Delete(accountId);
                 var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Preference Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Preference", 1, 2, Convert.ToString(accountId));
-                return Ok(result);
+                if (result) return Ok(result);
+                else return StatusCode(404, "Preference for this account is not configured.");
             }
             catch (Exception ex)
             {
@@ -719,7 +734,6 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
         // End - AccessRelationshhip
 
         // Begin - Account Group
-
         [HttpPost]
         [Route("accountgroup/create")]
         public async Task<IActionResult> CreateAccountGroup(AccountGroupRequest request)
@@ -832,7 +846,9 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 }
                 bool result = await groupmanager.Delete(id,Group.ObjectType.AccountGroup);
                 var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Account Group ", 1, 2, Convert.ToString(id));
-                return Ok(true);
+                if(result) return Ok(true);
+                else return StatusCode(404, "Account Group not configured.");
+                
             }
             catch (Exception ex)
             {
@@ -864,7 +880,8 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     result = await groupmanager.AddRefToGroups(groupRef);
                 }
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Acccount Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Account Group ", 1, 2, "");
-                return Ok(result);
+                if(result) return Ok(true);
+                else return StatusCode(404, "Account Group Accounts not configured.");
             }
             catch (Exception ex)
             {
@@ -891,7 +908,8 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 bool result = false;
                 result = await groupmanager.RemoveRef(id);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Acccount Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Account Group References", 1, 2, "");
-                return Ok(result);
+                if(result) return Ok(true);
+                else return StatusCode(404, "Account Group accounts not configured.");
             }
             catch (Exception ex)
             {
@@ -929,8 +947,9 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 group.GroupType = Group.GroupType.Group;
 
                 var groups = await groupmanager.Get(group);
-                _logger.LogInformation("Get account group.");
-                return Ok(groups);
+                _logger.LogInformation("Get account group.");                 
+                if(groups!= null && Convert.ToInt32(groups.Count()) > 0) return Ok(groups);
+                else return StatusCode(404, "Account Group not configured.");
             }
             catch (Exception ex)
             {
@@ -954,6 +973,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 List<AccountGroupDetailRequest> response = new List<AccountGroupDetailRequest>();
                 AccountGroupDetailRequest accountDetail = null;
                 groupFilter.OrganizationId = request.OrganizationId;
+                groupFilter.Id = request.AccountGroupId;
                 groupFilter.GroupType = Group.GroupType.Group;
                 groupFilter.FunctionEnum = Group.FunctionEnum.None;
                 groupFilter.ObjectType = Group.ObjectType.AccountGroup;
@@ -970,6 +990,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     accountDetail.Id = group.Id;
                     accountDetail.Name = group.Name;
                     accountDetail.AccountCount = group.GroupRefCount;
+                    accountDetail.OrganizationId = group.OrganizationId;
                     accessFilter.AccountGroupId = group.Id;
                     var accessList = accountmanager.GetAccessRelationship(accessFilter).Result;
                     List<Int32> groupId = new List<int>();
@@ -997,7 +1018,9 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     response.Add(accountDetail);
                 }
                 _logger.LogInformation("Get account group details.");
-                return Ok(response);
+                if(response!= null && Convert.ToInt32(response.Count()) > 0) return Ok(response);
+                else return StatusCode(404, "Account Group details not configured.");
+                
             }
             catch (Exception ex)
             {
