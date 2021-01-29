@@ -57,7 +57,18 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 		// TODO yet to be finalized :: endurance_brake, coasting, eco-rolling,
 			
 		statement.setString(1, rec.getTripId());
-		statement.setString(2, rec.getVid());
+		
+		//TODO only for testing
+		System.out.println("Sink TripId : "+rec.getTripId() +" VIN : "+rec.getVin() +" VID : "+rec.getVid());
+		
+		if(rec.getVin() != null){
+			statement.setString(2, rec.getVin());
+		}else if(rec.getVid() != null){
+			statement.setString(2, rec.getVid());
+		}else
+			statement.setString(2, ETLConstants.UNKNOWN);
+		
+		
 		if (rec.getStartDateTime() != null)
 			statement.setLong(3, rec.getStartDateTime());
 		else
@@ -253,8 +264,13 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 
 		statement.setBoolean(43, Boolean.FALSE);
 
-		statement.setString(44, rec.getVid());
-
+		if(rec.getVin() != null){
+			statement.setString(44, rec.getVin());
+		}else if(rec.getVid() != null){
+			statement.setString(44, rec.getVid());
+		}else
+			statement.setString(44, ETLConstants.UNKNOWN);
+		
 		if (rec.getStartDateTime() != null)
 			statement.setLong(45, rec.getStartDateTime());
 		else

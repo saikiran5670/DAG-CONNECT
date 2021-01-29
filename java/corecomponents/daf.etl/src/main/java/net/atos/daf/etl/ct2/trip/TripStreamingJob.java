@@ -12,6 +12,7 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.atos.daf.common.ct2.audittrail.TripAuditTrail;
 import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Status;
@@ -57,6 +58,7 @@ public class TripStreamingJob {
 								tripStsData.setDriverId(stsMsg.getDriverID());
 								tripStsData.setTripId(stsMsg.getDocument().getTripID());
 								tripStsData.setVid(stsMsg.getVid());
+								tripStsData.setVin(stsMsg.getVin());
 								// tripStsData.setIncrement(stsMsg.getIncrement());
 
 								SimpleDateFormat newDateStrFmt = new SimpleDateFormat(ETLConstants.DATE_FORMAT);
@@ -178,13 +180,23 @@ public class TripStreamingJob {
 			DataStream<Trip> finalTripData = TripAggregations.getConsolidatedTripData(statusDataStream, indxData,
 					tableEnv);
 
+			// Call Audit Trail
+			TripAuditTrail.auditTrail(envParams, ETLConstants.AUDIT_EVENT_STATUS_START, ETLConstants.TRIP_STREAMING_JOB_NAME,
+					"Trip ETL Job Started", ETLConstants.AUDIT_CREATE_EVENT_TYPE);
+
 			// TODO read master data
 			finalTripData.addSink(new TripSink());
 
 			env.execute("Trip Streaming Job");
 
 		} catch (Exception e) {
+
+			// Call Audit Trail
+			TripAuditTrail.auditTrail(envParams, ETLConstants.AUDIT_EVENT_STATUS_START, ETLConstants.TRIP_STREAMING_JOB_NAME,
+					"Trip ETL Job Started", ETLConstants.AUDIT_CREATE_EVENT_TYPE);
+
 			logger.error(" TripStreamingJob failed, reason :: " + e);
+			//e.printStackTrace();
 		}
 
 	}

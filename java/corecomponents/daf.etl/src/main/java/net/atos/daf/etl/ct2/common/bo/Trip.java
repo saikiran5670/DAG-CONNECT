@@ -17,6 +17,7 @@ public class Trip implements Serializable {
 
 	private String tripId;
 	private String vid;
+	private String vin;
 	private Long startDateTime;
 	private Long endDateTime;
 	private Integer gpsTripDist;

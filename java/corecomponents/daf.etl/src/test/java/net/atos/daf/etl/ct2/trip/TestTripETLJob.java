@@ -49,6 +49,7 @@ public class TestTripETLJob {
 		tripData.setTripId("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0");
 		
 		tripData.setVid("M4A1114");
+		tripData.setVin("M4A1114");
 		tripData.setGpsTripDist(299);
 		tripData.setGpsStopVehDist(Long.valueOf(443567905));
 		tripData.setGpsStartVehDist(Long.valueOf(443567695));

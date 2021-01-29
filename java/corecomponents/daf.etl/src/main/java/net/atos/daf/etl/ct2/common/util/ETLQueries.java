@@ -6,7 +6,7 @@ public class ETLQueries {
 	
 	public static final String TRIP_INDEX_AGGREGATION_QRY = "select idxData.f0 as tripId, idxData.f1 as vid, idxData.f2 as driver2Id, MAX(idxData.f3) as maxSpeed, AVG(CAST(idxData.f4 as Double)) as avgGrossWt FROM firstLevelAggrData idxData group by idxData.f0, idxData.f1, idxData.f2 ";
 	
-	public static final String CONSOLIDATED_TRIP_QRY = " select stsData.tripId, stsData.vid, stsData.startDateTime, stsData.endDateTime, stsData.gpsTripDist"
+	public static final String CONSOLIDATED_TRIP_QRY = " select stsData.tripId, stsData.vid, stsData.vin, stsData.startDateTime, stsData.endDateTime, stsData.gpsTripDist"
 			+ ", stsData.tripCalGpsVehDistDiff as tripCalDist, stsData.vIdleDuration, indxData.f4 vGrossWeightCombination"
 			+ ", if(stsData.tripCalGpsVehTimeDiff <> 0, (CAST(stsData.tripCalGpsVehDistDiff as Double)/stsData.tripCalVehTimeDiffInHr), stsData.tripCalGpsVehTimeDiff) as tripCalAvgSpeed"
 			+ ", stsData.gpsStartVehDist, stsData.gpsStopVehDist, stsData.gpsStartLatitude, stsData.gpsStartLongitude, stsData.gpsEndLatitude"
