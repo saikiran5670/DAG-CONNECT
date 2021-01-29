@@ -29,7 +29,13 @@ export class AppComponent {
   public fileUploadedPath: any;
   isLogedIn: boolean = false;
   menuPages: any = (data as any).default;
-  language: any;
+  language= {
+    "val": [
+      "EN-US",
+      "EN-GB"
+    ],
+    "selectedIndex": 0
+  };
   openUserRoleDialog= false;
   organizations: any;
   roles: any;
@@ -117,10 +123,10 @@ export class AppComponent {
 
   constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, private userService: EmployeeService) {
     this.defaultTranslation();
-    this.userService.getDefaultSetting().subscribe((data)=>{
-      this.language = data['language'];
-      console.log(this.language);
-    });
+    // this.userService.getDefaultSetting().subscribe((data)=>{
+   //   this.language = data['language'];
+    //   console.log(this.language);
+    // });
     this.dataInterchangeService.dataInterface$.subscribe(data => {
       this.isLogedIn = data;
       this.getTranslationLabels()
