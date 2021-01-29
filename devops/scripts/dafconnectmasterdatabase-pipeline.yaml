@@ -35,7 +35,7 @@ jobs:
     
   - task: CmdLine@2
     inputs:
-     script: 'echo $(ENVIRONMENT)'
+     script: 'echo $(PGDAFCONNECTMASTERDATABASECONNECTIONSTRING_PIPELINE)'
 
   - task: RunYuniqlCLI@1
     displayName: Run Yuniql
