@@ -100,7 +100,35 @@ export class EditCommonTableComponent implements OnInit {
     })
     }else{
       //TODO : update account group
-    }
+       let accountId= this.data.accountInfo.id;
+       let mapGrpData: any = [];
+       let mapGrpIds: any = this.selectionData.selected.map(resp => resp.id);
+        if(mapGrpIds.length > 0)
+        {
+          mapGrpIds.forEach(element => {
+            mapGrpData.push({
+              accountGroupId: element,
+              accountId: accountId
+            }); 
+          });
+        }
+        else{
+          mapGrpData = [{
+            accountGroupId: 0,
+            accountId: accountId
+          }];  
+        }
+
+        let grpObj = {
+          accounts: mapGrpData 
+        }
+        this.accountService.deleteAccountGroupsForAccount(accountId).subscribe(resp => {
+          this.accountService.addAccountGroups(grpObj).subscribe((data)=>{
+            this.onClose({data: this.selectionData.selected, type: this.data.type});    
+          }, (error) => {  });
+        })
+      }
+    
     
   }
   

@@ -177,6 +177,9 @@
                 <mat-error *ngIf="accountSettingsForm.get('firstName').hasError('numberNotAllowed')">
                   {{ translationData.lblNumbersNotAllowed || 'Numbers not allowed' }}
                 </mat-error>
+                <mat-error *ngIf="!accountSettingsForm.get('firstName').hasError('required')  && accountSettingsForm.get('firstName').hasError('whitespace')">
+                  First Name cannot contain only whitespace
+                 </mat-error>
 
               </div>
               <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -199,6 +202,9 @@
                 <mat-error *ngIf="accountSettingsForm.get('lastName').hasError('numberNotAllowed')">
                   {{ translationData.lblNumbersNotAllowed || 'Numbers not allowed' }}
                 </mat-error>
+                <mat-error *ngIf="!accountSettingsForm.get('lastName').hasError('required')  && accountSettingsForm.get('lastName').hasError('whitespace')">
+                  Last Name cannot contain only whitespace
+                 </mat-error>
               </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">

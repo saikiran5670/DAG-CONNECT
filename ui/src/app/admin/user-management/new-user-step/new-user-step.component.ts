@@ -98,8 +98,8 @@ export class NewUserStepComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.firstFormGroup = this._formBuilder.group({
       salutation: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
+      firstName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
+      lastName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       loginEmail: ['', [Validators.required, Validators.email]],
       organization: new FormControl({value: null, disabled: true}),
       birthDate: ['', []],

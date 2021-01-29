@@ -74,8 +74,8 @@ export class AccountInfoSettingsComponent implements OnInit {
   ngOnInit(): void {
     this.accountSettingsForm = this._formBuilder.group({
       salutation: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
+      firstName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
+      lastName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       loginEmail: ['', [Validators.required, Validators.email]],
       organization: new FormControl({value: null, disabled: true}),
       //birthDate: ['', []]

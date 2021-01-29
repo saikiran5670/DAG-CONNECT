@@ -110,6 +110,9 @@
                   <mat-error *ngIf="firstFormGroup.get('firstName').hasError('numberNotAllowed')">
                     {{ translationData.lblNumbersNotAllowed || 'Numbers not allowed' }}
                   </mat-error>
+                  <mat-error *ngIf="!firstFormGroup.get('firstName').hasError('required')  && firstFormGroup.get('firstName').hasError('whitespace')">
+                    First Name cannot contain only whitespace
+                   </mat-error>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <!-- <mat-label>{{ translationData.lblLastName }}<span class='mandatoryColor'>*</span></mat-label> -->
@@ -129,6 +132,9 @@
                   <mat-error *ngIf="firstFormGroup.get('lastName').hasError('numberNotAllowed')">
                     {{ translationData.lblNumbersNotAllowed || 'Numbers not allowed' }}
                   </mat-error>
+                  <mat-error *ngIf="!firstFormGroup.get('lastName').hasError('required')  && firstFormGroup.get('lastName').hasError('whitespace')">
+                    Last Name cannot contain only whitespace
+                   </mat-error>
                 </div>
               </div>
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
