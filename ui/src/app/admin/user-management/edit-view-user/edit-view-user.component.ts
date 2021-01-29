@@ -308,7 +308,8 @@ export class EditViewUserComponent implements OnInit {
       selectedData: selectedData
     }
     this.dialogRefForEdit = this.dialog.open(EditCommonTableComponent, dialogConfig);
-    this.dialogRefForEdit.afterClosed().pipe(take(1), map(res => {
+    // this.dialogRefForEdit.afterClosed().pipe(take(1), map(res => {
+      this.dialogRefForEdit.afterClosed().subscribe(res => {
       if(res.type == 'role'){
         this.selectedRoleData = res.data;
         this.loadRoleTable();
@@ -316,7 +317,7 @@ export class EditViewUserComponent implements OnInit {
         this.selectedUserGrpData = res.data;
         this.loadAccountGroupTable();
       }
-    }));
+    });
   }
 
   filesDroppedMethod(event: any) {
