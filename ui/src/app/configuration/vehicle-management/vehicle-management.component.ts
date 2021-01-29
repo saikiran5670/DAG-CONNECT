@@ -434,7 +434,9 @@ export class VehicleManagementComponent implements OnInit {
 
   onBackToPage(flag: any) {
     this.viewFlag = flag;
-    this.selectedType = 'vehicle';
+    if(flag='create')this.selectedType = 'group';
+    else this.selectedType = 'vehicle';
+    
     this.loadVehicleData();
     this.updateDataSource(this.initData);
   }
@@ -542,6 +544,7 @@ export class VehicleManagementComponent implements OnInit {
       'model',
       'status',
       'action',
+      'isVehicleGroup'
     ];
     this.columnNames = [
       'Vehicle Group/Vehicle',
@@ -550,6 +553,8 @@ export class VehicleManagementComponent implements OnInit {
       'Model',
       'Status',
       'Actions',
+      'isVehicleGroup'
+      
     ];
     //this.loadVehGroupTable('both');
     if (this.bothData != null) {

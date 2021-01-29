@@ -8,12 +8,13 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { vehicleUpdateRequest } from 'src/app/models/vehicle.model';
 import { VehicleService } from 'src/app/services/vehicle.service';
+import { CustomValidators } from 'src/app/shared/custom.validators';
 
 @Component({
   selector: 'app-create-edit-vehicle-details',
@@ -21,6 +22,8 @@ import { VehicleService } from 'src/app/services/vehicle.service';
   styleUrls: ['./create-edit-vehicle-details.component.less'],
 })
 export class CreateEditVehicleDetailsComponent implements OnInit {
+  @ViewChild("createVehicleForm",{ static: true })
+  public createVehicleForm: NgForm;
   @Output() backToPage = new EventEmitter<any>();
   @Input() gridData: any;
   @Input() title: string;
@@ -63,12 +66,11 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.vehicleFormGroup = this._formBuilder.group({
-      vehicleGroupName: ['', [Validators.required]],
-      vehicleGroupDescription: [''],
+      vehicleGroupName: ['', [Validators.required,CustomValidators.noWhitespaceValidator]],
+      vehicleGroupDescription: ['',[CustomValidators.noWhitespaceValidatorforDesc]],
     });
     //console.log(this.groupInfo);
-    this.vehGrpName = this.groupInfo ? this.groupInfo.name : '';
-   // this.vehicleFormGroup.controls.vehicleGroupDescription= this.groupInfo ? this.groupInfo.description : '';
+    
     this.dataSource = new MatTableDataSource(this.gridData);
     if (localStorage.getItem('accountOrganizationId') != null) {
       this.orgId = parseInt(localStorage.getItem('accountOrganizationId'));
@@ -78,9 +80,13 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
       this.vehicleFormGroup.get('vehicleGroupName').disable();
       this.vehicleFormGroup.get('vehicleGroupDescription').disable();
     }
-     //select associated vehicles of the vehicle group.
+    //select associated vehicles of the vehicle group.
     if (this.groupInfo) {
-     this.selectCheckBox(this.groupInfo.id);
+      this.vehGrpName = this.groupInfo ? this.groupInfo.name : '';
+    this.vehicleFormGroup.controls.vehicleGroupDescription.setValue(
+      this.groupInfo.description ? this.groupInfo.description : ''
+    );
+      this.selectCheckBox(this.groupInfo.id);
     }
   }
 
@@ -89,8 +95,15 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
   }
   onReset() {
     //this.vehicleFormGroup.reset();
-    this.vehGrpName =this.groupInfo ? this.groupInfo.name : '';
-    this.vehicleFormGroup.controls.vehicleGroupDescription= this.groupInfo.description ? this.groupInfo.description : '';
+    if (this.groupInfo) {
+      this.vehGrpName = this.groupInfo ? this.groupInfo.name : '';
+      this.vehicleFormGroup.controls.vehicleGroupDescription.setValue(
+        this.groupInfo.description ? this.groupInfo.description : ''
+      );
+    } else {
+      this.vehicleFormGroup.get('vehicleGroupName').setValue('');
+      this.vehicleFormGroup.controls.vehicleGroupDescription.setValue('');
+    }
   }
   selectCheckBox(vehGroupId) {
     this.vehService.getVehicleListById(vehGroupId).subscribe((req) => {
@@ -108,7 +121,8 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
       let objData = {
         id: 0,
         name: this.vehicleFormGroup.controls.vehicleGroupName.value.trim(),
-        description: this.vehicleFormGroup.controls.vehicleGroupDescription.value,
+        description: this.vehicleFormGroup.controls.vehicleGroupDescription
+          .value.trim(),
         organizationId: this.orgId ? this.orgId : 1,
         vehicles: [],
       };
@@ -123,6 +137,7 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
         });
       });
       //console.log(objData);
+
       this.vehService.createVehicleGroup(JSON.stringify(objData)).subscribe(
         (res) => {
           // this.vehService.getVehicleGroupByID().subscribe(
@@ -146,7 +161,8 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
         //vehicleUpdateRequest
         id: this.groupInfo.id,
         name: this.vehicleFormGroup.controls.vehicleGroupName.value.trim(),
-        description: this.vehicleFormGroup.controls.vehicleGroupDescription.value,
+        description: this.vehicleFormGroup.controls.vehicleGroupDescription
+          .value,
         organizationId: this.orgId ? this.orgId : 1,
         vehicles: [],
       };

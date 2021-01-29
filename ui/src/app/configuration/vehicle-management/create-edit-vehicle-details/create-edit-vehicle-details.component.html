@@ -1,4 +1,4 @@
-<form [formGroup]="vehicleFormGroup">
+<form [formGroup]="vehicleFormGroup" #createVehicleForm="ngForm">
     <mat-card class='mat-elevation-z margin-bottom-xlg'>
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
@@ -11,11 +11,14 @@
                     <mat-label>{{ createStatus ? (translationData.lblNewGroupName || 'New Group Name') : (translationData.lblGroupName || 'Group Name') }}<span class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <input placeholder="{{ translationData.lblEnterVehicleGroupName || 'Enter Vehicle Group Name' }}" [(ngModel)]="createStatus ? '' : vehGrpName"
+                        <input  placeholder="{{ translationData.lblEnterVehicleGroupName || 'Enter Vehicle Group Name' }}" [(ngModel)]="createStatus ? '' : vehGrpName"
                             matInput formControlName="vehicleGroupName" required maxlength="60">
                     </mat-form-field>
                     <mat-error *ngIf="vehicleFormGroup.get('vehicleGroupName').hasError('required')">
                         {{ translationData.lblPleaseenterthenewvehiclegroupname || 'Please enter the new vehicle group name'}}
+                    </mat-error>
+                    <mat-error *ngIf="!vehicleFormGroup.get('vehicleGroupName').hasError('required')  && vehicleFormGroup.get('vehicleGroupName').hasError('whitespace')">
+                     Vehicle Group Name cannot contain whitespace
                     </mat-error>
                 </div>
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
@@ -27,6 +30,9 @@
                         <input maxlength="120" placeholder="{{ translationData.lblEnterVehicleGroupDescription || 'Enter Vehicle Group Description' }}" matInput
                             formControlName="vehicleGroupDescription">
                     </mat-form-field>
+                    <mat-error *ngIf="  vehicleFormGroup.get('vehicleGroupDescription').hasError('whitespace')">
+                      Vehicle Group Description cannot contain whitespace
+                    </mat-error>
                 </div>
             </div>
         </mat-card-content>
