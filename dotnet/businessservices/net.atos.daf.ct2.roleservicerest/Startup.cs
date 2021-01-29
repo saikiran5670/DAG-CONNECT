@@ -17,7 +17,8 @@ using net.atos.daf.ct2.role.repository;
 using net.atos.daf.ct2.role;
 using net.atos.daf.ct2.features;
 using net.atos.daf.ct2.features.repository;
-
+using net.atos.daf.ct2.audit.repository;
+using net.atos.daf.ct2.audit;
 
 namespace net.atos.daf.ct2.roleservicerest
 {
@@ -37,7 +38,7 @@ namespace net.atos.daf.ct2.roleservicerest
          public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();            
-            var connectionString = Configuration.GetConnectionString("ConnectionString");
+            var connectionString = Configuration.GetConnectionString("ConnectionStringHardCode");
             
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
 
@@ -45,6 +46,9 @@ namespace net.atos.daf.ct2.roleservicerest
             services.AddTransient<IRoleRepository, RoleRepository>();
             services.AddTransient<IFeatureManager,FeatureManager>();
             services.AddTransient<IFeatureRepository,FeatureRepository>();
+            
+            services.AddTransient<IAuditLogRepository,AuditLogRepository>();
+            services.AddTransient<IAuditTraillib,AuditTraillib>();
 
             // Identity configuration
             services.AddSingleton(dataAccess);

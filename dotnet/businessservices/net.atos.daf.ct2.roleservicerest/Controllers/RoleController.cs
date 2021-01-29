@@ -11,6 +11,9 @@ using net.atos.daf.ct2.features.entity;
 using net.atos.daf.ct2.roleservicerest.Entity;
 using System.Linq;
 using net.atos.daf.ct2.role.entity;
+using net.atos.daf.ct2.audit;
+using Newtonsoft.Json;
+using net.atos.daf.ct2.audit.Enum;
 
 namespace net.atos.daf.ct2.roleservicerest.Controllers
 {
@@ -21,11 +24,13 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
         private readonly ILogger logger;
         RoleComponent.IRoleManagement roleManager;
         private readonly IFeatureManager featuresManager;
-        public RoleController(RoleComponent.IRoleManagement _roleManager,IFeatureManager _featureManager,ILogger<RoleController> _logger)
+        IAuditTraillib auditlog;
+        public RoleController(RoleComponent.IRoleManagement _roleManager,IFeatureManager _featureManager,ILogger<RoleController> _logger,IAuditTraillib _auditlog)
         {
             roleManager =_roleManager;
             logger=_logger;
             featuresManager=_featureManager;
+            auditlog = _auditlog;
         } 
        
         [HttpPost]      
@@ -48,6 +53,7 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
                     {
                             return StatusCode(400, "Role name already exist.");
                     }
+                    
                     RoleEntity.RoleMaster ObjRole = new RoleEntity.RoleMaster();
                     ObjRole.Organization_Id =roleMaster.OrganizationId;
                     ObjRole.Name = roleMaster.RoleName.Trim();
@@ -62,11 +68,13 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
                         ObjRole.FeatureSet.Features.Add(new Feature() { Id = item });
                     }
                     int roleId = await roleManager.CreateRole(ObjRole);
+                    auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Role Component","Role Service",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"Create method in Role manager",0,roleId,JsonConvert.SerializeObject(roleMaster));
                    return Ok(roleId);
                } 
                catch(Exception ex)
                {
                     logger.LogError(ex.Message +" " +ex.StackTrace);
+                    await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Role Component","Role Service",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.FAILED,"Create method in Role manager",0,0,JsonConvert.SerializeObject(roleMaster));
                      if (ex.Message.Contains("foreign key"))
                     {
                         return StatusCode(400, "The foreign key violation in one of dependant data.");
@@ -106,12 +114,14 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
                         ObjRole.FeatureSet.Features.Add(new Feature() { Id = item });
                     }            
                     int roleId = await roleManager.UpdateRole(ObjRole);
+                    auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Role Component","Role Service",AuditTrailEnum.Event_type.UPDATE,AuditTrailEnum.Event_status.SUCCESS,"Create method in Role manager",roleMaster.RoleId,0,JsonConvert.SerializeObject(roleMaster));
                     logger.LogInformation(roleId+"Role Master Updated");
                     return Ok(roleId);
                } 
                catch(Exception ex)
                {
                     logger.LogError(ex.Message +" " +ex.StackTrace);
+                    auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Role Component","Role Service",AuditTrailEnum.Event_type.UPDATE,AuditTrailEnum.Event_status.FAILED,"Create method in Role manager",roleMaster.RoleId,0,JsonConvert.SerializeObject(roleMaster));
                      if (ex.Message.Contains("foreign key"))
                     {
                         return StatusCode(400, "The foreign key violation in one of dependant data.");
@@ -132,10 +142,12 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
                 }
                                     
                     int role_Id = await roleManager.DeleteRole(roleId,updatedby);
+                     auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Role Component","Role Service",AuditTrailEnum.Event_type.DELETE,AuditTrailEnum.Event_status.SUCCESS,"Delete method in Role manager",roleId,roleId,JsonConvert.SerializeObject(roleId));
                     return Ok(role_Id);
                } 
                catch(Exception ex)
                {
+                    await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Role Component","Role Service",AuditTrailEnum.Event_type.DELETE,AuditTrailEnum.Event_status.FAILED,"Create method in Role manager",0,0,JsonConvert.SerializeObject(roleId));
                     logger.LogError(ex.Message +" " +ex.StackTrace);
                     return StatusCode(500,"Internal Server Error.");
                }
