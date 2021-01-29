@@ -5,12 +5,14 @@ using Microsoft.AspNetCore.Http;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.organization;
 using net.atos.daf.ct2.accountpreference;
+using Newtonsoft.Json;
 using net.atos.daf.ct2.vehicle;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AccountComponent = net.atos.daf.ct2.account;
 using net.atos.daf.ct2.organizationservicerest.entity;
 using OrganizationComponent = net.atos.daf.ct2.organization;
+using net.atos.daf.ct2.audit.Enum;
 using Preference = net.atos.daf.ct2.accountpreference;
 namespace net.atos.daf.ct2.organizationservicerest.Controllers
 {
@@ -72,6 +74,7 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 //organization.IsActive=request.is_active;
               
                 var OrgId= await organizationtmanager.Create(organization);   
+                auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Organization Component","Organization Service",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"Create method in organization manager",0,OrgId.Id,JsonConvert.SerializeObject(request));
                 if (OrgId.Id<1)
                 {
                     return StatusCode(400,"This organization is already exist :" + request.org_id);
@@ -84,6 +87,8 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
             catch(Exception ex)
             {
                  logger.LogError(ex.Message +" " +ex.StackTrace);
+                 auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Organization Component","Organization Service",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"Create method in organization manager",0,0,JsonConvert.SerializeObject(request));
+             
                 if (ex.Message.Contains(FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
@@ -143,12 +148,14 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 }
                 else
                 {
+                   auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Organization Component","Organization Service",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"Update method in organization manager",0,OrgId.Id,JsonConvert.SerializeObject(request));
                    return Ok("Organization updated :"+ OrgId.Id);    
                 }
              }
             catch(Exception ex)
             {         
                 logger.LogError(ex.Message +" " +ex.StackTrace);
+                await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Organization Component","Organization Service",AuditTrailEnum.Event_type.DELETE,AuditTrailEnum.Event_status.FAILED,"Update method in organization manager",0,0,JsonConvert.SerializeObject(request));      
                 if (ex.Message.Contains(FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
@@ -159,37 +166,37 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
         }       
 
 
-     [HttpDelete]   
-     [Route("delete")]
-     public async Task<IActionResult> Delete(int organizationId)
-        {              
-            try 
-            {      
-                logger.LogInformation("Organization delete function called "); 
-                if (organizationId<1)
-                {
-                     return StatusCode(400,"Please provide organization ID:");
-                }
-                var OrgId= await organizationtmanager.Delete(organizationId);  
-                if (OrgId)   
-                {
-                     return Ok("Organization Deleted : " +organizationId);   
-                } 
-                else{
-                 return StatusCode(400,"Organization ID not exist: "+organizationId); 
-                } 
-             }
-            catch(Exception ex)
-            {            
-                logger.LogError(ex.Message +" " +ex.StackTrace);
-                if (ex.Message.Contains(FK_Constraint))
-                {
-                    return StatusCode(400, "The foreign key violation in one of dependant data.");
-                }
-               // return StatusCode(500,"Internal Server Error.");
-                return StatusCode(500,ex.Message +" " +ex.StackTrace);
-            }   
-        }     
+    //  [HttpDelete]   
+    //  [Route("delete")]
+    //  public async Task<IActionResult> Delete(int organizationId)
+    //     {              
+    //         try 
+    //         {      
+    //             logger.LogInformation("Organization delete function called "); 
+    //             if (organizationId<1)
+    //             {
+    //                  return StatusCode(400,"Please provide organization ID:");
+    //             }
+    //             var OrgId= await organizationtmanager.Delete(organizationId);  
+    //             if (OrgId)   
+    //             {
+    //                  return Ok("Organization Deleted : " +organizationId);   
+    //             } 
+    //             else{
+    //              return StatusCode(400,"Organization ID not exist: "+organizationId); 
+    //             } 
+    //          }
+    //         catch(Exception ex)
+    //         {            
+    //             logger.LogError(ex.Message +" " +ex.StackTrace);
+    //             if (ex.Message.Contains(FK_Constraint))
+    //             {
+    //                 return StatusCode(400, "The foreign key violation in one of dependant data.");
+    //             }
+    //            // return StatusCode(500,"Internal Server Error.");
+    //             return StatusCode(500,ex.Message +" " +ex.StackTrace);
+    //         }   
+    //     }     
      
      [HttpGet]     
      [Route("get")]
@@ -208,7 +215,7 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                      return StatusCode(400,"Organization ID not exist :" + organizationId);
                  }  
                  else
-                 {  
+                 {                      
                      return Ok(await organizationtmanager.Get(organizationId));
                  }
              }
@@ -250,13 +257,15 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                     return StatusCode(400, "The Organization ID is not valid or created.");
                 }
 
-               // var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Preference Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Preference", 1, 2, Convert.ToString(preference.RefId));
+               auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Organization Component","Organization Service",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"CreateAccountPreference method in organization manager",0,0,JsonConvert.SerializeObject(request));
                return Ok("Organization Preference Created : " +preference.Id);
                             
             }
             catch (Exception ex)
             {
-                logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
+                logger.LogError("Error in organization service:create preference with exception - " + ex.Message + ex.StackTrace);
+                auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Organization Component","Organization Service",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"CreateAccountPreference method in organization manager",0,0,JsonConvert.SerializeObject(request));
+              
                if (ex.Message.Contains(FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
@@ -282,12 +291,14 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 accountpreference.AccountPreference preference = new Preference.AccountPreference();                
                 preference = _mapper.ToOrganizationPreference(request);
                 preference = await preferencemanager.Update(preference);
-                //var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Preference Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Preference", 1, 2, Convert.ToString(preference.RefId));
+                auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Organization Component","Organization Service",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"UpdateAccountPreference method in organization manager",0,0,JsonConvert.SerializeObject(request));
                 return Ok("Preference Updated : " +preference.Id); 
             }
             catch (Exception ex)
             {
                 logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
+               auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Organization Component","Organization Service",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"UpdateAccountPreference method in organization manager",0,0,JsonConvert.SerializeObject(request));
+               
                if (ex.Message.Contains(FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
