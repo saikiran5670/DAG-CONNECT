@@ -31,7 +31,7 @@ import java.util.Properties;
 public class ContiMessageProcessing {
 
   private static final Logger log = LogManager.getLogger(ContiMessageProcessing.class);
-  public static String FILE_PATH = "src/main/resources/configuration.properties";
+  public static String FILE_PATH; //= "src/main/resources/configuration.properties";
   private static AuditETLJobClient auditETLJobClient;
   private StreamExecutionEnvironment streamExecutionEnvironment;
 
@@ -54,7 +54,7 @@ public class ContiMessageProcessing {
   public static void main(String[] args) {
 
     try {
-      // FILE_PATH = args[0];
+      FILE_PATH = args[0];
 
       ContiMessageProcessing contiMessageProcessing = new ContiMessageProcessing();
       Properties properties = configuration();
