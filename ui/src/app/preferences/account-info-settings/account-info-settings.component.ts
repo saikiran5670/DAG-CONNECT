@@ -125,26 +125,29 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   loadGeneralSettingData(){
+    let languageCode= "EN-GB";
     forkJoin(
       this.accountService.getAccountPreference(this.accountId),
-      this.translationService.getTranslationsForDropdowns('EN-GB','language'),
-      this.translationService.getTranslationsForDropdowns('EN-GB','timezone'),
-      this.translationService.getTranslationsForDropdowns('EN-GB','unit'),
-      this.translationService.getTranslationsForDropdowns('EN-GB','currency'),
-      this.translationService.getTranslationsForDropdowns('EN-GB','dateformat'),
-      this.translationService.getTranslationsForDropdowns('EN-GB','timeformat'),
-      this.translationService.getTranslationsForDropdowns('EN-GB','vehicledisplay'),
-      this.translationService.getTranslationsForDropdowns('EN-GB','landingpagedisplay')
+      this.translationService.getPreferences(languageCode),
+      // this.translationService.getTranslationsForDropdowns('EN-GB','language'),
+      // this.translationService.getTranslationsForDropdowns('EN-GB','timezone'),
+      // this.translationService.getTranslationsForDropdowns('EN-GB','unit'),
+      // this.translationService.getTranslationsForDropdowns('EN-GB','currency'),
+      // this.translationService.getTranslationsForDropdowns('EN-GB','dateformat'),
+      // this.translationService.getTranslationsForDropdowns('EN-GB','timeformat'),
+      // this.translationService.getTranslationsForDropdowns('EN-GB','vehicledisplay'),
+      // this.translationService.getTranslationsForDropdowns('EN-GB','landingpagedisplay')
     ).subscribe((data) => {
       this.accountPreferenceData = data[0][0];
-      this.languageDropdownData = data[1];
-      this.timezoneDropdownData = data[2];
-      this.unitDropdownData = data[3];
-      this.currencyDropdownData = data[4];
-      this.dateFormatDropdownData = data[5];
-      this.timeFormatDropdownData = data[6];
-      this.vehicleDisplayDropdownData = data[7];
-      this.landingPageDisplayDropdownData = data[8];
+      let dropDownData = data[1];
+      this.languageDropdownData = dropDownData.language;
+      this.timezoneDropdownData = dropDownData.timezone;
+      this.unitDropdownData = dropDownData.unit;
+      this.currencyDropdownData = dropDownData.currency;
+      this.dateFormatDropdownData = dropDownData.dateformat;
+      this.timeFormatDropdownData = dropDownData.timeformat;
+      this.vehicleDisplayDropdownData = dropDownData.vehicledisplay;
+      this.landingPageDisplayDropdownData = dropDownData.landingpagedisplay;
       this.filterDefaultGeneralSetting(this.accountPreferenceData);
       this.setDefaultGeneralSetting();
       this.editGeneralSettingsFlag = false;
@@ -173,14 +176,14 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   filterDefaultGeneralSetting(accountPreferenceData: any){
-    this.languageData = this.languageDropdownData.filter(resp => resp.id === accountPreferenceData.languageId);
-    this.timezoneData = this.timezoneDropdownData.filter(resp => resp.id === accountPreferenceData.timezoneId);
-    this.unitData = this.unitDropdownData.filter(resp => resp.id === accountPreferenceData.unitId);
-    this.currencyData = this.currencyDropdownData.filter(resp => resp.id === accountPreferenceData.currencyId);
-    this.dateFormatData = this.dateFormatDropdownData.filter(resp => resp.id === accountPreferenceData.dateFormatTypeId);
-    this.timeFormatData = this.timeFormatDropdownData.filter(resp => resp.id === accountPreferenceData.timeFormatId);
-    this.vehicleDisplayData = this.vehicleDisplayDropdownData.filter(resp => resp.id === accountPreferenceData.vehicleDisplayId);
-    this.landingPageDisplayData = this.landingPageDisplayDropdownData.filter(resp => resp.id === accountPreferenceData.landingPageDisplayId);
+    this.languageData = this.languageDropdownData.filter(resp => resp.id === (accountPreferenceData.languageId  ? accountPreferenceData.languageId : 5));
+    this.timezoneData = this.timezoneDropdownData.filter(resp => resp.id === (accountPreferenceData.timezoneId ? accountPreferenceData.timezoneId : 45));
+    this.unitData = this.unitDropdownData.filter(resp => resp.id === (accountPreferenceData.unitId ? accountPreferenceData.unitId : 8));
+    this.currencyData = this.currencyDropdownData.filter(resp => resp.id === (accountPreferenceData.currencyId ? accountPreferenceData.currencyId : 3));
+    this.dateFormatData = this.dateFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.dateFormatTypeId ? accountPreferenceData.dateFormatTypeId : 10));
+    this.timeFormatData = this.timeFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.timeFormatId ? accountPreferenceData.timeFormatId : 8));
+    this.vehicleDisplayData = this.vehicleDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.vehicleDisplayId ? accountPreferenceData.vehicleDisplayId : 8));
+    this.landingPageDisplayData = this.landingPageDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.landingPageDisplayId ? accountPreferenceData.landingPageDisplayId : 10));
   }
 
   openChangePasswordPopup(){
