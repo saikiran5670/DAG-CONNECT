@@ -44,7 +44,7 @@
               </div>
 
               <div *ngIf="columnNames[colIndex]=='Vehicle Group' ">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{columnNames[colIndex]}}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header matSortDirection="asc">{{columnNames[colIndex]}}</mat-header-cell>
                 <mat-cell *matCellDef="let element " matTooltip={{element[disCol]}}> {{element[disCol]}}
                   <div *ngIf="element.isVehicleGroup==true">
 

@@ -157,12 +157,12 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
       );  
     } else {
       // edit function here
-      let objData = {
+      let objDataUpdate = {
         //vehicleUpdateRequest
-        id: this.groupInfo.id,
+        id: this.groupInfo.id?parseInt(this.groupInfo.id):0,
         name: this.vehicleFormGroup.controls.vehicleGroupName.value.trim(),
         description: this.vehicleFormGroup.controls.vehicleGroupDescription
-          .value,
+          .value.trim(),
         organizationId: this.orgId ? this.orgId : 1,
         vehicles: [],
       };
@@ -170,16 +170,15 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
       const numSelected = this.selectionForVehGrp.selected;
 
       numSelected.forEach((row) => {
-        // console.log(row.id);
-        objData.vehicles.push({
-          vehicleGroupId: this.groupInfo.id,
-          vehicleId: row.id,
+        objDataUpdate.vehicles.push({
+          vehicleGroupId: parseInt(this.groupInfo.id),
+          vehicleId: parseInt(row.id),
         });
       });
 
-      console.log(objData);
+     // console.log(objDataUpdate);
 
-      this.vehService.updateVehicleGroup(JSON.stringify(objData)).subscribe(
+      this.vehService.updateVehicleGroup(objDataUpdate).subscribe(
         (res) => {
           this.backToPage.emit({
             editFlag: false,

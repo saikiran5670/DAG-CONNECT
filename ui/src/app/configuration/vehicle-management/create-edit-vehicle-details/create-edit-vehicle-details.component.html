@@ -18,7 +18,7 @@
                         {{ translationData.lblPleaseenterthenewvehiclegroupname || 'Please enter the new vehicle group name'}}
                     </mat-error>
                     <mat-error *ngIf="!vehicleFormGroup.get('vehicleGroupName').hasError('required')  && vehicleFormGroup.get('vehicleGroupName').hasError('whitespace')">
-                     Vehicle Group Name cannot contain whitespace
+                     Vehicle Group Name cannot contain only whitespace
                     </mat-error>
                 </div>
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
@@ -31,7 +31,7 @@
                             formControlName="vehicleGroupDescription">
                     </mat-form-field>
                     <mat-error *ngIf="  vehicleFormGroup.get('vehicleGroupDescription').hasError('whitespace')">
-                      Vehicle Group Description cannot contain whitespace
+                      Vehicle Group Description cannot contain only whitespace
                     </mat-error>
                 </div>
             </div>
