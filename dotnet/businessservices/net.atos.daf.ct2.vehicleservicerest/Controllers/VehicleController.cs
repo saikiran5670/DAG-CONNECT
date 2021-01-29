@@ -12,6 +12,9 @@ using System.Collections.Generic;
 using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.vehicleservicerest.Entity;
 using System.Text;
+using  net.atos.daf.ct2.audit.Enum;
+using net.atos.daf.ct2.audit;
+using Newtonsoft.Json; 
 
 namespace net.atos.daf.ct2.vehicleservicerest.Controllers
 {
@@ -22,13 +25,15 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
         private readonly ILogger<VehicleController> _logger;
         private readonly IVehicleManager _vehicelManager;
         private readonly IGroupManager _groupManager;
+        IAuditTraillib _auditlog;
 
         private string FK_Constraint = "violates foreign key constraint";
-        public VehicleController(ILogger<VehicleController> logger, IVehicleManager vehicelManager, IGroupManager groupManager)
+        public VehicleController(ILogger<VehicleController> logger, IVehicleManager vehicelManager, IGroupManager groupManager,IAuditTraillib auditlog)
         {
             _logger = logger;
             _vehicelManager = vehicelManager;
             _groupManager = groupManager;
+            _auditlog=auditlog;
            
         }
 
@@ -72,6 +77,8 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 ObjvehicleResponse = await _vehicelManager.Create(vehicle);
                 vehicleRequest.ID=ObjvehicleResponse.ID;
                 _logger.LogInformation("vehicle details created with id."+ObjvehicleResponse.ID);
+                
+                await _auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"Create method in vehicle manager",1,2,JsonConvert.SerializeObject(vehicleRequest));
                 
                 return Ok(vehicleRequest);
                 
@@ -125,6 +132,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 vehicle.ID=ObjvehicleResponse.ID;
                 _logger.LogInformation("vehicle details updated with id."+ObjvehicleResponse.ID);
                 
+                await _auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.UPDATE,AuditTrailEnum.Event_status.SUCCESS,"Update method in vehicle service",1,2,JsonConvert.SerializeObject(vehicleRequest));
                 return Ok(vehicleRequest);
                 
             }
@@ -164,6 +172,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 ObjvehicleOptInOptOutResponce = await _vehicelManager.UpdateStatus(ObjVehicleOptInOptOut);
                 _logger.LogInformation("vehicle status details updated with id."+ ObjvehicleOptInOptOutResponce.RefId);
                 
+                await _auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.UPDATE,AuditTrailEnum.Event_status.SUCCESS,"Update status method in vehicle service",1,2,JsonConvert.SerializeObject(optInOutRequest));
                 return Ok(optInOutRequest);
                 
             }
@@ -231,6 +240,13 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 {
                     return StatusCode(401,"invalid vehicle group name: The vehicle group name is Empty.");
                 }
+                
+                // Length validation
+                if ((group.Name.Length > 50 ) || (group.Description.Length > 100 ))
+                {
+                    return StatusCode(400, "The vehicle group name and vehicle group description should be valid.");
+                }
+                
 
                 Group objGroup=new Group();
                 objGroup.Name=group.Name;
@@ -264,6 +280,8 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
 
                 _logger.LogInformation("Vehicle group name is created with id."+ VehicleGroupResponce.Id);
                 
+                await _auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"Create group method in vehicle service",1,2,JsonConvert.SerializeObject(group));
+                
                 return Ok(group);
                 
             }
@@ -288,7 +306,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
             {
                 _logger.LogInformation("Update Group method in vehicle API called.");
                 
-                if(group.Id==null)
+                if(group.Id==null || group.Id==0)
                 {
                     return StatusCode(401,"invalid Vehicle Group Id: The Vehicle group id is Empty.");
                 }
@@ -296,6 +314,12 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 if(string.IsNullOrEmpty(group.Name) || group.Name =="string")
                 {
                     return StatusCode(401,"invalid vehicle group name: The vehicle group name is Empty.");
+                }
+
+                        // Length validation
+                if ((group.Name.Length > 50 ) || (group.Description.Length > 100 ))
+                {
+                    return StatusCode(400, "The vehicle group name and vehicle group description should be valid.");
                 }
 
                 Group objGroup=new Group();
@@ -329,6 +353,8 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 group.Id=VehicleGroupResponce.Id;
                 _logger.LogInformation("Vehicle group name is Updated with id."+ VehicleGroupResponce.Id);
                 
+                 await _auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.UPDATE,AuditTrailEnum.Event_status.SUCCESS,"Update group method in vehicle service",1,2,JsonConvert.SerializeObject(group));
+
                 return Ok(group);
                 
             }
@@ -363,6 +389,8 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
         
                 _logger.LogInformation("Vehicle group details is deleted."+ GroupId);
                 
+                await _auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.DELETE,AuditTrailEnum.Event_status.SUCCESS,"delete group method in vehicle service",1,2,GroupId.ToString());
+
                 return Ok(IsVehicleGroupDeleted);
                 
             }
@@ -403,7 +431,9 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 IEnumerable<Group> ObjRetrieveGroupList=null ;
                 if (groupFilter.VehiclesGroup==true)
                 {
-                   ObjRetrieveGroupList = _groupManager.Get(ObjGroupFilter).Result;
+                   ObjGroupFilter.GroupRef =false;
+                   ObjRetrieveGroupList =await _groupManager.Get(ObjGroupFilter);
+                   ObjGroupFilter.GroupRef = groupFilter.Vehicles;
                     
                 if(ObjRetrieveGroupList.Count()>0)
                 {

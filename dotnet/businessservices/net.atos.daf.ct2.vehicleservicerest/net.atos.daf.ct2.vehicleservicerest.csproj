@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.group\net.atos.daf.ct2.group.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.vehicle\net.atos.daf.ct2.vehicle.csproj" />
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.audit\net.atos.daf.ct2.audit.csproj" />
   </ItemGroup>
 
   <ItemGroup>

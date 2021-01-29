@@ -6,6 +6,7 @@ using net.atos.daf.ct2.vehicle.repository;
 using  net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.audit;
 
+
 namespace net.atos.daf.ct2.vehicle
 {
     public class VehicleManager : IVehicleManager
@@ -23,7 +24,7 @@ namespace net.atos.daf.ct2.vehicle
         {
             try
             {
-                await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"Create method in vehicle manager",1,2,null);
+                // await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"Create method in vehicle manager",1,2,JsonConvert.SerializeObject(vehicle));
                 return await vehicleRepository.Create(vehicle);
             }
             catch (Exception ex)
@@ -36,7 +37,7 @@ namespace net.atos.daf.ct2.vehicle
         {
             try
             {
-                await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.UPDATE,AuditTrailEnum.Event_status.SUCCESS,"Update method in vehicle manager",1,2,null);
+                 //await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.UPDATE,AuditTrailEnum.Event_status.SUCCESS,"Update method in vehicle manager",1,2,JsonConvert.SerializeObject(vehicle));
                 return await vehicleRepository.Update(vehicle);
             }
             catch (Exception ex)
@@ -49,7 +50,7 @@ namespace net.atos.daf.ct2.vehicle
         {
             try
             {
-                await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.UPDATE,AuditTrailEnum.Event_status.SUCCESS,"Update property method in vehicle manager",1,2,null);
+                 await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.UPDATE,AuditTrailEnum.Event_status.SUCCESS,"Update property method in vehicle manager",1,2,null);
                 return await vehicleRepository.UpdateProperty(vehicleproperty);
             }
             catch (Exception ex)
