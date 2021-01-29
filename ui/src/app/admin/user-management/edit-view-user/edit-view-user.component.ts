@@ -109,7 +109,8 @@ export class EditViewUserComponent implements OnInit {
     this.croppedImage = '../../assets/images/Account_pic.png';    
     this.setDefaultAccountInfo();
     this.setDefaultGeneralSetting(this.selectedPreference);
-    this.loadTable();
+    this.loadRoleTable();
+    this.loadAccountGroupTable();
     this.breadcumMsg = this.getBreadcum(this.fromEdit);
   }
 
@@ -117,7 +118,7 @@ export class EditViewUserComponent implements OnInit {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblUserManagement ? this.translationData.lblUserManagement : "User Management"} / ${this.translationData.lblUserDetails ? this.translationData.lblUserDetails : 'User Details'}`;
   }
 
-  loadTable(){
+  loadRoleTable(){
     let filterRoleData = this.filterRoleTableData();
     this.selectedRoleDataSource = new MatTableDataSource(filterRoleData);
     setTimeout(()=>{
@@ -125,17 +126,19 @@ export class EditViewUserComponent implements OnInit {
       this.selectedRoleDataSource.sort = this.sort.toArray()[0];
     });
 
+    // this.selectedVehGrpDataSource = new MatTableDataSource(this.selectedVehGrpData);
+    // setTimeout(()=>{
+    //   this.selectedVehGrpDataSource.paginator = this.paginator.toArray()[2];
+    //   this.selectedVehGrpDataSource.sort = this.sort.toArray()[2];
+    // });
+  }
+
+  loadAccountGroupTable(){
     let filterAccountGroupData = this.filterAccountGroupTableData();
     this.selecteUserGrpDataSource = new MatTableDataSource(filterAccountGroupData);
     setTimeout(()=>{
       this.selecteUserGrpDataSource.paginator = this.paginator.toArray()[1];
       this.selecteUserGrpDataSource.sort = this.sort.toArray()[1];
-    });
-
-    this.selectedVehGrpDataSource = new MatTableDataSource(this.selectedVehGrpData);
-    setTimeout(()=>{
-      this.selectedVehGrpDataSource.paginator = this.paginator.toArray()[2];
-      this.selectedVehGrpDataSource.sort = this.sort.toArray()[2];
     });
   }
 
@@ -306,7 +309,13 @@ export class EditViewUserComponent implements OnInit {
     }
     this.dialogRefForEdit = this.dialog.open(EditCommonTableComponent, dialogConfig);
     this.dialogRefForEdit.afterClosed().pipe(take(1), map(res => {
-      return res;
+      if(res.type == 'role'){
+        this.selectedRoleData = res.data;
+        this.loadRoleTable();
+      }else if(res.type == 'userGroup'){
+        this.selectedUserGrpData = res.data;
+        this.loadAccountGroupTable();
+      }
     }));
   }
 

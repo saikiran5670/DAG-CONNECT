@@ -54,8 +54,8 @@ export class EditCommonTableComponent implements OnInit {
     });
   }
 
-  onClose(val: boolean) {
-    this.closePopup = val;
+  onClose(val: any) {
+    this.closePopup = false;
     this.mdDialogRef.close(val);
   }
   @HostListener('keydown.esc')
@@ -94,7 +94,8 @@ export class EditCommonTableComponent implements OnInit {
         selectedRoleIds.forEach(element => {
           updatedRoles.push({id: element});
         });
-        this.onClose(false);    
+
+        this.onClose({data: updatedRoles, type: this.data.type});    
       })
     })
     }else{
@@ -102,6 +103,7 @@ export class EditCommonTableComponent implements OnInit {
     }
     
   }
+  
 
   onReset(){
     //console.log("Table reset...")
