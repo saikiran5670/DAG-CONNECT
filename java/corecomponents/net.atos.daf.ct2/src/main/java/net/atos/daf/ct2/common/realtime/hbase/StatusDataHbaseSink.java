@@ -37,6 +37,7 @@ public class StatusDataHbaseSink extends RichSinkFunction<KafkaRecord<Status>> {
 
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
+		System.out.println("########## In Status Data HBase ##############");
 		super.open(parameters);
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 		
@@ -90,6 +91,8 @@ HbaseAdapter hbaseAdapter = HbaseAdapter.getInstance();
 
 		//Put put = new Put(Bytes.toBytes(value.getValue().getVid()+"_"+value.getValue().getTransID()+"_"+value.getValue().getDocument().getTripID()+"_"+ value.getValue().getReceivedTimestamp()));
 		Put put = new Put(Bytes.toBytes(value.getValue().getTransID()+"_"+value.getValue().getDocument().getTripID()+"_"+value.getValue().getVid()+"_"+ value.getValue().getReceivedTimestamp()));
+		
+		System.out.println("Status Data Row_Key :: " + (value.getValue().getTransID()+"_"+value.getValue().getDocument().getTripID()+"_"+value.getValue().getVid()+"_"+ value.getValue().getReceivedTimestamp()));
         
         //COLUMN FAMILY DATA
           //Common Fields
@@ -127,6 +130,7 @@ HbaseAdapter hbaseAdapter = HbaseAdapter.getInstance();
           put.addColumn(Bytes.toBytes("t"), Bytes.toBytes (" VEvtID ") , Bytes.toBytes(String.valueOf(value.getValue(). getVEvtID ())));
           put.addColumn(Bytes.toBytes("t"), Bytes.toBytes (" VHarshBrakeDuration ") , Bytes.toBytes(String.valueOf(value.getValue(). getVHarshBrakeDuration ())));
           put.addColumn(Bytes.toBytes("t"), Bytes.toBytes (" VID ") , Bytes.toBytes(String.valueOf(value.getValue(). getVid ())));
+          put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VIN"), Bytes.toBytes(value.getValue().getVin()));	
           put.addColumn(Bytes.toBytes("t"), Bytes.toBytes (" VIdleDuration ") , Bytes.toBytes(String.valueOf(value.getValue(). getVIdleDuration ())));
           put.addColumn(Bytes.toBytes("t"), Bytes.toBytes (" VNegAltitudeVariation ") , Bytes.toBytes(String.valueOf(value.getValue(). getVNegAltitudeVariation ())));
           put.addColumn(Bytes.toBytes("t"), Bytes.toBytes (" VPosAltitudeVariation ") , Bytes.toBytes(String.valueOf(value.getValue(). getVPosAltitudeVariation ())));
