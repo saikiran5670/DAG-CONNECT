@@ -180,14 +180,14 @@ export class EditViewUserComponent implements OnInit {
   }
 
   filterDefaultGeneralSetting(accountPreferenceData: any){
-    this.languageData = this.defaultSetting.languageDropdownData.filter(resp => resp.id === (accountPreferenceData.languageId ? accountPreferenceData.languageId : 5));
-    this.timezoneData = this.defaultSetting.timezoneDropdownData.filter(resp => resp.id === (accountPreferenceData.timezoneId ? accountPreferenceData.timezoneId : 45));
-    this.unitData = this.defaultSetting.unitDropdownData.filter(resp => resp.id === (accountPreferenceData.unitId ? accountPreferenceData.unitId : 8));
-    this.currencyData = this.defaultSetting.currencyDropdownData.filter(resp => resp.id === (accountPreferenceData.currencyId ? accountPreferenceData.currencyId : 3));
-    this.dateFormatData = this.defaultSetting.dateFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.dateFormatTypeId ? accountPreferenceData.dateFormatTypeId : 10));
-    this.timeFormatData = this.defaultSetting.timeFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.timeFormatId ? accountPreferenceData.timeFormatId : 8));
-    this.vehicleDisplayData = this.defaultSetting.vehicleDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.vehicleDisplayId ? accountPreferenceData.vehicleDisplayId : 8));
-    this.landingPageDisplayData = this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.landingPageDisplayId ? accountPreferenceData.landingPageDisplayId : 10));
+    this.languageData = this.defaultSetting.languageDropdownData.filter(resp => resp.id === (accountPreferenceData[0].languageId ? accountPreferenceData[0].languageId : 5));
+    this.timezoneData = this.defaultSetting.timezoneDropdownData.filter(resp => resp.id === (accountPreferenceData[0].timezoneId ? accountPreferenceData[0].timezoneId : 45));
+    this.unitData = this.defaultSetting.unitDropdownData.filter(resp => resp.id === (accountPreferenceData[0].unitId ? accountPreferenceData[0].unitId : 8));
+    this.currencyData = this.defaultSetting.currencyDropdownData.filter(resp => resp.id === (accountPreferenceData[0].currencyId ? accountPreferenceData[0].currencyId : 3));
+    this.dateFormatData = this.defaultSetting.dateFormatDropdownData.filter(resp => resp.id === (accountPreferenceData[0].dateFormatTypeId ? accountPreferenceData[0].dateFormatTypeId : 10));
+    this.timeFormatData = this.defaultSetting.timeFormatDropdownData.filter(resp => resp.id === (accountPreferenceData[0].timeFormatId ? accountPreferenceData[0].timeFormatId : 8));
+    this.vehicleDisplayData = this.defaultSetting.vehicleDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData[0].vehicleDisplayId ? accountPreferenceData[0].vehicleDisplayId : 8));
+    this.landingPageDisplayData = this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData[0].landingPageDisplayId ? accountPreferenceData[0].landingPageDisplayId : 10));
   }
 
   toBack(){
@@ -222,7 +222,7 @@ export class EditViewUserComponent implements OnInit {
     }
 
     this.accountService.updateAccountPreference(objData).subscribe((data) => {
-      this.selectedPreference = data;
+      this.selectedPreference = [data];
       this.setDefaultGeneralSetting(this.selectedPreference);
       this.editGeneralSettingsFlag = false;
     }); 

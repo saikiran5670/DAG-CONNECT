@@ -189,6 +189,24 @@ export class UserManagementComponent implements OnInit {
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
       this.loadUsersData();
+      this.getUserSettingsDropdownValues();
+      
+    });
+  }
+
+  getUserSettingsDropdownValues(){
+    let languageCode = "EN-GB";
+    this.translationService.getPreferences(languageCode).subscribe(data => {
+      this.defaultSetting = {
+        languageDropdownData: data.language,
+        timezoneDropdownData: data.timezone,
+        unitDropdownData: data.unit,
+        currencyDropdownData: data.currency,
+        dateFormatDropdownData: data.dateformat,
+        timeFormatDropdownData: data.timeformat,
+        vehicleDisplayDropdownData: data.vehicledisplay,
+        landingPageDisplayDropdownData: data.landingpagedisplay
+      }
     });
   }
 
@@ -240,29 +258,29 @@ export class UserManagementComponent implements OnInit {
       accountCount: true
    }
     forkJoin(this.roleService.getUserRoles(roleObj),
-            this.accountService.getAccountGroupDetails(accountGrpObj),
-            this.translationService.getTranslationsForDropdowns('EN-GB','language'),
-            this.translationService.getTranslationsForDropdowns('EN-GB','timezone'),
-            this.translationService.getTranslationsForDropdowns('EN-GB','unit'),
-            this.translationService.getTranslationsForDropdowns('EN-GB','currency'),
-            this.translationService.getTranslationsForDropdowns('EN-GB','dateformat'),
-            this.translationService.getTranslationsForDropdowns('EN-GB','timeformat'),
-            this.translationService.getTranslationsForDropdowns('EN-GB','vehicledisplay'),
-            this.translationService.getTranslationsForDropdowns('EN-GB','landingpagedisplay')
+            this.accountService.getAccountGroupDetails(accountGrpObj)
+            // this.translationService.getTranslationsForDropdowns('EN-GB','language'),
+            // this.translationService.getTranslationsForDropdowns('EN-GB','timezone'),
+            // this.translationService.getTranslationsForDropdowns('EN-GB','unit'),
+            // this.translationService.getTranslationsForDropdowns('EN-GB','currency'),
+            // this.translationService.getTranslationsForDropdowns('EN-GB','dateformat'),
+            // this.translationService.getTranslationsForDropdowns('EN-GB','timeformat'),
+            // this.translationService.getTranslationsForDropdowns('EN-GB','vehicledisplay'),
+            // this.translationService.getTranslationsForDropdowns('EN-GB','landingpagedisplay')
       ).subscribe((data) => {
         //console.log(data)
         this.roleData = data[0];
         this.userGrpData = data[1];
-        this.defaultSetting = {
-          languageDropdownData: data[2],
-          timezoneDropdownData: data[3],
-          unitDropdownData: data[4],
-          currencyDropdownData: data[5],
-          dateFormatDropdownData: data[6],
-          timeFormatDropdownData: data[7],
-          vehicleDisplayDropdownData: data[8],
-          landingPageDisplayDropdownData: data[9]
-        }
+        // this.defaultSetting = {
+        //   languageDropdownData: data[2],
+        //   timezoneDropdownData: data[3],
+        //   unitDropdownData: data[4],
+        //   currencyDropdownData: data[5],
+        //   dateFormatDropdownData: data[6],
+        //   timeFormatDropdownData: data[7],
+        //   vehicleDisplayDropdownData: data[8],
+        //   landingPageDisplayDropdownData: data[9]
+        // }
         this.stepFlag = true;
     }, (error) => {  });
   }
@@ -294,34 +312,34 @@ export class UserManagementComponent implements OnInit {
 
     forkJoin(this.roleService.getUserRoles(roleObj),
             this.accountService.getAccountGroupDetails(accountGrpObj),
-            this.translationService.getTranslationsForDropdowns('EN-GB','language'),
-            this.translationService.getTranslationsForDropdowns('EN-GB','timezone'),
-            this.translationService.getTranslationsForDropdowns('EN-GB','unit'),
-            this.translationService.getTranslationsForDropdowns('EN-GB','currency'),
-            this.translationService.getTranslationsForDropdowns('EN-GB','dateformat'),
-            this.translationService.getTranslationsForDropdowns('EN-GB','timeformat'),
-            this.translationService.getTranslationsForDropdowns('EN-GB','vehicledisplay'),
-            this.translationService.getTranslationsForDropdowns('EN-GB','landingpagedisplay'),
+            // this.translationService.getTranslationsForDropdowns('EN-GB','language'),
+            // this.translationService.getTranslationsForDropdowns('EN-GB','timezone'),
+            // this.translationService.getTranslationsForDropdowns('EN-GB','unit'),
+            // this.translationService.getTranslationsForDropdowns('EN-GB','currency'),
+            // this.translationService.getTranslationsForDropdowns('EN-GB','dateformat'),
+            // this.translationService.getTranslationsForDropdowns('EN-GB','timeformat'),
+            // this.translationService.getTranslationsForDropdowns('EN-GB','vehicledisplay'),
+            // this.translationService.getTranslationsForDropdowns('EN-GB','landingpagedisplay'),
             this.accountService.getAccountRoles(selectedRoleObj),
             this.accountService.getAccountPreference(element.id)
       ).subscribe((data) => {
         //console.log(data)
         this.roleData = data[0];
         this.userGrpData = data[1];
-        this.defaultSetting = {
-          languageDropdownData: data[2],
-          timezoneDropdownData: data[3],
-          unitDropdownData: data[4],
-          currencyDropdownData: data[5],
-          dateFormatDropdownData: data[6],
-          timeFormatDropdownData: data[7],
-          vehicleDisplayDropdownData: data[8],
-          landingPageDisplayDropdownData: data[9]
-        }
-        this.selectedRoleData = data[10];
+        // this.defaultSetting = {
+        //   languageDropdownData: data[2],
+        //   timezoneDropdownData: data[3],
+        //   unitDropdownData: data[4],
+        //   currencyDropdownData: data[5],
+        //   dateFormatDropdownData: data[6],
+        //   timeFormatDropdownData: data[7],
+        //   vehicleDisplayDropdownData: data[8],
+        //   landingPageDisplayDropdownData: data[9]
+        // }
+        this.selectedRoleData = data[2];
         //console.log(element);
         this.userDataForEdit = element;
-        this.selectedPreference = data[11];
+        this.selectedPreference = data[3];
         // this.stepFlag = true;
         this.accountService.getAccountDesc(selectedAccountGrpObj).subscribe((resp) => {
           this.selectedUserGrpData = resp;
