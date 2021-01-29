@@ -553,7 +553,7 @@ $$;
 CREATE TABLE if not exists  master.feature 
 (
 	id serial not null,
-	name varchar(50) not null,
+	name varchar(250) not null,
 	description varchar(100),
 	type char(1) not null,
 	is_active boolean not null default true,
