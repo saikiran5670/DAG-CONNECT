@@ -38,7 +38,7 @@ namespace net.atos.daf.ct2.roleservicerest
          public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();            
-            var connectionString = Configuration.GetConnectionString("ConnectionStringHardCode");
+            var connectionString = Configuration.GetConnectionString("ConnectionString");
             
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
 
