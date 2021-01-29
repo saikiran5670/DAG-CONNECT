@@ -23,6 +23,14 @@ public class TimeFormatter implements Serializable {
 	public static long getCurrentUTCTime() {
 		return ZonedDateTime.now(ZoneId.of("UTC")).toInstant().toEpochMilli();
 	}
+	
+	/**
+	 * This method returns the current UTC time
+	 * return long
+	 */
+	public static long getCurrentUTCTimeInSec() {
+		return ZonedDateTime.now(ZoneId.of("UTC")).toInstant().getEpochSecond();
+	}
 			
 	/**
 	 * This method subtract timeInSeconds from utcTime provided

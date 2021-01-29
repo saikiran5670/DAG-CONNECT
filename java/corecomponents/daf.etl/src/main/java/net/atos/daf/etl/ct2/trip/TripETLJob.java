@@ -97,7 +97,9 @@ public class TripETLJob {
 			//logger.error("Job aborted due to exception, Root cause is  :: "+ExceptionUtils.getRootCauseMessage(e));
 			//logger.error(ExceptionUtils.getStackTrace(e));
 			//logger.error(ExceptionUtils.getFullStackTrace(e));
-			throw new FailureException("Job aborted due to :: " + e.getMessage());
+			//throw new FailureException("Job aborted due to :: " + e.getMessage());
+			logger.error(" TripStreamingJob failed, reason :: " + e);
+			//e.printStackTrace();
 		}
 	}
 
@@ -108,6 +110,7 @@ public class TripETLJob {
 		stsClmns.add(ETLConstants.TRIP_ID);
 		stsClmns.add(ETLConstants.INCREMENT);
 		stsClmns.add(ETLConstants.VID);
+		stsClmns.add(ETLConstants.VIN);
 		stsClmns.add(ETLConstants.GPS_START_DATETIME);
 		stsClmns.add(ETLConstants.GPS_END_DATETIME);
 		stsClmns.add(ETLConstants.GPS_TRIP_DIST);

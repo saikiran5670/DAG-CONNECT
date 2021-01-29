@@ -31,6 +31,7 @@ export interface vehGrpCreation {
 })
 export class CreateEditUserGroupComponent implements OnInit {
   OrgId:number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+  // OrgId:number = 32;
   // usrgrp: UserGroup = {
   //   organizationId: null,
   //   name: null,
@@ -105,7 +106,8 @@ export class CreateEditUserGroupComponent implements OnInit {
   updatedRowData : object = {}
   selectedAccounts =  new SelectionModel(true,[]);
   accountSelected = [];
-
+  // hidden: boolean;
+  
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   inputText: any;
@@ -174,7 +176,7 @@ export class CreateEditUserGroupComponent implements OnInit {
   
     let getUserData: any = {
       "accountId": 0,
-      "organizationId": this.orgId,
+      "organizationId": this.OrgId,
       // "organizationId": this.selectedRowData.organizationId,
       "accountGroupId": 0,
       // "accountGroupId": this.selectedRowData.id,
@@ -193,7 +195,7 @@ export class CreateEditUserGroupComponent implements OnInit {
       this.dataSourceUsers = new MatTableDataSource(usrlist);
       this.dataSourceUsers.paginator = this.paginator;
       this.dataSourceUsers.sort = this.sort;
-      if(this.editFlag){
+      if(this.editFlag || this.viewDisplayFlag){
         this.onReset();
       }
     });
@@ -212,6 +214,17 @@ export class CreateEditUserGroupComponent implements OnInit {
           for(let element of this.accountSelected){
             if(element.ref_Id == row.id){
               this.selectionForVehGrp.select(row);
+               if(this.viewDisplayFlag){
+                let selectedRow = this.selectionForVehGrp.selected;
+                this.displayedColumns = [
+                  'firstName', 'emailId', 'roles', 'accountGroups',
+                ];
+                // this.hidden = true;
+                this.initData = selectedRow;
+                this.dataSourceUsers = new MatTableDataSource(selectedRow);
+                this.dataSourceUsers.paginator = this.paginator;
+                this.dataSourceUsers.sort = this.sort;
+              }
               break;
             }
             else{

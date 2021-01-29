@@ -245,6 +245,9 @@ public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusD
 				else if (ETLConstants.STS_MSG_COLUMNFAMILY_T.equals(family) && ETLConstants.VID.equals(column)
 						&& null != Bytes.toString(value) && !"null".equals(Bytes.toString(value)))
 					tripStsData.setVid(Bytes.toString(value));
+				else if (ETLConstants.STS_MSG_COLUMNFAMILY_T.equals(family) && ETLConstants.VIN.equals(column)
+						&& null != Bytes.toString(value) && !"null".equals(Bytes.toString(value)))
+					tripStsData.setVin(Bytes.toString(value));
 				else if (ETLConstants.STS_MSG_COLUMNFAMILY_T.equals(family) && ETLConstants.GPS_TRIP_DIST.equals(column)
 						&& null != Bytes.toString(value) && !"null".equals(Bytes.toString(value)))
 					tripStsData.setGpsTripDist(Integer.valueOf(Bytes.toString(value)));
@@ -408,6 +411,7 @@ public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusD
 
 			tripStsData.setHbaseInsertionTS(hbaseInsertionTS);
 			tripStsData.setEtlProcessingTS(TimeFormatter.getCurrentUTCTime());
+						
 		} catch (Exception e) {
 			logger.error("Issue while populating trip data :: " + e.getMessage());
 			// TODO need not throw an error to abort the process

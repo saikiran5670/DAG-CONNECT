@@ -31,7 +31,7 @@ import java.util.Properties;
 public class ContiMessageProcessing {
 
   private static final Logger log = LogManager.getLogger(ContiMessageProcessing.class);
-  public static String FILE_PATH;// = "src/main/resources/configuration.properties";
+  public static String FILE_PATH; //= "src/main/resources/configuration.properties";
   private static AuditETLJobClient auditETLJobClient;
   private StreamExecutionEnvironment streamExecutionEnvironment;
 
@@ -58,7 +58,7 @@ public class ContiMessageProcessing {
 
       ContiMessageProcessing contiMessageProcessing = new ContiMessageProcessing();
       Properties properties = configuration();
-      //contiMessageProcessing.auditTrail(properties);
+      auditTrail(properties);
 
       contiMessageProcessing.flinkConnection();
 
@@ -67,35 +67,41 @@ public class ContiMessageProcessing {
 
     } catch (DAFCT2Exception e) {
       log.error("Exception: ", e);
+      e.printStackTrace();
 
     } finally {
-//       auditETLJobClient.closeChannel();
+      //       auditETLJobClient.closeChannel();
     }
   }
 
   public static void auditTrail(Properties properties) {
 
-    auditETLJobClient =
-        new AuditETLJobClient(
-            properties.getProperty(DAFCT2Constant.GRPC_SERVER),
-            Integer.valueOf(properties.getProperty(DAFCT2Constant.GRPC_PORT)));
-    Map<String, String> auditMap = new HashMap<String, String>();
+    try {
+      auditETLJobClient =
+          new AuditETLJobClient(
+              properties.getProperty(DAFCT2Constant.GRPC_SERVER),
+              Integer.valueOf(properties.getProperty(DAFCT2Constant.GRPC_PORT)));
+      Map<String, String> auditMap = new HashMap<String, String>();
 
-    auditMap.put(DAFCT2Constant.JOB_EXEC_TIME, String.valueOf(TimeFormatter.getCurrentUTCTime()));
-    auditMap.put(DAFCT2Constant.AUDIT_PERFORMED_BY, DAFCT2Constant.TRIP_JOB_NAME);
-    auditMap.put(DAFCT2Constant.AUDIT_COMPONENT_NAME, DAFCT2Constant.TRIP_JOB_NAME);
-    auditMap.put(DAFCT2Constant.AUDIT_SERVICE_NAME, DAFCT2Constant.AUDIT_SERVICE);
-    auditMap.put(DAFCT2Constant.AUDIT_EVENT_TYPE, DAFCT2Constant.AUDIT_CREATE_EVENT_TYPE);
-    auditMap.put(
-        DAFCT2Constant.AUDIT_EVENT_TIME, String.valueOf(TimeFormatter.getCurrentUTCTime()));
-    auditMap.put(DAFCT2Constant.AUDIT_EVENT_STATUS, DAFCT2Constant.AUDIT_EVENT_STATUS_START);
-    auditMap.put(DAFCT2Constant.AUDIT_MESSAGE, "Conti Message Streaming");
-    auditMap.put(DAFCT2Constant.AUDIT_SOURCE_OBJECT_ID, DAFCT2Constant.DEFAULT_OBJECT_ID);
-    auditMap.put(DAFCT2Constant.AUDIT_TARGET_OBJECT_ID, DAFCT2Constant.DEFAULT_OBJECT_ID);
+      auditMap.put(DAFCT2Constant.JOB_EXEC_TIME, String.valueOf(TimeFormatter.getCurrentUTCTimeInSec()));
+      auditMap.put(DAFCT2Constant.AUDIT_PERFORMED_BY, DAFCT2Constant.TRIP_JOB_NAME);
+      auditMap.put(DAFCT2Constant.AUDIT_COMPONENT_NAME, DAFCT2Constant.TRIP_JOB_NAME);
+      auditMap.put(DAFCT2Constant.AUDIT_SERVICE_NAME, DAFCT2Constant.AUDIT_SERVICE);
+      auditMap.put(DAFCT2Constant.AUDIT_EVENT_TYPE, DAFCT2Constant.AUDIT_CREATE_EVENT_TYPE);
+      auditMap.put(
+          DAFCT2Constant.AUDIT_EVENT_TIME, String.valueOf(TimeFormatter.getCurrentUTCTime()));
+      auditMap.put(DAFCT2Constant.AUDIT_EVENT_STATUS, DAFCT2Constant.AUDIT_EVENT_STATUS_START);
+      auditMap.put(DAFCT2Constant.AUDIT_MESSAGE, "Conti Message Streaming");
+      auditMap.put(DAFCT2Constant.AUDIT_SOURCE_OBJECT_ID, DAFCT2Constant.DEFAULT_OBJECT_ID);
+      auditMap.put(DAFCT2Constant.AUDIT_TARGET_OBJECT_ID, DAFCT2Constant.DEFAULT_OBJECT_ID);
 
-    auditETLJobClient.auditTrialGrpcCall(auditMap);
+      auditETLJobClient.auditTrialGrpcCall(auditMap);
 
-    log.info("Audit Trial Started");
+      log.info("Audit Trial Started");
+
+    } catch (Exception e) {
+      log.error("Unable to initialize Audit Trials", e);
+    }
   }
 
   public void flinkConnection() {
@@ -108,7 +114,7 @@ public class ContiMessageProcessing {
         .getCheckpointConfig()
         .enableExternalizedCheckpoints(
             CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);*/
-    // this.streamExecutionEnvironment.setStateBackend(new FsStateBackend(""));
+    // this.streamExecutionEnvironment.setStateBackend(new FsStateBackend("file:///checkpointDir"));
 
     log.info("Flink Processing Started.");
   }

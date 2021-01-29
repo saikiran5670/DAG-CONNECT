@@ -63,4 +63,5 @@ public class TripStatusData implements Serializable {
 	private Long hbaseInsertionTS;
 	private Long etlProcessingTS;
 	private Double tripCalVehTimeDiffInHr;
+	private String vin;
 }

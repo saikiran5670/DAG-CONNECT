@@ -487,9 +487,9 @@ namespace net.atos.daf.ct2.account
             }
             return keyValueList;
         }
-        public async Task<List<KeyValue>> GetAccountRole(int accountId)
+        public async Task<List<AccountOrgRole>> GetAccountRole(int accountId)
         {
-            List<KeyValue> keyValueList = null;
+            List<AccountOrgRole> AccountOrgRoleList = null;
             try
             {
                 var parameter = new DynamicParameters();
@@ -497,16 +497,16 @@ namespace net.atos.daf.ct2.account
                 if (accountId > 0)
                 {
                     parameter.Add("@account_id", accountId);
-                    query = @"select r.id,r.name from master.role r inner join master.accountrole ac on r.id=ac.role_id and r.is_active=true where ac.account_id=@account_id";
-                    IEnumerable<KeyValue> result = await dataAccess.QueryAsync<KeyValue>(query, parameter);
-                    keyValueList = result.ToList();
+                    query = @"select r.id,r.name,r.id,ac.organization_id as Organization_Id from master.role r inner join master.accountrole ac on r.id=ac.role_id and r.is_active=true where ac.account_id=@account_id";
+                    IEnumerable<AccountOrgRole> result = await dataAccess.QueryAsync<AccountOrgRole>(query, parameter);
+                    AccountOrgRoleList = result.ToList();
                 }
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-            return keyValueList;
+            return AccountOrgRoleList;
         }
         // End - Account Rendering
 

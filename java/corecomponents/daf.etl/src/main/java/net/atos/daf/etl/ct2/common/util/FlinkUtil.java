@@ -50,11 +50,14 @@ public class FlinkUtil {
 		env.setStateBackend(
 				(StateBackend) new FsStateBackend(envParams.get(ETLConstants.CHECKPOINT_DIRECTORY), true));
 
-		// TODO Need to check if restartStrategy enabled and the set
-		env.setRestartStrategy(
-				RestartStrategies.fixedDelayRestart(Integer.parseInt(envParams.get(ETLConstants.RESTART_ATTEMPS)), //no of restart attempts
-						Long.parseLong(envParams.get(ETLConstants.RESTART_INTERVAL))) //time in milliseconds between restarts
-					);
+		// TODO  enable only in QA and Prod
+		if("true".equals(envParams.get(ETLConstants.RESTART_FLAG))){
+			env.setRestartStrategy(
+					RestartStrategies.fixedDelayRestart(Integer.parseInt(envParams.get(ETLConstants.RESTART_ATTEMPS)), //no of restart attempts
+							Long.parseLong(envParams.get(ETLConstants.RESTART_INTERVAL))) //time in milliseconds between restarts
+						);			
+		}
+		
 		
 		return env;
 	}

@@ -143,14 +143,14 @@ export class NewUserStepComponent implements OnInit {
   }
 
    setDefaultSetting(){
-  //   this.firstFormGroup.get('language').setValue(this.defaultSetting.language.val[this.defaultSetting.language.selectedIndex]);
-  //   this.firstFormGroup.get('timeZone').setValue(this.defaultSetting.timeZone.val[this.defaultSetting.timeZone.selectedIndex]);
-  //   this.firstFormGroup.get('unit').setValue(this.defaultSetting.unit.val[this.defaultSetting.unit.selectedIndex]);
-  //   this.firstFormGroup.get('currency').setValue(this.defaultSetting.currency.val[this.defaultSetting.currency.selectedIndex]);
-  //   this.firstFormGroup.get('dateFormat').setValue(this.defaultSetting.dateFormat.val[this.defaultSetting.dateFormat.selectedIndex]);
-  //   this.firstFormGroup.get('vehDisplay').setValue(this.defaultSetting.vehDisplay.val[this.defaultSetting.vehDisplay.selectedIndex]);
-  //   this.firstFormGroup.get('timeFormat').setValue(this.defaultSetting.timeFormat.val[this.defaultSetting.timeFormat.selectedIndex]);
-  //   this.firstFormGroup.get('landingPage').setValue(this.defaultSetting.landingPage.val[this.defaultSetting.landingPage.selectedIndex]);
+    this.firstFormGroup.get('language').setValue(13);
+    this.firstFormGroup.get('timeZone').setValue(47);
+    this.firstFormGroup.get('unit').setValue(8);
+    this.firstFormGroup.get('currency').setValue(3);
+    this.firstFormGroup.get('dateFormat').setValue(13);
+    this.firstFormGroup.get('vehDisplay').setValue(8);
+    this.firstFormGroup.get('timeFormat').setValue(8);
+    this.firstFormGroup.get('landingPage').setValue(11);
    }
 
   onClose(){

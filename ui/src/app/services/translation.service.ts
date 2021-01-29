@@ -37,6 +37,14 @@ export class TranslationService {
             .pipe(catchError(this.handleError));
     }
 
+    getPreferences(langCode: string): Observable<any> {
+        return this.httpClient
+            .get<any>(
+                `${this.translationUrl}/preferences?languagecode=${langCode}`
+                )
+            .pipe(catchError(this.handleError));
+    }
+
     private handleError(errResponse: HttpErrorResponse) {
         if (errResponse.error instanceof ErrorEvent) {
             console.error('Client side error', errResponse.error.message);

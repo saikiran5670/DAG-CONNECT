@@ -6,6 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { RoleService } from 'src/app/services/role.service';
+import { CustomValidators } from 'src/app/shared/custom.validators';
 
 @Component({
   selector: 'app-edit-user-role-details',
@@ -45,9 +46,9 @@ export class EditUserRoleDetailsComponent implements OnInit {
   ngOnInit() {
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.userRoleFormGroup = this._formBuilder.group({
-      userRoleName: ['', [Validators.required, Validators.maxLength(60)]],
+      userRoleName: ['', [Validators.required, Validators.maxLength(60),CustomValidators.noWhitespaceValidator]],
       roleType: ['Regular', [Validators.required]],
-      userRoleDescription: []
+      userRoleDescription: ['',[CustomValidators.noWhitespaceValidatorforDesc]]
     });
 
     let objData = {

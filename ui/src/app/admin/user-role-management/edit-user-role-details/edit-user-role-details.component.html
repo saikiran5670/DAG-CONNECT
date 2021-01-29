@@ -15,13 +15,20 @@
                   <mat-label>{{ translationData.lblUserRoleName || 'User Role Name' }}</mat-label>
                   <mat-label class='custom-font'>{{ this.gridData[0].roleName  }}</mat-label>
                 </div>
-                <div *ngIf="loggedInUser == 'admin'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <!-- <mat-label>{{ translationData.lblFirstName }}</mat-label> -->
+                <!-- <div *ngIf="loggedInUser == 'admin'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblUserRoleType || 'Role Type' }}</mat-label>
                     <mat-label class='custom-font'>{{ this.gridData[0].organizationId == 0 ? 'Global' : 'Regular'  }}</mat-label>
                 </div>
                 <div [ngClass]="loggedInUser == 'admin' ? 'areaWidth min-width-30-per' : 'areaWidth min-width-60-per'" fxLayout="column" fxLayoutAlign="left">
-                    <!-- <mat-label>{{ translationData.lblLastName }}</mat-label> -->
+                    <mat-label>{{ translationData.lblUserRoleDescriptionOptional || 'User Role Description' }}</mat-label>
+                    <mat-label class='custom-font'>{{ this.gridData[0].description ? this.gridData[0].description : '--' }}</mat-label>
+                </div> -->
+
+                <div *ngIf="(organizationId == 1 || organizationId == 2)" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblUserRoleType || 'Role Type' }}</mat-label>
+                    <mat-label class='custom-font'>{{ this.gridData[0].organizationId == 0 ? 'Global' : 'Regular'  }}</mat-label>
+                </div>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblUserRoleDescriptionOptional || 'User Role Description' }}</mat-label>
                     <mat-label class='custom-font'>{{ this.gridData[0].description ? this.gridData[0].description : '--' }}</mat-label>
                 </div>
@@ -51,20 +58,23 @@
                     <mat-error #UserValueCheck *ngIf="isUserRoleExist" >
                         {{ translationData.lblUserRolealreadyexistsPleasechooseadifferentname || 'User Role already exists. Please choose a different name.'}}
                     </mat-error>
+                    <mat-error *ngIf="!userRoleFormGroup.get('userRoleName').hasError('required')  && userRoleFormGroup.get('userRoleName').hasError('whitespace')">
+                      User Role Name cannot contain only whitespace
+                     </mat-error>
                 </div>
-                <div *ngIf="loggedInUser == 'admin'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>
                         {{ translationData.lblUserRoleType || 'Role Type'}}<span class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-select formControlName="roleType" [disabled]="!createStatus && !duplicateFlag">
+                        <mat-select formControlName="roleType" [disabled]="(organizationId != 1 && organizationId != 2) || (!createStatus && !duplicateFlag)">
                             <mat-option *ngFor="let roleType of roleTypes" [value]="roleType">
                                 {{roleType}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div [ngClass]="loggedInUser == 'admin' ? 'areaWidth min-width-30-per' : 'areaWidth min-width-60-per'" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
                         <span>{{ translationData.lblUserRoleDescriptionOptional || 'User Role Description (Optional)'}}</span>
                         <span>{{ translationData.lbl120CharMax || '120 characters max'}}</span>
@@ -72,6 +82,9 @@
                     <mat-form-field appearance="outline" class="full-width">
                         <input maxlength="120" placeholder="{{ translationData.lblEnterAboutUserRole || 'Enter About User Role' }}" matInput formControlName="userRoleDescription">
                     </mat-form-field>
+                    <mat-error *ngIf="  userRoleFormGroup.get('userRoleDescription').hasError('whitespace')">
+                      User Role Description cannot contain only whitespace
+                    </mat-error>
                 </div>
             </div>
         </mat-card-content>        

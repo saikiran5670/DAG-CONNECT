@@ -11,6 +11,7 @@ import { CommonTableComponent } from '../../../shared/common-table/common-table.
 import { CustomValidators } from '../../../shared/custom.validators';
 import { AccountService } from '../../../services/account.service';
 import { UserDetailTableComponent } from '.././new-user-step/user-detail-table/user-detail-table.component';
+import { map, take } from 'rxjs/internal/operators';
 
 @Component({
   selector: 'app-edit-view-user',
@@ -108,7 +109,8 @@ export class EditViewUserComponent implements OnInit {
     this.croppedImage = '../../assets/images/Account_pic.png';    
     this.setDefaultAccountInfo();
     this.setDefaultGeneralSetting(this.selectedPreference);
-    this.loadTable();
+    this.loadRoleTable();
+    this.loadAccountGroupTable();
     this.breadcumMsg = this.getBreadcum(this.fromEdit);
   }
 
@@ -116,7 +118,7 @@ export class EditViewUserComponent implements OnInit {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblUserManagement ? this.translationData.lblUserManagement : "User Management"} / ${this.translationData.lblUserDetails ? this.translationData.lblUserDetails : 'User Details'}`;
   }
 
-  loadTable(){
+  loadRoleTable(){
     let filterRoleData = this.filterRoleTableData();
     this.selectedRoleDataSource = new MatTableDataSource(filterRoleData);
     setTimeout(()=>{
@@ -124,17 +126,19 @@ export class EditViewUserComponent implements OnInit {
       this.selectedRoleDataSource.sort = this.sort.toArray()[0];
     });
 
+    // this.selectedVehGrpDataSource = new MatTableDataSource(this.selectedVehGrpData);
+    // setTimeout(()=>{
+    //   this.selectedVehGrpDataSource.paginator = this.paginator.toArray()[2];
+    //   this.selectedVehGrpDataSource.sort = this.sort.toArray()[2];
+    // });
+  }
+
+  loadAccountGroupTable(){
     let filterAccountGroupData = this.filterAccountGroupTableData();
     this.selecteUserGrpDataSource = new MatTableDataSource(filterAccountGroupData);
     setTimeout(()=>{
       this.selecteUserGrpDataSource.paginator = this.paginator.toArray()[1];
       this.selecteUserGrpDataSource.sort = this.sort.toArray()[1];
-    });
-
-    this.selectedVehGrpDataSource = new MatTableDataSource(this.selectedVehGrpData);
-    setTimeout(()=>{
-      this.selectedVehGrpDataSource.paginator = this.paginator.toArray()[2];
-      this.selectedVehGrpDataSource.sort = this.sort.toArray()[2];
     });
   }
 
@@ -176,14 +180,14 @@ export class EditViewUserComponent implements OnInit {
   }
 
   filterDefaultGeneralSetting(accountPreferenceData: any){
-    this.languageData = this.defaultSetting.languageDropdownData.filter(resp => resp.id === (accountPreferenceData.languageId ? accountPreferenceData.languageId : 5));
-    this.timezoneData = this.defaultSetting.timezoneDropdownData.filter(resp => resp.id === (accountPreferenceData.timezoneId ? accountPreferenceData.timezoneId : 45));
-    this.unitData = this.defaultSetting.unitDropdownData.filter(resp => resp.id === (accountPreferenceData.unitId ? accountPreferenceData.unitId : 8));
-    this.currencyData = this.defaultSetting.currencyDropdownData.filter(resp => resp.id === (accountPreferenceData.currencyId ? accountPreferenceData.currencyId : 3));
-    this.dateFormatData = this.defaultSetting.dateFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.dateFormatTypeId ? accountPreferenceData.dateFormatTypeId : 10));
-    this.timeFormatData = this.defaultSetting.timeFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.timeFormatId ? accountPreferenceData.timeFormatId : 8));
-    this.vehicleDisplayData = this.defaultSetting.vehicleDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.vehicleDisplayId ? accountPreferenceData.vehicleDisplayId : 8));
-    this.landingPageDisplayData = this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.landingPageDisplayId ? accountPreferenceData.landingPageDisplayId : 10));
+    this.languageData = this.defaultSetting.languageDropdownData.filter(resp => resp.id === (accountPreferenceData[0].languageId ? accountPreferenceData[0].languageId : 5));
+    this.timezoneData = this.defaultSetting.timezoneDropdownData.filter(resp => resp.id === (accountPreferenceData[0].timezoneId ? accountPreferenceData[0].timezoneId : 45));
+    this.unitData = this.defaultSetting.unitDropdownData.filter(resp => resp.id === (accountPreferenceData[0].unitId ? accountPreferenceData[0].unitId : 8));
+    this.currencyData = this.defaultSetting.currencyDropdownData.filter(resp => resp.id === (accountPreferenceData[0].currencyId ? accountPreferenceData[0].currencyId : 3));
+    this.dateFormatData = this.defaultSetting.dateFormatDropdownData.filter(resp => resp.id === (accountPreferenceData[0].dateFormatTypeId ? accountPreferenceData[0].dateFormatTypeId : 10));
+    this.timeFormatData = this.defaultSetting.timeFormatDropdownData.filter(resp => resp.id === (accountPreferenceData[0].timeFormatId ? accountPreferenceData[0].timeFormatId : 8));
+    this.vehicleDisplayData = this.defaultSetting.vehicleDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData[0].vehicleDisplayId ? accountPreferenceData[0].vehicleDisplayId : 8));
+    this.landingPageDisplayData = this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData[0].landingPageDisplayId ? accountPreferenceData[0].landingPageDisplayId : 10));
   }
 
   toBack(){
@@ -218,7 +222,7 @@ export class EditViewUserComponent implements OnInit {
     }
 
     this.accountService.updateAccountPreference(objData).subscribe((data) => {
-      this.selectedPreference = data;
+      this.selectedPreference = [data];
       this.setDefaultGeneralSetting(this.selectedPreference);
       this.editGeneralSettingsFlag = false;
     }); 
@@ -272,26 +276,30 @@ export class EditViewUserComponent implements OnInit {
   }
 
   editRoleData(){
+    let type= "role";
     let tableHeader: any = this.translationData.lblSelectedUserRoles || 'Selected User Roles';
-    let colsList: any = ['select', 'name', 'services'];
+    let colsList: any = ['select', 'roleName', 'featureIds'];
     let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lblUserRole || 'User Role', this.translationData.lblServices || 'Services'];
-    this.callCommonTableToEdit(colsList, colsName, tableHeader, this.selectedRoleData, this.allRoleData);
+    this.callCommonTableToEdit(this.accountInfoData, type, colsList, colsName, tableHeader, this.selectedRoleData, this.allRoleData);
   }
 
   editUserGroupData(){
+    let type= "userGroup";
     let tableHeader: any = this.translationData.lblSelectedUserGroups || 'Selected User Groups';
     // let colsList: any = ['select', 'name', 'vehicles', 'users'];
     // let colsName: any = ['All', 'Group Name', 'Vehicles', 'Users'];
-    let colsList: any = ['select', 'name', 'users'];
+    let colsList: any = ['select', 'name', 'accountCount'];
     let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lblGroupName || 'Group Name', this.translationData.lblUsers || 'Users'];
-    this.callCommonTableToEdit(colsList, colsName, tableHeader, this.selectedUserGrpData, this.allUserGrpData);
+    this.callCommonTableToEdit(this.accountInfoData, type, colsList, colsName, tableHeader, this.selectedUserGrpData, this.allUserGrpData);
   }
 
-  callCommonTableToEdit(colsList: any, colsName: any, tableHeader: any, selectedData: any, tableData: any){
+  callCommonTableToEdit(accountInfo: any, type: any, colsList: any, colsName: any, tableHeader: any, selectedData: any, tableData: any){
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
+      accountInfo: accountInfo,
+      type: type,
       colsList:  colsList,
       colsName: colsName,
       translationData: this.translationData,
@@ -300,6 +308,16 @@ export class EditViewUserComponent implements OnInit {
       selectedData: selectedData
     }
     this.dialogRefForEdit = this.dialog.open(EditCommonTableComponent, dialogConfig);
+    // this.dialogRefForEdit.afterClosed().pipe(take(1), map(res => {
+      this.dialogRefForEdit.afterClosed().subscribe(res => {
+      if(res.type == 'role'){
+        this.selectedRoleData = res.data;
+        this.loadRoleTable();
+      }else if(res.type == 'userGroup'){
+        this.selectedUserGrpData = res.data;
+        this.loadAccountGroupTable();
+      }
+    });
   }
 
   filesDroppedMethod(event: any) {

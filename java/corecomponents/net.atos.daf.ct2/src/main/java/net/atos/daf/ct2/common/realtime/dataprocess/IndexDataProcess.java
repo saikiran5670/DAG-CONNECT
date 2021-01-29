@@ -129,14 +129,14 @@ public class IndexDataProcess {
 			  message) { Map<String, String> auditMap = new HashMap<>();
 			  
 			  auditMap.put(DafConstants.JOB_EXEC_TIME,
-			  String.valueOf(TimeFormatter.getCurrentUTCTime()));
+			  String.valueOf(TimeFormatter.getCurrentUTCTimeInSec()));
 			  auditMap.put(DafConstants.AUDIT_PERFORMED_BY, DafConstants.TRIP_JOB_NAME);
 			  auditMap.put(DafConstants.AUDIT_COMPONENT_NAME, DafConstants.TRIP_JOB_NAME);
 			  auditMap.put(DafConstants.AUDIT_SERVICE_NAME, DafConstants.AUDIT_SERVICE);
 			  auditMap.put(DafConstants.AUDIT_EVENT_TYPE,
 			  DafConstants.AUDIT_CREATE_EVENT_TYPE);// check
 			  auditMap.put(DafConstants.AUDIT_EVENT_TIME,
-			  String.valueOf(TimeFormatter.getCurrentUTCTime()));
+			  String.valueOf(TimeFormatter.getCurrentUTCTimeInSec()));
 			  auditMap.put(DafConstants.AUDIT_EVENT_STATUS, jobStatus);
 			  auditMap.put(DafConstants.AUDIT_MESSAGE, message);
 			  auditMap.put(DafConstants.AUDIT_SOURCE_OBJECT_ID,

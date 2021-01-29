@@ -69,7 +69,7 @@ export class VehicleService {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
     return this.httpClient
-      .put<any>(`${this.vehicleServiceUrl}/group/update`, JSON.stringify(data) , headers)
+      .put<any>(`${this.vehicleServiceUrl}/group/update`, data , headers)
       .pipe(catchError(this.handleError));
   }
 

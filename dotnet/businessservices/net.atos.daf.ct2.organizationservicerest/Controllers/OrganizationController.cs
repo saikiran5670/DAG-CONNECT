@@ -325,30 +325,22 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
 
         [HttpGet]
         [Route("preference/get")]
-        public async Task<IActionResult> GetAccountPreference(int accountId)
+        public async Task<IActionResult> GetAccountPreference(int organizationId)
         {
             try
             {
                 // Validation                 
-                if ((accountId <= 0))
+                if ((organizationId <= 0))
                 {
-                    return StatusCode(400, "The Account Id is required");
-                }
-                Preference.AccountPreferenceFilter preferenceFilter = new Preference.AccountPreferenceFilter();
-                preferenceFilter.Id = 0;
-                preferenceFilter.Ref_Id = accountId;
-                preferenceFilter.PreferenceType = Preference.PreferenceType.Account;
-                var result = await preferencemanager.Get(preferenceFilter);
-                if ((result == null) || Convert.ToInt16(result.Count()) <= 0)
-                {
-                    return StatusCode(404, "Account Preference for this account is not configured.");
-                }
-                logger.LogInformation("Get account preference.");
+                    return StatusCode(400, "Organization Id is required");
+                }            
+
+                var result= await organizationtmanager.GetPreference(organizationId);                 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                logger.LogError("Error in account service:get account preference with exception - " + ex.Message + ex.StackTrace);
+                logger.LogError("Error in organization service: get preference with exception - " + ex.Message + ex.StackTrace);
                 return StatusCode(500, "Internal Server Error.");
             }
         }

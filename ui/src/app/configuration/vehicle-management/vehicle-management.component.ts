@@ -186,7 +186,7 @@ export class VehicleManagementComponent implements OnInit {
       organizationID:this.orgId ? this.orgId : 1,
       vehicleIdList: '',
       vin: '',
-      status: 73,
+      status: 0,
     };
     //clear the  table first
     let tempData=[]
@@ -434,7 +434,9 @@ export class VehicleManagementComponent implements OnInit {
 
   onBackToPage(flag: any) {
     this.viewFlag = flag;
-    this.selectedType = 'vehicle';
+    if(flag='create')this.selectedType = 'group';
+    else this.selectedType = 'vehicle';
+    
     this.loadVehicleData();
     this.updateDataSource(this.initData);
   }
@@ -475,10 +477,10 @@ export class VehicleManagementComponent implements OnInit {
     if (this.vehicleGroupData != null) {
      this.updateDataSource(this.vehicleGroupData);
     } else {
-      this.loadVehGroupTable();
+      this.loadVehGroupTable('group');
     }
   }
-  loadVehGroupTable(){
+  loadVehGroupTable(flag:string){
     this.vehGrpRqst = {
       id: 0,
       organizationID: this.orgId ? this.orgId : 1,
@@ -486,8 +488,12 @@ export class VehicleManagementComponent implements OnInit {
       vehiclesGroup: true,
       groupIds: [0],
     };
+    if(flag=='group'){
+      this.vehGrpRqst.vehicles=false;}
+    else{this.vehGrpRqst.vehicles=true;
+    }  
     this.vehService.getVehicleGroup(this.vehGrpRqst)
-    .pipe(map((data) => data.filter((d) => d.isVehicleGroup == true)))
+    //.pipe(map((data) => data.filter((d) => d.isVehicleGroup == true)))
     .subscribe((_data) => {
       this.vehicleGroupData = _data;
       this.initData = this.vehicleGroupData;
@@ -521,7 +527,7 @@ export class VehicleManagementComponent implements OnInit {
         organizationID: this.orgId ? this.orgId : 1,
         vehicleIdList: '',
         vin: '',
-        status: 73,
+        status: 0,
       };
       this.vehService.getVehicle(this.veh).subscribe((_data) => {
         this.vehicleData = _data;
@@ -538,6 +544,7 @@ export class VehicleManagementComponent implements OnInit {
       'model',
       'status',
       'action',
+      'isVehicleGroup'
     ];
     this.columnNames = [
       'Vehicle Group/Vehicle',
@@ -546,8 +553,10 @@ export class VehicleManagementComponent implements OnInit {
       'Model',
       'Status',
       'Actions',
+      'isVehicleGroup'
+      
     ];
-
+    //this.loadVehGroupTable('both');
     if (this.bothData != null) {
       this.updateDataSource(this.bothData);
     } else {

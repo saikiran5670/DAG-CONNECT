@@ -1,4 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
+import { isNull } from '@angular/compiler/src/output/output_ast';
 import {
   Component,
   EventEmitter,
@@ -7,12 +8,13 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { vehicleUpdateRequest } from 'src/app/models/vehicle.model';
 import { VehicleService } from 'src/app/services/vehicle.service';
+import { CustomValidators } from 'src/app/shared/custom.validators';
 
 @Component({
   selector: 'app-create-edit-vehicle-details',
@@ -20,6 +22,8 @@ import { VehicleService } from 'src/app/services/vehicle.service';
   styleUrls: ['./create-edit-vehicle-details.component.less'],
 })
 export class CreateEditVehicleDetailsComponent implements OnInit {
+  @ViewChild("createVehicleForm",{ static: true })
+  public createVehicleForm: NgForm;
   @Output() backToPage = new EventEmitter<any>();
   @Input() gridData: any;
   @Input() title: string;
@@ -62,12 +66,11 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.vehicleFormGroup = this._formBuilder.group({
-      vehicleGroupName: ['', [Validators.required]],
-      vehicleGroupDescription: [],
+      vehicleGroupName: ['', [Validators.required,CustomValidators.noWhitespaceValidator]],
+      vehicleGroupDescription: ['',[CustomValidators.noWhitespaceValidatorforDesc]],
     });
     //console.log(this.groupInfo);
-    this.vehGrpName = this.groupInfo ? this.groupInfo.name : '';
-   // this.vehicleFormGroup.controls.vehicleGroupDescription= this.groupInfo ? this.groupInfo.description : '';
+    
     this.dataSource = new MatTableDataSource(this.gridData);
     if (localStorage.getItem('accountOrganizationId') != null) {
       this.orgId = parseInt(localStorage.getItem('accountOrganizationId'));
@@ -77,9 +80,13 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
       this.vehicleFormGroup.get('vehicleGroupName').disable();
       this.vehicleFormGroup.get('vehicleGroupDescription').disable();
     }
-     //select associated vehicles of the vehicle group.
+    //select associated vehicles of the vehicle group.
     if (this.groupInfo) {
-     this.selectCheckBox(this.groupInfo.id);
+      this.vehGrpName = this.groupInfo ? this.groupInfo.name : '';
+    this.vehicleFormGroup.controls.vehicleGroupDescription.setValue(
+      this.groupInfo.description ? this.groupInfo.description : ''
+    );
+      this.selectCheckBox(this.groupInfo.id);
     }
   }
 
@@ -87,7 +94,16 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
     this.backToPage.emit({ editFlag: false, editText: 'cancel' });
   }
   onReset() {
-    this.vehicleFormGroup.reset();
+    //this.vehicleFormGroup.reset();
+    if (this.groupInfo) {
+      this.vehGrpName = this.groupInfo ? this.groupInfo.name : '';
+      this.vehicleFormGroup.controls.vehicleGroupDescription.setValue(
+        this.groupInfo.description ? this.groupInfo.description : ''
+      );
+    } else {
+      this.vehicleFormGroup.get('vehicleGroupName').setValue('');
+      this.vehicleFormGroup.controls.vehicleGroupDescription.setValue('');
+    }
   }
   selectCheckBox(vehGroupId) {
     this.vehService.getVehicleListById(vehGroupId).subscribe((req) => {
@@ -104,8 +120,9 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
       // create func
       let objData = {
         id: 0,
-        name: this.vehicleFormGroup.controls.vehicleGroupName.value,
-        description: this.vehicleFormGroup.controls.vehicleGroupDescription.value,
+        name: this.vehicleFormGroup.controls.vehicleGroupName.value.trim(),
+        description: this.vehicleFormGroup.controls.vehicleGroupDescription
+          .value.trim(),
         organizationId: this.orgId ? this.orgId : 1,
         vehicles: [],
       };
@@ -119,6 +136,7 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
           vehicleId: row.id,
         });
       });
+      //console.log(objData);
 
       this.vehService.createVehicleGroup(JSON.stringify(objData)).subscribe(
         (res) => {
@@ -136,15 +154,15 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
         (error) => {
           console.error(error);
         }
-      );
+      );  
     } else {
       // edit function here
-      let objData = {
+      let objDataUpdate = {
         //vehicleUpdateRequest
-        id: this.groupInfo.id,
-        name: this.vehicleFormGroup.controls.vehicleGroupName.value,
+        id: this.groupInfo.id?parseInt(this.groupInfo.id):0,
+        name: this.vehicleFormGroup.controls.vehicleGroupName.value.trim(),
         description: this.vehicleFormGroup.controls.vehicleGroupDescription
-          .value,
+          .value.trim(),
         organizationId: this.orgId ? this.orgId : 1,
         vehicles: [],
       };
@@ -152,16 +170,15 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
       const numSelected = this.selectionForVehGrp.selected;
 
       numSelected.forEach((row) => {
-        // console.log(row.id);
-        objData.vehicles.push({
-          vehicleGroupId: this.groupInfo.id,
-          vehicleId: row.id,
+        objDataUpdate.vehicles.push({
+          vehicleGroupId: parseInt(this.groupInfo.id),
+          vehicleId: parseInt(row.id),
         });
       });
 
-      //console.log(JSON.stringify(objData))
+     // console.log(objDataUpdate);
 
-      this.vehService.updateVehicleGroup(JSON.stringify(objData)).subscribe(
+      this.vehService.updateVehicleGroup(objDataUpdate).subscribe(
         (res) => {
           this.backToPage.emit({
             editFlag: false,

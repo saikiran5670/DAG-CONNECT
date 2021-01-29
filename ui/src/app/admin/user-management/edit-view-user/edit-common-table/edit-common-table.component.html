@@ -37,12 +37,15 @@
                                 </mat-checkbox>
                             </mat-cell>
                         </div>
-                        <div *ngIf="disCol == 'services'">
+                        <div *ngIf="disCol == 'featureIds'">
                             <mat-header-cell *matHeaderCellDef> {{ data.colsName[colIndex] }}</mat-header-cell>
                             <mat-cell *matCellDef="let element ">
-                                <span *ngFor='let item of [].constructor(element.services); let i = index'>
-                                    <img title={{item}} src="../../../assets/connected-logo-small.png" style="width: 20px;height: 20px;"/>&nbsp;
-                                </span> 
+                                <span *ngIf='element.featureIds.length > 0'>
+                                    <span *ngFor='let item of [].constructor(element.featureIds[0]); let i = index'>
+                                      <img title="item" src="../../../assets/connected-logo-small.png" style="width: 20px;height: 20px;"/>&nbsp;
+                                    </span>
+                                  </span>
+                                  <span *ngIf='element.featureIds.length == 0'>-</span>
                             </mat-cell>
                         </div>
                         <div *ngIf="disCol != 'select'">

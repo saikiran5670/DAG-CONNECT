@@ -12,6 +12,7 @@ public class TimeFormaterTest {
 
 	@Test
 	public void testGetCurrentUtcTime() throws Exception {
+	//	System.out.println("TimeFormatter.getCurrentUTCTime() :: "+TimeFormatter.getCurrentUTCTime());
 		assertTrue("Current UTC time greater than previous time :: ",
 				TimeFormatter.getCurrentUTCTime() > 1611055667622L);
 	}
@@ -60,7 +61,7 @@ public class TimeFormaterTest {
 
 	@Test
 	public void testGetTimeDiffInMilli() throws Exception {
-		System.out.println(TimeFormatter.getTimeDiffInMilli("2021-01-19T13:50:06.919Z",
+		/*System.out.println(TimeFormatter.getTimeDiffInMilli("2021-01-19T13:50:06.919Z",
 				"2021-01-19T13:50:08.919Z", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 		
 		System.out.println("converted 2 secs to hours :: "+TimeUnit.HOURS.convert(TimeFormatter.getTimeDiffInMilli("2021-01-19T13:50:06.919Z",
@@ -71,7 +72,7 @@ public class TimeFormaterTest {
 		Long aa= TimeFormatter.getTimeDiffInMilli("2021-01-19T13:50:06.919Z",
 				"2021-01-19T13:50:08.919Z", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 		double bb = aa.doubleValue();
-		System.out.println("hr is :: "+bb/3600000);
+		System.out.println("hr is :: "+bb/3600000);*/
 		
 		Assert.assertEquals(2000L, TimeFormatter.getTimeDiffInMilli("2021-01-19T13:50:06.919Z",
 				"2021-01-19T13:50:08.919Z", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));

@@ -23,6 +23,6 @@ namespace net.atos.daf.ct2.account
         Task<List<KeyValue>> GetRoles(AccountRole accountRole);
         Task<List<int>> GetRoleAccounts(int roleId);
         Task<List<KeyValue>> GetAccountOrg(int accountId);
-        Task<List<KeyValue>> GetAccountRole(int accountId);
+        Task<List<AccountOrgRole>> GetAccountRole(int accountId);
     }
 }

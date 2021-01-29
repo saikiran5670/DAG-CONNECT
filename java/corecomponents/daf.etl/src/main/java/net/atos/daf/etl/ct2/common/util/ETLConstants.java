@@ -11,6 +11,7 @@ public class ETLConstants {
 	public static final String CHECKPOINT_DIRECTORY = "checkpoint_directory";
 	public static final String RESTART_ATTEMPS = "restart_attempts";
 	public static final String RESTART_INTERVAL = "restart_interval";
+	public static final String RESTART_FLAG = "restart_flag";
 		
 	//HBase
 	public static final String HBASE_ZOOKEEPER_QUORUM = "hbase.zookeeper.quorum";
@@ -90,6 +91,7 @@ public class ETLConstants {
 	
 	public static final String TRIP_ID = "TripID";
 	public static final String VID = "VID";
+	public static final String VIN = "VIN";
 	public static final String GPS_START_DATETIME = "GPSStartDateTime";
 	public static final String GPS_END_DATETIME = "GPSEndDateTime";
 	public static final String GPS_TRIP_DIST = "GPSTripDist";
@@ -181,6 +183,7 @@ public class ETLConstants {
 	public static final String GRPC_SERVER = "grpc_server";
 	public static final String GRPC_PORT = "grpc_port";
 	public static final String TRIP_JOB_NAME ="tripEtlJob";
+	public static final String TRIP_STREAMING_JOB_NAME ="tripStreamingJob";
 	public static final String DEFAULT_OBJECT_ID ="00";
 
 	//Kafka parameter
@@ -205,6 +208,6 @@ public class ETLConstants {
 	public static final String WRITE_OUTPUT = "write_output";
 	public static final String WRITE_PATH = "write_path";
 	public static final String VEHICLE_DATA_PATH = "vehicleDataPath";
-	
+	public static final String UNKNOWN = "UNKNOWN";
 	
 }

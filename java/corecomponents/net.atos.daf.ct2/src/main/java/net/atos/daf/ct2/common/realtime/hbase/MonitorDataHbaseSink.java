@@ -36,6 +36,7 @@ public class MonitorDataHbaseSink extends RichSinkFunction<KafkaRecord<Monitor>>
 
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
+		System.out.println("########## In Monitoring Data HBase ##############");
 		super.open(parameters);
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 		
@@ -94,14 +95,18 @@ HbaseAdapter hbaseAdapter = HbaseAdapter.getInstance();
 	     
 			//Put put = new Put(Bytes.toBytes(value.getValue().getVid()+"_"+value.getValue().getTransID()+"_"+value.getValue().getDocument().getTripID()+"_"+ value.getValue().getReceivedTimestamp()));
 		Put put = new Put(Bytes.toBytes(value.getValue().getTransID()+"_"+value.getValue().getDocument().getTripID()+"_"+value.getValue().getVid()+"_"+ value.getValue().getReceivedTimestamp()));
-	        //Put put = new Put(Bytes.toBytes(value.getVID()+ value.getReceivedTimestamp()));
-	   //     put.addColumn(Bytes.toBytes("VID"), Bytes.toBytes("VID"), Bytes.toBytes(value.getVID()));
+		
+		System.out.println("Monitoring Row_Key :: " + (value.getValue().getTransID()+"_"+value.getValue().getDocument().getTripID()+"_"+value.getValue().getVid()+"_"+ value.getValue().getReceivedTimestamp()));
+	        
+		 //     put.addColumn(Bytes.toBytes("VID"), Bytes.toBytes("VID"), Bytes.toBytes(value.getVID()));
 	        put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("TransID"), Bytes.toBytes(value.getValue().getTransID()));
 	        put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("MessageType"), Bytes.toBytes(String.valueOf(value.getValue().getMessageType())));
 	        put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VEvtID"), Bytes.toBytes(String.valueOf(value.getValue().getVEvtID())));
 	        put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("GPSSpeed"), Bytes.toBytes(String.valueOf(value.getValue().getDocument().getGpsSpeed())  ));
 	      //  put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VFuelLevel"), Bytes.toBytes(String.valueOf(value.getValue().getDocument().getvFuelLevel1())));
 	        put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VDist"), Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVDist())));
+	        put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VID"), Bytes.toBytes(value.getValue().getVid()));
+	        put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VIN"), Bytes.toBytes(value.getValue().getVin()));		
 	        
 	        // added
 	        put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Increment"), Bytes.toBytes(String.valueOf(value.getValue().getIncrement())));

@@ -1,5 +1,8 @@
 package net.atos.daf.ct2.common.realtime.postgresql;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -47,7 +50,13 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 			statement.setString(1, row.getValue().getRoName());
 		}
 
-		statement.setString(2, row.getValue().getVin()); // vehicle_id
+		//statement.setString(2, row.getValue().getVin()); // vehicle_id
+		
+		if (row.getValue().getVin() !=null)
+			statement.setString(2, (String) row.getValue().getVin()); // vin
+		else
+			statement.setString(2, (String) row.getValue().getVid()); 		
+		
 		statement.setLong(3, row.getValue().getReceivedTimestamp()); // message_time_stamp
 
 		if (varGPSLongi == 255.0) {
@@ -93,6 +102,7 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
+		System.out.println("########## In LiveFleet Position ##############");
 
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 
@@ -102,17 +112,31 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 		 * DriverManager.getConnection(dbUrl);
 		 */
 		try {
-			Jdbc3PoolingDataSource dataSource = PostgreDataSourceConnection.getDataSource(
-					envParams.get(DafConstants.DATAMART_POSTGRE_SERVER_NAME),
-					Integer.parseInt(envParams.get(DafConstants.DATAMART_POSTGRE_PORT)),
-					envParams.get(DafConstants.DATAMART_POSTGRE_DATABASE_NAME),
-					envParams.get(DafConstants.DATAMART_POSTGRE_USER),
-					envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
+//			Jdbc3PoolingDataSource dataSource = PostgreDataSourceConnection.getDataSource(
+//					envParams.get(DafConstants.DATAMART_POSTGRE_SERVER_NAME),
+//					Integer.parseInt(envParams.get(DafConstants.DATAMART_POSTGRE_PORT)),
+//					envParams.get(DafConstants.DATAMART_POSTGRE_DATABASE_NAME),
+//					envParams.get(DafConstants.DATAMART_POSTGRE_USER),
+//					envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
 
-			connection = PostgreDataSourceConnection.getDataSourceConnection(dataSource);
-
-			// statement =
-			// connection.prepareStatement(DAFConstants.POSTGRE_QUERY_LIVEFLEET_POSITION);
+//			connection = PostgreDataSourceConnection.getDataSourceConnection(dataSource);
+			
+			//TODOonly for testing remove
+			System.out.println("envParams.get(DafConstants.POSTGRE_SQL_SERVER_NAME) :: "+envParams.get(DafConstants.DATAMART_POSTGRE_SERVER_NAME));
+			System.out.println("envParams.get(DafConstants.POSTGRE_SQL_PORT) :: "+envParams.get(DafConstants.DATAMART_POSTGRE_PORT));
+			System.out.println("envParams.get(DafConstants.POSTGRE_SQL_DATABASE_NAME) :: "+envParams.get(DafConstants.DATAMART_POSTGRE_DATABASE_NAME));
+			System.out.println("envParams.get(DafConstants.POSTGRE_SQL_USER) :: "+envParams.get(DafConstants.DATAMART_POSTGRE_USER));
+			System.out.println("envParams.get(DafConstants.POSTGRE_SQL_PASSWORD) :: "+envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
+			
+			Class.forName(envParams.get(DafConstants.POSTGRE_SQL_DRIVER));
+			String dbUrl = createValidUrlToConnectPostgreSql(envParams.get(DafConstants.DATAMART_POSTGRE_SERVER_NAME),
+						Integer.parseInt(envParams.get(DafConstants.DATAMART_POSTGRE_PORT)),
+						envParams.get(DafConstants.DATAMART_POSTGRE_DATABASE_NAME),
+						envParams.get(DafConstants.DATAMART_POSTGRE_USER),
+						envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
+			connection = DriverManager.getConnection(dbUrl);
+			System.out.println("Connect created individually ::: " + connection);
+			
 			// //QUERY EXECUTION
 			statement = connection.prepareStatement(livefleetposition); // QUERY EXECUTION
 			
@@ -126,6 +150,27 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 		
 	}
 
+	
+	private String createValidUrlToConnectPostgreSql(String serverNm, int port, String databaseNm, String userNm,
+			String password) throws Exception {
+
+		String encodedPassword = encodeValue(password);
+		String url = serverNm + ":" + port + "/" + databaseNm + "?" + "user=" + userNm + "&" + "password="
+				+ encodedPassword + DafConstants.POSTGRE_SQL_SSL_MODE;
+
+		System.out.println("Valid Url = " + url);
+
+		return url;
+	}
+	
+	private static String encodeValue(String value) {
+		try {
+			return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+		} catch (UnsupportedEncodingException ex) {
+			throw new RuntimeException(ex.getCause());
+		}
+	}
+	
 	
 	@Override
 	public void close() throws Exception {

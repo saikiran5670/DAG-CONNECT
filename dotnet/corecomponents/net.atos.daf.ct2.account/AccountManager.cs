@@ -179,7 +179,7 @@ namespace net.atos.daf.ct2.account
         {
             return await repository.GetAccountOrg(accountId);
         }
-        public async Task<List<KeyValue>> GetAccountRole(int accountId)
+        public async Task<List<AccountOrgRole>> GetAccountRole(int accountId)
         {
             return await repository.GetAccountRole(accountId);
         }
