@@ -11,6 +11,7 @@ import { CommonTableComponent } from '../../../shared/common-table/common-table.
 import { CustomValidators } from '../../../shared/custom.validators';
 import { AccountService } from '../../../services/account.service';
 import { UserDetailTableComponent } from '.././new-user-step/user-detail-table/user-detail-table.component';
+import { map, take } from 'rxjs/internal/operators';
 
 @Component({
   selector: 'app-edit-view-user',
@@ -272,26 +273,30 @@ export class EditViewUserComponent implements OnInit {
   }
 
   editRoleData(){
+    let type= "role";
     let tableHeader: any = this.translationData.lblSelectedUserRoles || 'Selected User Roles';
-    let colsList: any = ['select', 'name', 'services'];
+    let colsList: any = ['select', 'roleName', 'featureIds'];
     let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lblUserRole || 'User Role', this.translationData.lblServices || 'Services'];
-    this.callCommonTableToEdit(colsList, colsName, tableHeader, this.selectedRoleData, this.allRoleData);
+    this.callCommonTableToEdit(this.accountInfoData, type, colsList, colsName, tableHeader, this.selectedRoleData, this.allRoleData);
   }
 
   editUserGroupData(){
+    let type= "userGroup";
     let tableHeader: any = this.translationData.lblSelectedUserGroups || 'Selected User Groups';
     // let colsList: any = ['select', 'name', 'vehicles', 'users'];
     // let colsName: any = ['All', 'Group Name', 'Vehicles', 'Users'];
-    let colsList: any = ['select', 'name', 'users'];
+    let colsList: any = ['select', 'name', 'accountCount'];
     let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lblGroupName || 'Group Name', this.translationData.lblUsers || 'Users'];
-    this.callCommonTableToEdit(colsList, colsName, tableHeader, this.selectedUserGrpData, this.allUserGrpData);
+    this.callCommonTableToEdit(this.accountInfoData, type, colsList, colsName, tableHeader, this.selectedUserGrpData, this.allUserGrpData);
   }
 
-  callCommonTableToEdit(colsList: any, colsName: any, tableHeader: any, selectedData: any, tableData: any){
+  callCommonTableToEdit(accountInfo: any, type: any, colsList: any, colsName: any, tableHeader: any, selectedData: any, tableData: any){
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
+      accountInfo: accountInfo,
+      type: type,
       colsList:  colsList,
       colsName: colsName,
       translationData: this.translationData,
@@ -300,6 +305,9 @@ export class EditViewUserComponent implements OnInit {
       selectedData: selectedData
     }
     this.dialogRefForEdit = this.dialog.open(EditCommonTableComponent, dialogConfig);
+    this.dialogRefForEdit.afterClosed().pipe(take(1), map(res => {
+      return res;
+    }));
   }
 
   filesDroppedMethod(event: any) {

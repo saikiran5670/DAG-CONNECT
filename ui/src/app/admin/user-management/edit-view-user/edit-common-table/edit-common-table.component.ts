@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { AccountService } from 'src/app/services/account.service';
 import { EmployeeService } from 'src/app/services/employee.service';
 
 @Component({
@@ -21,6 +22,8 @@ export class EditCommonTableComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: {
+      accountInfo: any,
+      type: any,
       colsList: any,
       colsName: any,
       translationData: any,
@@ -29,7 +32,8 @@ export class EditCommonTableComponent implements OnInit {
       selectedData: any
     },
     private mdDialogRef: MatDialogRef<EditCommonTableComponent>,
-    private userService: EmployeeService
+    private userService: EmployeeService,
+    private accountService: AccountService
   ) { }
 
   ngOnInit() {
@@ -43,7 +47,7 @@ export class EditCommonTableComponent implements OnInit {
 
   selectTableRows(){
     this.dataSource.data.forEach(row => {
-      let search = this.data.selectedData.filter(item => item.id === row.id );
+      let search = this.data.selectedData.filter(item => item.id == (this.data.type=='role' ? row.roleId  : row.id));
       if(search.length > 0){
         this.selectionData.select(row);
       }
@@ -60,7 +64,43 @@ export class EditCommonTableComponent implements OnInit {
   }
 
   onConfirm(){
-    this.onClose(false);
+    if(this.data.type == 'role'){
+      let mapRoleIds :any = this.data.selectedData.map(resp => resp.id);
+    //let mapRoleData: any = [];
+    
+    // if(mapRoleIds.length > 0){
+    //   mapRoleData = mapRoleIds;
+    // }
+    // else{
+    //   mapRoleData = [0];
+    // }
+
+    let roleDeleteObj = {
+      accountId: this.data.accountInfo.id,
+      organizationId: this.data.accountInfo.organizationId,
+      roles: mapRoleIds
+    }
+
+    let selectedRoleIds = this.selectionData.selected.map(resp => resp.roleId);
+
+    this.accountService.deleteAccountRoles(roleDeleteObj).subscribe(delResp => {
+      let roleAddObj = {
+        accountId: this.data.accountInfo.id,
+        organizationId: this.data.accountInfo.organizationId,
+        roles: selectedRoleIds
+      }
+      this.accountService.addAccountRoles(roleAddObj).subscribe(addResp => {
+        let updatedRoles = [];
+        selectedRoleIds.forEach(element => {
+          updatedRoles.push({id: element});
+        });
+        this.onClose(false);    
+      })
+    })
+    }else{
+      //TODO : update account group
+    }
+    
   }
 
   onReset(){

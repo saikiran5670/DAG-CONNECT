@@ -288,8 +288,8 @@ export class UserManagementComponent implements OnInit {
     accountGroupId: 0,
     organizationId: element.organizationId,
     accountId: element.id,
-    accounts: true,
-    accountCount: true
+    accounts: false,
+    accountCount: false
   };
 
     forkJoin(this.roleService.getUserRoles(roleObj),
@@ -323,7 +323,7 @@ export class UserManagementComponent implements OnInit {
         this.userDataForEdit = element;
         this.selectedPreference = data[11];
         // this.stepFlag = true;
-        this.accountService.getAccountGroupDetails(selectedAccountGrpObj).subscribe((resp) => {
+        this.accountService.getAccountDesc(selectedAccountGrpObj).subscribe((resp) => {
           this.selectedUserGrpData = resp;
           this.editFlag = (type == 'edit') ? true : false;
           this.viewFlag = (type == 'view') ? true : false;

@@ -14,7 +14,7 @@ import { RoleService } from 'src/app/services/role.service';
   styleUrls: ['./user-role-management.component.less']
 })
 export class UserRoleManagementComponent implements OnInit {
-  loggedInUser: string = 'admin';
+  //loggedInUser: string = 'admin';
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
