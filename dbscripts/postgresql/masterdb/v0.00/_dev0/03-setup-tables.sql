@@ -258,6 +258,36 @@ end if;
 end;
 $$;
 
+--featureset (Master data is also required)
+CREATE TABLE if not exists  master.featureset 
+(
+	id serial not null,
+	name varchar(50) not null,
+	description varchar(100),
+	is_active boolean not null default true,
+	is_custom_feature_set boolean not null default false
+)
+TABLESPACE pg_default;
+
+ALTER TABLE  master.featureset 
+    OWNER to pgadmin;
+
+Do $$
+begin
+if not exists(
+	SELECT 1 FROM information_schema.table_constraints 
+	WHERE constraint_name='pk_featureset_id' AND table_name='featureset'
+		and constraint_type='PRIMARY KEY')
+then	
+	begin
+		ALTER TABLE  master.featureset 
+			ADD CONSTRAINT pk_featureset_id PRIMARY KEY (id)
+			USING INDEX TABLESPACE pg_default;
+	end;
+end if;
+end;
+$$;
+
 --role (Master data is also required)
 CREATE TABLE if not exists  master.role 
 (
@@ -567,35 +597,6 @@ end if;
 end;
 $$;
 
---featureset (Master data is also required)
-CREATE TABLE if not exists  master.featureset 
-(
-	id serial not null,
-	name varchar(50) not null,
-	description varchar(100),
-	is_active boolean not null default true,
-	is_custom_feature_set boolean not null default false
-)
-TABLESPACE pg_default;
-
-ALTER TABLE  master.featureset 
-    OWNER to pgadmin;
-
-Do $$
-begin
-if not exists(
-	SELECT 1 FROM information_schema.table_constraints 
-	WHERE constraint_name='pk_featureset_id' AND table_name='featureset'
-		and constraint_type='PRIMARY KEY')
-then	
-	begin
-		ALTER TABLE  master.featureset 
-			ADD CONSTRAINT pk_featureset_id PRIMARY KEY (id)
-			USING INDEX TABLESPACE pg_default;
-	end;
-end if;
-end;
-$$;
 
 --featuresetfeature (Master data is also required)
 CREATE TABLE if not exists  master.featuresetfeature 
