@@ -52,6 +52,11 @@ namespace net.atos.daf.ct2.group
         public async Task<bool> RemoveRef(int groupid)
         {
             return await gropRepository.RemoveRef(groupid);
-        }        
+        } 
+        public async  Task<bool> RemoveRefByRefId(int refId)
+        {
+            return await gropRepository.RemoveRefByRefId(refId);
+        }      
+         
     }
 }

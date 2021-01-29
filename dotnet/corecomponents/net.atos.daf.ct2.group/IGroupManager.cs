@@ -20,6 +20,7 @@ namespace net.atos.daf.ct2.group
             Task<List<GroupRef>> GetRef(int groupid);
             Task<bool> AddRefToGroups(List<GroupRef> groupRef);
             Task<bool> RemoveRef(int groupid);
+            Task<bool> RemoveRefByRefId(int refId);
         
     }
 }

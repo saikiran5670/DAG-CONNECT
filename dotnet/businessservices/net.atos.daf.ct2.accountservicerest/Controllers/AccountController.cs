@@ -103,7 +103,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 // Length validation
                 Int32 validOrgId=0; 
                 if ((request.EmailId.Length > 50 ) || (request.FirstName.Length > 30 ) 
-                || (request.LastName.Length>20) || Int32.TryParse(request.Organization_Id.ToString(), out validOrgId))
+                || (request.LastName.Length>20) || !Int32.TryParse(request.Organization_Id.ToString(), out validOrgId))
                 {
                     return StatusCode(400, "The EmailId address, first name, last name and organization id should be valid.");
                 }
@@ -705,7 +705,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
 
         [HttpGet]
         [Route("accessrelationship/get")]
-        public async Task<IActionResult> GetAccessRelationship(int AccountId, int AccountGroupId)
+        public async Task<IActionResult> GetAccessRelationship(int AccountId, int AccountGroupId,int VehicleGroupId)
         {
             try
             {
@@ -717,6 +717,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 AccountComponent.entity.AccessRelationshipFilter filter = new AccountComponent.entity.AccessRelationshipFilter();
                 filter.AccountId = AccountId;
                 filter.AccountGroupId = AccountGroupId;
+                filter.VehicleGroupId = VehicleGroupId;
                 var accessResult = await accountmanager.GetAccessRelationship(filter);
                 if ((accessResult == null) && (Convert.ToInt16(accessResult.Count()) <= 0))
                 {
@@ -903,10 +904,10 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 // Validation  
                 if (id <= 0)
                 {
-                    return StatusCode(400, "The AccountGroup Id is required");
+                    return StatusCode(400, "The Account Id is required");
                 }
                 bool result = false;
-                result = await groupmanager.RemoveRef(id);
+                result = await groupmanager.RemoveRefByRefId(id);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Acccount Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Account Group References", 1, 2, "");
                 if(result) return Ok(true);
                 else return StatusCode(404, "Account Group accounts not configured.");
@@ -978,7 +979,6 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 groupFilter.FunctionEnum = Group.FunctionEnum.None;
                 groupFilter.ObjectType = Group.ObjectType.AccountGroup;
                 groupFilter.GroupRefCount = true;
-
                 // all account group of organization with account count
                 var groups = await groupmanager.Get(groupFilter);
                 // get access relationship 
@@ -993,6 +993,8 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                     accountDetail.OrganizationId = group.OrganizationId;
                     accessFilter.AccountGroupId = group.Id;
                     var accessList = accountmanager.GetAccessRelationship(accessFilter).Result;
+
+
                     List<Int32> groupId = new List<int>();
                     accountDetail.VehicleCount = 0;
 

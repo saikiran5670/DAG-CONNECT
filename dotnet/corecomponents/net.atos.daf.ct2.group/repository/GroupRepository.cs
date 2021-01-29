@@ -449,6 +449,22 @@ namespace net.atos.daf.ct2.group
             }
         }
 
+        public async Task<bool> RemoveRefByRefId(int refId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@ref_id", refId);
+                var query = @"delete from master.groupref where ref_id=@ref_id";
+                var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }         
+
         #endregion
     }
 }
