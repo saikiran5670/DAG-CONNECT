@@ -111,7 +111,7 @@ export class UserManagementComponent implements OnInit {
       lblSalutation: "Salutation",
       lblLastName: "Last Name",
       lblBirthDate: "Birth Date",
-      lblOrganization: "Organization",
+      lblOrganisation: "Organisation",
       lblLanguage: "Language",
       lblTimeZone: "Time Zone",
       lblCurrency: "Currency",

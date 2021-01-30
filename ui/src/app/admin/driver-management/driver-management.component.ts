@@ -95,7 +95,7 @@ export class DriverManagementComponent implements OnInit {
       lblTimeZone: "Time Zone",
       lblCurrency: "Currency",
       lblDriverIDConsent: "Driver ID Consent",
-      lblOrganization: "Organization",
+      lblOrganisation: "Organisation",
       lblTotalDrivers: "Total Drivers",
       lblCurrentConsentStatusForSubscriber: "Current Consent Status For Subscriber ",
       lblOptOutMessage: "Now you are proceeding with Driver ID Consent Opt-Out operation!, Click 'Confirm' to change the consent status.",

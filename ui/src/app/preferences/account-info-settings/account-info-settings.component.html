@@ -109,8 +109,8 @@
               </mat-label>
             </div> -->
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-              <!-- <mat-label>{{ translationData.lblOrganization }}</mat-label> -->
-              <mat-label>{{ translationData.lblOrganization || 'Organization' }}</mat-label>
+              <!-- <mat-label>{{ translationData.lblOrganisation }}</mat-label> -->
+              <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
               <mat-label class='custom-font'>
                 <!-- {{confirmAccountInfoData.organization ? confirmAccountInfoData.organization.value : '--'}} -->
                 {{ orgName ? orgName : '--' }}
@@ -239,10 +239,10 @@
                 </mat-form-field>
               </div> -->
               <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                <!-- <mat-label>{{ translationData.lblOrganization }}</mat-label> -->
-                <mat-label>{{ translationData.lblOrganization || 'Organization' }}</mat-label>
+                <!-- <mat-label>{{ translationData.lblOrganisation }}</mat-label> -->
+                <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
                 <mat-form-field appearance="outline" class="full-width">
-                  <input placeholder="{{ translationData.lblOrganization || 'Organization' }}" matInput
+                  <input placeholder="{{ translationData.lblOrganisation || 'Organisation' }}" matInput
                     value="DAF Connect" formControlName="organization">
                 </mat-form-field>
               </div>
@@ -266,7 +266,7 @@
 
         <span
           style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneralSettings || 'General Settings' }}
-          ({{ translationData.lblDefaultorganizationbasedsettings || 'Default organization based settings' }})
+          ({{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }})
           <mat-icon *ngIf='!editGeneralSettingsFlag' (click)="editGeneralSettings()" style="cursor: pointer;">edit</mat-icon>
         </span>
 
