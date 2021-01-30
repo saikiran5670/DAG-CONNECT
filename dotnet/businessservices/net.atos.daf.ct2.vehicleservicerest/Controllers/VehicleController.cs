@@ -306,7 +306,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
             {
                 _logger.LogInformation("Update Group method in vehicle API called.");
                 
-                if(group.Id==null || group.Id==0)
+                if(group.Id==0)
                 {
                     return StatusCode(401,"invalid Vehicle Group Id: The Vehicle group id is Empty.");
                 }
@@ -348,6 +348,10 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 if (VehicleGroupResponce.Id > 0 &&  objGroup.GroupRef.Count()>0)
                 {
                     bool AddvehicleGroupRef = await _groupManager.UpdateRef(objGroup);
+                }
+                else 
+                {
+                    bool AddvehicleGroupRef = await _groupManager.RemoveRef(objGroup.Id);
                 }
 
                 group.Id=VehicleGroupResponce.Id;

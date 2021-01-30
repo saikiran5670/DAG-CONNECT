@@ -811,7 +811,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 {
                     return StatusCode(409, "Duplicate Account Group.");
                 }
-                if (result.Id > 0 && request.Accounts != null)
+                if ( Convert.ToInt32(request.Accounts.Count()) > 0)
                 {
                     group.GroupRef = new List<Group.GroupRef>();
                     foreach (var item in request.Accounts)
@@ -824,6 +824,12 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                         bool AddvehicleGroupRef = await groupmanager.UpdateRef(group);
                     }
                 }
+                else 
+                {
+                    // delete existing reference
+                    await groupmanager.RemoveRef(result.Id);
+                }
+
                 var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Account Group", 1, 2, Convert.ToString(group.Name));
                 return Ok(group);
             }
