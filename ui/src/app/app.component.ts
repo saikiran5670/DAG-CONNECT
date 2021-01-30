@@ -44,6 +44,7 @@ export class AppComponent {
   role: any;
   userFullName: any;
   userRole: any;
+  userOrg: any;
   public landingPageForm: FormGroup;
 
   private pagetTitles = {
@@ -146,6 +147,8 @@ export class AppComponent {
       this.userFullName = `${resp.accountDetail.salutation} ${resp.accountDetail.firstName} ${resp.accountDetail.lastName}`;
       let userRole = resp.role.filter(item => item.id === parseInt(localStorage.getItem("accountRoleId")));
       this.userRole = userRole[0].name;
+      let userOrg = resp.organization.filter(item => item.id === parseInt(localStorage.getItem("accountOrganizationId")));
+      this.userOrg = userOrg[0].name;
       this.organizationDropdown = resp.organization;
       this.roleDropdown = resp.role;
       this.setDropdownValues();
@@ -340,6 +343,8 @@ private setPageTitle() {
 
    onOrgChange(value){
     localStorage.setItem("accountOrganizationId", value);
+    let orgname = this.organizationDropdown.filter(item => item.id === value);
+    this.userOrg = orgname[0].name;
    }
 
    onRoleChange(value){
