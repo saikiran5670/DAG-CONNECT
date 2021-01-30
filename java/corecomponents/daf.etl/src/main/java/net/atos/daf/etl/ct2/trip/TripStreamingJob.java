@@ -61,40 +61,24 @@ public class TripStreamingJob {
 								tripStsData.setVin(stsMsg.getVin());
 								// tripStsData.setIncrement(stsMsg.getIncrement());
 
+								//Temporary fix due to source data type mismatch
 								SimpleDateFormat newDateStrFmt = new SimpleDateFormat(ETLConstants.DATE_FORMAT);
 
-								// TODO only for testing
-								System.out.println(" Format of stsMsg.getEventDateTimeFirstIndex() :: "
-										+ stsMsg.getEventDateTimeFirstIndex());
-								System.out.println(
-										" Format of stsMsg.getGpsStartDateTime() :: " + stsMsg.getGpsStartDateTime());
-								System.out.println(" output converted getEventDateTimeFirstIndex :: "
-										+ newDateStrFmt.format(stsMsg.getEventDateTimeFirstIndex()));
-								System.out.println(" output converted getGpsStartDateTime :: "
-										+ newDateStrFmt.format(stsMsg.getGpsStartDateTime()));
-								System.out.println(" output converted getEvtDateTime :: "
-										+ newDateStrFmt.format(stsMsg.getEvtDateTime()));
-								System.out.println(" output converted getGpsEndDateTime :: "
-										+ newDateStrFmt.format(stsMsg.getGpsEndDateTime()));
-
-								if (stsMsg.getEventDateTimeFirstIndex() != null)
+								if (stsMsg.getEventDateTimeFirstIndex() != null) {
 									tripStsData.setStartDateTime(TimeFormatter.convertUTCToEpochMilli(
 											newDateStrFmt.format(stsMsg.getEventDateTimeFirstIndex()),
 											ETLConstants.DATE_FORMAT));
-								else {
+								} else {
 									if (stsMsg.getGpsStartDateTime() != null)
 										tripStsData.setStartDateTime(TimeFormatter.convertUTCToEpochMilli(
 												newDateStrFmt.format(stsMsg.getGpsStartDateTime()),
 												ETLConstants.DATE_FORMAT));
 								}
 
-								System.out.println(" Format of stsMsg.getEvtDateTime() :: " + stsMsg.getEvtDateTime());
-								System.out.println(
-										" Format of stsMsg.getGpsEndDateTime() :: " + stsMsg.getGpsEndDateTime());
-								if (stsMsg.getEvtDateTime() != null)
+								if (stsMsg.getEvtDateTime() != null) {
 									tripStsData.setEndDateTime(TimeFormatter.convertUTCToEpochMilli(
 											newDateStrFmt.format(stsMsg.getEvtDateTime()), ETLConstants.DATE_FORMAT));
-								else {
+								} else {
 									if (stsMsg.getGpsEndDateTime() != null)
 										tripStsData.setEndDateTime(TimeFormatter.convertUTCToEpochMilli(
 												newDateStrFmt.format(stsMsg.getGpsEndDateTime()),
@@ -160,10 +144,9 @@ public class TripStreamingJob {
 								// tripStsData.set(hbaseInsertionTS);
 								tripStsData.setEtlProcessingTS(TimeFormatter.getCurrentUTCTime());
 								
-								System.out.println("tripStsData.getTripCalVehTimeDiffInHr ======= "+tripStsData.getTripCalVehTimeDiffInHr());
+								logger.info("tripStsData.getTripCalVehTimeDiffInHr : "+tripStsData.getTripCalVehTimeDiffInHr());
+								logger.info("driving Time : "+tripStsData.getTripCalGpsVehTimeDiff() +" idle: "+tripStsData.getVIdleDuration());
 								
-								System.out.println("driving Time ======= "+tripStsData.getTripCalGpsVehTimeDiff() +" idle: "+tripStsData.getVIdleDuration());
-
 								return tripStsData;
 							} catch (Exception e) {
 								logger.error(

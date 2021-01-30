@@ -64,4 +64,10 @@ public class TripStatusData implements Serializable {
 	private Long etlProcessingTS;
 	private Double tripCalVehTimeDiffInHr;
 	private String vin;
+	
+	private String gpsStartDateTime;
+	private String gpsEndDateTime;
+	private String evtDateTime;
+	private String evtDateTimeFirstIndex;
+		
 }

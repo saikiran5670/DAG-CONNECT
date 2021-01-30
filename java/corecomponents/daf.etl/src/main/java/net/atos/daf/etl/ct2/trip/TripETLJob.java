@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.atos.daf.common.ct2.audittrail.TripAuditTrail;
-import net.atos.daf.common.ct2.exception.FailureException;
 import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.etl.ct2.common.bo.Trip;
 import net.atos.daf.etl.ct2.common.bo.TripStatusData;

@@ -142,9 +142,7 @@ public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusD
 				long currentUtcTm = TimeFormatter.getCurrentUTCTime();
 				//long timeDiff = TimeFormatter.subMilliSecFromUTCTime(currentUtcTm, lastTripUtcTm);
 				long timeDiff = TimeFormatter.subPastUtcTmFrmCurrentUtcTm(lastTripUtcTm, currentUtcTm);
-				
-				//check this out here are we getting diff values*************************************************
-								
+												
 				logger.info("currentUtcTm :: " + currentUtcTm);
 				logger.info("timeDiff :: " + timeDiff);
 				
@@ -218,23 +216,21 @@ public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusD
 	private TripStatusData populateTripStsData(Result result) throws ParseException {
 		TripStatusData tripStsData = new TripStatusData();
 		logger.info(" Calling populateTripStsData :: ");
-
+		
 		long hbaseInsertionTS = 0;
 		for (Cell cell : result.listCells()) {
 			try {
+				
 				String family = Bytes.toString(CellUtil.cloneFamily(cell));
 				String column = Bytes.toString(CellUtil.cloneQualifier(cell));
 				byte[] value = CellUtil.cloneValue(cell);
-
+				
 				hbaseInsertionTS = cell.getTimestamp();
 				// Cell cellObj =
 				// result.getColumnLatestCell(CellUtil.cloneFamily(cell),
 				// CellUtil.cloneQualifier(cell));
 				// byte[] value = CellUtil.cloneValue(cellObj);
 				// Result.getColumnLatest(family, qualifier)
-
-				logger.info(" family  : " + family);
-				logger.info(" column  : " + column);
 
 				if (ETLConstants.STS_MSG_COLUMNFAMILY_T.equals(family) && ETLConstants.TRIP_ID.equals(column)
 						&& null != Bytes.toString(value) && !"null".equals(Bytes.toString(value)))
@@ -346,56 +342,39 @@ public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusD
 				else if (ETLConstants.STS_MSG_COLUMNFAMILY_T.equals(family) && ETLConstants.DRIVER_ID.equals(column)
 						&& null != Bytes.toString(value) && !"null".equals(Bytes.toString(value)))
 					tripStsData.setDriverId(Bytes.toString(value));
+				else if (ETLConstants.STS_MSG_COLUMNFAMILY_T.equals(family) && ETLConstants.EVENT_DATETIME_FIRST_INDEX.equals(column)
+						&& null != Bytes.toString(value) && !"null".equals(Bytes.toString(value)))
+					tripStsData.setEvtDateTimeFirstIndex(Bytes.toString(value));
+				else if (ETLConstants.STS_MSG_COLUMNFAMILY_T.equals(family) && ETLConstants.GPS_START_DATETIME.equals(column)
+						&& null != Bytes.toString(value) && !"null".equals(Bytes.toString(value)))
+					tripStsData.setGpsStartDateTime(Bytes.toString(value));
+				else if (ETLConstants.STS_MSG_COLUMNFAMILY_T.equals(family) && ETLConstants.EVT_DATETIME.equals(column)
+						&& null != Bytes.toString(value) && !"null".equals(Bytes.toString(value)))
+					tripStsData.setEvtDateTime(Bytes.toString(value));
+				else if (ETLConstants.STS_MSG_COLUMNFAMILY_T.equals(family) && ETLConstants.GPS_END_DATETIME.equals(column)
+						&& null != Bytes.toString(value) && !"null".equals(Bytes.toString(value)))
+					tripStsData.setGpsEndDateTime(Bytes.toString(value));
 
-			/*	else if (ETLConstants.STS_MSG_COLUMNFAMILY_T.equals(family)
-						&& ETLConstants.EVENT_DATETIME_FIRST_INDEX.equals(column) && null != Bytes.toString(value)
-						&& !"null".equals(Bytes.toString(value)))
-					tripStsData.setEventDateTimeFirstIndex(Bytes.toString(value));
-				else if (ETLConstants.STS_MSG_COLUMNFAMILY_T.equals(family)
-						&& DafEtlConstants.EVT_DATETIME.equals(column) && null != Bytes.toString(value)
-						&& !"null".equals(Bytes.toString(value)))
-					tripStsData.setEvtDateTime(Bytes.toString(value));*/
-
-				if (ETLConstants.STS_MSG_COLUMNFAMILY_T.equals(family)
-						&& ETLConstants.EVENT_DATETIME_FIRST_INDEX.equals(column) && null != Bytes.toString(value)
-						&& !"null".equals(Bytes.toString(value))) {
-					//logger.info("gps date str :: "+Bytes.toString(value) + "   DafEtlConstants.DATE_FORMAT :: "+ETLConstants.DATE_FORMAT +"  triId:: "+ tripStsData.getTripId() +"  inc:: "+ tripStsData.getIncrement());
-					tripStsData.setStartDateTime(
-							TimeFormatter.convertUTCToEpochMilli(Bytes.toString(value), ETLConstants.DATE_FORMAT));
-
-				} else {
-					if (ETLConstants.STS_MSG_COLUMNFAMILY_T.equals(family)
-							&& ETLConstants.GPS_START_DATETIME.equals(column) && null != Bytes.toString(value)
-							&& !"null".equals(Bytes.toString(value))) {
-						//logger.info(" evt date str :: "+Bytes.toString(value) + "   DafEtlConstants.DATE_FORMAT :: "+ETLConstants.DATE_FORMAT +"  triId:: "+ tripStsData.getTripId()+"  inc:: "+ tripStsData.getIncrement());
-						tripStsData.setStartDateTime(
-								TimeFormatter.convertUTCToEpochMilli(Bytes.toString(value), ETLConstants.DATE_FORMAT));
-					}
-				}
-
-				if (ETLConstants.STS_MSG_COLUMNFAMILY_T.equals(family) && ETLConstants.EVT_DATETIME.equals(column)
-						&& null != Bytes.toString(value) && !"null".equals(Bytes.toString(value))) {
-					//logger.info("end date str :: "+Bytes.toString(value) + "   DafEtlConstants.DATE_FORMAT :: "+ETLConstants.DATE_FORMAT +"  triId:: "+ tripStsData.getTripId()+"  inc:: "+ tripStsData.getIncrement());
-					tripStsData.setEndDateTime(
-							TimeFormatter.convertUTCToEpochMilli(Bytes.toString(value), ETLConstants.DATE_FORMAT));
-				} else {
-					if (ETLConstants.STS_MSG_COLUMNFAMILY_T.equals(family)
-							&& ETLConstants.GPS_END_DATETIME.equals(column) && null != Bytes.toString(value)) {
-						//logger.info("evt end date str :: "+Bytes.toString(value) + "   DafEtlConstants.DATE_FORMAT :: "+ETLConstants.DATE_FORMAT +"  triId:: "+ tripStsData.getTripId()+"  inc:: "+ tripStsData.getIncrement());
-						tripStsData.setEndDateTime(
-								TimeFormatter.convertUTCToEpochMilli(Bytes.toString(value), ETLConstants.DATE_FORMAT));
-					}
-				}
-
-			} catch (ParseException e) {
-				logger.error("Issue while populating trip data :: " + e.getMessage());
-			} catch (Exception e) {
+			}catch (Exception e) {
 				logger.error("Issue while populating trip data :: " + e.getMessage());
 			}
 
 		}
-
+		
+				
 		try {
+			
+			if(tripStsData.getEvtDateTimeFirstIndex() != null)
+				tripStsData.setStartDateTime(TimeFormatter.convertUTCToEpochMilli(tripStsData.getEvtDateTimeFirstIndex(), ETLConstants.DATE_FORMAT_UTC));
+			else if(tripStsData.getGpsStartDateTime() != null)
+				tripStsData.setStartDateTime(TimeFormatter.convertUTCToEpochMilli(tripStsData.getGpsStartDateTime(), ETLConstants.DATE_FORMAT_UTC));
+			
+			if(tripStsData.getEvtDateTime() != null)
+				tripStsData.setEndDateTime(TimeFormatter.convertUTCToEpochMilli(tripStsData.getEvtDateTime(), ETLConstants.DATE_FORMAT_UTC));
+			else if(tripStsData.getGpsEndDateTime() != null)
+				tripStsData.setEndDateTime(TimeFormatter.convertUTCToEpochMilli(tripStsData.getGpsEndDateTime(), ETLConstants.DATE_FORMAT_UTC));
+			
+			
 			if (tripStsData.getStartDateTime() != null && tripStsData.getEndDateTime() != null)
 				tripStsData.setTripCalGpsVehTimeDiff(TimeFormatter
 						.subPastUtcTmFrmCurrentUtcTm(tripStsData.getStartDateTime(), tripStsData.getEndDateTime()));
@@ -411,7 +390,9 @@ public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusD
 
 			tripStsData.setHbaseInsertionTS(hbaseInsertionTS);
 			tripStsData.setEtlProcessingTS(TimeFormatter.getCurrentUTCTime());
-						
+									
+		}catch (ParseException e) {
+			logger.error("Issue while populating trip data :: " + e.getMessage());
 		} catch (Exception e) {
 			logger.error("Issue while populating trip data :: " + e.getMessage());
 			// TODO need not throw an error to abort the process

@@ -163,6 +163,7 @@ public class ETLConstants {
 	
 	//Date Format
 	public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+	public static final String DATE_FORMAT_UTC = "EEE MMM dd HH:mm:ss zzz yyyy";
 	
 	//Audit Constants
 	public static final String JOB_EXEC_TIME = "jobExecTime";
