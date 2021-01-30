@@ -130,7 +130,7 @@ HbaseAdapter hbaseAdapter = HbaseAdapter.getInstance();
           put.addColumn(Bytes.toBytes("t"), Bytes.toBytes ("VEvtID") , Bytes.toBytes(String.valueOf(value.getValue(). getVEvtID ())));
           put.addColumn(Bytes.toBytes("t"), Bytes.toBytes ("VHarshBrakeDuration") , Bytes.toBytes(String.valueOf(value.getValue(). getVHarshBrakeDuration ())));
           put.addColumn(Bytes.toBytes("t"), Bytes.toBytes ("VID") , Bytes.toBytes(String.valueOf(value.getValue(). getVid ())));
-          put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VIN"), Bytes.toBytes(value.getValue().getVin()));	
+          put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VIN"), Bytes.toBytes(String.valueOf(value.getValue().getVin())));	
           put.addColumn(Bytes.toBytes("t"), Bytes.toBytes ("VIdleDuration") , Bytes.toBytes(String.valueOf(value.getValue(). getVIdleDuration ())));
           put.addColumn(Bytes.toBytes("t"), Bytes.toBytes ("VNegAltitudeVariation") , Bytes.toBytes(String.valueOf(value.getValue(). getVNegAltitudeVariation ())));
           put.addColumn(Bytes.toBytes("t"), Bytes.toBytes ("VPosAltitudeVariation") , Bytes.toBytes(String.valueOf(value.getValue(). getVPosAltitudeVariation ())));

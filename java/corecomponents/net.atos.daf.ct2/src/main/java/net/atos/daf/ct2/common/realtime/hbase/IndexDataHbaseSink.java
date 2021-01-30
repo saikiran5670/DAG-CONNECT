@@ -103,9 +103,9 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
         
         //Put put = new Put(Bytes.toBytes(value.getValue().getVID()+ value.getValue().getReceivedTimestamp()));
 
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("TransID"), Bytes.toBytes(value.getValue().getTransID()));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VID"), Bytes.toBytes(value.getValue().getVid()));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VIN"), Bytes.toBytes(value.getValue().getVin()));	
+		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("TransID"), Bytes.toBytes(String.valueOf(value.getValue().getTransID())));
+		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VID"), Bytes.toBytes(String.valueOf(value.getValue().getVid())));
+		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VIN"), Bytes.toBytes(String.valueOf(value.getValue().getVin())));	
 		
 		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VEvtID"), Bytes.toBytes(String.valueOf(value.getValue().getVEvtID())));
 		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VDist"), Bytes.toBytes(String.valueOf(value.getValue().getVDist())));
