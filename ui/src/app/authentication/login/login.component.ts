@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { AccountService } from 'src/app/services/account.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
@@ -30,10 +31,12 @@ export class LoginComponent implements OnInit {
   dialogRefLogin: MatDialogRef<LoginDialogComponent>;
   maintenancePopupFlag: boolean = false;
 
-  constructor(public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog) {
+  constructor(public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService) {
     this.loginForm = this.fb.group({
-      'username': [null, Validators.compose([Validators.required, Validators.email])],
-      'password': [null, Validators.compose([Validators.required, Validators.minLength(6)])]
+      // 'username': [null, Validators.compose([Validators.required, Validators.email])],
+      // 'password': [null, Validators.compose([Validators.required, Validators.minLength(6)])]
+      'username': [null, Validators.compose([Validators.required])],
+      'password': [null, Validators.compose([Validators.required])]
     });
     this.forgotPasswordForm = this.fb.group({
       'email': [null, Validators.compose([Validators.required, Validators.email])]
@@ -51,7 +54,19 @@ export class LoginComponent implements OnInit {
          if(data.status === 200){
            this.invalidUserMsg = false;
             //this.cookiesFlag = true;
-            this.showOrganizationRolePopup(data.body);
+
+            let loginObj = {
+              "id": data.body.accountId,
+              "organizationId": 0,
+              "email": "",
+              "accountIds": "",
+              "name": "",
+              "accountGroupId": 0
+            }
+            this.accountService.getAccount(loginObj).subscribe(resp => {
+              this.showOrganizationRolePopup(data.body, resp[0]);
+            }, (error) => {});
+            
          }
          else if(data.status === 401){
           this.invalidUserMsg = true;
@@ -86,32 +101,24 @@ export class LoginComponent implements OnInit {
     this.cookiesFlag = false;
   }
 
-  public showOrganizationRolePopup(data: any) {
+  public showOrganizationRolePopup(data: any, accountDetails: any) {
     if(data.accountOrganization.length === 0){
       data.accountOrganization = [
       {
-        id: 10,
+        id: 93,
         name: "DAF CONNECT"
-      },
-      {
-        id: 35,
-        name: "ATOS"
       }];
     }
 
     if(data.accountRole.length === 0){
       data.accountRole = [
       {
-        id: 1,
+        id: 131,
         name: "Fleet Admin"
-      },
-      {
-        id: 2,
-        name: "Fleet Execute"
       }];
     }
 
-    localStorage.setItem('accountOrganizationId', data.accountOrganization[0].id);
+    // localStorage.setItem('accountOrganizationId', data.accountOrganization[0].id);
     if(data.accountId){
       data.accountId = data.accountId;
     }
@@ -123,7 +130,7 @@ export class LoginComponent implements OnInit {
     let organization: Organization[] = data.accountOrganization;
     let role: Role[] = data.accountRole;
     const options = {
-      title: 'Welcome to DAF Connect Mr. John Rutherford',
+      title: `Welcome to DAF Connect ${accountDetails.salutation} ${accountDetails.firstName} ${accountDetails.lastName}`,
       cancelText: 'Cancel',
       confirmText: 'Confirm',
       organization: organization,
@@ -137,7 +144,8 @@ export class LoginComponent implements OnInit {
       cancelText: options.cancelText,
       confirmText: options.confirmText,
       organization: options.organization,
-      role: options.role
+      role: options.role,
+      accountDetail: accountDetails
     }
     this.dialogRefLogin = this.dialog.open(LoginDialogComponent, dialogConfig);
   }

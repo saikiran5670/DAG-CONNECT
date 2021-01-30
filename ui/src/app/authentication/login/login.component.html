@@ -22,7 +22,7 @@
                 </div> 
                  <div fxLayout="row" fxLayoutAlign="center" class='invalidMsgContainer'>
                     <div fxLayout="column" fxLayoutAlign="center">
-                        <span *ngIf='invalidUserMsg && !forgotPwdFlag'>Invalid user name and password. Try again</span>
+                        <span *ngIf='invalidUserMsg && !forgotPwdFlag'>Invalid user name/ password. Try again</span>
                     </div>
                 </div>
                 <div *ngIf='!forgotPwdFlag' fxLayout="row" fxLayoutAlign="start" class='fieldContainer'>
@@ -41,9 +41,9 @@
                                             <mat-error *ngIf="loginForm.get('username').hasError('required')">
                                               User name is required
                                             </mat-error>
-                                            <mat-error *ngIf="loginForm.get('username').hasError('email')">
+                                            <!-- <mat-error *ngIf="loginForm.get('username').hasError('email')">
                                                 Please enter valid user name
-                                            </mat-error>
+                                            </mat-error> -->
                                         </mat-form-field>
                                     </div>
                                   </div> 
@@ -58,7 +58,7 @@
                                             <mat-icon>{{hide ? 'visibility' : 'visibility_off'}}</mat-icon>
                                             </button>
                                             <mat-error *ngIf="loginForm.controls.password.errors?.required">Password is required</mat-error>
-                                            <mat-error *ngIf="loginForm.controls.password.hasError('minlength')">Password should be minimum 6 characters</mat-error>
+                                            <!-- <mat-error *ngIf="loginForm.controls.password.hasError('minlength')">Password should be minimum 6 characters</mat-error> -->
                                           </mat-form-field>
                                     </div>
                                   </div> 

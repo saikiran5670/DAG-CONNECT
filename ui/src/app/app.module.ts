@@ -9,7 +9,7 @@ import { ChartsModule } from 'ng2-charts';
 import { ListAccordianComponent } from './accordian/list-accordian.component';
 import { DisplayAccordianComponent } from './accordian/display-accordian.component';
 
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { EmployeeService } from './services/employee.service';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
@@ -26,7 +26,7 @@ import { OrganizationService } from './services/organization.service';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
-  // return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
+ // return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
 }
 
 @NgModule({
@@ -41,6 +41,8 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     AppRoutingModule,
     SharedModule,
     ChartsModule,
+    FormsModule,
+    ReactiveFormsModule,
     ConfigModule.forRoot({
       provide: ConfigLoader,
       useFactory: (configFactory),

@@ -6,6 +6,7 @@ import { TranslationService } from './services/translation.service';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { EmployeeService } from './services/employee.service';
 import { Organization, Role } from 'src/app/authentication/login/login.component'
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -37,10 +38,14 @@ export class AppComponent {
     "selectedIndex": 0
   };
   openUserRoleDialog= false;
-  organizations: any;
-  roles: any;
+  organizationDropdown: any;
+  roleDropdown: any;
   organization: any;
   role: any;
+  userFullName: any;
+  userRole: any;
+  public landingPageForm: FormGroup;
+
   private pagetTitles = {
     livefleet: 'live fleet',
     logbook: 'log book',
@@ -121,15 +126,29 @@ export class AppComponent {
   }
 
 
-  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, private userService: EmployeeService) {
+  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, private userService: EmployeeService, public fb: FormBuilder) {
     this.defaultTranslation();
     // this.userService.getDefaultSetting().subscribe((data)=>{
    //   this.language = data['language'];
     //   console.log(this.language);
     // });
+    this.landingPageForm = this.fb.group({
+      'organization': [''],
+      'role': ['']
+    });
+
     this.dataInterchangeService.dataInterface$.subscribe(data => {
       this.isLogedIn = data;
       this.getTranslationLabels()
+    });
+
+    this.dataInterchangeService.orgRoleInterface$.subscribe(resp => {
+      this.userFullName = `${resp.accountDetail.salutation} ${resp.accountDetail.firstName} ${resp.accountDetail.lastName}`;
+      let userRole = resp.role.filter(item => item.id === parseInt(localStorage.getItem("accountRoleId")));
+      this.userRole = userRole[0].name;
+      this.organizationDropdown = resp.organization;
+      this.roleDropdown = resp.role;
+      this.setDropdownValues();
     });
 
     router.events.subscribe((val:any) => {
@@ -162,6 +181,11 @@ export class AppComponent {
     // this.isMobile();
     // this.isTablet();
     // this.isDesktop();
+  }
+
+  setDropdownValues(){
+    this.landingPageForm.get("organization").setValue(parseInt(localStorage.getItem("accountOrganizationId")));
+    this.landingPageForm.get("role").setValue(parseInt(localStorage.getItem("accountRoleId")));
   }
 
   public detectDevice() {
@@ -296,7 +320,9 @@ private setPageTitle() {
   }
 
   logOut() {
-    localStorage.removeItem('accountOrganizationId');
+    // localStorage.removeItem('accountOrganizationId');
+    // localStorage.removeItem('accountOrganizationId');
+    localStorage.clear();
     this.router.navigate(["/auth/login"]);
   }
 
@@ -309,21 +335,16 @@ private setPageTitle() {
   }
 
   onClickUserRole(){
-    this.openUserRoleDialog = !this.openUserRoleDialog;
-    if(this.openUserRoleDialog){
-      this.organizations = [
-        { value: 'daf-0', viewValue: 'DAF Connect' },
-        { value: 'conti-1', viewValue: 'Conti' },
-        { value: 'daf-2', viewValue: 'DAF CT 2.0' }
-      ];
+     this.openUserRoleDialog = !this.openUserRoleDialog;
+   }
 
-      this.roles = [
-        { value: 'fleetadmin-0', viewValue: 'Fleet Admin' },
-        { value: 'fleetmanager-1', viewValue: 'Fleet Manager' },
-        { value: 'user-2', viewValue: 'Fleet User' }
-      ];
-      this.organization = this.organizations[0].viewValue;
-      this.role = this.roles[0].viewValue;
-    }
-  }
+   onOrgChange(value){
+    localStorage.setItem("accountOrganizationId", value);
+   }
+
+   onRoleChange(value){
+    localStorage.setItem("accountRoleId", value);
+    let rolename = this.roleDropdown.filter(item => item.id === value);
+    this.userRole = rolename[0].name;
+   }
 }

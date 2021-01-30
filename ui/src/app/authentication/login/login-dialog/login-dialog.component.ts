@@ -16,18 +16,19 @@ export class LoginDialogComponent {
     cancelText: string,
     confirmText: string,
     organization: any,
-    role: any
+    role: any,
+    accountDetail: any
   }, private mdDialogRef: MatDialogRef<LoginDialogComponent>, public router: Router, public fb: FormBuilder, private dataInterchangeService: DataInterchangeService) {
     this.loginDialogForm = this.fb.group({
       'organization': [null, Validators.compose([Validators.required])],
       'role': [null, Validators.compose([Validators.required])]
     });
-    this.setDropdownValues();
+     this.setDropdownValues();
   }
 
   setDropdownValues(){
-    this.loginDialogForm.get('organization').setValue(this.data.organization[0].name);
-    this.loginDialogForm.get('role').setValue(this.data.role[0].name);
+    this.loginDialogForm.get('organization').setValue(this.data.organization[0].id);
+    this.loginDialogForm.get('role').setValue(this.data.role[0].id);
   }
 
   public cancel() {
@@ -41,8 +42,11 @@ export class LoginDialogComponent {
   public confirm(formValue) {
     if (this.loginDialogForm.valid) {
       let selectedValues = formValue;
+      localStorage.setItem('accountOrganizationId', this.loginDialogForm.controls.organization.value);
+      localStorage.setItem('accountRoleId', this.loginDialogForm.controls.role.value);
       this.close(false);
       this.dataInterchangeService.getDataInterface(true);
+      this.dataInterchangeService.getOrgRoleInterface(this.data);
       this.router.navigate(['/dashboard']);
     }
   }
