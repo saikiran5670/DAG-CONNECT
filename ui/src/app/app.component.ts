@@ -345,6 +345,7 @@ private setPageTitle() {
     localStorage.setItem("accountOrganizationId", value);
     let orgname = this.organizationDropdown.filter(item => item.id === value);
     this.userOrg = orgname[0].name;
+    localStorage.setItem("organizationName", this.userOrg);
    }
 
    onRoleChange(value){

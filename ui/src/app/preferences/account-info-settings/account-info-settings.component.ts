@@ -101,7 +101,7 @@ export class AccountInfoSettingsComponent implements OnInit {
     this.changePictureFlag = true;
     this.isSelectPictureConfirm = true;
     this.croppedImage='../../assets/images/Account_pic.png';
-    this.orgName = 'DAF CONNECT';
+    this.orgName = localStorage.getItem("organizationName");
     this.accountId = parseInt(localStorage.getItem('accountId'));
     this.organizationId = parseInt(localStorage.getItem('accountOrganizationId'));
     this.loadAccountData();  
@@ -164,14 +164,14 @@ export class AccountInfoSettingsComponent implements OnInit {
 
   setDefaultGeneralSetting(){
     setTimeout(()=>{
-      this.userSettingsForm.get('language').setValue(this.languageData.length > 0 ? this.languageData[0].id : 1 );
-      this.userSettingsForm.get('timeZone').setValue(this.timezoneData.length > 0 ? this.timezoneData[0].id : 1);
-      this.userSettingsForm.get('unit').setValue(this.unitData.length > 0 ? this.unitData[0].id : 1);
-      this.userSettingsForm.get('currency').setValue(this.currencyData.length > 0 ? this.currencyData[0].id : 1);
-      this.userSettingsForm.get('dateFormat').setValue(this.dateFormatData.length > 0 ? this.dateFormatData[0].id : 1);
-      this.userSettingsForm.get('timeFormat').setValue(this.timeFormatData.length > 0 ? this.timeFormatData[0].id : 1);
-      this.userSettingsForm.get('vehDisplay').setValue(this.vehicleDisplayData.length > 0 ? this.vehicleDisplayData[0].id : 1);
-      this.userSettingsForm.get('landingPage').setValue(this.landingPageDisplayData.length > 0 ? this.landingPageDisplayData[0].id : 1);
+      this.userSettingsForm.get('language').setValue(this.languageData.length > 0 ? this.languageData[0].id : 5 );
+      this.userSettingsForm.get('timeZone').setValue(this.timezoneData.length > 0 ? this.timezoneData[0].id : 45);
+      this.userSettingsForm.get('unit').setValue(this.unitData.length > 0 ? this.unitData[0].id : 8);
+      this.userSettingsForm.get('currency').setValue(this.currencyData.length > 0 ? this.currencyData[0].id : 3);
+      this.userSettingsForm.get('dateFormat').setValue(this.dateFormatData.length > 0 ? this.dateFormatData[0].id : 10);
+      this.userSettingsForm.get('timeFormat').setValue(this.timeFormatData.length > 0 ? this.timeFormatData[0].id : 8);
+      this.userSettingsForm.get('vehDisplay').setValue(this.vehicleDisplayData.length > 0 ? this.vehicleDisplayData[0].id : 8);
+      this.userSettingsForm.get('landingPage').setValue(this.landingPageDisplayData.length > 0 ? this.landingPageDisplayData[0].id : 10);
     });
   }
 

@@ -171,7 +171,7 @@
                   <!-- <mat-label>{{ translationData.lblOrganization }}</mat-label> -->
                   <mat-label>{{ translationData.lblOrganization || 'Organization' }}</mat-label>
                   <mat-form-field appearance="outline" class="full-width">
-                    <input placeholder="{{ translationData.lblOrganization || 'Organization' }}" matInput value="DAF Connect" formControlName="organization">
+                    <input placeholder="{{ translationData.lblOrganization || 'Organization' }}" matInput formControlName="organization">
                   </mat-form-field>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
@@ -384,7 +384,7 @@
             <!-- <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel }}</button> -->
             <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel(true)'>{{ translationData.lblCancel || 'Cancel' }}</button>
             <!-- <button class='margin-right-10' mat-raised-button color="primary" (click)='backToCreateUser()'>{{ translationData.lblPrevious }}</button> -->
-            <button class='margin-right-10' mat-raised-button color="primary" (click)='backToCreateUser()'>{{ translationData.lblPrevious || 'Previous' }}</button>
+            <!-- <button class='margin-right-10' mat-raised-button color="primary" (click)='backToCreateUser()'>{{ translationData.lblPrevious || 'Previous' }}</button> -->
             <!-- <button mat-raised-button color="primary" matStepperNext>{{ translationData.lblNext }}</button> -->
             <button mat-raised-button color="primary" matStepperNext>{{ translationData.lblNext || 'Next' }}</button>
           </div>

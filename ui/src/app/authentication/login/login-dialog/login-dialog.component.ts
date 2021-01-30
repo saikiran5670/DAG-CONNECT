@@ -44,6 +44,8 @@ export class LoginDialogComponent {
       let selectedValues = formValue;
       localStorage.setItem('accountOrganizationId', this.loginDialogForm.controls.organization.value);
       localStorage.setItem('accountRoleId', this.loginDialogForm.controls.role.value);
+      let orgName = this.data.organization.filter(item => item.id === this.loginDialogForm.controls.organization.value);
+      localStorage.setItem("organizationName", orgName[0].name);
       this.close(false);
       this.dataInterchangeService.getDataInterface(true);
       this.dataInterchangeService.getOrgRoleInterface(this.data);

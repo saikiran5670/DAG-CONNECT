@@ -82,30 +82,48 @@ export class EditCommonTableComponent implements OnInit {
     }
 
     let selectedRoleIds = this.selectionData.selected.map(resp => resp.roleId);
+    let roleAddObj = {
+      accountId: this.data.accountInfo.id,
+      organizationId: this.data.accountInfo.organizationId,
+      roles: selectedRoleIds
+    }
+    let updatedRoles = [];
 
-    this.accountService.deleteAccountRoles(roleDeleteObj).subscribe(delResp => {
-      let roleAddObj = {
-        accountId: this.data.accountInfo.id,
-        organizationId: this.data.accountInfo.organizationId,
-        roles: selectedRoleIds
-      }
+    if(mapRoleIds.length > 0 && selectedRoleIds.length > 0){
+      this.accountService.deleteAccountRoles(roleDeleteObj).subscribe(delResp => {
+        this.accountService.addAccountRoles(roleAddObj).subscribe(addResp => {
+          updatedRoles = [];
+          selectedRoleIds.forEach(element => {
+            updatedRoles.push({id: element});
+          });
+          this.onClose({data: updatedRoles, type: this.data.type});    
+        })
+      })
+    }else if(mapRoleIds.length == 0 && selectedRoleIds.length > 0){
       this.accountService.addAccountRoles(roleAddObj).subscribe(addResp => {
-        let updatedRoles = [];
+        updatedRoles = [];
         selectedRoleIds.forEach(element => {
           updatedRoles.push({id: element});
         });
-
         this.onClose({data: updatedRoles, type: this.data.type});    
       })
-    })
+    }else if(mapRoleIds.length > 0 && selectedRoleIds.length == 0){
+      this.accountService.deleteAccountRoles(roleDeleteObj).subscribe(delResp => {
+        updatedRoles = [];
+        this.onClose({data: updatedRoles, type: this.data.type});    
+      })
+    }else{
+      updatedRoles = [];
+      this.onClose({data: updatedRoles, type: this.data.type});    
+    }
     }else{
       //TODO : update account group
        let accountId= this.data.accountInfo.id;
        let mapGrpData: any = [];
-       let mapGrpIds: any = this.selectionData.selected.map(resp => resp.id);
-        if(mapGrpIds.length > 0)
+       let selectedGrpIds: any = this.selectionData.selected.map(resp => resp.id);
+        if(selectedGrpIds.length > 0)
         {
-          mapGrpIds.forEach(element => {
+          selectedGrpIds.forEach(element => {
             mapGrpData.push({
               accountGroupId: element,
               accountId: accountId
@@ -122,12 +140,27 @@ export class EditCommonTableComponent implements OnInit {
         let grpObj = {
           accounts: mapGrpData 
         }
+
+      if(selectedGrpIds.length > 0 && this.data.selectedData.length > 0){
         this.accountService.deleteAccountGroupsForAccount(accountId).subscribe(resp => {
           this.accountService.addAccountGroups(grpObj).subscribe((data)=>{
             this.onClose({data: this.selectionData.selected, type: this.data.type});    
           }, (error) => {  });
         })
+      }else if(selectedGrpIds.length > 0 && this.data.selectedData.length == 0){
+        this.accountService.addAccountGroups(grpObj).subscribe((data)=>{
+          this.onClose({data: this.selectionData.selected, type: this.data.type});    
+        }, (error) => {  });
+      }else if(selectedGrpIds.length == 0 && this.data.selectedData.length > 0){
+        this.accountService.deleteAccountGroupsForAccount(accountId).subscribe(resp => {
+          this.onClose({data: this.selectionData.selected, type: this.data.type});    
+        }, (error) => {  });
+      }else{
+        this.onClose({data: this.selectionData.selected, type: this.data.type});    
       }
+    }
+
+        
     
     
   }

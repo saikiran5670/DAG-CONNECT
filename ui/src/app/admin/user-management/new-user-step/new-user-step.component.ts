@@ -36,7 +36,7 @@ export class NewUserStepComponent implements OnInit {
   grpTitleVisible: boolean = false;
   userName: string = '';
   isLinear = false;
-  orgName: any = 'DAF Connect';
+  orgName: any;
 
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
@@ -120,6 +120,7 @@ export class NewUserStepComponent implements OnInit {
         CustomValidators.numberValidationForName('lastName')
       ]
     });
+    this.orgName = localStorage.getItem("organizationName");
     this.firstFormGroup.get('organization').setValue(this.orgName);
 
     this.secondFormGroup = this._formBuilder.group({
@@ -232,7 +233,9 @@ export class NewUserStepComponent implements OnInit {
             this.stepper.next();
           }
         });
-      }, (error) => {  });
+      }, (error) => { 
+        console.log(error);
+       });
   }
 
   onUpdateUserData(){
@@ -295,12 +298,23 @@ export class NewUserStepComponent implements OnInit {
       accounts: mapGrpData 
     }
 
-    this.accountService.addAccountRoles(roleObj).subscribe((data)=>{
-      this.accountService.addAccountGroups(grpObj).subscribe((data)=>{
-        this.updateTableData(false);
+    if(mapRoleIds.length > 0 && mapGrpIds.length > 0){
+      this.accountService.addAccountRoles(roleObj).subscribe((data)=>{
+        this.accountService.addAccountGroups(grpObj).subscribe((data)=>{
+          this.updateTableData(false);
+        }, (error) => {  });
       }, (error) => {  });
-    }, (error) => {  });
-
+    }else if(mapRoleIds.length > 0 && mapGrpIds.length == 0){
+      this.accountService.addAccountRoles(roleObj).subscribe((data)=>{
+           this.updateTableData(false);
+      }, (error) => {  });
+    }else if(mapRoleIds.length == 0 && mapGrpIds.length > 0){
+        this.accountService.addAccountGroups(grpObj).subscribe((data)=>{
+          this.updateTableData(false);
+      }, (error) => {  });
+    }else{
+      this.onCancel(true);
+    }
   }
 
   updateTableData(status?: any){

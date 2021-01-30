@@ -105,7 +105,7 @@ export class EditViewUserComponent implements OnInit {
         CustomValidators.numberValidationForName('lastName')
       ]
     });
-    this.accountInfoData.organization = 'DAF CONNECT';
+    this.accountInfoData.organization = localStorage.getItem("organizationName");
     this.croppedImage = '../../assets/images/Account_pic.png';    
     this.setDefaultAccountInfo();
     this.setDefaultGeneralSetting(this.selectedPreference);
@@ -158,7 +158,7 @@ export class EditViewUserComponent implements OnInit {
       this.accountInfoForm.get('firstName').setValue(this.accountInfoData.firstName ? this.accountInfoData.firstName : '--');
       this.accountInfoForm.get('lastName').setValue(this.accountInfoData.lastName ? this.accountInfoData.lastName : '--');
       this.accountInfoForm.get('loginEmail').setValue(this.accountInfoData.emailId ? this.accountInfoData.emailId : '--');
-      this.accountInfoForm.get('organization').setValue(this.accountInfoData.organization ? this.accountInfoData.organization : 'DAF CONNECT');
+      this.accountInfoForm.get('organization').setValue(this.accountInfoData.organization ? this.accountInfoData.organization : localStorage.getItem("organizationName"));
       //this.accountInfoForm.get('birthDate').setValue(this.accountInfoData.dob);
     }
   }
@@ -261,7 +261,7 @@ export class EditViewUserComponent implements OnInit {
     }
     this.accountService.updateAccount(objData).subscribe((data)=>{
       this.accountInfoData = data;
-      this.accountInfoData.organization = 'DAF CONNECT';
+      this.accountInfoData.organization = localStorage.getItem("organizationName");
       this.setDefaultAccountInfo();
       // this.isSelectPictureConfirm = true;
       this.editAccountInfoFlag = false;
