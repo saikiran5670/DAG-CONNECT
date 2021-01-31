@@ -331,7 +331,7 @@
         class="full-width margin-bottom-sm" fxLayoutGap="10px">  
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <!-- <mat-label>{{ translationData.lblVehicleDisplayDefault }}</mat-label> -->
-          <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display (Default)' }}</mat-label>
+          <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display' }}</mat-label>
           <mat-label class='custom-font'>
             <!-- {{confirmAccountInfoData.vehDisplay ? confirmAccountInfoData.vehDisplay.value : '--'}} -->
             {{ !vehicleDisplayData ? '--' : vehicleDisplayData.length > 0 ? vehicleDisplayData[0].value : '--' }}
@@ -339,7 +339,7 @@
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <!-- <mat-label>{{ translationData.lblLandingPageDisplayDefault }}</mat-label> -->
-          <mat-label>{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display (Default)' }}</mat-label>
+          <mat-label>{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display' }}</mat-label>
           <mat-label class='custom-font'>
             <!-- {{ confirmAccountInfoData.landingPage ? confirmAccountInfoData.landingPage.value : '--'}} -->
             {{ !landingPageDisplayData ? '--' : landingPageDisplayData.length > 0 ? landingPageDisplayData[0].value : '--' }}
@@ -448,9 +448,9 @@
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <!-- <mat-label>{{ translationData.lblVehicleDisplayDefault }}</mat-label> -->
-            <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display (Default)' }}</mat-label>
+            <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-select placeholder="Vehicle Display (Default)" formControlName="vehDisplay">
+              <mat-select placeholder="Vehicle Display" formControlName="vehDisplay">
                 <!-- <mat-option>
                         <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                         </ngx-mat-select-search>
@@ -463,9 +463,9 @@
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <!-- <mat-label>{{ translationData.lblVehicleDisplayDefault }}</mat-label> -->
-            <mat-label>{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display (Default)' }}</mat-label>
+            <mat-label>{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-select placeholder="{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display (Default)' }}" formControlName="landingPage">
+              <mat-select placeholder="{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display' }}" formControlName="landingPage">
                 <!-- <mat-option>
                   <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                   </ngx-mat-select-search>

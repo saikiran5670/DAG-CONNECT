@@ -33,14 +33,14 @@
                             
                                   <div fxLayout="row" fxLayoutAlign="start">
                                     <div fxLayout="column" fxLayoutAlign="center" class='loginIcon'>
-                                        <mat-icon>supervisor_account</mat-icon>
+                                        <mat-icon>account_circle</mat-icon>
                                     </div>
                                     <div fxLayout="column" fxLayoutAlign="start" class='full-width'>
                                         <mat-form-field appearance="fill">
                                             <!-- <input maxlength="120" matInput placeholder="User name" formControlName="username" pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}" required> -->
-                                            <input maxlength="120" matInput placeholder="User name" formControlName="username" required>
+                                            <input maxlength="120" matInput placeholder="User Name" formControlName="username" required>
                                             <mat-error *ngIf="loginForm.get('username').hasError('required')">
-                                              User name is required
+                                              User Name is required
                                             </mat-error>
                                             <!-- <mat-error *ngIf="loginForm.get('username').hasError('email')">
                                                 Please enter valid user name
@@ -64,7 +64,7 @@
                                     </div>
                                   </div> 
                                 <div class="text-right linkBtn">
-                                    <a (click)="onForgetPassword()">Forgot password?</a>
+                                    <a (click)="onForgetPassword()">Forgot Password?</a>
                                 </div>
                                 <button [disabled]="!loginForm.valid" mat-raised-button color="primary" class="margin-top-20 mat-elevation-z box-button" type="submit">Login</button>
                             </div>
@@ -127,10 +127,10 @@
                     <a href='https://www.daf.com/en/legal/privacy-statement' target='_blank'><span>Private Statement</span></a>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="left">
-                    <a href='https://www.daf.com/en/legal/privacy-statement' target='_blank'><span>General conditions</span></a>
+                    <a href='https://www.daf.com/en/legal/privacy-statement' target='_blank'><span>General Conditions</span></a>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="left">
-                    <a href='https://www.daf.com/en/legal/privacy-statement' target='_blank'><span>DAF and cookies</span></a>
+                    <a href='https://www.daf.com/en/legal/privacy-statement' target='_blank'><span>DAF and Cookies</span></a>
                 </div>
             </div>
         </div>
