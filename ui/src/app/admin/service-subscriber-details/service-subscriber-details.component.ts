@@ -109,9 +109,9 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
     const colsList= ['firstName','emailId','role'];
     const colsName=['First Name','Email ID','Role'];
     const tableTitle="User List";
-    // this.userService.getUsers().subscribe((data)=>{
-    //   this.callToCommonTable(data,colsList,colsName,tableTitle);
-    // });
+    this.userService.getUsers().subscribe((data)=>{
+      this.callToCommonTable(data,colsList,colsName,tableTitle);
+    });
 
     let obj: any = {
       "accountId": 0,
@@ -121,10 +121,10 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
       "roleId": 0,
       "name": ""
     }
-    // this.accountService.getAccountDetails(obj).subscribe((data)=>{
-    //   data = this.makeRoleAccountGrpList(data);
-    //   this.callToCommonTable(data,colsList,colsName,tableTitle);
-    // });
+    this.accountService.getAccountDetails(obj).subscribe((data)=>{
+      data = this.makeRoleAccountGrpList(data);
+      this.callToCommonTable(data,colsList,colsName,tableTitle);
+    });
   }
   onVehClick(row:any){
     const colsList= ['vin','name','model'];

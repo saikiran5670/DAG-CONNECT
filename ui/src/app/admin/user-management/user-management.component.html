@@ -9,10 +9,10 @@
     </div>
   </div>
   <mat-card class='mat-elevation-z' *ngIf='!stepFlag && !editFlag && !viewFlag'>
-    <!-- removed for MVP -->
-    <!-- <div>
-      <app-common-filter *ngIf="filterFlag" (filterValues)="getFilteredValues($event)" [initData]='initData' [translationData]='translationData'></app-common-filter>
-    </div>   -->
+    <div>
+      <app-common-filter *ngIf="true" [initData]='initData' [translationData]='translationData'></app-common-filter>
+      <!-- <app-common-filter *ngIf="filterFlag" (filterValues)="getFilteredValues($event)" [initData]='initData' [translationData]='translationData'></app-common-filter> -->
+    </div>  
     <div fxLayout="row" fxLayoutAlign="space-between">
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <!-- <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserDetails }}</span> -->
@@ -53,7 +53,8 @@
         </ng-container>
         <ng-container matColumnDef="accountGroups">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserGroup || 'User Group' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}"><span class="text-truncate">{{ row.accountGroups.length > 0 ? row.accountGroups[0].name : '-' }}</span></mat-cell>
+          <!-- <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}"><span class="text-truncate">{{ row.accountGroups.length > 0 ? row.accountGroups[0].name : '-' }}</span></mat-cell> -->
+          <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}"><span class="text-truncate">{{ row.accountGroupList }}</span></mat-cell>
         </ng-container>
         <ng-container matColumnDef="action">
           <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Action' }} </mat-header-cell>

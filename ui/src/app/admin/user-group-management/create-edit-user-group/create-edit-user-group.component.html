@@ -80,6 +80,7 @@
 
             <mat-card class='mat-elevation-z' >
                 <div>
+                  <app-common-filter *ngIf="true" [initDataUserGroup]='initData'></app-common-filter>
                   <!-- <app-common-filter *ngIf="filterFlag" (filterValues)="getFilteredValues($event)" [initDataUserGroup]='initData'></app-common-filter> -->
                 </div>  
                 <div>
