@@ -34,7 +34,7 @@
  -->
 <div class="user-preferences">
     <div class="preferences-sidenav-content" [ngStyle]="{'right': userPreferencesFlag ? '1000px' : '0px' }" (click)='userPreferencesSetting($event)'>
-        <mat-icon style="margin-top:5px; color:white;">{{!userPreferencesFlag ? 'keyboard_arrow_leftperson_search' : 'person_searchkeyboard_arrow_right'}}</mat-icon>    
+        <mat-icon matTooltip="Preferences" style="margin-top:5px; color:white;">{{!userPreferencesFlag ? 'keyboard_arrow_leftperson_search' : 'person_searchkeyboard_arrow_right'}}</mat-icon>    
     </div>
         
     <div class="preferences-container" *ngIf="userPreferencesFlag" [ngStyle]="{'width': userPreferencesFlag ? '1000px' : '0px' }">

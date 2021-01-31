@@ -144,14 +144,23 @@ export class NewUserStepComponent implements OnInit {
   }
 
    setDefaultSetting(){
-    this.firstFormGroup.get('language').setValue(13);
-    this.firstFormGroup.get('timeZone').setValue(47);
-    this.firstFormGroup.get('unit').setValue(8);
-    this.firstFormGroup.get('currency').setValue(3);
-    this.firstFormGroup.get('dateFormat').setValue(13);
-    this.firstFormGroup.get('vehDisplay').setValue(8);
-    this.firstFormGroup.get('timeFormat').setValue(8);
-    this.firstFormGroup.get('landingPage').setValue(11);
+    // this.firstFormGroup.get('language').setValue(13);
+    // this.firstFormGroup.get('timeZone').setValue(47);
+    // this.firstFormGroup.get('unit').setValue(8);
+    // this.firstFormGroup.get('currency').setValue(3);
+    // this.firstFormGroup.get('dateFormat').setValue(13);
+    // this.firstFormGroup.get('vehDisplay').setValue(8);
+    // this.firstFormGroup.get('timeFormat').setValue(8);
+    // this.firstFormGroup.get('landingPage').setValue(11);
+
+    this.firstFormGroup.get('language').setValue(2);
+    this.firstFormGroup.get('timeZone').setValue(2);
+    this.firstFormGroup.get('unit').setValue(2);
+    this.firstFormGroup.get('currency').setValue(2);
+    this.firstFormGroup.get('dateFormat').setValue(2);
+    this.firstFormGroup.get('vehDisplay').setValue(2);
+    this.firstFormGroup.get('timeFormat').setValue(2);
+    this.firstFormGroup.get('landingPage').setValue(2);
    }
 
   onClose(){
@@ -209,14 +218,14 @@ export class NewUserStepComponent implements OnInit {
         let preferenceObj = {
           id: 0,
           refId: this.userData.id,
-          languageId: this.firstFormGroup.controls.language.value != '' ? this.firstFormGroup.controls.language.value : 5,
-          timezoneId: this.firstFormGroup.controls.timeZone.value != '' ?  this.firstFormGroup.controls.timeZone.value : 45,
-          unitId: this.firstFormGroup.controls.unit.value != '' ?  this.firstFormGroup.controls.unit.value : 8,
-          currencyId: this.firstFormGroup.controls.currency.value != '' ?  this.firstFormGroup.controls.currency.value : 3,
-          dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value != '' ?  this.firstFormGroup.controls.dateFormat.value : 10,
-          timeFormatId: this.firstFormGroup.controls.timeFormat.value != '' ?  this.firstFormGroup.controls.timeFormat.value : 8,
-          vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : 8,
-          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : 10,
+          languageId: this.firstFormGroup.controls.language.value != '' ? this.firstFormGroup.controls.language.value : 2,
+          timezoneId: this.firstFormGroup.controls.timeZone.value != '' ?  this.firstFormGroup.controls.timeZone.value : 2,
+          unitId: this.firstFormGroup.controls.unit.value != '' ?  this.firstFormGroup.controls.unit.value : 2,
+          currencyId: this.firstFormGroup.controls.currency.value != '' ?  this.firstFormGroup.controls.currency.value : 2,
+          dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value != '' ?  this.firstFormGroup.controls.dateFormat.value : 2,
+          timeFormatId: this.firstFormGroup.controls.timeFormat.value != '' ?  this.firstFormGroup.controls.timeFormat.value : 2,
+          vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : 2,
+          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : 2,
           driverId: ""
         }
         

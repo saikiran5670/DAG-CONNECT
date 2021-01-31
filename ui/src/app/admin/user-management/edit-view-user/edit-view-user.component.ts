@@ -167,27 +167,27 @@ export class EditViewUserComponent implements OnInit {
     this.filterDefaultGeneralSetting(selectedPreference);
     if(this.defaultSetting){
       setTimeout(()=>{
-        this.generalSettingForm.get('language').setValue(this.languageData.length > 0 ? this.languageData[0].id : 1 );
-        this.generalSettingForm.get('timeZone').setValue(this.timezoneData.length > 0 ? this.timezoneData[0].id : 1);
-        this.generalSettingForm.get('unit').setValue(this.unitData.length > 0 ? this.unitData[0].id : 1);
-        this.generalSettingForm.get('currency').setValue(this.currencyData.length > 0 ? this.currencyData[0].id : 1);
-        this.generalSettingForm.get('dateFormat').setValue(this.dateFormatData.length > 0 ? this.dateFormatData[0].id : 1);
-        this.generalSettingForm.get('timeFormat').setValue(this.timeFormatData.length > 0 ? this.timeFormatData[0].id : 1);
-        this.generalSettingForm.get('vehDisplay').setValue(this.vehicleDisplayData.length > 0 ? this.vehicleDisplayData[0].id : 1);
-        this.generalSettingForm.get('landingPage').setValue(this.landingPageDisplayData.length > 0 ? this.landingPageDisplayData[0].id : 1);
+        this.generalSettingForm.get('language').setValue(this.languageData.length > 0 ? this.languageData[0].id : 2 );
+        this.generalSettingForm.get('timeZone').setValue(this.timezoneData.length > 0 ? this.timezoneData[0].id : 2);
+        this.generalSettingForm.get('unit').setValue(this.unitData.length > 0 ? this.unitData[0].id : 2);
+        this.generalSettingForm.get('currency').setValue(this.currencyData.length > 0 ? this.currencyData[0].id : 2);
+        this.generalSettingForm.get('dateFormat').setValue(this.dateFormatData.length > 0 ? this.dateFormatData[0].id : 2);
+        this.generalSettingForm.get('timeFormat').setValue(this.timeFormatData.length > 0 ? this.timeFormatData[0].id : 2);
+        this.generalSettingForm.get('vehDisplay').setValue(this.vehicleDisplayData.length > 0 ? this.vehicleDisplayData[0].id : 2);
+        this.generalSettingForm.get('landingPage').setValue(this.landingPageDisplayData.length > 0 ? this.landingPageDisplayData[0].id : 2);
       });
     }
   }
 
   filterDefaultGeneralSetting(accountPreferenceData: any){
-    this.languageData = this.defaultSetting.languageDropdownData.filter(resp => resp.id === (accountPreferenceData[0].languageId ? accountPreferenceData[0].languageId : 5));
-    this.timezoneData = this.defaultSetting.timezoneDropdownData.filter(resp => resp.id === (accountPreferenceData[0].timezoneId ? accountPreferenceData[0].timezoneId : 45));
-    this.unitData = this.defaultSetting.unitDropdownData.filter(resp => resp.id === (accountPreferenceData[0].unitId ? accountPreferenceData[0].unitId : 8));
-    this.currencyData = this.defaultSetting.currencyDropdownData.filter(resp => resp.id === (accountPreferenceData[0].currencyId ? accountPreferenceData[0].currencyId : 3));
-    this.dateFormatData = this.defaultSetting.dateFormatDropdownData.filter(resp => resp.id === (accountPreferenceData[0].dateFormatTypeId ? accountPreferenceData[0].dateFormatTypeId : 10));
-    this.timeFormatData = this.defaultSetting.timeFormatDropdownData.filter(resp => resp.id === (accountPreferenceData[0].timeFormatId ? accountPreferenceData[0].timeFormatId : 8));
-    this.vehicleDisplayData = this.defaultSetting.vehicleDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData[0].vehicleDisplayId ? accountPreferenceData[0].vehicleDisplayId : 8));
-    this.landingPageDisplayData = this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData[0].landingPageDisplayId ? accountPreferenceData[0].landingPageDisplayId : 10));
+    this.languageData = this.defaultSetting.languageDropdownData.filter(resp => resp.id === (accountPreferenceData[0].languageId ? accountPreferenceData[0].languageId : 2));
+    this.timezoneData = this.defaultSetting.timezoneDropdownData.filter(resp => resp.id === (accountPreferenceData[0].timezoneId ? accountPreferenceData[0].timezoneId : 2));
+    this.unitData = this.defaultSetting.unitDropdownData.filter(resp => resp.id === (accountPreferenceData[0].unitId ? accountPreferenceData[0].unitId : 2));
+    this.currencyData = this.defaultSetting.currencyDropdownData.filter(resp => resp.id === (accountPreferenceData[0].currencyId ? accountPreferenceData[0].currencyId : 2));
+    this.dateFormatData = this.defaultSetting.dateFormatDropdownData.filter(resp => resp.id === (accountPreferenceData[0].dateFormatTypeId ? accountPreferenceData[0].dateFormatTypeId : 2));
+    this.timeFormatData = this.defaultSetting.timeFormatDropdownData.filter(resp => resp.id === (accountPreferenceData[0].timeFormatId ? accountPreferenceData[0].timeFormatId : 2));
+    this.vehicleDisplayData = this.defaultSetting.vehicleDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData[0].vehicleDisplayId ? accountPreferenceData[0].vehicleDisplayId : 2));
+    this.landingPageDisplayData = this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData[0].landingPageDisplayId ? accountPreferenceData[0].landingPageDisplayId : 2));
   }
 
   toBack(){

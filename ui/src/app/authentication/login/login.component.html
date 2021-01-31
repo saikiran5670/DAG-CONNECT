@@ -37,7 +37,8 @@
                                     </div>
                                     <div fxLayout="column" fxLayoutAlign="start" class='full-width'>
                                         <mat-form-field appearance="fill">
-                                            <input maxlength="120" matInput placeholder="User name" formControlName="username" pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}" required>
+                                            <!-- <input maxlength="120" matInput placeholder="User name" formControlName="username" pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}" required> -->
+                                            <input maxlength="120" matInput placeholder="User name" formControlName="username" required>
                                             <mat-error *ngIf="loginForm.get('username').hasError('required')">
                                               User name is required
                                             </mat-error>

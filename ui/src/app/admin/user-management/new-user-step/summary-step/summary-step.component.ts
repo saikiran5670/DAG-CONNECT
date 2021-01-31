@@ -76,14 +76,14 @@ export class SummaryStepComponent implements OnInit {
       lastNameData: accountPreferenceData.lastName ? accountPreferenceData.lastName.value : '--',
       loginEmailData: accountPreferenceData.loginEmail ? accountPreferenceData.loginEmail.value : '--',
       organizationData: accountPreferenceData.organization ? accountPreferenceData.organization.value : '--',
-      languageData: this.defaultSetting.languageDropdownData.filter(resp => resp.id === (accountPreferenceData.language.value != '' ? accountPreferenceData.language.value : 5 )),
-      timezoneData: this.defaultSetting.timezoneDropdownData.filter(resp => resp.id === (accountPreferenceData.timeZone.value != '' ? accountPreferenceData.timeZone.value : 45)),
-      unitData:  this.defaultSetting.unitDropdownData.filter(resp => resp.id === (accountPreferenceData.unit.value ? accountPreferenceData.unit.value : 8)),
-      currencyData: this.defaultSetting.currencyDropdownData.filter(resp => resp.id === (accountPreferenceData.currency.value ? accountPreferenceData.currency.value : 3)),
-      dateFormatData:  this.defaultSetting.dateFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.dateFormat.value ? accountPreferenceData.dateFormat.value : 10)),
-      timeFormatData: this.defaultSetting.timeFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.timeFormat.value ? accountPreferenceData.timeFormat.value : 8)),
-      vehicleDisplayData: this.defaultSetting.vehicleDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.vehDisplay.value ? accountPreferenceData.vehDisplay.value : 8)),
-      landingPageDisplayData: this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.landingPage.value ? accountPreferenceData.landingPage.value : 10))
+      languageData: this.defaultSetting.languageDropdownData.filter(resp => resp.id === (accountPreferenceData.language.value != '' ? accountPreferenceData.language.value : 2 )),
+      timezoneData: this.defaultSetting.timezoneDropdownData.filter(resp => resp.id === (accountPreferenceData.timeZone.value != '' ? accountPreferenceData.timeZone.value : 2)),
+      unitData:  this.defaultSetting.unitDropdownData.filter(resp => resp.id === (accountPreferenceData.unit.value ? accountPreferenceData.unit.value : 2)),
+      currencyData: this.defaultSetting.currencyDropdownData.filter(resp => resp.id === (accountPreferenceData.currency.value ? accountPreferenceData.currency.value : 2)),
+      dateFormatData:  this.defaultSetting.dateFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.dateFormat.value ? accountPreferenceData.dateFormat.value : 2)),
+      timeFormatData: this.defaultSetting.timeFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.timeFormat.value ? accountPreferenceData.timeFormat.value : 2)),
+      vehicleDisplayData: this.defaultSetting.vehicleDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.vehDisplay.value ? accountPreferenceData.vehDisplay.value : 2)),
+      landingPageDisplayData: this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.landingPage.value ? accountPreferenceData.landingPage.value : 2))
     }
     return respData;
   }
