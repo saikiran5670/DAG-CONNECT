@@ -105,7 +105,7 @@ export class AccountInfoSettingsComponent implements OnInit {
     this.accountId = parseInt(localStorage.getItem('accountId'));
     this.organizationId = parseInt(localStorage.getItem('accountOrganizationId'));
     this.loadAccountData();  
-    this.loadGeneralSettingData();
+    // this.loadGeneralSettingData();
   }
 
   loadAccountData(){
@@ -121,37 +121,57 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.editAccountSettingsFlag = false;
       this.isSelectPictureConfirm = true;
       this.setDefaultAccountInfo();
+      this.loadGeneralSettingData();
     });
   }
 
   loadGeneralSettingData(){
     let languageCode= "EN-GB";
-    forkJoin(
-      this.accountService.getAccountPreference(this.accountId),
-      this.translationService.getPreferences(languageCode),
-      // this.translationService.getTranslationsForDropdowns('EN-GB','language'),
-      // this.translationService.getTranslationsForDropdowns('EN-GB','timezone'),
-      // this.translationService.getTranslationsForDropdowns('EN-GB','unit'),
-      // this.translationService.getTranslationsForDropdowns('EN-GB','currency'),
-      // this.translationService.getTranslationsForDropdowns('EN-GB','dateformat'),
-      // this.translationService.getTranslationsForDropdowns('EN-GB','timeformat'),
-      // this.translationService.getTranslationsForDropdowns('EN-GB','vehicledisplay'),
-      // this.translationService.getTranslationsForDropdowns('EN-GB','landingpagedisplay')
-    ).subscribe((data) => {
-      this.accountPreferenceData = data[0][0];
-      let dropDownData = data[1];
-      this.languageDropdownData = dropDownData.language;
-      this.timezoneDropdownData = dropDownData.timezone;
-      this.unitDropdownData = dropDownData.unit;
-      this.currencyDropdownData = dropDownData.currency;
-      this.dateFormatDropdownData = dropDownData.dateformat;
-      this.timeFormatDropdownData = dropDownData.timeformat;
-      this.vehicleDisplayDropdownData = dropDownData.vehicledisplay;
-      this.landingPageDisplayDropdownData = dropDownData.landingpagedisplay;
-      this.filterDefaultGeneralSetting(this.accountPreferenceData);
-      this.setDefaultGeneralSetting();
-      this.editGeneralSettingsFlag = false;
-      }, (error) => {  });
+
+    this.accountService.getAccountPreference(this.accountId).subscribe(resp => {
+      this.accountPreferenceData = resp[0];
+      this.translationService.getPreferences(languageCode).subscribe((data) => {
+        let dropDownData = data;
+        this.languageDropdownData = dropDownData.language;
+        this.timezoneDropdownData = dropDownData.timezone;
+        this.unitDropdownData = dropDownData.unit;
+        this.currencyDropdownData = dropDownData.currency;
+        this.dateFormatDropdownData = dropDownData.dateformat;
+        this.timeFormatDropdownData = dropDownData.timeformat;
+        this.vehicleDisplayDropdownData = dropDownData.vehicledisplay;
+        this.landingPageDisplayDropdownData = dropDownData.landingpagedisplay;
+        this.filterDefaultGeneralSetting(this.accountPreferenceData);
+        this.setDefaultGeneralSetting();
+        this.editGeneralSettingsFlag = false;
+        }, (error) => {  });
+    }, (error) => {  });
+
+    // forkJoin(
+    //   this.accountService.getAccountPreference(this.accountId),
+    //   this.translationService.getPreferences(languageCode),
+    //   // this.translationService.getTranslationsForDropdowns('EN-GB','language'),
+    //   // this.translationService.getTranslationsForDropdowns('EN-GB','timezone'),
+    //   // this.translationService.getTranslationsForDropdowns('EN-GB','unit'),
+    //   // this.translationService.getTranslationsForDropdowns('EN-GB','currency'),
+    //   // this.translationService.getTranslationsForDropdowns('EN-GB','dateformat'),
+    //   // this.translationService.getTranslationsForDropdowns('EN-GB','timeformat'),
+    //   // this.translationService.getTranslationsForDropdowns('EN-GB','vehicledisplay'),
+    //   // this.translationService.getTranslationsForDropdowns('EN-GB','landingpagedisplay')
+    // ).subscribe((data) => {
+    //   this.accountPreferenceData = data[0][0];
+    //   let dropDownData = data[1];
+    //   this.languageDropdownData = dropDownData.language;
+    //   this.timezoneDropdownData = dropDownData.timezone;
+    //   this.unitDropdownData = dropDownData.unit;
+    //   this.currencyDropdownData = dropDownData.currency;
+    //   this.dateFormatDropdownData = dropDownData.dateformat;
+    //   this.timeFormatDropdownData = dropDownData.timeformat;
+    //   this.vehicleDisplayDropdownData = dropDownData.vehicledisplay;
+    //   this.landingPageDisplayDropdownData = dropDownData.landingpagedisplay;
+    //   this.filterDefaultGeneralSetting(this.accountPreferenceData);
+    //   this.setDefaultGeneralSetting();
+    //   this.editGeneralSettingsFlag = false;
+    //   }, (error) => {  });
   }
 
   setDefaultAccountInfo(){

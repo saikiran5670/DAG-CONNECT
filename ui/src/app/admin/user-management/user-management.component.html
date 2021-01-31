@@ -9,9 +9,10 @@
     </div>
   </div>
   <mat-card class='mat-elevation-z' *ngIf='!stepFlag && !editFlag && !viewFlag'>
-    <div>
+    <!-- removed for MVP -->
+    <!-- <div>
       <app-common-filter *ngIf="filterFlag" (filterValues)="getFilteredValues($event)" [initData]='initData' [translationData]='translationData'></app-common-filter>
-    </div>  
+    </div>   -->
     <div fxLayout="row" fxLayoutAlign="space-between">
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <!-- <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserDetails }}</span> -->
