@@ -6,6 +6,7 @@ import { AccountService } from 'src/app/services/account.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
+import { CookieService } from 'ngx-cookie-service';
 
 export interface Organization {
   id: number ;

@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
@@ -51,7 +52,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     PreferencesModule
     //RouterModule.forRoot(appRoute)
   ],
-  providers: [EmployeeService, DataInterchangeService, AccountService, RoleService, OrganizationService],
+  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}, EmployeeService, DataInterchangeService, AccountService, RoleService, OrganizationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
