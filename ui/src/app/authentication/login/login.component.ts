@@ -22,6 +22,7 @@ export interface Role {
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.less']
 })
+
 export class LoginComponent implements OnInit {
   public loginForm: FormGroup;
   public forgotPasswordForm: FormGroup;
@@ -32,7 +33,7 @@ export class LoginComponent implements OnInit {
   dialogRefLogin: MatDialogRef<LoginDialogComponent>;
   maintenancePopupFlag: boolean = false;
 
-  constructor(public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService) {
+  constructor(private cookieService: CookieService, public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService) {
     this.loginForm = this.fb.group({
       // 'username': [null, Validators.compose([Validators.required, Validators.email])],
       // 'password': [null, Validators.compose([Validators.required, Validators.minLength(6)])]
@@ -42,6 +43,8 @@ export class LoginComponent implements OnInit {
     this.forgotPasswordForm = this.fb.group({
       'email': [null, Validators.compose([Validators.required, Validators.email])]
     });
+    
+    this.cookiesFlag = this.cookieService.get('cookiePolicy') ? false : true;
   }
 
   ngOnInit(): void {
@@ -100,6 +103,7 @@ export class LoginComponent implements OnInit {
 
   public acceptCookies(){
     this.cookiesFlag = false;
+    this.cookieService.set('cookiePolicy', 'true');
   }
 
   public showOrganizationRolePopup(data: any, accountDetails: any) {
