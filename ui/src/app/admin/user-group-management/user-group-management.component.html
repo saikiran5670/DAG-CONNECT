@@ -30,7 +30,7 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
     </div>
 
     <div class="example-container">
-      <mat-paginator class="table-paginator" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+      <!-- <mat-paginator class="table-paginator" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
       <mat-table [dataSource]="dataSource" matSort>
         <!-- <ng-container matColumnDef="organizationId" >
         <mat-header-cell *matHeaderCellDef mat-sort-header> Org ID </mat-header-cell>
@@ -72,7 +72,7 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
         <mat-row *matRowDef="let row; columns: displayedColumns;">
         </mat-row>
       </mat-table>
-
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
       
     </div>
 

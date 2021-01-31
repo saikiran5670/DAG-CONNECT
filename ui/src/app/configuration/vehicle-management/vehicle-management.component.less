@@ -21,35 +21,35 @@
   min-width: 300px;
 }
 
-.mat-table {
-  overflow: auto;
-  font-family: "Open Sans", sans-serif
-}
+// .mat-table {
+//   overflow: auto;
+//   font-family: "Open Sans", sans-serif
+// }
 
-.mat-header-cell.mat-sort-header-sorted {
-  color: black;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: navy;
-  font-weight: normal
-}
-
-
-.mat-cell:nth-child(4),
-.mat-header-cell:nth-child(4) {
-  flex: 0 0 15%;
-}
+// .mat-header-cell.mat-sort-header-sorted {
+//   color: black;
+// }
+// h1,
+// h2,
+// h3,
+// h4,
+// h5,
+// h6 {
+//   color: navy;
+//   font-weight: normal
+// }
 
 
-.mat-sort-header-container {
-  font-size: larger;
-  font-weight: bolder;
-}
+// .mat-cell:nth-child(4),
+// .mat-header-cell:nth-child(4) {
+//   flex: 0 0 15%;
+// }
+
+
+// .mat-sort-header-container {
+//   font-size: larger;
+//   font-weight: bolder;
+// }
 
 :host ::ng-deep.mat-paginator .mat-paginator-container {
   justify-content: flex-start !important;
@@ -67,11 +67,17 @@ h6 {
   text-transform: none;
 }
 
-.mat-sort-header-button {
-  font-size: larger !important;
-  font-weight: bold !important;
+.mat-table {
+  .mat-header-cell, .mat-cell {
+    // justify-content: center !important;
+  }
+} 
 
-}
+// .mat-sort-header-button {
+//   font-size: larger !important;
+//   font-weight: bold !important;
+
+// }
 
 // .bgtrans{
 //   padding: 20px 30px;
@@ -107,6 +113,6 @@ h6 {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.tablemargin{
-  margin-left: 55px;
-}
+// .tablemargin{
+//   margin-left: 55px;
+// }

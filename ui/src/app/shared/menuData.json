@@ -64,7 +64,7 @@
       "subMenuFlag": true,
       "subMenu": [
         {
-          "name": "Orgnisation Details",
+          "name": "Organisation Details",
           "subRoute": "orgnisationdetails"
         },
         {
