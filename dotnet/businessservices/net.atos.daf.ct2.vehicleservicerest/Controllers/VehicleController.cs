@@ -595,6 +595,38 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 return StatusCode(500, "Internal Server Error.");
             }
         }
+         [HttpGet]
+        [Route("getGroup")]
+        public async Task<IActionResult> GetVehicleGroup(int OrganizationId,int VehicleId)
+        {
+            try
+            {
+                _logger.LogInformation("Get vehicle group list by orgnization & vehicle id method in vehicle API called.");
+
+                if(OrganizationId==null || OrganizationId==0)
+                {
+                    return StatusCode(401,"invalid organization ID: The organization Id is Empty.");
+                }
+                if(VehicleId==null || VehicleId==0)
+                {
+                    return StatusCode(401,"invalid vehicle ID: The vehicle Id is Empty.");
+                }
+                
+                IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroup> vehicleGroupList = await _vehicelManager.GetVehicleGroup(OrganizationId,VehicleId);
+                
+                if(vehicleGroupList .Count()==0)
+                {
+                    return StatusCode(401,"vehicle group does not exist for pass parameter");
+                }
+                return Ok(vehicleGroupList);
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Vehicle Service : Get vehicle Group  details: " + ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
 
     }
 }
