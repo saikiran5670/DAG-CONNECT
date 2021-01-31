@@ -541,10 +541,33 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             return vehicleproperty;
         }
+        public async Task<IEnumerable<VehicleGroup>> GetVehicleGroup(int organizationId,int vehicleId)
+        {
 
+            var QueryStatement = @"select veh.id,grp.id as group_id,grp.name 
+                                    from master.vehicle veh left join
+                                    master.groupref gref on veh.id= gref.ref_id Left join 
+                                    master.group grp on grp.id= gref.group_id
+                                    where 1=1 ";
+            var parameter = new DynamicParameters();
+
+            // Vehicle Id Filter
+            if (vehicleId > 0)
+            {
+                parameter.Add("@id", vehicleId);
+                QueryStatement = QueryStatement + " and veh.id  = @id";
+            }
+            // organization id filter
+            if (organizationId> 0)
+            {
+                parameter.Add("@organization_id", organizationId);
+                QueryStatement = QueryStatement + " and veh.organization_id = @organization_id";
+            }
+
+            IEnumerable<VehicleGroup> result = await dataAccess.QueryAsync<VehicleGroup>(QueryStatement, parameter);
+            return result;
+        }
         
-
-
         #endregion
 
 

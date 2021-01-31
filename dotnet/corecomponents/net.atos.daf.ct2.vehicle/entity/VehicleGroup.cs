@@ -5,6 +5,10 @@ namespace net.atos.daf.ct2.vehicle.entity
 {
     public class VehicleGroup
     {
+        public int Id{get;set;}
+        public int Group_Id{get;set;}
+        public string Name { get; set; }
+        
         //  public int VehicleGroupID { get; set; }
         // public int OrganizationID { get; set; }       
         // public string Name { get; set; }
