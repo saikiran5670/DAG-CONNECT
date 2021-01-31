@@ -145,7 +145,7 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
           this.backToPage.emit({
             editFlag: false,
             editText: 'create',
-            //gridData: data,
+            gridData: objData,
           });
           //   },
           //   (error) => {}
@@ -183,7 +183,7 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
           this.backToPage.emit({
             editFlag: false,
             editText: 'edit',
-            //gridData: data,
+            gridData: objDataUpdate,
           });
         },
         (error) => {

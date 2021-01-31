@@ -1,3 +1,4 @@
+import { stringify } from '@angular/compiler/src/util';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   FormBuilder,
@@ -26,8 +27,8 @@ export class EditVINSettingComponent implements OnInit {
 
   ngOnInit() {
     this.vinSettingFormGroup = this._formBuilder.group({
-      vehicleName: ['', [Validators.required]],
-      registrationNumber: ['', [Validators.required]],
+      vehicleName: [''],
+      registrationNumber: [''],
 
       vin: new FormControl({ value: null, disabled: true }),
       vehicleModel: new FormControl({ value: null, disabled: true }),
@@ -35,31 +36,48 @@ export class EditVINSettingComponent implements OnInit {
       associateGroup: new FormControl({ value: null, disabled: true }),
     });
     this.makeVehicleData();
+    this.getAssociatedgroups();
+  }
+  getAssociatedgroups(){
+    let groups=[];
+    var str;
+    this.vehService.getAssociatedVehicleGroup(this.vinData.organization_Id,this.vinData.id).subscribe(
+      (_data) => {
+        _data.forEach((d)=>{
+           groups.push(d.name);
+           str = groups.join(", "); 
+        })
+        this.vehicleData.associateGroup = str;
+      
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
   }
 
   //--- TODO: need to add proper api response ---//
   makeVehicleData() {
+    
     this.vehicleData = {
       id: this.vinData.id,
       vehicleName: this.vinData.name,
       registrationNo: this.vinData.license_Plate_Number,
       vin: this.vinData.vin,
       vehicleModel: this.vinData.model,
-      consent: this.vinData.isActive,
+      status: this.vinData.status,
       associateGroup: this.vinData.createdDate,
     };
-    
     //when in View mode
-    if(this.viewMode){
+    if (this.viewMode) {
       this.vinSettingFormGroup.get('vehicleName').disable();
       this.vinSettingFormGroup.get('registrationNumber').disable();
-    }else{
+    } else {
       this.vinSettingFormGroup.get('vehicleName').enable();
       this.vinSettingFormGroup.get('registrationNumber').enable();
     }
-
   }
-
+  
   onCancel() {
     this.backToPage.emit(false);
   }
@@ -67,8 +85,8 @@ export class EditVINSettingComponent implements OnInit {
   onReset() {
     // this.vinSettingFormGroup.get('vehicleName').reset();
     // this.vinSettingFormGroup.get('registrationNumber').reset();
-    this.vehicleData.vehicleName= this.vinData.name;
-    this.vehicleData.registrationNo= this.vinData.license_Plate_Number;
+    this.vehicleData.vehicleName = this.vinData.name;
+    this.vehicleData.registrationNo = this.vinData.license_Plate_Number;
   }
 
   onSave() {
@@ -79,10 +97,19 @@ export class EditVINSettingComponent implements OnInit {
       vin: this.vehicleData.vin,
       license_Plate_Number: this.vehicleData.registrationNo,
     };
-    this.vehService.updateVehicleSettings(objData).subscribe((d) => {
-     
-      this.backToPage.emit(false);
-      //this.openSnackBar('Item delete', 'dismiss');
-    });
+    this.vehService.updateVehicleSettings(objData).subscribe(
+      (d) => {
+        //this.backToPage.emit(false);
+        this.backToPage.emit({
+          editFlag: false,
+          editText: 'edit',
+          gridData: objData.name
+        });
+        //this.openSnackBar('Item delete', 'dismiss');
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
   }
 }

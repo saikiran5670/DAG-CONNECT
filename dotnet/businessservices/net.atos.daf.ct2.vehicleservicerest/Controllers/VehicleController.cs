@@ -107,19 +107,20 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 {
                     return StatusCode(401,"invalid Vehicle ID: The Vehicle Id is Empty.");
                 }
-                if(string.IsNullOrEmpty(vehicleRequest.Name))
-                {
-                    return StatusCode(401,"invalid Vehicle Name: The Vehicle Name is Empty.");
-                }
-                if(string.IsNullOrEmpty(vehicleRequest.License_Plate_Number))
-                {
-                    return StatusCode(401,"invalid Vehicle License Plate Number: The Vehicle License Plate Number is Empty.");
-                }
+                // if(string.IsNullOrEmpty(vehicleRequest.Name))
+                // {
+                //     return StatusCode(401,"invalid Vehicle Name: The Vehicle Name is Empty.");
+                // }
+                // if(string.IsNullOrEmpty(vehicleRequest.License_Plate_Number))
+                // {
+                //     return StatusCode(401,"invalid Vehicle License Plate Number: The Vehicle License Plate Number is Empty.");
+                // }
+
                 Vehicle ObjvehicleResponse = new Vehicle();
                 Vehicle vehicle = new Vehicle();
                 vehicle.ID=vehicleRequest.ID;
-                vehicle.Name=vehicleRequest.Name;
-                vehicle.License_Plate_Number=vehicleRequest.License_Plate_Number;
+                vehicle.Name=vehicleRequest.Name == null ? "": vehicleRequest.Name;
+                vehicle.License_Plate_Number=vehicleRequest.License_Plate_Number==null ? "": vehicleRequest.License_Plate_Number;
                 vehicle.Vid=null;
                 vehicle.Tcu_Id="";
                 vehicle.Tcu_Serial_Number=null;
