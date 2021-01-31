@@ -44,11 +44,25 @@
                     <input [(ngModel)]='vehicleData.vehicleModel' placeholder="{{ translationData.lblVehicleModel || 'Vehicle Model' }}" matInput formControlName="vehicleModel" >
                   </mat-form-field>
                 </div>
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblConsent || 'Consent' }}</mat-label>
-                    <mat-form-field appearance="outline" class="full-width">
-                      <input [(ngModel)]='vehicleData.consent' placeholder="{{ translationData.lblConsent || 'Consent' }}" matInput formControlName="consent" >
-                    </mat-form-field>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="center">
+                    <mat-label>{{ translationData.lblConsent || 'Status' }}</mat-label>
+                     <div *ngIf="vehicleData.status==73 ">
+                        <img src='assets/images/Opt_in.svg' style="width: 20px;height: 20px;" />
+                      </div>
+                      <div *ngIf="vehicleData.status==79 ">
+                        <img src='assets/images/Ota.svg' style="width: 20px;height: 20px;" />
+                      </div>
+                      <div *ngIf="vehicleData.status==84 ">
+                        <img src='assets/images/terminated.svg' style="width: 20px;height: 20px;" />
+                      </div>
+                      <div *ngIf="vehicleData.status==85 ">
+                        <img src='assets/images/Opt_out.svg' style="width: 20px;height: 20px;" />
+                      </div>
+                    <!-- <mat-form-field appearance="outline" class="full-width" style="display: none;">
+                      <input [(ngModel)]='vehicleData.status' placeholder="{{ translationData.lblConsent || 'Status' }}" matInput formControlName="consent" >
+                      
+                      
+                    </mat-form-field> -->
                   </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblAssociateGroup || 'Associate Group' }}</mat-label>

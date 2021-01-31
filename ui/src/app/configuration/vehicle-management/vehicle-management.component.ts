@@ -41,6 +41,7 @@ export class VehicleManagementComponent implements OnInit {
   dataSource: any = new MatTableDataSource([]);
   selectedType: any = '';
   columnNames: string[];
+  userCreatedMsg: any = '';
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -60,7 +61,8 @@ export class VehicleManagementComponent implements OnInit {
   vehicleGroupData: any;
   vinData: any;
   groupInfo: any;
-  orgId:number
+  orgId: number;
+  grpTitleVisible: boolean = false;
 
   constructor(
     private vehService: VehicleService,
@@ -118,7 +120,7 @@ export class VehicleManagementComponent implements OnInit {
       lblSelectVehicleListOptional: 'Select Vehicle List (Optional)',
       lblHintMessage:
         'Please select vehicles to from below list to associate with this vehicle group if needed.',
-      lblConsent: 'Consent',
+      lblConsent: 'Status',
       lblVehicleGroupalreadyexistsPleasechooseadifferentname:
         'Vehicle Group already exists. Please choose a different name.',
       lblPleaseenterthenewvehiclegroupname:
@@ -155,7 +157,7 @@ export class VehicleManagementComponent implements OnInit {
     if (localStorage.getItem('accountOrganizationId') != null) {
       this.orgId = parseInt(localStorage.getItem('accountOrganizationId'));
     }
-    this.editFlag=false;
+    this.editFlag = false;
     let translationObj = {
       id: 0,
       code: 'EN-GB', //-- TODO: Lang code based on account
@@ -183,13 +185,13 @@ export class VehicleManagementComponent implements OnInit {
     };
     this.veh = {
       vehicleId: 0,
-      organizationID:this.orgId ? this.orgId : 1,
+      organizationID: this.orgId ? this.orgId : 1,
       vehicleIdList: '',
       vin: '',
       status: 0,
     };
     //clear the  table first
-    let tempData=[]
+    let tempData = [];
     this.dataSource = new MatTableDataSource(tempData);
     //*************** */
     this.vehService.getVehicle(this.veh).subscribe(
@@ -316,17 +318,22 @@ export class VehicleManagementComponent implements OnInit {
           if (this.selectedType === 'group' || this.selectedType === 'both') {
             this.vehService.deleteVehicleGroup(item.id).subscribe((d) => {
               this.loadVehicleData();
-              this.openSnackBar('Item delete', 'dismiss');
+              let msg = this.getCreateMsg(item.name, 'delete');
+              this.openSnackBar(msg, 'dismiss');
             });
           } else if (this.selectedType === 'vehicle') {
             this.vehService.deleteVehicle(item.vehicleID).subscribe((d) => {
               this.loadVehicleData();
-              this.openSnackBar('Item delete', 'dismiss');
+              let msg = this.getCreateMsg(item.name, 'delete');
+              this.openSnackBar(msg, 'dismiss');
             });
           }
         }
       });
     }
+  }
+  onClose() {
+    this.grpTitleVisible = false;
   }
 
   openSnackBar(message: string, action: string) {
@@ -413,17 +420,63 @@ export class VehicleManagementComponent implements OnInit {
 
   editData(item: any) {
     this.editFlag = item.editFlag;
+    //console.log(item.gridData.name);
     if (item.editText == 'create') {
-      this.openSnackBar('Item created', 'dismiss');
+      let msg = this.getCreateMsg(item.gridData.name, 'create');
+      this.openSnackBar(msg, 'dismiss');
       this.initData = item.gridData;
     } else if (item.editText == 'edit') {
-      this.openSnackBar('Item edited', 'dismiss');
-      this.initData = item.gridData;
+      let msg = this.getCreateMsg(item.gridData.name, 'edit');
+
+      this.userCreatedMsg = msg;
+      this.grpTitleVisible = true;
+      setTimeout(() => {
+        this.grpTitleVisible = false;
+      }, 5000);
+      //this.openSnackBar(msg, 'dismiss');
+      //this.initData = item.gridData;
     }
     this.loadVehicleData();
-    this.updateDataSource(this.initData);
+    //this.updateDataSource(this.initData);
   }
-
+  getCreateMsg(Name: any, flagS: string) {
+    let returnVal = '';
+    if (flagS == 'edit') {
+      if (this.translationData.lblVehicleGroupdetailssuccessfullyupdated)
+        returnVal = this.translationData.lblVehicleGroupdetailssuccessfullyupdated.replace(
+          '$',
+          Name
+        );
+      else
+        returnVal = "Vehicle Group '$' details successfully updated".replace(
+          '$',
+          Name
+        );
+    } else if (flagS == 'delete') {
+      if (this.translationData.lblVehicleGroupDeleted)
+        returnVal = this.translationData.lblVehicleGroupDeleted.replace(
+          '$',
+          Name
+        );
+      else
+        returnVal = "Vehicle Group '$' was successfully deleted".replace(
+          '$',
+          Name
+        );
+    } else {
+      if (this.translationData.lblNewVehicleGroupCreatedSuccessfully)
+        returnVal = this.translationData.lblNewVehicleGroupCreatedSuccessfully.replace(
+          '$',
+          Name
+        );
+      else
+        returnVal = "New Vehicle Group '$' Created Successfully".replace(
+          '$',
+          Name
+        );
+    }
+    return returnVal;
+  }
   updateDataSource(data: any) {
     setTimeout(() => {
       this.dataSource = new MatTableDataSource(data);
@@ -432,11 +485,31 @@ export class VehicleManagementComponent implements OnInit {
     });
   }
 
-  onBackToPage(flag: any) {
-    this.viewFlag = flag;
-    if(flag='create')this.selectedType = 'group';
-    else this.selectedType = 'vehicle';
+  onBackToPage(item: any) {
+    this.viewFlag = item.editFlag;
+    //this.editFlag = flag;
     
+    if (item.editText == 'create') this.selectedType = 'group';
+    else this.selectedType = 'vehicle';
+    if (item.editText == 'edit'){
+      let msg = '';
+      if (this.translationData.lblVehiclesettingssuccessfullyupdated)
+        msg = this.translationData.lblVehiclesettingssuccessfullyupdated.replace(
+          '$',
+          item.gridData
+        );
+      else
+        msg = "Vehicle '$' settings successfully updated".replace(
+          '$',
+          item.gridData
+        );
+      // this.openSnackBar(msg, 'dismiss');
+      this.userCreatedMsg = msg;
+      this.grpTitleVisible = true;
+      setTimeout(() => {
+        this.grpTitleVisible = false;
+      }, 5000);
+    }
     this.loadVehicleData();
     this.updateDataSource(this.initData);
   }
@@ -444,10 +517,9 @@ export class VehicleManagementComponent implements OnInit {
   onChange(event) {
     this.selectedType = event.value;
     if (event.value === 'group') {
-       this.initData = this.vehicleGroupData;
+      this.initData = this.vehicleGroupData;
       this.loadVehicleGroupDataSource();
     } else if (event.value === 'vehicle') {
-      
       this.initData = this.vehicleData;
       this.loadVehicleDataSource();
     } else if (event.value === 'both') {
@@ -475,12 +547,12 @@ export class VehicleManagementComponent implements OnInit {
       'Actions',
     ];
     if (this.vehicleGroupData != null) {
-     this.updateDataSource(this.vehicleGroupData);
+      this.updateDataSource(this.vehicleGroupData);
     } else {
       this.loadVehGroupTable('group');
     }
   }
-  loadVehGroupTable(flag:string){
+  loadVehGroupTable(flag: string) {
     this.vehGrpRqst = {
       id: 0,
       organizationID: this.orgId ? this.orgId : 1,
@@ -488,16 +560,18 @@ export class VehicleManagementComponent implements OnInit {
       vehiclesGroup: true,
       groupIds: [0],
     };
-    if(flag=='group'){
-      this.vehGrpRqst.vehicles=false;}
-    else{this.vehGrpRqst.vehicles=true;
-    }  
-    this.vehService.getVehicleGroup(this.vehGrpRqst)
-    //.pipe(map((data) => data.filter((d) => d.isVehicleGroup == true)))
-    .subscribe((_data) => {
-      this.vehicleGroupData = _data;
-      this.initData = this.vehicleGroupData;
-    });
+    if (flag == 'group') {
+      this.vehGrpRqst.vehicles = false;
+    } else {
+      this.vehGrpRqst.vehicles = true;
+    }
+    this.vehService
+      .getVehicleGroup(this.vehGrpRqst)
+      //.pipe(map((data) => data.filter((d) => d.isVehicleGroup == true)))
+      .subscribe((_data) => {
+        this.vehicleGroupData = _data;
+        this.initData = this.vehicleGroupData;
+      });
     this.updateDataSource(this.vehicleGroupData);
   }
 
@@ -544,7 +618,7 @@ export class VehicleManagementComponent implements OnInit {
       'model',
       'status',
       'action',
-      'isVehicleGroup'
+      'isVehicleGroup',
     ];
     this.columnNames = [
       'Vehicle Group/Vehicle',
@@ -553,8 +627,7 @@ export class VehicleManagementComponent implements OnInit {
       'Model',
       'Status',
       'Actions',
-      'isVehicleGroup'
-      
+      'isVehicleGroup',
     ];
     //this.loadVehGroupTable('both');
     if (this.bothData != null) {
