@@ -30,10 +30,10 @@ import { ImageCropperModule } from 'ngx-image-cropper';
 import { DirectivesModule } from '../directives/directives.module';
 import { AccountService } from '../services/account.service';
 import { UserDetailTableComponent } from './user-management/new-user-step/user-detail-table/user-detail-table.component';
-import { CreateEditVehicleDetailsComponent } from '../configuration/vehicle-management/create-edit-vehicle-details/create-edit-vehicle-details.component';
-import { EditVINSettingComponent } from '../configuration/vehicle-management/edit-vin-setting/edit-vin-setting.component';
+import { CreateEditVehicleDetailsComponent } from '../admin/vehicle-management/create-edit-vehicle-details/create-edit-vehicle-details.component';
+import { EditVINSettingComponent } from '../admin/vehicle-management/edit-vin-setting/edit-vin-setting.component';
 import { VehicleService } from '../services/vehicle.service';
-import { VehicleManagementComponent } from '../configuration/vehicle-management/vehicle-management.component';
+import { VehicleManagementComponent } from '../admin/vehicle-management/vehicle-management.component';
 
 @NgModule({
   declarations: [AdminComponent, UserGroupManagementComponent,
