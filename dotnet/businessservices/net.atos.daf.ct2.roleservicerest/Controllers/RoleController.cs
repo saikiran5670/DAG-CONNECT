@@ -57,8 +57,9 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
                     RoleEntity.RoleMaster ObjRole = new RoleEntity.RoleMaster();
                     ObjRole.Organization_Id =roleMaster.OrganizationId;
                     ObjRole.Name = roleMaster.RoleName.Trim();
+                    ObjRole.Description = roleMaster.Description;
                     ObjRole.Createdby = roleMaster.Createdby;                    
-                    if(ObjRole.Description!= null && !string.IsNullOrEmpty(ObjRole.Description))
+                    if( (ObjRole.Description!= null) && (!string.IsNullOrEmpty(ObjRole.Description)))
                     ObjRole.Description=roleMaster.Description.Trim();
                     else ObjRole.Description=string.Empty;
 
@@ -107,8 +108,9 @@ namespace net.atos.daf.ct2.roleservicerest.Controllers
                {
                     RoleEntity.RoleMaster ObjRole = new RoleEntity.RoleMaster();                   
                     ObjRole.Name = roleMaster.RoleName.Trim();
+                    ObjRole.Description = roleMaster.Description;
                     ObjRole.Id = roleMaster.RoleId;
-                    if(ObjRole.Description!= null && !string.IsNullOrEmpty(ObjRole.Description))
+                    if( (ObjRole.Description!= null) && (!string.IsNullOrEmpty(ObjRole.Description)))
                     ObjRole.Description=roleMaster.Description.Trim();
                     else ObjRole.Description=string.Empty;
 
