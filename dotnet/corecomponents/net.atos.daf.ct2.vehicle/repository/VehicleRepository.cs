@@ -321,14 +321,12 @@ namespace net.atos.daf.ct2.vehicle.repository
         public async Task<IEnumerable<VehicleGroupRequest>> GetOrganizationVehicleGroupdetails(long OrganizationId)
         {
 
-            var QueryStatement = @"select vehiclegroupid,VehicleGroupName,vehicleCount,count(account) as usercount from 
-                                    (select 
-                                    grp.id as vehiclegroupid
-                                    ,grp.name as VehicleGroupName                                                                                                                                                ,grp.object_type
-                                    ,count(distinct vgrpref.ref_id) as vehicleCount                                     
+            var QueryStatement = @"select vehiclegroupid,VehicleGroupName,vehicleCount,count(account) as usercount, true as isgroup from 
+                                   (select grp.id as vehiclegroupid,grp.name as VehicleGroupName,grp.object_type
+                                    ,count(distinct vgrpref.ref_id) as vehicleCount 
                                     ,agrpref.ref_id as account
                                     from master.group grp 
-                                    left join master.groupref vgrpref
+                                    Left join master.groupref vgrpref
                                     on  grp.id=vgrpref.group_id and grp.object_type='V'
                                     left join master.accessrelationship accrel
                                     on  accrel.vehicle_group_id=grp.id
@@ -336,7 +334,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                                     on  accrel.account_group_id=agrpref.group_id
                                     where grp.organization_id = @organization_id
                                     group by grp.id,grp.name,accrel.account_group_id,agrpref.ref_id,grp.object_type) vdetail
-                                    group by vehiclegroupid,VehicleGroupName,vehicleCount,object_type";
+                                    group by vehiclegroupid,VehicleGroupName,vehicleCount,object_type union all 
+									select id as vehiclegroupid, name as VehicleGroupName,0 as vehicleCount, 0 as usercount,false as isgroup
+									 from master.vehicle";
+
             var parameter = new DynamicParameters();
 
             parameter.Add("@organization_id",OrganizationId);
