@@ -87,7 +87,6 @@ export class AppComponent {
       pageTitles: {
         alerts: 'Alerts',
         landmarks: 'Landmarks',
-        vehiclemanagement: 'Vehicle Management'
       }
     },
     admin : {
@@ -97,7 +96,8 @@ export class AppComponent {
         usergroupmanagement: 'User Group Management',
         usermanagement: 'User Management',
         drivermanagement: 'Driver Management',
-        userrolemanagement: 'User Role Management'
+        userrolemanagement: 'User Role Management',
+        vehiclemanagement: 'Vehicle Management'
       }
     },
     tachograph : {

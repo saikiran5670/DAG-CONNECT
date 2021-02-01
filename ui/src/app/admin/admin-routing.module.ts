@@ -7,6 +7,7 @@ import { UserManagementComponent } from './user-management/user-management.compo
 import { UserListResolver } from '../services/resolver/user-list-resolver.service';
 import { DriverManagementComponent } from './driver-management/driver-management.component';
 import { UserRoleManagementComponent } from './user-role-management/user-role-management.component';
+import { VehicleManagementComponent } from '../configuration/vehicle-management/vehicle-management.component';
 
 const routes: Routes = [
   {
@@ -27,7 +28,8 @@ const routes: Routes = [
       // },
       { path: 'usermanagement', component: UserManagementComponent },
       { path: 'userrolemanagement', component: UserRoleManagementComponent },
-      { path: 'drivermanagement', component: DriverManagementComponent }
+      { path: 'drivermanagement', component: DriverManagementComponent },
+      { path: "vehiclemanagement", component: VehicleManagementComponent}
     ],
   },
 ];

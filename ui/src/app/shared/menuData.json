@@ -50,10 +50,6 @@
         {
           "name": "Landmarks",
           "subRoute": "landmarks"
-        },
-        {
-          "name": "Vehicle Management",
-          "subRoute": "vehiclemanagement"
         }
       ]
     },
@@ -82,6 +78,10 @@
         {
           "name": "Driver Management",
           "subRoute": "drivermanagement"
+        },
+        {
+          "name": "Vehicle Management",
+          "subRoute": "vehiclemanagement"
         }
       ]
     },
