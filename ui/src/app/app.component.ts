@@ -54,7 +54,7 @@ export class AppComponent {
     triptracing: 'Trip Tracing',
     alerts: 'Alerts',
     landmarks: 'Landmarks',
-    orgnisationdetails: 'Orgnisation Details',
+    orgnisationdetails: 'Organisation Details',
     usergroupmanagement: 'User Group Management',
     usermanagement: 'User Management',
     vehiclemanagement: 'Vehicle Management',
@@ -87,17 +87,17 @@ export class AppComponent {
       pageTitles: {
         alerts: 'Alerts',
         landmarks: 'Landmarks',
-        vehiclemanagement: 'Vehicle Management'
       }
     },
     admin : {
       open: false,
       pageTitles: {
-        orgnisationdetails: 'Orgnisation Details',
+        orgnisationdetails: 'Organisation Details',
         usergroupmanagement: 'User Group Management',
         usermanagement: 'User Management',
         drivermanagement: 'Driver Management',
-        userrolemanagement: 'User Role Management'
+        userrolemanagement: 'User Role Management',
+        vehiclemanagement: 'Vehicle Management'
       }
     },
     tachograph : {
@@ -141,18 +141,24 @@ export class AppComponent {
     this.dataInterchangeService.dataInterface$.subscribe(data => {
       this.isLogedIn = data;
       this.getTranslationLabels()
+      this.getAccountInfo();
     });
+    if(!this.isLogedIn){
+      this.getAccountInfo();
+    }
 
-    this.dataInterchangeService.orgRoleInterface$.subscribe(resp => {
-      this.userFullName = `${resp.accountDetail.salutation} ${resp.accountDetail.firstName} ${resp.accountDetail.lastName}`;
-      let userRole = resp.role.filter(item => item.id === parseInt(localStorage.getItem("accountRoleId")));
-      this.userRole = userRole[0].name;
-      let userOrg = resp.organization.filter(item => item.id === parseInt(localStorage.getItem("accountOrganizationId")));
-      this.userOrg = userOrg[0].name;
-      this.organizationDropdown = resp.organization;
-      this.roleDropdown = resp.role;
-      this.setDropdownValues();
-    });
+    // this.dataInterchangeService.orgRoleInterface$.subscribe(resp => {
+    //   this.userFullName = `${resp.accountDetail.salutation} ${resp.accountDetail.firstName} ${resp.accountDetail.lastName}`;
+    //   let userRole = resp.role.filter(item => item.id === parseInt(localStorage.getItem("accountRoleId")));
+    //   this.userRole = userRole[0].name;
+    //   let userOrg = resp.organization.filter(item => item.id === parseInt(localStorage.getItem("accountOrganizationId")));
+    //   this.userOrg = userOrg[0].name;
+    //   this.organizationDropdown = resp.organization;
+    //   this.roleDropdown = resp.role;
+    //   this.setDropdownValues();
+
+    //   console.log(JSON.stringify(localStorage.getItem("accountInfo")));
+    // });
 
     router.events.subscribe((val:any) => {
       if(val instanceof NavigationEnd){
@@ -184,6 +190,21 @@ export class AppComponent {
     // this.isMobile();
     // this.isTablet();
     // this.isDesktop();
+  }
+
+  getAccountInfo(){
+    let accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+    console.log(accountInfo);
+    if(accountInfo){
+      this.userFullName = `${accountInfo.accountDetail.salutation} ${accountInfo.accountDetail.firstName} ${accountInfo.accountDetail.lastName}`;
+      let userRole = accountInfo.role.filter(item => item.id === parseInt(localStorage.getItem("accountRoleId")));
+      this.userRole = userRole[0].name;
+      let userOrg = accountInfo.organization.filter(item => item.id === parseInt(localStorage.getItem("accountOrganizationId")));
+      this.userOrg = userOrg[0].name;
+      this.organizationDropdown = accountInfo.organization;
+      this.roleDropdown = accountInfo.role;
+      this.setDropdownValues();
+    }
   }
 
   setDropdownValues(){
@@ -345,6 +366,7 @@ private setPageTitle() {
     localStorage.setItem("accountOrganizationId", value);
     let orgname = this.organizationDropdown.filter(item => item.id === value);
     this.userOrg = orgname[0].name;
+    localStorage.setItem("organizationName", this.userOrg);
    }
 
    onRoleChange(value){

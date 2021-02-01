@@ -68,7 +68,7 @@
                                 style='padding: 10px !important; background: #ECF7FE;'>
                                 <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px"
                                     fxLayoutAlign="left">
-                                    <mat-label>Select Organization</mat-label>
+                                    <mat-label>Select Organisation</mat-label>
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="onOrgChange($event.value)" formControlName="organization">
                                             <mat-option *ngFor="let org of organizationDropdown" [value]="org.id">
@@ -136,7 +136,7 @@
                             <a matTooltip='{{subMenuItem.name | titlecase}}'
                                 [routerLink]="[ '/'+menu.mainRoute+'/'+subMenuItem.subRoute ]"
                                 (click)="navigateToPage(subMenuItem.subRoute)">
-                                <mat-icon class='box-svg-css margin-right-10'>stop_circle</mat-icon>
+                                <mat-icon class='box-svg-css margin-right-5'>stop_circle</mat-icon>
                                 <span class='font-size-0-9'>{{subMenuItem.name | titlecase}}</span>
                             </a>
                         </li>

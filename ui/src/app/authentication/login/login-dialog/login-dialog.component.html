@@ -14,7 +14,7 @@
         <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="10px" class='margin-20'
           style='padding: 10px 20px !important; background: #ecf7fe;'>
           <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <mat-label>Select Organization</mat-label>
+            <mat-label>Select Organisation</mat-label>
             <mat-form-field appearance="outline" class="full-width">
               <mat-select formControlName="organization">
                 <mat-option *ngFor="let org of data.organization" [value]="org.id">
@@ -22,7 +22,7 @@
                 </mat-option>
               </mat-select>
             </mat-form-field>
-            <mat-error *ngIf="loginDialogForm.get('organization').hasError('required')">Organization is required
+            <mat-error *ngIf="loginDialogForm.get('organization').hasError('required')">Organisation is required
             </mat-error>
           </div>
         </div>

@@ -111,7 +111,7 @@ export class UserManagementComponent implements OnInit {
       lblSalutation: "Salutation",
       lblLastName: "Last Name",
       lblBirthDate: "Birth Date",
-      lblOrganization: "Organization",
+      lblOrganisation: "Organisation",
       lblLanguage: "Language",
       lblTimeZone: "Time Zone",
       lblCurrency: "Currency",
@@ -257,8 +257,17 @@ export class UserManagementComponent implements OnInit {
       accounts: true,
       accountCount: true
    }
-    forkJoin(this.roleService.getUserRoles(roleObj),
-            this.accountService.getAccountGroupDetails(accountGrpObj)
+
+   this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
+    this.roleData = allRoleData;
+    this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
+      this.userGrpData = allAccountGroupData;
+      this.stepFlag = true;
+    }, (error)=> {});
+   }, (error)=> {});
+
+    // forkJoin(this.roleService.getUserRoles(roleObj),
+    //         this.accountService.getAccountGroupDetails(accountGrpObj)
             // this.translationService.getTranslationsForDropdowns('EN-GB','language'),
             // this.translationService.getTranslationsForDropdowns('EN-GB','timezone'),
             // this.translationService.getTranslationsForDropdowns('EN-GB','unit'),
@@ -267,10 +276,10 @@ export class UserManagementComponent implements OnInit {
             // this.translationService.getTranslationsForDropdowns('EN-GB','timeformat'),
             // this.translationService.getTranslationsForDropdowns('EN-GB','vehicledisplay'),
             // this.translationService.getTranslationsForDropdowns('EN-GB','landingpagedisplay')
-      ).subscribe((data) => {
-        //console.log(data)
-        this.roleData = data[0];
-        this.userGrpData = data[1];
+      // ).subscribe((data) => {
+      //   //console.log(data)
+      //   this.roleData = data[0];
+      //   this.userGrpData = data[1];
         // this.defaultSetting = {
         //   languageDropdownData: data[2],
         //   timezoneDropdownData: data[3],
@@ -281,9 +290,9 @@ export class UserManagementComponent implements OnInit {
         //   vehicleDisplayDropdownData: data[8],
         //   landingPageDisplayDropdownData: data[9]
         // }
-        this.stepFlag = true;
-    }, (error) => {  });
-  }
+  //       this.stepFlag = true;
+  //   }, (error) => {  });
+    }
 
   editViewUser(element: any, type: any) {
     let roleObj = { 
@@ -310,8 +319,35 @@ export class UserManagementComponent implements OnInit {
     accountCount: false
   };
 
-    forkJoin(this.roleService.getUserRoles(roleObj),
-            this.accountService.getAccountGroupDetails(accountGrpObj),
+  this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
+    this.roleData = allRoleData;
+    this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
+      this.userGrpData = allAccountGroupData;
+      this.accountService.getAccountRoles(selectedRoleObj).subscribe(selectedRoleData => { 
+        this.selectedRoleData = selectedRoleData;
+        this.accountService.getAccountPreference(element.id).subscribe(accountPrefData => {
+          this.userDataForEdit = element;
+          this.selectedPreference = accountPrefData;
+          this.accountService.getAccountDesc(selectedAccountGrpObj).subscribe((resp) => {
+            this.selectedUserGrpData = resp;
+            this.editFlag = (type == 'edit') ? true : false;
+            this.viewFlag = (type == 'view') ? true : false;
+            this.isCreateFlag = false;
+          }, (error) => { 
+              if(error.status == 404){
+                this.selectedUserGrpData = [];
+                this.editFlag = (type == 'edit') ? true : false;
+                this.viewFlag = (type == 'view') ? true : false;
+                this.isCreateFlag = false;
+              }
+           });
+        }, (error)=> {});
+      }, (error)=> {});
+    }, (error)=> {});
+   }, (error)=> {});
+
+    // forkJoin(this.roleService.getUserRoles(roleObj),
+    //         this.accountService.getAccountGroupDetails(accountGrpObj),
             // this.translationService.getTranslationsForDropdowns('EN-GB','language'),
             // this.translationService.getTranslationsForDropdowns('EN-GB','timezone'),
             // this.translationService.getTranslationsForDropdowns('EN-GB','unit'),
@@ -320,12 +356,12 @@ export class UserManagementComponent implements OnInit {
             // this.translationService.getTranslationsForDropdowns('EN-GB','timeformat'),
             // this.translationService.getTranslationsForDropdowns('EN-GB','vehicledisplay'),
             // this.translationService.getTranslationsForDropdowns('EN-GB','landingpagedisplay'),
-            this.accountService.getAccountRoles(selectedRoleObj),
-            this.accountService.getAccountPreference(element.id)
-      ).subscribe((data) => {
+      //       this.accountService.getAccountRoles(selectedRoleObj),
+      //       this.accountService.getAccountPreference(element.id)
+      // ).subscribe((data) => {
         //console.log(data)
-        this.roleData = data[0];
-        this.userGrpData = data[1];
+        // this.roleData = data[0];
+        // this.userGrpData = data[1];
         // this.defaultSetting = {
         //   languageDropdownData: data[2],
         //   timezoneDropdownData: data[3],
@@ -336,18 +372,18 @@ export class UserManagementComponent implements OnInit {
         //   vehicleDisplayDropdownData: data[8],
         //   landingPageDisplayDropdownData: data[9]
         // }
-        this.selectedRoleData = data[2];
+        //this.selectedRoleData = data[2];
         //console.log(element);
-        this.userDataForEdit = element;
-        this.selectedPreference = data[3];
+        // this.userDataForEdit = element;
+        // this.selectedPreference = data[3];
         // this.stepFlag = true;
-        this.accountService.getAccountDesc(selectedAccountGrpObj).subscribe((resp) => {
-          this.selectedUserGrpData = resp;
-          this.editFlag = (type == 'edit') ? true : false;
-          this.viewFlag = (type == 'view') ? true : false;
-          this.isCreateFlag = false;
-        }, (error) => {  });
-    }, (error) => {  });
+        // this.accountService.getAccountDesc(selectedAccountGrpObj).subscribe((resp) => {
+        //   this.selectedUserGrpData = resp;
+        //   this.editFlag = (type == 'edit') ? true : false;
+        //   this.viewFlag = (type == 'view') ? true : false;
+        //   this.isCreateFlag = false;
+        // }, (error) => {  });
+    //}, (error) => {  });
   }
 
   loadUsersData(){

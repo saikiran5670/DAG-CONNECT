@@ -222,14 +222,10 @@ export class AccountService {
   }
 
   private handleError(errResponse: HttpErrorResponse) {
-    if (errResponse.error instanceof ErrorEvent) {
-      console.error('Client side error', errResponse.error.message);
-    } else {
-      console.error('Server side error', errResponse);
-    }
-    return throwError(
-      'There is a problem with the service. Please try again later.'
-    );
+      console.error('Error : ', errResponse.error);
+      return throwError(
+        errResponse
+      );
   }
 
 }

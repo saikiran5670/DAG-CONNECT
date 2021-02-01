@@ -107,19 +107,20 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 {
                     return StatusCode(401,"invalid Vehicle ID: The Vehicle Id is Empty.");
                 }
-                if(string.IsNullOrEmpty(vehicleRequest.Name))
-                {
-                    return StatusCode(401,"invalid Vehicle Name: The Vehicle Name is Empty.");
-                }
-                if(string.IsNullOrEmpty(vehicleRequest.License_Plate_Number))
-                {
-                    return StatusCode(401,"invalid Vehicle License Plate Number: The Vehicle License Plate Number is Empty.");
-                }
+                // if(string.IsNullOrEmpty(vehicleRequest.Name))
+                // {
+                //     return StatusCode(401,"invalid Vehicle Name: The Vehicle Name is Empty.");
+                // }
+                // if(string.IsNullOrEmpty(vehicleRequest.License_Plate_Number))
+                // {
+                //     return StatusCode(401,"invalid Vehicle License Plate Number: The Vehicle License Plate Number is Empty.");
+                // }
+
                 Vehicle ObjvehicleResponse = new Vehicle();
                 Vehicle vehicle = new Vehicle();
                 vehicle.ID=vehicleRequest.ID;
-                vehicle.Name=vehicleRequest.Name;
-                vehicle.License_Plate_Number=vehicleRequest.License_Plate_Number;
+                vehicle.Name=vehicleRequest.Name == null ? "": vehicleRequest.Name;
+                vehicle.License_Plate_Number=vehicleRequest.License_Plate_Number==null ? "": vehicleRequest.License_Plate_Number;
                 vehicle.Vid=null;
                 vehicle.Tcu_Id="";
                 vehicle.Tcu_Serial_Number=null;
@@ -592,6 +593,38 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Vehicle Service : Get oganization vehicle Group  details: " + ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+         [HttpGet]
+        [Route("getGroup")]
+        public async Task<IActionResult> GetVehicleGroup(int OrganizationId,int VehicleId)
+        {
+            try
+            {
+                _logger.LogInformation("Get vehicle group list by orgnization & vehicle id method in vehicle API called.");
+
+                if(OrganizationId==null || OrganizationId==0)
+                {
+                    return StatusCode(401,"invalid organization ID: The organization Id is Empty.");
+                }
+                if(VehicleId==null || VehicleId==0)
+                {
+                    return StatusCode(401,"invalid vehicle ID: The vehicle Id is Empty.");
+                }
+                
+                IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroup> vehicleGroupList = await _vehicelManager.GetVehicleGroup(OrganizationId,VehicleId);
+                
+                if(vehicleGroupList .Count()==0)
+                {
+                    return StatusCode(401,"vehicle group does not exist for pass parameter");
+                }
+                return Ok(vehicleGroupList);
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Vehicle Service : Get vehicle Group  details: " + ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, "Internal Server Error.");
             }
         }

@@ -9,8 +9,9 @@
     </div>
   </div>
   <mat-card class='mat-elevation-z' *ngIf='!stepFlag && !editFlag && !viewFlag'>
-    <div>
-      <app-common-filter *ngIf="filterFlag" (filterValues)="getFilteredValues($event)" [initData]='initData' [translationData]='translationData'></app-common-filter>
+    <div *ngIf="initData">
+      <app-common-filter *ngIf="true" [initData]='initData' [translationData]='translationData'></app-common-filter>
+      <!-- <app-common-filter *ngIf="filterFlag" (filterValues)="getFilteredValues($event)" [initData]='initData' [translationData]='translationData'></app-common-filter> -->
     </div>  
     <div fxLayout="row" fxLayoutAlign="space-between">
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -29,7 +30,7 @@
     <div>
       <mat-form-field>
         <!-- <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch }}"> -->
-        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblFilter || 'Filter' }}">
       </mat-form-field>
     </div>
     <div>
@@ -52,7 +53,8 @@
         </ng-container>
         <ng-container matColumnDef="accountGroups">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserGroup || 'User Group' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}">{{ row.accountGroups.length > 0 ? row.accountGroups[0].name : '-' }}</mat-cell>
+          <!-- <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}"><span class="text-truncate">{{ row.accountGroups.length > 0 ? row.accountGroups[0].name : '-' }}</span></mat-cell> -->
+          <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}"><span class="text-truncate">{{ row.accountGroupList }}</span></mat-cell>
         </ng-container>
         <ng-container matColumnDef="action">
           <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Action' }} </mat-header-cell>

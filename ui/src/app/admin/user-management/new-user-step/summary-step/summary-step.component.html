@@ -39,8 +39,8 @@
                         <mat-label class='custom-font'>{{!isCreateFlag ? confirmAccountInfoData.birthDate : confirmAccountInfoData.birthDate ? (confirmAccountInfoData.birthDate.value | date: 'MM/dd/yyyy') : '--'}}</mat-label>
                     </div> -->
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                        <!-- <mat-label>{{ translationData.lblOrganization }}</mat-label> -->
-                        <mat-label>{{ translationData.lblOrganization || 'Organization' }}</mat-label>
+                        <!-- <mat-label>{{ translationData.lblOrganisation }}</mat-label> -->
+                        <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
                         <mat-label class='custom-font'>{{ confirmAccountInfoData.organizationData }}</mat-label>
                     </div>
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
@@ -52,7 +52,7 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
             <div>
-                <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting || 'User General Setting' }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblDefaultorganizationbasedsettings || 'Default organization based settings' }})</span></span>
+                <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting || 'User General Setting' }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }})</span></span>
             </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
