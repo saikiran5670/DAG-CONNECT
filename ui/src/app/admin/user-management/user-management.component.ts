@@ -333,7 +333,14 @@ export class UserManagementComponent implements OnInit {
             this.editFlag = (type == 'edit') ? true : false;
             this.viewFlag = (type == 'view') ? true : false;
             this.isCreateFlag = false;
-          }, (error) => {  });
+          }, (error) => { 
+              if(error.status == 404){
+                this.selectedUserGrpData = [];
+                this.editFlag = (type == 'edit') ? true : false;
+                this.viewFlag = (type == 'view') ? true : false;
+                this.isCreateFlag = false;
+              }
+           });
         }, (error)=> {});
       }, (error)=> {});
     }, (error)=> {});

@@ -141,18 +141,24 @@ export class AppComponent {
     this.dataInterchangeService.dataInterface$.subscribe(data => {
       this.isLogedIn = data;
       this.getTranslationLabels()
+      this.getAccountInfo();
     });
+    if(!this.isLogedIn){
+      this.getAccountInfo();
+    }
 
-    this.dataInterchangeService.orgRoleInterface$.subscribe(resp => {
-      this.userFullName = `${resp.accountDetail.salutation} ${resp.accountDetail.firstName} ${resp.accountDetail.lastName}`;
-      let userRole = resp.role.filter(item => item.id === parseInt(localStorage.getItem("accountRoleId")));
-      this.userRole = userRole[0].name;
-      let userOrg = resp.organization.filter(item => item.id === parseInt(localStorage.getItem("accountOrganizationId")));
-      this.userOrg = userOrg[0].name;
-      this.organizationDropdown = resp.organization;
-      this.roleDropdown = resp.role;
-      this.setDropdownValues();
-    });
+    // this.dataInterchangeService.orgRoleInterface$.subscribe(resp => {
+    //   this.userFullName = `${resp.accountDetail.salutation} ${resp.accountDetail.firstName} ${resp.accountDetail.lastName}`;
+    //   let userRole = resp.role.filter(item => item.id === parseInt(localStorage.getItem("accountRoleId")));
+    //   this.userRole = userRole[0].name;
+    //   let userOrg = resp.organization.filter(item => item.id === parseInt(localStorage.getItem("accountOrganizationId")));
+    //   this.userOrg = userOrg[0].name;
+    //   this.organizationDropdown = resp.organization;
+    //   this.roleDropdown = resp.role;
+    //   this.setDropdownValues();
+
+    //   console.log(JSON.stringify(localStorage.getItem("accountInfo")));
+    // });
 
     router.events.subscribe((val:any) => {
       if(val instanceof NavigationEnd){
@@ -184,6 +190,21 @@ export class AppComponent {
     // this.isMobile();
     // this.isTablet();
     // this.isDesktop();
+  }
+
+  getAccountInfo(){
+    let accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+    console.log(accountInfo);
+    if(accountInfo){
+      this.userFullName = `${accountInfo.accountDetail.salutation} ${accountInfo.accountDetail.firstName} ${accountInfo.accountDetail.lastName}`;
+      let userRole = accountInfo.role.filter(item => item.id === parseInt(localStorage.getItem("accountRoleId")));
+      this.userRole = userRole[0].name;
+      let userOrg = accountInfo.organization.filter(item => item.id === parseInt(localStorage.getItem("accountOrganizationId")));
+      this.userOrg = userOrg[0].name;
+      this.organizationDropdown = accountInfo.organization;
+      this.roleDropdown = accountInfo.role;
+      this.setDropdownValues();
+    }
   }
 
   setDropdownValues(){

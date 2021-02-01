@@ -37,6 +37,7 @@ export class NewUserStepComponent implements OnInit {
   userName: string = '';
   isLinear = false;
   orgName: any;
+  duplicateEmailMsg: boolean;
 
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
@@ -181,6 +182,7 @@ export class NewUserStepComponent implements OnInit {
   }
 
   onCreate(createStatus: any){
+    this.duplicateEmailMsg = false;
     
     //-- TODO: Existing Email Id check --//
     /* if(this.firstFormGroup.controls.loginEmail.value){ } */
@@ -244,6 +246,9 @@ export class NewUserStepComponent implements OnInit {
         });
       }, (error) => { 
         console.log(error);
+        if(error.status == 409){
+          this.duplicateEmailMsg = true;
+        }
        });
   }
 

@@ -1,6 +1,6 @@
 {
     "authentication": {
-      "loginUrl": "https://api.tst1.ct2.atos.net",
+      "loginUrl": "http://51.124.138.94",
       "authRESTServiceURL": "http://51.124.138.94"
     },
     "foundationServices": {
@@ -17,9 +17,9 @@
       "backendGrpcServiceUrl": "https://localhost:5001",
       "accountGrpcServiceUrl": "http://20.54.198.157:80",
       "roleRESTServiceURL": "http://20.73.217.14/role",
-      "featureRESTServiceURL": "https://api.tst1.ct2.atos.net/feature",
+      "featureRESTServiceURL": "http://20.73.203.148/feature",
       "accountRESTServiceURL": "http://20.54.198.157/account",
       "translationRESTServiceURL": "http://20.71.11.150/translation",
-      "organizationRESTServiceURL": "https://api.tst1.ct2.atos.net/vehicle"
+      "organizationRESTServiceURL": "http://51.124.8.28/vehicle"
     }
 }

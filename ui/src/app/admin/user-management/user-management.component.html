@@ -9,7 +9,7 @@
     </div>
   </div>
   <mat-card class='mat-elevation-z' *ngIf='!stepFlag && !editFlag && !viewFlag'>
-    <div>
+    <div *ngIf="initData">
       <app-common-filter *ngIf="true" [initData]='initData' [translationData]='translationData'></app-common-filter>
       <!-- <app-common-filter *ngIf="filterFlag" (filterValues)="getFilteredValues($event)" [initData]='initData' [translationData]='translationData'></app-common-filter> -->
     </div>  
