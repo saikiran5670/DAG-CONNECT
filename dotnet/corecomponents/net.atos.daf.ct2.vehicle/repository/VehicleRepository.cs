@@ -332,9 +332,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                                     on  accrel.vehicle_group_id=grp.id
                                     left join master.groupref agrpref
                                     on  accrel.account_group_id=agrpref.group_id
-                                    where grp.organization_id = @organization_id
+                                    where grp.organization_id = @organization_id and grp.object_type='V'
                                     group by grp.id,grp.name,accrel.account_group_id,agrpref.ref_id,grp.object_type) vdetail
-                                    group by vehiclegroupid,VehicleGroupName,vehicleCount,object_type union all 
+                                    group by vehiclegroupid,VehicleGroupName,vehicleCount,object_type 
+                                    union all 
 									select id as vehiclegroupid, name as VehicleGroupName,0 as vehicleCount, 0 as usercount,false as isgroup
 									 from master.vehicle where organization_id=@organization_id";
 
