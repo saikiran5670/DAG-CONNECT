@@ -324,20 +324,19 @@ namespace net.atos.daf.ct2.vehicle.repository
             var QueryStatement = @"select vehiclegroupid,VehicleGroupName,vehicleCount,count(account) as usercount from 
                                     (select 
                                     grp.id as vehiclegroupid
-                                    ,grp.name as VehicleGroupName
-                                    ,count(distinct vgrpref.ref_id) as vehicleCount 
-                                    --, accrel.account_group_id
+                                    ,grp.name as VehicleGroupName                                                                                                                                                ,grp.object_type
+                                    ,count(distinct vgrpref.ref_id) as vehicleCount                                     
                                     ,agrpref.ref_id as account
                                     from master.group grp 
-                                    inner join master.groupref vgrpref
-                                    on  grp.id=vgrpref.group_id
-                                    inner join master.accessrelationship accrel
+                                    left join master.groupref vgrpref
+                                    on  grp.id=vgrpref.group_id and grp.object_type='V'
+                                    left join master.accessrelationship accrel
                                     on  accrel.vehicle_group_id=grp.id
-                                    inner join master.groupref agrpref
+                                    left join master.groupref agrpref
                                     on  accrel.account_group_id=agrpref.group_id
                                     where grp.organization_id = @organization_id
-                                    group by grp.id,grp.name,accrel.account_group_id,agrpref.ref_id) vdetail
-                                    group by vehiclegroupid,VehicleGroupName,vehicleCount";
+                                    group by grp.id,grp.name,accrel.account_group_id,agrpref.ref_id,grp.object_type) vdetail
+                                    group by vehiclegroupid,VehicleGroupName,vehicleCount,object_type";
             var parameter = new DynamicParameters();
 
             parameter.Add("@organization_id",OrganizationId);

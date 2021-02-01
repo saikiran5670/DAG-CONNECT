@@ -584,7 +584,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 
                 if(ObjOrgVehicleGroupList.Count()==0)
                 {
-                    return StatusCode(401,"vehicle group details not exist for pass parameter");
+                    return StatusCode(401,"No vehicle groups exists for current organization.");
                 }
                 return Ok(ObjOrgVehicleGroupList);
                 
