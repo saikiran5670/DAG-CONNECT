@@ -26,7 +26,15 @@ namespace net.atos.daf.ct2.identity
             Response response= new Response();
             try
             {
-                var querystring = new StringContent("username="+user.UserName+"&password="+user.Password+"&grant_type=password&client_id="+_settings.AuthClientId, Encoding.UTF8, "application/x-www-form-urlencoded");
+                var requestContent = string.Format("username={0}&password={1}&grant_type={2}&client_id={3}", 
+                Uri.EscapeDataString(user.UserName),
+                Uri.EscapeDataString(user.Password),
+                Uri.EscapeDataString("password"),
+                Uri.EscapeDataString(_settings.AuthClientId)
+                );
+
+                // var querystring = new StringContent("username="+user.UserName+"&password="+user.Password+"&grant_type=password&client_id="+_settings.AuthClientId, Encoding.UTF8, "application/x-www-form-urlencoded");
+                var querystring = new StringContent(requestContent, Encoding.UTF8, "application/x-www-form-urlencoded");
                 var url = _settings.BaseUrl + _settings.AuthUrl;
                 url=url.Replace("{{realm}}",_settings.Realm);
 
