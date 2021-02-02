@@ -125,6 +125,7 @@ export class CreateEditUserGroupComponent implements OnInit {
   rowsData: any;
   titleText: string;
   orgId: number;
+  duplicateEmailMsg
 
   UserGroupForm: FormGroup;
   constructor(private _formBuilder: FormBuilder,
@@ -207,6 +208,11 @@ export class CreateEditUserGroupComponent implements OnInit {
     this.backToPage.emit({ editFlag: false, editText: 'cancel' });
   }
   onReset(){
+    this.UserGroupForm.patchValue({
+      userGroupName: this.selectedRowData.name,
+      userGroupDescription: this.selectedRowData.description,
+    });
+
     this.accountSelected = this.selectedRowData.groupRef;
       
       this.dataSourceUsers.data.forEach(row => {
@@ -238,12 +244,14 @@ export class CreateEditUserGroupComponent implements OnInit {
   onInputChange(event) {
 
     this.newUserGroupName = event.target.value;
+    console.log("---this.newUserGroupName--",this.newUserGroupName)
   }
   onInputGD(event) {
     this.enteredUserGroupDescription = event.target.value;
   }
 
   onCreate(res) {
+    this.duplicateEmailMsg = false;
     let create = document.getElementById("createUpdateButton");
 
     let accountList = [];
@@ -275,25 +283,9 @@ export class CreateEditUserGroupComponent implements OnInit {
       accountCount : 0,
     }
 
-    this.userCreatedMsg = this.getUserCreatedMessage();
-    this.createStatus = false;
-    this.editUserContent = false;
-    this.editFlag = false;
-    this.viewDisplayFlag = false;
+  
 
     if (create.innerText == "Confirm") {
-
-
-      // this.usrgrp = {
-      //   organizationId: this.selectedRowData.organizationId,
-      //   name: this.UserGroupForm.controls.userGroupName.value,
-      //   isActive: true,
-      //   id: this.selectedRowData.id,
-      //   usergroupId: this.selectedRowData.id,
-      //   vehicles: "05",
-      //   users: "04",
-      //   userGroupDescriptions: this.UserGroupForm.controls.userGroupDescription.value,
-      // }
       this.createaccountgrp = {
         id: this.selectedRowData.id,
         name: this.UserGroupForm.controls.userGroupName.value,
@@ -307,6 +299,14 @@ export class CreateEditUserGroupComponent implements OnInit {
         // this.userService.getUserGroup(1, true).subscribe((grp) => {
         this.accountService.updateAccountGroup(this.createaccountgrp).subscribe((d) => {
         this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp) => {
+
+          this.userCreatedMsg = this.getUserCreatedMessage();
+          this.createStatus = false;
+          this.editUserContent = false;
+          this.editFlag = false;
+          this.viewDisplayFlag = false;
+
+
           this.products = grp;
           this.initData = grp;
           this.dataSource = new MatTableDataSource(grp);
@@ -314,10 +314,23 @@ export class CreateEditUserGroupComponent implements OnInit {
           this.dataSource.sort = this.sort;
           this.backToPage.emit({ FalseFlag: false, editText: 'create', gridData: grp, successMsg: this.userCreatedMsg });
         });
-      });
+      }, (error) => { 
+        console.log(error);
+        if(error.status == 409){
+          this.duplicateEmailMsg = true;
+        }
+       });
     } else if (create.innerText == "Create") {
       this.accountService.createAccountGroup(this.createaccountgrp).subscribe((d) => {
       this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp) => {
+
+        this.userCreatedMsg = this.getUserCreatedMessage();
+        this.createStatus = false;
+        this.editUserContent = false;
+        this.editFlag = false;
+        this.viewDisplayFlag = false;
+
+
           // this.products = grp;
           // this.initData = grp;
           // this.dataSource = new MatTableDataSource(grp);
@@ -325,7 +338,12 @@ export class CreateEditUserGroupComponent implements OnInit {
           // this.dataSource.sort = this.sort;
           this.backToPage.emit({ FalseFlag: false, editText: 'create', gridData: grp, successMsg: this.userCreatedMsg });
         });
-      });
+      }, (error) => { 
+        console.log(error);
+        if(error.status == 409){
+          this.duplicateEmailMsg = true;
+        }
+       });
     }
 
   }
