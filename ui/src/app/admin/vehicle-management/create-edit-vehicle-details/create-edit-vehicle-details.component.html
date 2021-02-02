@@ -1,3 +1,9 @@
+<div fxLayout="row" fxLayoutAlign="end end" class="full-width margin-bottom-sm">
+  <button class='no-margin' mat-raised-button color="primary"
+      (click)='onCancel()'>{{ translationData.lblBack || 'Back' }}
+  </button>
+</div>
+
 <form [formGroup]="vehicleFormGroup" #createVehicleForm="ngForm">
     <mat-card class='mat-elevation-z margin-bottom-xlg'>
         <mat-card-content>
@@ -46,12 +52,12 @@
                 </div>
                 <div fxLayout="column" fxLayoutAlign="end">
                     <div fxLayout="row">
-                        <button class='margin-right-10' mat-raised-button color="primary"
+                        <button class='margin-right-10' mat-raised-button color="primary"  [ngClass]="{'hidden': viewGroupMode}"
                             (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
-                            <button class='margin-right-10' mat-raised-button color="primary"
+                            <button class='margin-right-10' mat-raised-button color="primary"  [ngClass]="{'hidden': viewGroupMode}"
                             (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
-                        <button class='no-margin' [disabled]="!vehicleFormGroup.valid" mat-raised-button color="primary"
-                            (click)='onCreate()'>{{ createStatus ? (translationData.lblCreate || 'Create') : (translationData.lblUpdate || 'Update') }}</button>
+                        <button class='no-margin' [disabled]="!vehicleFormGroup.valid" mat-raised-button color="primary"  [ngClass]="{'hidden': viewGroupMode}"
+                            (click)='onCreate()'>{{ createStatus ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm || 'Confirm') }}</button>
                     </div>
                 </div>
             </div>
@@ -74,9 +80,9 @@
             <div fxLayout="column" class='full-width'>
                 <mat-table [dataSource]="dataSource" class="table-items" matSort>
                     <ng-container *ngFor="let disCol of displayedColumns; let colIndex = index" matColumnDef="{{disCol}}">
-                      <div *ngIf="disCol == 'select'">
-                        <mat-header-cell *matHeaderCellDef>
-                            <mat-checkbox (change)='$event ? masterToggleForVehGrp() : null'
+                      <div *ngIf="disCol == 'select'"  >
+                        <mat-header-cell *matHeaderCellDef >
+                            <mat-checkbox (change)='$event ? masterToggleForVehGrp() : null' 
                                 [checked]='selectionForVehGrp.hasValue() && isAllSelectedForVehGrp()'
                                 [indeterminate]='selectionForVehGrp.hasValue() && !isAllSelectedForVehGrp()'
                                 [aria-label]='checkboxLabelForVehGrp()'>
