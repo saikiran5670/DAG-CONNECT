@@ -17,6 +17,7 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
 import { OrganizationService } from 'src/app/services/organization.service';
 import { AccountService } from 'src/app/services/account.service';
+import { UserDetailTableComponent } from '../user-management/new-user-step/user-detail-table/user-detail-table.component';
 
 @Component({
   selector: 'app-service-subscriber-details',
@@ -27,7 +28,7 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   displayedColumns: string[] = ['vehicleGroupName', 'userCount'];
-  dialogRef: MatDialogRef<CommonTableComponent>;
+  dialogRef: MatDialogRef<UserDetailTableComponent>;
   products: any[] = [];
   organizationId: any;
   dataSource: any = new MatTableDataSource([]);
@@ -108,7 +109,7 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
 
   onUserClick(row: any){
 
-    const colsList= ['firstName','emailId','role'];
+    const colsList= ['firstName','emailId','roles'];
     const colsName=['First Name','Email ID','Role'];
     const tableTitle="User List";
     // this.userService.getUsers().subscribe((data)=>{
@@ -148,7 +149,7 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
       colsName:colsName,
       tableTitle: tableTitle
     }
-    this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
+    this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
 
   makeRoleAccountGrpList(initdata){

@@ -25,7 +25,7 @@
                 </div>
                 <div *ngIf="disCol == 'roles'">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{ data.colsName[colIndex] }}</mat-header-cell>
-                    <mat-cell *matCellDef="let element"  matTooltip="{{ element.roleList }}">{{ element[disCol].length > 0 ? element[disCol][0].name : '-' }}</mat-cell>
+                    <mat-cell *matCellDef="let element"  matTooltip="{{ element.roleList }}">{{ element[disCol].length > 0 ? element[disCol][0].name : '-' }}{{element[disCol].length > 1 ? '...' : ''}}</mat-cell>
                 </div>
               </ng-container>
               <mat-header-row *matHeaderRowDef="data.colsList"></mat-header-row>
