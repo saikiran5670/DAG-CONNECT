@@ -6,54 +6,6 @@
       "subMenuFlag": false
     },
     {
-      "mainMenu": "Live Fleet",
-      "mainRoute": "livefleet",
-      "icon": "directions_car",
-      "subMenuFlag": true,
-      "subMenu": [
-        {
-          "name": "Live Fleet",
-          "subRoute": "livefleet"
-        },
-        {
-          "name": "Log Book",
-          "subRoute": "logbook"
-        }
-      ]
-    },
-    {
-      "mainMenu": "Report",
-      "mainRoute": "report",
-      "icon": "leaderboard",
-      "subMenuFlag": true,
-      "subMenu": [
-        {
-          "name": "Trip Report",
-          "subRoute": "tripreport"
-        },
-        {
-          "name": "Trip Tracing",
-          "subRoute": "triptracing"
-        }
-      ]
-    },
-    {
-      "mainMenu": "Configuration",
-      "mainRoute": "configuration",
-      "icon": "settings",
-      "subMenuFlag": true,
-      "subMenu": [
-        {
-          "name": "Alerts",
-          "subRoute": "alerts"
-        },
-        {
-          "name": "Landmarks",
-          "subRoute": "landmarks"
-        }
-      ]
-    },
-    {
       "mainMenu": "Admin",
       "mainRoute": "admin",
       "icon": "person",
@@ -76,32 +28,10 @@
           "subRoute": "userrolemanagement"
         },
         {
-          "name": "Driver Management",
-          "subRoute": "drivermanagement"
-        },
-        {
           "name": "Vehicle Management",
           "subRoute": "vehiclemanagement"
         }
       ]
-    },
-    {
-      "mainMenu": "Tachograph",
-      "mainRoute": "https://www.my-fis.com/fleetservices/default.aspx",
-      "icon": "show_chart",
-      "subMenuFlag": false
-    },
-    {
-      "mainMenu": "Mobile Portal",
-      "mainRoute": "https://driverapp-cert.daf.com/DAFConnectDashboard/MessageOverview.aspx",
-      "icon": "phone_android",
-      "subMenuFlag": false
-    },
-    {
-      "mainMenu": "Shop",
-      "mainRoute": "shop",
-      "icon": "shopping_cart",
-      "subMenuFlag": false
     },
     {
       "mainMenu": "Information",

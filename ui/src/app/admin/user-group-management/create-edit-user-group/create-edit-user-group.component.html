@@ -14,6 +14,7 @@
                     <mat-error *ngIf="UserGroupForm.get('userGroupName').hasError('required')">
                         {{translationData.lblErrorUserGroupName || 'Please enter any User Group name' }}
                     </mat-error>
+                    <mat-error *ngIf="duplicateEmailMsg">{{translationData.lblDuplicateUserGroupName || 'Duplicate User Group Name' }}</mat-error>
                 </div>
 
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
@@ -98,39 +99,6 @@
                 </div>
             
                 <div class="example-container">
-            
-                  <!-- <mat-table [dataSource]="dataSourceUsers" class="table-items" matSort>
-                    
-                    <ng-container *ngFor="let disCol of displayedColumns; let colIndex = index" matColumnDef="{{disCol}}">
-                    <div *ngIf="disCol == 'select'">
-                        <mat-header-cell *matHeaderCellDef>
-                            <mat-checkbox (change)='$event ? masterToggleForVehGrp() : null'
-                                [checked]='selectionForVehGrp.hasValue() && isAllSelectedForVehGrp()'
-                                [indeterminate]='selectionForVehGrp.hasValue() && !isAllSelectedForVehGrp()'
-                                [aria-label]='checkboxLabelForVehGrp()'>
-                            </mat-checkbox>
-                            <span style="margin: 5px 0px 0px 5px;"> {{UsrGrpColumns[colIndex]}} </span>
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                            <mat-checkbox (click)='$event.stopPropagation()'
-                                (change)='$event ? selectionForVehGrp.toggle(row) : null'
-                                [checked]='selectionForVehGrp.isSelected(row)'
-                                [aria-label]='checkboxLabelForVehGrp(row)'>
-                            </mat-checkbox>
-                        </mat-cell>
-                      </div>
-
-                  <div *ngIf="disCol != 'select'">
-                    <mat-header-cell *matHeaderCellDef>{{UsrGrpColumns[colIndex]}}</mat-header-cell>
-                    <mat-cell *matCellDef="let element "> {{element[disCol]}} </mat-cell>
-                  </div>
-                </ng-container>
-                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumns;">
-                    </mat-row>
-                  </mat-table> -->
-                  
-                  
                   
                   <mat-table [dataSource]="dataSourceUsers" class="table-items" matSort>
                     <ng-container matColumnDef="select">
