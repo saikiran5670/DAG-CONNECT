@@ -10,12 +10,23 @@
       <mat-table [dataSource]="dataSource" matSort>
         <ng-container matColumnDef="vehicleGroupName">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}/{{ translationData.lblVehicle || 'Vehicle' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row" (click)="onVehClick(row)" class="row-hover"><a>{{row.vehicleGroupName}}</a> </mat-cell>
+          <mat-cell *matCellDef="let row">
+            <div *ngIf="row.isGroup" class="row-hover">
+              <a (click)="onVehClick(row)">{{row.vehicleGroupName}}</a> 
+              <img src='assets/images/group_icon.svg' style="width: 20px;height: 20px;" />
+            </div>
+            <span *ngIf="!row.isGroup">{{row.vehicleGroupName}}</span>
+          </mat-cell>
         </ng-container>
         <ng-container matColumnDef="userCount">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Users' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row" (click)="onUserClick(row)"  class="row-hover">
-          <a > {{row.userCount}}</a>
+          <mat-cell *matCellDef="let row" >
+            <span *ngIf="row.userCount!=0 && row.isGroup" class="row-hover">
+              <a (click)="onUserClick(row)"> {{row.userCount}}</a>
+            </span>
+            <span *ngIf="row.userCount==0">
+              {{row.userCount}}
+            </span>  
            </mat-cell>
         </ng-container>
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

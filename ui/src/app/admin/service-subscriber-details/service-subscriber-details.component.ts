@@ -33,6 +33,7 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
   dataSource: any = new MatTableDataSource([]);
   translationData: any;
   gRpcClient: CustomerClient;
+  initData: any = [];
   private backendGrpc: string;
   constructor(
     private translationService: TranslationService,
@@ -76,7 +77,7 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
     });
   }
   ngOnInit() {
-    this.organizationId = localStorage.getItem("accountOrganizationId")
+    this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     let translationObj = {
       id: 0,
       code: "EN-GB", //-- TODO: Lang code based on account 
@@ -95,8 +96,9 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
   loadOrgData() {
     this.orgService.getOrganizationDetails(this.organizationId).subscribe(
       (_data) => {
+        this.initData = _data
         //console.log(' data : ' + _data[0]);
-        this.updateDataSource(_data);
+        this.updateDataSource(this.initData);
       },
       (error) => {
         console.error(' error : ' + error);
@@ -109,9 +111,9 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
     const colsList= ['firstName','emailId','role'];
     const colsName=['First Name','Email ID','Role'];
     const tableTitle="User List";
-    this.userService.getUsers().subscribe((data)=>{
-      this.callToCommonTable(data,colsList,colsName,tableTitle);
-    });
+    // this.userService.getUsers().subscribe((data)=>{
+    //   this.callToCommonTable(data,colsList,colsName,tableTitle);
+    // });
 
     let obj: any = {
       "accountId": 0,

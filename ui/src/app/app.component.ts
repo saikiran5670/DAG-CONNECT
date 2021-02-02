@@ -194,7 +194,7 @@ export class AppComponent {
 
   getAccountInfo(){
     let accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
-    console.log(accountInfo);
+    //console.log(accountInfo);
     if(accountInfo){
       this.userFullName = `${accountInfo.accountDetail.salutation} ${accountInfo.accountDetail.firstName} ${accountInfo.accountDetail.lastName}`;
       let userRole = accountInfo.role.filter(item => item.id === parseInt(localStorage.getItem("accountRoleId")));
