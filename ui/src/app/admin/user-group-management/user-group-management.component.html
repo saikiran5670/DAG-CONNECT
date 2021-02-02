@@ -49,7 +49,7 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
 
         <ng-container matColumnDef="users">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Users'}}</mat-header-cell>
-          <mat-cell *matCellDef="let row" class="row-hover"> <a>{{row.accountCount}}</a> </mat-cell>
+          <mat-cell *matCellDef="let row" > <span [ngClass]="row.accountCount !=0 ? 'row-hover' : '' " (click)="row.accountCount !=0 ? onUserClick(row) : ''">{{row.accountCount}}</span> </mat-cell>
         </ng-container>
 
 

@@ -6,7 +6,7 @@ import { AlertService } from 'src/app/services/alert.service';
 import { MatSort } from '@angular/material/sort';
 import {
   MatDialog,
-  MatDialogRef,
+  MatDialogRef,MatDialogConfig,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
@@ -18,6 +18,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, forkJoin } from 'rxjs';
 import { TranslationService } from '../../services/translation.service';
 import { AccountService } from '../../services/account.service';
+import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
 
 @Component({
   selector: 'app-user-group-management',
@@ -27,6 +28,7 @@ import { AccountService } from '../../services/account.service';
 export class UserGroupManagementComponent implements OnInit {
   OrgId:number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
   // OrgId:number = 32;
+  dialogRef: MatDialogRef<CommonTableComponent>;
   getAccountGrp: GetAccountGrp  = {
     accountGroupId : null,
     organizationId : null,
@@ -93,7 +95,8 @@ export class UserGroupManagementComponent implements OnInit {
     private dialogService: ConfirmDialogService,
     private _snackBar: MatSnackBar,
     private translationService: TranslationService,
-    private accountService: AccountService
+    private accountService: AccountService,
+    private dialog: MatDialog
   ) {
     this.defaultTranslation();
   }
@@ -400,4 +403,60 @@ export class UserGroupManagementComponent implements OnInit {
     // }, 5000);
     // this.userCreatedMsg = this.getUserCreatedMessage();
   }
+  onUserClick(data : any){
+    
+    const colsList= ['firstName','lastName','emailId'];
+    const colsName=['First Name','Last Name','Email ID'];
+    const tableTitle="User List";
+    console.log("----user click data---", data)
+    let obj: any = {
+      "accountId": 0,
+      "organizationId": data.organizationId,
+      "accountGroupId": data.id,
+      "vehicleGroupId": 0,
+      "roleId": 0,
+      "name": ""
+    }
+    this.accountService.getAccountDetails(obj).subscribe((data)=>{
+      data = this.makeRoleAccountGrpList(data);
+      this.callToCommonTable(data,colsList,colsName,tableTitle);
+    });
+  }
+  makeRoleAccountGrpList(initdata){
+    initdata.forEach((element, index) => {
+      let roleTxt: any = '';
+      let accGrpTxt: any = '';
+      element.roles.forEach(resp => {
+        roleTxt += resp.name + ',';
+      });
+      element.accountGroups.forEach(resp => {
+        accGrpTxt += resp.name + ',';
+      });
+
+      if(roleTxt != ''){
+        roleTxt = roleTxt.slice(0, -1);
+      }
+      if(accGrpTxt != ''){
+        accGrpTxt = accGrpTxt.slice(0, -1);
+      }
+
+      initdata[index].roleList = roleTxt; 
+      initdata[index].accountGroupList = accGrpTxt;
+    });
+    
+    return initdata;
+  }
+  callToCommonTable(tableData: any,colsList,colsName,tableTitle){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      tableData: tableData,
+      colsList: colsList,
+      colsName:colsName,
+      tableTitle: tableTitle
+    }
+    this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
+  }
+
 }
