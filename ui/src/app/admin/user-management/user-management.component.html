@@ -49,7 +49,7 @@
         </ng-container>
         <ng-container matColumnDef="roles">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRole || 'Role' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}">{{ row.roles.length > 0 ? row.roles[0].name : '-' }}</mat-cell>
+          <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}">{{ row.roles.length > 0 ? row.roles[0].name : '-' }} {{ row.roles.length > 1 ? '...' : '' }}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="accountGroups">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserGroup || 'User Group' }}</mat-header-cell>

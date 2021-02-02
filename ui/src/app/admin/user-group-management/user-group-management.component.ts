@@ -19,6 +19,7 @@ import { Observable, forkJoin } from 'rxjs';
 import { TranslationService } from '../../services/translation.service';
 import { AccountService } from '../../services/account.service';
 import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
+import { UserDetailTableComponent } from '../user-management/new-user-step/user-detail-table/user-detail-table.component';
 
 @Component({
   selector: 'app-user-group-management',
@@ -28,7 +29,7 @@ import { CommonTableComponent } from 'src/app/shared/common-table/common-table.c
 export class UserGroupManagementComponent implements OnInit {
   OrgId:number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
   // OrgId:number = 32;
-  dialogRef: MatDialogRef<CommonTableComponent>;
+  dialogRef: MatDialogRef<UserDetailTableComponent>;
   getAccountGrp: GetAccountGrp  = {
     accountGroupId : null,
     organizationId : null,
@@ -404,11 +405,9 @@ export class UserGroupManagementComponent implements OnInit {
     // this.userCreatedMsg = this.getUserCreatedMessage();
   }
   onUserClick(data : any){
-    
-    const colsList= ['firstName','lastName','emailId'];
-    const colsName=['First Name','Last Name','Email ID'];
+    const colsList= ['firstName','emailId','roles'];
+    const colsName=['First Name','Last Name','Role'];
     const tableTitle="User List";
-    console.log("----user click data---", data)
     let obj: any = {
       "accountId": 0,
       "organizationId": data.organizationId,
@@ -456,7 +455,7 @@ export class UserGroupManagementComponent implements OnInit {
       colsName:colsName,
       tableTitle: tableTitle
     }
-    this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
+    this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
 
 }
