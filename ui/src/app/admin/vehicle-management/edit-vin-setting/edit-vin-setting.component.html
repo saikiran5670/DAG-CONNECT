@@ -73,9 +73,9 @@
               </div>
         </mat-card-content>
     </mat-card>
-    <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
-        <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
-        <button class='margin-right-10' mat-raised-button color="primary" (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
-        <button [disabled]="!vinSettingFormGroup.valid" mat-raised-button color="primary" (click)='onSave()'>{{ translationData.lblSave || 'Save' }}</button>
+    <div fxLayout="row" fxLayoutAlign="end end" class="full-width"  [ngClass]="{'hidden': viewMode}">
+        <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()' [ngClass]="{'hidden': viewMode}">{{ translationData.lblCancel || 'Cancel' }}</button>
+        <button class='margin-right-10' mat-raised-button color="primary" (click)='onReset()' [ngClass]="{'hidden': viewMode}">{{ translationData.lblReset || 'Reset' }}</button>
+        <button [disabled]="!vinSettingFormGroup.valid" mat-raised-button color="primary" (click)='onSave()' [ngClass]="{'hidden': viewMode}">{{ translationData.lblConfirm || 'Confirm' }}</button>
     </div>
 </form>
