@@ -28,10 +28,6 @@
           "subRoute": "userrolemanagement"
         },
         {
-          "name": "Driver Management",
-          "subRoute": "drivermanagement"
-        },
-        {
           "name": "Vehicle Management",
           "subRoute": "vehiclemanagement"
         }
