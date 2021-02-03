@@ -108,14 +108,10 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
   }
 
   onUserClick(row: any){
-
-    const colsList= ['firstName','emailId','roles'];
-    const colsName=['First Name','Email ID','Role'];
-    const tableTitle="User List";
-    // this.userService.getUsers().subscribe((data)=>{
-    //   this.callToCommonTable(data,colsList,colsName,tableTitle);
-    // });
-
+    const colsList = ['firstName','emailId','roles'];
+    const colsName = ['User Name','Email ID','User Role'];
+    const tableTitle = `${row.vehicleGroupName} - Users`;
+    
     let obj: any = {
       "accountId": 0,
       "organizationId": this.organizationId,
@@ -124,19 +120,20 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
       "roleId": 0,
       "name": ""
     }
+
     this.accountService.getAccountDetails(obj).subscribe((data)=>{
       data = this.makeRoleAccountGrpList(data);
       this.callToCommonTable(data,colsList,colsName,tableTitle);
     });
   }
+
   onVehClick(row:any){
-    const colsList= ['vin','name','model'];
-    const colsName=['VIN','Vehicle Name','Model'];
-    const tableTitle="Vehicle List";
+    const colsList= ['name','vin','license_Plate_Number'];
+    const colsName=['Vehicle Name','VIN','Registration Number'];
+    const tableTitle=`${row.vehicleGroupName} - Vehicles`;
     this.orgService.getVehicleList(row.vehicleGroupId).subscribe((data)=>{
       this.callToCommonTable(data,colsList,colsName,tableTitle);
     });
-
   }
 
   callToCommonTable(tableData: any,colsList,colsName,tableTitle){
@@ -157,17 +154,17 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
       let roleTxt: any = '';
       let accGrpTxt: any = '';
       element.roles.forEach(resp => {
-        roleTxt += resp.name + ',';
+        roleTxt += resp.name + ', ';
       });
       element.accountGroups.forEach(resp => {
-        accGrpTxt += resp.name + ',';
+        accGrpTxt += resp.name + ', ';
       });
 
       if(roleTxt != ''){
-        roleTxt = roleTxt.slice(0, -1);
+        roleTxt = roleTxt.slice(0, -2);
       }
       if(accGrpTxt != ''){
-        accGrpTxt = accGrpTxt.slice(0, -1);
+        accGrpTxt = accGrpTxt.slice(0, -2);
       }
 
       initdata[index].roleList = roleTxt; 

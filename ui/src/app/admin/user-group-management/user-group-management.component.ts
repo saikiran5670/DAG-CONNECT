@@ -404,10 +404,12 @@ export class UserGroupManagementComponent implements OnInit {
     // }, 5000);
     // this.userCreatedMsg = this.getUserCreatedMessage();
   }
+
   onUserClick(data : any){
-    const colsList= ['firstName','emailId','roles'];
-    const colsName=['First Name','Last Name','Role'];
-    const tableTitle="User List";
+    const colsList = ['firstName','emailId','roles'];
+    const colsName = [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'];
+    const tableTitle = `${data.name} - ${this.translationData.lblUsers || 'Users'}`
+    
     let obj: any = {
       "accountId": 0,
       "organizationId": data.organizationId,
@@ -416,27 +418,29 @@ export class UserGroupManagementComponent implements OnInit {
       "roleId": 0,
       "name": ""
     }
+
     this.accountService.getAccountDetails(obj).subscribe((data)=>{
       data = this.makeRoleAccountGrpList(data);
-      this.callToCommonTable(data,colsList,colsName,tableTitle);
+      this.callToCommonTable(data, colsList, colsName, tableTitle);
     });
   }
+
   makeRoleAccountGrpList(initdata){
     initdata.forEach((element, index) => {
       let roleTxt: any = '';
       let accGrpTxt: any = '';
       element.roles.forEach(resp => {
-        roleTxt += resp.name + ',';
+        roleTxt += resp.name + ', ';
       });
       element.accountGroups.forEach(resp => {
-        accGrpTxt += resp.name + ',';
+        accGrpTxt += resp.name + ', ';
       });
 
       if(roleTxt != ''){
-        roleTxt = roleTxt.slice(0, -1);
+        roleTxt = roleTxt.slice(0, -2);
       }
       if(accGrpTxt != ''){
-        accGrpTxt = accGrpTxt.slice(0, -1);
+        accGrpTxt = accGrpTxt.slice(0, -2);
       }
 
       initdata[index].roleList = roleTxt; 

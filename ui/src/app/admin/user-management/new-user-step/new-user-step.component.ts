@@ -589,7 +589,7 @@ export class NewUserStepComponent implements OnInit {
 
     this.accountService.getAccountDetails(objData).subscribe((data)=>{
       let repsData = this.makeRoleAccountGrpList(data);
-      this.callToUserDetailTable(repsData);  
+      this.callToUserDetailTable(repsData, rowData);  
     });
   }
 
@@ -598,17 +598,17 @@ export class NewUserStepComponent implements OnInit {
       let roleTxt: any = '';
       let accGrpTxt: any = '';
       element.roles.forEach(resp => {
-        roleTxt += resp.name + ',';
+        roleTxt += resp.name + ', ';
       });
       element.accountGroups.forEach(resp => {
-        accGrpTxt += resp.name + ',';
+        accGrpTxt += resp.name + ', ';
       });
 
       if(roleTxt != ''){
-        roleTxt = roleTxt.slice(0, -1);
+        roleTxt = roleTxt.slice(0, -2);
       }
       if(accGrpTxt != ''){
-        accGrpTxt = accGrpTxt.slice(0, -1);
+        accGrpTxt = accGrpTxt.slice(0, -2);
       }
 
       initdata[index].roleList = roleTxt; 
@@ -618,15 +618,15 @@ export class NewUserStepComponent implements OnInit {
     return initdata;
   }
 
-  callToUserDetailTable(tableData: any){
+  callToUserDetailTable(tableData: any, rowData: any){
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
       tableData: tableData,
       colsList: ['firstName','emailId','roles'],
-      colsName: [this.translationData.lblFirstName || 'First Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblRole || 'Role'],
-      tableTitle: this.translationData.lblUserDetails || 'User Details'
+      colsName: [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'],
+      tableTitle: `${rowData.name} - ${this.translationData.lblUsers || 'Users'}`
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
