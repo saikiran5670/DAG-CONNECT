@@ -458,17 +458,17 @@ export class UserManagementComponent implements OnInit {
       let roleTxt: any = '';
       let accGrpTxt: any = '';
       element.roles.forEach(resp => {
-        roleTxt += resp.name + ',';
+        roleTxt += resp.name + ', ';
       });
       element.accountGroups.forEach(resp => {
-        accGrpTxt += resp.name + ',';
+        accGrpTxt += resp.name + ', ';
       });
 
       if(roleTxt != ''){
-        roleTxt = roleTxt.slice(0, -1);
+        roleTxt = roleTxt.slice(0, -2);
       }
       if(accGrpTxt != ''){
-        accGrpTxt = accGrpTxt.slice(0, -1);
+        accGrpTxt = accGrpTxt.slice(0, -2);
       }
 
       initdata[index].roleList = roleTxt; 

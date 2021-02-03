@@ -109,8 +109,8 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
 
   onUserClick(row: any){
     const colsList = ['firstName','emailId','roles'];
-    const colsName = ['User Name','Email ID','User Role'];
-    const tableTitle = `${row.vehicleGroupName} - Users`;
+    const colsName = [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'];
+    const tableTitle = `${row.vehicleGroupName} - ${this.translationData.lblUsers || 'Users'}`;
     
     let obj: any = {
       "accountId": 0,
@@ -128,15 +128,15 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
   }
 
   onVehClick(row:any){
-    const colsList= ['name','vin','license_Plate_Number'];
-    const colsName=['Vehicle Name','VIN','Registration Number'];
-    const tableTitle=`${row.vehicleGroupName} - Vehicles`;
+    const colsList = ['name','vin','license_Plate_Number'];
+    const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
+    const tableTitle =`${row.vehicleGroupName} - ${this.translationData.lblVehicles || 'Vehicles'}`;
     this.orgService.getVehicleList(row.vehicleGroupId).subscribe((data)=>{
-      this.callToCommonTable(data,colsList,colsName,tableTitle);
+      this.callToCommonTable(data, colsList, colsName, tableTitle);
     });
   }
 
-  callToCommonTable(tableData: any,colsList,colsName,tableTitle){
+  callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any){
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
@@ -180,11 +180,11 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
     this.identityGrpcService
       .getGenerateToken(username, password)
       .then((result: any) => {
-        console.log(`Inside UI result:: ${result}`);
+        //console.log(`Inside UI result:: ${result}`);
       });
     //method 1
     this.getCustomer().then((result: any) => {
-      console.log(` Customer result:: ${result}`);
+      //console.log(` Customer result:: ${result}`);
     });
     //method 2
     /* const cltRequest = new CustomerLookupModel();
