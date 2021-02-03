@@ -1,8 +1,6 @@
 trigger:
 - none
 
-pool: dafct-dta-privateagent
-
 parameters:
 - name: ENV
   displayName: ENV
@@ -26,6 +24,9 @@ variables:
   - group: TEST01-Build-Variables
 - ${{ if eq(parameters.ENV, 'TEST02') }}:
   - group: TEST02-Build-Variables
+  
+pool: $(PRIVATEAGENT)
+
 steps:
 - task: replacetokens@3
   inputs:
