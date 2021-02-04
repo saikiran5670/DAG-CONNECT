@@ -46,7 +46,7 @@
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ createStatus ? (translationData.lblNewUserRoleName || 'New User Role Name') : (translationData.lblUserRoleName || 'User Role Name') }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <input placeholder="{{ translationData.lblEnterUserRoleName || 'Enter User Role Name' }}" (keyup)="isUserRoleExist=false; doneFlag=false"  matInput formControlName="userRoleName" required>
+                        <input placeholder="{{ translationData.lblEnterUserRoleName || 'Enter User Role Name' }}" (keyup)="isUserRoleExist=false; doneFlag=false"  matInput formControlName="userRoleName" required maxlength="60">
                     <mat-icon style='color:green;' matSuffix *ngIf="doneFlag">done</mat-icon>
                     </mat-form-field>
                     <mat-error *ngIf="userRoleFormGroup.get('userRoleName').hasError('required')">
