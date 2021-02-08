@@ -61,6 +61,9 @@ export class NewUserStepComponent implements OnInit {
       name: 'Mr'
     },
     {
+      name: 'Mrs'
+    },
+    {
       name: 'Ms'
     }
   ];

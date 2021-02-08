@@ -58,6 +58,9 @@ export class AccountInfoSettingsComponent implements OnInit {
       name: 'Mr'
     },
     {
+      name: 'Mrs'
+    },
+    {
       name: 'Ms'
     }
   ];

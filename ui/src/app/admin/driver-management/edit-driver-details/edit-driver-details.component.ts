@@ -13,10 +13,13 @@ export class EditDriverDetailsComponent implements OnInit {
   firstFormGroup: FormGroup;
   selectList: any = [
     {
-      name: 'Mr.'
+      name: 'Mr'
     },
     {
-      name: 'Ms.'
+      name: 'Mrs'
+    },
+    {
+      name: 'Ms'
     }
   ];
   data: any = {

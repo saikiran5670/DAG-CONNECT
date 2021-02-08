@@ -32,6 +32,9 @@ export class EditViewUserComponent implements OnInit {
       name: 'Mr'
     },
     {
+      name: 'Mrs'
+    },
+    {
       name: 'Ms'
     }
   ];
