@@ -574,9 +574,9 @@ export class UserManagementComponent implements OnInit {
 
   viewUserGrpDetails(rowData: any){
     //console.log("rowData:: ", rowData);
-    this.userService.getUsers().subscribe((data)=>{
-      this.callToUserDetailTable(data);  
-    });
+    // this.userService.getUsers().subscribe((data)=>{
+    //   this.callToUserDetailTable(data);  
+    // });
   }
 
   callToUserDetailTable(tableData: any){
