@@ -7,6 +7,8 @@ export class DataInterchangeService {
     dataInterface$ = this.dataInterfaceSource.asObservable();
     private orgRoleInterfaceSource = new Subject<any>();
     orgRoleInterface$ = this.orgRoleInterfaceSource.asObservable();
+    private settingInterfaceSource = new Subject<any>();
+    settingInterface$ = this.settingInterfaceSource.asObservable();
     
     constructor(){ }
 
@@ -16,5 +18,9 @@ export class DataInterchangeService {
 
     getOrgRoleInterface(data: any) {
         this.orgRoleInterfaceSource.next(data);
+    }
+
+    getSettingTabStatus(data: any) {
+        this.settingInterfaceSource.next(data);
     }
 }   

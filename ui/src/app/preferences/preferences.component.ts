@@ -1,8 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslationService } from '../services/translation.service';
-
-
+import { DataInterchangeService } from '.././services/data-interchange.service';
 @Component({
   selector: 'app-preferences',
   templateUrl: './preferences.component.html',
@@ -13,8 +12,11 @@ export class PreferencesComponent implements OnInit {
   public userPreferencesFlag : boolean = false;
   public selectedIndex: number = 0;
 
-  constructor(private translationService: TranslationService, private route: Router) {
+  constructor(private translationService: TranslationService, private route: Router, private dataInterchangeService: DataInterchangeService) {
     //this.defaultTranslation();
+    this.dataInterchangeService.settingInterface$.subscribe(data => {
+      this.userPreferencesFlag = data;
+    }); 
   }
 
   // defaultTranslation(){

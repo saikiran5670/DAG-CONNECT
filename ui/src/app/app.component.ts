@@ -167,19 +167,20 @@ export class AppComponent {
         this.pageName = PageName;
         this.subpage = val.url.split('/')[2];
 
-        if (val.url == "/auth/login") {
+        if(val.url == "/auth/login") {
           this.isLogedIn = false;
         } else if (val.url == "/") {
           this.isLogedIn = false;
         }
 
-        if (this.isLogedIn) {
+        if(this.isLogedIn) {
           if(!this.menuCollapsed) {
             this.menuSelected(this.pageName, true);
             if(this.pageName && this.menuStatus[this.pageName]) {
               this.menuStatus[this.pageName].open = true;
             }
           }
+          this.dataInterchangeService.getSettingTabStatus(false);
         }
         this.setPageTitle();
       }
