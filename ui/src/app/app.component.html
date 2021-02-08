@@ -42,7 +42,7 @@
                 </div>
                 <div *ngIf="!menuCollapsed" fxLayoutAlign="center" fxLayout="column" class='font-size-0-9'>
                     <span class='userName'>{{ userFullName }}</span>
-                    <span class='display-flex align-items-center'>
+                    <span class='display-flex align-items-center' *ngIf="this.roleDropdown!=null && this.roleDropdown.length > 0 ">
                         <span class='userRole'>{{ userRole }}</span>
                         <span>
                             <mat-icon style="cursor: pointer;" (click)="onClickUserRole()" class='font-size-20'>{{
@@ -79,7 +79,7 @@
                                 </div>
                             </div>
 
-                            <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="0px"
+                            <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="0px" *ngIf="this.roleDropdown!=null && this.roleDropdown.length > 0 "
                                 style='padding: 10px !important; background:#c3f1f7;'>
                                 <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px"
                                     fxLayoutAlign="left">

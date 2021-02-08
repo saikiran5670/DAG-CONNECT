@@ -27,7 +27,7 @@
           </div>
         </div>
 
-        <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="0px" class='margin-20'
+        <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="0px" class='margin-20' *ngIf="this.data.role!=null && this.data.role.length > 0 "
           style='padding: 10px 20px !important; background: #d1edfe;'>
           <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-label>Select Role</mat-label>
