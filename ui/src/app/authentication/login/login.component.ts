@@ -107,21 +107,21 @@ export class LoginComponent implements OnInit {
   }
 
   public showOrganizationRolePopup(data: any, accountDetails: any) {
-    if(data.accountOrganization.length === 0){
-      data.accountOrganization = [
-      {
-        id: 93,
-        name: "DAF CONNECT"
-      }];
-    }
+    // if(data.accountOrganization.length === 0){
+    //   data.accountOrganization = [
+    //   {
+    //     id: 93,
+    //     name: "DAF CONNECT"
+    //   }];
+    // }
 
-    if(data.accountRole.length === 0){
-      data.accountRole = [
-      {
-        id: 131,
-        name: "Fleet Admin"
-      }];
-    }
+    // if(data.accountRole.length === 0){
+    //   data.accountRole = [
+    //   {
+    //     id: 131,
+    //     name: "Fleet Admin"
+    //   }];
+    // }
 
     // localStorage.setItem('accountOrganizationId', data.accountOrganization[0].id);
     if(data.accountId){
