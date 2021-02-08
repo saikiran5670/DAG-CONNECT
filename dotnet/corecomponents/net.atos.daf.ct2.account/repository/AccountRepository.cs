@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.account
                 var parameter = new DynamicParameters();
 
                 //parameter.Add("@id", account.Id);
-                parameter.Add("@email", account.EmailId);
+                parameter.Add("@email", String.IsNullOrEmpty(account.EmailId)? account.EmailId : account.EmailId.ToLower());
                 parameter.Add("@salutation", account.Salutation);
                 parameter.Add("@first_name", account.FirstName);
                 parameter.Add("@last_name", account.LastName);
@@ -68,7 +68,7 @@ namespace net.atos.daf.ct2.account
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", account.Id);
-                parameter.Add("@email", account.EmailId);
+                parameter.Add("@email", String.IsNullOrEmpty(account.EmailId)? account.EmailId : account.EmailId.ToLower());
                 parameter.Add("@salutation", account.Salutation);
                 parameter.Add("@first_name", account.FirstName);
                 parameter.Add("@last_name", account.LastName);
@@ -143,8 +143,9 @@ namespace net.atos.daf.ct2.account
                     // email id filter
                     if (!string.IsNullOrEmpty(filter.Email))
                     {
-                        parameter.Add("@email", filter.Email);
-                        query = query + " and a.email = @email ";
+                        
+                        parameter.Add("@email", filter.Email.ToLower());
+                        query = query + " and LOWER(a.email) = @email ";
                     }
                     // email id filter
                     if (!string.IsNullOrEmpty(filter.Name))
