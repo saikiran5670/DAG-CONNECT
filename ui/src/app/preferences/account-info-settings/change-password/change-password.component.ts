@@ -1,4 +1,4 @@
-import { Component, HostListener, Inject, OnInit } from '@angular/core';
+import { Component, EventEmitter, HostListener, Inject, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -55,7 +55,8 @@ export class ChangePasswordComponent implements OnInit {
         password: formValue.newPassword
       }
       this.accountService.changeAccountPassword(objData).subscribe(()=>{
-        this.close(false);   
+        this.close(false);  
+        this.mdDialogRef.close({editText : 'Password'}); 
       });
     }
   }

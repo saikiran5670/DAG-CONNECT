@@ -31,6 +31,8 @@ export class AccountInfoSettingsComponent implements OnInit {
   defaultSetting: any = [];
   accountInfo: any = [];
   accountPreferenceData: any;
+  grpTitleVisible : boolean = false;
+  displayMessage: any;
 
   languageDropdownData: any = [];
   timezoneDropdownData: any = [];
@@ -218,6 +220,11 @@ export class AccountInfoSettingsComponent implements OnInit {
       accountInfo: this.accountInfo[0]
     }
     this.dialogRefLogin = this.dialog.open(ChangePasswordComponent, dialogConfig);
+    this.dialogRefLogin.afterClosed().subscribe(res => {
+      if(res.editText == 'Password'){
+        this.successMsgBlink(this.getEditMsg(res.editText));
+      }
+    });
   }
   
   editAccountSettings(){
@@ -245,6 +252,8 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.editAccountSettingsFlag = false;
       this.isSelectPictureConfirm = true;
       this.setDefaultAccountInfo();
+      let editText = 'AccountSettings';
+      this.successMsgBlink(this.getEditMsg(editText));
     });
   }
 
@@ -280,6 +289,8 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.filterDefaultGeneralSetting(data);
       this.setDefaultGeneralSetting();
       this.editGeneralSettingsFlag = false;
+      let editText = 'GeneralSettings';
+      this.successMsgBlink(this.getEditMsg(editText));
     });
   }
 
@@ -336,6 +347,39 @@ readImageFile(file: any) {
       this.droppedImage = e.target.result;
     };
     reader.readAsDataURL(file);
+  }
+
+  getEditMsg(editText){
+    if(editText == 'AccountSettings'){
+      if(this.translationData.lblAccountSettingsSuccessfullyUpdated)
+        return this.translationData.lblAccountSettingsSuccessfullyUpdated;
+      else
+        return ("Account settings successfully updated");
+    }
+    else if(editText == 'GeneralSettings'){
+      if(this.translationData.lblGeneralSettingsSuccessfullyUpdated)
+        return this.translationData.lblGeneralSettingsSuccessfullyUpdated;
+      else
+        return ("General settings successfully updated");
+    }
+    else if(editText == 'Password'){
+      if(this.translationData.lblPasswordChangedSuccessfully)
+      return this.translationData.lblPasswordChangedSuccessfully;
+    else
+      return ("Password changed successfully");
+    }
+  }
+
+  successMsgBlink(msg: any){
+    this.grpTitleVisible = true;
+    this.displayMessage = msg;
+    setTimeout(() => {  
+      this.grpTitleVisible = false;
+    }, 5000);
+  }
+
+  onClose(){
+    this.grpTitleVisible = false;
   }
 }
 

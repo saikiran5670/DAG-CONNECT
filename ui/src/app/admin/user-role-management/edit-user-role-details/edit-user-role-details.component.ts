@@ -171,7 +171,11 @@ export class EditUserRoleDetailsComponent implements OnInit {
         }
         this.roleService.createUserRole(objData).subscribe((res) => {
           this.backToPage.emit({ editFlag: false, editText: 'create',  rolename: this.userRoleFormGroup.controls.userRoleName.value });
-        }, (error) => { });
+        }, (error) => { 
+          if(error.status == 409){
+            this.isUserRoleExist = true;
+          }
+        });
       }
    // }, (error) => { });
   }
