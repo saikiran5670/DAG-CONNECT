@@ -76,6 +76,7 @@ export class EditViewUserComponent implements OnInit {
   timeFormatData: any;
   vehicleDisplayData: any;
   landingPageDisplayData: any;
+  accountOrganizationId: any;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private userService: EmployeeService, private accountService: AccountService) { }
 
@@ -109,6 +110,7 @@ export class EditViewUserComponent implements OnInit {
       ]
     });
     this.accountInfoData.organization = localStorage.getItem("organizationName");
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.croppedImage = '../../assets/images/Account_pic.png';    
     this.setDefaultAccountInfo();
     this.setDefaultGeneralSetting(this.selectedPreference);
@@ -194,11 +196,31 @@ export class EditViewUserComponent implements OnInit {
   }
 
   toBack(){
-    let emitObj = {
-      stepFlag: false,
-      msg: ""
+    if(this.fromEdit == 'edit'){ //--- back from edit 
+      let obj: any = {
+        accountId: 0,
+        organizationId: this.accountOrganizationId,
+        accountGroupId: 0,
+        vehicleGroupGroupId: 0,
+        roleId: 0,
+        name: ""
+      }
+      this.accountService.getAccountDetails(obj).subscribe((data)=>{
+        let emitObj = {
+          stepFlag: false,
+          msg: "",
+          tableData: data
+        }
+        this.userCreate.emit(emitObj);
+      });  
     }
-    this.userCreate.emit(emitObj);
+    else{ //-- back from view
+      let emitObj = {
+        stepFlag: false,
+        msg: ""
+      }
+      this.userCreate.emit(emitObj);
+    }
   }
 
   editGeneralSettings(){
