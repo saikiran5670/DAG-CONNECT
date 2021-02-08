@@ -40,7 +40,7 @@
           <mat-cell *matCellDef="let row">
             <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
             <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-            <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.firstName }}</span>
+            <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.firstName }} {{ row.lastName }}</span>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="emailId">
@@ -54,7 +54,7 @@
         <ng-container matColumnDef="accountGroups">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserGroup || 'User Group' }}</mat-header-cell>
           <!-- <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}"><span class="text-truncate">{{ row.accountGroups.length > 0 ? row.accountGroups[0].name : '-' }}</span></mat-cell> -->
-          <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}"><span class="text-truncate">{{ row.accountGroupList }}</span></mat-cell>
+          <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}"><span class="text-truncate">{{ row.accountGroups.length > 0 ? row.accountGroupList : '-' }}</span></mat-cell>
         </ng-container>
         <ng-container matColumnDef="action">
           <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
