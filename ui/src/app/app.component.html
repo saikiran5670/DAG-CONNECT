@@ -57,8 +57,11 @@
                     </span>
                 </span>
                 </div>
+                <div *ngIf="menuCollapsed" class='text-truncate' style='font-size: 11px;'>
+                    <span matTooltip='{{ userFullName }}'>{{ userFullName }}</span>
+                </div>
             </div>
-            <div fxLayout="row" fxLayoutAlign="end">
+            <div class='logoutbtnContainer' fxLayout="row" fxLayoutAlign="end">
                 <div class="logoutButton" fxLayout="column">
                     <button mat-icon-button (click)="logOut()" class="menuToggler display-flex align-items-center">
                         <mat-icon matTooltip="Logout" class='logoutIcon'>exit_to_app</mat-icon>

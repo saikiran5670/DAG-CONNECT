@@ -169,7 +169,7 @@ a{
     background-color: #00529C;
     overflow: auto;
     width: 210px; // 200px
-    z-index: 2;
+    z-index: 3; //2
 
     &.menuCollapsed {
         width: 100px;
@@ -224,11 +224,20 @@ a{
             margin: 10px 10px 10px 10px;
         }
         .userBgImg{
-            padding: 20px 10px 10px 0px;
+            padding: 10px 10px 10px 5px;
 
             .userImageContainer{
-                display: flex;
+                display: flex !important;
                 flex-flow: column wrap;
+                place-content: stretch center !important;
+                align-items: center !important;
+            }
+
+            .logoutbtnContainer{
+                place-content: stretch center !important;
+                align-items: center !important;
+                display: flex !important;
+                margin: 2px 0px 0px 7px !important;
             }
         }
         .display-flex .align-items-center{
