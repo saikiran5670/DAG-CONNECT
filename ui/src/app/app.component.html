@@ -49,11 +49,13 @@
                                 openUserRoleDialog ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
                         </span>
                     </span>
+                    <span class='display-flex align-items-center'>
                     <span class='userRole'>{{ userOrg }}</span>
                     <span *ngIf="roleDropdown.length == 0">
                         <mat-icon style="cursor: pointer;" (click)="onClickUserRole()" class='font-size-20'>{{
                             openUserRoleDialog ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
                     </span>
+                </span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="end">
