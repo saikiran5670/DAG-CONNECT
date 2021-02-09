@@ -424,7 +424,9 @@ export class UserGroupManagementComponent implements OnInit {
       this.callToCommonTable(data, colsList, colsName, tableTitle);
     });
   }
+  onVehicleClick(data : any) {
 
+  }
   makeRoleAccountGrpList(initdata){
     initdata.forEach((element, index) => {
       let roleTxt: any = '';

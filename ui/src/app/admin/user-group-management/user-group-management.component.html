@@ -44,7 +44,7 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
 
         <ng-container matColumnDef="vehicles">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicles || 'Vehicles'}}</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{row.vehicleCount}}</mat-cell>
+          <mat-cell *matCellDef="let row"><span [ngClass]="row.vehicleCount !=0 ? 'row-hover' : '' " (click)="row.vehicleCount !=0 ? onVehicleClick(row) : ''">{{row.vehicleCount}}</span></mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="users">
