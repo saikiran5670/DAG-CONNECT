@@ -20,18 +20,19 @@ export class LoginDialogComponent {
     accountDetail: any
   }, private mdDialogRef: MatDialogRef<LoginDialogComponent>, public router: Router, public fb: FormBuilder, private dataInterchangeService: DataInterchangeService) {
     this.loginDialogForm = this.fb.group({
-      'organization': [null, Validators.compose([Validators.required])],
+      'organization': [],
       'role': []
     });
      this.setDropdownValues();
   }
 
   setDropdownValues(){
-    this.loginDialogForm.get('organization').setValue(this.data.organization[0].id);
-    if((this.data.role[0] != null) && (this.data.role.length > 0)){
+    if(this.data.organization.length > 0){
+      this.loginDialogForm.get('organization').setValue(this.data.organization[0].id);
+    }
+    if(this.data.role.length > 0){
       this.loginDialogForm.get('role').setValue(this.data.role[0].id);
     }
-    
   }
 
   public cancel() {
@@ -48,7 +49,9 @@ export class LoginDialogComponent {
       localStorage.setItem('accountOrganizationId', this.loginDialogForm.controls.organization.value);
       localStorage.setItem('accountRoleId', this.loginDialogForm.controls.role.value);
       let orgName = this.data.organization.filter(item => item.id === this.loginDialogForm.controls.organization.value);
-      localStorage.setItem("organizationName", orgName[0].name);
+      if(orgName.length > 0){
+        localStorage.setItem("organizationName", orgName[0].name);
+      }
       let loginDetailsObj: any = {
         organization : this.data.organization,
         role : this.data.role,

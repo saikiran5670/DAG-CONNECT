@@ -38,8 +38,8 @@ export class AppComponent {
     "selectedIndex": 0
   };
   openUserRoleDialog= false;
-  organizationDropdown: any;
-  roleDropdown: any;
+  organizationDropdown: any = [];
+  roleDropdown: any = [];
   organization: any;
   role: any;
   userFullName: any;
@@ -199,10 +199,13 @@ export class AppComponent {
     if(accountInfo){
       this.userFullName = `${accountInfo.accountDetail.salutation} ${accountInfo.accountDetail.firstName} ${accountInfo.accountDetail.lastName}`;
       let userRole = accountInfo.role.filter(item => item.id === parseInt(localStorage.getItem("accountRoleId")));
-      if (userRole.length > 0 )
-        { this.userRole = userRole[0].name; }
+      if (userRole.length > 0){
+         this.userRole = userRole[0].name; 
+      }
       let userOrg = accountInfo.organization.filter(item => item.id === parseInt(localStorage.getItem("accountOrganizationId")));
-      this.userOrg = userOrg[0].name;
+      if(userOrg.length > 0){
+        this.userOrg = userOrg[0].name;
+      }
       this.organizationDropdown = accountInfo.organization;
       this.roleDropdown = accountInfo.role;
       this.setDropdownValues();

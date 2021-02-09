@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { CookieService } from 'ngx-cookie-service';
+import { DataInterchangeService } from 'src/app/services/data-interchange.service';
 
 export interface Organization {
   id: number ;
@@ -33,7 +34,7 @@ export class LoginComponent implements OnInit {
   dialogRefLogin: MatDialogRef<LoginDialogComponent>;
   maintenancePopupFlag: boolean = false;
 
-  constructor(private cookieService: CookieService, public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService) {
+  constructor(private cookieService: CookieService, public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService, private dataInterchangeService: DataInterchangeService) {
     this.loginForm = this.fb.group({
       // 'username': [null, Validators.compose([Validators.required, Validators.email])],
       // 'password': [null, Validators.compose([Validators.required, Validators.minLength(6)])]
@@ -107,23 +108,6 @@ export class LoginComponent implements OnInit {
   }
 
   public showOrganizationRolePopup(data: any, accountDetails: any) {
-    // if(data.accountOrganization.length === 0){
-    //   data.accountOrganization = [
-    //   {
-    //     id: 93,
-    //     name: "DAF CONNECT"
-    //   }];
-    // }
-
-    // if(data.accountRole.length === 0){
-    //   data.accountRole = [
-    //   {
-    //     id: 131,
-    //     name: "Fleet Admin"
-    //   }];
-    // }
-
-    // localStorage.setItem('accountOrganizationId', data.accountOrganization[0].id);
     if(data.accountId){
       data.accountId = data.accountId;
     }
@@ -131,28 +115,66 @@ export class LoginComponent implements OnInit {
       data.accountId = 0;
     }
     localStorage.setItem('accountId', data.accountId);
+    
+  //---Test scenario -----//
+  //  org  role  action
+  //  0     0    popup skip - dashboard with no data
+  //  1     0    popup skip - dashboard with org data only
+  //  1     1    popup skip - dashboard with both role & org data
+  //  2     0    popup show w/o role - dashboard with org data only
+  //  2	    1    popup show with both data - dashboard with both role & org data 
+  //  1     2    popup show with both data - dashboard with both role & org data 
+  
+  //--- Test data-------------
+    //data.accountOrganization.push({id: 1, name: 'Org01'});
+    //data.accountRole.push({id: 1, name: 'Role01'});
+    //data.accountOrganization = [];
+    //data.accountRole = [];
+  //----------------------
 
     let organization: Organization[] = data.accountOrganization;
     let role: Role[] = data.accountRole;
-    const options = {
-      title: `Welcome to DAF Connect ${accountDetails.salutation} ${accountDetails.firstName} ${accountDetails.lastName}`,
-      cancelText: 'Cancel',
-      confirmText: 'Confirm',
-      organization: organization,
-      role: role
-    };
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.disableClose = true;
-    dialogConfig.autoFocus = true;
-    dialogConfig.data = {
-      title: options.title,
-      cancelText: options.cancelText,
-      confirmText: options.confirmText,
-      organization: options.organization,
-      role: options.role,
-      accountDetail: accountDetails
+    
+    if(data.accountOrganization.length > 1 || data.accountRole.length > 1){ //-- show popup
+      const options = {
+        title: `Welcome to DAF Connect ${accountDetails.salutation} ${accountDetails.firstName} ${accountDetails.lastName}`,
+        cancelText: 'Cancel',
+        confirmText: 'Confirm',
+        organization: organization,
+        role: role
+      };
+      const dialogConfig = new MatDialogConfig();
+      dialogConfig.disableClose = true;
+      dialogConfig.autoFocus = true;
+      dialogConfig.data = {
+        title: options.title,
+        cancelText: options.cancelText,
+        confirmText: options.confirmText,
+        organization: options.organization,
+        role: options.role,
+        accountDetail: accountDetails
+      }
+      this.dialogRefLogin = this.dialog.open(LoginDialogComponent, dialogConfig);
     }
-    this.dialogRefLogin = this.dialog.open(LoginDialogComponent, dialogConfig);
+    else{ //-- skip popup
+      if(data.accountOrganization.length > 0){
+        localStorage.setItem('accountOrganizationId', data.accountOrganization[0].id);
+        localStorage.setItem("organizationName", data.accountOrganization[0].name);
+      }
+
+      if(data.accountRole.length > 0){
+        localStorage.setItem('accountRoleId', data.accountRole[0].id);
+      }
+
+      let loginDetailsObj: any = {
+        organization: organization,
+        role: role,
+        accountDetail: accountDetails
+      }
+      localStorage.setItem("accountInfo", JSON.stringify(loginDetailsObj));
+      this.dataInterchangeService.getDataInterface(true);
+      this.router.navigate(['/dashboard']);
+    }
   }
 
   onForgetPassword() {

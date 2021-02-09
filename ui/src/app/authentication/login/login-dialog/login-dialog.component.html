@@ -12,7 +12,7 @@
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="10px" class='margin-20'
-          style='padding: 10px 20px !important; background: #ecf7fe;'>
+          style='padding: 10px 20px !important; background: #ecf7fe;' *ngIf="data.organization != null && data.organization.length > 0">
           <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-label>Select Organisation</mat-label>
             <mat-form-field appearance="outline" class="full-width">
@@ -27,7 +27,7 @@
           </div>
         </div>
 
-        <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="0px" class='margin-20' *ngIf="data.role!=null && data.role.length > 0 "
+        <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="0px" class='margin-20' *ngIf="data.role != null && data.role.length > 0"
           style='padding: 10px 20px !important; background: #d1edfe;'>
           <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-label>Select Role</mat-label>

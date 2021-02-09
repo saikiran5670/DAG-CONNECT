@@ -44,14 +44,14 @@
                     <span class='userName'>{{ userFullName }}</span>
                     <span class='display-flex align-items-center'>
                         <span class='userRole' *ngIf="roleDropdown != null && roleDropdown.length > 0">{{ userRole }}</span>
-                        <span *ngIf="roleDropdown != null && roleDropdown.length > 0">
+                        <span *ngIf="(roleDropdown.length > 0 && organizationDropdown.length > 1) || (roleDropdown.length > 1 && organizationDropdown.length > 0)">
                             <mat-icon style="cursor: pointer;" (click)="onClickUserRole()" class='font-size-20'>{{
                                 openUserRoleDialog ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
                         </span>
                     </span>
                     <span class='display-flex align-items-center'>
-                    <span class='userRole'>{{ userOrg }}</span>
-                    <span *ngIf="roleDropdown.length == 0">
+                    <span class='userRole' *ngIf="organizationDropdown != null && organizationDropdown.length > 0">{{ userOrg }}</span>
+                    <span *ngIf="roleDropdown.length == 0 && organizationDropdown.length > 1">
                         <mat-icon style="cursor: pointer;" (click)="onClickUserRole()" class='font-size-20'>{{
                             openUserRoleDialog ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
                     </span>
@@ -71,7 +71,7 @@
                     <mat-card class='mat-elevation-z margin-bottom-xlg no-padding'>
                         <mat-card-content>
                             <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="0px"
-                                style='padding: 10px !important; background: #ECF7FE;'>
+                                style='padding: 10px !important; background: #ECF7FE;' *ngIf="organizationDropdown.length > 0">
                                 <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px"
                                     fxLayoutAlign="left">
                                     <mat-label>Select Organisation</mat-label>
@@ -85,7 +85,7 @@
                                 </div>
                             </div>
 
-                            <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="0px" *ngIf="roleDropdown!=null && roleDropdown.length > 0 "
+                            <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="0px" *ngIf="roleDropdown.length > 0"
                                 style='padding: 10px !important; background:#c3f1f7;'>
                                 <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px"
                                     fxLayoutAlign="left">
