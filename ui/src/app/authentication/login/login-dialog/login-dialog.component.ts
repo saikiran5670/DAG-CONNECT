@@ -28,7 +28,10 @@ export class LoginDialogComponent {
 
   setDropdownValues(){
     this.loginDialogForm.get('organization').setValue(this.data.organization[0].id);
-    this.loginDialogForm.get('role').setValue(this.data.role[0].id);
+    if(this.data.role[0]!=null ){
+      this.loginDialogForm.get('role').setValue(this.data.role[0].id);
+    }
+    
   }
 
   public cancel() {
