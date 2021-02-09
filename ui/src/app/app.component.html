@@ -43,10 +43,14 @@
                 <div *ngIf="!menuCollapsed" fxLayoutAlign="center" fxLayout="column" class='font-size-0-9'>
                     <span class='userName'>{{ userFullName }}</span>
                     <span class='display-flex align-items-center'>
-                        <span class='userRole' *ngIf="roleDropdown!=null && roleDropdown.length > 0 ">{{ userRole }}</span>
+                        <span class='userRole' *ngIf="roleDropdown != null && roleDropdown.length > 0">{{ userRole }}</span>
+                        <span *ngIf="roleDropdown != null && roleDropdown.length > 0">
+                            <mat-icon style="cursor: pointer;" (click)="onClickUserRole()" class='font-size-20'>{{
+                                openUserRoleDialog ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
+                        </span>
                     </span>
                     <span class='userRole'>{{ userOrg }}</span>
-                    <span>
+                    <span *ngIf="roleDropdown.length == 0">
                         <mat-icon style="cursor: pointer;" (click)="onClickUserRole()" class='font-size-20'>{{
                             openUserRoleDialog ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
                     </span>
