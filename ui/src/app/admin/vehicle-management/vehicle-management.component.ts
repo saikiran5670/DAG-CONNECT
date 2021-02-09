@@ -118,8 +118,8 @@ export class VehicleManagementComponent implements OnInit {
       lblEnterVehicleGroupName: 'Enter Vehicle Group Name',
       lblEnterVehicleGroupDescription: 'Enter Vehicle Group Description',
       lblSelectVehicleListOptional: 'Select Vehicle List (Optional)',
-      lblHintMessage:
-        'Please select vehicles to from below list to associate with this vehicle group if needed.',
+      lblVehicleHintMessage:
+        'Please select vehicles from below list to associate with this vehicle group if needed.',
       lblConsent: 'Status',
       lblVehicleGroupalreadyexistsPleasechooseadifferentname:
         'Vehicle Group already exists. Please choose a different name.',

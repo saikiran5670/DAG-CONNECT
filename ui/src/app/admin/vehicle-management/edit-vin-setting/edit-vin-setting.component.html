@@ -15,7 +15,7 @@
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblVehicleName || 'Vehicle Name' }}</mat-label>
                   <mat-form-field appearance="outline" class="full-width">
-                    <input [(ngModel)]='vehicleData.vehicleName' placeholder="{{ translationData.lblVehicleName || 'Vehicle Name' }}" matInput formControlName="vehicleName" >
+                    <input [(ngModel)]='vehicleData.vehicleName' placeholder="{{ translationData.lblVehicleName || 'Vehicle Name' }}" matInput formControlName="vehicleName" maxlength="50">
                   </mat-form-field>
                   <mat-error *ngIf="vinSettingFormGroup.get('vehicleName').hasError('required')">
                     {{ translationData.lblVehicleNameisrequired || 'Vehicle Name is required' }}.
@@ -24,7 +24,7 @@
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblRegistrationNumber || 'Registration Number' }}</mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                      <input [(ngModel)]='vehicleData.registrationNo' placeholder="{{ translationData.lblRegistrationNumber || 'Registration Number' }}" matInput formControlName="registrationNumber" >
+                      <input [(ngModel)]='vehicleData.registrationNo' placeholder="{{ translationData.lblRegistrationNumber || 'Registration Number' }}" matInput formControlName="registrationNumber" maxlength="50">
                     </mat-form-field>
                     <mat-error *ngIf="vinSettingFormGroup.get('registrationNumber').hasError('required')">
                       {{ translationData.lblRegistrationNumberisrequired || 'Registration Number is required' }}.
@@ -33,7 +33,7 @@
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblVehicleIdentificationNumber || 'Vehicle Identification Number' }} ({{ translationData.lblVIN || 'VIN' }})</mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                      <input [(ngModel)]='vehicleData.vin' placeholder="{{ translationData.lblVIN || 'VIN' }}" matInput formControlName="vin" >
+                      <input [(ngModel)]='vehicleData.vin' placeholder="{{ translationData.lblVIN || 'VIN' }}" matInput formControlName="vin" maxlength="50">
                     </mat-form-field>
                 </div> 
               </div>
@@ -41,7 +41,7 @@
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblVehicleModel || 'Vehicle Model' }}</mat-label>
                   <mat-form-field appearance="outline" class="full-width">
-                    <input [(ngModel)]='vehicleData.vehicleModel' placeholder="{{ translationData.lblVehicleModel || 'Vehicle Model' }}" matInput formControlName="vehicleModel" >
+                    <input [(ngModel)]='vehicleData.vehicleModel' placeholder="{{ translationData.lblVehicleModel || 'Vehicle Model' }}" matInput formControlName="vehicleModel" maxlength="50">
                   </mat-form-field>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="center">

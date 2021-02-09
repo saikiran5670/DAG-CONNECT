@@ -58,7 +58,8 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
                 <mat-cell *matCellDef="let element " matTooltip={{element[disCol]}}> {{element[disCol]}}
                   <div *ngIf="element.isVehicleGroup==true">
 
-                    <img src='assets/images/group_icon.svg' style="width: 20px;height: 20px;" />
+                    <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
+                    <span class='iconTxt'>{{ (element.vehicleCount < 10) ? '0' : '' }}{{ element.vehicleCount }}</span>
                   </div>
 
                 </mat-cell>
@@ -68,7 +69,8 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
                 <mat-cell *matCellDef="let element " matTooltip={{element[disCol]}}> {{element[disCol]}}
                   <div *ngIf="element.isVehicleGroup==true">
 
-                    <img src='assets/images/group_icon.svg' style="width: 20px;height: 20px;" />
+                    <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
+                    <span class='iconTxt'>{{ (element.vehicleCount < 10) ? '0' : '' }}{{ element.vehicleCount }}</span>
                   </div>
 
                 </mat-cell>
