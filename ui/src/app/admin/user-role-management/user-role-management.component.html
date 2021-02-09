@@ -54,7 +54,7 @@
                         </ng-container>
                         <ng-container matColumnDef="description">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRoleDescription || 'Role Description'}}</mat-header-cell>
-                            <mat-cell *matCellDef="let row"> {{row.description}} </mat-cell>
+                            <mat-cell *matCellDef="let row" matTooltip="{{ row.description }}"><span class="text-truncate">{{row.description}}</span> </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="action">
                             <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action' }}</mat-header-cell>
