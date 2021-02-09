@@ -21,14 +21,14 @@ export class LoginDialogComponent {
   }, private mdDialogRef: MatDialogRef<LoginDialogComponent>, public router: Router, public fb: FormBuilder, private dataInterchangeService: DataInterchangeService) {
     this.loginDialogForm = this.fb.group({
       'organization': [null, Validators.compose([Validators.required])],
-      'role': [null, Validators.compose([Validators.required])]
+      'role': []
     });
      this.setDropdownValues();
   }
 
   setDropdownValues(){
     this.loginDialogForm.get('organization').setValue(this.data.organization[0].id);
-    if(this.data.role[0]!=null ){
+    if((this.data.role[0] != null) && (this.data.role.length > 0)){
       this.loginDialogForm.get('role').setValue(this.data.role[0].id);
     }
     
