@@ -18,6 +18,7 @@ export class EditCommonTableComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   dataSource: any;
   selectionData = new SelectionModel(true, []);
+  servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
 
   constructor(
     @Inject(MAT_DIALOG_DATA)

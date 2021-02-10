@@ -77,6 +77,7 @@ export class EditViewUserComponent implements OnInit {
   vehicleDisplayData: any;
   landingPageDisplayData: any;
   accountOrganizationId: any;
+  servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private userService: EmployeeService, private accountService: AccountService) { }
 

@@ -79,6 +79,7 @@ export class NewUserStepComponent implements OnInit {
   dialogRef: MatDialogRef<UserDetailTableComponent>;
   userData: any;
   accountOrganizationId: any = 0;
+  servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
