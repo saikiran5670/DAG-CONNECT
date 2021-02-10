@@ -9,7 +9,7 @@
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                         <input (keyup)="onInputChange($event)" placeholder="{{ translationData.lblEnterNewUserGroupName || 'Enter New User Group Name' }}"
-                            matInput formControlName="userGroupName" required maxlength="60">
+                            matInput formControlName="userGroupName" required maxlength="50">
                     </mat-form-field>
                     <mat-error *ngIf="UserGroupForm.get('userGroupName').hasError('required')">
                         {{translationData.lblErrorUserGroupName || 'Please enter any User Group name' }}
@@ -23,7 +23,7 @@
                         <span>{{ translationData.lbl120CharMax || '120 characters max' }}</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <input (keyup)="onInputGD($event)" maxlength="120" placeholder="{{translationData.lblEnterAboutGroupPlaceholder || 'Enter About Group' }}" matInput
+                        <input (keyup)="onInputGD($event)" maxlength="100" placeholder="{{translationData.lblEnterAboutGroupPlaceholder || 'Enter About Group' }}" matInput
                             formControlName="userGroupDescription">
                     </mat-form-field>
                 </div>
