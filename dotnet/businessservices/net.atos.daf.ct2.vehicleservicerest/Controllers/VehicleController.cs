@@ -15,6 +15,7 @@ using System.Text;
 using  net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.audit;
 using Newtonsoft.Json; 
+using AccountComponent = net.atos.daf.ct2.account;
 
 namespace net.atos.daf.ct2.vehicleservicerest.Controllers
 {
@@ -25,15 +26,17 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
         private readonly ILogger<VehicleController> _logger;
         private readonly IVehicleManager _vehicelManager;
         private readonly IGroupManager _groupManager;
+        private readonly AccountComponent.IAccountManager accountmanager;
         IAuditTraillib _auditlog;
 
         private string FK_Constraint = "violates foreign key constraint";
-        public VehicleController(ILogger<VehicleController> logger, IVehicleManager vehicelManager, IGroupManager groupManager,IAuditTraillib auditlog)
+        public VehicleController(ILogger<VehicleController> logger, IVehicleManager vehicelManager, IGroupManager groupManager,IAuditTraillib auditlog, AccountComponent.IAccountManager _accountmanager)
         {
             _logger = logger;
             _vehicelManager = vehicelManager;
             _groupManager = groupManager;
             _auditlog=auditlog;
+             accountmanager = _accountmanager;
            
         }
 
@@ -596,6 +599,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                 return StatusCode(500, "Internal Server Error.");
             }
         }
+
          [HttpGet]
         [Route("getGroup")]
         public async Task<IActionResult> GetVehicleGroup(int OrganizationId,int VehicleId)
@@ -629,5 +633,89 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
             }
         }
 
+
+        [HttpGet]
+        [Route("group/getvehicles")]
+        public async Task<IActionResult> GetVehiclesByAccountGroup(int AccountGroupId,int Organization_Id)
+        {
+            try
+            {
+                _logger.LogInformation("Get vehicle list by group id method in vehicle API called.");
+                
+                 if(AccountGroupId==0)
+                {
+                    return StatusCode(401,"invalid Account Group Id: The Account group id is Empty.");
+                }
+                    StringBuilder VehicleIdList = new StringBuilder();
+                    // Get Access Relationship
+                    AccountComponent.entity.AccessRelationshipFilter accessFilter = new AccountComponent.entity.AccessRelationshipFilter();
+                    accessFilter.AccountId = 0;
+                    accessFilter.AccountGroupId = AccountGroupId;
+                    accessFilter.VehicleGroupId = 0;
+                    // get account group and vehicle group access relationship.
+                    var accessResult = await accountmanager.GetAccessRelationship(accessFilter);
+                    if (Convert.ToInt32(accessResult.Count) > 0)
+                    {
+                        List<int> vehicleGroupIds = new List<int>();
+                        //List<int> accountIdList = new List<int>();
+                        vehicleGroupIds.AddRange(accessResult.Select(c => c.VehicleGroupId).ToList());
+                        var groupFilter = new GroupFilter();
+                        groupFilter.GroupIds = vehicleGroupIds;
+                        groupFilter.OrganizationId = Organization_Id;                        
+                        groupFilter.GroupRefCount = false;
+                        groupFilter.GroupRef = true;
+                        groupFilter.ObjectType = ObjectType.None;
+                        groupFilter.GroupType = GroupType.None;
+                        groupFilter.FunctionEnum = FunctionEnum.None;
+                        var vehicleGroups = await _groupManager.Get(groupFilter);
+                        // Get group reference
+                        foreach (Group vGroup in vehicleGroups)
+                        {
+                            foreach (GroupRef groupRef in vGroup.GroupRef)
+                            {
+                                if (groupRef.Ref_Id > 0) 
+                                    if (VehicleIdList.Length > 0)
+                                        {
+                                            VehicleIdList.Append(",");
+                                        }
+                                        VehicleIdList.Append(groupRef.Ref_Id);
+                            }
+                        }
+                    }
+
+                List<Vehicle> ObjVehicleList = new List<Vehicle>();
+                if(VehicleIdList.Length >0)
+                {
+                    VehicleFilter ObjVehicleFilter = new VehicleFilter();
+                    ObjVehicleFilter.VehicleIdList = VehicleIdList.ToString();
+                    ObjVehicleFilter.OrganizationId = Organization_Id;    
+                    IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.Get(ObjVehicleFilter);
+                
+                    foreach (var item in ObjRetrieveVehicleList)
+                    {
+                        Vehicle ObjGroupRef = new Vehicle();
+                        ObjGroupRef.ID = item.ID;
+                        ObjGroupRef.Name = item.Name== null ? "" : item.Name;
+                        ObjGroupRef.License_Plate_Number = item.License_Plate_Number== null ? "" : item.License_Plate_Number;
+                        ObjGroupRef.VIN = item.VIN== null ? "" : item.VIN;
+                        ObjGroupRef.Model = item.Model;
+                        ObjGroupRef.Organization_Id = item.Organization_Id;
+                        ObjVehicleList.Add(ObjGroupRef);
+                    }
+                }
+                else
+                {
+                    return StatusCode(401,"vehicle details does not exist for passed parameters.");
+                }
+        
+                return Ok(ObjVehicleList);
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Vehicle Service:Get vehicle list by account group ID  : " + ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
     }
 }
