@@ -1,5 +1,4 @@
-﻿using Confluent.Kafka;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,94 +8,156 @@ using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.repository;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.vehicle.entity;
+using System.Threading.Tasks;
+using Azure.Storage.Blobs;
+using Azure.Messaging.EventHubs;
+using Azure.Messaging.EventHubs.Consumer;
+using Azure.Messaging.EventHubs.Processor;
+using System.Threading;
+using Azure.Messaging.EventHubs.Producer;
+using net.atos.daf.ct2.audit.repository;
+using net.atos.daf.ct2.audit;
 
 namespace TCUProvisioning
 {
     class TCUProvision : ITCUProvisioningDataReceiver
     {
-        private readonly IVehicleManager vehicleManager;
 
-        public TCUProvision(IVehicleManager _vehicleManager)
-        {
-            vehicleManager = _vehicleManager;
-        }
+        //private const string ehubNamespaceConnectionString = ConfigurationManager.AppSetting["ehubNamespaceConnectionString"];
 
-
-
-
-        private static String kafkaEndpoint = ConfigurationManager.AppSetting["BootstrapServers"];
-        private static String topicname = ConfigurationManager.AppSetting["TCUProvisioningTopic"];
-        private static String groupID = ConfigurationManager.AppSetting["GroupId"];
-        private static String clientID = ConfigurationManager.AppSetting["ClientId"];
-        private static String vehicleChangeTopic = ConfigurationManager.AppSetting["VehicleChangeTopic"];
         private static String psqlConnString = ConfigurationManager.AppSetting["psqlconnstring"];
+        private static String ehubNamespaceConnectionString = ConfigurationManager.AppSetting["ehubNamespaceConnectionString"];
+        private static String eventHubName = ConfigurationManager.AppSetting["eventHubName"];
+        private static String blobStorageConnectionString = ConfigurationManager.AppSetting["blobStorageConnectionString"];
+        private static String blobContainerName = ConfigurationManager.AppSetting["blobContainerName"];
+        private static String vehicleChangeTopic = ConfigurationManager.AppSetting["VehicleChangeTopic"];
+        private static String consumerGroup = ConfigurationManager.AppSetting["GroupId"];
 
+        // private readonly IVehicleManager vehicleManager;
 
+        /*    public TCUProvision(IVehicleManager _vehicleManager)
+            {
+                vehicleManager = _vehicleManager;
+            }*/
 
-
-
-        public async void scribeTCUProvisioningTopic()
+        public async Task subcribeTCUProvisioningTopic()
         {
-            var config = new ConsumerConfig
-            {
-                GroupId = groupID,
-                BootstrapServers = kafkaEndpoint
-            };
-                       
-           //DataAccess dataacess = new PgSQLDataAccess(psqlConnString);
-           //VehicleRepository vehiclerepo = new VehicleRepository(dataacess);
-           //VehicleManager vehicleManager = new VehicleManager(vehiclerepo);
-            VehicleFilter vehicleFilter = new VehicleFilter();
             
-            
+            // Create a blob container client that the event processor will use 
+            BlobContainerClient storageClient = new BlobContainerClient(blobStorageConnectionString, blobContainerName);
 
+            // Create an event processor client to process events in the event hub
+            EventProcessorClient processor = new EventProcessorClient(storageClient, consumerGroup, ehubNamespaceConnectionString, eventHubName);
 
-            using (var consumer = new ConsumerBuilder<Null, string>(config).Build())
-            {
-                consumer.Subscribe(topicname);
-                while (true)
-                {
-                    var cr = consumer.Consume();
-                    String TCUDataFromTopic = cr.Message.Value;
-                    var TCUDataReceive = JsonConvert.DeserializeObject<TCUDataReceive>(TCUDataFromTopic);
-                    vehicleFilter.OrganizationId = 0;
-                    vehicleFilter.VIN = TCUDataReceive.Vin;
-                    vehicleFilter.VehicleId = 0;
-                    vehicleFilter.VehicleGroupId = 0;
-                    vehicleFilter.AccountId = 0;
-                    vehicleFilter.FeatureId = 0;
-                    vehicleFilter.VehicleIdList = "";
-                    vehicleFilter.Status = 0;
-                    vehicleFilter.AccountGroupId = 0;
-                    Vehicle receivedVehicle = await vehicleManager.Get(vehicleFilter);
+            // Register handlers for processing events and handling errors
+            processor.ProcessEventAsync += ProcessEventHandler;
+            processor.ProcessErrorAsync += ProcessErrorHandler;
 
+            // Start the processing
+            await processor.StartProcessingAsync();
 
-                }
+            // Wait for 10 seconds for the events to be processed
+            await Task.Delay(TimeSpan.FromSeconds(10));
 
-            }
+            // Stop the processing
+            await processor.StopProcessingAsync();
         }
 
-        public void raiseVehicleChangeEvent(TCUDataReceive TCUDataReceive) {
+        static async Task ProcessEventHandler(ProcessEventArgs eventArgs)
+        {
+            String TCUDataFromTopic = Encoding.UTF8.GetString(eventArgs.Data.Body.ToArray());
+
+            // Write the body of the event to the console window
+            Console.WriteLine(TCUDataFromTopic);
+            var TCUDataReceive = JsonConvert.DeserializeObject<TCUDataReceive>(TCUDataFromTopic);
+
+            await updateVehicleDetails(TCUDataReceive);
+
+            // Update checkpoint in the blob storage so that the app receives only new events the next time it's run
+            await eventArgs.UpdateCheckpointAsync(eventArgs.CancellationToken);
+        }
+
+        static Task ProcessErrorHandler(ProcessErrorEventArgs eventArgs)
+        {
+            // Write details about the error to the console window
+            Console.WriteLine($"\tPartition '{ eventArgs.PartitionId}': an unhandled exception was encountered. This was not expected to happen.");
+            Console.WriteLine(eventArgs.Exception.Message);
+            return Task.CompletedTask;
+        }
+
+
+        static async Task updateVehicleDetails(TCUDataReceive TCUDataReceive) {
+
+            DateTime dateTime = DateTime.Now;
+            var Currdate = new DateTime(dateTime.Ticks);
+            Currdate = Currdate.AddTicks(-(dateTime.Ticks % TimeSpan.TicksPerSecond));
+
+            IDataAccess dataacess = new PgSQLDataAccess(psqlConnString);
+            IVehicleRepository vehiclerepo = new VehicleRepository(dataacess);
+            IAuditLogRepository auditrepo = new AuditLogRepository(dataacess);
+            IAuditTraillib audit = new AuditTraillib(auditrepo);
+            IVehicleManager vehicleManager = new VehicleManager(vehiclerepo,audit);
+            VehicleFilter vehicleFilter = new VehicleFilter();
+            vehicleFilter.OrganizationId = 0;
+            vehicleFilter.VIN = TCUDataReceive.Vin;
+            vehicleFilter.VehicleId = 0;
+            vehicleFilter.VehicleGroupId = 0;
+            vehicleFilter.AccountId = 0;
+            vehicleFilter.FeatureId = 0;
+            vehicleFilter.VehicleIdList = "";
+            vehicleFilter.Status = 0;
+            vehicleFilter.AccountGroupId = 0;
+            Vehicle receivedVehicle = (Vehicle) await vehicleManager.Get(vehicleFilter);
+
+            if (receivedVehicle == null)
+            {
+                receivedVehicle.VIN = TCUDataReceive.Vin;
+                receivedVehicle.Vid = TCUDataReceive.Correlations.VehicleId;
+                receivedVehicle.Tcu_Id = TCUDataReceive.Correlations.DeviceId;
+                receivedVehicle.Tcu_Serial_Number = TCUDataReceive.DeviceSerialNumber;
+                receivedVehicle.Is_Tcu_Register = true;
+                receivedVehicle.Reference_Date = Currdate;
+                await vehicleManager.Create(receivedVehicle);
+            }
+            else {
+
+                receivedVehicle.VIN = TCUDataReceive.Vin;
+                receivedVehicle.Vid = TCUDataReceive.Correlations.VehicleId;
+                receivedVehicle.Tcu_Id = TCUDataReceive.Correlations.DeviceId;
+                receivedVehicle.Tcu_Serial_Number = TCUDataReceive.DeviceSerialNumber;
+                receivedVehicle.Is_Tcu_Register = true;
+                receivedVehicle.Reference_Date = Currdate;
+                await vehicleManager.Update(receivedVehicle);
+                await raiseVehicleChangeEvent(TCUDataReceive);
+            }
+
+
+        }
+
+        static async Task raiseVehicleChangeEvent(TCUDataReceive TCUDataReceive) {
+
+            //Console.WriteLine("A batch of 1 events has been published.");
 
             VehicleChangeEvent vehicleChangeEvent = new VehicleChangeEvent(TCUDataReceive.Vin,TCUDataReceive.DeviceIdentifier);
             TCUDataSend tcuDataSend = new TCUDataSend(vehicleChangeEvent);
 
             string TCUDataSendJson = JsonConvert.SerializeObject(tcuDataSend);
 
-            var config = new ProducerConfig
+            await using (var producerClient = new EventHubProducerClient(ehubNamespaceConnectionString, vehicleChangeTopic))
             {
-                BootstrapServers = kafkaEndpoint,
-                ClientId = clientID
-            };
+                // Create a batch of events 
+                using EventDataBatch eventBatch = await producerClient.CreateBatchAsync();
 
-            using (var producer = new ProducerBuilder<Null, string>(config).Build())
-            {
-                producer.ProduceAsync(vehicleChangeTopic, new Message<Null, string> { Value = TCUDataSendJson });
-                producer.Flush();
-                
+                // Add events to the batch. An event is a represented by a collection of bytes and metadata. 
+                eventBatch.TryAdd(new EventData(Encoding.UTF8.GetBytes(TCUDataSendJson)));
+
+                // Use the producer client to send the batch of events to the event hub
+                await producerClient.SendAsync(eventBatch);
+               // Console.WriteLine("A batch of 2 events has been published.");
             }
+
         }
 
-
+        
     }
 }

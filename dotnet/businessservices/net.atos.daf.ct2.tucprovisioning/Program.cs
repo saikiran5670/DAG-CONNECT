@@ -1,13 +1,19 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace TCUProvisioning
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main()
         {
             TCUProvision tcuProvision = new TCUProvision();
-            tcuProvision.subscribeTCUProvisioningTopic();
+
+            while (true)
+            {
+                await tcuProvision.subcribeTCUProvisioningTopic();
+                Console.WriteLine("Out of Method");
+            }
         }
     }
 }

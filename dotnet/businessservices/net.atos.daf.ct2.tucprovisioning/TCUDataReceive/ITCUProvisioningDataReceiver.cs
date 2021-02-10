@@ -6,7 +6,7 @@ namespace TCUReceive
 {
     interface ITCUProvisioningDataReceiver
     {
-        public void subscribeTCUProvisioningTopic();
+
 
 
     }
