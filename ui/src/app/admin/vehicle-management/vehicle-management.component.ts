@@ -63,7 +63,7 @@ export class VehicleManagementComponent implements OnInit {
   groupInfo: any;
   orgId: number;
   grpTitleVisible: boolean = false;
-
+  showLoadingIndicator = true;
   constructor(
     private vehService: VehicleService,
     private dialogService: ConfirmDialogService,
@@ -220,6 +220,9 @@ export class VehicleManagementComponent implements OnInit {
       .pipe(map((data) => data.filter((d) => d.isVehicleGroup == true)))
       .subscribe(
         (_data) => {
+          // if(_data){
+          //   this.hideloader();
+          // }
           this.vehicleGroupData = _data;
           //console.log('getVehicleGroup call', this.vehicleGroupData);
           //this.vehicleData =of(this.vehicleGroupData).pipe(filter( _data => _data.isVehicleGroup == false));
@@ -241,7 +244,10 @@ export class VehicleManagementComponent implements OnInit {
         }
       );
   }
-
+  hideloader() {
+// Setting display of spinner
+    this.showLoadingIndicator=false;
+}
   processTranslation(transData: any) {
     this.translationData = transData.reduce(
       (acc, cur) => ({ ...acc, [cur.name]: cur.value }),
@@ -488,7 +494,7 @@ export class VehicleManagementComponent implements OnInit {
   onBackToPage(item: any) {
     this.viewFlag = item.editFlag;
     //this.editFlag = flag;
-    
+
     if (item.editText == 'create') this.selectedType = 'group';
     else this.selectedType = 'vehicle';
     if (item.editText == 'edit'){
