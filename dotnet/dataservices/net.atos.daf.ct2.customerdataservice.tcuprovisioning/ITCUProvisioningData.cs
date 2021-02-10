@@ -7,8 +7,6 @@ namespace TCUProvisioning
 {
     interface ITCUProvisioningData
     {
-        public String  createTCUDataInDAFFormat(TCUDataReceive TCUDataReceive);
-
         public void postTCUProvisioningMessageToDAF(String TCUDataDAF);
     }
 }
