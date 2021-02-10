@@ -40,8 +40,8 @@
                 <div fxLayout="column">
                     <img class="userIcon" mat-card-avatar src="{{fileUploadedPath}}">
                 </div>
-                <div *ngIf="!menuCollapsed" fxLayoutAlign="center" fxLayout="column" class='font-size-0-9'>
-                    <span class='userName'>{{ userFullName }}</span>
+                <div *ngIf="!menuCollapsed" style='width: 75%;' fxLayoutAlign="center" fxLayout="column" class='font-size-0-9'>
+                    <span matTooltip='{{ userFullName }}' class='userName text-truncate'>{{ userFullName }}</span>
                     <span class='display-flex align-items-center'>
                         <span class='userRole' *ngIf="roleDropdown != null && roleDropdown.length > 0">{{ userRole }}</span>
                         <span *ngIf="(roleDropdown.length > 0 && organizationDropdown.length > 1) || (roleDropdown.length > 1 && organizationDropdown.length > 0)">
