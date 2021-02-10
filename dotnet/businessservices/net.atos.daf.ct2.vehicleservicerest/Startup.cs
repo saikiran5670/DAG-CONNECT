@@ -20,6 +20,8 @@ using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
+using net.atos.daf.ct2.account;
+using Identity = net.atos.daf.ct2.identity;
 
 
 namespace net.atos.daf.ct2.vehicleservicerest
@@ -48,6 +50,9 @@ namespace net.atos.daf.ct2.vehicleservicerest
             services.AddTransient<IAuditTraillib,AuditTraillib>();
             services.AddTransient<IGroupManager,GroupManager>();
             services.AddTransient<IGroupRepository, GroupRepository>();
+            services.AddTransient<IAccountRepository, AccountRepository>();
+            services.AddTransient<IAccountManager, AccountManager>();
+            services.AddTransient<Identity.IAccountManager, Identity.AccountManager>();
 
 
 
