@@ -10,8 +10,8 @@
   </div>
   <mat-card class='mat-elevation-z' *ngIf='!stepFlag && !editFlag && !viewFlag'>
     <div *ngIf="initData">
-      <app-common-filter *ngIf="true" [initData]='initData' [translationData]='translationData'></app-common-filter>
-      <!-- <app-common-filter *ngIf="filterFlag" (filterValues)="getFilteredValues($event)" [initData]='initData' [translationData]='translationData'></app-common-filter> -->
+      <!-- <app-common-filter *ngIf="true" [initData]='initData' [translationData]='translationData'></app-common-filter> -->
+      <app-common-filter *ngIf="filterFlag" (filterValues)="getFilteredValues($event)" [initData]='initData' [translationData]='translationData'></app-common-filter>
     </div>  
     <div fxLayout="row" fxLayoutAlign="space-between">
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">

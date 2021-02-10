@@ -4,7 +4,7 @@
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFilter || 'Filter' }}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
-    <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
         <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblName || 'Name' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
@@ -18,7 +18,8 @@
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{ translationData.lblSelectUserGroup || 'Select User Group' }}" [(ngModel)]="userGroup">
                     <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option>
-                    <mat-option *ngFor="let usrGrp of userGroups | removeDuplicates" [value]="usrGrp">
+                    <!-- <mat-option *ngFor="let usrGrp of userGroups | removeDuplicates" [value]="usrGrp"> -->
+                    <mat-option *ngFor="let usrGrp of userGroups" [value]="usrGrp">
                         {{usrGrp}}
                     </mat-option>
                 </mat-select>
@@ -31,7 +32,8 @@
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{ translationData.lblSelectUserRole || 'Select User Role' }}" [(ngModel)]="role">
                     <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option>
-                    <mat-option *ngFor="let role of roles | removeDuplicates" [value]="role">
+                    <!-- <mat-option *ngFor="let role of roles | removeDuplicates" [value]="role"> -->
+                    <mat-option *ngFor="let role of roles" [value]="role">
                         {{role}}
                     </mat-option>
                 </mat-select>
@@ -47,5 +49,5 @@
                 </button>
             </div>
         </div>
-    </div> -->
+    </div>
   </mat-expansion-panel><br><br>
