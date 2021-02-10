@@ -20,7 +20,7 @@
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
                         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{translationData.lblUserGroupDescriptionOptional || 'User Group Description (Optional)' }}</span>
-                        <span>{{ translationData.lbl120CharMax || '120 characters max' }}</span>
+                        <span>{{ translationData.lbl100CharMax || '100 characters max' }}</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                         <input (keyup)="onInputGD($event)" maxlength="100" placeholder="{{translationData.lblEnterAboutGroupPlaceholder || 'Enter About Group' }}" matInput
