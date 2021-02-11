@@ -368,8 +368,8 @@
                   <mat-header-cell *matHeaderCellDef>{{ translationData.lblServices || 'Services' }}</mat-header-cell>
                   <mat-cell *matCellDef="let row">  
                     <span *ngIf='row.featureIds.length > 0'>
-                      <span *ngFor='let item of [].constructor(row.featureIds[0]); let i = index'>
-                        <img title="{{i}}" src="assets/images/icons/services/{{servicesIcon[i]}}.svg" style="width: 20px;height: 20px;"/>&nbsp;
+                      <span *ngFor='let item of [].constructor(row.featureIds.length); let i = index'>
+                        <img title="{{servicesIcon[i]}}" src="assets/images/icons/services/{{servicesIcon[i]}}.svg" style="width: 20px; height: 20px;"/>&nbsp;
                       </span>
                     </span>
                     <span *ngIf='row.featureIds.length == 0'>-</span>
