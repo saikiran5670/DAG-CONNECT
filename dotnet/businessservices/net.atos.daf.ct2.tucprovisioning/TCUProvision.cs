@@ -57,7 +57,7 @@ namespace TCUProvisioning
             await processor.StartProcessingAsync();
 
             // Wait for 10 seconds for the events to be processed
-            await Task.Delay(TimeSpan.FromSeconds(10));
+            await Task.Delay(TimeSpan.FromSeconds(60));
 
             // Stop the processing
             await processor.StopProcessingAsync();
@@ -88,16 +88,26 @@ namespace TCUProvisioning
 
         static async Task updateVehicleDetails(TCUDataReceive TCUDataReceive) {
 
+            Console.WriteLine("Inside updateVehicleDetails method");
+
             DateTime dateTime = DateTime.Now;
             var Currdate = new DateTime(dateTime.Ticks);
             Currdate = Currdate.AddTicks(-(dateTime.Ticks % TimeSpan.TicksPerSecond));
+
+            Console.WriteLine("After Date");
 
             IDataAccess dataacess = new PgSQLDataAccess(psqlConnString);
             IVehicleRepository vehiclerepo = new VehicleRepository(dataacess);
             IAuditLogRepository auditrepo = new AuditLogRepository(dataacess);
             IAuditTraillib audit = new AuditTraillib(auditrepo);
             IVehicleManager vehicleManager = new VehicleManager(vehiclerepo,audit);
+
+            Console.WriteLine("After vehicle object");
+
             VehicleFilter vehicleFilter = new VehicleFilter();
+
+            Console.WriteLine("After vehicle filter object");
+
             vehicleFilter.OrganizationId = 0;
             vehicleFilter.VIN = TCUDataReceive.Vin;
             vehicleFilter.VehicleId = 0;
@@ -107,10 +117,17 @@ namespace TCUProvisioning
             vehicleFilter.VehicleIdList = "";
             vehicleFilter.Status = 0;
             vehicleFilter.AccountGroupId = 0;
-            Vehicle receivedVehicle = (Vehicle) await vehicleManager.Get(vehicleFilter);
+
+            Console.WriteLine("After vehicle filter object filling");
+
+            Vehicle receivedVehicle = (Vehicle)await vehicleManager.Get(vehicleFilter);
+
+            Console.WriteLine("Received vehicle value");
+            Console.WriteLine(receivedVehicle);
 
             if (receivedVehicle == null)
             {
+                Console.WriteLine("Vehicle is null proceeding to create vehicle");
                 receivedVehicle.VIN = TCUDataReceive.Vin;
                 receivedVehicle.Vid = TCUDataReceive.Correlations.VehicleId;
                 receivedVehicle.Tcu_Id = TCUDataReceive.Correlations.DeviceId;
@@ -121,6 +138,7 @@ namespace TCUProvisioning
             }
             else {
 
+                Console.WriteLine("Vehicle is present proceeding to update vehicle");
                 receivedVehicle.VIN = TCUDataReceive.Vin;
                 receivedVehicle.Vid = TCUDataReceive.Correlations.VehicleId;
                 receivedVehicle.Tcu_Id = TCUDataReceive.Correlations.DeviceId;
@@ -137,6 +155,8 @@ namespace TCUProvisioning
         static async Task raiseVehicleChangeEvent(TCUDataReceive TCUDataReceive) {
 
             //Console.WriteLine("A batch of 1 events has been published.");
+
+            Console.WriteLine("Inside raiseVehicleChangeEvent method");
 
             VehicleChangeEvent vehicleChangeEvent = new VehicleChangeEvent(TCUDataReceive.Vin,TCUDataReceive.DeviceIdentifier);
             TCUDataSend tcuDataSend = new TCUDataSend(vehicleChangeEvent);

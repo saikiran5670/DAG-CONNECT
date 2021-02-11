@@ -5,8 +5,13 @@ namespace TCUProvisioning
 {
     class Program
     {
-        static async Task Main()
+        public static async Task Main()
         {
+            await TCU();
+        }
+
+        static async Task TCU() {
+
             TCUProvision tcuProvision = new TCUProvision();
 
             while (true)
@@ -14,6 +19,10 @@ namespace TCUProvisioning
                 await tcuProvision.subcribeTCUProvisioningTopic();
                 Console.WriteLine("Out of Method");
             }
+
+
         }
+
+
     }
 }
