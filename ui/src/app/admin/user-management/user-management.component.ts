@@ -454,6 +454,8 @@ export class UserManagementComponent implements OnInit {
   }
 
   makeRoleAccountGrpList(initdata){
+    let accountId =  localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    initdata = initdata.filter(item => item.id != accountId);
     initdata.forEach((element, index) => {
       let roleTxt: any = '';
       let accGrpTxt: any = '';
