@@ -18,6 +18,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, forkJoin } from 'rxjs';
 import { TranslationService } from '../../services/translation.service';
 import { AccountService } from '../../services/account.service';
+import { VehicleService } from '../../services/vehicle.service';
 import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
 import { UserDetailTableComponent } from '../user-management/new-user-step/user-detail-table/user-detail-table.component';
 
@@ -97,6 +98,7 @@ export class UserGroupManagementComponent implements OnInit {
     private _snackBar: MatSnackBar,
     private translationService: TranslationService,
     private accountService: AccountService,
+    private vehicleService: VehicleService,
     private dialog: MatDialog
   ) {
     this.defaultTranslation();
@@ -169,9 +171,6 @@ export class UserGroupManagementComponent implements OnInit {
   }
 
   ngOnInit() {
-
-    
-
 
     let translationObj = {
       id: 0,
@@ -309,17 +308,7 @@ export class UserGroupManagementComponent implements OnInit {
             users: options.users,
             userGroupDescriptions: options.userGroupDescriptions
           };
-          
-          // this.accountgrp = {
-          //     id: options.id,
-          //     name: res.inputValue,
-          //     organizationId: this.OrgId,
-          //     description : options.userGroupDescriptions,
-          //     accountCount: true,
-          //     accounts : true,
-          //     accountGroupId : 0,
-          //     accountId : 0,
-          // }
+
 
 
           //check if its a new or update request
@@ -369,7 +358,6 @@ export class UserGroupManagementComponent implements OnInit {
       this.dialogService.DeleteModelOpen(options, name);
       this.dialogService.confirmedDel().subscribe((res) => {
         if (res) {
-          console.log("------item for deleted",item.id)
           // this.userService.deleteUserGroup(item.usergroupId, item.organizationId).subscribe((d) => {
           this.accountService.deleteAccountGroup(item).subscribe((d) => {
               console.log(d);
@@ -397,15 +385,10 @@ export class UserGroupManagementComponent implements OnInit {
     this.editFlag = data.FalseFlag;
     this.viewDisplayFlag = data.FalseFlag;
     this.onUpdateDataSource(this.initData);
-    // this.childUserGroupFormData = data.UserGroupForm;
-    // this.grpTitleVisible = true;
-    // setTimeout(() => {  
-    //   this.grpTitleVisible = false;
-    // }, 5000);
-    // this.userCreatedMsg = this.getUserCreatedMessage();
   }
 
   onUserClick(data : any){
+    console.log("---userclick row data---",data);
     const colsList = ['firstName','emailId','roles'];
     const colsName = [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'];
     const tableTitle = `${data.name} - ${this.translationData.lblUsers || 'Users'}`
@@ -425,7 +408,13 @@ export class UserGroupManagementComponent implements OnInit {
     });
   }
   onVehicleClick(data : any) {
-
+    const colsList = ['name','vin','license_Plate_Number'];
+    const colsName = [this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
+    const tableTitle = `${data.name} - ${this.translationData.lblVehicles || 'Vehicles'}`
+ 
+    this.vehicleService.getVehiclesDataByAccGrpID(data.id, data.organizationId).subscribe((data)=>{
+      this.callToCommonTable(data, colsList, colsName, tableTitle);
+  });
   }
   makeRoleAccountGrpList(initdata){
     initdata.forEach((element, index) => {

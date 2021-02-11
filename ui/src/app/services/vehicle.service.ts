@@ -46,6 +46,15 @@ export class VehicleService {
       .pipe(catchError(this.handleError));
   }
 
+  getVehiclesDataByAccGrpID(AccGrpId, OrgId): Observable<any[]> {
+    const headers = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.vehicleServiceUrl}/group/getvehicles?AccountGroupId=${AccGrpId}&Organization_Id=${OrgId}`,headers)
+      .pipe(catchError(this.handleError));
+  }
+
   getVehicle(data): Observable<any[]> {
     const headers = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
