@@ -80,16 +80,16 @@
             <div fxLayout="column" class='full-width'>
                 <mat-table [dataSource]="dataSource" class="table-items" matSort>
                     <ng-container *ngFor="let disCol of displayedColumns; let colIndex = index" matColumnDef="{{disCol}}">
-                      <div *ngIf="disCol == 'select'"  >
+                      <div *ngIf="disCol == 'select' "  >
                         <mat-header-cell *matHeaderCellDef >
-                            <mat-checkbox (change)='$event ? masterToggleForVehGrp() : null' 
+                            <mat-checkbox (change)='$event ? masterToggleForVehGrp() : null'  *ngIf="!viewGroupMode"
                                 [checked]='selectionForVehGrp.hasValue() && isAllSelectedForVehGrp()'
                                 [indeterminate]='selectionForVehGrp.hasValue() && !isAllSelectedForVehGrp()'
                                 [aria-label]='checkboxLabelForVehGrp()'>
-                            </mat-checkbox><span style="padding-left:10px">{{displayColumnHeaders[colIndex]}}</span>
+                            </mat-checkbox><span style="padding-left:10px" *ngIf="!viewGroupMode">{{displayColumnHeaders[colIndex]}}</span>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <mat-checkbox (click)='$event.stopPropagation()'
+                            <mat-checkbox (click)='$event.stopPropagation()' *ngIf="!viewGroupMode"
                                 (change)='$event ? selectionForVehGrp.toggle(row) : null'
                                 [checked]='selectionForVehGrp.isSelected(row)'
                                 [aria-label]='checkboxLabelForVehGrp(row)'>

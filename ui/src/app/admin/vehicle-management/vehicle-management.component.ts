@@ -183,18 +183,21 @@ export class VehicleManagementComponent implements OnInit {
       vehiclesGroup: true,
       groupIds: [0],
     };
-    this.veh = {
+
+    //clear the  table first
+    let tempData = [];
+    let tempDataForGroup = [];
+    this.dataSource = new MatTableDataSource(tempData);
+    //*************** */
+   /*
+   this.veh = {
       vehicleId: 0,
       organizationID: this.orgId ? this.orgId : 1,
       vehicleIdList: '',
       vin: '',
       status: 0,
     };
-    //clear the  table first
-    let tempData = [];
-    this.dataSource = new MatTableDataSource(tempData);
-    //*************** */
-    this.vehService.getVehicle(this.veh).subscribe(
+   this.vehService.getVehicle(this.veh).subscribe(
       (_data) => {
         this.vehicleData = _data;
         //console.log('1st call', this.vehicleData);
@@ -202,33 +205,34 @@ export class VehicleManagementComponent implements OnInit {
       (error) => {
         console.log(error);
       }
-    );
+    );  */
 
-    // forkJoin(
-    //   this.vehService.getVehicleGroup(this.vehGrpRqst),
-    //   this.vehService.getVehicle(this.veh)
-    // ).subscribe((_data) => {
-    //   this.vehicleGroupData = _data[0];
-    //     this.vehicleData = _data[1];
-    //     this.initData = _data[0];
-    //     this.bothData = _data[0].concat(_data[1]);
-    //     console.log('2nd call', this.bothData);
-    // })
+
 
     this.vehService
       .getVehicleGroup(this.vehGrpRqst)
-      .pipe(map((data) => data.filter((d) => d.isVehicleGroup == true)))
+      //.pipe(map((data) => data.filter((d) => d.isVehicleGroup == true)))
       .subscribe(
         (_data) => {
-          // if(_data){
-          //   this.hideloader();
-          // }
-          this.vehicleGroupData = _data;
-          //console.log('getVehicleGroup call', this.vehicleGroupData);
-          //this.vehicleData =of(this.vehicleGroupData).pipe(filter( _data => _data.isVehicleGroup == false));
-          //const ob$: Observable<any> = of(this.vehicleGroupData).pipe(filter( _data => _data.isVehicleGroup == true));
+          if(_data){
+            this.hideloader();
+          }
+          _data.forEach((res)=>{
+            if(res.isVehicleGroup == false){
+              tempData.push(res);
+            }
+            else if(res.isVehicleGroup == true){
+              tempDataForGroup.push(res);
+            }
 
-          this.initData = _data;
+
+          })
+          //console.log(tempDataForGroup);
+          this.vehicleData=tempData;
+          this.vehicleGroupData = tempDataForGroup;
+
+
+          this.initData = this.vehicleGroupData;
           this.selectedType =
             this.selectedType == '' ? 'group' : this.selectedType;
           if (this.selectedType === 'group') {
@@ -345,10 +349,10 @@ export class VehicleManagementComponent implements OnInit {
   openSnackBar(message: string, action: string) {
     let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
     snackBarRef.afterDismissed().subscribe(() => {
-      //console.log('The snackbar is dismissed');
+
     });
     snackBarRef.onAction().subscribe(() => {
-      //console.log('The snackbar action was triggered!');
+
     });
   }
 
@@ -439,11 +443,10 @@ export class VehicleManagementComponent implements OnInit {
       setTimeout(() => {
         this.grpTitleVisible = false;
       }, 5000);
-      //this.openSnackBar(msg, 'dismiss');
-      //this.initData = item.gridData;
+
     }
     this.loadVehicleData();
-    //this.updateDataSource(this.initData);
+
   }
   getCreateMsg(Name: any, flagS: string) {
     let returnVal = '';
@@ -575,6 +578,9 @@ export class VehicleManagementComponent implements OnInit {
       .getVehicleGroup(this.vehGrpRqst)
       //.pipe(map((data) => data.filter((d) => d.isVehicleGroup == true)))
       .subscribe((_data) => {
+        if(_data){
+          this.hideloader();
+        }
         this.vehicleGroupData = _data;
         this.initData = this.vehicleGroupData;
       });
@@ -602,14 +608,20 @@ export class VehicleManagementComponent implements OnInit {
     if (this.vehicleData != null) {
       this.updateDataSource(this.vehicleData);
     } else {
-      this.veh = {
-        vehicleId: 0,
+
+      this.vehGrpRqst = {
+        id: 0,
         organizationID: this.orgId ? this.orgId : 1,
-        vehicleIdList: '',
-        vin: '',
-        status: 0,
+        vehicles: true,
+        vehiclesGroup: false,
+        groupIds: [0],
       };
-      this.vehService.getVehicle(this.veh).subscribe((_data) => {
+      this.vehService
+      .getVehicleGroup(this.vehGrpRqst)
+      .subscribe((_data) => {
+        if(_data){
+          this.hideloader();
+        }
         this.vehicleData = _data;
         this.initData = this.vehicleData;
       });

@@ -9,15 +9,15 @@ import { Router, NavigationEnd, Event, NavigationStart, NavigationCancel, Naviga
 export class AdminComponent implements OnInit {
   showLoadingIndicator=true;
   constructor(private router: Router) {
-    router.events.subscribe((routerEvent: Event) => {
-      if (routerEvent instanceof NavigationStart) {
-        this.showLoadingIndicator = true;
-      }
-      if (routerEvent instanceof NavigationEnd||routerEvent instanceof NavigationError ||
-        routerEvent instanceof NavigationCancel) {
-        this.showLoadingIndicator = false;
-      }
-    });
+    // router.events.subscribe((routerEvent: Event) => {
+    //   if (routerEvent instanceof NavigationStart) {
+    //     this.showLoadingIndicator = true;
+    //   }
+    //   if (routerEvent instanceof NavigationEnd||routerEvent instanceof NavigationError ||
+    //     routerEvent instanceof NavigationCancel) {
+    //     this.showLoadingIndicator = false;
+    //   }
+    // });
    }
 
   ngOnInit(): void {

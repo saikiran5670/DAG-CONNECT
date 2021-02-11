@@ -70,7 +70,7 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
       vehicleGroupDescription: ['',[CustomValidators.noWhitespaceValidatorforDesc]],
     });
     //console.log(this.groupInfo);
-    
+
     this.dataSource = new MatTableDataSource(this.gridData);
     if (localStorage.getItem('accountOrganizationId') != null) {
       this.orgId = parseInt(localStorage.getItem('accountOrganizationId'));
@@ -86,7 +86,7 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
     this.vehicleFormGroup.controls.vehicleGroupDescription.setValue(
       this.groupInfo.description ? this.groupInfo.description : ''
     );
-      this.selectCheckBox(this.groupInfo.id);
+      this.selectCheckBox(this.groupInfo.id,this.viewGroupMode);
     }
   }
 
@@ -105,7 +105,7 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
       this.vehicleFormGroup.controls.vehicleGroupDescription.setValue('');
     }
   }
-  selectCheckBox(vehGroupId) {
+  selectCheckBox(vehGroupId,viewGroupMode) {
     this.vehService.getVehicleListById(vehGroupId).subscribe((req) => {
       this.dataSource.data.forEach((row) => {
         let search = req.filter((item) => item.id === row.id);
@@ -113,6 +113,22 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
           this.selectionForVehGrp.select(row);
         }
       });
+      if(viewGroupMode){
+        this.displayedColumns= [
+          'name',
+          'vin',
+          'license_Plate_Number',
+          'model',
+        ];
+        this.displayColumnHeaders = [
+          'Vehicle name',
+          'VIN',
+          'Registration Number',
+          'Model',
+        ];
+        this.dataSource = new MatTableDataSource(this.selectionForVehGrp.selected);
+      }
+
     });
   }
   onCreate() {
@@ -154,7 +170,7 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
         (error) => {
           console.error(error);
         }
-      );  
+      );
     } else {
       // edit function here
       let objDataUpdate = {
