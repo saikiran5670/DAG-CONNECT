@@ -69,47 +69,50 @@ export class CommonFilterComponent implements OnInit {
       let searchTerms = JSON.parse(filter);
       
       if(searchTerms.firstName){
-        found = data.firstName.toLowerCase().includes(searchTerms.firstName);
+        found = (data.firstName.toLowerCase()+" "+data.lastName.toLowerCase()).includes(searchTerms.firstName);
+        if(!found)
+          return found;
       }
 
       if(searchTerms.userGroup){
         if(data.accountGroups.length != 0){
           let accountGroupName = '';
+          let foundUserGroup:boolean=false;
           for(let i = 0; i < data.accountGroups.length; i++){
             accountGroupName = data.accountGroups[i].name.toLowerCase();
             if(accountGroupName.includes(searchTerms.userGroup)){
-              found = found && accountGroupName.includes(searchTerms.userGroup);
+              foundUserGroup = true;
               break;
             }
-            else{
-              found = found && accountGroupName.includes(searchTerms.userGroup);
-            }
           }
+          if(!foundUserGroup)
+            return foundUserGroup;
         }
         else{
-          found = false;
+          return false;
         }
       }
 
       if(searchTerms.role){
+        let foundRole:boolean=false;
         if(data.roles.length != 0){
           let roleName = '';
           for(let i = 0; i < data.roles.length; i++){
             roleName = data.roles[i].name.toLowerCase();
             if(roleName.includes(searchTerms.role)){
               found = found && roleName.includes(searchTerms.role);
+              foundRole = true;
               break;
             }
-            else{
-              found = found && roleName.includes(searchTerms.role);
-            }
           }
+          if(!foundRole)
+            return foundRole;
         }
         else{
-          found = false;
+          return foundRole;
         }
       }
-      return found;
+      return true;
     }) as (PeriodicElement, string) => boolean;
     
   }
