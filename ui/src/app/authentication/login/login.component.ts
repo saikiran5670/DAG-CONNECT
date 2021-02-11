@@ -134,7 +134,8 @@ export class LoginComponent implements OnInit {
 
     let organization: Organization[] = data.accountOrganization;
     let role: Role[] = data.accountRole;
-    
+    let accountPreference: any = data.accountPreference ? data.accountPreference : '';
+
     if(data.accountOrganization.length > 1 || data.accountRole.length > 1){ //-- show popup
       const options = {
         title: `Welcome to DAF Connect ${accountDetails.salutation} ${accountDetails.firstName} ${accountDetails.lastName}`,
@@ -152,7 +153,8 @@ export class LoginComponent implements OnInit {
         confirmText: options.confirmText,
         organization: options.organization,
         role: options.role,
-        accountDetail: accountDetails
+        accountDetail: accountDetails,
+        accountPreference: accountPreference
       }
       this.dialogRefLogin = this.dialog.open(LoginDialogComponent, dialogConfig);
     }
@@ -169,7 +171,8 @@ export class LoginComponent implements OnInit {
       let loginDetailsObj: any = {
         organization: organization,
         role: role,
-        accountDetail: accountDetails
+        accountDetail: accountDetails,
+        accountPreference: accountPreference
       }
       localStorage.setItem("accountInfo", JSON.stringify(loginDetailsObj));
       this.dataInterchangeService.getDataInterface(true);

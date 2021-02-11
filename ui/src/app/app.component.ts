@@ -266,6 +266,8 @@ export class AppComponent {
   }
 
   getTranslationLabels(){
+    let accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+    console.log("accountInfo.accountPreference:: ", accountInfo.accountPreference)
     let translationObj = {
       id: 0,
       code: "EN-GB", //-- TODO: Lang code based on account 

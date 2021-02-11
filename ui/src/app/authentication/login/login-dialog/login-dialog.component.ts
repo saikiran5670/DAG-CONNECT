@@ -17,7 +17,8 @@ export class LoginDialogComponent {
     confirmText: string,
     organization: any,
     role: any,
-    accountDetail: any
+    accountDetail: any,
+    accountPreference: any
   }, private mdDialogRef: MatDialogRef<LoginDialogComponent>, public router: Router, public fb: FormBuilder, private dataInterchangeService: DataInterchangeService) {
     this.loginDialogForm = this.fb.group({
       'organization': [],
@@ -53,9 +54,10 @@ export class LoginDialogComponent {
         localStorage.setItem("organizationName", orgName[0].name);
       }
       let loginDetailsObj: any = {
-        organization : this.data.organization,
-        role : this.data.role,
-        accountDetail : this.data.accountDetail
+        organization: this.data.organization,
+        role: this.data.role,
+        accountDetail: this.data.accountDetail,
+        accountPreference: this.data.accountPreference
       }
       localStorage.setItem("accountInfo", JSON.stringify(loginDetailsObj));
       this.close(false);
