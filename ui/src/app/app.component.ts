@@ -40,7 +40,7 @@ export class AppComponent {
   userRole: any;
   userOrg: any;
   public landingPageForm: FormGroup;
-  accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+  accountInfo: any;
   localStLanguage: any;
 
   private pagetTitles = {
@@ -191,8 +191,8 @@ export class AppComponent {
   }
 
   getAccountInfo(){
-    
     //console.log(accountInfo);
+    this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
     if(this.accountInfo){
       this.userFullName = `${this.accountInfo.accountDetail.salutation} ${this.accountInfo.accountDetail.firstName} ${this.accountInfo.accountDetail.lastName}`;
       let userRole = this.accountInfo.role.filter(item => item.id === parseInt(localStorage.getItem("accountRoleId")));
@@ -265,7 +265,7 @@ export class AppComponent {
   getTranslationLabels(){
     // let accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
  // console.log("accountInfo.accountPreference:: ", this.accountInfo.accountPreference)
-
+    this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
     let preferencelanguageCode= "";
     let preferenceLanguageId = 1;
     this.translationService.getLanguageCodes().subscribe(languageCodes => {
