@@ -47,13 +47,13 @@ steps:
     tokenSuffix: '}#'
     useLegacyPattern: false
     enableTelemetry: true
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01')
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01','TEST02')
 
 - task: CmdLine@2
   inputs:
     script: |
       cat dotnet/commonservices/net.atos.daf.ct2.auditservicerest/appsettings.json
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01')
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01','TEST02')
 
 - task: replacetokens@3
   inputs:
@@ -79,7 +79,7 @@ steps:
     azureContainerRegistry: $(ContainerRegistry)
     dockerFile: dotnet/AuditServiceRest_Dockerfile
     imageName: auditservice
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01')
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01','TEST02')
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -88,7 +88,7 @@ steps:
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
     imageName: auditservice
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01')
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01','TEST02')
 
 - task: CmdLine@2
   inputs:
