@@ -22,9 +22,9 @@
                         <span class="badge">0</span>
                     </a>
                     <!-- TODO : language selection(dropdown) -->
-                    <mat-select *ngIf="language" class="matSelect" [value]="language.val[language.selectedIndex]">
-                        <mat-option *ngFor="let lang of language.val" [value]="lang">
-                            &nbsp;{{lang}}
+                    <mat-select class="matSelect" (selectionChange)="onLanguageChange($event.value)" [value]="localStLanguage ? localStLanguage.id : accountInfo.accountPreference.languageId">
+                        <mat-option *ngFor="let lang of languages" [value]="lang.id" >
+                            &nbsp;{{lang.name}}
                         </mat-option>
                     </mat-select>
                     <!-- <a class="navIcon">

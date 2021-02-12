@@ -30,13 +30,7 @@ export class AppComponent {
   public fileUploadedPath: any;
   isLogedIn: boolean = false;
   menuPages: any = (data as any).default;
-  language= {
-    "val": [
-      "EN-US",
-      "EN-GB"
-    ],
-    "selectedIndex": 0
-  };
+  languages= [];
   openUserRoleDialog= false;
   organizationDropdown: any = [];
   roleDropdown: any = [];
@@ -46,6 +40,8 @@ export class AppComponent {
   userRole: any;
   userOrg: any;
   public landingPageForm: FormGroup;
+  accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+  localStLanguage: any;
 
   private pagetTitles = {
     livefleet: 'live fleet',
@@ -140,10 +136,11 @@ export class AppComponent {
 
     this.dataInterchangeService.dataInterface$.subscribe(data => {
       this.isLogedIn = data;
-      this.getTranslationLabels()
+      this.getTranslationLabels();
       this.getAccountInfo();
     });
     if(!this.isLogedIn){
+      this.getTranslationLabels();
       this.getAccountInfo();
     }
 
@@ -194,20 +191,20 @@ export class AppComponent {
   }
 
   getAccountInfo(){
-    let accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+    
     //console.log(accountInfo);
-    if(accountInfo){
-      this.userFullName = `${accountInfo.accountDetail.salutation} ${accountInfo.accountDetail.firstName} ${accountInfo.accountDetail.lastName}`;
-      let userRole = accountInfo.role.filter(item => item.id === parseInt(localStorage.getItem("accountRoleId")));
+    if(this.accountInfo){
+      this.userFullName = `${this.accountInfo.accountDetail.salutation} ${this.accountInfo.accountDetail.firstName} ${this.accountInfo.accountDetail.lastName}`;
+      let userRole = this.accountInfo.role.filter(item => item.id === parseInt(localStorage.getItem("accountRoleId")));
       if (userRole.length > 0){
          this.userRole = userRole[0].name; 
       }
-      let userOrg = accountInfo.organization.filter(item => item.id === parseInt(localStorage.getItem("accountOrganizationId")));
+      let userOrg = this.accountInfo.organization.filter(item => item.id === parseInt(localStorage.getItem("accountOrganizationId")));
       if(userOrg.length > 0){
         this.userOrg = userOrg[0].name;
       }
-      this.organizationDropdown = accountInfo.organization;
-      this.roleDropdown = accountInfo.role;
+      this.organizationDropdown = this.accountInfo.organization;
+      this.roleDropdown = this.accountInfo.role;
       this.setDropdownValues();
     }
   }
@@ -266,20 +263,60 @@ export class AppComponent {
   }
 
   getTranslationLabels(){
-    let accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
-    console.log("accountInfo.accountPreference:: ", accountInfo.accountPreference)
-    let translationObj = {
-      id: 0,
-      code: "EN-GB", //-- TODO: Lang code based on account 
-      type: "Menu",
-      name: "",
-      value: "",
-      filter: "",
-      menuId: 0 //-- for common & user preference
-    }
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
-      this.processTranslation(data);
-    });
+    // let accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+ // console.log("accountInfo.accountPreference:: ", this.accountInfo.accountPreference)
+
+    let preferencelanguageCode= "";
+    let preferenceLanguageId = 1;
+    this.translationService.getLanguageCodes().subscribe(languageCodes => {
+      this.languages = languageCodes;
+      this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+      let filterLang = [];
+      if(this.localStLanguage){
+        preferencelanguageCode = this.localStLanguage.code;
+        preferenceLanguageId = this.localStLanguage.id;
+      }
+      else if(this.accountInfo){
+          filterLang = this.languages.filter(item => item.id == this.accountInfo.accountPreference.languageId )
+        if(filterLang.length > 0){
+          preferencelanguageCode = filterLang[0].code;
+          preferenceLanguageId = filterLang[0].id;
+        }
+        else{
+          filterLang = this.languages.filter(item => item.code == "EN-GB" )
+          if(filterLang.length > 0){
+            preferencelanguageCode = filterLang[0].code;
+            preferenceLanguageId = filterLang[0].id;
+          }
+        }
+      }
+      else{
+        filterLang = this.languages.filter(item => item.code == "EN-GB" )
+        if(filterLang.length > 0){
+          preferencelanguageCode = filterLang[0].code;
+          preferenceLanguageId = filterLang[0].id;
+        }
+      }
+
+      if(!this.localStLanguage){
+        let languageObj = {id: filterLang[0].id, code: preferencelanguageCode}
+        localStorage.setItem("language", JSON.stringify(languageObj));
+      }
+
+      let translationObj = {
+        id: 0,
+        code: preferencelanguageCode, //-- TODO: Lang code based on account 
+        type: "Menu",
+        name: "",
+        value: "",
+        filter: "",
+        menuId: 0 //-- for common & user preference
+      }
+      this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+        this.processTranslation(data);
+      });
+    })
+    
   }
 
   processTranslation(transData: any){
@@ -381,4 +418,28 @@ private setPageTitle() {
     let rolename = this.roleDropdown.filter(item => item.id === value);
     this.userRole = rolename[0].name;
    }
+
+   onLanguageChange(value){
+    console.log(value);
+    if(this.accountInfo.accountPreference.languageId != value){
+      let languageCode = '';
+      let languageId = 1;
+      let filterLang = this.languages.filter(item => item.id == value )
+      if(filterLang.length > 0){
+        languageCode = filterLang[0].code;
+        languageId = value;
+      }
+      else{
+        filterLang = this.languages.filter(item => item.code == 'EN-GB' ) 
+        languageCode = 'EN-GB';
+        languageId = filterLang[0].id;  
+      }
+      let languageObj = {id: languageId, code: languageCode}
+      localStorage.setItem("language", JSON.stringify(languageObj));
+      //TODO : Reload the current page
+      //window.location.reload();
+   }
+  }
+
+   
 }

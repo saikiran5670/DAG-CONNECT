@@ -31,6 +31,7 @@ export class UserRoleManagementComponent implements OnInit {
   displayMessage: any;
   organizationId: number;
   isGlobal: boolean;
+  localStLanguage = JSON.parse(localStorage.getItem("language"));
 
   constructor(private translationService: TranslationService, private roleService: RoleService, private userService: EmployeeService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar) {
     this.defaultTranslation();
@@ -87,7 +88,7 @@ export class UserRoleManagementComponent implements OnInit {
     this.isGlobal = true;
     let translationObj = {
       id: 0,
-      code: "EN-GB", //-- TODO: Lang code based on account 
+      code: this.localStLanguage.code,
       type: "Menu",
       name: "",
       value: "",
