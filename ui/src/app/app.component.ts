@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import * as data from './shared/menuData.json';
 import { DataInterchangeService } from './services/data-interchange.service';
@@ -7,6 +7,7 @@ import { DeviceDetectorService } from 'ngx-device-detector';
 import { EmployeeService } from './services/employee.service';
 import { Organization, Role } from 'src/app/authentication/login/login.component'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -42,6 +43,7 @@ export class AppComponent {
   public landingPageForm: FormGroup;
   accountInfo: any;
   localStLanguage: any;
+  isFullScreen= false;
 
   private pagetTitles = {
     livefleet: 'live fleet',
@@ -123,7 +125,7 @@ export class AppComponent {
   }
 
 
-  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, private userService: EmployeeService, public fb: FormBuilder) {
+  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, private userService: EmployeeService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any) {
     this.defaultTranslation();
     // this.userService.getDefaultSetting().subscribe((data)=>{
    //   this.language = data['language'];
@@ -399,8 +401,26 @@ private setPageTitle() {
     let methodToBeInvoked = elem.requestFullscreen || elem['mozRequestFullscreen'] || elem['msRequestFullscreen'];
     if (methodToBeInvoked){
        methodToBeInvoked.call(elem);
+       this.isFullScreen = true;
     }
   }
+
+  exitFullScreen(){
+    if (document.exitFullscreen) {
+      this.document.exitFullscreen();
+    } else if (this.document.mozCancelFullScreen) {
+      /* Firefox */
+      this.document.mozCancelFullScreen();
+    } else if (this.document.webkitExitFullscreen) {
+      /* Chrome, Safari and Opera */
+      this.document.webkitExitFullscreen();
+    } else if (this.document.msExitFullscreen) {
+      /* IE/Edge */
+      this.document.msExitFullscreen();
+    }
+    this.isFullScreen = false;
+  }
+  
 
   onClickUserRole(){
      this.openUserRoleDialog = !this.openUserRoleDialog;

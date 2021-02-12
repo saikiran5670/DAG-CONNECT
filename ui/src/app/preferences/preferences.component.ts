@@ -11,6 +11,8 @@ export class PreferencesComponent implements OnInit {
   translationData: any = [];
   public userPreferencesFlag : boolean = false;
   public selectedIndex: number = 0;
+  localStLanguage = JSON.parse(localStorage.getItem("language"));
+  accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
 
   constructor(private translationService: TranslationService, private route: Router, private dataInterchangeService: DataInterchangeService) {
     //this.defaultTranslation();
@@ -73,7 +75,7 @@ export class PreferencesComponent implements OnInit {
   ngOnInit() {
     let translationObj = {
       id: 0,
-      code: "EN-GB", //-- TODO: Lang code based on account
+      code: "EN-GB",
       type: "Menu",
       name: "",
       value: "",

@@ -12,8 +12,8 @@
                 </div>
                 <div fxLayoutAlign="end" class='full-width'>
                     <a class="navIcon fullScreen">
-                        <mat-icon aria-hidden="false" aria-label="fullscreen" (click)="fullScreen()"
-                            matTooltip="Full Screen">fullscreen</mat-icon>
+                        <mat-icon aria-hidden="false" aria-label="fullscreen" (click)="isFullScreen ? exitFullScreen() : fullScreen()"
+                            matTooltip="{{isFullScreen ? 'Exit Full Screen' : 'Full Screen'}}">{{ isFullScreen ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
                     </a>
                     <!-- <img class="navIcon countryflag" mat-card-avatar src="{{fileUploadedPath}}"> -->
                     <a class="navIcon">

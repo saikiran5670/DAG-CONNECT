@@ -64,6 +64,8 @@ export class VehicleManagementComponent implements OnInit {
   orgId: number;
   grpTitleVisible: boolean = false;
   showLoadingIndicator = true;
+  localStLanguage = JSON.parse(localStorage.getItem("language"));
+
   constructor(
     private vehService: VehicleService,
     private dialogService: ConfirmDialogService,
@@ -160,7 +162,7 @@ export class VehicleManagementComponent implements OnInit {
     this.editFlag = false;
     let translationObj = {
       id: 0,
-      code: 'EN-GB', //-- TODO: Lang code based on account
+      code: this.localStLanguage.code,
       type: 'Menu',
       name: '',
       value: '',

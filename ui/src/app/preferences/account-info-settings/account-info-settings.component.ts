@@ -33,6 +33,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   accountPreferenceData: any;
   grpTitleVisible : boolean = false;
   displayMessage: any;
+  localStLanguage = JSON.parse(localStorage.getItem("language"));
 
   languageDropdownData: any = [];
   timezoneDropdownData: any = [];
@@ -131,7 +132,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   loadGeneralSettingData(){
-    let languageCode= "EN-GB";
+    let languageCode= this.localStLanguage.code;
 
     this.accountService.getAccountPreference(this.accountId).subscribe(resp => {
       this.accountPreferenceData = resp[0];

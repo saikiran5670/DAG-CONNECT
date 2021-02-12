@@ -84,7 +84,7 @@ export class UserGroupManagementComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   inputText: any;
   translationData: any;
-
+  localStLanguage = JSON.parse(localStorage.getItem("language"));
 
   ngAfterViewInit() {
     // this.dataSource.paginator = this.paginator;
@@ -174,7 +174,7 @@ export class UserGroupManagementComponent implements OnInit {
 
     let translationObj = {
       id: 0,
-      code: "EN-GB", //-- TODO: Lang code based on account 
+      code: this.localStLanguage.code,
       type: "Menu",
       name: "",
       value: "",

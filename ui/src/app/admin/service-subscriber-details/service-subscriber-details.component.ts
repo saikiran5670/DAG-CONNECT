@@ -36,6 +36,8 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
   gRpcClient: CustomerClient;
   initData: any = [];
   private backendGrpc: string;
+  localStLanguage = JSON.parse(localStorage.getItem("language"));
+
   constructor(
     private translationService: TranslationService,
     private orgService: OrganizationService,
@@ -81,7 +83,7 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     let translationObj = {
       id: 0,
-      code: "EN-GB", //-- TODO: Lang code based on account 
+      code: this.localStLanguage.code,
       type: "Menu",
       name: "",
       value: "",

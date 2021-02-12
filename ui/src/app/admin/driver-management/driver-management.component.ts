@@ -42,6 +42,7 @@ export class DriverManagementComponent implements OnInit {
   arrayBuffer: any;
   filelist: any;
   translationData: any;
+  localStLanguage = JSON.parse(localStorage.getItem("language"));
 
   constructor(private _formBuilder: FormBuilder, private userService: EmployeeService, private dialog: MatDialog, private dialogService: ConfirmDialogService,
     private _snackBar: MatSnackBar, private translationService: TranslationService) { 
@@ -119,7 +120,7 @@ export class DriverManagementComponent implements OnInit {
   ngOnInit(){
     let translationObj = {
       id: 0,
-      code: "EN-GB", //-- TODO: Lang code based on account 
+      code: this.localStLanguage.code,
       type: "Menu",
       name: "",
       value: "",

@@ -57,6 +57,7 @@ export class UserManagementComponent implements OnInit {
   filterFlag = false;
 
   accountOrganizationId: any = 0;
+  localStLanguage = JSON.parse(localStorage.getItem("language"));
 
   dialogRef: MatDialogRef<CommonTableComponent>;
   backendGrpc: any;
@@ -179,7 +180,7 @@ export class UserManagementComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
       id: 0,
-      code: "EN-GB", //-- TODO: Lang code based on account 
+      code: this.localStLanguage.code, //-- TODO: Lang code based on account 
       type: "Menu",
       name: "",
       value: "",
@@ -195,7 +196,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   getUserSettingsDropdownValues(){
-    let languageCode = "EN-GB";
+    let languageCode = this.localStLanguage.code;
     this.translationService.getPreferences(languageCode).subscribe(data => {
       this.defaultSetting = {
         languageDropdownData: data.language,
