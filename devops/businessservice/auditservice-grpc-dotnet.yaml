@@ -17,6 +17,7 @@ parameters:
   - DEV01
   - DEV02
   - TEST01
+  - TEST02
 
 pool: $(PRIVATEAGENT)
 
@@ -31,6 +32,8 @@ variables:
   - group: TEST01-Build-Variables
 - ${{ if eq(parameters.ENV, 'All') }}:
   - group: DEV02-Build-Variables
+- ${{ if eq(parameters.ENV, 'TEST02') }}:
+  - group: TEST02-Build-Variables
 
 steps:
 - task: replacetokens@3
