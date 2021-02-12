@@ -127,8 +127,9 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
 
           <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
         </div>
-        <div *ngIf="showLoadingIndicator" class="spinner"> </div>
-        <!-- <mat-spinner *ngIf="showLoadingIndicator"></mat-spinner> -->
+        <!-- <div *ngIf="showLoadingIndicator" class="spinner"> </div> -->
+        <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
+
       </div>
     </mat-card>
   </div>

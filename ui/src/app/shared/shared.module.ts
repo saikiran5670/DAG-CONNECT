@@ -42,9 +42,10 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
 import { CommonFilterComponent } from './common-filter/common-filter.component';
 import { RemoveDuplicatesPipe } from './pipes/remove-duplicates.pipe';
 import { CustomPaginationComponent } from './custom-pagination/custom-pagination.component';
+import { SpinnerComponent } from './spinner/spinner.component';
 
 @NgModule({
-  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, CustomPaginationComponent],
+  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, CustomPaginationComponent, SpinnerComponent],
   imports: [
     CommonModule,
     FlexLayoutModule,
@@ -129,6 +130,7 @@ import { CustomPaginationComponent } from './custom-pagination/custom-pagination
     MaterialFileInputModule,
     CommonFilterComponent,
     RemoveDuplicatesPipe,
+    SpinnerComponent
   ],
   providers: [{ provide: MatPaginatorIntl, useClass: CustomPaginationComponent}],
 })
