@@ -81,7 +81,11 @@ namespace net.atos.daf.ct2.identity
         {
             return await UpdateOrDeleteUser(user,"CHANGEPASSWORD");
         }
-        private async Task<Response> UpdateOrDeleteUser(Identity user,string actionType)
+        public async Task<Response> LogOut(Identity user)
+        {
+            return await UpdateOrDeleteUser(user,"LOGOUT");
+        }
+        internal async Task<Response> UpdateOrDeleteUser(Identity user,string actionType)
         {
             IDPToken token = new IDPToken();
             String accessToekn= string.Empty;
@@ -120,6 +124,10 @@ namespace net.atos.daf.ct2.identity
                             {
                                 httpResponse = client.PutAsync(_settings.UserMgmUrl.Replace("{{realm}}",_settings.Realm) +"/"+keycloakUserId +"/"+"reset-password",contentData).Result;
                             }
+                            if(actionType=="LOGOUT")
+                            {
+                                httpResponse = client.PutAsync(_settings.UserMgmUrl.Replace("{{realm}}",_settings.Realm) +"/"+keycloakUserId +"/"+"logout",contentData).Result;
+                            }
                             if(httpResponse.IsSuccessStatusCode && httpResponse.StatusCode == System.Net.HttpStatusCode.NoContent)
                             {
                                 objResponse.StatusCode=httpResponse .StatusCode;
@@ -134,6 +142,10 @@ namespace net.atos.daf.ct2.identity
                                 if(actionType=="CHANGEPASSWORD")
                                 {
                                  objResponse.Result=JsonConvert.SerializeObject("User password has been changed.");
+                                }
+                                if(actionType=="LOGOUT")
+                                {
+                                    objResponse.Result=JsonConvert.SerializeObject("User has logout from IDP");
                                 }
                             }
                             else
@@ -238,11 +250,12 @@ namespace net.atos.daf.ct2.identity
                                 modelUserChangePwd.temporary=false;
                                 stringData=JsonConvert.SerializeObject(modelUserChangePwd,Formatting.Indented);
                                 break;
+                case "LOGOUT":  
+                                stringData="";
+                                break;
             } 
             return stringData;
-        }
-
-                         
+        }                         
     }
     public class keycloakPwdChangeModel    
     {
