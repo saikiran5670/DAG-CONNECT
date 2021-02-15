@@ -181,6 +181,7 @@ export class AppComponent {
               this.menuStatus[this.pageName].open = true;
             }
           }
+          this.userPreferencesFlag = false;
           this.dataInterchangeService.getSettingTabStatus(false);
         }
         this.setPageTitle();
