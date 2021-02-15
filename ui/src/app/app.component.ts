@@ -174,7 +174,8 @@ export class AppComponent {
         }
 
         if(this.isLogedIn) {
-          if(!this.menuCollapsed) {
+          if(!this.menuCollapsed) {            
+            this.hideAllOpenMenus(); // collapse all menus
             this.menuSelected(this.pageName, true);
             if(this.pageName && this.menuStatus[this.pageName]) {
               this.menuStatus[this.pageName].open = true;
