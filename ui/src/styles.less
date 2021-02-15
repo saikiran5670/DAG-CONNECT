@@ -780,6 +780,9 @@ input:-webkit-autofill {
             font-weight: bold;
             font-size: 16px;
             color: #353C45;
+            @media @mobile {
+                font-size: 14px !important;
+            }
         }
         .mat-sort-header-arrow {
             color: #353C45;
@@ -790,6 +793,9 @@ input:-webkit-autofill {
         min-height: 40px !important;
         .mat-cell{
             font-size: 15px;
+            @media @mobile {
+                font-size: 14px !important;
+            }
             button{
                 background: transparent;
                 &.actionBtn{
@@ -914,3 +920,11 @@ input:-webkit-autofill {
 //     background-color: red !important;
 //     color: pink !important;
 // }
+
+
+
+mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-type{
+    @media @mobile {
+        padding-left: 10px !important;
+    }
+}
