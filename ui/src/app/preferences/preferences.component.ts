@@ -75,7 +75,7 @@ export class PreferencesComponent implements OnInit {
   ngOnInit() {
     let translationObj = {
       id: 0,
-      code: "EN-GB",
+      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
       type: "Menu",
       name: "",
       value: "",

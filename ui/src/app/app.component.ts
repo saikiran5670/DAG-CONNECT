@@ -456,10 +456,16 @@ private setPageTitle() {
       }
       let languageObj = {id: languageId, code: languageCode}
       localStorage.setItem("language", JSON.stringify(languageObj));
-      //TODO : Reload the current page
-      //window.location.reload();
+      this.reloadCurrentComponent();
    }
   }
 
-   
+  reloadCurrentComponent() {
+    // save current route 
+    const currentRoute = this.router.url;
+
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigate([currentRoute]); // navigate to same route
+    }); 
+  }
 }
