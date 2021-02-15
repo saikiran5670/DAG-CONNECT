@@ -158,7 +158,14 @@
             <mat-icon>exit_to_app</mat-icon>
         </button> -->
     </div>
-    <app-preferences *ngIf="isLogedIn"></app-preferences>
+
+    <div class="user-preferences">
+        <div *ngIf="isLogedIn" class="preferences-sidenav-content" [ngClass]="userPreferencesFlag ? 'pref-expand' : 'pref-collapse' " (click)='userPreferencesSetting($event)'>
+            <mat-icon matTooltip="Preferences" style="margin-top:5px; color:white;">{{!userPreferencesFlag ? 'keyboard_arrow_leftperson_search' : 'person_searchkeyboard_arrow_right'}}</mat-icon>    
+        </div>
+        <app-preferences *ngIf="userPreferencesFlag" [userPreferencesFlag]="userPreferencesFlag"></app-preferences>
+    </div>
+    
     <div id="sideMenuCollapseBtnContainer" class='sideMenuCollapseBtnContainer'
         [ngClass]="menuCollapsed ? 'withCollapse' : 'withoutCollapse'" *ngIf="isLogedIn">
         <button mat-icon-button (click)="sidenavToggle()" class="collapseBtn">

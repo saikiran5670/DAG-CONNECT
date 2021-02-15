@@ -9,7 +9,7 @@ import { DataInterchangeService } from '.././services/data-interchange.service';
 })
 export class PreferencesComponent implements OnInit {
   translationData: any = [];
-  public userPreferencesFlag : boolean = false;
+  @Input() userPreferencesFlag : boolean;
   public selectedIndex: number = 0;
   localStLanguage = JSON.parse(localStorage.getItem("language"));
   accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
@@ -73,9 +73,22 @@ export class PreferencesComponent implements OnInit {
   // }
 
   ngOnInit() {
+    if(this.userPreferencesFlag){
+      let currentComponentUrl : String;
+      currentComponentUrl = this.route.routerState.snapshot.url
+      if(currentComponentUrl == "/dashboard")
+        this.selectedIndex = 1;
+      else if(currentComponentUrl.substr(0, 8) == "/report/" )
+        this.selectedIndex = 2;
+      else if(currentComponentUrl.substr(0, 11) == "/livefleet/")
+        this.selectedIndex = 3;
+      else
+        this.selectedIndex = 0;
+    }
+
     let translationObj = {
       id: 0,
-      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+      code: this.localStLanguage.code,
       type: "Menu",
       name: "",
       value: "",

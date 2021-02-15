@@ -44,6 +44,7 @@ export class AppComponent {
   accountInfo: any;
   localStLanguage: any;
   isFullScreen= false;
+  public userPreferencesFlag : boolean = false;
 
   private pagetTitles = {
     livefleet: 'live fleet',
@@ -457,6 +458,8 @@ private setPageTitle() {
       let languageObj = {id: languageId, code: languageCode}
       localStorage.setItem("language", JSON.stringify(languageObj));
       this.reloadCurrentComponent();
+      if(this.userPreferencesFlag)
+        this.userPreferencesFlag = false;
    }
   }
 
@@ -467,5 +470,9 @@ private setPageTitle() {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
         this.router.navigate([currentRoute]); // navigate to same route
     }); 
+  }
+
+  userPreferencesSetting(event){
+    this.userPreferencesFlag  = !this.userPreferencesFlag;
   }
 }
