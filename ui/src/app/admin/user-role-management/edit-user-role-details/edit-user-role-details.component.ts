@@ -157,10 +157,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
         this.selectionForFeatures.selected.forEach(feature => {
           featureIds.push(feature.id);
         })
-        if(featureIds.length == 0){
-          alert("Please select at least one feature for access");
-          return;
-        }
+        
         let objData = {
           "organizationId": this.userRoleFormGroup.controls.roleType.value=='Global'? 0 : this.organizationId,
           "roleId": 0,
