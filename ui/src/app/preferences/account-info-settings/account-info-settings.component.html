@@ -18,7 +18,7 @@
             <mat-icon *ngIf='!editAccountSettingsFlag' (click)="editAccountSettings()" style="cursor: pointer;">edit</mat-icon></span>
         </div>
       </div>
-      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+      <div fxLayout="row" fxLayoutAlign="space-between" class="accInfoContainer full-width margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
           <div *ngIf="!changePictureFlag" fxLayout="row" style="box-sizing: content-box; width: 170px; height: 170px;">
             <mat-icon  style="cursor: pointer; font-size: 150px; text-align: center; color: grey;"
@@ -71,9 +71,9 @@
           </div>
         </div>
         
-        <div class="areaWidth min-width-75-per" fxLayout="column">
+        <div class="areaWidth min-width-75-per accountInfo">
           <div *ngIf="!editAccountSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
-            class="full-width margin-bottom-sm" fxLayoutGap="10px">
+            class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <!-- <mat-label>{{ translationData.lblSalutation }}</mat-label> -->
               <mat-label>{{ translationData.lblSalutation || 'Salutation' }}</mat-label>
@@ -102,7 +102,7 @@
             </div>
           </div>
           <div *ngIf="!editAccountSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
-            class="full-width margin-bottom-sm" fxLayoutGap="10px">
+            class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <!-- <mat-label>{{ translationData.lblLoginEmail }}</mat-label> -->
               <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}</mat-label>
@@ -281,7 +281,7 @@
 
       </div>
       <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
-        class="full-width margin-bottom-sm" fxLayoutGap="10px">
+        class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <!-- <mat-label>{{ translationData.lblLanguage }}</mat-label> -->
           <mat-label>{{ translationData.lblLanguage || 'Language' }}</mat-label>
@@ -310,7 +310,7 @@
         </div>
       </div>
       <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
-        class="full-width margin-bottom-sm" fxLayoutGap="10px">
+        class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <!-- <mat-label>{{ translationData.lblCurrency }}</mat-label> -->
           <mat-label>{{ translationData.lblCurrency || 'Currency' }}</mat-label>
@@ -337,7 +337,7 @@
         </div>
       </div>
       <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
-        class="full-width margin-bottom-sm" fxLayoutGap="10px">  
+        class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">  
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <!-- <mat-label>{{ translationData.lblVehicleDisplayDefault }}</mat-label> -->
           <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display' }}</mat-label>
