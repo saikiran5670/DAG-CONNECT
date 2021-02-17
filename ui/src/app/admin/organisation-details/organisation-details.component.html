@@ -1,12 +1,13 @@
 <div class='bgtrans'>
   <mat-card class='mat-elevation-z'>
-    <div class="example-header">
+    <div>
       <mat-form-field>
         <input matInput (keyup)="applyFilter($event.target.value)"
           placeholder="{{ translationData.lblFilter || 'Filter' }}">
       </mat-form-field>
     </div>
-    <div class="example-container">
+    <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+    <div *ngIf='initData.length > 0'>
       <mat-table [dataSource]="dataSource" matSort>
         <ng-container matColumnDef="vehicleGroupName">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}/{{ translationData.lblVehicle || 'Vehicle' }}</mat-header-cell>

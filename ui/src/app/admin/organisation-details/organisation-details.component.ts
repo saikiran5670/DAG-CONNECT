@@ -2,21 +2,10 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { CustomerLookupModel, CustomerModel } from 'src/app/protos/customer_pb';
-import {
-  Customer,
-  CustomerClient,
-  ServiceError,
-} from 'src/app/protos/customer_pb_service';
-import { EmployeeService } from 'src/app/services/employee.service';
-import { IdentityGrpcService } from 'src/app/services/identity-grpc.service';
 import { TranslationService } from '../../services/translation.service';
-import { grpc } from '@improbable-eng/grpc-web';
-import { ConfigService } from '@ngx-config/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
-import { OrganizationService } from 'src/app/services/organization.service';
-import { AccountService } from 'src/app/services/account.service';
+import { OrganizationService } from '../../services/organization.service';
+import { AccountService } from '../../services/account.service';
 import { UserDetailTableComponent } from '../user-management/new-user-step/user-detail-table/user-detail-table.component';
 
 @Component({
@@ -24,34 +13,25 @@ import { UserDetailTableComponent } from '../user-management/new-user-step/user-
   templateUrl: './organisation-details.component.html',
   styleUrls: ['./organisation-details.component.less'],
 })
+
 export class OrganisationDetailsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   displayedColumns: string[] = ['vehicleGroupName', 'userCount'];
   dialogRef: MatDialogRef<UserDetailTableComponent>;
-  products: any[] = [];
   organizationId: any;
   dataSource: any = new MatTableDataSource([]);
   translationData: any;
-  gRpcClient: CustomerClient;
   initData: any = [];
-  private backendGrpc: string;
-  localStLanguage = JSON.parse(localStorage.getItem("language"));
+  localStLanguage: any;
 
   constructor(
     private translationService: TranslationService,
     private orgService: OrganizationService,
-    private userService: EmployeeService,
     private accountService: AccountService,
-    private identityGrpcService: IdentityGrpcService,
-    private config: ConfigService,
     private dialog: MatDialog
   ) {
     this.defaultTranslation();
-    this.backendGrpc = config.getSettings(
-      'foundationServices'
-    ).backendGrpcServiceUrl;
-    this.gRpcClient = new CustomerClient(this.backendGrpc);
   }
 
   defaultTranslation() {
@@ -72,6 +52,7 @@ export class OrganisationDetailsComponent implements OnInit {
     };
 
   }
+
   updateDataSource(data: any) {
     setTimeout(() => {
       this.dataSource = new MatTableDataSource(data);
@@ -79,8 +60,10 @@ export class OrganisationDetailsComponent implements OnInit {
       this.dataSource.sort = this.sort;
     });
   }
+
   ngOnInit() {
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -99,8 +82,7 @@ export class OrganisationDetailsComponent implements OnInit {
   loadOrgData() {
     this.orgService.getOrganizationDetails(this.organizationId).subscribe(
       (_data) => {
-        this.initData = _data
-        //console.log(' data : ' + _data[0]);
+        this.initData = _data;
         this.updateDataSource(this.initData);
       },
       (error) => {
@@ -115,12 +97,12 @@ export class OrganisationDetailsComponent implements OnInit {
     const tableTitle = `${row.vehicleGroupName} - ${this.translationData.lblUsers || 'Users'}`;
     
     let obj: any = {
-      "accountId": 0,
-      "organizationId": this.organizationId,
-      "accountGroupId": 0,
-      "vehicleGroupId": row.vehicleGroupId,
-      "roleId": 0,
-      "name": ""
+      accountId: 0,
+      organizationId: this.organizationId,
+      accountGroupId: 0,
+      vehicleGroupId: row.vehicleGroupId,
+      roleId: 0,
+      name: ""
     }
 
     this.accountService.getAccountDetails(obj).subscribe((data)=>{
@@ -176,53 +158,6 @@ export class OrganisationDetailsComponent implements OnInit {
     return initdata;
   }
 
-  loadGrpc() {
-    let username: any = 'testuser10@atos.net';
-    let password: any = '123456';
-    this.identityGrpcService
-      .getGenerateToken(username, password)
-      .then((result: any) => {
-        //console.log(`Inside UI result:: ${result}`);
-      });
-    //method 1
-    this.getCustomer().then((result: any) => {
-      //console.log(` Customer result:: ${result}`);
-    });
-    //method 2
-    /* const cltRequest = new CustomerLookupModel();
-    cltRequest.setUserid(1);
-    grpc.unary(Customer.GetCustomerInfo, {
-      request: cltRequest,
-      host: 'https://localhost:5001',
-      onEnd: (res) => {
-        const { status, message } = res;
-        if (status === grpc.Code.OK && message) {
-          var result = message.toObject() as CustomerModel.AsObject;
-
-          console.log(result);
-        }
-      },
-    });  */
-  }
-  getCustomer(): Promise<any> {
-    // call customer service
-    var clientRequest = new CustomerLookupModel();
-    //clientRequest.setUserid(1);
-    return new Promise((resolve, reject) => {
-      this.gRpcClient.getCustomerInfo(
-        clientRequest,
-        (err: ServiceError, response: CustomerModel) => {
-          if (err) {
-            console.log(`Error while invoking gRpc: ${err}`);
-            return reject(err);
-          } else {
-            console.log(` invoking gRpc: ${response.getFirstname()}`);
-            return resolve(response);
-          }
-        }
-      );
-    });
-  }
   processTranslation(transData: any) {
     this.translationData = transData.reduce(
       (acc, cur) => ({ ...acc, [cur.name]: cur.value }),
@@ -231,18 +166,10 @@ export class OrganisationDetailsComponent implements OnInit {
     //console.log("process translationData:: ", this.translationData)
   }
 
-  loadUserGroupData(orgid) {
-    this.userService.getUserGroup(orgid, true).subscribe((grp) => {
-      this.products = grp;
-      this.dataSource = new MatTableDataSource(grp);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
-  }
-
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
   }
+
 }
