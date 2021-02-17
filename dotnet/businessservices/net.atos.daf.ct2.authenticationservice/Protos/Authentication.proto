@@ -20,6 +20,8 @@ message AccountIdentityResponse {
     string Message=2;
     AccountToken AccountToken=3;
     AccountPreference AccountPreference= 4;      
+    repeated AccountOrganization AccountOrganizations = 5;
+    repeated AccountOrgRole AccountRoles=6;
 }
 message ValidateRequest {
     string Token=1;
@@ -42,7 +44,17 @@ message AccountToken
     google.protobuf.StringValue SessionState=4;
     google.protobuf.StringValue Scope=5;
 }
-
+message AccountOrganization
+{
+    int32 Id=1;
+    string Name=2;
+}
+message AccountOrgRole 
+{
+    int32 Id=1;
+    string Name=2;
+    int32 OrganizationId=3;
+}
 message AccountPreference
 {
     google.protobuf.Int32Value Id =1;
