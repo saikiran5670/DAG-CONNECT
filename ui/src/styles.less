@@ -572,6 +572,10 @@ app-consent-opt{
       overflow-y: auto;
       @media @mobile {
         width: 100% !important;
+        margin-top: 30px;
+      }
+      @media @tablet {
+        width: 100% !important;
         padding-left: 50px;
       }
     }
@@ -589,7 +593,7 @@ app-consent-opt{
       border-bottom-left-radius: 10px;
       &.pref-expand{
         right: 1000px;
-        @media @mobile {
+        @media @mobileToTablet {
             left: 0px !important;
             z-index: 9;
         }
