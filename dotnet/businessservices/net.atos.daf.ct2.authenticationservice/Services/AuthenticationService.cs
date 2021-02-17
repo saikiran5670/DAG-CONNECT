@@ -74,7 +74,29 @@ namespace net.atos.daf.ct2.authenticationservice
 
                         response.AccountPreference=accPreference;
                     }
-
+                    if(accIdentity.AccountOrganization!=null && accIdentity.AccountOrganization.Count>0)
+                    {   
+                        AccountOrganization acctOrganization = new AccountOrganization();
+                        foreach(var accOrg in accIdentity.AccountOrganization)
+                        {
+                            acctOrganization = new AccountOrganization();
+                            acctOrganization.Id = accOrg.Id;
+                            acctOrganization.Name = accOrg.Name;
+                            response.AccountOrganizations.Add(acctOrganization);
+                        }
+                    }
+                    if(accIdentity.AccountRole!=null && accIdentity.AccountRole.Count>0)
+                    {   
+                        AccountOrgRole accRole = new AccountOrgRole();
+                        foreach(var accr in accIdentity.AccountRole)
+                        {
+                            accRole = new AccountOrgRole();
+                            accRole.Id = accr.Id;
+                            accRole.Name = accr.Name;
+                            accRole.OrganizationId= accr.Organization_Id;
+                            response.AccountRoles.Add(accRole);
+                        }
+                    }
                     return Task.FromResult(response);
                 }
                 else 
