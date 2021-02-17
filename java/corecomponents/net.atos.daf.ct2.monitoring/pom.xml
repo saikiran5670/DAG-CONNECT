@@ -2,11 +2,11 @@
   <modelVersion>4.0.0</modelVersion>
   
   <groupId>com.atos</groupId>
-  <artifactId>net.atos.daf.ct2.monitor</artifactId>
+  <artifactId>net.atos.daf.ct2.monitoring</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   
-  <name>net.atos.daf.ct2.monitor</name>
+  <name>net.atos.daf.ct2.monitoring</name>
   <url>http://maven.apache.org</url>
   
   <properties>
@@ -176,7 +176,7 @@
 					<archive>
 						<manifest>
 							<!-- <mainClass>com.atos.daf.batch.App</mainClass>  -->
-							<mainClass>com.atos.net.atos.daf.ct2.monitor.App</mainClass>
+							<mainClass>com.atos.net.atos.daf.ct2.monitoring.App</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
