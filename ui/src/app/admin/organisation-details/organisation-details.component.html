@@ -13,7 +13,7 @@
           <mat-cell *matCellDef="let row">
             <div *ngIf="row.isGroup">
               <span>{{row.vehicleGroupName}}</span> 
-              <span class="cursor-pointer" (click)="onVehClick(row)">
+              <span [ngClass]="{'cursor-pointer': row.vehicleCount > 0}" (click)="row.vehicleCount > 0 ? onVehClick(row) : ''">
                 <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
                 <span class='iconTxt'>{{ (row.vehicleCount < 10) ? '0' : '' }}{{ row.vehicleCount }}</span>
               </span>
