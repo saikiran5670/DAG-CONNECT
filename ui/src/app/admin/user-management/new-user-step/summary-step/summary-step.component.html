@@ -160,7 +160,7 @@
                         <mat-cell *matCellDef="let row"> {{row.vehicles}} </mat-cell>
                     </ng-container> -->
                     <ng-container matColumnDef="accountCount">
-                        <mat-header-cell *matHeaderCellDef>{{ translationData.lblUsers || 'Users' }}</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Users' }}</mat-header-cell>
                         <mat-cell *matCellDef="let row">{{ row.accountCount }}</mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumnsUserGrpConfirm"></mat-header-row>

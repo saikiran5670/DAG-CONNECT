@@ -473,7 +473,7 @@
                       <mat-cell *matCellDef="let row"> {{row.vehicles}} </mat-cell>
                   </ng-container> -->
                   <ng-container matColumnDef="accountCount">
-                      <mat-header-cell *matHeaderCellDef>{{ translationData.lblUsers || 'Users' }}</mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Users' }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">
                         <span (click)="row.accountCount > 0 ? viewUserGrpDetails(row) : ''" [ngClass]="{'row-hover': row.accountCount > 0}">{{ row.accountCount }}</span>
                       </mat-cell>
