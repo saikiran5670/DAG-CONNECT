@@ -165,9 +165,9 @@ jobs:
       condition: succeededOrFailed()
     
     - task: Maven@3
-      displayName: 'Maven java/corecomponents/net.atos.daf.ct2.monitor/pom.xml'
+      displayName: 'Maven java/corecomponents/net.atos.daf.ct2.monitoring/pom.xml'
       inputs:
-        mavenPomFile: java/corecomponents/net.atos.daf.ct2.monitor/pom.xml
+        mavenPomFile: java/corecomponents/net.atos.daf.ct2.monitoring/pom.xml
         publishJUnitResults: false
         goals: clean install
 
