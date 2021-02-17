@@ -11,23 +11,18 @@ import org.slf4j.LoggerFactory;
 
 import net.atos.daf.common.AuditETLJobClient;
 import net.atos.daf.common.ct2.utc.TimeFormatter;
-import net.atos.daf.ct2.common.realtime.hbase.IndexDataHbaseSink;
-import net.atos.daf.ct2.common.realtime.postgresql.LiveFleetDriverActivityPostgreSink;
+import net.atos.daf.ct2.common.realtime.hbase.MonitorDataHbaseSink;
+import net.atos.daf.ct2.common.realtime.postgresql.LiveFleetPositionPostgreSink;
 import net.atos.daf.ct2.common.util.DafConstants;
-import net.atos.daf.ct2.common.util.FlinkKafkaIndexDataConsumer;
+import net.atos.daf.ct2.common.util.FlinkKafkaMonitorDataConsumer;
 import net.atos.daf.ct2.common.util.FlinkUtil;
 import net.atos.daf.ct2.pojo.KafkaRecord;
-import net.atos.daf.ct2.pojo.standard.Index;
+import net.atos.daf.ct2.pojo.standard.Monitor;
 
-
-public class IndexDataProcess {
+public class MonitorDataProcess {
 	public static void main(String[] args) throws Exception {
-		
-		/*
-		 * This Job will read the index message data from Kafka topic and store it in HBase and Postgres
-		 */
 
-		Logger log = LoggerFactory.getLogger(IndexDataProcess.class);
+		Logger log = LoggerFactory.getLogger(MonitorDataProcess.class);
 
 		Map<String, String> auditMap = null;
 		AuditETLJobClient auditing = null;
@@ -35,8 +30,6 @@ public class IndexDataProcess {
 		ParameterTool envParams = null;
 
 		try {
-			
-			log.info("============== Start of IndexDataProcess =============");
 
 			ParameterTool params = ParameterTool.fromArgs(args);
 
@@ -45,53 +38,46 @@ public class IndexDataProcess {
 
 			
 			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams,
-					envParams.get(DafConstants.INDEX_JOB));
+					envParams.get(DafConstants.MONITOR_JOB));
 
 			log.info("env :: " + env);
-			
-			FlinkKafkaIndexDataConsumer flinkKafkaConsumer = new FlinkKafkaIndexDataConsumer();
-
+			FlinkKafkaMonitorDataConsumer flinkKafkaConsumer = new FlinkKafkaMonitorDataConsumer();
 			env.getConfig().setGlobalJobParameters(envParams);
 
-			DataStream<KafkaRecord<Index>> consumerStream = flinkKafkaConsumer.connectToKafkaTopic(envParams, env);
+			DataStream<KafkaRecord<Monitor>> consumerStream = flinkKafkaConsumer.connectToKafkaTopic(envParams, env);
 			consumerStream.print();
-			
-			consumerStream.addSink(new IndexDataHbaseSink()); // Writing into HBase Table
 
-			consumerStream.addSink(new LiveFleetDriverActivityPostgreSink()); // Writing into PostgreSQL Table
+			consumerStream.addSink(new MonitorDataHbaseSink()); // Writing into HBase Table
+
+			consumerStream.addSink(new LiveFleetPositionPostgreSink()); // Writing into PostgreSQL Table
 
 			log.info("after addsink");
-
 			try {
 				auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
 						Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
-
 				auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_START,
 						"Realtime Data Monitoring processing Job Started");
 				auditing.auditTrialGrpcCall(auditMap);
 				auditing.closeChannel();
 			} catch (Exception e) {
-
 				log.error("Issue while auditing :: " + e.getMessage());
 			}
 
-			env.execute(" Realtime_IndexDataProcess");
+			env.execute(" Realtime_MonitorDataProcess");
 
 		} catch (Exception e) {
 
-			log.error("Error in Index Data Process" + e.getMessage());
-			//e.printStackTrace();
+			log.error("Error in Message Data Processing - " + e.getMessage());
 
 			try {
 				auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL,
-						"Realtime index data processing Job Failed, reason :: " + e.getMessage());
+						"Realtime Data Monitoring processing Job Failed, reason :: " + e.getMessage());
 
 				auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
 						Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
 				auditing.auditTrialGrpcCall(auditMap);
 				auditing.closeChannel();
 			} catch (Exception ex) {
-
 				log.error("Issue while auditing :: " + ex.getMessage());
 			}
 

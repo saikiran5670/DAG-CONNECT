@@ -6,19 +6,16 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.atos.daf.ct2.common.realtime.dataprocess.IndexDataProcess;
-
-
+import net.atos.daf.ct2.common.realtime.dataprocess.StatusDataProcess;
 
 public class FlinkUtil {
 
 	public static StreamExecutionEnvironment createStreamExecutionEnvironment(ParameterTool envParams, String jobName) {
 
-		Logger log = LoggerFactory.getLogger(IndexDataProcess.class);
+		Logger log = LoggerFactory.getLogger(StatusDataProcess.class);
 		StreamExecutionEnvironment env;
 
 		log.info("Start of FLINK UTIL...");
-		
 		env = StreamExecutionEnvironment.getExecutionEnvironment();
 		/*
 		 * env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime); // TODO

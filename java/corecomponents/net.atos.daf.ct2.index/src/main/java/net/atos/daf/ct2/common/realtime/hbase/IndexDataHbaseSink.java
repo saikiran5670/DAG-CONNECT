@@ -37,7 +37,6 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 		// this function is used to set up a connection to hbase table
 
 		log.info("########## In Index Data HBase ##############");
-		System.out.println("########## In Index Data HBase ##############");
 		super.open(parameters);
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 
@@ -73,7 +72,6 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 		}
 
 		log.info("Index table_name -- " + tableName);
-		System.out.println("Index table_name -- " + tableName);
 	}
 
 	public void invoke(KafkaRecord<Index> value, Context context) throws Exception {

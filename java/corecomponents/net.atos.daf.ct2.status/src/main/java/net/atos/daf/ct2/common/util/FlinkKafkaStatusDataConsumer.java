@@ -10,17 +10,16 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.atos.daf.ct2.common.realtime.dataprocess.IndexDataProcess;
+import net.atos.daf.ct2.common.realtime.dataprocess.StatusDataProcess;
 import net.atos.daf.ct2.pojo.KafkaRecord;
-import net.atos.daf.ct2.pojo.standard.Index;
+import net.atos.daf.ct2.pojo.standard.Status;
 import net.atos.daf.ct2.serde.KafkaMessageDeSerializeSchema;
 
-public class FlinkKafkaIndexDataConsumer {
-	//This class has all setup parameters of Kafka consumer
-	
-	public DataStream<KafkaRecord<Index>> connectToKafkaTopic(ParameterTool envParams, StreamExecutionEnvironment env) {
-		
-		Logger log = LoggerFactory.getLogger(IndexDataProcess.class);
+public class FlinkKafkaStatusDataConsumer {
+
+	public DataStream<KafkaRecord<Status>> connectToKafkaTopic(ParameterTool envParams,
+			StreamExecutionEnvironment env) {
+		Logger log = LoggerFactory.getLogger(StatusDataProcess.class);
 		log.info("========= in a connectToKafkaTopic ==========");
 
 		Properties properties = new Properties();
@@ -34,9 +33,10 @@ public class FlinkKafkaIndexDataConsumer {
 		properties.setProperty("sasl.mechanism", "PLAIN");
 		properties.setProperty("sasl.jaas.config", envParams.get(DafConstants.EVENT_HUB_CONFIG));
 
-		DataStream<KafkaRecord<Index>> ds = env.addSource(new FlinkKafkaConsumer<KafkaRecord<Index>>(
-				envParams.get(DafConstants.INDEX_TOPIC), new KafkaMessageDeSerializeSchema<Index>(), properties));
-		
+		DataStream<KafkaRecord<Status>> ds = env.addSource(new FlinkKafkaConsumer<KafkaRecord<Status>>(
+				envParams.get(DafConstants.STATUS_TOPIC), new KafkaMessageDeSerializeSchema<Status>(), properties));
+
 		return ds;
 	}
+
 }

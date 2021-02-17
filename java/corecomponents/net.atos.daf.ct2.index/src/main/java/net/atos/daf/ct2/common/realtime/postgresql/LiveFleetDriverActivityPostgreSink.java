@@ -14,6 +14,7 @@ import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.atos.daf.ct2.common.realtime.dataprocess.IndexDataProcess;
 import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Index;
@@ -24,7 +25,7 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 	 * This class is used to write Index message data in a postgres table.
 	 */
 
-	private static Logger log = LoggerFactory.getLogger(LiveFleetDriverActivityPostgreSink.class);
+	private static Logger log = LoggerFactory.getLogger(IndexDataProcess.class);
 
 	private static final long serialVersionUID = 1L;
 
