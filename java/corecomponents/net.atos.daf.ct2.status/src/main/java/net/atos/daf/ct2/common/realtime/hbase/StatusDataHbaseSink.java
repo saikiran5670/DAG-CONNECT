@@ -201,109 +201,130 @@ public class StatusDataHbaseSink extends RichSinkFunction<KafkaRecord<Status>> {
 				Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVEvtCause())));
 
 		// VCruiseControlDistanceDistr
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VCruiseDistrMinRangeInt"), Bytes.toBytes(
-				String.valueOf(value.getValue().getDocument().getVCruiseControlDistanceDistr().getDistrMinRangeInt())));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VCruiseDistrMaxRangeInt"), Bytes.toBytes(
-				String.valueOf(value.getValue().getDocument().getVCruiseControlDistanceDistr().getDistrMaxRangeInt())));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VCruiseDistrStep"), Bytes.toBytes(
-				String.valueOf(value.getValue().getDocument().getVCruiseControlDistanceDistr().getDistrStep())));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VCruiseDistrArrayInt"), Bytes.toBytes(
-				Arrays.toString(value.getValue().getDocument().getVCruiseControlDistanceDistr().getDistrArrayInt())));
+		System.out.println("VCruiseControlDistanceDistr Data Fields in Status Data");
 
-		// getStatusVRpmTorque
+		if (value.getValue().getDocument().getVCruiseControlDistanceDistr() != null) {
 
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vrpm_abs"),
-				Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVRpmTorque().getAbs())));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vrpm_ord"),
-				Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVRpmTorque().getOrd())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VCruiseDistrMinRangeInt"), Bytes.toBytes(String
+					.valueOf(value.getValue().getDocument().getVCruiseControlDistanceDistr().getDistrMinRangeInt())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VCruiseDistrMaxRangeInt"), Bytes.toBytes(String
+					.valueOf(value.getValue().getDocument().getVCruiseControlDistanceDistr().getDistrMaxRangeInt())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VCruiseDistrStep"), Bytes.toBytes(
+					String.valueOf(value.getValue().getDocument().getVCruiseControlDistanceDistr().getDistrStep())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VCruiseDistrArrayInt"), Bytes.toBytes(Arrays
+					.toString(value.getValue().getDocument().getVCruiseControlDistanceDistr().getDistrArrayInt())));
+		}
+		// VRpmTorque
+		System.out.println("getStatusVRpmTorque Data Fields in Status Data");
 
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vrpm_A"),
-				Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVRpmTorque().getA())));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vrpm_IA"),
-				Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVRpmTorque().getIa())));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vrpm_JA"),
-				Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVRpmTorque().getJa())));
+		if (value.getValue().getDocument().getVRpmTorque() != null) {
 
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vspeed_abs"),
-				Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVSpeedRpm().getAbs())));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vspeed_ord"),
-				Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVSpeedRpm().getOrd())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vrpm_abs"),
+					Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVRpmTorque().getAbs())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vrpm_ord"),
+					Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVRpmTorque().getOrd())));
 
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vspeed_A"),
-				Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVSpeedRpm().getA())));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vspeed_IA"),
-				Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVSpeedRpm().getIa())));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vspeed_JA"),
-				Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVSpeedRpm().getJa())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vrpm_A"),
+					Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVRpmTorque().getA())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vrpm_IA"),
+					Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVRpmTorque().getIa())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vrpm_JA"),
+					Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVRpmTorque().getJa())));
+		}
+		// VSpeedRpm
+
+		System.out.println("StatusVSpeedRpm Data Fields in Status Data");
+
+		if (value.getValue().getDocument().getVSpeedRpm() != null) {
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vspeed_abs"),
+					Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVSpeedRpm().getAbs())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vspeed_ord"),
+					Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVSpeedRpm().getOrd())));
+
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vspeed_A"),
+					Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVSpeedRpm().getA())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vspeed_IA"),
+					Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVSpeedRpm().getIa())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Vspeed_JA"),
+					Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVSpeedRpm().getJa())));
+		}
 
 		// VAccelerationSpeed
 
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VAcceleration_abs"),
-				Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVAccelerationSpeed().getAbs())));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VAcceleration_ord"),
-				Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVAccelerationSpeed().getOrd())));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VAcceleration_A"),
-				Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVAccelerationSpeed().getA())));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VAcceleration_A_VBrake"),
-				Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVAccelerationSpeed().getA_VBrake())));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VAcceleration_IA"),
-				Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVAccelerationSpeed().getIa())));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VAcceleration_JA"),
-				Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVAccelerationSpeed().getJa())));
+		System.out.println("VAccelerationSpeed Data Fields in Status Data");
 
+		if (value.getValue().getDocument().getVAccelerationSpeed() != null) {
+
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VAcceleration_abs"),
+					Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVAccelerationSpeed().getAbs())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VAcceleration_ord"),
+					Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVAccelerationSpeed().getOrd())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VAcceleration_A"),
+					Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVAccelerationSpeed().getA())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VAcceleration_A_VBrake"), Bytes
+					.toBytes(Arrays.toString(value.getValue().getDocument().getVAccelerationSpeed().getA_VBrake())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VAcceleration_IA"),
+					Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVAccelerationSpeed().getIa())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VAcceleration_JA"),
+					Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getVAccelerationSpeed().getJa())));
+		}
 		// put.addColumn(Bytes.toBytes("t"), Bytes.toBytes ("M2M_in") ,
 		// Bytes.toBytes(String.valueOf(value.getValue().getTimestamps().getM2M_in())));
 		// put.addColumn(Bytes.toBytes("t"), Bytes.toBytes ("M2M_out") ,
 		// Bytes.toBytes(String.valueOf(value.getValue().getTimestamps().getM2M_out())));
 
 		// VIdleDurationDistr
+		System.out.println("VIdleDurationDistr Data Fields in Status Data");
+		if (value.getValue().getVIdleDurationDistr() != null) {
 
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VIdleDistrStep"),
-				Bytes.toBytes(String.valueOf(value.getValue().getVIdleDurationDistr().getDistrStep())));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VIdleDistrMaxRangeInt"),
-				Bytes.toBytes(String.valueOf(value.getValue().getVIdleDurationDistr().getDistrMaxRangeInt())));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VIdleDistrMinRangeInt"),
-				Bytes.toBytes(String.valueOf(value.getValue().getVIdleDurationDistr().getDistrMinRangeInt())));
-		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VIdleDistrArrayInt"),
-				Bytes.toBytes(Arrays.toString(value.getValue().getVIdleDurationDistr().getDistrArrayInt())));
-
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VIdleDistrStep"),
+					Bytes.toBytes(String.valueOf(value.getValue().getVIdleDurationDistr().getDistrStep())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VIdleDistrMaxRangeInt"),
+					Bytes.toBytes(String.valueOf(value.getValue().getVIdleDurationDistr().getDistrMaxRangeInt())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VIdleDistrMinRangeInt"),
+					Bytes.toBytes(String.valueOf(value.getValue().getVIdleDurationDistr().getDistrMinRangeInt())));
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VIdleDistrArrayInt"),
+					Bytes.toBytes(Arrays.toString(value.getValue().getVIdleDurationDistr().getDistrArrayInt())));
+		}
 		// VAccelerationPedalDistr
 		System.out.println("VAccelerationPedalDistr Data Fields in Status Data");
-
-		put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMinRangeInt"), Bytes.toBytes(
-				String.valueOf(value.getValue().getDocument().getVAccelerationPedalDistr().getDistrMinRangeInt())));
-		put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMaxRangeInt"), Bytes.toBytes(
-				String.valueOf(value.getValue().getDocument().getVAccelerationPedalDistr().getDistrMaxRangeInt())));
-		put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrStep"), Bytes
-				.toBytes(String.valueOf(value.getValue().getDocument().getVAccelerationPedalDistr().getDistrStep())));
-		put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrArrayTime"), Bytes.toBytes(
-				Arrays.toString(value.getValue().getDocument().getVAccelerationPedalDistr().getDistrArrayInt())));
-
+		if (value.getValue().getDocument().getVAccelerationPedalDistr() != null) {
+			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMinRangeInt"), Bytes.toBytes(
+					String.valueOf(value.getValue().getDocument().getVAccelerationPedalDistr().getDistrMinRangeInt())));
+			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMaxRangeInt"), Bytes.toBytes(
+					String.valueOf(value.getValue().getDocument().getVAccelerationPedalDistr().getDistrMaxRangeInt())));
+			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrStep"), Bytes.toBytes(
+					String.valueOf(value.getValue().getDocument().getVAccelerationPedalDistr().getDistrStep())));
+			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrArrayTime"), Bytes.toBytes(
+					Arrays.toString(value.getValue().getDocument().getVAccelerationPedalDistr().getDistrArrayInt())));
+		}
 		// VEngineLoadAtEngineSpeedDistr
-
 		System.out.println("VEngineLoadAtEngineSpeedDistr Data Fields in Status Data");
 
-		put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMinRangeInt"), Bytes.toBytes(String
-				.valueOf(value.getValue().getDocument().getVEngineLoadAtEngineSpeedDistr().getDistrMinRangeInt())));
-		put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMaxRangeInt"), Bytes.toBytes(String
-				.valueOf(value.getValue().getDocument().getVEngineLoadAtEngineSpeedDistr().getDistrMaxRangeInt())));
-		put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrStep"), Bytes.toBytes(
-				String.valueOf(value.getValue().getDocument().getVEngineLoadAtEngineSpeedDistr().getDistrStep())));
-		put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrArrayInt"), Bytes.toBytes(
-				Arrays.toString(value.getValue().getDocument().getVEngineLoadAtEngineSpeedDistr().getDistrArrayInt())));
+		if (value.getValue().getDocument().getVEngineLoadAtEngineSpeedDistr() != null) {
 
+			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMinRangeInt"), Bytes.toBytes(String
+					.valueOf(value.getValue().getDocument().getVEngineLoadAtEngineSpeedDistr().getDistrMinRangeInt())));
+			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMaxRangeInt"), Bytes.toBytes(String
+					.valueOf(value.getValue().getDocument().getVEngineLoadAtEngineSpeedDistr().getDistrMaxRangeInt())));
+			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrStep"), Bytes.toBytes(
+					String.valueOf(value.getValue().getDocument().getVEngineLoadAtEngineSpeedDistr().getDistrStep())));
+			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrArrayInt"), Bytes.toBytes(Arrays
+					.toString(value.getValue().getDocument().getVEngineLoadAtEngineSpeedDistr().getDistrArrayInt())));
+		}
 		// VRetarderTorqueActualDistr
 		System.out.println("VRetarderTorqueActualDistr Data Fields in Status Data");
 
-		put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMinRangeInt"), Bytes.toBytes(
-				String.valueOf(value.getValue().getDocument().getVRetarderTorqueActualDistr().getDistrMinRangeInt())));
-		put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMaxRangeInt"), Bytes.toBytes(
-				String.valueOf(value.getValue().getDocument().getVRetarderTorqueActualDistr().getDistrMaxRangeInt())));
-		put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrStep "), Bytes.toBytes(
-				String.valueOf(value.getValue().getDocument().getVRetarderTorqueActualDistr().getDistrStep())));
-		put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrArrayInt"), Bytes.toBytes(
-				Arrays.toString(value.getValue().getDocument().getVRetarderTorqueActualDistr().getDistrArrayInt())));
-
+		if (value.getValue().getDocument().getVRetarderTorqueActualDistr() != null) {
+			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMinRangeInt"), Bytes.toBytes(String
+					.valueOf(value.getValue().getDocument().getVRetarderTorqueActualDistr().getDistrMinRangeInt())));
+			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMaxRangeInt"), Bytes.toBytes(String
+					.valueOf(value.getValue().getDocument().getVRetarderTorqueActualDistr().getDistrMaxRangeInt())));
+			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrStep "), Bytes.toBytes(
+					String.valueOf(value.getValue().getDocument().getVRetarderTorqueActualDistr().getDistrStep())));
+			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrArrayInt"), Bytes.toBytes(Arrays
+					.toString(value.getValue().getDocument().getVRetarderTorqueActualDistr().getDistrArrayInt())));
+		}
 		table.put(put);
 
 	}
