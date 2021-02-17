@@ -141,8 +141,8 @@
                   style='color: red;'>*{{ translationData.lblAllDetailsAreMandatory || 'All details are mandatory' }}</span>
               </div>
             </div>
-            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm mobile-view" fxLayoutGap="10px">
+              <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
                 <!-- <mat-label>{{ translationData.lblSalutation }}<span class='mandatoryColor'>*</span></mat-label> -->
                 <mat-label>{{ translationData.lblSalutation || 'Salutation' }}<span class='mandatoryColor'>*</span>
                 </mat-label>
@@ -166,7 +166,7 @@
                   {{ translationData.lblPleasechoosesalutation || 'Please choose salutation' }}
                 </mat-error>
               </div>
-              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
                 <!-- <mat-label>{{ translationData.lblFirstName }}<span class='mandatoryColor'>*</span></mat-label> -->
                 <mat-label>{{ translationData.lblFirstName || 'First Name' }}<span class='mandatoryColor'>*</span>
                 </mat-label>
@@ -191,7 +191,7 @@
                  </mat-error>
 
               </div>
-              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
                 <!-- <mat-label>{{ translationData.lblLastName }}<span class='mandatoryColor'>*</span></mat-label> -->
                 <mat-label>{{ translationData.lblLastName || 'Last Name' }}<span class='mandatoryColor'>*</span>
                 </mat-label>
@@ -216,8 +216,8 @@
                  </mat-error>
               </div>
             </div>
-            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm mobile-view" fxLayoutGap="10px">
+              <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
                 <!-- <mat-label>{{ translationData.lblLoginEmail }}<span class='mandatoryColor'>*</span></mat-label> -->
                 <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}<span class='mandatoryColor'>*</span>
                 </mat-label>
@@ -247,7 +247,7 @@
                   <mat-datepicker #Due_Date></mat-datepicker>
                 </mat-form-field>
               </div> -->
-              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
                 <!-- <mat-label>{{ translationData.lblOrganisation }}</mat-label> -->
                 <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
                 <mat-form-field appearance="outline" class="full-width">
@@ -255,14 +255,14 @@
                     value="DAF Connect" formControlName="organization">
                 </mat-form-field>
               </div>
-              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+              <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left"></div>
             </div>
-            <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
-              <button class='margin-right-10' mat-raised-button color="primary"
+            <div fxLayout="row" fxLayoutAlign="end end" class="full-width mobile-view mobile-btn-align">
+              <button class='margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary"
                 (click)='onEditAccountSettingsCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
-              <button class='margin-right-10'  mat-raised-button color="primary" 
+              <button class='margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary" 
                 (click)='onResetAccountSettings()'>{{ translationData.lblReset || 'Reset' }}</button>  
-              <button mat-raised-button type="submit" color="primary" [disabled]="!accountSettingsForm.valid"
+              <button class='mobile-full-width' mat-raised-button type="submit" color="primary" [disabled]="!accountSettingsForm.valid"
                 (click)='onAccountSettingsUpdate()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
             </div>
           </form>
@@ -358,9 +358,9 @@
       </div>
 
       <form [formGroup]="userSettingsForm" *ngIf="editGeneralSettingsFlag">
-        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm mobile-view" fxLayoutGap="10px">
 
-          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <!-- <mat-label>{{ translationData.lblLanguage }}</mat-label> -->
             <mat-label>{{ translationData.lblLanguage || 'Language' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
@@ -375,7 +375,7 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <!-- <mat-label>{{ translationData.lblTimeZone }}</mat-label> -->
             <mat-label>{{ translationData.lblTimeZone || 'Time Zone' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
@@ -390,7 +390,7 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <!-- <mat-label>{{ translationData.lblUnit }}</mat-label> -->
             <mat-label>{{ translationData.lblUnit || 'Unit' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
@@ -407,9 +407,8 @@
           </div>
 
         </div>
-
-        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm mobile-view" fxLayoutGap="10px">
+          <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <!-- <mat-label>{{ translationData.lblCurrency }}</mat-label> -->
             <mat-label>{{ translationData.lblCurrency || 'Currency' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
@@ -424,7 +423,7 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <!-- <mat-label>{{ translationData.lblDateFormat }}</mat-label> -->
             <mat-label>{{ translationData.lblDateFormat || 'Date Format' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
@@ -439,7 +438,7 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblTimeFormat || 'Time Format' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
               <mat-select placeholder="{{ translationData.lblTimeFormat || 'Time Format' }}" formControlName="timeFormat">
@@ -454,8 +453,8 @@
             </mat-form-field>
           </div>
         </div>
-        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm mobile-view" fxLayoutGap="10px">
+          <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <!-- <mat-label>{{ translationData.lblVehicleDisplayDefault }}</mat-label> -->
             <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
@@ -470,7 +469,7 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
             <!-- <mat-label>{{ translationData.lblVehicleDisplayDefault }}</mat-label> -->
             <mat-label>{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
@@ -485,14 +484,14 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+          <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left"></div>
         </div>
-        <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
-          <button class='margin-right-10' mat-raised-button color="primary"
+        <div fxLayout="row" fxLayoutAlign="end end" class="full-width mobile-view mobile-btn-align">
+          <button class='margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary"
             (click)='onEditGeneralSettingsCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
-          <button class='margin-right-10'  mat-raised-button color="primary" 
+          <button class='margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary" 
                             (click)='onResetGeneralSettings()'>{{ translationData.lblReset || 'Reset' }}</button>
-          <button mat-raised-button color="primary" type="submit"
+          <button class='mobile-full-width' mat-raised-button color="primary" type="submit"
             (click)='onGeneralSettingsUpdate()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
         </div>
       </form>
