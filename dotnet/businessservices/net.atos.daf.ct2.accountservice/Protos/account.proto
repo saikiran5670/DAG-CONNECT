@@ -23,7 +23,7 @@ service AccountService {
 
   // Access Relationship
   rpc CreateAccessRelationship (AccessRelationship) returns (AccessRelationshipResponse);
-  //rpc UpdateAccessRelationship (AccessRelationship) returns (AccessRelationshipResponse);
+  rpc UpdateAccessRelationship (AccessRelationship) returns (AccessRelationshipResponse);
   rpc DeleteAccessRelationship (AccessRelationshipDeleteRequest) returns (AccessRelationshipResponse);
   rpc GetAccessRelationship (AccessRelationshipFilter) returns (AccessRelationshipDataList);
 
@@ -63,16 +63,19 @@ message AccountData {
   string Message = 2;
   AccountRequest Account = 3;
 }
+message KeyValue
+{
+  int32 Id=1;
+  string Name=2;
+}
 // account details 
 message AccountDetails {  
   AccountRequest Account = 1;
-  string Roles=2;
-  string AccountGroups = 3;
+  repeated KeyValue Roles = 2;
+  repeated KeyValue AccountGroups = 3;  
 }
-
 message AccountDetailsResponse {  
   repeated AccountDetails AccountDetails = 1;
-
   Responcecode Code=2;
   string Message = 3;
 }
@@ -91,15 +94,8 @@ message AccountRequest {
     string Salutation=3;
     string FirstName=4;
     string LastName=5;
-    string Password=6;
-    //google.protobuf.Timestamp Dob=7; 
-    //AccountType Type=7;    
-    int32 OrganizationId=7;
-    //int32 Account_OrgId =10;
-    //google.protobuf.Timestamp StartDate=10;
-    //google.protobuf.Timestamp EndDate=11;
-    //bool Active =12;
-    //bool Active =11;
+    string Password=6;    
+    int32 OrganizationId=7;    
   }
 
 message AccountId
@@ -113,6 +109,7 @@ message AccountFilter {
   string Name=3;
   string Email=4;  
   string AccountIds = 5;
+  int32 AccountGroupId=6;
 
 }
 
@@ -249,9 +246,10 @@ message AccountGroupFilterRequest{
 message AccountGroupDetailsRequest {
   int32 AccountId=1;  
   int32 OrganizationId = 2;
-  int32 GroupId=3;
-  int32 RoleId=4;
-  string Name = 5;
+  int32 AccountGroupId=3;
+  int32 VehicleGroupId=4;
+  int32 RoleId=5;
+  string Name = 6;  
 }
 message AccountGroupDetail {
   int32 GroupId=1;
@@ -323,7 +321,8 @@ message AccessRelationship
 message AccessRelationshipFilter
 {
   int32 AccountId =1;
-  int32 AccountGroupId =2;   
+  int32 AccountGroupId =2; 
+  int32 VehicleGroupId =3;
 }
 message AccessRelationshipResponse
 {
