@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ServiceSubscriberDetailsComponent } from './service-subscriber-details.component';
+import { OrganisationDetailsComponent } from './organisation-details.component';
 import { TranslationService } from '../../services/translation.service';
 import { EmployeeService } from 'src/app/services/employee.service';
 // import { HttpDataService } from '../../services/sampleService/http-data.service';
@@ -8,9 +8,9 @@ import { ConfigService, ConfigLoader } from '@ngx-config/core';
 
 import { HttpClient, HttpHandler } from '@angular/common/http';
 
-describe('ServiceSubscriberDetailsComponent', () => {
-  let component: ServiceSubscriberDetailsComponent;
-  let fixture: ComponentFixture<ServiceSubscriberDetailsComponent>;
+describe('OrganisationDetailsComponent', () => {
+  let component: OrganisationDetailsComponent;
+  let fixture: ComponentFixture<OrganisationDetailsComponent>;
   let translationService: TranslationService;
   let employeeService: EmployeeService;
   // let configService: ConfigService;
@@ -20,14 +20,14 @@ describe('ServiceSubscriberDetailsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ServiceSubscriberDetailsComponent ],
+      declarations: [ OrganisationDetailsComponent ],
       providers : [ TranslationService,EmployeeService, HttpClient, ConfigService,HttpHandler,ConfigLoader ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ServiceSubscriberDetailsComponent);
+    fixture = TestBed.createComponent(OrganisationDetailsComponent);
     // translationService = TestBed.inject(TranslationService);
     // employeeService= TestBed.inject(EmployeeService);
     // httpClient = TestBed.inject(HttpClient);

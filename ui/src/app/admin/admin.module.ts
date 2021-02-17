@@ -6,7 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { ChartsModule } from 'ng2-charts';
 import { UserGroupManagementComponent } from './user-group-management/user-group-management.component';
-import { ServiceSubscriberDetailsComponent } from './service-subscriber-details/service-subscriber-details.component';
+import { OrganisationDetailsComponent } from './organisation-details/organisation-details.component';
 import { ConfirmDialogService } from '../shared/confirm-dialog/confirm-dialog.service';
 import { EmployeeService } from '../services/employee.service';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
@@ -37,7 +37,7 @@ import { VehicleManagementComponent } from '../admin/vehicle-management/vehicle-
 
 @NgModule({
   declarations: [AdminComponent, UserGroupManagementComponent,
-    ServiceSubscriberDetailsComponent,
+    OrganisationDetailsComponent,
     ConfirmDialogComponent,
     DeleteDialogComponent,
     UserManagementComponent,

@@ -61,7 +61,7 @@
       "subMenu": [
         {
           "name": "Organisation Details",
-          "subRoute": "orgnisationdetails"
+          "subRoute": "organisationdetails"
         },
         {
           "name": "User Group Management",

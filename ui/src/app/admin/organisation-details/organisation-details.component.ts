@@ -20,11 +20,11 @@ import { AccountService } from 'src/app/services/account.service';
 import { UserDetailTableComponent } from '../user-management/new-user-step/user-detail-table/user-detail-table.component';
 
 @Component({
-  selector: 'app-service-subscriber-details',
-  templateUrl: './service-subscriber-details.component.html',
-  styleUrls: ['./service-subscriber-details.component.less'],
+  selector: 'app-organisation-details',
+  templateUrl: './organisation-details.component.html',
+  styleUrls: ['./organisation-details.component.less'],
 })
-export class ServiceSubscriberDetailsComponent implements OnInit {
+export class OrganisationDetailsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   displayedColumns: string[] = ['vehicleGroupName', 'userCount'];
@@ -65,7 +65,7 @@ export class ServiceSubscriberDetailsComponent implements OnInit {
       lblVIN: 'VIN',
       lblRegistrationNumber: 'Registration Number',
       lblUserRole: 'User Role',
-      lblServiceSubscriberDetails: 'Service Subscriber Details',
+      lblOrganisationDetails: 'Organisation Details',
       lblUsersList: 'Users List',
       lblUserEmail: 'User Email',
       lblUserName: 'User Name',

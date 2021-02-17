@@ -53,7 +53,7 @@ export class AppComponent {
     triptracing: 'Trip Tracing',
     alerts: 'Alerts',
     landmarks: 'Landmarks',
-    orgnisationdetails: 'Organisation Details',
+    organisationdetails: 'Organisation Details',
     usergroupmanagement: 'User Group Management',
     usermanagement: 'User Management',
     vehiclemanagement: 'Vehicle Management',
@@ -91,7 +91,7 @@ export class AppComponent {
     admin : {
       open: false,
       pageTitles: {
-        orgnisationdetails: 'Organisation Details',
+        organisationdetails: 'Organisation Details',
         usergroupmanagement: 'User Group Management',
         usermanagement: 'User Management',
         drivermanagement: 'Driver Management',
@@ -247,7 +247,7 @@ export class AppComponent {
       lblDashboard: "Dashboard",
       lblReports: "Reports",
       lblVehicleManagement: "Vehicle Management",
-      lblServiceSubscriberDetails: "Service Subscriber Details",
+      lblOrganisationDetails: 'Organisation Details',
       lblUserGroupManagement: "User Group Management",
       lblUserManagement: "User Management",
       lblUserRoleManagement: "User Role Management",
