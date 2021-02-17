@@ -1,22 +1,11 @@
-import { Component, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ActivatedRoute, Router } from '@angular/router';
-import { UserListResolver } from '../../services/resolver/user-list-resolver.service';
-import { EmployeeService } from 'src/app/services/employee.service';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
-import { Observable, forkJoin } from 'rxjs';
-import { map } from 'rxjs/internal/operators';
 import { TranslationService } from '../../services/translation.service';
 import { CommonTableComponent } from '../.././shared/common-table/common-table.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-//import { AccountGrpcService } from '../../services/account-grpc.service';
-import { ConfigService } from '@ngx-config/core';
-import { Greeter, GreeterClient, ServiceError } from 'src/app/protos/Greet/greet_pb_service';
-import { HelloReply, HelloRequest } from 'src/app/protos/Greet/greet_pb';
-import { grpc } from '@improbable-eng/grpc-web';
 import { AccountService } from '../../services/account.service';
 import { RoleService } from '../../services/role.service';
 
@@ -26,14 +15,7 @@ import { RoleService } from '../../services/role.service';
   styleUrls: ['./user-management.component.less']
 })
 export class UserManagementComponent implements OnInit {
-  displayedColumns: string[] = [
-    'firstName',
-    'emailId',
-    'roles',
-    'accountGroups',
-    'action'
-  ];
-  //products: any[] = [];
+  displayedColumns: string[] = ['firstName','emailId','roles','accountGroups','action'];
   stepFlag: boolean = false;
   editFlag: boolean = false;
   viewFlag: boolean = false;
@@ -45,7 +27,7 @@ export class UserManagementComponent implements OnInit {
   selectedRoleData: any;
   selectedUserGrpData: any;
   error: any;
-  initData: any;
+  initData: any = [];
   translationData: any;
   userDataForEdit: any;
   selectedPreference: any;
@@ -55,40 +37,17 @@ export class UserManagementComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   filterFlag = false;
-
   accountOrganizationId: any = 0;
-  localStLanguage = JSON.parse(localStorage.getItem("language"));
-
+  localStLanguage: any;
   dialogRef: MatDialogRef<CommonTableComponent>;
-  backendGrpc: any;
-  gRpcClient: GreeterClient;
+
   constructor(
-    private userService: EmployeeService,
     private dialogService: ConfirmDialogService,
-    private _snackBar: MatSnackBar,
-    private _router:Router,
-    private actr: ActivatedRoute,
     private translationService: TranslationService,
     private dialog: MatDialog,
-    private config: ConfigService,
     private accountService: AccountService,
     private roleService: RoleService
-    //private accountGrpcService: AccountGrpcService
   ) {
-    // const resolvedData:any[] = actr.snapshot.data['resl'];
-    // console.log('constructor: ',resolvedData);
-    // if(Array.isArray(resolvedData)){
-    //   this.products= resolvedData;
-    //   this.initData = resolvedData;
-    //   this.dataSource = new MatTableDataSource(this.products);
-    //   this.dataSource.paginator = this.paginator;
-    //   this.dataSource.sort = this.sort;
-    // }
-    // else{
-    //   this.error= resolvedData;
-    // }
-    this.backendGrpc = config.getSettings("foundationServices").accountGrpcServiceUrl;
-	  this.gRpcClient = new GreeterClient(this.backendGrpc);
     this.defaultTranslation();
   }
 
@@ -177,6 +136,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
       id: 0,
@@ -191,7 +151,6 @@ export class UserManagementComponent implements OnInit {
       this.processTranslation(data);
       this.loadUsersData();
       this.getUserSettingsDropdownValues();
-      
     });
   }
 
@@ -224,18 +183,7 @@ export class UserManagementComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
-  // openSnackBar(message: string, action: string) {
-  //   let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
-  //   snackBarRef.afterDismissed().subscribe(() => {
-  //     console.log('The snackbar is dismissed');
-  //   });
-  //   snackBarRef.onAction().subscribe(() => {
-  //     console.log('The snackbar action was triggered!');
-  //   });
-  // }
-
   deleteUser(item) {
-    //console.log(item);
     const options = {
       title: this.translationData.lblDeleteAccount || "Delete Account",
       message: this.translationData.lblAreyousureyouwanttodeleteuseraccount || "Are you sure you want to delete '$' user account?",
@@ -266,34 +214,7 @@ export class UserManagementComponent implements OnInit {
       this.stepFlag = true;
     }, (error)=> {});
    }, (error)=> {});
-
-    // forkJoin(this.roleService.getUserRoles(roleObj),
-    //         this.accountService.getAccountGroupDetails(accountGrpObj)
-            // this.translationService.getTranslationsForDropdowns('EN-GB','language'),
-            // this.translationService.getTranslationsForDropdowns('EN-GB','timezone'),
-            // this.translationService.getTranslationsForDropdowns('EN-GB','unit'),
-            // this.translationService.getTranslationsForDropdowns('EN-GB','currency'),
-            // this.translationService.getTranslationsForDropdowns('EN-GB','dateformat'),
-            // this.translationService.getTranslationsForDropdowns('EN-GB','timeformat'),
-            // this.translationService.getTranslationsForDropdowns('EN-GB','vehicledisplay'),
-            // this.translationService.getTranslationsForDropdowns('EN-GB','landingpagedisplay')
-      // ).subscribe((data) => {
-      //   //console.log(data)
-      //   this.roleData = data[0];
-      //   this.userGrpData = data[1];
-        // this.defaultSetting = {
-        //   languageDropdownData: data[2],
-        //   timezoneDropdownData: data[3],
-        //   unitDropdownData: data[4],
-        //   currencyDropdownData: data[5],
-        //   dateFormatDropdownData: data[6],
-        //   timeFormatDropdownData: data[7],
-        //   vehicleDisplayDropdownData: data[8],
-        //   landingPageDisplayDropdownData: data[9]
-        // }
-  //       this.stepFlag = true;
-  //   }, (error) => {  });
-    }
+  }
 
   editViewUser(element: any, type: any) {
     let roleObj = { 
@@ -308,7 +229,7 @@ export class UserManagementComponent implements OnInit {
       accountCount: true
    }
    let selectedRoleObj = {
-    accountId: element.id, //159
+    accountId: element.id,
     organizationId: element.organizationId,
     roles: [0]
   }
@@ -346,87 +267,9 @@ export class UserManagementComponent implements OnInit {
       }, (error)=> {});
     }, (error)=> {});
    }, (error)=> {});
-
-    // forkJoin(this.roleService.getUserRoles(roleObj),
-    //         this.accountService.getAccountGroupDetails(accountGrpObj),
-            // this.translationService.getTranslationsForDropdowns('EN-GB','language'),
-            // this.translationService.getTranslationsForDropdowns('EN-GB','timezone'),
-            // this.translationService.getTranslationsForDropdowns('EN-GB','unit'),
-            // this.translationService.getTranslationsForDropdowns('EN-GB','currency'),
-            // this.translationService.getTranslationsForDropdowns('EN-GB','dateformat'),
-            // this.translationService.getTranslationsForDropdowns('EN-GB','timeformat'),
-            // this.translationService.getTranslationsForDropdowns('EN-GB','vehicledisplay'),
-            // this.translationService.getTranslationsForDropdowns('EN-GB','landingpagedisplay'),
-      //       this.accountService.getAccountRoles(selectedRoleObj),
-      //       this.accountService.getAccountPreference(element.id)
-      // ).subscribe((data) => {
-        //console.log(data)
-        // this.roleData = data[0];
-        // this.userGrpData = data[1];
-        // this.defaultSetting = {
-        //   languageDropdownData: data[2],
-        //   timezoneDropdownData: data[3],
-        //   unitDropdownData: data[4],
-        //   currencyDropdownData: data[5],
-        //   dateFormatDropdownData: data[6],
-        //   timeFormatDropdownData: data[7],
-        //   vehicleDisplayDropdownData: data[8],
-        //   landingPageDisplayDropdownData: data[9]
-        // }
-        //this.selectedRoleData = data[2];
-        //console.log(element);
-        // this.userDataForEdit = element;
-        // this.selectedPreference = data[3];
-        // this.stepFlag = true;
-        // this.accountService.getAccountDesc(selectedAccountGrpObj).subscribe((resp) => {
-        //   this.selectedUserGrpData = resp;
-        //   this.editFlag = (type == 'edit') ? true : false;
-        //   this.viewFlag = (type == 'view') ? true : false;
-        //   this.isCreateFlag = false;
-        // }, (error) => {  });
-    //}, (error) => {  });
   }
 
   loadUsersData(){
-
-    // this.accountGrpcService.getAllAccounts().then((result: any) => {
-    //   console.log(`Inside UI result:: ${result}`);
-    // });
-
-    // this.accountGrpcService.getGreet().then((result: any) => {
-    //   console.log(`Inside UI result:: ${result}`);
-    // });
-    
-
-    // this.getGreeter().then((data: any) => {
-    //   console.log("resp data:: ", data)
-    // });
-
-    
-    //method 2
-    // const req = new HelloRequest();
-    // req.setName('Vishal');
-    // grpc.unary(Greeter.SayHello, {
-    //   request: req,
-    //   host: 'https://10.10.128.9:80',
-    //   onEnd: (res) => {
-    //     const { status, message } = res;
-    //     if (status === grpc.Code.OK && message) {
-    //       var result = message.toObject() as HelloReply.AsObject;
-    //       console.log("Unary resp:: ", result);
-    //       this.makeData();
-    //     }
-    //     else{
-    //       console.log("res.statusMessage:: ", res.statusMessage)
-    //     }
-    //   },
-    // });  
-
-    // this.accountGrpcService.getGreet().then((result: any) => {
-    //   console.log(`Inside UI result:: ${result}`);
-    // });
-    
-    // Rest code
     let obj: any = {
       accountId: 0,
       organizationId: this.accountOrganizationId,
@@ -440,18 +283,11 @@ export class UserManagementComponent implements OnInit {
       //this.initData = usrlist;
       this.initData = this.makeRoleAccountGrpList(usrlist);
       this.dataSource = new MatTableDataSource(this.initData);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+      setTimeout(()=>{
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      });
     });
-
-    // this.userService.getUsers().subscribe((usrlist)=>{
-    //   this.filterFlag = true;
-    //   usrlist = this.getNewTagData(usrlist);
-    //   this.initData = usrlist;
-    //   this.dataSource = new MatTableDataSource(usrlist);
-    //   this.dataSource.paginator = this.paginator;
-    //   this.dataSource.sort = this.sort;
-    // });
   }
 
   makeRoleAccountGrpList(initdata){
@@ -480,24 +316,7 @@ export class UserManagementComponent implements OnInit {
     
     return initdata;
   }
-
-  getGreeter(): Promise<any> {
-    let req = new HelloRequest();
-    req.setName('Vishal');
-    return new Promise((resolve, reject) => {
-      this.gRpcClient.sayHello(req, (err: ServiceError, response: HelloReply) => {
-        if (err) {
-          console.log(`Error while invoking gRpc: ${err}`);
-          return reject(err);
-        }
-        else{
-          console.log("response:: ", response);
-          return resolve(response);
-        }
-      });
-    });
-  }
-
+  
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     data.forEach(row => {
@@ -524,7 +343,6 @@ export class UserManagementComponent implements OnInit {
     this.dialogService.confirmedDel().subscribe((res) => {
       if (res) {
         this.accountService.deleteAccount(item).subscribe(d=>{
-          //console.log(d);
           this.successMsgBlink(this.getDeletMsg(name));
           this.loadUsersData();
         });

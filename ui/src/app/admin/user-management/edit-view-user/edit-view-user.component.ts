@@ -6,12 +6,9 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { EditCommonTableComponent } from 'src/app/admin/user-management/edit-view-user/edit-common-table/edit-common-table.component';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
-import { EmployeeService } from '../../../services/employee.service';
-import { CommonTableComponent } from '../../../shared/common-table/common-table.component';
 import { CustomValidators } from '../../../shared/custom.validators';
 import { AccountService } from '../../../services/account.service';
 import { UserDetailTableComponent } from '.././new-user-step/user-detail-table/user-detail-table.component';
-import { map, take } from 'rxjs/internal/operators';
 
 @Component({
   selector: 'app-edit-view-user',
@@ -79,10 +76,9 @@ export class EditViewUserComponent implements OnInit {
   accountOrganizationId: any;
   servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
 
-  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private userService: EmployeeService, private accountService: AccountService) { }
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService) { }
 
   ngOnInit() {
-    //console.log("accountInfoData:: ", this.accountInfoData)
     this.generalSettingForm = this._formBuilder.group({
       language: ['', []],
       timeZone: ['', []],
@@ -165,7 +161,6 @@ export class EditViewUserComponent implements OnInit {
       this.accountInfoForm.get('lastName').setValue(this.accountInfoData.lastName ? this.accountInfoData.lastName : '--');
       this.accountInfoForm.get('loginEmail').setValue(this.accountInfoData.emailId ? this.accountInfoData.emailId : '--');
       this.accountInfoForm.get('organization').setValue(this.accountInfoData.organization ? this.accountInfoData.organization : localStorage.getItem("organizationName"));
-      //this.accountInfoForm.get('birthDate').setValue(this.accountInfoData.dob);
     }
   }
 
@@ -264,7 +259,6 @@ export class EditViewUserComponent implements OnInit {
   }
 
   onEditAccountInfoReset(){
-    //console.log("Account info Reset...");
     this.setDefaultAccountInfo();
   }
 
@@ -273,10 +267,6 @@ export class EditViewUserComponent implements OnInit {
   }
 
   onAccountInfoUpdate(){ 
-    // if(this.accountInfoForm.controls.loginEmail.value != this.accountInfoData.emailId){
-    //   //TODO : Check if email id already exists in DB(API call).
-    // }
-
     let objData: any = {
         id: this.accountInfoData.id,
         emailId: this.accountInfoForm.controls.loginEmail.value,
@@ -334,8 +324,7 @@ export class EditViewUserComponent implements OnInit {
       selectedData: selectedData
     }
     this.dialogRefForEdit = this.dialog.open(EditCommonTableComponent, dialogConfig);
-    // this.dialogRefForEdit.afterClosed().pipe(take(1), map(res => {
-      this.dialogRefForEdit.afterClosed().subscribe(res => {
+    this.dialogRefForEdit.afterClosed().subscribe(res => {
       if(res.type == 'role'){
         this.selectedRoleData = res.data;
         this.loadRoleTable();
@@ -394,7 +383,6 @@ export class EditViewUserComponent implements OnInit {
   }
 
   viewUserGrpDetails(rowData: any){
-    //console.log("rowData:: ", rowData);
     let objData = {
       accountId: 0,
       organizationId: rowData.organizationId, //32

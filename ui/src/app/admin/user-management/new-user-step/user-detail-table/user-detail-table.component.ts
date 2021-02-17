@@ -1,6 +1,5 @@
 import {
   Component,
-  Input,
   OnInit,
   ViewChild,
   Inject,
@@ -53,11 +52,6 @@ export class UserDetailTableComponent implements OnInit {
   @HostListener('keydown.esc')
   public onEsc() {
     this.onClose(false);
-  }
-  
-  ngAfterViewInit() {
-    //this.dataSource.paginator = this.paginator;
-    //this.dataSource.sort = this.sort;
   }
 
   ngOnInit(){ }

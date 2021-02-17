@@ -2,7 +2,6 @@ import { Component, OnInit, Input, ViewChildren, QueryList, Output, EventEmitter
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-summary-step',
@@ -30,7 +29,6 @@ export class SummaryStepComponent implements OnInit {
 
   @Input() set accountInfoData(value){
     this.confirmAccountInfoData = this.getDefaultSetting(value);
-    //this.confirmAccountInfoData = value;
   }
   
   @Input() isCreateFlag: boolean = true;

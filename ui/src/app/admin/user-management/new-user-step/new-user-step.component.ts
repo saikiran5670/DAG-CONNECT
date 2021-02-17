@@ -6,12 +6,10 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { CustomValidators } from '../../../shared/custom.validators';
-import { EmployeeService } from '../../../services/employee.service';
 import { AccountService } from '../../../services/account.service';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { UserDetailTableComponent } from './user-detail-table/user-detail-table.component';
-import { map } from 'rxjs/internal/operators';
 
 @Component({
   selector: 'app-new-user-step',
@@ -50,7 +48,6 @@ export class NewUserStepComponent implements OnInit {
   
   roleDisplayedColumns: string[] = ['select', 'roleName', 'featureIds'];
   vehGrpDisplayedColumns: string[] = ['select', 'name', 'vehicles', 'registrationNumber'];
-  //userGrpDisplayedColumns: string[] = ['select',  'name', 'vehicles', 'users'];
   userGrpDisplayedColumns: string[] = ['select',  'name', 'accountCount'];
 
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
@@ -88,7 +85,7 @@ export class NewUserStepComponent implements OnInit {
     return date > now;
   }
 
-  constructor(private _formBuilder: FormBuilder, private cdref: ChangeDetectorRef, private userService: EmployeeService, private dialog: MatDialog, private accountService: AccountService) { }
+  constructor(private _formBuilder: FormBuilder, private cdref: ChangeDetectorRef, private dialog: MatDialog, private accountService: AccountService) { }
 
   ngAfterViewInit() {
     this.roleDataSource.paginator = this.paginator.toArray()[0];
@@ -141,23 +138,10 @@ export class NewUserStepComponent implements OnInit {
     this.roleDataSource = new MatTableDataSource(this.roleData);
     this.vehGrpDataSource = new MatTableDataSource(this.vehGrpData);
     this.userGrpDataSource = new MatTableDataSource(this.userGrpData);
-    this.setDefaultSetting(); //--- for rest mock
-    //Mock data changes
-    //this.changePictureFlag = true;
-    //this.isSelectPictureConfirm = true;
-    //this.croppedImage='../../assets/images/Account_pic.png';
+    this.setDefaultSetting();
   }
 
    setDefaultSetting(){
-    // this.firstFormGroup.get('language').setValue(13);
-    // this.firstFormGroup.get('timeZone').setValue(47);
-    // this.firstFormGroup.get('unit').setValue(8);
-    // this.firstFormGroup.get('currency').setValue(3);
-    // this.firstFormGroup.get('dateFormat').setValue(13);
-    // this.firstFormGroup.get('vehDisplay').setValue(8);
-    // this.firstFormGroup.get('timeFormat').setValue(8);
-    // this.firstFormGroup.get('landingPage').setValue(11);
-
     this.firstFormGroup.get('language').setValue(2);
     this.firstFormGroup.get('timeZone').setValue(2);
     this.firstFormGroup.get('unit').setValue(2);
@@ -187,28 +171,6 @@ export class NewUserStepComponent implements OnInit {
 
   onCreate(createStatus: any){
     this.duplicateEmailMsg = false;
-    
-    //-- TODO: Existing Email Id check --//
-    /* if(this.firstFormGroup.controls.loginEmail.value){ } */
-
-    //let mockVarForID = Math.random();
-      // let objData: any = {
-      //   isActive: true,
-      //   salutation: this.firstFormGroup.controls.salutation.value,
-      //   firstName: this.firstFormGroup.controls.firstName.value,
-      //   lastName: this.firstFormGroup.controls.lastName.value,
-      //   emailId: this.firstFormGroup.controls.loginEmail.value,
-      //   userTypeid: 1,
-      //   createBy: 1,
-      //   //data added for mock
-      //   role: "Fleet Admin",
-      //   userGroup: "mockUserGrp",
-      //   id: mockVarForID,
-      //   userID: mockVarForID,
-      //   dob: this.firstFormGroup.controls.birthDate.value,
-      //   createdOn: new Date()
-      // } 
-      
       let objData = {
         id: 0,
         emailId: this.firstFormGroup.controls.loginEmail.value,
@@ -257,25 +219,6 @@ export class NewUserStepComponent implements OnInit {
   }
 
   onUpdateUserData(){
-    // let objData: any = {
-    //   id: this.userData.id,
-    //   userID: this.userData.userID,
-    //   isActive: true,
-    //   salutation: this.firstFormGroup.controls.salutation.value,
-    //   firstName: this.firstFormGroup.controls.firstName.value,
-    //   lastName: this.firstFormGroup.controls.lastName.value,
-    //   emailId: this.firstFormGroup.controls.loginEmail.value,
-    //   userTypeid: 1,
-    //   createBy: 1,
-    //   role: this.userData.role,
-    //   userGroup: this.userData.userGroup,
-    //   dob: this.firstFormGroup.controls.birthDate.value,
-    //   createdOn: this.userData.createdOn
-    // } 
-    // this.userService.updateUser(objData).subscribe((res)=>{
-    //   this.updateTableData(false);
-    // }, (error) => {  });
-    
     //---- Role obj----------//
     let mapRoleIds :any = this.selectionForRole.selected.map(resp => resp.roleId);
     let mapRoleData: any = [];
@@ -353,61 +296,6 @@ export class NewUserStepComponent implements OnInit {
       this.userCreate.emit(emitObj);
     });
   }
-
-  // onCreate(createStatus: any){
-  //   if(createStatus){
-  //     //Code for create user
-  //     let mockVarForID = Math.random();
-  //     let objData: any = {
-  //       isActive: true,
-  //       salutation: this.firstFormGroup.controls.salutation.value,
-  //       firstName: this.firstFormGroup.controls.firstName.value,
-  //       lastName: this.firstFormGroup.controls.lastName.value,
-  //       emailId: this.firstFormGroup.controls.loginEmail.value,
-  //       userTypeid: 1,
-  //       createBy: 1,
-  //       //data added for mock
-  //       role: "Fleet Admin",
-  //       userGroup: "mockUserGrp",
-  //       id: mockVarForID,
-  //       userID: mockVarForID,
-  //       dob: this.firstFormGroup.controls.birthDate.value
-  //     } 
-  //     this.userService.createUser(objData).subscribe((res)=>{
-  //       this.userService.getUsers().subscribe((data) => {
-  //         let emitObj = {
-  //           stepFlag :false,
-  //           msg : this.getUserCreatedMessage(createStatus),
-  //           tableData: data
-  //         }
-  //         this.userCreate.emit(emitObj);
-  //       });
-  //     }, (error) => {  });
-  //   }else{
-  //     //Code for Edit user
-  //     let objData: any = {
-  //       id: this.userDataForEdit.id,
-  //       userID: this.userDataForEdit.userID,
-  //       isActive: true,
-  //       salutation: this.firstFormGroup.controls.salutation.value,
-  //       firstName: this.firstFormGroup.controls.firstName.value,
-  //       lastName: this.firstFormGroup.controls.lastName.value,
-  //       emailId: this.firstFormGroup.controls.loginEmail.value,
-  //       userTypeid: 1,
-  //       createBy: 1,
-  //       role: this.userDataForEdit.role,
-  //       userGroup: this.userDataForEdit.userGroup,
-  //       dob: this.firstFormGroup.controls.birthDate.value
-  //     } 
-  //     this.userService.updateUser(objData).subscribe((res)=>{
-  //       let emitObj = {
-  //         stepFlag :false,
-  //         msg : this.getUserCreatedMessage(createStatus)
-  //       }
-  //       this.userCreate.emit(emitObj);
-  //     }, (error) => {  });
-  //   }
-  // }
 
   isAllSelectedForRole(){
     const numSelected = this.selectionForRole.selected.length;

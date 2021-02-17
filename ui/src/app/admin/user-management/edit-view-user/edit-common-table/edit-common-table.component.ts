@@ -5,7 +5,6 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { AccountService } from 'src/app/services/account.service';
-import { EmployeeService } from 'src/app/services/employee.service';
 
 @Component({
   selector: 'app-edit-common-table',
@@ -33,23 +32,22 @@ export class EditCommonTableComponent implements OnInit {
       selectedData: any
     },
     private mdDialogRef: MatDialogRef<EditCommonTableComponent>,
-    private userService: EmployeeService,
     private accountService: AccountService
   ) { }
 
   ngOnInit() {
-    this.dataSource = new MatTableDataSource(this.data.tableData);    
+    this.dataSource = new MatTableDataSource(this.data.tableData);
     setTimeout(() => {
-       this.dataSource.paginator = this.paginator;
-       this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
     });
     this.selectTableRows();
   }
 
-  selectTableRows(){
+  selectTableRows() {
     this.dataSource.data.forEach(row => {
-      let search = this.data.selectedData.filter(item => item.id == (this.data.type=='role' ? row.roleId  : row.id));
-      if(search.length > 0){
+      let search = this.data.selectedData.filter(item => item.id == (this.data.type == 'role' ? row.roleId : row.id));
+      if (search.length > 0) {
         this.selectionData.select(row);
       }
     });
@@ -64,111 +62,96 @@ export class EditCommonTableComponent implements OnInit {
     this.onClose(false);
   }
 
-  onConfirm(){
-    if(this.data.type == 'role'){
-      let mapRoleIds :any = this.data.selectedData.map(resp => resp.id);
-    //let mapRoleData: any = [];
-    
-    // if(mapRoleIds.length > 0){
-    //   mapRoleData = mapRoleIds;
-    // }
-    // else{
-    //   mapRoleData = [0];
-    // }
+  onConfirm() {
+    if (this.data.type == 'role') {
+      let mapRoleIds: any = this.data.selectedData.map(resp => resp.id);
 
-    let roleDeleteObj = {
-      accountId: this.data.accountInfo.id,
-      organizationId: this.data.accountInfo.organizationId,
-      roles: mapRoleIds
-    }
+      let roleDeleteObj = {
+        accountId: this.data.accountInfo.id,
+        organizationId: this.data.accountInfo.organizationId,
+        roles: mapRoleIds
+      }
 
-    let selectedRoleIds = this.selectionData.selected.map(resp => resp.roleId);
-    let roleAddObj = {
-      accountId: this.data.accountInfo.id,
-      organizationId: this.data.accountInfo.organizationId,
-      roles: selectedRoleIds
-    }
-    let updatedRoles = [];
+      let selectedRoleIds = this.selectionData.selected.map(resp => resp.roleId);
+      let roleAddObj = {
+        accountId: this.data.accountInfo.id,
+        organizationId: this.data.accountInfo.organizationId,
+        roles: selectedRoleIds
+      }
+      let updatedRoles = [];
 
-    if(mapRoleIds.length > 0 && selectedRoleIds.length > 0){
-      this.accountService.deleteAccountRoles(roleDeleteObj).subscribe(delResp => {
+      if (mapRoleIds.length > 0 && selectedRoleIds.length > 0) {
+        this.accountService.deleteAccountRoles(roleDeleteObj).subscribe(delResp => {
+          this.accountService.addAccountRoles(roleAddObj).subscribe(addResp => {
+            updatedRoles = [];
+            selectedRoleIds.forEach(element => {
+              updatedRoles.push({ id: element });
+            });
+            this.onClose({ data: updatedRoles, type: this.data.type });
+          })
+        })
+      } else if (mapRoleIds.length == 0 && selectedRoleIds.length > 0) {
         this.accountService.addAccountRoles(roleAddObj).subscribe(addResp => {
           updatedRoles = [];
           selectedRoleIds.forEach(element => {
-            updatedRoles.push({id: element});
+            updatedRoles.push({ id: element });
           });
-          this.onClose({data: updatedRoles, type: this.data.type});    
+          this.onClose({ data: updatedRoles, type: this.data.type });
         })
-      })
-    }else if(mapRoleIds.length == 0 && selectedRoleIds.length > 0){
-      this.accountService.addAccountRoles(roleAddObj).subscribe(addResp => {
-        updatedRoles = [];
-        selectedRoleIds.forEach(element => {
-          updatedRoles.push({id: element});
-        });
-        this.onClose({data: updatedRoles, type: this.data.type});    
-      })
-    }else if(mapRoleIds.length > 0 && selectedRoleIds.length == 0){
-      this.accountService.deleteAccountRoles(roleDeleteObj).subscribe(delResp => {
-        updatedRoles = [];
-        this.onClose({data: updatedRoles, type: this.data.type});    
-      })
-    }else{
-      updatedRoles = [];
-      this.onClose({data: updatedRoles, type: this.data.type});    
-    }
-    }else{
-      //TODO : update account group
-       let accountId= this.data.accountInfo.id;
-       let mapGrpData: any = [];
-       let selectedGrpIds: any = this.selectionData.selected.map(resp => resp.id);
-        if(selectedGrpIds.length > 0)
-        {
-          selectedGrpIds.forEach(element => {
-            mapGrpData.push({
-              accountGroupId: element,
-              accountId: accountId
-            }); 
-          });
-        }
-        else{
-          mapGrpData = [{
-            accountGroupId: 0,
-            accountId: accountId
-          }];  
-        }
-
-        let grpObj = {
-          accounts: mapGrpData 
-        }
-
-      if(selectedGrpIds.length > 0 && this.data.selectedData.length > 0){
-        this.accountService.deleteAccountGroupsForAccount(accountId).subscribe(resp => {
-          this.accountService.addAccountGroups(grpObj).subscribe((data)=>{
-            this.onClose({data: this.selectionData.selected, type: this.data.type});    
-          }, (error) => {  });
+      } else if (mapRoleIds.length > 0 && selectedRoleIds.length == 0) {
+        this.accountService.deleteAccountRoles(roleDeleteObj).subscribe(delResp => {
+          updatedRoles = [];
+          this.onClose({ data: updatedRoles, type: this.data.type });
         })
-      }else if(selectedGrpIds.length > 0 && this.data.selectedData.length == 0){
-        this.accountService.addAccountGroups(grpObj).subscribe((data)=>{
-          this.onClose({data: this.selectionData.selected, type: this.data.type});    
-        }, (error) => {  });
-      }else if(selectedGrpIds.length == 0 && this.data.selectedData.length > 0){
-        this.accountService.deleteAccountGroupsForAccount(accountId).subscribe(resp => {
-          this.onClose({data: this.selectionData.selected, type: this.data.type});    
-        }, (error) => {  });
-      }else{
-        this.onClose({data: this.selectionData.selected, type: this.data.type});    
+      } else {
+        updatedRoles = [];
+        this.onClose({ data: updatedRoles, type: this.data.type });
       }
     }
+    else {
+      let accountId = this.data.accountInfo.id;
+      let mapGrpData: any = [];
+      let selectedGrpIds: any = this.selectionData.selected.map(resp => resp.id);
+      if (selectedGrpIds.length > 0) {
+        selectedGrpIds.forEach(element => {
+          mapGrpData.push({
+            accountGroupId: element,
+            accountId: accountId
+          });
+        });
+      }
+      else {
+        mapGrpData = [{
+          accountGroupId: 0,
+          accountId: accountId
+        }];
+      }
 
-        
-    
-    
+      let grpObj = {
+        accounts: mapGrpData
+      }
+
+      if (selectedGrpIds.length > 0 && this.data.selectedData.length > 0) {
+        this.accountService.deleteAccountGroupsForAccount(accountId).subscribe(resp => {
+          this.accountService.addAccountGroups(grpObj).subscribe((data) => {
+            this.onClose({ data: this.selectionData.selected, type: this.data.type });
+          }, (error) => { });
+        })
+      } else if (selectedGrpIds.length > 0 && this.data.selectedData.length == 0) {
+        this.accountService.addAccountGroups(grpObj).subscribe((data) => {
+          this.onClose({ data: this.selectionData.selected, type: this.data.type });
+        }, (error) => { });
+      } else if (selectedGrpIds.length == 0 && this.data.selectedData.length > 0) {
+        this.accountService.deleteAccountGroupsForAccount(accountId).subscribe(resp => {
+          this.onClose({ data: this.selectionData.selected, type: this.data.type });
+        }, (error) => { });
+      } else {
+        this.onClose({ data: this.selectionData.selected, type: this.data.type });
+      }
+    }
   }
-  
 
-  onReset(){
-    //console.log("Table reset...")
+  onReset() {
     this.selectionData.clear();
     this.selectTableRows();
   }
@@ -177,8 +160,8 @@ export class EditCommonTableComponent implements OnInit {
     this.isAllSelectedForSelectionData()
       ? this.selectionData.clear()
       : this.dataSource.data.forEach((row) =>
-          this.selectionData.select(row)
-        );
+        this.selectionData.select(row)
+      );
   }
 
   isAllSelectedForSelectionData() {
@@ -191,9 +174,8 @@ export class EditCommonTableComponent implements OnInit {
     if (row)
       return `${this.isAllSelectedForSelectionData() ? 'select' : 'deselect'} all`;
     else
-      return `${
-        this.selectionData.isSelected(row) ? 'deselect' : 'select'
-      } row`;
+      return `${this.selectionData.isSelected(row) ? 'deselect' : 'select'
+        } row`;
   }
 
   applyFilter(filterValue: string) {
@@ -201,5 +183,5 @@ export class EditCommonTableComponent implements OnInit {
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
   }
-  
+
 }

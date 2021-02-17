@@ -33,7 +33,8 @@
         <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblFilter || 'Filter' }}">
       </mat-form-field>
     </div>
-    <div>
+    <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+    <div *ngIf='initData.length > 0'>
       <mat-table [dataSource]="dataSource" class="table-items" matSort>
         <ng-container matColumnDef="firstName">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
