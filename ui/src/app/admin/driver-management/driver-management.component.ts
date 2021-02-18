@@ -140,7 +140,7 @@ export class DriverManagementComponent implements OnInit {
     });
 
     this.importDriverFormGroup = this._formBuilder.group({
-      userGroup: [],
+      //userGroup: [],
       uploadFile: [
         undefined,
         [Validators.required, FileValidator.maxContentSize(this.maxSize)]
@@ -213,7 +213,7 @@ export class DriverManagementComponent implements OnInit {
 
   importDrivers(){ 
     this.importDriverPopup = true;
-    this.userGrpName = this.importDriverFormGroup.controls.userGroup.value;
+    this.userGrpName = 'Test User Group' ; //this.importDriverFormGroup.controls.userGroup.value;
     this.validateExcelFileField();
   }
 

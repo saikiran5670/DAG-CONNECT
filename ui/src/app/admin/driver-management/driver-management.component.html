@@ -17,58 +17,18 @@
                     </div>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="15px">
-                    <div style='width:30%' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <div style='width: 60%' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                         <span style='display: flex; align-items: center;'>
                             <mat-icon style="margin-right: 5px;">cloud_upload</mat-icon><a [download]="templateFileName" [href]="templateFileUrl"
                                 style='font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>{{ translationData.lblDownloadaTemplate || 'Download a Template' }}</a>
                         </span>
                         <span>{{ translationData.lblDownloadaTemplateMessage || 'You can enter multiple driver records. New Driver IDs records will be added and existing Driver ID records will be updated. Few fields are mandatory; the rest optional – please see the template for details. All the fields (with the exception of the Driver ID) can be edited later from the Driver Management screen shown below.'}}</span>
                     </div>
-                    <div style='width:70%; border: 1px solid; border-radius: 5px;' fxLayout="column" fxLayoutAlign="end">
-                        <div style='border-bottom: 1px solid; padding: 10px; background: #d8d8d8;' fxLayout="row"
-                            fxLayoutAlign="start">
-                            <div fxLayout="column" fxLayoutAlign="left">
-                                <span>{{ translationData.lblUploadupdateddriverdetailsandselectgroupfordefiningcategory || 'Upload updated driver details and select group for defining category' }}</span>
-                            </div>
-                        </div>
-                        <div style='padding: 20px 10px 10px;' fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="start">
-                            <div style="width: 35%;" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                                <div fxLayout="row" fxLayoutAlign="start">
-                                    <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                                        <mat-label>{{ translationData.lblSelectUserGroupOptional || 'Select User Group (Optional)'}}</mat-label>
-                                        <mat-form-field appearance="outline" class="full-width">
-                                            <mat-select placeholder="{{ translationData.lblSelectusergroup || 'Select User Group' }}" formControlName="userGroup">
-                                                <mat-option *ngFor="let userGrp of userGrpList" [value]="userGrp.name">
-                                                    {{ userGrp.name }}
-                                                </mat-option>
-                                            </mat-select>
-                                        </mat-form-field>
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="width: 65%;" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <div style='width: 90%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="end">
+                        <div style='padding: 30px;' fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="start">
+                            <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                                 <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                                     <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                                        <!-- <mat-label>Upload updated Excel file <span class='mandatoryColor'>*</span></mat-label>
-                                        <mat-form-field appearance="outline" class="full-width">
-                                            <mat-select placeholder="Upload Updated Excel file" formControlName="uploadFile" required>
-                                                <mat-option *ngFor="let userGrp of userGrpList" [value]="userGrp.name">
-                                                    {{userGrp.name}}
-                                                </mat-option>
-                                            </mat-select>
-                                        </mat-form-field>
-                                        <mat-error *ngIf="importDriverFormGroup.get('uploadFile').hasError('required')">
-                                            Upload File is required
-                                        </mat-error> -->
-                                        <!-- <mat-form-field appearance="outline" class="full-width">
-                                            <div class="myfilebrowser">
-                                                <input placeholder="Upload Updated Excel file" matInput [(ngModel)]="myfilename" readonly name="memberContactNo"  formControlName="uploadFile" required />
-                                                <button mat-flat-button color="primary">
-                                                Browse
-                                                </button>
-                                            <input type="file" #UploadFileInput id="fileUpload" (change)="fileChangeEvent($event)" name="fileUpload"/>
-                                            </div>                                    
-                                        </mat-form-field> -->
                                         <mat-label>{{ translationData.lblUploadUpdatedExcelFile || 'Upload updated Excel file' }} <span class='mandatoryColor'>*</span></mat-label>
                                         <mat-form-field appearance="outline">
                                             <ngx-mat-file-input (change)="addfile($event)" [accept]="'.xlsx'" formControlName="uploadFile" placeholder="Upload Excel File" ></ngx-mat-file-input>
@@ -81,17 +41,11 @@
                                             The total size must not exceed {{importDriverFormGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{importDriverFormGroup.get('uploadFile')?.getError('maxContentSize').actualSize
                                             | byteFormat}}).
                                         </mat-error>
-                                        <!-- <div class="form-group">
-                                            <label for="file">Choose File</label>
-                                            <input type="file"
-                                                id="file"
-                                                (change)="handleFileInput($event.target.files)">
-                                        </div> -->
                                     </div>
                                     <div fxLayout="column" fxLayoutAlign="space-around" class='margin-bottom-sm'>
-                                        <button style='color: #fff;' [disabled]="!importDriverFormGroup.valid" [ngStyle]="{'margin-top': importDriverFormGroup.get('uploadFile').hasError('required') ? '5px' : '28px' }" mat-flat-button color="primary"
+                                        <button style='color: #fff;' [disabled]="!importDriverFormGroup.valid" [ngStyle]="{'margin-top': importDriverFormGroup.get('uploadFile').hasError('required') ? '9px' : '29px' }" mat-flat-button color="primary"
                                             (click)="importDrivers()">
-                                            <mat-icon>keyboard_arrow_up</mat-icon> {{ translationData.lblImport || 'Import' }}
+                                            <mat-icon>keyboard_arrow_up</mat-icon> {{ translationData.lblImportDrivers || 'Import Driver(s)' }}
                                         </button>
                                     </div>
                                 </div>
@@ -101,11 +55,10 @@
                 </div>
             </form>
         </mat-card>
-
-        <mat-card *ngIf='importDriverPopup' style='background: transparent; border: 1px solid;' class='mat-elevation-z margin-bottom-xlg'>
+        <mat-card *ngIf='importDriverPopup' style='border: 1px solid #d0d0d0;' class='mat-elevation-z margin-bottom-xlg'>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
                 <div style='width:95%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span class='custom-font'>{{ translationData.lblImportedFileDetails || 'Imported File Details' }}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblImportedFileDetails || 'Imported File Details' }}</span>
                 </div>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
                     <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
@@ -128,19 +81,12 @@
                 </div>
             </div>
         </mat-card>
-
         <mat-card class='mat-elevation-z'>
             <div fxLayout="row" fxLayoutAlign="space-between">
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span class='custom-font'>{{ translationData.lblDriverDetails || 'Driver Details' }}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverDetails || 'Driver Details' }}</span>
                 </div>
             </div>
-
-            <!-- <div class="example-header">
-                <mat-form-field>
-                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-                </mat-form-field>
-            </div> -->
             <div fxLayout="row" fxLayoutAlign="space-between">
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <mat-form-field>
@@ -158,7 +104,6 @@
                     </button>
                 </div>
             </div>
-
             <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
             <div *ngIf='initData.length > 0'>
                 <mat-table [dataSource]="dataSource" matSort>
@@ -192,15 +137,12 @@
                             </button>
                         </mat-cell>
                     </ng-container>
-
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumns;">
                     </mat-row>
                 </mat-table>
-
                 <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
             </div>
-
         </mat-card>
     </div>
     <div *ngIf='editFlag'>
