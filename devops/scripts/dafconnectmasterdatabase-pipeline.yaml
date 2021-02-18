@@ -47,4 +47,5 @@ jobs:
       workspacePath: $(PGDAFCONNECTMASTERDATABASESCRIPTS)
       targetPlatform: postgresql
       additionalArguments: --debug --environment $(ENVIRONMENT)
+      targetVersion: v1.00
  
