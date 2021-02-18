@@ -18,16 +18,6 @@ export class VehicleService {
 
   }
 
-  private handleError(errResponse: HttpErrorResponse) {
-    if (errResponse.error instanceof ErrorEvent) {
-      console.error('Client side error', errResponse.error.message);
-    } else {
-      console.error('Server side error', errResponse);
-    }
-    return throwError(
-      'There is a problem with the service. Please try again later.'
-    );
-  }
 
   getVehicleGroup(data): Observable<any[]> {
     const headers = {
@@ -72,7 +62,7 @@ export class VehicleService {
       .pipe(catchError(this.handleError));
   }
 
-  
+
   createVehicleGroup(data): Observable<any> {
     const headers = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -110,5 +100,12 @@ export class VehicleService {
       .post<any>(`${this.vehicleServiceUrl}/delete?roleId=${roleId}`, data)
       .pipe(catchError(this.handleError));
   }
+  private handleError(errResponse: HttpErrorResponse) {
+    console.error('Error : ', errResponse.error);
+    return throwError(
+      errResponse
+    );
+}
+
 
 }
