@@ -71,7 +71,7 @@ export class OrganisationDetailsComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 23 //-- for ssb/org details
+      menuId: 23 //-- for org details
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data) => {
       this.processTranslation(data);

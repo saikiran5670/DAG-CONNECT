@@ -157,16 +157,11 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
 
       this.vehService.createVehicleGroup(JSON.stringify(objData)).subscribe(
         (res) => {
-          // this.vehService.getVehicleGroupByID().subscribe(
-          //   (data) => {
           this.backToPage.emit({
             editFlag: false,
             editText: 'create',
             gridData: objData,
           });
-          //   },
-          //   (error) => {}
-          // );
         },
         (error) => {
           console.error(error);

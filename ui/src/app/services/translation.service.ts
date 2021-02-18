@@ -13,15 +13,6 @@ export class TranslationService {
         this.translationUrl = config.getSettings("foundationServices").translationRESTServiceURL;
     }
 
-    getTranslationLabel(labelList:any, langCode: string): Observable<any[]> {
-        return this.httpClient
-            .get<any[]>(
-                //`${this.translationUrl}/GetLabelTranslation?LabelList=${labelList}&languageCode=${langCode}`
-                `${this.translationUrl}/GetLabelTranslation`
-                )
-            .pipe(catchError(this.handleError));
-    }
-
     getMenuTranslations(dataObj: any): Observable<any[]> {
         const headers = {
             headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
