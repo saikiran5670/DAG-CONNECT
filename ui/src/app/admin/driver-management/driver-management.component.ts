@@ -48,6 +48,7 @@ export class DriverManagementComponent implements OnInit {
   translationData: any;
   localStLanguage: any;
   type: any = '';
+  showLoadingIndicator: any;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService,
     private _snackBar: MatSnackBar, private translationService: TranslationService, private accountService: AccountService) { 
@@ -155,6 +156,7 @@ export class DriverManagementComponent implements OnInit {
   }
 
   loadUsersData() {
+    this.showLoadingIndicator = true;
     let obj: any = {
       accountId: 0,
       organizationId: this.accountOrganizationId,
@@ -173,6 +175,7 @@ export class DriverManagementComponent implements OnInit {
     }
 
     this.accountService.getAccountDetails(obj).subscribe((usrlist)=>{
+      this.hideloader();
       this.initData = this.makeRoleAccountGrpList(usrlist);
       this.accountService.getAccountGroupDetails(accountGrpObj).subscribe((grpData)=>{
         this.dataSource = new MatTableDataSource(this.initData);
@@ -316,6 +319,11 @@ export class DriverManagementComponent implements OnInit {
 
   onCloseMsg(){
     this.grpTitleVisible = false;
+  }
+
+  hideloader() {
+    // Setting display of spinner
+      this.showLoadingIndicator=false;
   }
 
 }

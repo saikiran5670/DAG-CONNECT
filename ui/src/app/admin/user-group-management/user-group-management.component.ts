@@ -75,6 +75,7 @@ export class UserGroupManagementComponent implements OnInit {
   inputText: any;
   translationData: any;
   localStLanguage = JSON.parse(localStorage.getItem("language"));
+  showLoadingIndicator: any;
 
   ngAfterViewInit() {
     // this.dataSource.paginator = this.paginator;
@@ -259,7 +260,9 @@ export class UserGroupManagementComponent implements OnInit {
   }
 
   loadUserGroupData(orgid) {
-      this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp)=>{
+    this.showLoadingIndicator = true;
+    this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp)=>{
+      this.hideloader();  
       this.products = grp;
       this.initData = grp;
       this.onUpdateDataSource(grp);
@@ -406,6 +409,11 @@ export class UserGroupManagementComponent implements OnInit {
       tableTitle: tableTitle
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
+  }
+
+  hideloader() {
+    // Setting display of spinner
+      this.showLoadingIndicator=false;
   }
 
 }

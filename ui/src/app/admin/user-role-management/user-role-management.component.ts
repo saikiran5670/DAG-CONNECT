@@ -21,7 +21,7 @@ export class UserRoleManagementComponent implements OnInit {
   editFlag: boolean = false;
   duplicateFlag: boolean = false;
   viewFlag: boolean = false;
-  initData: any;
+  initData: any = [];
   rowsData: any;
   createStatus: boolean;
   titleText: string;
@@ -31,6 +31,7 @@ export class UserRoleManagementComponent implements OnInit {
   organizationId: number;
   isGlobal: boolean;
   localStLanguage = JSON.parse(localStorage.getItem("language"));
+  showLoadingIndicator: any;
 
   constructor(private translationService: TranslationService, private roleService: RoleService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar) {
     this.defaultTranslation();
@@ -106,6 +107,7 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   loadInitData() {
+    this.showLoadingIndicator = true;
      let objData = { 
         Organizationid : this.organizationId,
         IsGlobal: this.isGlobal
@@ -113,7 +115,10 @@ export class UserRoleManagementComponent implements OnInit {
     
     this.roleService.getUserRoles(objData).subscribe((data) => {
       //this.initData = this.getNewTagData(data); //no createdDate present in API response
+      if(data)
+        this.hideloader();
       this.initData = data; //temporary 
+      
       setTimeout(()=>{
         this.dataSource = new MatTableDataSource(this.initData);
         this.dataSource.paginator = this.paginator;
@@ -262,5 +267,10 @@ export class UserRoleManagementComponent implements OnInit {
 
   onClose(){
     this.grpTitleVisible = false;
+  }
+
+  hideloader() {
+    // Setting display of spinner
+      this.showLoadingIndicator=false;
   }
 }

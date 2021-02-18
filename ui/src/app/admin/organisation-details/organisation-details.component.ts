@@ -24,6 +24,7 @@ export class OrganisationDetailsComponent implements OnInit {
   translationData: any;
   initData: any = [];
   localStLanguage: any;
+  showLoadingIndicator: any;
 
   constructor(
     private translationService: TranslationService,
@@ -80,12 +81,15 @@ export class OrganisationDetailsComponent implements OnInit {
   }
 
   loadOrgData() {
+    this.showLoadingIndicator = true;
     this.orgService.getOrganizationDetails(this.organizationId).subscribe(
       (_data) => {
+        this.hideloader();
         this.initData = _data;
         this.updateDataSource(this.initData);
       },
       (error) => {
+        this.hideloader();
         console.error(' error : ' + error);
       }
     );
@@ -170,6 +174,11 @@ export class OrganisationDetailsComponent implements OnInit {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
+  }
+
+  hideloader() {
+    // Setting display of spinner
+      this.showLoadingIndicator=false;
   }
 
 }

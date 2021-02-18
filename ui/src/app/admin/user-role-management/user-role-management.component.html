@@ -27,15 +27,16 @@
                     </mat-form-field>
                 </div>
             </div>
-            <div fxLayout="row" class='margin-top-xlg' *ngIf='!initData'>
+            <!-- <div fxLayout="row" class='margin-top-xlg' *ngIf='!initData'>
                 <p>
                     No record found.<br><br>
 
                     Please click on 'New User Role' button and create new role
                 </p>
-            </div>
-            <div fxLayout="row" class='margin-top-xlg' *ngIf='initData'>
-                <div fxLayout="column" class='full-width'>
+            </div> -->
+            <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+            <div fxLayout="row" class='margin-top-xlg'>
+                <div fxLayout="column" class='full-width' *ngIf='initData.length > 0'>
                     <mat-table [dataSource]="dataSource" matSort>
                         <!-- <ng-container matColumnDef="newTag">
                             <mat-header-cell *matHeaderCellDef></mat-header-cell>
@@ -86,6 +87,8 @@
                     </mat-table>
                     <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
                 </div>
+
+                <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
             </div>
         </mat-card>
     </div>

@@ -78,6 +78,7 @@
       </mat-table>
       <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
     </div>
+    <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
   </mat-card>
   <app-edit-view-user *ngIf='editFlag || viewFlag' [defaultSetting]="defaultSetting" [fromEdit]="editFlag ? 'edit' : 'view'" [translationData]='translationData' [isCreateFlag]='isCreateFlag' [selectedPreference]='selectedPreference' [accountInfoData]='userDataForEdit' [allRoleData]='roleData' [allUserGrpData]='userGrpData' [selectedVehGrpData]='vehGrpData' [selectedRoleData]='selectedRoleData' [selectedUserGrpData]='selectedUserGrpData' (userCreate)="checkCreation($event)"></app-edit-view-user>
   <app-new-user-step *ngIf='stepFlag' [defaultSetting]="defaultSetting" [translationData]='translationData' [isCreateFlag]='isCreateFlag' [userDataForEdit]='userDataForEdit' [roleData]='roleData' [userGrpData]='userGrpData' [vehGrpData]='vehGrpData' (userCreate)="checkCreation($event)"></app-new-user-step>

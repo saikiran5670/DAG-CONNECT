@@ -64,6 +64,7 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
       </mat-table>
       <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
     </div>
+    <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
   </mat-card>
   <app-create-edit-user-group *ngIf='createStatus || editFlag || viewDisplayFlag' [createStatus]="createStatus" [viewDisplayFlag]="viewDisplayFlag" [editFlag]="editFlag" [translationData]="translationData" [selectedRowData]="selectedRowData" (backToPage)='onBackToPage($event)'></app-create-edit-user-group>
   <!-- <app-confirm-step *ngIf='editFlag' [editFlag]= 'editFlag' [translationData]='translationData' [selectedRoleData]='editSampleData' [selectedVehGrpData]='editSampleData' (grpCreate)="checkCreation($event)"></app-confirm-step> -->

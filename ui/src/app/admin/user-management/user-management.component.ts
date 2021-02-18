@@ -40,6 +40,7 @@ export class UserManagementComponent implements OnInit {
   accountOrganizationId: any = 0;
   localStLanguage: any;
   dialogRef: MatDialogRef<CommonTableComponent>;
+  showLoadingIndicator: any;
 
   constructor(
     private dialogService: ConfirmDialogService,
@@ -270,6 +271,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   loadUsersData(){
+    this.showLoadingIndicator = true;
     let obj: any = {
       accountId: 0,
       organizationId: this.accountOrganizationId,
@@ -281,6 +283,7 @@ export class UserManagementComponent implements OnInit {
     this.accountService.getAccountDetails(obj).subscribe((usrlist)=>{
       this.filterFlag = true;
       //this.initData = usrlist;
+      this.hideloader();
       this.initData = this.makeRoleAccountGrpList(usrlist);
       this.dataSource = new MatTableDataSource(this.initData);
       setTimeout(()=>{
@@ -411,6 +414,11 @@ export class UserManagementComponent implements OnInit {
       tableTitle: this.translationData.lblUserDetails || 'User Details'
     }
     this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
+  }
+
+  hideloader() {
+    // Setting display of spinner
+      this.showLoadingIndicator=false;
   }
 
 }
