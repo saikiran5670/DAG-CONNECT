@@ -35,6 +35,10 @@ namespace net.atos.daf.ct2.authenticationservice
                 AccountEntity.AccountIdentity accIdentity = accountIdentityManager.Login(account).Result;
                 if(accIdentity !=null)
                 {
+                    if(accIdentity.AccountId>0)
+                    {
+                       response.AccountId = accIdentity.AccountId;
+                    }
                     if(accIdentity.AccountToken!=null)
                     {
                         AccountToken accToken = new AccountToken();
