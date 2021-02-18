@@ -146,12 +146,12 @@ export class AppComponent {
 
     this.dataInterchangeService.generalSettingInterface$.subscribe(data => {
       if(data){
-        this.localStLanguage.id = JSON.parse(localStorage.getItem("language")).id;
-        this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
-        if(this.localStLanguage.id == this.accountInfo.accountPreference.languageId){
+        // this.localStLanguage.id = JSON.parse(localStorage.getItem("language")).id;
+        // this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+        // if(this.localStLanguage.id == this.accountInfo.accountPreference.languageId){
           this.onLanguageChange(data.languageId);
           this.appForm.get('languageSelection').setValue(data.languageId);
-        }
+        // }
       }
     })
 
