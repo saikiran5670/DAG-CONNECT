@@ -26,14 +26,17 @@ namespace net.atos.daf.ct2.portalservice
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var authservice = Configuration["ServiceConfiguration:authservice"];
+            var accountservice = Configuration["ServiceConfiguration:accountservice"];
+            
             services.AddControllers();
             services.AddGrpcClient<Greeter.GreeterClient>(o =>
             {
-                o.Address = new Uri("https://localhost:5051");
+                o.Address = new Uri(authservice);
             });   
             services.AddGrpcClient<AuthService.AuthServiceClient>(o =>
             {
-                o.Address = new Uri("https://localhost:5051");
+                o.Address = new Uri(accountservice);
             });   
         }
 

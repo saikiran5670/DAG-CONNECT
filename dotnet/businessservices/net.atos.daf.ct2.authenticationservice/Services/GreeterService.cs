@@ -7,10 +7,10 @@ using Microsoft.Extensions.Logging;
 
 namespace net.atos.daf.ct2.authenticationservice
 {
-    public class GreeterTestService : Greeter.GreeterBase
+    public class GreeterService : Greeter.GreeterBase
     {
-        private readonly ILogger<GreeterTestService> _logger;
-        public GreeterTestService(ILogger<GreeterTestService> logger)
+        private readonly ILogger<GreeterService> _logger;
+        public GreeterService(ILogger<GreeterService> logger)
         {
             _logger = logger;
         }
