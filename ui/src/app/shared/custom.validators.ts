@@ -1,5 +1,4 @@
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
-import { EmployeeService } from '../services/employee.service';
 
 export class CustomValidators {
   static emailDomain(domainName: string) {
@@ -83,30 +82,30 @@ export class CustomValidators {
     };
   }
 
-  static checkForCurrentPassword(
-    currentPassword: string,
-    password: string,
-    userService: EmployeeService
-  ) {
-    password;
-    userService.changePassword().subscribe((data) => {
-      password = data[0].currentPassword;
-    });
-    return (formGroup: FormGroup) => {
-      const CURRENT_PASSWORD = formGroup.controls[currentPassword];
+  // static checkForCurrentPassword(
+  //   currentPassword: string,
+  //   password: string,
+  //   userService: EmployeeService
+  // ) {
+  //   password;
+  //   userService.changePassword().subscribe((data) => {
+  //     password = data[0].currentPassword;
+  //   });
+  //   return (formGroup: FormGroup) => {
+  //     const CURRENT_PASSWORD = formGroup.controls[currentPassword];
 
-      if (CURRENT_PASSWORD.errors && !CURRENT_PASSWORD.errors.wrongPassword) {
-        return;
-      }
+  //     if (CURRENT_PASSWORD.errors && !CURRENT_PASSWORD.errors.wrongPassword) {
+  //       return;
+  //     }
 
-      if (CURRENT_PASSWORD.value != password) {
-        CURRENT_PASSWORD.setErrors({ wrongPassword: true });
-      } else {
-        CURRENT_PASSWORD.setErrors(null);
-      }
-      return;
-    };
-  }
+  //     if (CURRENT_PASSWORD.value != password) {
+  //       CURRENT_PASSWORD.setErrors({ wrongPassword: true });
+  //     } else {
+  //       CURRENT_PASSWORD.setErrors(null);
+  //     }
+  //     return;
+  //   };
+  // }
 
   static specialCharValidationForName(name) {
     return (formGroup: FormGroup) => {

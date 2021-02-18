@@ -4,8 +4,6 @@ import * as data from './shared/menuData.json';
 import { DataInterchangeService } from './services/data-interchange.service';
 import { TranslationService } from './services/translation.service';
 import { DeviceDetectorService } from 'ngx-device-detector';
-import { EmployeeService } from './services/employee.service';
-import { Organization, Role } from 'src/app/authentication/login/login.component'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DOCUMENT } from '@angular/common';
 
@@ -127,12 +125,8 @@ export class AppComponent {
   }
 
 
-  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, private userService: EmployeeService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any) {
+  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any) {
     this.defaultTranslation();
-    // this.userService.getDefaultSetting().subscribe((data)=>{
-   //   this.language = data['language'];
-    //   console.log(this.language);
-    // });
     this.landingPageForm = this.fb.group({
       'organization': [''],
       'role': ['']

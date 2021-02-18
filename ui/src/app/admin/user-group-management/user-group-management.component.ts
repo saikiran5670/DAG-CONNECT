@@ -1,7 +1,6 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-
 import { AlertService } from 'src/app/services/alert.service';
 import { MatSort } from '@angular/material/sort';
 import {
@@ -10,16 +9,11 @@ import {
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
-
-import { EmployeeService } from 'src/app/services/employee.service';
-
 import { AccountGroup, Product, UserGroup,GetAccountGrp } from 'src/app/models/users.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Observable, forkJoin } from 'rxjs';
 import { TranslationService } from '../../services/translation.service';
 import { AccountService } from '../../services/account.service';
 import { VehicleService } from '../../services/vehicle.service';
-import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
 import { UserDetailTableComponent } from '../user-management/new-user-step/user-detail-table/user-detail-table.component';
 
 @Component({
@@ -29,7 +23,6 @@ import { UserDetailTableComponent } from '../user-management/new-user-step/user-
 })
 export class UserGroupManagementComponent implements OnInit {
   OrgId:number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-  // OrgId:number = 32;
   dialogRef: MatDialogRef<UserDetailTableComponent>;
   getAccountGrp: GetAccountGrp  = {
     accountGroupId : null,
@@ -40,9 +33,6 @@ export class UserGroupManagementComponent implements OnInit {
 }
 
   accountgrp: AccountGroup = {
-    // id: 1  ,
-    // name: '',
-    // description: '',
     accountGroupId : 0,
     organizationId : this.OrgId,
     accountId : 0,
@@ -93,7 +83,6 @@ export class UserGroupManagementComponent implements OnInit {
 
   constructor(
     private alertService: AlertService,
-    private userService: EmployeeService,
     private dialogService: ConfirmDialogService,
     private _snackBar: MatSnackBar,
     private translationService: TranslationService,
@@ -270,14 +259,10 @@ export class UserGroupManagementComponent implements OnInit {
   }
 
   loadUserGroupData(orgid) {
-    // this.userService.getUserGroup(orgid, true).subscribe((grp) => {
       this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp)=>{
       this.products = grp;
       this.initData = grp;
       this.onUpdateDataSource(grp);
-      // this.dataSource = new MatTableDataSource(grp);
-      // this.dataSource.paginator = this.paginator;
-      // this.dataSource.sort = this.sort;
     });
   }
   onUpdateDataSource(updatedData: any) {
@@ -313,42 +298,13 @@ export class UserGroupManagementComponent implements OnInit {
 
           //check if its a new or update request
           if (options.button2Text == 'Update') {
-            // this.userService
-            //   .updateUserGroup(this.usrgrp)
-            //   .subscribe((result) => {
-            //     console.log(result);
-            //   });
             // this.loadUserGroupData(1);
           }
           else if (res.type == 'create') {
-            // // this.userService.createUserGroup(this.usrgrp).subscribe((d) => {
-            // this.accountService.createAccountGroup(this.accountgrp).subscribe((d) => {
-            //   this.loadUserGroupData(this.accountgrp);
-            // });
+            
           }
           else if (res.type == 'createContinue') {
-            // this.userService.createUserGroup(this.usrgrp).subscribe((d) => {
-            //   this.loadUserGroupData(1);
-            //   let objData = { 
-            //     "roleId": 0,
-            //     "organization_Id": 0,
-            //     "accountId": 0,
-            //     "is_Active": true
-            //   };
-            //   forkJoin(
-            //     this.userService.getUserRoles(objData),
-            //     this.userService.getVehicleGroupByID()
-            //   ).subscribe(
-            //     (_data) => {
-            //       //console.log(_data)
-            //       this.roleData = _data[0];
-            //       this.vehGrpData = _data[1];
-            //       this.stepFlag = true;
-            //       this.newGroupName = res.inputValue;
-            //     },
-            //     (error) => { }
-            //   );
-            // });
+            
           }
         }
       });
@@ -358,7 +314,6 @@ export class UserGroupManagementComponent implements OnInit {
       this.dialogService.DeleteModelOpen(options, name);
       this.dialogService.confirmedDel().subscribe((res) => {
         if (res) {
-          // this.userService.deleteUserGroup(item.usergroupId, item.organizationId).subscribe((d) => {
           this.accountService.deleteAccountGroup(item).subscribe((d) => {
               console.log(d);
               this.openSnackBar('Item delete', 'dismiss');

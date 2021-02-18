@@ -12,11 +12,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { forkJoin } from 'rxjs';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { EmployeeService } from 'src/app/services/employee.service';
 import { SelectionModel } from '@angular/cdk/collections';
-import { TranslationService } from '../../../../app/services/translation.service';
 import { VehicleGroup } from 'src/app/models/vehicle.model';
-import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { Product, UserGroup,AccountGroup, GetAccountGrp } from 'src/app/models/users.model';
 import { AccountService } from '../../../services/account.service';
 
@@ -129,11 +126,8 @@ export class CreateEditUserGroupComponent implements OnInit {
 
   UserGroupForm: FormGroup;
   constructor(private _formBuilder: FormBuilder,
-    private userService: EmployeeService,
-    private translationService: TranslationService,
     private _snackBar: MatSnackBar,
-    private accountService: AccountService,
-    private dialogService: ConfirmDialogService) { }
+    private accountService: AccountService) { }
 
 
   ngOnInit(): void {
@@ -185,8 +179,7 @@ export class CreateEditUserGroupComponent implements OnInit {
       "roleId": 0,
       "name": ""
     }
-    // this.userService.getUsers().subscribe((usrlist) => {
-      // console.log("--------getDataOld---",usrlist);
+
     this.accountService.getAccountDetails(getUserData).subscribe((usrlist) => {
       usrlist = this.makeRoleAccountGrpList(usrlist);
       this.updatedRowData = usrlist;
@@ -200,7 +193,6 @@ export class CreateEditUserGroupComponent implements OnInit {
         this.onReset();
       }
     });
-  // });
 }
 
   onCancel() {
@@ -258,21 +250,7 @@ export class CreateEditUserGroupComponent implements OnInit {
     this.selectionForVehGrp.selected.forEach(element => {
       accountList.push({ "accountGroupId" : (element.accountGroups.length > 0 ? element.accountGroups[0].id : 0 )  , "accountId": element.id})
     });
-
-    // mockData added for API
-    // let randomMockId = Math.random();
-    // let id = randomMockId;
-    // this.usrgrp = {
-    //   organizationId: 1,
-    //   name: this.UserGroupForm.controls.userGroupName.value,
-    //   isActive: true,
-    //   id: id,
-    //   usergroupId: id,
-    //   vehicles: "05",
-    //   users: "04",
-    //   userGroupDescriptions: this.UserGroupForm.controls.userGroupDescription.value,
-    // }
-
+    
     //-----------------------------------------
     this.createaccountgrp = {
       id: 0,
@@ -295,8 +273,6 @@ export class CreateEditUserGroupComponent implements OnInit {
         accountCount : 0,
       }
 
-      // this.userService.updateUserGroup(this.usrgrp).subscribe((result) => {
-        // this.userService.getUserGroup(1, true).subscribe((grp) => {
         this.accountService.updateAccountGroup(this.createaccountgrp).subscribe((d) => {
         this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp) => {
 
@@ -330,12 +306,6 @@ export class CreateEditUserGroupComponent implements OnInit {
         this.editFlag = false;
         this.viewDisplayFlag = false;
 
-
-          // this.products = grp;
-          // this.initData = grp;
-          // this.dataSource = new MatTableDataSource(grp);
-          // this.dataSource.paginator = this.paginator;
-          // this.dataSource.sort = this.sort;
           this.backToPage.emit({ FalseFlag: false, editText: 'create', gridData: grp, successMsg: this.userCreatedMsg });
         });
       }, (error) => { 
@@ -390,17 +360,6 @@ export class CreateEditUserGroupComponent implements OnInit {
   }
 
   editFunc() {
-    // this.userService
-    // .updateUserGroup(this.usrgrp)
-    // .subscribe((result) => {
-    //   console.log(result);
-    // });
-    // this.loadUserGroupData(1);
-    // this.loadUsersData();
-    // this.newUserGroupName = this.UserGroupForm.controls.userGroupName.value;
-    // this.enteredUserGroupDescription = this.UserGroupForm.controls.userGroupDescription.value;
-
-
     this.createStatus = false;
     this.editFlag = false;
     this.editUserContent = true;

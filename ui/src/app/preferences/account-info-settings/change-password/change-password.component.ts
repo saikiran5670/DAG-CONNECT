@@ -2,7 +2,6 @@ import { Component, EventEmitter, HostListener, Inject, OnInit, Output } from '@
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { EmployeeService } from 'src/app/services/employee.service';
 import { CustomValidators } from '../../../shared/custom.validators';
 import { AccountService } from '../../../services/account.service';
 
@@ -19,14 +18,15 @@ export class ChangePasswordComponent implements OnInit {
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     translationData: any,
     accountInfo: any
-  },private mdDialogRef: MatDialogRef<ChangePasswordComponent>, public router: Router, public fb: FormBuilder, private userService: EmployeeService, private accountService: AccountService) {
+  },private mdDialogRef: MatDialogRef<ChangePasswordComponent>, public router: Router, public fb: FormBuilder, private accountService: AccountService) {
     this.changePasswordForm = this.fb.group({
      // 'currentPassword': [null, Validators.compose([Validators.required])],
       'newPassword': [null, Validators.compose([Validators.required, Validators.minLength(8)])],
       'confirmPassword': [null, Validators.compose([Validators.required])],
     },{
-      validator : [CustomValidators.mustMatchNewAndConfirmPassword('newPassword', 'confirmPassword'), CustomValidators.validatePassword('newPassword')//, CustomValidators.checkForCurrentPassword('currentPassword', this.password, this.userService)
-    ]
+      validator : [
+        CustomValidators.mustMatchNewAndConfirmPassword('newPassword', 'confirmPassword'), CustomValidators.validatePassword('newPassword')
+      ]
     });
     
     if(data.translationData.lblcharactersmin)

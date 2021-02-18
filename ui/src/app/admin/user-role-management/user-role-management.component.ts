@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { EmployeeService } from 'src/app/services/employee.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -33,7 +32,7 @@ export class UserRoleManagementComponent implements OnInit {
   isGlobal: boolean;
   localStLanguage = JSON.parse(localStorage.getItem("language"));
 
-  constructor(private translationService: TranslationService, private roleService: RoleService, private userService: EmployeeService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar) {
+  constructor(private translationService: TranslationService, private roleService: RoleService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar) {
     this.defaultTranslation();
   }
 

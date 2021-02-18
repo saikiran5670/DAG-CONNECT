@@ -14,7 +14,7 @@ export class VehicleService {
 
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.vehicleServiceUrl = config.getSettings("foundationServices").vehicleGroupServiceUrl;
+    this.vehicleServiceUrl = config.getSettings("foundationServices").vehicleGroupRESTServiceUrl;
 
   }
 

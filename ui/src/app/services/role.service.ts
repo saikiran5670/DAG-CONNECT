@@ -45,9 +45,6 @@ export class RoleService {
 
   checkUserRoleExist(UserRoleInput: any): Observable<any[]> {
     return this.httpClient
-      //.get<any[]>(`${this.roleServiceUrl}/CheckRoleNameExist?roleName=${UserRoleInput}`)
-
-      //Mock API to check if role already exists
       .get<any[]>(`${this.roleServiceUrl}/roles?roleName=${UserRoleInput}`)
       .pipe(catchError(this.handleError));
   }

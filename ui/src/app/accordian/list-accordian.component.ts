@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Employee } from '../models/users.model';
-import { EmployeeService } from '../services/employee.service';
+//import { EmployeeService } from '../services/employee.service';
 export interface PeriodicElement {
   name: string;
   position: number;
@@ -35,7 +35,9 @@ export class ListAccordianComponent implements OnInit {
   employees: Employee[];
   filteredEmployees: Employee[];
   private _searchTerm: string;
-  constructor(private _empService:EmployeeService) { }
+  constructor(
+    //private _empService:EmployeeService
+  ) { }
   get searchTerm(): string {
     return this._searchTerm;
   }
@@ -49,10 +51,10 @@ export class ListAccordianComponent implements OnInit {
     );
   }
   ngOnInit(): void {
-    this._empService.getEmployees().subscribe((empList) => {
-      this.employees = empList;
-      this.filteredEmployees = this.employees;
-    });
+    // this._empService.getEmployees().subscribe((empList) => {
+    //   this.employees = empList;
+    //   this.filteredEmployees = this.employees;
+    // });
     //console.log(this.filteredEmployees);
   }
 

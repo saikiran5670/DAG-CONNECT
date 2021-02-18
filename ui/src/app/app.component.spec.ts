@@ -70,8 +70,6 @@ afterEach(() => {
 
   // //Checking if we can call object from JSON file
   // it('should create the app', () => {
-  //   // let newData = data.foundationServices.translationServiceUrl;
-  //   // console.log("----newData",newData);
 
   //   expect(component).toBeTruthy();
   // });
