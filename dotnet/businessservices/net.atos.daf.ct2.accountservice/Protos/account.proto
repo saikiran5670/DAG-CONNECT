@@ -18,7 +18,7 @@ service AccountService {
   // Account Preference Mthod
   rpc CreatePreference (AccountPreference) returns (AccountPreferenceResponse);
   rpc UpdatePreference (AccountPreference) returns (AccountPreferenceResponse);
-  rpc DeletePreference (AccountPreferenceFilter) returns (AccountPreferenceResponse);
+  rpc DeletePreference (IdRequest) returns (AccountPreferenceResponse);
   rpc GetPreference (AccountPreferenceFilter) returns (AccountPreferenceDataList);
 
   // Access Relationship
@@ -34,6 +34,7 @@ service AccountService {
   rpc GetAccountGroup (AccountGroupFilterRequest) returns (AccountGroupDataList);
   rpc GetAccountGroupDetail (AccountGroupDetailsRequest) returns (AccountGroupDetailsDataList);
   rpc AddAccountToGroups(AccountGroupRefRequest) returns (AccountGroupRefResponce);
+  rpc DeleteAccountFromGroups(IdRequest) returns (AccountGroupResponce);
   
 
   // Add Role
@@ -51,6 +52,7 @@ enum AccountType
     enum Responcecode{
       Success = 0;
       Failed = 1;
+      Conflict = 2;
     }
 // common response 
 message AccountResponse {
@@ -221,12 +223,12 @@ message AccountGroupRequest{
   string Description= 5;
   int32 GroupRefCount=6;
   repeated AccountGroupRef GroupRef = 7;
+  bool Exists=8;   
 }
 message AccountGroupResponce{
-  int32 Id = 1;
-  Responcecode code=2;
-  string message = 3;  
-  //repeated AccountGroupRef GroupRef = 4;
+  Responcecode code=1;  
+  string message = 2; 
+  AccountGroupRequest AccountGroup=3;   
 }
 message AccountGroupDataList
     {
@@ -235,13 +237,11 @@ message AccountGroupDataList
       repeated AccountGroupRequest AccountGroupRequest= 3;      
     }
 message AccountGroupFilterRequest{
-  int32 Id=1;
-  //ObjectType ObjectType = 2;
-  //GroupType GroupType = 3;
+  int32 Id=1;  
   bool GroupRef = 2;
-  bool GroupRefCount = 3;
-  //FunctionEnum FunctionEnum = 6;
+  bool GroupRefCount = 3;  
   int32 OrganizationId = 4;
+  int32 AccountId =5;
 }
 message AccountGroupDetailsRequest {
   int32 AccountId=1;  
@@ -256,6 +256,7 @@ message AccountGroupDetail {
   string AccountGroupName=2;    
   int32 VehicleCount = 3;
   int32 AccountCount = 4;
+  int32 OrganizationId = 5;
 }
 message AccountGroupDetailsDataList {
   repeated AccountGroupDetail AccountGroupDetail= 1;  
