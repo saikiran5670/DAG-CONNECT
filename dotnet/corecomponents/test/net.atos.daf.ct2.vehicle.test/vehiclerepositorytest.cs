@@ -216,14 +216,14 @@ namespace net.atos.daf.ct2.vehicle.test
             Assert.IsTrue(result);
         }
 
-        [TestCategory("Unit-Test-Case")]
-        [Description("Test for delete vehicle group")]
-        [TestMethod]
-        public void DeleteGroup()
-        {
-            var result = _groupRepository.Delete(7).Result;
-            Assert.IsTrue(result == true);
-        }
+        // [TestCategory("Unit-Test-Case")]
+        // [Description("Test for delete vehicle group")]
+        // [TestMethod]
+        // public void DeleteGroup()
+        // {
+        //     var result = _groupRepository.Delete(7).Result;
+        //     Assert.IsTrue(result == true);
+        // }
 
         [TestCategory("Unit-Test-Case")]
         [Description("Test for get organization group details")]

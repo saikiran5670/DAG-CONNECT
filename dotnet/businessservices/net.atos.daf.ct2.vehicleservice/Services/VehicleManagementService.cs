@@ -323,31 +323,31 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
         }
 
-        public override Task<VehicleGroupResponce> DeleteGroup(VehicleGroupIdRequest request, ServerCallContext context)
-        {
-            try
-            {
-                bool IsVehicleGroupDeleted = _groupManager.Delete(request.GroupId).Result;
+        // public override Task<VehicleGroupResponce> DeleteGroup(VehicleGroupIdRequest request, ServerCallContext context)
+        // {
+        //     try
+        //     {
+        //         bool IsVehicleGroupDeleted = _groupManager.Delete(request.GroupId).Result;
 
-                _logger.LogInformation("Delete group method in vehicle service called.");
+        //         _logger.LogInformation("Delete group method in vehicle service called.");
 
-                return Task.FromResult(new VehicleGroupResponce
-                {
-                    Message = "Vehicle group deleted with id:- " + request.GroupId,
-                    Code = Responcecode.Success
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error in vehicle service delete group method.");
+        //         return Task.FromResult(new VehicleGroupResponce
+        //         {
+        //             Message = "Vehicle group deleted with id:- " + request.GroupId,
+        //             Code = Responcecode.Success
+        //         });
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         _logger.LogError("Error in vehicle service delete group method.");
 
-                return Task.FromResult(new VehicleGroupResponce
-                {
-                    Message = "Exception :-" + ex.Message,
-                    Code = Responcecode.Failed
-                });
-            }
-        }
+        //         return Task.FromResult(new VehicleGroupResponce
+        //         {
+        //             Message = "Exception :-" + ex.Message,
+        //             Code = Responcecode.Failed
+        //         });
+        //     }
+        // }
 
         public async override Task<VehicleGroupRefResponce> GetGroupDetails(GroupFilterRequest request, ServerCallContext context)
         {
