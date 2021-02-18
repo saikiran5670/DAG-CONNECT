@@ -45,6 +45,7 @@ export class AppComponent {
   localStLanguage: any;
   isFullScreen= false;
   public userPreferencesFlag : boolean = false;
+  appForm: FormGroup;
 
   private pagetTitles = {
     livefleet: 'live fleet',
@@ -142,10 +143,32 @@ export class AppComponent {
       this.getTranslationLabels();
       this.getAccountInfo();
     });
+
+    this.dataInterchangeService.userNameInterface$.subscribe(data => {
+      if(data){
+        this.userFullName = `${data.salutation} ${data.firstName} ${data.lastName}`;
+      }
+    })
+
+    this.dataInterchangeService.generalSettingInterface$.subscribe(data => {
+      if(data){
+        this.localStLanguage.id = JSON.parse(localStorage.getItem("language")).id;
+        this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+        if(this.localStLanguage.id == this.accountInfo.accountPreference.languageId){
+          this.onLanguageChange(data.languageId);
+          this.appForm.get('languageSelection').setValue(data.languageId);
+        }
+      }
+    })
+
     if(!this.isLogedIn){
       this.getTranslationLabels();
       this.getAccountInfo();
     }
+
+    this.appForm = this.fb.group({
+      'languageSelection': [this.localStLanguage ? this.localStLanguage.id : this.accountInfo.accountPreference.languageId]
+    });
 
     // this.dataInterchangeService.orgRoleInterface$.subscribe(resp => {
     //   this.userFullName = `${resp.accountDetail.salutation} ${resp.accountDetail.firstName} ${resp.accountDetail.lastName}`;
@@ -306,6 +329,7 @@ export class AppComponent {
       if(!this.localStLanguage){
         let languageObj = {id: filterLang[0].id, code: preferencelanguageCode}
         localStorage.setItem("language", JSON.stringify(languageObj));
+        this.localStLanguage = JSON.parse(localStorage.getItem("language"));
       }
 
       let translationObj = {
@@ -334,7 +358,6 @@ export class AppComponent {
       //this.isLogedIn = true;
     }
     this.fileUploadedPath = 'assets/images/john.png';
-
 }
 
 // ngAfterViewInit (){
@@ -444,7 +467,7 @@ private setPageTitle() {
 
    onLanguageChange(value){
     console.log(value);
-    if(this.accountInfo.accountPreference.languageId != value){
+    if(this.localStLanguage.id != value){
       let languageCode = '';
       let languageId = 1;
       let filterLang = this.languages.filter(item => item.id == value )

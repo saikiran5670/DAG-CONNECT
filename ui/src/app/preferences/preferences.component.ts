@@ -105,20 +105,4 @@ export class PreferencesComponent implements OnInit {
     //console.log("process translationData:: ", this.translationData)
   }
 
-  userPreferencesSetting(event){
-    this.userPreferencesFlag  = !this.userPreferencesFlag;
-    if(this.userPreferencesFlag){
-      let currentComponentUrl : String;
-      currentComponentUrl = this.route.routerState.snapshot.url
-      if(currentComponentUrl == "/dashboard")
-        this.selectedIndex = 1;
-      else if(currentComponentUrl.substr(0, 8) == "/report/" )
-        this.selectedIndex = 2;
-      else if(currentComponentUrl.substr(0, 11) == "/livefleet/")
-        this.selectedIndex = 3;
-      else
-        this.selectedIndex = 0;
-    }
-  }
-
 }
