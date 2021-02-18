@@ -14,6 +14,7 @@ import { VehicleService } from 'src/app/services/vehicle.service';
   styleUrls: ['./edit-vin-setting.component.less'],
 })
 export class EditVINSettingComponent implements OnInit {
+  breadcumMsg: any = '';
   @Input() translationData: any;
   @Input() vinData: any;
   @Input() viewMode: any;
@@ -37,7 +38,13 @@ export class EditVINSettingComponent implements OnInit {
     });
     this.makeVehicleData();
     this.getAssociatedgroups();
+    this.breadcumMsg = this.getBreadcum();
   }
+
+  getBreadcum(){
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblVehicleManagement ? this.translationData.lblVehicleManagement : "Vehicle Management"} / ${this.translationData.lblVehicleDetails ? this.translationData.lblVehicleDetails : 'Vehicle Details'}`;
+  }
+
   getAssociatedgroups(){
     let groups=[];
     var str;

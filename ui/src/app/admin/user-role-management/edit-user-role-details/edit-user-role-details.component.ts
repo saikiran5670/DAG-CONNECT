@@ -13,6 +13,7 @@ import { CustomValidators } from 'src/app/shared/custom.validators';
   styleUrls: ['./edit-user-role-details.component.less']
 })
 export class EditUserRoleDetailsComponent implements OnInit {
+  breadcumMsg: any = '';
   loggedInUser : string = 'admin';
   userRoleFormGroup: FormGroup;
   @Output() backToPage = new EventEmitter<any>();
@@ -68,6 +69,11 @@ export class EditUserRoleDetailsComponent implements OnInit {
     }, (error) => { });
 
     this.doneFlag = this.createStatus ? false : true;
+    this.breadcumMsg = this.getBreadcum();
+  }
+
+  getBreadcum(){
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblUserRoleManagement ? this.translationData.lblUserRoleManagement : "User Role Management"} / ${this.translationData.lblUserRoleDetails ? this.translationData.lblUserRoleDetails : 'User Role Details'}`;
   }
 
   onCancel() {

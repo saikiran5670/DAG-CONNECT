@@ -334,10 +334,11 @@
       <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 2: {{ translationData.lblSelectUserRole || 'Select User Role' }}</ng-template>
       <mat-card>
         <mat-card-content>
-          <div fxLayout="row">
-            <div fxLayout="column">
-              <mat-form-field>
-                <input matInput (keyup)="applyFilterForRole($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+              <mat-form-field appearance="outline">
+                  <input matInput (keyup)="applyFilterForRole($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                  <span matPrefix><mat-icon>search</mat-icon></span>
               </mat-form-field>
             </div>
           </div>
@@ -402,10 +403,11 @@
       <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 3: {{ translationData.lblSelectUserGroup || 'Select User Group' }}</ng-template>
       <mat-card>
         <mat-card-content>
-          <div fxLayout="row">
-            <div fxLayout="column">
-              <mat-form-field>
-                <input matInput (keyup)="applyFilterForUserGrp($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+              <mat-form-field appearance="outline">
+                  <input matInput (keyup)="applyFilterForUserGrp($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                  <span matPrefix><mat-icon>search</mat-icon></span>
               </mat-form-field>
             </div>
           </div>

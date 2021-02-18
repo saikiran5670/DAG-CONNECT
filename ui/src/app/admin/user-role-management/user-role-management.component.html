@@ -29,8 +29,8 @@
                 </div>
             </div>
             <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
-            <div fxLayout="row" class='margin-top-xlg'>
-                <div fxLayout="column" class='full-width' *ngIf='initData.length > 0'>
+            <div *ngIf='initData.length > 0' fxLayout="row" class='margin-top-xlg'>
+                <div fxLayout="column" class='full-width'>
                     <mat-table [dataSource]="dataSource" matSort>
                         <!-- <ng-container matColumnDef="newTag">
                             <mat-header-cell *matHeaderCellDef></mat-header-cell>
