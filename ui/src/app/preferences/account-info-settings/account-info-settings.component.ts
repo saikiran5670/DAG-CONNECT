@@ -8,6 +8,7 @@ import { CustomValidators } from 'src/app/shared/custom.validators';
 import { AccountService } from '../../services/account.service';
 import { TranslationService } from '../../services/translation.service';
 import { forkJoin } from 'rxjs';
+import { DataInterchangeService } from 'src/app/services/data-interchange.service';
 
 @Component({
   selector: 'app-account-info-settings',
@@ -75,7 +76,7 @@ export class AccountInfoSettingsComponent implements OnInit {
     return date > now;
   }
 
-  constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private userService: EmployeeService, private accountService: AccountService, private translationService: TranslationService) { }
+  constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private userService: EmployeeService, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService) { }
 
   ngOnInit(): void {
     this.accountSettingsForm = this._formBuilder.group({
@@ -253,8 +254,10 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.editAccountSettingsFlag = false;
       this.isSelectPictureConfirm = true;
       this.setDefaultAccountInfo();
+      this.updateLocalStorageAccountInfo("accountsettings", data);
       let editText = 'AccountSettings';
       this.successMsgBlink(this.getEditMsg(editText));
+      
     });
   }
 
@@ -289,6 +292,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       //this.loadGeneralSettingData();
       this.filterDefaultGeneralSetting(data);
       this.setDefaultGeneralSetting();
+      this.updateLocalStorageAccountInfo("generalsettings", data);
       this.editGeneralSettingsFlag = false;
       let editText = 'GeneralSettings';
       this.successMsgBlink(this.getEditMsg(editText));
@@ -301,6 +305,22 @@ export class AccountInfoSettingsComponent implements OnInit {
 
   onResetGeneralSettings(){
     this.setDefaultGeneralSetting();
+  }
+
+  updateLocalStorageAccountInfo(type: string, data: any){
+    let accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+    if(type.toLocaleLowerCase() == 'accountsettings'){
+      accountInfo.accountDetail = data;
+      this.dataInterchangeService.getUserName(data);
+    }
+    else if(type.toLocaleLowerCase() == 'generalsettings'){
+      if(accountInfo.accountPreference.languageId != data.languageId){
+          this.dataInterchangeService.getUserGeneralSettings(data);
+      }
+      accountInfo.accountPreference = data;
+    }
+    localStorage.setItem("accountInfo", JSON.stringify(accountInfo));
+
   }
 
   onchangePictureClick(){

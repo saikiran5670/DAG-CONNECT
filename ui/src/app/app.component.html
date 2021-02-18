@@ -7,31 +7,35 @@
             <div class="logo">
                 <img class='margin-left-sm' src="assets/connected-logo-big.png">
             </div>
-            <div class='toolbarRightContainer full-width'>
-                <div fxLayoutAlign="start center" class='half-width titleText'>{{ currentTitle | titlecase }}
+            
+                <div class='toolbarRightContainer full-width'>
+                    <form [formGroup]="appForm" class='toolbarRightContainer full-width'>
+                    <div fxLayoutAlign="start center" class='half-width titleText'>{{ currentTitle | titlecase }}
+                    </div>
+                    <div fxLayoutAlign="end" class='full-width'>
+                        <a class="navIcon fullScreen">
+                            <mat-icon aria-hidden="false" aria-label="fullscreen" (click)="isFullScreen ? exitFullScreen() : fullScreen()"
+                                matTooltip="{{isFullScreen ? 'Exit Full Screen' : 'Full Screen'}}">{{ isFullScreen ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+                        </a>
+                        <!-- <img class="navIcon countryflag" mat-card-avatar src="{{fileUploadedPath}}"> -->
+                        <a class="navIcon">
+                            <mat-icon aria-hidden="false" aria-label="notifications" matTooltip="Notifications">
+                                notifications_none</mat-icon>
+                            <span class="badge">0</span>
+                        </a>
+                        <!-- TODO : language selection(dropdown) -->
+                        <mat-select formControlName="languageSelection" class="matSelect" (selectionChange)="onLanguageChange($event.value)">
+                            <mat-option *ngFor="let lang of languages" [value]="lang.id" matTooltip="{{lang.name}}">
+                                &nbsp;{{lang.name}}
+                            </mat-option>
+                        </mat-select>
+                        <!-- <a class="navIcon">
+                            <mat-icon aria-hidden="false" aria-label="setting" matTooltip="Setting">settings</mat-icon>
+                        </a> -->
+                    </div>
+                </form>
                 </div>
-                <div fxLayoutAlign="end" class='full-width'>
-                    <a class="navIcon fullScreen">
-                        <mat-icon aria-hidden="false" aria-label="fullscreen" (click)="isFullScreen ? exitFullScreen() : fullScreen()"
-                            matTooltip="{{isFullScreen ? 'Exit Full Screen' : 'Full Screen'}}">{{ isFullScreen ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
-                    </a>
-                    <!-- <img class="navIcon countryflag" mat-card-avatar src="{{fileUploadedPath}}"> -->
-                    <a class="navIcon">
-                        <mat-icon aria-hidden="false" aria-label="notifications" matTooltip="Notifications">
-                            notifications_none</mat-icon>
-                        <span class="badge">0</span>
-                    </a>
-                    <!-- TODO : language selection(dropdown) -->
-                    <mat-select class="matSelect" (selectionChange)="onLanguageChange($event.value)" [value]="localStLanguage ? localStLanguage.id : accountInfo.accountPreference.languageId">
-                        <mat-option *ngFor="let lang of languages" [value]="lang.id" >
-                            &nbsp;{{lang.name}}
-                        </mat-option>
-                    </mat-select>
-                    <!-- <a class="navIcon">
-                        <mat-icon aria-hidden="false" aria-label="setting" matTooltip="Setting">settings</mat-icon>
-                    </a> -->
-                </div>
-            </div>
+            
         </mat-toolbar-row>
     </mat-toolbar>
     <div class="dashboardMenu" id="sideNavConteiner" [ngClass]="menuCollapsed ? 'menuCollapsed' : ''" *ngIf="isLogedIn">

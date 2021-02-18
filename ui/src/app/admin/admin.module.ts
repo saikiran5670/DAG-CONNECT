@@ -22,7 +22,6 @@ import { ConsentOptComponent } from './driver-management/consent-opt/consent-opt
 import { EditDriverDetailsComponent } from './driver-management/edit-driver-details/edit-driver-details.component';
 import { UserRoleManagementComponent } from './user-role-management/user-role-management.component';
 import { EditUserRoleDetailsComponent } from './user-role-management/edit-user-role-details/edit-user-role-details.component';
-import { IdentityGrpcService } from '../services/identity-grpc.service';
 import { CreateEditUserGroupComponent } from './user-group-management/create-edit-user-group/create-edit-user-group.component';
 import { EditViewUserComponent } from './user-management/edit-view-user/edit-view-user.component';
 import { EditCommonTableComponent } from './user-management/edit-view-user/edit-common-table/edit-common-table.component';
@@ -64,7 +63,7 @@ import { VehicleManagementComponent } from '../admin/vehicle-management/vehicle-
     ImageCropperModule,
     DirectivesModule
     ],
-    providers: [ConfirmDialogService, EmployeeService, UserListResolver, IdentityGrpcService, AccountService,VehicleService],
+    providers: [ConfirmDialogService, EmployeeService, UserListResolver, AccountService, VehicleService],
     schemas: [
       CUSTOM_ELEMENTS_SCHEMA
     ],
