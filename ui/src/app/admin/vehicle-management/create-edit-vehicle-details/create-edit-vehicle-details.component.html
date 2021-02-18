@@ -26,6 +26,7 @@
                     <mat-error *ngIf="!vehicleFormGroup.get('vehicleGroupName').hasError('required')  && vehicleFormGroup.get('vehicleGroupName').hasError('whitespace')">
                      Vehicle Group Name cannot contain only whitespace
                     </mat-error>
+                    <mat-error *ngIf="duplicateMsg">{{translationData.lblVehicleGroupalreadyexistsPleasechooseadifferentname || 'Duplicate Vehicle Group Name' }}</mat-error>
                 </div>
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>

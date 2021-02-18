@@ -6,18 +6,21 @@ import {
 } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/internal/operators';
-import { EmployeeService } from '../employee.service';
+//import { EmployeeService } from '../employee.service';
 
 @Injectable()
 export class UserListResolver implements Resolve<any[] | string> {
-  constructor(private userService: EmployeeService) {}
+  constructor(
+    //private userService: EmployeeService
+    ) {}
 
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<any[] | string> {
-    return this.userService
-      .getUsers()
-      .pipe(catchError((err: string) => of(err)));
+    return;
+    // return this.userService
+    //   .getUsers()
+    //   .pipe(catchError((err: string) => of(err)));
   }
 }

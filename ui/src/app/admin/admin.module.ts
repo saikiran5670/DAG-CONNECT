@@ -8,7 +8,6 @@ import { ChartsModule } from 'ng2-charts';
 import { UserGroupManagementComponent } from './user-group-management/user-group-management.component';
 import { OrganisationDetailsComponent } from './organisation-details/organisation-details.component';
 import { ConfirmDialogService } from '../shared/confirm-dialog/confirm-dialog.service';
-import { EmployeeService } from '../services/employee.service';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { DeleteDialogComponent } from '../shared/confirm-dialog/delete-dialog.component';
 import { UserManagementComponent } from './user-management/user-management.component';
@@ -63,7 +62,7 @@ import { VehicleManagementComponent } from '../admin/vehicle-management/vehicle-
     ImageCropperModule,
     DirectivesModule
     ],
-    providers: [ConfirmDialogService, EmployeeService, UserListResolver, AccountService, VehicleService],
+    providers: [ConfirmDialogService, UserListResolver, AccountService, VehicleService],
     schemas: [
       CUSTOM_ELEMENTS_SCHEMA
     ],

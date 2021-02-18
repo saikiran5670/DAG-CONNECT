@@ -32,7 +32,7 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
   @Input() groupInfo: any;
   @Input() viewGroupMode: boolean;
   vehicleFormGroup: FormGroup;
-  orgId: number;
+  orgId: number;duplicateMsg:boolean;
   displayColumnHeaders: string[] = [
     'All',
     'Vehicle name',
@@ -132,6 +132,7 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
     });
   }
   onCreate() {
+    this.duplicateMsg = false;
     if (this.createStatus) {
       // create func
       let objData = {
@@ -169,6 +170,9 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
         },
         (error) => {
           console.error(error);
+          if(error.status == 409){
+            this.duplicateMsg = true;
+          }
         }
       );
     } else {
@@ -204,6 +208,9 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
         },
         (error) => {
           console.error(error);
+          if(error.status == 409){
+            this.duplicateMsg = true;
+          }
         }
       );
     }

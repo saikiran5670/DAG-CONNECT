@@ -25,7 +25,7 @@ export class EmployeeService {
   constructor(private httpClient: HttpClient, private config: ConfigService) {
     this.userServiceUrl = config.getSettings("foundationServices").userServiceUrl;
     this.userGroupServiceUrl = config.getSettings("foundationServices").userGroupServiceUrl;
-    this.vehicleGroupServiceUrl = config.getSettings("foundationServices").vehicleGroupServiceUrl;
+    this.vehicleGroupServiceUrl = config.getSettings("foundationServices").vehicleGroupRESTServiceUrl;
     this.roleServiceUrl = config.getSettings("foundationServices").roleServiceUrl;
     this.roleRESTServiceURL = config.getSettings("foundationServices").roleRESTServiceURL;
   }
@@ -143,9 +143,6 @@ export class EmployeeService {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
    return this.httpClient
-      // .post<any>(`${this.userGroupServiceUrl}/AddUserGroup`, data, headers)
-
-      //mock call for createUserGroup
       .post<any>(`${this.userGroupServiceUrl}/GetUserGroups`, data, headers)
       .pipe(catchError(this.handleError));
   }
@@ -155,9 +152,6 @@ export class EmployeeService {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
    return this.httpClient
-   // .put<any>(`${this.userGroupServiceUrl}/UpdateUserGroup`, data, headers)
-
-   //mock call for update user group
       .put<any>(`${this.userGroupServiceUrl}/GetUserGroups/${data.usergroupId}`, data, headers)
       .pipe(catchError(this.handleError));
   }

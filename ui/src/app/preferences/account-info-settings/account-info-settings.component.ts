@@ -2,12 +2,10 @@ import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
-import { EmployeeService } from 'src/app/services/employee.service';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { AccountService } from '../../services/account.service';
 import { TranslationService } from '../../services/translation.service';
-import { forkJoin } from 'rxjs';
 import { DataInterchangeService } from 'src/app/services/data-interchange.service';
 
 @Component({
@@ -76,7 +74,7 @@ export class AccountInfoSettingsComponent implements OnInit {
     return date > now;
   }
 
-  constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private userService: EmployeeService, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService) { }
+  constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService) { }
 
   ngOnInit(): void {
     this.accountSettingsForm = this._formBuilder.group({
@@ -152,33 +150,6 @@ export class AccountInfoSettingsComponent implements OnInit {
         this.editGeneralSettingsFlag = false;
         }, (error) => {  });
     }, (error) => {  });
-
-    // forkJoin(
-    //   this.accountService.getAccountPreference(this.accountId),
-    //   this.translationService.getPreferences(languageCode),
-    //   // this.translationService.getTranslationsForDropdowns('EN-GB','language'),
-    //   // this.translationService.getTranslationsForDropdowns('EN-GB','timezone'),
-    //   // this.translationService.getTranslationsForDropdowns('EN-GB','unit'),
-    //   // this.translationService.getTranslationsForDropdowns('EN-GB','currency'),
-    //   // this.translationService.getTranslationsForDropdowns('EN-GB','dateformat'),
-    //   // this.translationService.getTranslationsForDropdowns('EN-GB','timeformat'),
-    //   // this.translationService.getTranslationsForDropdowns('EN-GB','vehicledisplay'),
-    //   // this.translationService.getTranslationsForDropdowns('EN-GB','landingpagedisplay')
-    // ).subscribe((data) => {
-    //   this.accountPreferenceData = data[0][0];
-    //   let dropDownData = data[1];
-    //   this.languageDropdownData = dropDownData.language;
-    //   this.timezoneDropdownData = dropDownData.timezone;
-    //   this.unitDropdownData = dropDownData.unit;
-    //   this.currencyDropdownData = dropDownData.currency;
-    //   this.dateFormatDropdownData = dropDownData.dateformat;
-    //   this.timeFormatDropdownData = dropDownData.timeformat;
-    //   this.vehicleDisplayDropdownData = dropDownData.vehicledisplay;
-    //   this.landingPageDisplayDropdownData = dropDownData.landingpagedisplay;
-    //   this.filterDefaultGeneralSetting(this.accountPreferenceData);
-    //   this.setDefaultGeneralSetting();
-    //   this.editGeneralSettingsFlag = false;
-    //   }, (error) => {  });
   }
 
   setDefaultAccountInfo(){

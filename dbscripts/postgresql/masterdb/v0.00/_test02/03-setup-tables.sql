@@ -1778,6 +1778,7 @@ CREATE TABLE if not exists master.accountsession
     account_id integer NOT NULL,
     created_at bigint NOT NULL
 )
+TABLESPACE pg_default;
 
 ALTER TABLE  master.accountsession 
     OWNER to pgdbmadmin;

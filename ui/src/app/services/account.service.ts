@@ -108,9 +108,6 @@ export class AccountService {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
    return this.httpClient
-      // .post<any>(`${this.userGroupServiceUrl}/AddUserGroup`, data, headers)
-
-      //mock call for createUserGroup
       .post<any>(`${this.accountServiceUrl}/accountgroup/create`, data, headers)
       .pipe(catchError(this.handleError));
   }
@@ -127,9 +124,6 @@ export class AccountService {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
    return this.httpClient
-      // .post<any>(`${this.userGroupServiceUrl}/AddUserGroup`, data, headers)
-
-      //mock call for createUserGroup
       .post<any>(`${this.accountServiceUrl}/accountgroup/update`, data, headers)
       .pipe(catchError(this.handleError));
   }
@@ -139,9 +133,6 @@ export class AccountService {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
    return this.httpClient
-      // .post<any>(`${this.userGroupServiceUrl}/AddUserGroup`, data, headers)
-
-      //mock call for createUserGroup
       .put<any>(`${this.accountServiceUrl}/accountgroup/delete?id=${data.id}`, data, headers)
       .pipe(catchError(this.handleError));
   }

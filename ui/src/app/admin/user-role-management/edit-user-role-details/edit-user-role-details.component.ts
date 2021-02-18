@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { EmployeeService } from 'src/app/services/employee.service';
 import { RoleService } from 'src/app/services/role.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 
@@ -39,7 +38,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   //access: any = '';
   //disabled : boolean = true;
 
-  constructor(private _formBuilder: FormBuilder, private roleService: RoleService, private userService: EmployeeService) { }
+  constructor(private _formBuilder: FormBuilder, private roleService: RoleService) { }
 
   ngAfterViewInit() {}
 

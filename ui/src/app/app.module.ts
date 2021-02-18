@@ -7,7 +7,6 @@ import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { ChartsModule } from 'ng2-charts';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { EmployeeService } from './services/employee.service';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { AlertsComponent } from './configuration/alerts/alerts.component';
 import { ConfigLoader, ConfigModule } from '@ngx-config/core';
@@ -20,8 +19,8 @@ import { RoleService } from './services/role.service';
 import { OrganizationService } from './services/organization.service';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
-  return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
-   // return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
+   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
+  //return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
 }
 
 @NgModule({
@@ -46,7 +45,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     PreferencesModule
     //RouterModule.forRoot(appRoute)
   ],
-  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}, EmployeeService, DataInterchangeService, AccountService, RoleService, OrganizationService],
+  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}, DataInterchangeService, AccountService, RoleService, OrganizationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
