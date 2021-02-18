@@ -11,7 +11,7 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
 
 <div class='bgtrans'>
   <mat-card class='mat-elevation-z' *ngIf='!createStatus && !editFlag && !viewDisplayFlag'>
-    <div class="groupDetails" fxLayout="row" fxLayoutAlign="space-between">
+    <div class="groupDetails margin-bottom-sm" fxLayout="row" fxLayoutAlign="space-between">
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGroupDetails || 'Group Details' }} -
           ({{ dataSource.filteredData.length }})</span>
@@ -22,11 +22,13 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
       </div>
     </div>
 
-
-    <div class="example-header">
-      <mat-form-field>
-        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblFilter || 'Filter' }}">
-      </mat-form-field>
+    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+      <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <mat-form-field appearance="outline">
+            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+            <span matPrefix><mat-icon>search</mat-icon></span>
+        </mat-form-field>
+      </div>
     </div>
 
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>

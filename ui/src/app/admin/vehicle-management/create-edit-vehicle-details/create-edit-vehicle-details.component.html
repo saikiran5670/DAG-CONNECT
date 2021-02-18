@@ -70,10 +70,11 @@
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectVehicleListOptional || 'Select Vehicle List (Optional)' }}</span>
             </div>
         </div>
-        <div *ngIf='createStatus' fxLayout="row" fxLayoutAlign="start start" class='margin-top-xlg'>
-            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <mat-form-field>
-                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblFilter || 'Filter' }}">
+        <div *ngIf='createStatus' fxLayout="row" fxLayoutAlign="start start" class='margin-bottom-sm'>
+            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                <mat-form-field appearance="outline">
+                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                    <span matPrefix><mat-icon>search</mat-icon></span>
                 </mat-form-field>
             </div>
         </div>

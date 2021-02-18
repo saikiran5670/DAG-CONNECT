@@ -13,7 +13,7 @@
       <!-- <app-common-filter *ngIf="true" [initData]='initData' [translationData]='translationData'></app-common-filter> -->
       <app-common-filter *ngIf="filterFlag" (filterValues)="getFilteredValues($event)" [initData]='initData' [translationData]='translationData'></app-common-filter>
     </div>  
-    <div fxLayout="row" fxLayoutAlign="space-between">
+    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <!-- <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserDetails }}</span> -->
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserDetails || 'All User Details' }}</span>
@@ -27,11 +27,13 @@
         </button>
       </div>
     </div>
-    <div>
-      <mat-form-field>
-        <!-- <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch }}"> -->
-        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblFilter || 'Filter' }}">
-      </mat-form-field>
+    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+      <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <mat-form-field appearance="outline">
+            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+            <span matPrefix><mat-icon>search</mat-icon></span>
+        </mat-form-field>
+      </div>
     </div>
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
     <div *ngIf='initData.length > 0'>
