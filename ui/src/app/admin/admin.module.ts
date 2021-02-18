@@ -14,7 +14,6 @@ import { UserManagementComponent } from './user-management/user-management.compo
 import { UserGroupStepComponent } from './user-group-management/user-group-step/user-group-step.component';
 import { ConfirmStepComponent } from './user-group-management/user-group-step/confirm-step/confirm-step.component';
 import { NewUserStepComponent } from './user-management/new-user-step/new-user-step.component';
-import { UserListResolver } from '../services/resolver/user-list-resolver.service';
 import { SummaryStepComponent } from './user-management/new-user-step/summary-step/summary-step.component';
 import { DriverManagementComponent } from './driver-management/driver-management.component';
 import { ConsentOptComponent } from './driver-management/consent-opt/consent-opt.component';
@@ -62,7 +61,7 @@ import { VehicleManagementComponent } from '../admin/vehicle-management/vehicle-
     ImageCropperModule,
     DirectivesModule
     ],
-    providers: [ConfirmDialogService, UserListResolver, AccountService, VehicleService],
+    providers: [ConfirmDialogService, AccountService, VehicleService],
     schemas: [
       CUSTOM_ELEMENTS_SCHEMA
     ],

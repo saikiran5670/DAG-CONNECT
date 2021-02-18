@@ -29,30 +29,21 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
       </mat-form-field>
     </div>
 
-    <div class="example-container">
-      <!-- <mat-paginator class="table-paginator" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
+    <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+    <div *ngIf='initData.length > 0'>
       <mat-table [dataSource]="dataSource" matSort>
-        <!-- <ng-container matColumnDef="organizationId" >
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Org ID </mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{row.organizationId}} </mat-cell>
-      </ng-container> -->
-
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblGroupName || 'Group Name'}}</mat-header-cell>
           <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
         </ng-container>
-
         <ng-container matColumnDef="vehicles">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicles || 'Vehicles'}}</mat-header-cell>
           <mat-cell *matCellDef="let row"><span [ngClass]="row.vehicleCount !=0 ? 'row-hover' : '' " (click)="row.vehicleCount !=0 ? onVehicleClick(row) : ''">{{row.vehicleCount}}</span></mat-cell>
         </ng-container>
-
         <ng-container matColumnDef="users">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Users'}}</mat-header-cell>
           <mat-cell *matCellDef="let row" > <span [ngClass]="row.accountCount !=0 ? 'row-hover' : '' " (click)="row.accountCount !=0 ? onUserClick(row) : ''">{{row.accountCount}}</span> </mat-cell>
         </ng-container>
-
-
         <ng-container matColumnDef="action">
           <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action'}}</mat-header-cell>
           <mat-cell *matCellDef="let row">
@@ -67,15 +58,12 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
             </button>
           </mat-cell>
         </ng-container>
-
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns;">
         </mat-row>
       </mat-table>
       <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
-      
     </div>
-
   </mat-card>
   <app-create-edit-user-group *ngIf='createStatus || editFlag || viewDisplayFlag' [createStatus]="createStatus" [viewDisplayFlag]="viewDisplayFlag" [editFlag]="editFlag" [translationData]="translationData" [selectedRowData]="selectedRowData" (backToPage)='onBackToPage($event)'></app-create-edit-user-group>
   <!-- <app-confirm-step *ngIf='editFlag' [editFlag]= 'editFlag' [translationData]='translationData' [selectedRoleData]='editSampleData' [selectedVehGrpData]='editSampleData' (grpCreate)="checkCreation($event)"></app-confirm-step> -->

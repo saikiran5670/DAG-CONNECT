@@ -58,7 +58,7 @@ export class UserGroupManagementComponent implements OnInit {
   roleData: any;
   vehGrpData: any;
   products: any[] = [];
-  initData: any;
+  initData: any = [];
   titleText: string;
   rowsData: any;
   createStatus: boolean = false;

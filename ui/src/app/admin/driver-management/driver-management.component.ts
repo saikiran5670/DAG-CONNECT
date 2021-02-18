@@ -2,7 +2,6 @@ import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core'
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { EmployeeService } from 'src/app/services/employee.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { ConsentOptComponent } from './consent-opt/consent-opt.component';
@@ -11,6 +10,8 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
 import { FileValidator } from 'ngx-material-file-input';
 import * as XLSX from 'xlsx';
 import { TranslationService } from '../../services/translation.service';
+import { AccountService } from '../../services/account.service';
+import { AccountGroup } from 'src/app/models/users.model';
 
 @Component({
   selector: 'app-driver-management',
@@ -18,11 +19,14 @@ import { TranslationService } from '../../services/translation.service';
   styleUrls: ['./driver-management.component.less']
 })
 export class DriverManagementComponent implements OnInit {
+  grpTitleVisible : boolean = false;
+  userCreatedMsg : any;
+  accountOrganizationId: any = 0;
   userGrpList: any = [];
   dataSource: any;
-  initData: any;
+  initData: any = [];
   importDriverPopup: boolean = false;
-  displayedColumns: string[] = ['usergroupId', 'name', 'isActive', 'action'];
+  displayedColumns: string[] = ['firstName','emailId','roles','accountGroups','action'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   importDriverFormGroup: FormGroup;
@@ -42,10 +46,10 @@ export class DriverManagementComponent implements OnInit {
   arrayBuffer: any;
   filelist: any;
   translationData: any;
-  localStLanguage = JSON.parse(localStorage.getItem("language"));
+  localStLanguage: any;
 
-  constructor(private _formBuilder: FormBuilder, private userService: EmployeeService, private dialog: MatDialog, private dialogService: ConfirmDialogService,
-    private _snackBar: MatSnackBar, private translationService: TranslationService) { 
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService,
+    private _snackBar: MatSnackBar, private translationService: TranslationService, private accountService: AccountService) { 
       this.defaultTranslation();
   }
 
@@ -118,6 +122,8 @@ export class DriverManagementComponent implements OnInit {
   }
 
   ngOnInit(){
+    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -130,7 +136,7 @@ export class DriverManagementComponent implements OnInit {
 
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
-      this.loadUserGroupData();
+      this.loadUsersData();
     });
 
     this.importDriverFormGroup = this._formBuilder.group({
@@ -147,14 +153,62 @@ export class DriverManagementComponent implements OnInit {
     //console.log("process translationData:: ", this.translationData)
   }
 
-  loadUserGroupData() {
-    this.userService.getUserGroup(1, true).subscribe((data) => {
-      this.initData = data;
-      this.dataSource = new MatTableDataSource(data);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      this.userGrpList = data;
+  loadUsersData() {
+    let obj: any = {
+      accountId: 0,
+      organizationId: this.accountOrganizationId,
+      accountGroupId: 0,
+      vehicleGroupGroupId: 0,
+      roleId: 0,
+      name: ""
+    }
+
+    let accountGrpObj: AccountGroup = {
+      accountGroupId : 0,
+      organizationId : this.accountOrganizationId,
+      accountId : 0,
+      accounts : true,
+      accountCount : true,
+    }
+
+    this.accountService.getAccountDetails(obj).subscribe((usrlist)=>{
+      this.initData = this.makeRoleAccountGrpList(usrlist);
+      this.accountService.getAccountGroupDetails(accountGrpObj).subscribe((grpData)=>{
+        this.dataSource = new MatTableDataSource(this.initData);
+        setTimeout(()=>{
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+        });
+        this.userGrpList = grpData;
+      });
     });
+  }
+
+  makeRoleAccountGrpList(initdata){
+    let accountId =  localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    initdata = initdata.filter(item => item.id != accountId);
+    initdata.forEach((element, index) => {
+      let roleTxt: any = '';
+      let accGrpTxt: any = '';
+      element.roles.forEach(resp => {
+        roleTxt += resp.name + ', ';
+      });
+      element.accountGroups.forEach(resp => {
+        accGrpTxt += resp.name + ', ';
+      });
+
+      if(roleTxt != ''){
+        roleTxt = roleTxt.slice(0, -2);
+      }
+      if(accGrpTxt != ''){
+        accGrpTxt = accGrpTxt.slice(0, -2);
+      }
+
+      initdata[index].roleList = roleTxt; 
+      initdata[index].accountGroupList = accGrpTxt;
+    });
+    
+    return initdata;
   }
 
   importDrivers(){ 
@@ -173,12 +227,12 @@ export class DriverManagementComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
-  editgroup(row: any){
-    this.rowData = row;
+  onEditView(element: any, type: any){
+    this.rowData = element;
     this.editFlag = true;
   }
 
-  deleteGroup(row: any){
+  onDelete(row: any){
     const options = {
       title: this.translationData.lblDeleteDriver || "Delete Driver",
       message: this.translationData.lblAreyousureyouwanttodeletedriver || "Are you sure you want to delete driver '$'? ",
@@ -186,31 +240,43 @@ export class DriverManagementComponent implements OnInit {
       confirmText: this.translationData.lblYes || "Yes"
     };
    
-    let name = row.name;
+    let name = `${row.salutation} ${row.firstName} ${row.lastName}`;
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
-     if (res) {
-       this.userService
-         .deleteUserGroup(row.usergroupId, row.organizationId)
-         .subscribe((d) => {
-           //console.log(d);
-           this.loadUserGroupData();
-           this.openSnackBar('Item delete', 'dismiss');
-         });
-     }
+      if (res) {
+        this.accountService.deleteAccount(row).subscribe(d => {
+          this.successMsgBlink(this.getDeletMsg(name));
+          this.loadUsersData();
+        });
+      }
    });
   }
 
-  openSnackBar(message: string, action: string) {
-    //"openSnackBar('Item Deleted', 'Dismiss')"
-    let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
-    snackBarRef.afterDismissed().subscribe(() => {
-      console.log('The snackbar is dismissed');
-    });
-    snackBarRef.onAction().subscribe(() => {
-      console.log('The snackbar action was triggered!');
-    });
+  getDeletMsg(userName: any){
+    if(this.translationData.lblDriversuccessfullydeleted)
+      return this.translationData.lblDriversuccessfullydeleted.replace('$', userName);
+    else
+      return ("Driver '$' successfully deleted").replace('$', userName);
   }
+
+  successMsgBlink(msg: any){
+    this.grpTitleVisible = true;
+    this.userCreatedMsg = msg;
+    setTimeout(() => {  
+      this.grpTitleVisible = false;
+    }, 5000);
+  }
+
+  // openSnackBar(message: string, action: string) {
+  //   //"openSnackBar('Item Deleted', 'Dismiss')"
+  //   let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
+  //   snackBarRef.afterDismissed().subscribe(() => {
+  //     console.log('The snackbar is dismissed');
+  //   });
+  //   snackBarRef.onAction().subscribe(() => {
+  //     console.log('The snackbar action was triggered!');
+  //   });
+  // }
 
   onClose(){
     this.importDriverPopup = false;
@@ -283,6 +349,10 @@ export class DriverManagementComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
+  }
+
+  onCloseMsg(){
+    this.grpTitleVisible = false;
   }
 
 }
