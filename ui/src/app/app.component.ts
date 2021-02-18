@@ -167,7 +167,7 @@ export class AppComponent {
     }
 
     this.appForm = this.fb.group({
-      'languageSelection': [this.localStLanguage ? this.localStLanguage.id : this.accountInfo.accountPreference.languageId]
+      'languageSelection': [this.localStLanguage ? this.localStLanguage.id : (this.accountInfo ? this.accountInfo.accountPreference.languageId : 8)]
     });
 
     // this.dataInterchangeService.orgRoleInterface$.subscribe(resp => {
@@ -466,7 +466,7 @@ private setPageTitle() {
    }
 
    onLanguageChange(value){
-    console.log(value);
+    //console.log(value);
     if(this.localStLanguage.id != value){
       let languageCode = '';
       let languageId = 1;
