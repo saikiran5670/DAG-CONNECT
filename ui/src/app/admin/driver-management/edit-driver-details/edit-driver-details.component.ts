@@ -10,7 +10,9 @@ export class EditDriverDetailsComponent implements OnInit {
   @Output() backToPage = new EventEmitter<boolean>();
   @Input() rowData: any;
   @Input() translationData: any;
+  @Input() type: any;
   firstFormGroup: FormGroup;
+  breadcumMsg: any = '';
   selectList: any = [
     {
       name: 'Mr'
@@ -45,7 +47,11 @@ export class EditDriverDetailsComponent implements OnInit {
     });
     //this.optVal = this.rowData.isActive ? this.data.optValue : 'opt-out';
     this.optVal = this.data.optValue;
-    //console.log("rowData:: ", this.rowData)
+    this.breadcumMsg = this.getBreadcum(this.type);
+  }
+
+  getBreadcum(type: any){
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblDriverManagement ? this.translationData.lblDriverManagement : "Driver Management"} / ${this.translationData.lblDriverDetails ? this.translationData.lblDriverDetails : 'Driver Details'}`;
   }
 
   myFilter = (d: Date | null): boolean => {

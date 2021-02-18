@@ -47,6 +47,7 @@ export class DriverManagementComponent implements OnInit {
   filelist: any;
   translationData: any;
   localStLanguage: any;
+  type: any = '';
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService,
     private _snackBar: MatSnackBar, private translationService: TranslationService, private accountService: AccountService) { 
@@ -230,6 +231,7 @@ export class DriverManagementComponent implements OnInit {
   onEditView(element: any, type: any){
     this.rowData = element;
     this.editFlag = true;
+    this.type = type; 
   }
 
   onDelete(row: any){
@@ -267,17 +269,6 @@ export class DriverManagementComponent implements OnInit {
     }, 5000);
   }
 
-  // openSnackBar(message: string, action: string) {
-  //   //"openSnackBar('Item Deleted', 'Dismiss')"
-  //   let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
-  //   snackBarRef.afterDismissed().subscribe(() => {
-  //     console.log('The snackbar is dismissed');
-  //   });
-  //   snackBarRef.onAction().subscribe(() => {
-  //     console.log('The snackbar action was triggered!');
-  //   });
-  // }
-
   onClose(){
     this.importDriverPopup = false;
   }
@@ -292,34 +283,6 @@ export class DriverManagementComponent implements OnInit {
     }
     this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
   }
-
-  // fileChangeEvent(fileInput: any) {
-  //     if (fileInput.target.files && fileInput.target.files[0]) {
-  //       this.myfilename = '';
-  //       Array.from(fileInput.target.files).forEach((file: File) => {
-  //         console.log(file);
-  //         this.myfilename += file.name + ',';
-  //       });
-  //       const reader = new FileReader();
-  //       reader.onload = (e: any) => {
-  //         const image = new Image();
-  //         image.src = e.target.result;
-  //         image.onload = rs => {
-  //           // Return Base64 Data URL
-  //           const imgBase64Path = e.target.result;
-  //         };
-  //       };
-  //       reader.readAsDataURL(fileInput.target.files[0]);
-  //       // Reset File Input to Selct Same file again
-  //       this.uploadFileInput.nativeElement.value = "";
-  //     } else {
-  //       this.myfilename = 'Select File';
-  //     }
-  // }
-
-  // handleFileInput(files: FileList) {
-  //   this.fileToUpload = files.item(0);
-  // }
 
   addfile(event)     
   {    

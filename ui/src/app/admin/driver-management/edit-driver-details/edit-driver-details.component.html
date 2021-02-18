@@ -1,9 +1,19 @@
+<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+    <span>{{ breadcumMsg }}</span>
+  </div>
+  <div *ngIf="type == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+    <span class='custom-font' (click)="onCancel()">
+      <span><&nbsp;</span>
+      <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+  </div>
+</div>
 <form [formGroup]="firstFormGroup">
   <mat-card class='mat-elevation-z margin-bottom-xlg'>
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblEditDriverDetails || 'Edit Driver Details' }}</span>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (type == 'edit') ? (translationData.lblEditDriverDetails || 'Edit Driver Details') : (translationData.lblViewDriverDetails || 'View Driver Details') }}</span>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
           <span style='color: red;'>*{{ translationData.lblAlldetailsaremandatory || 'All details are mandatory' }}</span>
@@ -159,7 +169,7 @@
       </div>
     </mat-card-content>
   </mat-card>
-  <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
+  <div *ngIf="type == 'edit'" fxLayout="row" fxLayoutAlign="end end" class="full-width">
     <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
     <button class='margin-right-10' mat-raised-button color="primary" (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
     <button [disabled]="!firstFormGroup.valid" mat-raised-button color="primary" (click)='onConfirm()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
