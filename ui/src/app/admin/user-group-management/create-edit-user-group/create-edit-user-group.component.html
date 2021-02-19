@@ -54,10 +54,20 @@
                 </mat-card-actions>
             </mat-card>
 
-            <div *ngIf="editFlag || viewDisplayFlag">
+            <!-- <div *ngIf="editFlag || viewDisplayFlag">
             <button  class='margin-right-10' mat-raised-button color="primary"
             (click)='onCancel()'>{{translationData.lblBack || 'Back' }}</button>
-             </div>
+             </div> -->
+             <div *ngIf="editFlag || viewDisplayFlag" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                  <span>{{ breadcumMsg }}</span>
+                </div>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+                  <span class='custom-font' (click)="onCancel()">
+                    <span><&nbsp;</span>
+                    <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+                </div>
+              </div>
             <mat-card *ngIf="editFlag || viewDisplayFlag" style='background-color: #ECF7FE;' class='mat-elevation-z margin-bottom-xlg'>
                 <mat-card-content>
                     <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
@@ -80,25 +90,24 @@
             </mat-card>
 
             <mat-card class='mat-elevation-z' >
-                <div>
-                  <!-- <app-common-filter *ngIf="filterFlag" (filterValues)="getFilteredValues($event)" [initDataUserGroup]='initData'></app-common-filter> -->
-                </div>  
-                <div>
-                  <div>
+                <!--<div>
+                   <app-common-filter *ngIf="filterFlag" (filterValues)="getFilteredValues($event)" [initDataUserGroup]='initData'></app-common-filter> 
+                </div>  -->
+                <div class="margin-bottom-sm" fxLayout="row" fxLayoutAlign="space-between">
+                  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <!-- <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserDetails }}</span> -->
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectUser || 'Select User' }}</span>
-                    <span>{{translationData.lblOptional || '(Optional)' }}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectUser || 'Select User' }} {{translationData.lblOptional || '(Optional)' }}</span>
                   </div>
-
                 </div>
-                <div class="example-header">
-                  <mat-form-field>
-                    <!-- <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblFilter }}"> -->
-                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblFilter || 'Filter' }}">
-                  </mat-form-field>
+                <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+                  <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <mat-form-field appearance="outline">
+                        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                        <span matPrefix><mat-icon>search</mat-icon></span>
+                    </mat-form-field>
+                  </div>
                 </div>
-            
-                <div class="example-container">
+                <div>
                   
                   <mat-table [dataSource]="dataSourceUsers" class="table-items" matSort>
                     <ng-container matColumnDef="select">

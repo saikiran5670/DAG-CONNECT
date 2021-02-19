@@ -35,20 +35,15 @@ export class EditViewUserComponent implements OnInit {
       name: 'Ms'
     }
   ];
-
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
-
   @Input() selectedRoleData: any;
   @Input() selectedUserGrpData: any;
-  @Input() selectedVehGrpData: any;
   @Input() accountInfoData: any;
   @Input() allRoleData: any;
   @Input() allUserGrpData: any;
   @Input() selectedPreference: any;
-
   displayedColumnsRoleConfirm: string[] = ['roleName', 'featureIds'];
-  //displayedColumnsUserGrpConfirm: string[] = ['name', 'vehicles', 'users'];
   displayedColumnsUserGrpConfirm: string[] = ['name', 'accountCount'];
   displayedColumnsVehGrpConfirm: string[] = ['name', 'vehicles', 'registrationNumber'];
   selectedRoleDataSource: any = [];
@@ -56,7 +51,6 @@ export class EditViewUserComponent implements OnInit {
   selectedVehGrpDataSource: any = [];
   dialogRefForEdit: MatDialogRef<EditCommonTableComponent>;
   dialogRefForView: MatDialogRef<UserDetailTableComponent>;
-  
   changePictureFlag: boolean = false;
   isAccountPictureSelected: boolean = false;
   droppedImage:any = '';
@@ -64,7 +58,6 @@ export class EditViewUserComponent implements OnInit {
   imageChangedEvent: any = '';
   croppedImage: any = '';
   breadcumMsg: any = '';
-
   languageData: any;
   timezoneData: any;
   unitData: any;
@@ -127,12 +120,6 @@ export class EditViewUserComponent implements OnInit {
       this.selectedRoleDataSource.paginator = this.paginator.toArray()[0];
       this.selectedRoleDataSource.sort = this.sort.toArray()[0];
     });
-
-    // this.selectedVehGrpDataSource = new MatTableDataSource(this.selectedVehGrpData);
-    // setTimeout(()=>{
-    //   this.selectedVehGrpDataSource.paginator = this.paginator.toArray()[2];
-    //   this.selectedVehGrpDataSource.sort = this.sort.toArray()[2];
-    // });
   }
 
   loadAccountGroupTable(){
@@ -302,8 +289,6 @@ export class EditViewUserComponent implements OnInit {
   editUserGroupData(){
     let type= "userGroup";
     let tableHeader: any = this.translationData.lblSelectedUserGroups || 'Selected User Groups';
-    // let colsList: any = ['select', 'name', 'vehicles', 'users'];
-    // let colsName: any = ['All', 'Group Name', 'Vehicles', 'Users'];
     let colsList: any = ['select', 'name', 'accountCount'];
     let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lblGroupName || 'Group Name', this.translationData.lblUsers || 'Users'];
     this.callCommonTableToEdit(this.accountInfoData, type, colsList, colsName, tableHeader, this.selectedUserGrpData, this.allUserGrpData);

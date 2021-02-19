@@ -10,7 +10,7 @@
     </div>
     <div *ngIf='!editFlag'>
         <mat-card class='mat-elevation-z'>
-            <div fxLayout="row" fxLayoutAlign="space-between">
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserRoleDetails || 'All User Role Details' }}</span>
                 </div>
@@ -20,23 +20,17 @@
                     </button>
                 </div>
             </div>
-            <div fxLayout="row" fxLayoutAlign="start start" class='margin-top-xlg'>
-                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <mat-form-field>
-                        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblFilter || 'Filter' }}">
-                    </mat-form-field>
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+                <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                  <mat-form-field appearance="outline">
+                      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                      <span matPrefix><mat-icon>search</mat-icon></span>
+                  </mat-form-field>
                 </div>
             </div>
-            <!-- <div fxLayout="row" class='margin-top-xlg' *ngIf='!initData'>
-                <p>
-                    No record found.<br><br>
-
-                    Please click on 'New User Role' button and create new role
-                </p>
-            </div> -->
             <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
-            <div fxLayout="row" class='margin-top-xlg'>
-                <div fxLayout="column" class='full-width' *ngIf='initData.length > 0'>
+            <div *ngIf='initData.length > 0' fxLayout="row" class='margin-top-xlg'>
+                <div fxLayout="column" class='full-width'>
                     <mat-table [dataSource]="dataSource" matSort>
                         <!-- <ng-container matColumnDef="newTag">
                             <mat-header-cell *matHeaderCellDef></mat-header-cell>

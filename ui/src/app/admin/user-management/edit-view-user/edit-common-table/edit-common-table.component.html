@@ -2,21 +2,24 @@
     style="min-width: 800px; min-height: 300px;">
     <mat-card-content>
         <div fxLayout="row" fxLayoutAlign="start space-around"
-            style='padding: 10px 20px !important; background: #d4d4d4;'>
+            style='padding: 10px 20px !important; background: #65c3f8; color: #fff;'>
             <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <span class='custom-font'>{{ data.tableHeader }} ({{ selectionData.selected.length }})</span>
             </div>
             <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
-                <mat-icon matTooltip="{{ data.translationData.lblClose || 'Close'}}" (click)='onClose(false)' style='cursor: pointer;'>close</mat-icon>
+                <mat-icon matTooltip="{{ data.translationData.lblClose || 'Close'}}" (click)='onClose(false)' style='cursor: pointer; color: #000;'>close</mat-icon>
             </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="start space-around">
             <div style='padding: 10px 20px 0px 20px;' class='full-width' fxLayout="column" fxLayoutGap="3px"
                 fxLayoutAlign="left">
-                <div class='margin-bottom-xlg'>
-                    <mat-form-field>
-                      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ data.translationData.lblSearch || 'Search' }}">
-                    </mat-form-field>
+                <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+                    <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                      <mat-form-field appearance="outline">
+                          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ data.translationData.lblSearch || 'Search' }}">
+                          <span matPrefix><mat-icon>search</mat-icon></span>
+                      </mat-form-field>
+                    </div>
                   </div>
                 <mat-table [dataSource]="dataSource" class="table-items" matSort>
                     <ng-container *ngFor="let disCol of data.colsList; let colIndex = index" matColumnDef="{{disCol}}">

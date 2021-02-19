@@ -1,7 +1,17 @@
-<form [formGroup]="userRoleFormGroup">
-    <div fxLayout="row" fxLayoutAlign="end end" class='margin-bottom-sm'>
-        <button *ngIf="viewFlag" mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblBack || 'Back' }}</button>
+<div *ngIf="viewFlag" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+      <span>{{ breadcumMsg }}</span>
     </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+      <span class='custom-font' (click)="onCancel()">
+        <span><&nbsp;</span>
+        <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+    </div>
+</div>
+<form [formGroup]="userRoleFormGroup">
+    <!-- <div fxLayout="row" fxLayoutAlign="end end" class='margin-bottom-sm'>
+        <button *ngIf="viewFlag" mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblBack || 'Back' }}</button>
+    </div> -->
     <mat-card class='mat-elevation-z margin-bottom-xlg' *ngIf="viewFlag">
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
@@ -114,13 +124,14 @@
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ createStatus ? ( translationData.lblSelectRoleAccess || 'Select Role Access') : (translationData.lblSelectedRoleAccess || 'Selected Role Access') }}</span>
             </div>
         </div>
-        <div *ngIf='createStatus' fxLayout="row" fxLayoutAlign="start start" class='margin-top-xlg'>
-            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <mat-form-field>
-                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblFilter || 'Filter' }}">
-                </mat-form-field>
+        <div *ngIf='createStatus' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+              <mat-form-field appearance="outline">
+                  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                  <span matPrefix><mat-icon>search</mat-icon></span>
+              </mat-form-field>
             </div>
-        </div>
+          </div>
         <div fxLayout="row" class='margin-top-xlg'>
             <div fxLayout="column" class='full-width'>
                 <mat-table [dataSource]="dataSource" matSort>      

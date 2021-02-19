@@ -16,10 +16,8 @@ import { MatTableDataSource } from '@angular/material/table';
   styleUrls: ['./user-detail-table.component.less']
 })
 export class UserDetailTableComponent implements OnInit {
-
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-
   closePopup: boolean = true;
   dataSource: any;
 

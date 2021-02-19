@@ -24,7 +24,7 @@ export interface vehGrpCreation {
 @Component({
   selector: 'app-create-edit-user-group',
   templateUrl: './create-edit-user-group.component.html',
-  styleUrls: ['./create-edit-user-group.component.css']
+  styleUrls: ['./create-edit-user-group.component.less']
 })
 export class CreateEditUserGroupComponent implements OnInit {
   OrgId:number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -122,7 +122,8 @@ export class CreateEditUserGroupComponent implements OnInit {
   rowsData: any;
   titleText: string;
   orgId: number;
-  duplicateEmailMsg
+  duplicateEmailMsg: boolean = false;
+  breadcumMsg: any = '';
 
   UserGroupForm: FormGroup;
   constructor(private _formBuilder: FormBuilder,
@@ -136,10 +137,12 @@ export class CreateEditUserGroupComponent implements OnInit {
       userGroupName: ['', [Validators.required]],
       userGroupDescription: [],
     });
-
     this.loadUsersData();
- 
+    this.breadcumMsg = this.getBreadcum();
+  }
 
+  getBreadcum(){
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblUserGroupManagement ? this.translationData.lblUserGroupManagement : "User Group Management"} / ${this.translationData.lblUserGroupDetails ? this.translationData.lblUserGroupDetails : 'User Group Details'}`;
   }
 
   makeRoleAccountGrpList(initdata){

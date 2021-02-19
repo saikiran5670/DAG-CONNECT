@@ -13,6 +13,7 @@ import { DataInterchangeService } from 'src/app/services/data-interchange.servic
   templateUrl: './account-info-settings.component.html',
   styleUrls: ['./account-info-settings.component.less']
 })
+
 export class AccountInfoSettingsComponent implements OnInit {
   @Input() translationData: any;
   confirmAccountInfoData: any = [];
@@ -32,8 +33,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   accountPreferenceData: any;
   grpTitleVisible : boolean = false;
   displayMessage: any;
-  localStLanguage = JSON.parse(localStorage.getItem("language"));
-
+  localStLanguage: any;
   languageDropdownData: any = [];
   timezoneDropdownData: any = [];
   unitDropdownData: any = [];
@@ -42,7 +42,6 @@ export class AccountInfoSettingsComponent implements OnInit {
   timeFormatDropdownData: any = [];
   vehicleDisplayDropdownData: any = [];
   landingPageDisplayDropdownData: any = [];
-
   languageData: any;
   timezoneData: any;
   unitData: any;
@@ -54,7 +53,6 @@ export class AccountInfoSettingsComponent implements OnInit {
   orgName: any;
   accountId: any;
   organizationId: any;
-
   salutationList: any = [
     {
       name: 'Mr'
@@ -76,14 +74,14 @@ export class AccountInfoSettingsComponent implements OnInit {
 
   constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
+    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountSettingsForm = this._formBuilder.group({
       salutation: ['', [Validators.required]],
       firstName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       lastName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       loginEmail: ['', [Validators.required, Validators.email]],
-      organization: new FormControl({value: null, disabled: true}),
-      //birthDate: ['', []]
+      organization: new FormControl({value: null, disabled: true})
     },{
       validator : [
         CustomValidators.specialCharValidationForName('firstName'),
@@ -102,7 +100,6 @@ export class AccountInfoSettingsComponent implements OnInit {
       vehDisplay: ['',[]],
       landingPage: ['', []]
     });
-    //Mock data changes
     this.changePictureFlag = true;
     this.isSelectPictureConfirm = true;
     this.croppedImage='../../assets/images/Account_pic.png';
@@ -110,7 +107,6 @@ export class AccountInfoSettingsComponent implements OnInit {
     this.accountId = parseInt(localStorage.getItem('accountId'));
     this.organizationId = parseInt(localStorage.getItem('accountOrganizationId'));
     this.loadAccountData();  
-    // this.loadGeneralSettingData();
   }
 
   loadAccountData(){
@@ -132,7 +128,6 @@ export class AccountInfoSettingsComponent implements OnInit {
 
   loadGeneralSettingData(){
     let languageCode= this.localStLanguage.code;
-
     this.accountService.getAccountPreference(this.accountId).subscribe(resp => {
       this.accountPreferenceData = resp[0];
       this.translationService.getPreferences(languageCode).subscribe((data) => {
@@ -220,7 +215,6 @@ export class AccountInfoSettingsComponent implements OnInit {
         organization_Id: this.organizationId
     }
     this.accountService.updateAccount(objData).subscribe((data)=>{
-      //this.loadAccountData();
       this.accountInfo = [data];
       this.editAccountSettingsFlag = false;
       this.isSelectPictureConfirm = true;
@@ -228,7 +222,6 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.updateLocalStorageAccountInfo("accountsettings", data);
       let editText = 'AccountSettings';
       this.successMsgBlink(this.getEditMsg(editText));
-      
     });
   }
 
@@ -260,7 +253,6 @@ export class AccountInfoSettingsComponent implements OnInit {
       driverId: ""
     }
     this.accountService.updateAccountPreference(objData).subscribe((data) => {
-      //this.loadGeneralSettingData();
       this.filterDefaultGeneralSetting(data);
       this.setDefaultGeneralSetting();
       this.updateLocalStorageAccountInfo("generalsettings", data);
@@ -291,7 +283,6 @@ export class AccountInfoSettingsComponent implements OnInit {
       accountInfo.accountPreference = data;
     }
     localStorage.setItem("accountInfo", JSON.stringify(accountInfo));
-
   }
 
   onchangePictureClick(){
@@ -315,15 +306,19 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.isAccountPictureSelected = true;
       this.imageChangedEvent = event;
   }
+
   imageCropped(event: ImageCroppedEvent) {
       this.croppedImage = event.base64;
   }
+
   imageLoaded() {
       // show cropper
   }
+  
   cropperReady() {
       // cropper ready
   }
+  
   loadImageFailed() {
       // show message
   }
@@ -333,7 +328,7 @@ export class AccountInfoSettingsComponent implements OnInit {
     this.readImageFile(event);
   }
 
-readImageFile(file: any) {
+  readImageFile(file: any) {
     const reader = new FileReader();
     reader.onload = (e: any) => {
       this.droppedImage = e.target.result;
@@ -374,4 +369,3 @@ readImageFile(file: any) {
     this.grpTitleVisible = false;
   }
 }
-

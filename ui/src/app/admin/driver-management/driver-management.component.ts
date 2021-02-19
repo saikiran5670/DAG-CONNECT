@@ -49,6 +49,14 @@ export class DriverManagementComponent implements OnInit {
   localStLanguage: any;
   type: any = '';
   showLoadingIndicator: any;
+  consentSelectionList: any = [
+    {
+      name: 'Opt-In'
+    },
+    {
+      name: 'Opt-Out'
+    }
+  ];
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService,
     private _snackBar: MatSnackBar, private translationService: TranslationService, private accountService: AccountService) { 

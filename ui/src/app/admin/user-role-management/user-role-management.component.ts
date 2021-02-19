@@ -168,6 +168,7 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   viewUserRole(row: any){
+    this.titleText = this.translationData.lblViewUserRole || "View User Role";
     this.editFlag = true;
     this.viewFlag = true;
     this.rowsData = [];
@@ -257,12 +258,7 @@ export class UserRoleManagementComponent implements OnInit {
       //this.openSnackBar('Item edited', 'dismiss');
       this.successMsgBlink(this.getCreateEditMsg(item.editText, item.rolename));
     }
-    this.initData = this.loadInitData();
-    setTimeout(()=>{
-      this.dataSource = new MatTableDataSource(this.initData);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
+    this.loadInitData();
   }
 
   onClose(){
