@@ -62,11 +62,6 @@ steps:
     useLegacyPattern: false
     enableTelemetry: true
 
-- task: CmdLine@2
-  inputs:
-    script: |
-      cat dotnet/portalserver/net.atos.daf.ct2.portalservice/log4net.config
-
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
