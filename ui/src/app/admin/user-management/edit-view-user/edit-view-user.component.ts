@@ -298,6 +298,7 @@ export class EditViewUserComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
+    dialogConfig.maxHeight = '90vh';
     dialogConfig.data = {
       accountInfo: accountInfo,
       type: type,

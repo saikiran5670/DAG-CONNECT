@@ -45,7 +45,7 @@
                             <mat-cell *matCellDef="let element ">
                                 <span *ngIf='element.featureIds.length > 0'>
                                     <span *ngFor='let item of [].constructor(element.featureIds.length); let i = index'>
-                                        <img title="{{servicesIcon[i]}}" src="assets/images/icons/services/{{servicesIcon[i]}}.svg" style="width: 20px; height: 20px;"/>&nbsp;
+                                        <img title="{{ i > 7 ? servicesIcon[0] : servicesIcon[i] }}" src="assets/images/icons/services/{{ i > 7 ? servicesIcon[0] : servicesIcon[i] }}.svg" style="width: 20px; height: 20px;"/>&nbsp;
                                     </span>
                                   </span>
                                   <span *ngIf='element.featureIds.length == 0'>&nbsp;&nbsp;-</span>

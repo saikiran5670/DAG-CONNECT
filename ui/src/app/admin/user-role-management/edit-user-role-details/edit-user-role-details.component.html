@@ -9,9 +9,6 @@
     </div>
 </div>
 <form [formGroup]="userRoleFormGroup">
-    <!-- <div fxLayout="row" fxLayoutAlign="end end" class='margin-bottom-sm'>
-        <button *ngIf="viewFlag" mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblBack || 'Back' }}</button>
-    </div> -->
     <mat-card class='mat-elevation-z margin-bottom-xlg' *ngIf="viewFlag">
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
@@ -140,21 +137,6 @@
                         <mat-cell *matCellDef="let row; let index"> {{row.featureName}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="select">
-                        <!-- <mat-header-cell *matHeaderCellDef>
-                          <mat-checkbox (change)='$event ? masterToggleForFeatures() : null;' [disabled]="viewFlag"
-                            [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
-                            [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
-                            [aria-label]='checkboxLabelForFeatures()'>
-                          </mat-checkbox>
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                          <mat-checkbox (click)='$event.stopPropagation()' [disabled]="viewFlag"
-                            (change)='$event ? selectionForFeatures.toggle(row) : null; onCheckboxChange($event, row)'
-                            [checked]='selectionForFeatures.isSelected(row)'
-                            [aria-label]='checkboxLabelForFeatures(row)'>
-                          </mat-checkbox>
-                        </mat-cell> -->
-
                         <mat-header-cell *matHeaderCellDef>{{ translationData.lblAccess || 'Access'}}
                             <mat-slide-toggle color="primary" (change)='$event ? masterToggleForFeatures() : null;' [disabled]="viewFlag"
                               [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
@@ -169,8 +151,6 @@
                               [aria-label]='checkboxLabelForFeatures(row)'>
                             </mat-slide-toggle>
                           </mat-cell>
-                        
-
                     </ng-container> 
                     <mat-header-row *matHeaderRowDef="featureDisplayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: featureDisplayedColumns;">
