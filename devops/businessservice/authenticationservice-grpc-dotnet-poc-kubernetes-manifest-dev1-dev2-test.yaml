@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: authenticationservice-poc-deployment
+  name: authenticationservice-deployment
   labels:
-    app.kubernetes.io/name: authenticationservice-poc
+    app.kubernetes.io/name: authenticationservice
     app.kubernetes.io/type: businessservice
 spec:
   template:
@@ -11,7 +11,7 @@ spec:
       annotations:
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
       labels:
-        app.kubernetes.io/name: authenticationservice-poc
+        app.kubernetes.io/name: authenticationservice
         app.kubernetes.io/type: businessservice
     spec:
       automountServiceAccountToken: false
@@ -27,14 +27,14 @@ spec:
               - key: app.kubernetes.io/name
                 operator: In
                 values:
-                - authenticationservice-poc
+                - authenticationservice
               - key: app.kubernetes.io/type
                 operator: In
                 values:
                 - businessservice
             topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: authenticationservice-poc-container
+      - name: authenticationservice-container
         image: #{acrurl}#/authenticationservicegrpc_poc
         imagePullPolicy: "Always"
         securityContext:
@@ -61,15 +61,15 @@ spec:
         agentpool: npuser01         
   selector:
     matchLabels:
-        app.kubernetes.io/name: authenticationservice-poc
+        app.kubernetes.io/name: authenticationservice
         app.kubernetes.io/type: businessservice
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: authenticationservicegrpc-poc
+  name: authenticationservice
   labels:
-    svc.kubernetes.io/name: authenticationservice-poc
+    svc.kubernetes.io/name: authenticationservice
     svc.kubernetes.io/type: businessservice
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
@@ -80,16 +80,16 @@ spec:
     port: 80
     targetPort: 8080
   selector:
-    app.kubernetes.io/name: authenticationservice-poc
+    app.kubernetes.io/name: authenticationservice
     app.kubernetes.io/type: businessservice
 
 ---
 kind: HorizontalPodAutoscaler 
 apiVersion: autoscaling/v2beta1 
 metadata: 
-  name: authenticationservice-poc-hpa
+  name: authenticationservice-hpa
   labels:
-    hpa.kubernetes.io/name: authenticationservice-poc
+    hpa.kubernetes.io/name: authenticationservice
     hpa.kubernetes.io/type: businessservice 
 spec: 
   maxReplicas: 5 
@@ -97,7 +97,7 @@ spec:
   scaleTargetRef: 
     apiVersion: apps/v1 
     kind: Deployment 
-    name: authenticationservice-poc-deployment 
+    name: authenticationservice-deployment 
   metrics: 
   - type: Resource 
     resource: 
