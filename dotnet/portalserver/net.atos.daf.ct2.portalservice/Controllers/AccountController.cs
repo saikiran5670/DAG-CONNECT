@@ -347,7 +347,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 AccountBusinessService.AccountPreferenceFilter request =new AccountBusinessService.AccountPreferenceFilter();
                 request.RefId = accountId;
-                AccountBusinessService.AccountPreferenceDataList response = _accountClient.GetPreference(request);
+                AccountBusinessService.AccountPreferenceDataList response =await _accountClient.GetPreferenceAsync(request);
                 if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
                     return Ok(response);
@@ -515,6 +515,297 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         // End - AccessRelationshhip
+        // Begin - Account Group
+        [HttpPost]
+        [Route("accountgroup/create")]
+        public async Task<IActionResult> CreateAccountGroup(AccountBusinessService.AccountGroupRequest request)
+        {
+            try
+            {
+                // Validation                 
+                if (string.IsNullOrEmpty(request.Name))
+                {
+                    return StatusCode(400, "The AccountGroup name is required");
+                }
+                AccountBusinessService.AccountGroupResponce response= await _accountClient.CreateGroupAsync(request);
+                if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(500, "Internal  Server error");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:create account group with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+        [HttpPost]
+        [Route("accountgroup/update")]
+        public async Task<IActionResult> UpdateAccountGroup(AccountBusinessService.AccountGroupRequest request)
+        {
+            try
+            {
+                // Validation                 
+                if ((request.Id <= 0) || (string.IsNullOrEmpty(request.Name)))
+                {
+                    return StatusCode(400, "The AccountGroup name and id is required");
+                }
+                
+                AccountBusinessService.AccountGroupResponce response = await _accountClient.UpdateGroupAsync(request);
+                if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(500, "Internal  Server error");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:create account group with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+        [HttpPut]
+        [Route("accountgroup/delete")]
+        public async Task<IActionResult> DeleteAccountGroup(int id)
+        {
+            try
+            {
+                // Validation                 
+                if ((Convert.ToInt32(id) <= 0))
+                {
+                    return StatusCode(400, "The account group id is required.");
+                }
+                AccountBusinessService.IdRequest request=new AccountBusinessService.IdRequest();
+                request.Id=id;
+                AccountBusinessService.AccountGroupResponce response = await _accountClient.RemoveGroupAsync(request);
+                if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(500, "Internal  Server error");
+                }                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in delete account group :DeleteGroup with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+        [HttpPost]
+        [Route("accountgroup/addaccounts")]
+        public async Task<IActionResult> AddAccountsToGroup(AccountBusinessService.AccountGroupRefRequest request)
+        {
+            try
+            {
+                // Validation  
+                if (request == null)
+                {
+                    return StatusCode(400, "The AccountGroup account is required");
+                }
+                AccountBusinessService.AccountGroupRefResponce response =await _accountClient.AddAccountToGroupsAsync(request);
+                if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(500, "Internal Server error");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in delete account group :DeleteGroup with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+        [HttpPut]
+        [Route("accountgroup/deleteaccounts")]
+        public async Task<IActionResult> DeleteAccountFromGroup(int id)
+        {
+            try
+            {
+                //Need to confrim gRPC service method name.
+                return Ok(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in delete account group reference :DeleteAccountsGroupReference with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+        
+        [HttpPost]
+        [Route("accountgroup/get")]
+        public async Task<IActionResult> GetAccountGroup(AccountBusinessService.AccountGroupFilterRequest request)
+        {            
+            try
+            {
+                // Validation  
+                if (request.OrganizationId <= 0)
+                {
+                    return StatusCode(400, "The Organization id is required");
+                }
+                AccountBusinessService.AccountGroupDataList response =await _accountClient.GetAccountGroupAsync(request);
+                if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(500, "Internal Server error");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:get account group with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+                [HttpPost]
+        [Route("accountgroup/getdetails")]
+        public async Task<IActionResult> GetAccountGroupDetails(AccountBusinessService.AccountGroupDetailsRequest request)
+        { 
+            try
+            {
+                // Validation  
+                if (request.OrganizationId <= 0)
+                {
+                    return StatusCode(400, "The Organization id is required");
+                }
+                AccountBusinessService.AccountGroupDetailsDataList response= await _accountClient.GetAccountGroupDetailAsync(request);
+                if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(500, "Internal Server error");
+                }                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:get account group details with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+        // End Account Group
+
+        // Begin Account Role        
+        [HttpPost]
+        [Route("addroles")]
+        public async Task<IActionResult> AddRoles(AccountBusinessService.AccountRoleRequest request)
+        {
+            try
+            {
+                // Validation  
+                if (request.OrganizationId <= 0)
+                {
+                    return StatusCode(400, "The Organization id is required");
+                }
+                AccountBusinessService.AccountRoleResponse response = await _accountClient.AddRolesAsync(request);
+                if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(500, "Internal Server error");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:get account group details with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+        [HttpPost]
+        [Route("deleteroles")]
+        public async Task<IActionResult> RemoveRoles(AccountBusinessService.AccountRoleDeleteRequest request)
+        {
+            try
+            {
+                // Validation  
+                if (request == null && request.OrganizationId <= 0 || request.AccountId <= 0)
+                {
+                    return StatusCode(400, "The Organization id and account id is required");
+                }
+                AccountBusinessService.AccountRoleResponse response = await _accountClient.RemoveRolesAsync(request);
+                if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(500, "Internal Server error");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:get account group details with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+        [HttpPost]
+        [Route("getroles")]
+        public async Task<IActionResult> GetRoles(AccountBusinessService.AccountRoleDeleteRequest request)
+        {
+            try
+            {
+                if (request == null && request.OrganizationId <= 0 || request.AccountId <= 0)
+                {
+                    return StatusCode(400, "The Organization id and account id is required");
+                }
+                AccountBusinessService.AccountRoles response = await _accountClient.GetRolesAsync(request);
+                if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
+                {
+                    return Ok(response);
+                }
+                else if (response != null && response .Code==AccountBusinessService.Responcecode.Failed 
+                    && response .Message=="Please provide accountid and organizationid to get roles details.")
+                {
+                    return StatusCode(400, "Please provide accountid and organizationid to get roles details.");
+                }
+                else
+                {
+                    return StatusCode(500, "Internal Server error");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:get account roles with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+        // End Account Role
 
     }
 }
