@@ -1,92 +1,49 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
-import { forkJoin } from 'rxjs';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
-import { VehicleGroup } from 'src/app/models/vehicle.model';
-import { Product, UserGroup,AccountGroup, GetAccountGrp } from 'src/app/models/users.model';
+import { VehicleGroup } from '../../../models/vehicle.model';
+import { AccountGroup } from '../../../models/users.model';
 import { AccountService } from '../../../services/account.service';
 
 export interface vehGrpCreation {
   groupName: null;
   groupDesc: null;
 }
+
 @Component({
   selector: 'app-create-edit-user-group',
   templateUrl: './create-edit-user-group.component.html',
   styleUrls: ['./create-edit-user-group.component.less']
 })
-export class CreateEditUserGroupComponent implements OnInit {
-  OrgId:number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-  // OrgId:number = 32;
-  // usrgrp: UserGroup = {
-  //   organizationId: null,
-  //   name: null,
-  //   isActive: null,
-  //   id: null,
-  //   usergroupId: null,
-  //   vehicles: null,
-  //   users: null,
-  //   userGroupDescriptions: null,
-  // };
-  accountgrp: AccountGroup = {
-    // id: 1  ,
-    // name: '',
-    // description: '',
-    accountGroupId : 0,
-    organizationId : this.OrgId,
-    accountId : 0,
-    accounts : true,
-    accountCount : true,
-  }
-  // getAccountGrp: GetAccountGrp  = {
-  //     accountGroupId : null,
-  //     organizationId : null,
-  //     accountId : null,
-  //     accounts : true,
-  //     accountCount : true
-  // }
 
+export class CreateEditUserGroupComponent implements OnInit {
+  OrgId: number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+  accountgrp: AccountGroup = {
+    accountGroupId: 0,
+    organizationId: this.OrgId,
+    accountId: 0,
+    accounts: true,
+    accountCount: true,
+  }
   createaccountgrp = {
     id: 0,
     name: "",
-    organizationId : this.OrgId,
-    description : "",
-     accountCount : 0,
-     accounts : [
+    organizationId: this.OrgId,
+    description: "",
+    accountCount: 0,
+    accounts: [
       {
         "accountGroupId": 0,
         "accountId": 0
       }
     ]
-  }  
-
+  }
   @Output() backToPage = new EventEmitter<any>();
-  // UsrGrpColumns: string[] = [
-  //   'All',
-  //   'User Name',
-  //   'Email ID',
-  //   'User Role',
-  //   'User Group',
-  // ];
-  displayedColumns: string[] = [
-    'select',
-    'firstName',
-    'emailId',
-    'roles',
-    'accountGroups',
-  ];
-
+  displayedColumns: string[] = ['select', 'firstName', 'emailId', 'roles', 'accountGroups'];
   vehGrp: VehicleGroup;
   vehSelectionFlag: boolean = false;
   mainTableFlag: boolean = true;
@@ -100,11 +57,9 @@ export class CreateEditUserGroupComponent implements OnInit {
   newUserGroupName: any;
   enteredUserGroupDescription: any;
   editUserContent: boolean = false;
-  updatedRowData : object = {}
-  selectedAccounts =  new SelectionModel(true,[]);
+  updatedRowData: object = {}
+  selectedAccounts = new SelectionModel(true, []);
   accountSelected = [];
-  // hidden: boolean;
-  
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   inputText: any;
@@ -113,9 +68,7 @@ export class CreateEditUserGroupComponent implements OnInit {
   @Input() editFlag: boolean;
   @Input() viewDisplayFlag: boolean;
   @Input() selectedRowData: any;
-
   userCreatedMsg: any = '';
-  // grpTitleVisible: boolean = false;
   userName: string = '';
   viewFlag: boolean = false;
   initData: any;
@@ -124,14 +77,11 @@ export class CreateEditUserGroupComponent implements OnInit {
   orgId: number;
   duplicateEmailMsg: boolean = false;
   breadcumMsg: any = '';
-
   UserGroupForm: FormGroup;
-  constructor(private _formBuilder: FormBuilder,
-    private _snackBar: MatSnackBar,
-    private accountService: AccountService) { }
 
+  constructor(private _formBuilder: FormBuilder, private _snackBar: MatSnackBar, private accountService: AccountService) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.orgId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.UserGroupForm = this._formBuilder.group({
       userGroupName: ['', [Validators.required]],
@@ -141,11 +91,11 @@ export class CreateEditUserGroupComponent implements OnInit {
     this.breadcumMsg = this.getBreadcum();
   }
 
-  getBreadcum(){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblUserGroupManagement ? this.translationData.lblUserGroupManagement : "User Group Management"} / ${this.translationData.lblUserGroupDetails ? this.translationData.lblUserGroupDetails : 'User Group Details'}`;
+  getBreadcum() {
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblUserGroupManagement ? this.translationData.lblUserGroupManagement : "User Group Management"} / ${this.translationData.lblUserGroupDetails ? this.translationData.lblUserGroupDetails : 'User Group Details'}`;
   }
 
-  makeRoleAccountGrpList(initdata){
+  makeRoleAccountGrpList(initdata) {
     initdata.forEach((element, index) => {
       let roleTxt: any = '';
       let accGrpTxt: any = '';
@@ -156,169 +106,148 @@ export class CreateEditUserGroupComponent implements OnInit {
         accGrpTxt += resp.name + ',';
       });
 
-      if(roleTxt != ''){
+      if (roleTxt != '') {
         roleTxt = roleTxt.slice(0, -1);
       }
-      if(accGrpTxt != ''){
+      if (accGrpTxt != '') {
         accGrpTxt = accGrpTxt.slice(0, -1);
       }
 
-      initdata[index].roleList = roleTxt; 
+      initdata[index].roleList = roleTxt;
       initdata[index].accountGroupList = accGrpTxt;
     });
-    
+
     return initdata;
   }
 
   loadUsersData() {
-  
     let getUserData: any = {
-      "accountId": 0,
-      "organizationId": this.OrgId,
-      // "organizationId": this.selectedRowData.organizationId,
-      "accountGroupId": 0,
-      // "accountGroupId": this.selectedRowData.id,
-      "vehicleGroupId": 0,
-      "roleId": 0,
-      "name": ""
+      accountId: 0,
+      organizationId: this.OrgId,
+      accountGroupId: 0,
+      vehicleGroupId: 0,
+      roleId: 0,
+      name: ""
     }
-
     this.accountService.getAccountDetails(getUserData).subscribe((usrlist) => {
       usrlist = this.makeRoleAccountGrpList(usrlist);
       this.updatedRowData = usrlist;
-
-      // this.filterFlag = true;
       this.initData = usrlist;
       this.dataSourceUsers = new MatTableDataSource(usrlist);
       this.dataSourceUsers.paginator = this.paginator;
       this.dataSourceUsers.sort = this.sort;
-      if(this.editFlag || this.viewDisplayFlag){
+      if (this.editFlag || this.viewDisplayFlag) {
         this.onReset();
       }
     });
-}
+  }
 
   onCancel() {
     this.createStatus = false;
     this.backToPage.emit({ editFlag: false, editText: 'cancel' });
   }
-  onReset(){
+
+  onReset() {
     this.UserGroupForm.patchValue({
       userGroupName: this.selectedRowData.name,
       userGroupDescription: this.selectedRowData.description,
     });
-
     this.accountSelected = this.selectedRowData.groupRef;
-      
-      this.dataSourceUsers.data.forEach(row => {
-        if(this.accountSelected){
-          for(let element of this.accountSelected){
-            if(element.ref_Id == row.id){
-              this.selectionForVehGrp.select(row);
-               if(this.viewDisplayFlag){
-                let selectedRow = this.selectionForVehGrp.selected;
-                this.displayedColumns = [
-                  'firstName', 'emailId', 'roles', 'accountGroups',
-                ];
-                // this.hidden = true;
-                this.initData = selectedRow;
-                this.dataSourceUsers = new MatTableDataSource(selectedRow);
-                this.dataSourceUsers.paginator = this.paginator;
-                this.dataSourceUsers.sort = this.sort;
-              }
-              break;
+    this.dataSourceUsers.data.forEach(row => {
+      if (this.accountSelected) {
+        for (let element of this.accountSelected) {
+          if (element.ref_Id == row.id) {
+            this.selectionForVehGrp.select(row);
+            if (this.viewDisplayFlag) {
+              let selectedRow = this.selectionForVehGrp.selected;
+              this.displayedColumns = ['firstName', 'emailId', 'roles', 'accountGroups'];
+              this.initData = selectedRow;
+              this.dataSourceUsers = new MatTableDataSource(selectedRow);
+              this.dataSourceUsers.paginator = this.paginator;
+              this.dataSourceUsers.sort = this.sort;
             }
-            else{
-              this.selectionForVehGrp.deselect(row);
-            }
+            break;
+          }
+          else {
+            this.selectionForVehGrp.deselect(row);
           }
         }
-      })
+      }
+    })
   }
 
-  onInputChange(event) {
-
+  onInputChange(event: any) {
     this.newUserGroupName = event.target.value;
-    console.log("---this.newUserGroupName--",this.newUserGroupName)
   }
-  onInputGD(event) {
+
+  onInputGD(event: any) {
     this.enteredUserGroupDescription = event.target.value;
   }
 
-  onCreate(res) {
+  onCreate() {
     this.duplicateEmailMsg = false;
     let create = document.getElementById("createUpdateButton");
-
     let accountList = [];
     this.selectionForVehGrp.selected.forEach(element => {
-      accountList.push({ "accountGroupId" : (element.accountGroups.length > 0 ? element.accountGroups[0].id : 0 )  , "accountId": element.id})
+      accountList.push({ "accountGroupId": (element.accountGroups.length > 0 ? element.accountGroups[0].id : 0), "accountId": element.id })
     });
-    
-    //-----------------------------------------
+
     this.createaccountgrp = {
       id: 0,
       name: this.UserGroupForm.controls.userGroupName.value,
       description: this.UserGroupForm.controls.userGroupDescription.value,
-      organizationId : this.OrgId,
-      accounts : accountList,
-      accountCount : 0,
+      organizationId: this.OrgId,
+      accounts: accountList,
+      accountCount: 0,
     }
-
-  
 
     if (create.innerText == "Confirm") {
       this.createaccountgrp = {
         id: this.selectedRowData.id,
         name: this.UserGroupForm.controls.userGroupName.value,
         description: this.UserGroupForm.controls.userGroupDescription.value,
-        organizationId : this.selectedRowData.organizationId,
-        accounts : accountList,
-        accountCount : 0,
+        organizationId: this.selectedRowData.organizationId,
+        accounts: accountList,
+        accountCount: 0,
       }
 
-        this.accountService.updateAccountGroup(this.createaccountgrp).subscribe((d) => {
+      this.accountService.updateAccountGroup(this.createaccountgrp).subscribe((d) => {
         this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp) => {
-
           this.userCreatedMsg = this.getUserCreatedMessage();
           this.createStatus = false;
           this.editUserContent = false;
           this.editFlag = false;
           this.viewDisplayFlag = false;
-
-
           this.products = grp;
           this.initData = grp;
           this.dataSource = new MatTableDataSource(grp);
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
           this.backToPage.emit({ FalseFlag: false, editText: 'create', gridData: grp, successMsg: this.userCreatedMsg });
-        });
-      }, (error) => { 
-        console.log(error);
-        if(error.status == 409){
+        }, (err) => { });
+      }, (error) => {
+        //console.log(error);
+        if (error.status == 409) {
           this.duplicateEmailMsg = true;
         }
-       });
+      });
     } else if (create.innerText == "Create") {
       this.accountService.createAccountGroup(this.createaccountgrp).subscribe((d) => {
-      this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp) => {
-
-        this.userCreatedMsg = this.getUserCreatedMessage();
-        this.createStatus = false;
-        this.editUserContent = false;
-        this.editFlag = false;
-        this.viewDisplayFlag = false;
-
+        this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp) => {
+          this.userCreatedMsg = this.getUserCreatedMessage();
+          this.createStatus = false;
+          this.editUserContent = false;
+          this.editFlag = false;
+          this.viewDisplayFlag = false;
           this.backToPage.emit({ FalseFlag: false, editText: 'create', gridData: grp, successMsg: this.userCreatedMsg });
-        });
-      }, (error) => { 
+        }, (err) => { });
+      }, (error) => {
         console.log(error);
-        if(error.status == 409){
+        if (error.status == 409) {
           this.duplicateEmailMsg = true;
         }
-       });
+      });
     }
-
   }
 
   getUserCreatedMessage() {
@@ -336,33 +265,13 @@ export class CreateEditUserGroupComponent implements OnInit {
     }
   }
 
-  // loadUserGroupData(orgid) {
-  //   this.accountService.getAccountGroupDetails(orgid).subscribe((grp) => {
-  //     this.products = grp;
-  //     this.initData = grp;
-  //     this.dataSource = new MatTableDataSource(grp);
-  //     this.dataSource.paginator = this.paginator;
-  //     this.dataSource.sort = this.sort;
-  //   });
-  // }
-
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSourceUsers.filter = filterValue;
   }
 
-  openSnackBar(message: string, action: string) {
-    let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
-    snackBarRef.afterDismissed().subscribe(() => {
-      console.log('The snackbar is dismissed');
-    });
-    snackBarRef.onAction().subscribe(() => {
-      console.log('The snackbar action was triggered!');
-    });
-  }
-
-  editFunc() {
+  onEdit() {
     this.createStatus = false;
     this.editFlag = false;
     this.editUserContent = true;
@@ -371,7 +280,6 @@ export class CreateEditUserGroupComponent implements OnInit {
       userGroupDescription: this.selectedRowData.description,
     })
   }
-
 
   masterToggleForVehGrp() {
     this.isAllSelectedForVehGrp()
@@ -387,7 +295,7 @@ export class CreateEditUserGroupComponent implements OnInit {
     return numSelected === numRows;
   }
 
-  checkboxLabelForVehGrp(row?): string {
+  checkboxLabelForVehGrp(row?: any): string {
     if (row)
       return `${this.isAllSelectedForVehGrp() ? 'select' : 'deselect'} all`;
     else
@@ -395,6 +303,4 @@ export class CreateEditUserGroupComponent implements OnInit {
         } row`;
   }
 
-
 }
-
