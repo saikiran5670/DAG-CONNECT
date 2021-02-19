@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Inject, OnInit, Output } from '@angular/core';
+import { Component, HostListener, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -10,6 +10,7 @@ import { AccountService } from '../../../services/account.service';
   templateUrl: './change-password.component.html',
   styleUrls: ['./change-password.component.less']
 })
+
 export class ChangePasswordComponent implements OnInit {
   public changePasswordForm : FormGroup
   password: string;
@@ -18,9 +19,8 @@ export class ChangePasswordComponent implements OnInit {
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     translationData: any,
     accountInfo: any
-  },private mdDialogRef: MatDialogRef<ChangePasswordComponent>, public router: Router, public fb: FormBuilder, private accountService: AccountService) {
+  }, private mdDialogRef: MatDialogRef<ChangePasswordComponent>, public router: Router, public fb: FormBuilder, private accountService: AccountService) {
     this.changePasswordForm = this.fb.group({
-     // 'currentPassword': [null, Validators.compose([Validators.required])],
       'newPassword': [null, Validators.compose([Validators.required, Validators.minLength(8)])],
       'confirmPassword': [null, Validators.compose([Validators.required])],
     },{
@@ -35,9 +35,7 @@ export class ChangePasswordComponent implements OnInit {
       this.minCharacterTxt =  ("'$' characters min").replace('$', '8');
   }
 
-  ngOnInit(): void {
-    
-  }
+  ngOnInit() { }
 
   public cancel() {
     this.close(false);
@@ -49,7 +47,6 @@ export class ChangePasswordComponent implements OnInit {
 
   public onChangePassword(formValue) {
     if (this.changePasswordForm.valid) {
-      let selectedValues = formValue;
       let objData: any = {
         emailId: this.data.accountInfo.emailId,
         password: formValue.newPassword
@@ -65,4 +62,5 @@ export class ChangePasswordComponent implements OnInit {
   public onEsc() {
     this.close(false);
   }
+
 }

@@ -20,7 +20,7 @@ import { DirectivesModule } from '../directives/directives.module';
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA,
   ],
-  exports: [AccountInfoSettingsComponent],
-  entryComponents: [AccountInfoSettingsComponent]
+  exports: [ AccountInfoSettingsComponent ],
+  entryComponents: [ AccountInfoSettingsComponent ]
 })
 export class PreferencesModule { }
