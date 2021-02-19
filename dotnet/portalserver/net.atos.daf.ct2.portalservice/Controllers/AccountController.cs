@@ -446,7 +446,75 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, "Internal Server Error.");
             }
         }
+        [HttpPost]
+        [Route("accessrelationship/delete")]
+        public async Task<IActionResult> DeleteAccessRelationship(AccountBusinessService.AccessRelationshipDeleteRequest request)
+        {
+            try
+            {
+                // Validation                 
+                if (request.AccountGroupId <= 0 || request.VehicleGroupId <= 0) 
+                {
+                    return StatusCode(400, "The AccountGroupId,VehicleGroupId is required");
+                }
+                AccountBusinessService.AccessRelationshipResponse accessRelationship  = await _accountClient.DeleteAccessRelationshipAsync(request);
+                if (accessRelationship != null && accessRelationship.Code==AccountBusinessService.Responcecode.Success)
+                {
+                    return Ok(accessRelationship);
+                }
+                else if (accessRelationship != null && accessRelationship.Code==AccountBusinessService.Responcecode.Failed 
+                    && accessRelationship.Message=="The delete access group , Account Group Id and Vehicle Group Id is required.")
+                {
+                    return StatusCode(400, "The delete access group , Account Group Id and Vehicle Group Id is required.");
+                }
+                else
+                {
+                    return StatusCode(500, "Internal  Server error");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:create access relationship with exception - " + ex.Message);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+        [HttpGet]
+        [Route("accessrelationship/get")]
+        public async Task<IActionResult> GetAccessRelationship(int AccountId, int AccountGroupId,int VehicleGroupId)
+        {
+            try
+            {
+                // Validation                 
+                if ((AccountId <= 0) && (AccountGroupId <= 0))
+                {
+                    return StatusCode(400, "The AccountId or AccountGroupId is required");
+                }
+                AccountBusinessService.AccessRelationshipFilter request = new AccountBusinessService.AccessRelationshipFilter();
+                request.AccountId = AccountId;
+                request.AccountGroupId = AccountGroupId;
+                request.VehicleGroupId = VehicleGroupId;
+                AccountBusinessService.AccessRelationshipDataList accessRelationship = await _accountClient.GetAccessRelationshipAsync(request);
+                if (accessRelationship != null && accessRelationship.Code==AccountBusinessService.Responcecode.Success)
+                {
+                    return Ok(accessRelationship);
+                }
+                else if (accessRelationship != null && accessRelationship.Code==AccountBusinessService.Responcecode.Failed 
+                    && accessRelationship.Message=="Please provide AccountId or AccountGroupId or VehicleGroupId to get AccessRelationship.")
+                {
+                    return StatusCode(400, "Please provide AccountId or AccountGroupId or VehicleGroupId to get AccessRelationship.");
+                }
+                else
+                {
+                    return StatusCode(500, "Internal  Server error");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:get accessrelatioship with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+        // End - AccessRelationshhip
 
-    
     }
 }
