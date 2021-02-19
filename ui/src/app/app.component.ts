@@ -57,7 +57,8 @@ export class AppComponent {
     usermanagement: 'User Management',
     vehiclemanagement: 'Vehicle Management',
     drivermanagement: 'Driver Management',
-    userrolemanagement: 'User Role Management'
+    userrolemanagement: 'User Role Management',
+    vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship'
   }
   public menuStatus = {
     dashboard : {
@@ -95,7 +96,8 @@ export class AppComponent {
         usermanagement: 'User Management',
         drivermanagement: 'Driver Management',
         userrolemanagement: 'User Role Management',
-        vehiclemanagement: 'Vehicle Management'
+        vehiclemanagement: 'Vehicle Management',
+        vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship'
       }
     },
     tachograph : {
@@ -268,6 +270,7 @@ export class AppComponent {
       lblUserGroupManagement: "User Group Management",
       lblUserManagement: "User Management",
       lblUserRoleManagement: "User Role Management",
+      lblVehicleAccountAccessRelationship: 'Vehicle/Account Access-Relationship',
       lblDriverManagement: "Driver Management",
       lblLiveFleet: "Live Fleet",
       lblLogBook: "Log Book",
