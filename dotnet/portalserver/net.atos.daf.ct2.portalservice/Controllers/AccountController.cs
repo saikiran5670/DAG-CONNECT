@@ -639,7 +639,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 //Need to confrim gRPC service method name.
-                return Ok(true);
+                return Ok("true");
             }
             catch (Exception ex)
             {
