@@ -29,6 +29,7 @@ import { CreateEditVehicleDetailsComponent } from '../admin/vehicle-management/c
 import { EditVINSettingComponent } from '../admin/vehicle-management/edit-vin-setting/edit-vin-setting.component';
 import { VehicleService } from '../services/vehicle.service';
 import { VehicleManagementComponent } from '../admin/vehicle-management/vehicle-management.component';
+import { VehicleAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/vehicle-account-access-relationship.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { VehicleManagementComponent } from '../admin/vehicle-management/vehicle-
     UserDetailTableComponent,
     VehicleManagementComponent,
     CreateEditVehicleDetailsComponent,
-    EditVINSettingComponent
+    EditVINSettingComponent,
+    VehicleAccountAccessRelationshipComponent
   ],
   imports: [
       CommonModule,
