@@ -73,6 +73,10 @@ spec:
           servicePort: 80
         path: /authenticationservicepoc
       - backend:
+          serviceName: portalservicepoc
+          servicePort: 80
+        path: /portalservicepoc
+      - backend:
           serviceName: uimanagement-service
           servicePort: 80
         path: /  
