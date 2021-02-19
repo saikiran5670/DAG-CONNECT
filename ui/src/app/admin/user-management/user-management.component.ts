@@ -21,7 +21,6 @@ export class UserManagementComponent implements OnInit {
   viewFlag: boolean = false;
   dataSource: any;
   roleData: any;
-  vehGrpData: any;
   userGrpData: any;
   defaultSetting: any;
   selectedRoleData: any;
@@ -141,7 +140,7 @@ export class UserManagementComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
       id: 0,
-      code: this.localStLanguage.code, //-- TODO: Lang code based on account 
+      code: this.localStLanguage.code,
       type: "Menu",
       name: "",
       value: "",
@@ -282,7 +281,6 @@ export class UserManagementComponent implements OnInit {
     }
     this.accountService.getAccountDetails(obj).subscribe((usrlist)=>{
       this.filterFlag = true;
-      //this.initData = usrlist;
       this.hideloader();
       this.initData = this.makeRoleAccountGrpList(usrlist);
       this.dataSource = new MatTableDataSource(this.initData);
@@ -394,13 +392,6 @@ export class UserManagementComponent implements OnInit {
     this.dataSource = dataSource;
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-  }
-
-  viewUserGrpDetails(rowData: any){
-    //console.log("rowData:: ", rowData);
-    // this.userService.getUsers().subscribe((data)=>{
-    //   this.callToUserDetailTable(data);  
-    // });
   }
 
   callToUserDetailTable(tableData: any){
