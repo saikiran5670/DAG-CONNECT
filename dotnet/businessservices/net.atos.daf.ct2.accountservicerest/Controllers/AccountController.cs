@@ -554,7 +554,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
+                _logger.LogError("Error in account service:delete account preference with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
                 if (ex.Message.Contains(FK_Constraint))
                 {
@@ -753,7 +753,6 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 group.FunctionEnum = Group.FunctionEnum.None;
                 group.GroupType = Group.GroupType.Group;
                 group.ObjectType = Group.ObjectType.AccountGroup;
-
                 var result = await groupmanager.Create(group);
                 // check for exists
                 if (result.Exists)
