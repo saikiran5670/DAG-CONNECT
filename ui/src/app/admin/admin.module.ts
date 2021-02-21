@@ -1,4 +1,4 @@
-import { NgModule,CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin.component';
@@ -11,8 +11,6 @@ import { ConfirmDialogService } from '../shared/confirm-dialog/confirm-dialog.se
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { DeleteDialogComponent } from '../shared/confirm-dialog/delete-dialog.component';
 import { UserManagementComponent } from './user-management/user-management.component';
-import { UserGroupStepComponent } from './user-group-management/user-group-step/user-group-step.component';
-import { ConfirmStepComponent } from './user-group-management/user-group-step/confirm-step/confirm-step.component';
 import { NewUserStepComponent } from './user-management/new-user-step/new-user-step.component';
 import { SummaryStepComponent } from './user-management/new-user-step/summary-step/summary-step.component';
 import { DriverManagementComponent } from './driver-management/driver-management.component';
@@ -31,15 +29,16 @@ import { CreateEditVehicleDetailsComponent } from '../admin/vehicle-management/c
 import { EditVINSettingComponent } from '../admin/vehicle-management/edit-vin-setting/edit-vin-setting.component';
 import { VehicleService } from '../services/vehicle.service';
 import { VehicleManagementComponent } from '../admin/vehicle-management/vehicle-management.component';
+import { VehicleAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/vehicle-account-access-relationship.component';
 
 @NgModule({
-  declarations: [AdminComponent, UserGroupManagementComponent,
+  declarations: [
+    AdminComponent,
+    UserGroupManagementComponent,
     OrganisationDetailsComponent,
     ConfirmDialogComponent,
     DeleteDialogComponent,
     UserManagementComponent,
-    UserGroupStepComponent,
-    ConfirmStepComponent,
     NewUserStepComponent,
     SummaryStepComponent,
     DriverManagementComponent,
@@ -50,20 +49,24 @@ import { VehicleManagementComponent } from '../admin/vehicle-management/vehicle-
     CreateEditUserGroupComponent,
     EditViewUserComponent,
     EditCommonTableComponent,
-    UserDetailTableComponent,VehicleManagementComponent, CreateEditVehicleDetailsComponent, EditVINSettingComponent],
+    UserDetailTableComponent,
+    VehicleManagementComponent,
+    CreateEditVehicleDetailsComponent,
+    EditVINSettingComponent,
+    VehicleAccountAccessRelationshipComponent
+  ],
   imports: [
-    CommonModule,
-    AdminRoutingModule,
-    FormsModule,
-    ReactiveFormsModule,
-    SharedModule,
-    ChartsModule,
-    ImageCropperModule,
-    DirectivesModule
+      CommonModule,
+      AdminRoutingModule,
+      FormsModule,
+      ReactiveFormsModule,
+      SharedModule,
+      ChartsModule,
+      ImageCropperModule,
+      DirectivesModule
     ],
     providers: [ConfirmDialogService, AccountService, VehicleService],
-    schemas: [
-      CUSTOM_ELEMENTS_SCHEMA
-    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
+
 export class AdminModule { }
