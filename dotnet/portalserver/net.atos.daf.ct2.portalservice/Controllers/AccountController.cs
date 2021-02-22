@@ -57,7 +57,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "Internal Server Error.");
+                    return StatusCode(500, "accountResponse is null");
                 }
             }
             catch (Exception ex)
@@ -68,7 +68,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
                 [HttpPost]
@@ -106,7 +106,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "Internal Server Error.");
+                    return StatusCode(500, "accountResponse is null");
                 }
 
             }
@@ -118,7 +118,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }                
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         [HttpDelete]
@@ -145,7 +145,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:delete account with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
                 [HttpPost]
@@ -167,7 +167,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:delete account with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         [HttpPost]
@@ -196,7 +196,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         [HttpPost]
@@ -224,7 +224,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
          // Begin Account Preference
@@ -262,7 +262,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }                
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }        
         [HttpPost]
@@ -297,7 +297,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         [HttpDelete]
@@ -331,7 +331,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         [HttpGet]
@@ -360,7 +360,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:get account preference with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         // End - Account Preference
@@ -406,7 +406,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         [HttpPost]
@@ -443,7 +443,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         [HttpPost]
@@ -475,7 +475,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:create access relationship with exception - " + ex.Message);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         [HttpGet]
@@ -511,7 +511,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:get accessrelatioship with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         // End - AccessRelationshhip
@@ -540,7 +540,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:create account group with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         [HttpPost]
@@ -568,7 +568,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:create account group with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         [HttpPut]
@@ -597,7 +597,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in delete account group :DeleteGroup with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         [HttpPost]
@@ -629,7 +629,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         [HttpPut]
@@ -649,7 +649,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         
@@ -677,7 +677,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:get account group with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
                 [HttpPost]
@@ -704,7 +704,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:get account group details with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         // End Account Group
@@ -739,7 +739,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         [HttpPost]
@@ -771,7 +771,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         [HttpPost]
@@ -802,7 +802,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:get account roles with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
             }
         }
         // End Account Role
