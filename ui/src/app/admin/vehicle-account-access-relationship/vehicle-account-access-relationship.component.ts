@@ -26,6 +26,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   showLoadingIndicator: any;
+  isViewListDisabled: boolean = false;
   
   constructor(private translationService: TranslationService, private accountService: AccountService) { 
     this.defaultTranslation();
@@ -91,6 +92,14 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
         this.dataSource.sort = this.sort;
       });
     });
+    this.selectedViewType = this.selectedViewType == '' ? 'both' : this.selectedViewType;
+    this.selectedColumnType = this.selectedColumnType == '' ? 'vehicle' : this.selectedColumnType;
+    if(this.selectedColumnType == 'account'){
+      this.isViewListDisabled = true;
+    }
+    else{
+      this.isViewListDisabled = false;
+    }
   }
 
   makeRoleAccountGrpList(initdata: any){
@@ -137,7 +146,12 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   }
 
   onColumnChange(event: any){
-
+    if(event.value == 'account'){
+      this.isViewListDisabled = true;
+    }
+    else{
+      this.isViewListDisabled = false;
+    }
   }
 
   checkCreation(item: any){

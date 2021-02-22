@@ -946,3 +946,21 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
         padding-left: 10px !important;
     }
 }
+
+.disableRadioBtn {
+    .mat-radio-button {
+        &.mat-accent{
+            &.mat-radio-checked{
+                .mat-radio-outer-circle{
+                    border-color: #29539c61;
+                }
+            }
+            .mat-radio-inner-circle{
+                background-color: #29539c61;
+            }
+        }
+    }
+    .radioLabel{
+        color: rgba(0,0,0,.38);
+    }
+}

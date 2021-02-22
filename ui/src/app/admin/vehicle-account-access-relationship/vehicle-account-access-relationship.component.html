@@ -15,16 +15,16 @@
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllAccessRelationshipDetails || 'All Access Relationship Details' }}</span>
       </div>
     </div>
-    <div fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
           <mat-form-field appearance="outline">
               <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
               <span matPrefix><mat-icon>search</mat-icon></span>
           </mat-form-field>
         </div>
-        <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
-          <span>{{ translationData.lblViewlistby || 'View list by' }}:</span>
-          <mat-radio-group (change)='onListChange($event)'>
+        <div [ngClass]="{'disableRadioBtn': isViewListDisabled}" class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
+          <span class='radioLabel'>{{ translationData.lblViewlistby || 'View list by' }}:</span>
+          <mat-radio-group (change)='onListChange($event)' [disabled]="isViewListDisabled">
             <mat-radio-button style='margin-right: 20px;' value="group"
               [checked]="selectedViewType ===  'group' ? true : false">{{ translationData.lblGroup || 'Group' }}
             </mat-radio-button>
