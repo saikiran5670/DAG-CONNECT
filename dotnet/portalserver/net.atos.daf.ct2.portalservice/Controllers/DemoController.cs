@@ -10,6 +10,7 @@ using net.atos.daf.ct2.authenticationservice;
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
+    [Route("demopoc")]
     public class DemoController: ControllerBase
     {
         private readonly Greeter.GreeterClient _greeterClient;

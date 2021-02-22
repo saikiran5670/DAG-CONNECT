@@ -10,6 +10,7 @@ using AccountBusinessService = net.atos.daf.ct2.accountservice;
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
+    [Route("accountpoc")]
     public class AccountController: ControllerBase
     {
         private readonly ILogger<AccountController> _logger;
