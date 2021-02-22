@@ -65,17 +65,21 @@ spec:
           servicePort: 80
         path: /feature
       - backend:
-          serviceName: accountservice-poc 
+          serviceName: portalservicepoc
           servicePort: 80
-        path: /accountservicepoc
-      - backend:
-          serviceName: authenticationservice-poc
-          servicePort: 80
-        path: /authenticationservicepoc
+        path: /portalservice
       - backend:
           serviceName: portalservicepoc
           servicePort: 80
-        path: /portalservicepoc
+        path: /accountpoc
+      - backend:
+          serviceName: portalservicepoc
+          servicePort: 80
+        path: /authenticationpoc    
+      - backend:
+          serviceName: portalservicepoc
+          servicePort: 80
+        path: /demopoc   
       - backend:
           serviceName: uimanagement-service
           servicePort: 80
