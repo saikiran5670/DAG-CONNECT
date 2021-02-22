@@ -169,7 +169,7 @@
     <div id="sideMenuCollapseBtnContainer" class='sideMenuCollapseBtnContainer'
         [ngClass]="menuCollapsed ? 'withCollapse' : 'withoutCollapse'" *ngIf="isLogedIn">
         <button mat-icon-button (click)="sidenavToggle()" class="collapseBtn">
-            <mat-icon>{{menuCollapsed ? 'keyboard_arrow_right' : 'keyboard_arrow_left'}}</mat-icon>
+            <mat-icon  matTooltip="{{menuCollapsed ? 'Expand' : 'Collapse'}}">{{menuCollapsed ? 'keyboard_arrow_right' : 'keyboard_arrow_left'}}</mat-icon>
         </button>
     </div>
     <mat-sidenav-container fxFlexFill [ngClass]="{'rightContainer': isLogedIn, 'menuCollapsed' : menuCollapsed }">

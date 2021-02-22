@@ -34,8 +34,8 @@ namespace net.atos.daf.ct2.portalservice
             var authservice = Configuration["ServiceConfiguration:authservice"];
             var accountservice = Configuration["ServiceConfiguration:accountservice"];
             // We are enforcing to call Insercure service             
-            // AppContext.SetSwitch(
-            //         "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            AppContext.SetSwitch(
+                    "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
             services.AddControllers();
             services.AddGrpcClient<Greeter.GreeterClient>(o =>

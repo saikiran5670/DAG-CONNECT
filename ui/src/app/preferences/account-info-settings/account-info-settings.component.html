@@ -170,15 +170,15 @@
                 <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}<span class='mandatoryColor'>*</span>
                 </mat-label>
                 <mat-form-field appearance="outline" class="full-width">
-                  <input maxlength="50" placeholder="{{ translationData.lblLoginEmail || 'Login Email' }}" matInput readonly
+                  <input maxlength="50" placeholder="{{ translationData.lblLoginEmail || 'Login Email' }}" matInput 
                     formControlName="loginEmail" pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}" required>
                 </mat-form-field>
-                <mat-error *ngIf="accountSettingsForm.get('loginEmail').hasError('required')">
+                <!-- <mat-error *ngIf="accountSettingsForm.get('loginEmail').hasError('required')">
                   {{ translationData.lblPleaseenteremailID || 'Please enter email ID' }}
                 </mat-error>
                 <mat-error *ngIf="accountSettingsForm.get('loginEmail').hasError('email')">
                   {{ translationData.lblPleaseentervalidemailID || 'Please enter valid email ID' }}
-                </mat-error>
+                </mat-error> -->
               </div>
               <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
