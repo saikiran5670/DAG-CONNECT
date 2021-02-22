@@ -1,4 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { AccountService } from '../../services/account.service';
 import { TranslationService } from '../../services/translation.service';
 
 @Component({
@@ -13,8 +17,17 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   translationData: any;
   localStLanguage: any;
   accountOrganizationId: any;
-
-  constructor(private translationService: TranslationService) { 
+  selectedViewType: any = '';
+  selectedColumnType: any = '';
+  createAccessRelation: boolean = false;
+  displayedColumns: string[] = ['firstName','emailId','roles','accountGroups','action'];
+  dataSource: any;
+  initData: any = [];
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+  showLoadingIndicator: any;
+  
+  constructor(private translationService: TranslationService, private accountService: AccountService) { 
     this.defaultTranslation();
   }
 
@@ -40,26 +53,100 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
+      this.loadAccountData();
     });
   }
 
   processTranslation(transData: any){
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
   }
 
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    //this.dataSource.filter = filterValue;
+    this.dataSource.filter = filterValue;
   }
 
-  newAssociation(){
+  createNewAssociation(){
+    this.createAccessRelation = true;
+  }
+
+  loadAccountData(){
+    this.showLoadingIndicator = true;
+    let obj: any = {
+      accountId: 0,
+      organizationId: this.accountOrganizationId,
+      accountGroupId: 0,
+      vehicleGroupGroupId: 0,
+      roleId: 0,
+      name: ""
+    }
+    this.accountService.getAccountDetails(obj).subscribe((usrlist) => {
+      this.hideloader();
+      this.initData = this.makeRoleAccountGrpList(usrlist);
+      this.dataSource = new MatTableDataSource(this.initData);
+      setTimeout(()=>{
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      });
+    });
+  }
+
+  makeRoleAccountGrpList(initdata: any){
+    let accountId =  localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    initdata = initdata.filter(item => item.id != accountId);
+    initdata.forEach((element, index) => {
+      let roleTxt: any = '';
+      let accGrpTxt: any = '';
+      element.roles.forEach(resp => {
+        roleTxt += resp.name + ', ';
+      });
+      element.accountGroups.forEach(resp => {
+        accGrpTxt += resp.name + ', ';
+      });
+
+      if(roleTxt != ''){
+        roleTxt = roleTxt.slice(0, -2);
+      }
+      if(accGrpTxt != ''){
+        accGrpTxt = accGrpTxt.slice(0, -2);
+      }
+
+      initdata[index].roleList = roleTxt; 
+      initdata[index].accountGroupList = accGrpTxt;
+    });
+    
+    return initdata;
+  }
+
+  editViewAccessRelationship(element: any, type: any) {
+
+  }
+
+  deleteAccessRelationship(element: any){
 
   }
 
   onClose(){
+    this.titleVisible = false;
+  }
 
+  onListChange(event: any){
+
+  }
+
+  onColumnChange(event: any){
+
+  }
+
+  checkCreation(item: any){
+    this.createAccessRelation = !this.createAccessRelation;
+  }
+
+  hideloader() {
+    // Setting display of spinner
+      this.showLoadingIndicator=false;
   }
 
 }
