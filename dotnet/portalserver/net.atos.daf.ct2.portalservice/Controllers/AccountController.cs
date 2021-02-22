@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if(accountResponse!=null && accountResponse.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(accountResponse);
+                    return Ok(accountResponse.Account);
                 }
                 else
                 {
@@ -103,7 +103,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if(accountResponse!=null && accountResponse.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(accountResponse);
+                    return Ok(accountResponse.Account);
                 }
                 else
                 {
@@ -187,11 +187,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountDataList  response = await _accountClient.GetAsync(accountFilter);
                 if (response !=null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(response);
+                    if (response.Accounts && response.Accounts.count>0)
+                    {
+                        return Ok(response.Accounts);
+                    }
+                    else
+                    {
+                        StatusCode(404, "Accounts details are found.");
+                    }
                 }
                 else
                 {
-                    return StatusCode(404, "Accounts is not found.");
+                    return StatusCode(500, response.Message);
                 }
             }
             catch (Exception ex)
@@ -215,11 +222,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (response !=null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(response);
+                    if (response.Accounts && response.Accounts.count>0)
+                    {
+                        return Ok(response.AccountDetails);
+                    }
+                    else
+                    {
+                        StatusCode(404, "Accounts details are found.");
+                    }
                 }
                 else
                 {
-                    return StatusCode(404, "Accounts is not found.");
+                    return StatusCode(500, response.Message);
                 }
             }
             catch (Exception ex)
