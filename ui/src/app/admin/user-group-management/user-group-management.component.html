@@ -15,11 +15,6 @@
           'Group Details' }} -
           ({{ dataSource.filteredData.length }})</span>
       </div>
-      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-        <button mat-flat-button color="primary" (click)="newUserGroup()">
-          <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUserGroup || 'New User Group' }}
-        </button>
-      </div>
     </div>
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
       <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -30,6 +25,11 @@
             <mat-icon>search</mat-icon>
           </span>
         </mat-form-field>
+      </div>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+        <button mat-flat-button color="primary" (click)="newUserGroup()">
+          <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUserGroup || 'New User Group' }}
+        </button>
       </div>
     </div>
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>

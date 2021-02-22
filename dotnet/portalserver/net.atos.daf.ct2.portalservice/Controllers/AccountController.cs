@@ -10,6 +10,7 @@ using AccountBusinessService = net.atos.daf.ct2.accountservice;
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
+    [Route("accountpoc")]
     public class AccountController: ControllerBase
     {
         private readonly ILogger<AccountController> _logger;
@@ -53,7 +54,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if(accountResponse!=null && accountResponse.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(accountResponse);
+                    return Ok(accountResponse.Account);
                 }
                 else
                 {
@@ -102,7 +103,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if(accountResponse!=null && accountResponse.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(accountResponse);
+                    return Ok(accountResponse.Account);
                 }
                 else
                 {
@@ -186,11 +187,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountDataList  response = await _accountClient.GetAsync(accountFilter);
                 if (response !=null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(response);
+                    if (response.Accounts !=null && response.Accounts.Count>0)
+                    {
+                        return Ok(response.Accounts);
+                    }
+                    else
+                    {
+                        return StatusCode(404, "Accounts details are found.");
+                    }
                 }
                 else
                 {
-                    return StatusCode(404, "Accounts is not found.");
+                    return StatusCode(500, response.Message);
                 }
             }
             catch (Exception ex)
@@ -214,11 +222,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (response !=null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(response);
+                    if (response.AccountDetails !=null && response.AccountDetails.Count>0)
+                    {
+                        return Ok(response.AccountDetails);
+                    }
+                    else
+                    {
+                        return StatusCode(404, "Accounts details are found.");
+                    }
                 }
                 else
                 {
-                    return StatusCode(404, "Accounts is not found.");
+                    return StatusCode(500, response.Message);
                 }
             }
             catch (Exception ex)
@@ -247,11 +262,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountPreferenceResponse preference = await _accountClient.CreatePreferenceAsync(request);
                 if (preference !=null && preference.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(preference);
+                    return Ok(preference.AccountPreference);
                 }
                 else
                 {
-                    return StatusCode(500, "Internal  Server error");
+                    return StatusCode(500, "preference is null" + preference.Message);
                 }                
             }
             catch (Exception ex)
@@ -282,12 +297,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountPreferenceResponse preference = await _accountClient.UpdatePreferenceAsync(request);
                 if (preference !=null && preference.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(preference);
+                    return Ok(preference.AccountPreference);
                 }
                 else
                 {
-                    return StatusCode(500, "Internal  Server error");
-                }
+                    return StatusCode(500, "preference is null" + preference.Message);
+                }                
             }
             catch (Exception ex)
             {
@@ -306,22 +321,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         { 
             try
             {
-                AccountBusinessService.AccountPreferenceFilter request =new AccountBusinessService.AccountPreferenceFilter();
+                AccountBusinessService.IdRequest request =new AccountBusinessService.IdRequest();
                 // Validation                 
                 if (preferenceId <= 0)
                 {
                     return StatusCode(400, "The preferenceId Id is required");
                 }
-                request.Id =preferenceId;
+                request.Id =preferenceId;                
                 AccountBusinessService.AccountPreferenceResponse response= await _accountClient.DeletePreferenceAsync(request);
-                if (response !=null && response.Code==AccountBusinessService.Responcecode.Success)
+               if (response !=null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(response);
+                    return Ok(response.AccountPreference);
                 }
                 else
                 {
-                    return StatusCode(500, "Internal  Server error");
-                }
+                    return StatusCode(500, "preference is null" + response.Message);
+                }                
             }
             catch (Exception ex)
             {
@@ -348,13 +363,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountPreferenceFilter request =new AccountBusinessService.AccountPreferenceFilter();
                 request.Id  = preferenceId;
                 AccountBusinessService.AccountPreferenceDataList response =await _accountClient.GetPreferenceAsync(request);
-                if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
+                if (response !=null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(response);
+                    if (response.Preference !=null && response.Preference.Count>0)
+                    {
+                        return Ok(response.Preference);
+                    }
+                    else
+                    {
+                        return StatusCode(404, "Preference details are found.");
+                    }
                 }
                 else
                 {
-                    return StatusCode(500, "Internal  Server error");
+                    return StatusCode(500, response.Message);
                 }
             }
             catch (Exception ex)
@@ -385,7 +407,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccessRelationshipResponse accessRelationship = await _accountClient.CreateAccessRelationshipAsync(request);
                 if (accessRelationship != null && accessRelationship.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(accessRelationship);
+                    return Ok(accessRelationship.AccessRelationship);
                 }
                 else if (accessRelationship != null && accessRelationship.Code==AccountBusinessService.Responcecode.Failed 
                     && accessRelationship.Message=="The AccessType should be ReadOnly / ReadWrite.(R/W).")
@@ -394,7 +416,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "Internal  Server error");
+                    return StatusCode(500, "accessRelationship is null" + accessRelationship.Message);
                 }
                 
             }
@@ -427,7 +449,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccessRelationshipResponse accessRelationship = await _accountClient.UpdateAccessRelationshipAsync(request);
                 if (accessRelationship != null && accessRelationship.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(accessRelationship);
+                    return Ok(accessRelationship.AccessRelationship);
                 }
                 else if (accessRelationship != null && accessRelationship.Code==AccountBusinessService.Responcecode.Failed 
                     && accessRelationship.Message=="The AccessType should be ReadOnly / ReadWrite.(R/W).")
@@ -436,7 +458,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "Internal  Server error");
+                    return StatusCode(500, "accessRelationship is null" + accessRelationship.Message);
                 }
                 
             }
@@ -460,7 +482,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccessRelationshipResponse accessRelationship  = await _accountClient.DeleteAccessRelationshipAsync(request);
                 if (accessRelationship != null && accessRelationship.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(accessRelationship);
+                    return Ok(accessRelationship.AccessRelationship);
                 }
                 else if (accessRelationship != null && accessRelationship.Code==AccountBusinessService.Responcecode.Failed 
                     && accessRelationship.Message=="The delete access group , Account Group Id and Vehicle Group Id is required.")
@@ -469,7 +491,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "Internal  Server error");
+                    return StatusCode(500, "accessRelationship is null" + accessRelationship.Message);
                 }
             }
             catch (Exception ex)
@@ -494,9 +516,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 request.AccountGroupId = AccountGroupId;
                 request.VehicleGroupId = VehicleGroupId;
                 AccountBusinessService.AccessRelationshipDataList accessRelationship = await _accountClient.GetAccessRelationshipAsync(request);
-                if (accessRelationship != null && accessRelationship.Code==AccountBusinessService.Responcecode.Success)
+                if (accessRelationship !=null && accessRelationship.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(accessRelationship);
+                    if (accessRelationship.AccessRelationship !=null && accessRelationship.AccessRelationship.Count>0)
+                    {
+                        return Ok(accessRelationship.AccessRelationship);
+                    }
+                    else
+                    {
+                        return StatusCode(404, "access relationship details are found.");
+                    }
                 }
                 else if (accessRelationship != null && accessRelationship.Code==AccountBusinessService.Responcecode.Failed 
                     && accessRelationship.Message=="Please provide AccountId or AccountGroupId or VehicleGroupId to get AccessRelationship.")
@@ -505,7 +534,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "Internal  Server error");
+                    return StatusCode(500, accessRelationship.Message);
                 }
             }
             catch (Exception ex)
@@ -530,11 +559,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountGroupResponce response= await _accountClient.CreateGroupAsync(request);
                 if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(response);
+                    return Ok(response.AccountGroup);
                 }
                 else
                 {
-                    return StatusCode(500, "Internal  Server error");
+                    return StatusCode(500, "AccountGroupResponce is null " + response.Message);
                 }
             }
             catch (Exception ex)
@@ -558,11 +587,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountGroupResponce response = await _accountClient.UpdateGroupAsync(request);
                 if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(response);
+                    return Ok(response.AccountGroup);
                 }
                 else
                 {
-                    return StatusCode(500, "Internal  Server error");
+                    return StatusCode(500, "AccountGroupResponce is null " + response.Message);
                 }
             }
             catch (Exception ex)
@@ -587,11 +616,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountGroupResponce response = await _accountClient.RemoveGroupAsync(request);
                 if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(response);
+                    return Ok(response.AccountGroup);
                 }
                 else
                 {
-                    return StatusCode(500, "Internal  Server error");
+                    return StatusCode(500, "AccountGroupResponce is null " + response.Message);
                 }                
             }
             catch (Exception ex)
@@ -614,12 +643,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountGroupRefResponce response =await _accountClient.AddAccountToGroupsAsync(request);
                 if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(response);
+                    return Ok(true);
                 }
                 else
                 {
-                    return StatusCode(500, "Internal Server error");
-                }
+                    return StatusCode(500, "AccountGroupRefResponce is null or " + response.Message);
+                }   
             }
             catch (Exception ex)
             {
@@ -665,13 +694,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "The Organization id is required");
                 }
                 AccountBusinessService.AccountGroupDataList response =await _accountClient.GetAccountGroupAsync(request);
-                if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
+                if (response !=null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(response);
+                    if (response.AccountGroupRequest !=null && response.AccountGroupRequest.Count>0)
+                    {
+                        return Ok(response.AccountGroupRequest);
+                    }
+                    else
+                    {
+                        return StatusCode(404, "Account Groups are found.");
+                    }
                 }
                 else
                 {
-                    return StatusCode(500, "Internal Server error");
+                    return StatusCode(500, response.Message);
                 }
             }
             catch (Exception ex)
@@ -692,13 +728,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "The Organization id is required");
                 }
                 AccountBusinessService.AccountGroupDetailsDataList response= await _accountClient.GetAccountGroupDetailAsync(request);
-                if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
+                if (response !=null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(response);
+                    if (response.AccountGroupDetail !=null && response.AccountGroupDetail.Count>0)
+                    {
+                        return Ok(response.AccountGroupDetail);
+                    }
+                    else
+                    {
+                        return StatusCode(404, "Account Group details are found.");
+                    }
                 }
                 else
                 {
-                    return StatusCode(500, "Internal Server error");
+                    return StatusCode(500, response.Message);
                 }                
             }
             catch (Exception ex)
@@ -724,11 +767,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountRoleResponse response = await _accountClient.AddRolesAsync(request);
                 if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(response);
+                    return Ok(true);
                 }
                 else
                 {
-                    return StatusCode(500, "Internal Server error");
+                    return Ok(false);
                 }
             }
             catch (Exception ex)
@@ -756,11 +799,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountRoleResponse response = await _accountClient.RemoveRolesAsync(request);
                 if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(response);
+                    return Ok(true);
                 }
                 else
                 {
-                    return StatusCode(500, "Internal Server error");
+                    return Ok(false);
                 }
             }
             catch (Exception ex)
@@ -787,16 +830,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountRoles response = await _accountClient.GetRolesAsync(request);
                 if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(response);
+                    return Ok(response.Roles);
                 }
                 else if (response != null && response .Code==AccountBusinessService.Responcecode.Failed 
-                    && response .Message=="Please provide accountid and organizationid to get roles details.")
+                    && response.Message=="Please provide accountid and organizationid to get roles details.")
                 {
                     return StatusCode(400, "Please provide accountid and organizationid to get roles details.");
                 }
                 else
                 {
-                    return StatusCode(500, "Internal Server error");
+                    return StatusCode(500, response.Message);
                 }
             }
             catch (Exception ex)

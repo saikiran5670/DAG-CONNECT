@@ -14,11 +14,11 @@
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllAccessRelationshipDetails || 'All Access Relationship Details' }}</span>
       </div>
-      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+      <!-- <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
         <button mat-flat-button color="primary" (click)="newAssociation()">
           <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewAssociation || 'New Association' }}
         </button>
-      </div>
+      </div> -->
     </div>
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -27,7 +27,12 @@
               <span matPrefix><mat-icon>search</mat-icon></span>
           </mat-form-field>
         </div>
-      </div>
-    <!-- <app-spinner *ngIf="showLoadingIndicator"></app-spinner> -->
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+          <button mat-flat-button color="primary" (click)="newAssociation()">
+            <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewAssociation || 'New Association' }}
+          </button>
+        </div>
+    </div>
   </mat-card>
 </div>
+<!-- <app-spinner *ngIf="showLoadingIndicator"></app-spinner> -->

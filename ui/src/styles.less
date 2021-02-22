@@ -457,7 +457,7 @@ footer{
     a{
         &:before{
             position: absolute;
-            height: 17px;
+            height: 50px; //17
             width: 1.5px;
             background-color: #416cb7;
             left: 22px;
@@ -466,7 +466,7 @@ footer{
         }   
         &:after{
             position: absolute;
-            height: 17px;
+            height: 50px; //17
             width: 1.5px;
             background-color: #416cb7;
             left: 22px;
@@ -481,11 +481,11 @@ footer{
         a{
             &:before{
                 left: 14px;
-                height: 20px;
+                height: 50px; //20
             }
             &:after{
                 left: 14px;
-                height: 24px;
+                height: 50px; //24
                 top: 25px;
             }
         }
@@ -524,6 +524,9 @@ footer{
     .mat-form-field-appearance-outline {
         .mat-form-field-prefix {
             top: 0.45em !important;
+        }
+        .mat-form-field-wrapper {
+            margin: 0.25em 0 0.15em 0 !important
         }
     }
     .mat-radio-label{

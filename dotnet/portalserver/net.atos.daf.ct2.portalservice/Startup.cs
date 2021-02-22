@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.portalservice
 {
     public class Startup
     {
-        private readonly string swaggerBasePath = "portal";
+        private readonly string swaggerBasePath = "portalservice";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;

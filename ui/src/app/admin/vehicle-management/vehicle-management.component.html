@@ -16,20 +16,16 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
             translationData.lblAllVehicleGroupVehicleDetails || 'All Vehicle Group/Vehicle Details' }}</span>
         </div>
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-          <button mat-flat-button color="primary" (click)="newVehicleGroup()">
-            <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewVehicleGroup || 'New Vehicle Group' }}
-          </button>
-        </div>
       </div>
-      <div fxLayout="row" fxLayoutGap="50px" fxLayoutAlign="start center" class='margin-bottom-sm'>
-        <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+      <div fxLayout="row" fxLayoutGap="50px" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+        <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
           <mat-form-field appearance="outline">
               <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
               <span matPrefix><mat-icon>search</mat-icon></span>
           </mat-form-field>
         </div>
-        <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
+          <!-- <span>{{ translationData.lblViewby || 'View by' }}:</span> -->
           <mat-radio-group (change)='onChange($event)'>
             <mat-radio-button style='margin-right: 20px;' value="group"
               [checked]="selectedType ===  'group' ? true : false">{{ translationData.lblGroup || 'Group' }}
@@ -40,6 +36,11 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
             <mat-radio-button value="both" [checked]="selectedType ===  'both' ? true : false">{{
               translationData.lblBoth || 'Both' }}</mat-radio-button>
           </mat-radio-group>
+        </div>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+          <button mat-flat-button color="primary" (click)="newVehicleGroup()">
+            <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewVehicleGroup || 'New Vehicle Group' }}
+          </button>
         </div>
       </div>
       <div fxLayout="row" class='margin-top-xlg'>
@@ -52,31 +53,24 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
                 <mat-cell [ngClass]="{'tablemargin': element[disCol]==null }" *matCellDef="let element ">
                   {{element[disCol]==null?'-':element[disCol]}} </mat-cell>
               </div>
-
               <div *ngIf="columnNames[colIndex]=='Vehicle Group' ">
                 <mat-header-cell *matHeaderCellDef mat-sort-header matSortDirection="asc">{{columnNames[colIndex]}}</mat-header-cell>
                 <mat-cell *matCellDef="let element " matTooltip={{element[disCol]}}> {{element[disCol]}}
                   <div *ngIf="element.isVehicleGroup==true">
-
                     <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
                     <span class='iconTxt'>{{ (element.vehicleCount < 10) ? '0' : '' }}{{ element.vehicleCount }}</span>
                   </div>
-
                 </mat-cell>
               </div>
               <div *ngIf="columnNames[colIndex]=='Vehicle Group/Vehicle' ">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{columnNames[colIndex]}}</mat-header-cell>
                 <mat-cell *matCellDef="let element " matTooltip={{element[disCol]}}> {{element[disCol]}}
                   <div *ngIf="element.isVehicleGroup==true">
-
                     <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
                     <span class='iconTxt'>{{ (element.vehicleCount < 10) ? '0' : '' }}{{ element.vehicleCount }}</span>
                   </div>
-
                 </mat-cell>
               </div>
-
-
               <div *ngIf="columnNames[colIndex]=='Status'  ">
                 <mat-header-cell *matHeaderCellDef style="width: 20px;">Status</mat-header-cell>
                 <mat-cell *matCellDef="let element ">
@@ -92,7 +86,6 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
                   <div *ngIf="element[disCol]==85 ">
                     <img src='assets/images/Opt_out.svg' style="width: 20px;height: 20px;" />
                   </div>
-
                 </mat-cell>
               </div>
               <div *ngIf="disCol=='isVehicleGroup'">
@@ -114,22 +107,15 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
                     (click)="deleteFunc(row)" matTooltip="Delete">
                     <mat-icon class="deleteIcon">delete_outline</mat-icon>
                   </button>
-
-
                 </mat-cell>
               </div>
-
             </ng-container>
-
             <mat-header-row *matHeaderRowDef="cols"></mat-header-row>
             <mat-row *matRowDef="let row; columns: cols;"></mat-row>
           </mat-table>
-
           <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
         </div>
-        <!-- <div *ngIf="showLoadingIndicator" class="spinner"> </div> -->
         <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
-
       </div>
     </mat-card>
   </div>

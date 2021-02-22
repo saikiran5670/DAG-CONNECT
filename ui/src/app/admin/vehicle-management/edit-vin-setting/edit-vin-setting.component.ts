@@ -1,18 +1,13 @@
-import { stringify } from '@angular/compiler/src/util';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
-import { VehicleService } from 'src/app/services/vehicle.service';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { VehicleService } from '../../../services/vehicle.service';
 
 @Component({
   selector: 'app-edit-vin-setting',
   templateUrl: './edit-vin-setting.component.html',
   styleUrls: ['./edit-vin-setting.component.less'],
 })
+
 export class EditVINSettingComponent implements OnInit {
   breadcumMsg: any = '';
   @Input() translationData: any;
@@ -21,16 +16,13 @@ export class EditVINSettingComponent implements OnInit {
   @Output() backToPage = new EventEmitter<any>();
   vinSettingFormGroup: FormGroup;
   vehicleData: any;
-  constructor(
-    private _formBuilder: FormBuilder,
-    private vehService: VehicleService
-  ) {}
+  
+  constructor(private _formBuilder: FormBuilder, private vehService: VehicleService) {}
 
   ngOnInit() {
     this.vinSettingFormGroup = this._formBuilder.group({
       vehicleName: [''],
       registrationNumber: [''],
-
       vin: new FormControl({ value: null, disabled: true }),
       vehicleModel: new FormControl({ value: null, disabled: true }),
       consent: new FormControl({ value: null, disabled: true }),
@@ -47,7 +39,7 @@ export class EditVINSettingComponent implements OnInit {
 
   getAssociatedgroups(){
     let groups=[];
-    var str;
+    var str: any;
     this.vehService.getAssociatedVehicleGroup(this.vinData.organization_Id,this.vinData.id).subscribe(
       (_data) => {
         _data.forEach((d)=>{
@@ -55,7 +47,6 @@ export class EditVINSettingComponent implements OnInit {
            str = groups.join(", "); 
         })
         this.vehicleData.associateGroup = str;
-      
       },
       (error) => {
         console.log(error);
@@ -63,9 +54,7 @@ export class EditVINSettingComponent implements OnInit {
     );
   }
 
-  //--- TODO: need to add proper api response ---//
   makeVehicleData() {
-    
     this.vehicleData = {
       id: this.vinData.id,
       vehicleName: this.vinData.name,
@@ -90,14 +79,11 @@ export class EditVINSettingComponent implements OnInit {
   }
 
   onReset() {
-    // this.vinSettingFormGroup.get('vehicleName').reset();
-    // this.vinSettingFormGroup.get('registrationNumber').reset();
     this.vehicleData.vehicleName = this.vinData.name;
     this.vehicleData.registrationNo = this.vinData.license_Plate_Number;
   }
 
   onSave() {
-    //console.log(this.vinData);
     let objData = {
       id: this.vinData.id,
       name: this.vehicleData.vehicleName,
@@ -106,17 +92,16 @@ export class EditVINSettingComponent implements OnInit {
     };
     this.vehService.updateVehicleSettings(objData).subscribe(
       (d) => {
-        //this.backToPage.emit(false);
         this.backToPage.emit({
           editFlag: false,
           editText: 'edit',
           gridData: objData.name
-        });
-        //this.openSnackBar('Item delete', 'dismiss');
+        });//this.openSnackBar('Item delete', 'dismiss');
       },
       (error) => {
         console.error(error);
       }
     );
   }
+  
 }
