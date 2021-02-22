@@ -98,6 +98,7 @@ namespace net.atos.daf.ct2.account
 
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
+                    // check in user need to delete 
                     // Delete Account Group Reference
                     query = @"delete from master.groupref gr
                         using master.group g,master.accountorg ao 
@@ -105,7 +106,7 @@ namespace net.atos.daf.ct2.account
                          and g.id=gr.group_id and ao.is_active=true";
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                     // Delete preference
-                    query = @"update master.accountpreference set is_active=false where ref_id = @id;";
+                    query = @"update master.accountpreference set is_active=false from master.account where master.accountpreference.id=master.account.preference_id and master.account.id=@id;";
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
                     // Delete account role
