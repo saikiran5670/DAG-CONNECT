@@ -272,12 +272,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 // Validation                 
-                if ((request.RefId <= 0) || (request.LanguageId <= 0) || (request.TimezoneId <= 0) || (request.CurrencyId <= 0) ||
+                if ((request.Id  <= 0) || (request.LanguageId <= 0) || (request.TimezoneId <= 0) || (request.CurrencyId <= 0) ||
                     (request.UnitId <= 0) || (request.VehicleDisplayId <= 0) || (request.DateFormatId <= 0) || (request.TimeFormatId <= 0) ||
                     (request.LandingPageDisplayId <= 0)
                     )
                 {
-                    return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
+                    return StatusCode(400, "The Preference Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
                 }
                 AccountBusinessService.AccountPreferenceResponse preference = await _accountClient.UpdatePreferenceAsync(request);
                 if (preference !=null && preference.Code==AccountBusinessService.Responcecode.Success)
@@ -302,17 +302,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         [HttpDelete]
         [Route("preference/delete")]
-        public async Task<IActionResult> DeleteAccountPreference(int accountId)
+        public async Task<IActionResult> DeleteAccountPreference(int preferenceId)
         { 
             try
             {
                 AccountBusinessService.AccountPreferenceFilter request =new AccountBusinessService.AccountPreferenceFilter();
                 // Validation                 
-                if (accountId <= 0)
+                if (preferenceId <= 0)
                 {
-                    return StatusCode(400, "The Account Id is required");
+                    return StatusCode(400, "The preferenceId Id is required");
                 }
-                request.RefId=accountId;
+                request.Id =preferenceId;
                 AccountBusinessService.AccountPreferenceResponse response= await _accountClient.DeletePreferenceAsync(request);
                 if (response !=null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
@@ -336,17 +336,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         [HttpGet]
         [Route("preference/get")]
-        public async Task<IActionResult> GetAccountPreference(int accountId)
+        public async Task<IActionResult> GetAccountPreference(int preferenceId)
         {
             try
             {
                 // Validation                 
-                if ((accountId <= 0))
+                if ((preferenceId <= 0))
                 {
-                    return StatusCode(400, "The Account Id is required");
+                    return StatusCode(400, "The preferenceId Id is required");
                 }
                 AccountBusinessService.AccountPreferenceFilter request =new AccountBusinessService.AccountPreferenceFilter();
-                request.RefId = accountId;
+                request.Id  = preferenceId;
                 AccountBusinessService.AccountPreferenceDataList response =await _accountClient.GetPreferenceAsync(request);
                 if (response != null && response.Code==AccountBusinessService.Responcecode.Success)
                 {

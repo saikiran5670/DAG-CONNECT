@@ -511,12 +511,12 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             try
             {
                 // Validation                 
-                if ((request.RefId <= 0) || (request.LanguageId <= 0) || (request.TimezoneId <= 0) || (request.CurrencyId <= 0) ||
+                if ((request.Id <= 0) || (request.LanguageId <= 0) || (request.TimezoneId <= 0) || (request.CurrencyId <= 0) ||
                     (request.UnitId <= 0) || (request.VehicleDisplayId <= 0) || (request.DateFormatTypeId <= 0) || (request.TimeFormatId <= 0) ||
                     (request.LandingPageDisplayId <= 0)
                     )
                 {
-                    return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
+                    return StatusCode(400, "The preferenceId Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
                 }
                 accountpreference.AccountPreference preference = new Preference.AccountPreference();
                 preference = _mapper.ToAccountPreference(request);
@@ -538,17 +538,17 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
 
         [HttpDelete]
         [Route("preference/delete")]
-        public async Task<IActionResult> DeleteAccountPreference(int accountId)
+        public async Task<IActionResult> DeleteAccountPreference(int preferenceId)
         {
             try
             {
                 // Validation                 
-                if ((accountId <= 0))
+                if ((preferenceId <= 0))
                 {
                     return StatusCode(400, "The Account Id is required");
                 }
-                var result = await preferencemanager.Delete(accountId);
-                var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Preference Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Preference", 1, 2, Convert.ToString(accountId));
+                var result = await preferencemanager.Delete(preferenceId);
+                var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Preference Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Preference", 1, 2, Convert.ToString(preferenceId));
                 if (result) return Ok(result);
                 else return StatusCode(404, "Preference for this account is not configured.");
             }
@@ -566,18 +566,17 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
 
         [HttpGet]
         [Route("preference/get")]
-        public async Task<IActionResult> GetAccountPreference(int accountId)
+        public async Task<IActionResult> GetAccountPreference(int preferenceId)
         {
             try
             {
                 // Validation                 
-                if ((accountId <= 0))
+                if ((preferenceId <= 0))
                 {
-                    return StatusCode(400, "The Account Id is required");
+                    return StatusCode(400, "The Preference Id is required");
                 }
-                Preference.AccountPreferenceFilter preferenceFilter = new Preference.AccountPreferenceFilter();
-                preferenceFilter.Id = 0;
-                preferenceFilter.Ref_Id = accountId;
+                Preference.AccountPreferenceFilter preferenceFilter = new Preference.AccountPreferenceFilter();                
+                preferenceFilter.Id = preferenceId;
                 preferenceFilter.PreferenceType = Preference.PreferenceType.Account;
                 var result = await preferencemanager.Get(preferenceFilter);
                 if ((result == null) || Convert.ToInt16(result.Count()) <= 0)

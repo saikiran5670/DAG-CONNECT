@@ -688,7 +688,7 @@ namespace net.atos.daf.ct2.accountservice
             {
                 Preference.AccountPreferenceFilter preferenceFilter = new Preference.AccountPreferenceFilter();
                 preferenceFilter.Id = request.Id;
-                preferenceFilter.Ref_Id = request.RefId;
+                //preferenceFilter.Ref_Id = request.RefId;
                 preferenceFilter.PreferenceType = Preference.PreferenceType.Account; // (Preference.PreferenceType)Enum.Parse(typeof(Preference.PreferenceType), request.Preference.ToString());
                 _logger.LogInformation("Get account preference.");
                 var result = await preferencemanager.Get(preferenceFilter);

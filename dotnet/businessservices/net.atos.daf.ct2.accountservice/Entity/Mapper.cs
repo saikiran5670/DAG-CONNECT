@@ -17,6 +17,10 @@ namespace net.atos.daf.ct2.accountservice
             request.FirstName = account.FirstName;
             request.LastName = account.LastName;           
             request.OrganizationId = account.Organization_Id;
+            if (account.PreferenceId.HasValue)
+            request.PreferenceId = account.PreferenceId.Value;
+            if (account.BlobId.HasValue)
+            request.BlobId = account.BlobId.Value;
             return request;
         }
         public AccountComponent.entity.Account ToAccountEntity(AccountRequest request)
@@ -57,7 +61,7 @@ namespace net.atos.daf.ct2.accountservice
             preference.UnitId = request.UnitId;
             preference.VehicleDisplayId = request.VehicleDisplayId;
             preference.DateFormatTypeId = request.DateFormatId;
-            preference.DriverId = request.DriverId;
+            // preference.DriverId = request.DriverId;
             preference.TimeFormatId = request.TimeFormatId;
             preference.LandingPageDisplayId = request.LandingPageDisplayId;
             return preference;
@@ -73,7 +77,7 @@ namespace net.atos.daf.ct2.accountservice
             request.UnitId = entity.UnitId;
             request.VehicleDisplayId = entity.VehicleDisplayId;
             request.DateFormatId = entity.DateFormatTypeId;
-            request.DriverId = entity.DriverId;
+            // request.DriverId = entity.DriverId;
             request.TimeFormatId = entity.TimeFormatId;
             request.LandingPageDisplayId = entity.LandingPageDisplayId;
             return request;
