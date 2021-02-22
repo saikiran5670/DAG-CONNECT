@@ -187,13 +187,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountDataList  response = await _accountClient.GetAsync(accountFilter);
                 if (response !=null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    if (response.Accounts && response.Accounts.count>0)
+                    if (response.Accounts !=null && response.Accounts.Count>0)
                     {
                         return Ok(response.Accounts);
                     }
                     else
                     {
-                        StatusCode(404, "Accounts details are found.");
+                        return StatusCode(404, "Accounts details are found.");
                     }
                 }
                 else
@@ -222,13 +222,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (response !=null && response.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    if (response.Accounts && response.Accounts.count>0)
+                    if (response.AccountDetails !=null && response.AccountDetails.Count>0)
                     {
                         return Ok(response.AccountDetails);
                     }
                     else
                     {
-                        StatusCode(404, "Accounts details are found.");
+                        return StatusCode(404, "Accounts details are found.");
                     }
                 }
                 else
@@ -262,7 +262,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountPreferenceResponse preference = await _accountClient.CreatePreferenceAsync(request);
                 if (preference !=null && preference.Code==AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(preference);
+                    return Ok(preference.AccountPreference);
                 }
                 else
                 {
