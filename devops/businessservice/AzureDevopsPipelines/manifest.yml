@@ -35,7 +35,7 @@ spec:
             topologyKey: "kubernetes.io/hostname"
       containers:
       - name: portalservice-container
-        image: #{acrurl}#/portalservice
+        image: #{acrurl}#/portalservicegrpc
         imagePullPolicy: "Always"
         securityContext:
           allowPrivilegeEscalation: false
