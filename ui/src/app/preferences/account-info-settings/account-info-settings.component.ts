@@ -80,7 +80,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       salutation: ['', [Validators.required]],
       firstName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       lastName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
-      loginEmail: ['', [Validators.required, Validators.email]],
+      loginEmail: new FormControl({value: null, disabled: true}), //['', [Validators.required, Validators.email]],
       organization: new FormControl({value: null, disabled: true})
     },{
       validator : [

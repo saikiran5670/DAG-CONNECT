@@ -380,6 +380,8 @@ private setPageTitle() {
 
     this.menuCollapsed = !this.menuCollapsed;
     this.hideAllOpenMenus();
+    if(this.openUserRoleDialog)
+      this.openUserRoleDialog = !this.openUserRoleDialog;
   }
 
   logOut() {
