@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 import { AccountService } from '../../services/account.service';
 import { TranslationService } from '../../services/translation.service';
 import { VehicleService } from '../../services/vehicle.service';
@@ -19,7 +20,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   vehicleGrpVehicleDetails: any = [];
   accountGrpAccountDetails: any = [];
   //---------------//
-  accessRelationCreatedMsg : any;
+  accessRelationCreatedMsg : any = '';
   titleVisible: boolean = false;
   translationData: any;
   localStLanguage: any;
@@ -37,7 +38,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   showLoadingIndicator: any;
   isViewListDisabled: boolean = false;
   
-  constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService) { 
+  constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService, private dialogService: ConfirmDialogService) { 
     this.defaultTranslation();
   }
 
@@ -493,7 +494,34 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   }
 
   deleteAccessRelationship(element: any){
+    //console.log("delete item:: ", element);
+    const options = {
+        title: this.translationData.lblDelete || "Delete",
+        message: this.translationData.lblAreyousureyouwanttodeleteAssociationRelationship || "Are you sure you want to delete '$' Association Relationship?",
+        cancelText: this.translationData.lblNo || "No",
+        confirmText: this.translationData.lblYes || "Yes"
+      };
+    this.dialogService.DeleteModelOpen(options, element.name);
+    this.dialogService.confirmedDel().subscribe((res) => {
+      if (res) {
+          this.successMsgBlink(this.getDeletMsg(element.name));
+        }
+    });
+  }
 
+  successMsgBlink(msg: any){
+    this.titleVisible = true;
+    this.accessRelationCreatedMsg = msg;
+    setTimeout(() => {  
+      this.titleVisible = false;
+    }, 5000);
+  }
+
+  getDeletMsg(userName: any){
+    if(this.translationData.lblAssociationRelationshipwassuccessfullydeleted)
+      return this.translationData.lblAssociationRelationshipwassuccessfullydeleted.replace('$', userName);
+    else
+      return ("Association Relationship '$' was successfully deleted").replace('$', userName);
   }
 
   onClose(){

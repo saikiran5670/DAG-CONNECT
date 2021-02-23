@@ -184,7 +184,7 @@ export class UserManagementComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
-  deleteUser(item) {
+  deleteUser(item: any) {
     const options = {
       title: this.translationData.lblDeleteAccount || "Delete Account",
       message: this.translationData.lblAreyousureyouwanttodeleteuseraccount || "Are you sure you want to delete '$' user account?",
