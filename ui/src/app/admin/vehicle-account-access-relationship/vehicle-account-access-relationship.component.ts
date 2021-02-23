@@ -37,7 +37,9 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   showLoadingIndicator: any;
   isViewListDisabled: boolean = false;
-  
+  actionType: any = '';
+  selectedElementData: any;
+
   constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService, private dialogService: ConfirmDialogService) { 
     this.defaultTranslation();
   }
@@ -444,6 +446,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   }
 
   createNewAssociation(){
+    this.actionType = 'create';
     if(!this.isViewListDisabled){
       this.createVehicleAccessRelation = true;
     }
@@ -490,7 +493,14 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   }
 
   editViewAccessRelationship(element: any, type: any) {
-    this.createNewAssociation();
+    this.actionType = type;
+    this.selectedElementData = element;
+    if(!this.isViewListDisabled){
+      this.createVehicleAccessRelation = true;
+    }
+    else{
+      this.createAccountAccessRelation = true;
+    }
   }
 
   deleteAccessRelationship(element: any){

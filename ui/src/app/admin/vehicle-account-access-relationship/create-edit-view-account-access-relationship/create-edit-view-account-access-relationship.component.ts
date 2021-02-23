@@ -25,17 +25,28 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   selectedViewType: any = '';
+  @Input() actionType: any;
+  @Input() selectedElementData: any;
 
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit() {
+    console.log("selectedElementData::", this.selectedElementData);
     this.accountAccessRelationshipFormGroup = this._formBuilder.group({
       accountGroup: ['', [Validators.required]],
       accessType: ['', [Validators.required]]
     });
     this.breadcumMsg = this.getBreadcum();
+    if(this.actionType == 'view' || this.actionType == 'edit' ){
+      this.setDropdownValue();
+    }
     this.loadGridData(this.vehicleGrpList);
     this.selectedViewType = this.selectedViewType == '' ? 'both' : this.selectedViewType;
+  }
+
+  setDropdownValue(){
+    this.accountAccessRelationshipFormGroup.get('accountGroup').setValue(this.selectedElementData.id);
+    this.accountAccessRelationshipFormGroup.get('accessType').setValue(this.selectedElementData.accessType.id);
   }
 
   loadGridData(tableData: any){

@@ -15,6 +15,8 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
   @Input() accountGrpList: any;
   @Input() vehicleGrpList: any;
   @Input() translationData: any;
+  @Input() actionType: any;
+  @Input() selectedElementData: any;
   breadcumMsg: any = '';  
   @Output() vehicleAccessRelationCreate = new EventEmitter<object>();
   vehicleAccessRelationshipFormGroup: FormGroup;
@@ -29,13 +31,22 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit() {
+    console.log("selectedElementData::", this.selectedElementData);
     this.vehicleAccessRelationshipFormGroup = this._formBuilder.group({
       vehicleGroup: ['', [Validators.required]],
       accessType: ['', [Validators.required]]
     });
     this.breadcumMsg = this.getBreadcum();
+    if(this.actionType == 'view' || this.actionType == 'edit' ){
+      this.setDropdownValue();
+    }
     this.loadGridData(this.accountGrpList);
     this.selectedViewType = this.selectedViewType == '' ? 'both' : this.selectedViewType;
+  }
+
+  setDropdownValue(){
+    this.vehicleAccessRelationshipFormGroup.get('vehicleGroup').setValue(this.selectedElementData.id);
+    this.vehicleAccessRelationshipFormGroup.get('accessType').setValue(this.selectedElementData.accessType.id);
   }
 
   loadGridData(tableData: any){

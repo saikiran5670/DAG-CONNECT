@@ -103,6 +103,6 @@
     </div>
     <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
   </mat-card>
-  <app-create-edit-view-vehicle-access-relationship *ngIf='createVehicleAccessRelation' [translationData]='translationData' [accountGrpList]='accountGrpAccountDetails' [vehicleGrpList]='vehicleGrpVehicleDetails' (vehicleAccessRelationCreate)='checkCreationForVehicle($event)'></app-create-edit-view-vehicle-access-relationship>
-  <app-create-edit-view-account-access-relationship *ngIf='createAccountAccessRelation' [translationData]='translationData' [accountGrpList]='accountGrpAccountDetails' [vehicleGrpList]='vehicleGrpVehicleDetails' (accountAccessRelationCreate)='checkCreationForAccount($event)'></app-create-edit-view-account-access-relationship>
+  <app-create-edit-view-vehicle-access-relationship *ngIf='createVehicleAccessRelation' [translationData]='translationData' [actionType]='actionType' [accountGrpList]='accountGrpAccountDetails' [vehicleGrpList]='vehicleGrpVehicleDetails' [selectedElementData]='selectedElementData' (vehicleAccessRelationCreate)='checkCreationForVehicle($event)'></app-create-edit-view-vehicle-access-relationship>
+  <app-create-edit-view-account-access-relationship *ngIf='createAccountAccessRelation' [translationData]='translationData' [actionType]='actionType' [accountGrpList]='accountGrpAccountDetails' [vehicleGrpList]='vehicleGrpVehicleDetails' [selectedElementData]='selectedElementData' (accountAccessRelationCreate)='checkCreationForAccount($event)'></app-create-edit-view-account-access-relationship>
 </div>
