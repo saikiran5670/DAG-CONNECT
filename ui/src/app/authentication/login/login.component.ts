@@ -68,10 +68,11 @@ export class LoginComponent implements OnInit {
               "name": "",
               "accountGroupId": 0
             }
-            this.accountService.getAccount(loginObj).subscribe(resp => {
-              this.showOrganizationRolePopup(data.body, resp[0]);
-            }, (error) => {});
-            
+            if(!this.dialogRefLogin || this.dialogRefLogin == null){
+              this.accountService.getAccount(loginObj).subscribe(resp => {
+                this.showOrganizationRolePopup(data.body, resp[0]);
+              }, (error) => {});
+            }
          }
          else if(data.status === 401){
           this.invalidUserMsg = true;
@@ -157,6 +158,9 @@ export class LoginComponent implements OnInit {
         accountPreference: accountPreference
       }
       this.dialogRefLogin = this.dialog.open(LoginDialogComponent, dialogConfig);
+      this.dialogRefLogin.afterClosed().subscribe(res => {
+        this.dialogRefLogin = null;
+      });
     }
     else{ //-- skip popup
       if(data.accountOrganization.length > 0){
