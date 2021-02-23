@@ -14,20 +14,27 @@ using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehiclerepository;
-
-
+using net.atos.daf.ct2.group;
+using net.atos.daf.ct2.account;
+using net.atos.daf.ct2.account.entity;
+using AccountComponent = net.atos.daf.ct2.account;
 namespace net.atos.daf.ct2.organization.repository
 {
     public class OrganizationRepository:IOrganizationRepository
     {
         private readonly IDataAccess dataAccess;
-        private readonly IVehicleManager _vehicelManager;
+        private readonly IVehicleManager vehicelManager;
+        private readonly IGroupManager groupManager;
+         private readonly IAccountManager accountManager;
+
         private static readonly log4net.ILog log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        public OrganizationRepository(IDataAccess _dataAccess,IVehicleManager vehicleManager)
-        {
+        public OrganizationRepository(IDataAccess _dataAccess,IVehicleManager _vehicleManager,IGroupManager _groupManager, IAccountManager _accountManager)
+          {
             dataAccess = _dataAccess;
-           _vehicelManager= vehicleManager;
+            vehicelManager= _vehicleManager;
+            groupManager=_groupManager;
+            accountManager=_accountManager;
         }
           
         public async Task<Organization> Create(Organization organization)       
@@ -63,12 +70,44 @@ namespace net.atos.daf.ct2.organization.repository
                 parameter.Add("@OptOutStatusChangedDate",organization.optout_status_changed_date != null ? UTCHandling.GetUTCFromDateTime(organization.optout_status_changed_date.ToString()) : (long ?)null); 
                // parameter.Add("@IsActive", organization.IsActive);               
 
-                string queryInsert= "insert into master.organization(org_id, type, name, address_type, street, street_number, postal_code, city,country_code,reference_date,optout_status,optout_status_changed_date) " +
-                              "values(@OrganizationId, @OrganizationType, @Name, @AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@ReferencedDate, @OptOutStatus,@OptOutStatusChangedDate) RETURNING id";
+                string queryInsert= "insert into master.organization(org_id, type, name, address_type, street, street_number, postal_code, city,country_code,reference_date,optout_status,optout_status_changed_date,preference_id) " +
+                              "values(@OrganizationId, @OrganizationType, @Name, @AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@ReferencedDate, @OptOutStatus,@OptOutStatusChangedDate,NULL) RETURNING id";
 
                 var orgid =   await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);                
                 organization.Id = orgid;
-               }
+
+                // Create dynamic account group
+                Group groupAccount=new Group();
+                groupAccount.ObjectType=ObjectType.AccountGroup;
+                groupAccount.GroupType=GroupType.Dynamic;
+                groupAccount.Argument="";
+                groupAccount.FunctionEnum=FunctionEnum.None;
+                groupAccount.OrganizationId=orgid;
+                groupAccount.RefId=0;
+                groupAccount.Name="DefaultAccountGroup";
+                groupAccount.Description="DefaultAccountGroup";              
+                groupAccount =  await groupManager.Create(groupAccount);
+
+                // Create dynamic vehicle group
+                Group groupVehicle=new Group();
+                groupVehicle.ObjectType=ObjectType.VehicleGroup;
+                groupVehicle.GroupType=GroupType.Dynamic;
+                groupVehicle.Argument="";
+                groupVehicle.FunctionEnum=FunctionEnum.None;
+                groupVehicle.OrganizationId=orgid;
+                groupVehicle.RefId=0;
+                groupVehicle.Name="DefaultVehicleGroup";
+                groupVehicle.Description="DefaultVehicleGroup";
+                groupVehicle =await groupManager.Create(groupVehicle);
+
+                // Create access relationship
+                AccessRelationship accessRelationship=new AccessRelationship();
+                accessRelationship.AccountGroupId=groupAccount.Id;
+                accessRelationship.VehicleGroupId=groupVehicle.Id;
+                accessRelationship.AccessRelationType=AccountComponent.ENUM.AccessRelationType.ReadWrite;
+                await accountManager.CreateAccessRelationship(accessRelationship);
+
+                }
             }
             catch (Exception ex)
             {
