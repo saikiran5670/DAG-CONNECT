@@ -30,28 +30,49 @@ export class RoleService {
       'There is a problem with the service. Please try again later.'
     );
   }
+  generateHeader(){
+    let genericHeader : object = {
+      'Content-Type' : 'application/json',
+      'accountId' : localStorage.getItem('accountId'),
+      'orgId' : localStorage.getItem('accountOrganizationId'),
+      'roleId' : localStorage.getItem('accountRoleId')
+    }
+    let getHeaderObj = JSON.stringify(genericHeader)
+    return getHeaderObj;
+  }
 
   getUserRoles(data): Observable<any[]> {
+   let headerObj = this.generateHeader();
+    const headers =  new HttpHeaders({ headerObj });
+    const options =  { params: new HttpParams(data), headers: headers };
     return this.httpClient
-      .get<any[]>(`${this.roleServiceUrl}/get`,{params: data})
+      .get<any[]>(`${this.roleServiceUrl}/get`,options)
       .pipe(catchError(this.handleError));
   }
 
   getFeatures(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = new HttpHeaders({ headerObj });
+    const options =  { params: new HttpParams(data), headers: headers };
     return this.httpClient
-      .get<any[]>(`${this.featureServiceUrl}/getfeatures`,{params:data})
+      .get<any[]>(`${this.featureServiceUrl}/getfeatures`,options)
       .pipe(catchError(this.handleError));
   }
 
   checkUserRoleExist(UserRoleInput: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
     return this.httpClient
-      .get<any[]>(`${this.roleServiceUrl}/roles?roleName=${UserRoleInput}`)
+      .get<any[]>(`${this.roleServiceUrl}/roles?roleName=${UserRoleInput}`, headers)
       .pipe(catchError(this.handleError));
   }
 
   createUserRole(data): Observable<any> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
       .post<any>(`${this.roleServiceUrl}/create`, data, headers)
@@ -59,8 +80,9 @@ export class RoleService {
   }
 
   updateUserRole(data): Observable<any> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
       .post<any>(`${this.roleServiceUrl}/update`, data, headers)
@@ -68,8 +90,9 @@ export class RoleService {
   }
 
   deleteUserRole(roleId: number): Observable<void> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
     let data = { roleId: roleId };
    return this.httpClient
