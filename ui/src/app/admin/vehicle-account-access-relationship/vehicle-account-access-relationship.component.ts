@@ -74,7 +74,6 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   }
 
   createNewAssociation(){
-    //if(!this.isViewListDisabled){ // for vehicle association
       let accountGrpObj: any = {
         accountGroupId: 0,
         organizationId: this.accountOrganizationId,
@@ -101,10 +100,6 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
           }
         });
       });
-    // }
-    // else{ // for account association
-
-    // }
   }
 
   loadAccountData(){
@@ -176,7 +171,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   }
 
   onListChange(event: any){
-
+    this.selectedViewType = event.value;
   }
 
   onColumnChange(event: any){
@@ -190,10 +185,22 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
 
   checkCreationForVehicle(item: any){
     this.createVehicleAccessRelation = !this.createVehicleAccessRelation;
+    if(this.isViewListDisabled){
+      this.selectedColumnType = 'account';
+    }
+    else{
+      this.selectedColumnType = 'vehicle';
+    }
   }
 
   checkCreationForAccount(item: any){
     this.createAccountAccessRelation = !this.createAccountAccessRelation;
+    if(this.isViewListDisabled){
+      this.selectedColumnType = 'account';
+    }
+    else{
+      this.selectedColumnType = 'vehicle';
+    }
   }
 
   hideloader() {

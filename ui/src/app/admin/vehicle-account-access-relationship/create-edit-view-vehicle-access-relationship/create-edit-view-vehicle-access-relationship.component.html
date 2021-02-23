@@ -8,7 +8,7 @@
         <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
     </div>
 </div>
-<form [formGroup]="createAccessRelationshipFormGroup">
+<form [formGroup]="vehicleAccessRelationshipFormGroup">
   <mat-card class='mat-elevation-z'>
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
@@ -26,7 +26,7 @@
                 </mat-option>
               </mat-select>
             </mat-form-field>
-            <mat-error *ngIf="createAccessRelationshipFormGroup.get('vehicleGroup').hasError('required')">
+            <mat-error *ngIf="vehicleAccessRelationshipFormGroup.get('vehicleGroup').hasError('required')">
               {{ translationData.lblPleaseSelectVehicleGroupVehicle || 'Please Select Vehicle Group/Vehicle' }}
             </mat-error>
         </div>
@@ -39,7 +39,7 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-error *ngIf="createAccessRelationshipFormGroup.get('accessType').hasError('required')">
+          <mat-error *ngIf="vehicleAccessRelationshipFormGroup.get('accessType').hasError('required')">
             {{ translationData.lblPleaseSelectAccessType || 'Please Select Access Type' }}
           </mat-error>
         </div>
@@ -49,7 +49,7 @@
         <div fxLayout="column" fxLayoutAlign="left">
             <div fxLayout="row" fxLayoutAlign='center center'>
                 <mat-icon class='margin-right-10'>info</mat-icon>
-                <span>{{ translationData.lblAccessRelationCreateHintMessage || 'You can select multiple Account Group/Account from below list to map with selected Vehicle Group/Vehicle list' }}</span>
+                <span>{{ translationData.lblVehicleAccessRelationCreateHintMessage || 'You can select multiple Account Group/Account from below list to map with selected Vehicle Group/Vehicle list' }}</span>
             </div>
         </div>
       </div>
@@ -69,7 +69,7 @@
           </mat-form-field>
         </div>
         <div class='areaWidth margin-right-10' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
-          <span>{{ translationData.lblViewby || 'View by' }}:</span>
+          <span>{{ translationData.lblViewlistby || 'View list by' }}:</span>
         </div>
         <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
           <mat-radio-group (change)='onListChange($event)'>
@@ -118,7 +118,7 @@
       <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
         <button class='margin-right-10' mat-raised-button color="primary"
           (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
-        <button [disabled]="!createAccessRelationshipFormGroup.valid" mat-raised-button color="primary"
+        <button [disabled]="!vehicleAccessRelationshipFormGroup.valid" mat-raised-button color="primary"
           (click)='onConfirm()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
       </div>
     </mat-card-content>

@@ -17,11 +17,11 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
   @Input() translationData: any;
   breadcumMsg: any = '';  
   @Output() accountAccessRelationCreate = new EventEmitter<object>();
-  createAccessRelationshipFormGroup: FormGroup;
+  accountAccessRelationshipFormGroup: FormGroup;
   accessTypeList: any = [{name: 'Full Access', id: 1}, {name: 'View Only', id: 2}]; 
   dataSource: any = new MatTableDataSource([]);
   displayedColumns: string[] = ['select', 'name'];
-  selectionForAccountGrp = new SelectionModel(true, []);
+  selectionForVehicleGrp = new SelectionModel(true, []);
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   selectedViewType: any = '';
@@ -29,12 +29,12 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit() {
-    this.createAccessRelationshipFormGroup = this._formBuilder.group({
-      vehicleGroup: ['', [Validators.required]],
+    this.accountAccessRelationshipFormGroup = this._formBuilder.group({
+      accountGroup: ['', [Validators.required]],
       accessType: ['', [Validators.required]]
     });
     this.breadcumMsg = this.getBreadcum();
-    this.fillGridData(this.accountGrpList);
+    this.fillGridData(this.vehicleGrpList);
     this.selectedViewType = this.selectedViewType == '' ? 'both' : this.selectedViewType;
   }
 
@@ -47,7 +47,7 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
   }
 
   getBreadcum(){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblVehicleAccountAccessRelationship ? this.translationData.lblVehicleAccountAccessRelationship : "Vehicle/Account Access-Relationship"} / ${this.translationData.lblAccessRelationshipDetails ? this.translationData.lblAccessRelationshipDetails : 'Access Relationship Details'}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblVehicleAccountAccessRelationship ? this.translationData.lblAccountAccessRelationship : "Account Access Relationship"} / ${this.translationData.lblAccessRelationshipDetails ? this.translationData.lblAccessRelationshipDetails : 'Access Relationship Details'}`;
   }
 
   toBack(){
@@ -64,25 +64,25 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
     this.dataSource.filter = filterValue;
   }
 
-  masterToggleForAccountGrp() {
-    this.isAllSelectedForAccountGrp()
-      ? this.selectionForAccountGrp.clear()
+  masterToggleForVehicleGrp() {
+    this.isAllSelectedForVehicleGrp()
+      ? this.selectionForVehicleGrp.clear()
       : this.dataSource.data.forEach((row) =>
-        this.selectionForAccountGrp.select(row)
+        this.selectionForVehicleGrp.select(row)
       );
   }
 
-  isAllSelectedForAccountGrp() {
-    const numSelected = this.selectionForAccountGrp.selected.length;
+  isAllSelectedForVehicleGrp() {
+    const numSelected = this.selectionForVehicleGrp.selected.length;
     const numRows = this.dataSource.data.length;
     return numSelected === numRows;
   }
 
-  checkboxLabelForAccountGrp(row?: any): string {
+  checkboxLabelForVehicleGrp(row?: any): string {
     if (row)
-      return `${this.isAllSelectedForAccountGrp() ? 'select' : 'deselect'} all`;
+      return `${this.isAllSelectedForVehicleGrp() ? 'select' : 'deselect'} all`;
     else
-      return `${this.selectionForAccountGrp.isSelected(row) ? 'deselect' : 'select'
+      return `${this.selectionForVehicleGrp.isSelected(row) ? 'deselect' : 'select'
         } row`;
   }
 

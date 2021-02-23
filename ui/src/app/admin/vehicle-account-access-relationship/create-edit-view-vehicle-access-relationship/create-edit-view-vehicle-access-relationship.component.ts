@@ -18,7 +18,7 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
   @Input() translationData: any;
   breadcumMsg: any = '';  
   @Output() vehicleAccessRelationCreate = new EventEmitter<object>();
-  createAccessRelationshipFormGroup: FormGroup;
+  vehicleAccessRelationshipFormGroup: FormGroup;
   accessTypeList: any = [{name: 'Full Access', id: 1}, {name: 'View Only', id: 2}]; 
   dataSource: any = new MatTableDataSource([]);
   displayedColumns: string[] = ['select', 'name'];
@@ -30,7 +30,7 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit() {
-    this.createAccessRelationshipFormGroup = this._formBuilder.group({
+    this.vehicleAccessRelationshipFormGroup = this._formBuilder.group({
       vehicleGroup: ['', [Validators.required]],
       accessType: ['', [Validators.required]]
     });
@@ -48,7 +48,7 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
   }
 
   getBreadcum(){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblVehicleAccountAccessRelationship ? this.translationData.lblVehicleAccountAccessRelationship : "Vehicle/Account Access-Relationship"} / ${this.translationData.lblAccessRelationshipDetails ? this.translationData.lblAccessRelationshipDetails : 'Access Relationship Details'}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblVehicleAccessRelationship ? this.translationData.lblVehicleAccessRelationship : "Vehicle Access Relationship"} / ${this.translationData.lblAccessRelationshipDetails ? this.translationData.lblAccessRelationshipDetails : 'Access Relationship Details'}`;
   }
 
   toBack(){
