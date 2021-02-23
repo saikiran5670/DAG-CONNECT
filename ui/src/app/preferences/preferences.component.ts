@@ -1,80 +1,32 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { TranslationService } from '../services/translation.service';
 import { DataInterchangeService } from '.././services/data-interchange.service';
+
 @Component({
   selector: 'app-preferences',
   templateUrl: './preferences.component.html',
   styleUrls: ['./preferences.component.less']
 })
+
 export class PreferencesComponent implements OnInit {
   translationData: any = [];
   @Input() userPreferencesFlag : boolean;
   public selectedIndex: number = 0;
-  localStLanguage = JSON.parse(localStorage.getItem("language"));
-  accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+  localStLanguage: any;
+  accountInfo: any;
 
   constructor(private translationService: TranslationService, private route: Router, private dataInterchangeService: DataInterchangeService) {
-    //this.defaultTranslation();
     this.dataInterchangeService.settingInterface$.subscribe(data => {
       this.userPreferencesFlag = data;
     }); 
   }
 
-  // defaultTranslation(){
-  //   this.translationData = {
-  //     lblAccountInformation: "Account Information",
-  //     lblSalutation: "Salutation",
-  //     lblFirstName: "First Name",
-  //     lblLastName: "Last Name",
-  //     lblLoginEmail: "Login Email",
-  //     lblOrganisation: "Organisation",
-  //     lblLanguage: "Language",
-  //     lblTimeZone: "Time Zone",
-  //     lblUnit: "Unit",
-  //     lblCurrency: "Currency",
-  //     lblDateFormat: "Date Format",
-  //     lblTimeFormat: "Time Format",
-  //     lblVehicleDisplayDefault: "Vehicle Display (Default)",
-  //     lblLandingPageDisplayDefault: "Landing Page Display (Default)'",
-  //     lblAllDetailsAreMandatory: "All details are mandatory",
-  //     lblCancel: "Cancel",
-  //     lblConfirm: "Confirm",
-  //     lblReset: "Reset",
-  //     lblSearch: "Search",
-  //     lblPreferences: "Preferences",
-  //     lblPersonaliseyourowndisplaysettings: "Personalise your own display settings",
-  //     lblAccountInfoSettings: "Account Info & Settings",
-  //     lblGeneralSettings: "General Settings",
-  //     lblOganisationbasedsettings: "Organisation based settings ",
-  //     lblChangePassword: "Change Password",
-  //     lblBrowsefromfolder: "Browse from folder",
-  //     lblDraghere: "Drag here",
-  //     lblor: "or",
-  //     lblchange: "change",
-  //     lblSpecialCharactersNotAllowed: "Special characters not allowed",
-  //     lblNumbersNotAllowed: "Numbers not allowed",
-  //     lblCurrentPassword: "Current Password",
-  //     lblNewPassword: "New Password",
-  //     lblcharactersmin: "'$' characters min",
-  //     lblConfirmNewPassword: "Confirm New Password",
-  //     lblPasswordmust: "Password must",
-  //     lblWrongPassword: "Wrong Password",
-  //     lblCurrentpasswordisrequired: "Current password is required",
-  //     lblNewpasswordisrequired: "New password is required",
-  //     lblConfirmpasswordisrequired: "Confirm password is required",
-  //     lblNewPasswordandconfirmpasswordmustmatch: "New Password and confirm password must match",
-  //     lblBeatleasteightcharacterslong: "Be at least eight characters long",
-  //     lblContainatleastoneuppercaseletter: "Contain at least one uppercase letter",
-  //     lblContainatleastonelowercaseletter: "Contain at least one lowercase letter",
-  //     lblContainatleastonenumber: "Contain at least one number",
-  //     lblContainatleastonespecialcharacter: "Contain at least one special character"
-  //   }
-  // }
-
   ngOnInit() {
+    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
     if(this.userPreferencesFlag){
-      let currentComponentUrl : String;
+      let currentComponentUrl: String;
       currentComponentUrl = this.route.routerState.snapshot.url
       if(currentComponentUrl == "/dashboard")
         this.selectedIndex = 1;

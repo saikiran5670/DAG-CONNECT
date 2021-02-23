@@ -10,28 +10,25 @@
   </div>
   <mat-card class='mat-elevation-z' *ngIf='!stepFlag && !editFlag && !viewFlag'>
     <div *ngIf="initData">
-      <!-- <app-common-filter *ngIf="true" [initData]='initData' [translationData]='translationData'></app-common-filter> -->
       <app-common-filter *ngIf="filterFlag" (filterValues)="getFilteredValues($event)" [initData]='initData' [translationData]='translationData'></app-common-filter>
     </div>  
-    <div fxLayout="row" fxLayoutAlign="space-between">
+    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <!-- <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserDetails }}</span> -->
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserDetails || 'All User Details' }}</span>
       </div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+      <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <mat-form-field appearance="outline">
+            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+            <span matPrefix><mat-icon>search</mat-icon></span>
+        </mat-form-field>
+      </div>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-        <!-- <button mat-flat-button color="primary" (click)="newUser()">
-          <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUser }}
-        </button> -->
         <button mat-flat-button color="primary" (click)="newUser()">
           <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUser || 'New User' }}
         </button>
       </div>
-    </div>
-    <div>
-      <mat-form-field>
-        <!-- <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch }}"> -->
-        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblFilter || 'Filter' }}">
-      </mat-form-field>
     </div>
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
     <div *ngIf='initData.length > 0'>
@@ -50,12 +47,10 @@
         </ng-container>
         <ng-container matColumnDef="roles">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRole || 'Role' }}</mat-header-cell>
-          <!-- <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}">{{ row.roles.length > 0 ? row.roles[0].name : '&nbsp; &nbsp; -' }} {{ row.roles.length > 1 ? '...' : '' }}</mat-cell> -->
           <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}"><span class="text-truncate">{{ row.roles.length > 0 ? row.roleList : '&nbsp; &nbsp; -' }}</span></mat-cell>
         </ng-container>
         <ng-container matColumnDef="accountGroups">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserGroup || 'User Group' }}</mat-header-cell>
-          <!-- <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}"><span class="text-truncate">{{ row.accountGroups.length > 0 ? row.accountGroups[0].name : '-' }}</span></mat-cell> -->
           <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}"><span class="text-truncate">{{ row.accountGroups.length > 0 ? row.accountGroupList : '&nbsp; &nbsp; -' }}</span></mat-cell>
         </ng-container>
         <ng-container matColumnDef="action">
@@ -80,6 +75,6 @@
     </div>
     <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
   </mat-card>
-  <app-edit-view-user *ngIf='editFlag || viewFlag' [defaultSetting]="defaultSetting" [fromEdit]="editFlag ? 'edit' : 'view'" [translationData]='translationData' [isCreateFlag]='isCreateFlag' [selectedPreference]='selectedPreference' [accountInfoData]='userDataForEdit' [allRoleData]='roleData' [allUserGrpData]='userGrpData' [selectedVehGrpData]='vehGrpData' [selectedRoleData]='selectedRoleData' [selectedUserGrpData]='selectedUserGrpData' (userCreate)="checkCreation($event)"></app-edit-view-user>
-  <app-new-user-step *ngIf='stepFlag' [defaultSetting]="defaultSetting" [translationData]='translationData' [isCreateFlag]='isCreateFlag' [userDataForEdit]='userDataForEdit' [roleData]='roleData' [userGrpData]='userGrpData' [vehGrpData]='vehGrpData' (userCreate)="checkCreation($event)"></app-new-user-step>
+  <app-edit-view-user *ngIf='editFlag || viewFlag' [defaultSetting]="defaultSetting" [fromEdit]="editFlag ? 'edit' : 'view'" [translationData]='translationData' [isCreateFlag]='isCreateFlag' [selectedPreference]='selectedPreference' [accountInfoData]='userDataForEdit' [allRoleData]='roleData' [allUserGrpData]='userGrpData' [selectedRoleData]='selectedRoleData' [selectedUserGrpData]='selectedUserGrpData' (userCreate)="checkCreation($event)"></app-edit-view-user>
+  <app-new-user-step *ngIf='stepFlag' [defaultSetting]="defaultSetting" [translationData]='translationData' [isCreateFlag]='isCreateFlag' [userDataForEdit]='userDataForEdit' [roleData]='roleData' [userGrpData]='userGrpData' (userCreate)="checkCreation($event)"></app-new-user-step>
 </div>

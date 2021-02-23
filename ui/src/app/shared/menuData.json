@@ -34,6 +34,10 @@
         {
           "name": "Driver Management",
           "subRoute": "drivermanagement"
+        },
+        {
+          "name": "Vehicle/Account Access-Relationship",
+          "subRoute": "vehicleaccountaccessrelationship"
         }
       ]
     },

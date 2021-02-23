@@ -11,42 +11,26 @@ import { MatSort } from '@angular/material/sort';
 export class SummaryStepComponent implements OnInit {
   @Input() translationData: any;
   @Input() defaultSetting: any;
-
   @Input() set selectedRoleData(value) {
     this.confirmRoleData = value;
     this.loadRoleData();
   }
-
   @Input() set selectedUserGrpData(value) {
     this.confirmUserGrpData = value;
     this.loadUserGrpData();
   }
-
-  @Input() set selectedVehGrpData(value) {
-    this.confirmVehGrpData = value;
-    this.loadVehGrpData();
-  }
-
   @Input() set accountInfoData(value){
     this.confirmAccountInfoData = this.getDefaultSetting(value);
   }
-  
   @Input() isCreateFlag: boolean = true;
   @Input() profilePath: any;
-  
   confirmAccountInfoData: any = [];
   confirmRoleData: any = [];
   confirmUserGrpData: any = [];
-  confirmVehGrpData: any = [];
-
   displayedColumnsRoleConfirm: string[] = ['roleName', 'featureIds'];
-  //displayedColumnsUserGrpConfirm: string[] = ['name', 'vehicles', 'users'];
   displayedColumnsUserGrpConfirm: string[] = ['name', 'accountCount'];
-  displayedColumnsVehGrpConfirm: string[] = ['name', 'vehicles', 'registrationNumber'];
   selectedRoleDataSource: any = [];
   selecteUserGrpDataSource: any = [];
-  selectedVehGrpDataSource: any = [];
-
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
@@ -64,6 +48,14 @@ export class SummaryStepComponent implements OnInit {
     setTimeout(()=>{                     
       this.selectedRoleDataSource.paginator = this.paginator.toArray()[0];
       this.selectedRoleDataSource.sort = this.sort.toArray()[0];
+    });
+  }
+  
+  loadUserGrpData(){
+    this.selecteUserGrpDataSource = new MatTableDataSource(this.confirmUserGrpData);
+    setTimeout(()=>{                     
+      this.selecteUserGrpDataSource.paginator = this.paginator.toArray()[1];
+      this.selecteUserGrpDataSource.sort = this.sort.toArray()[1];
     });
   }
 
@@ -87,19 +79,4 @@ export class SummaryStepComponent implements OnInit {
     return respData;
   }
 
-  loadUserGrpData(){
-    this.selecteUserGrpDataSource = new MatTableDataSource(this.confirmUserGrpData);
-    setTimeout(()=>{                     
-      this.selecteUserGrpDataSource.paginator = this.paginator.toArray()[1];
-      this.selecteUserGrpDataSource.sort = this.sort.toArray()[1];
-    });
-  }
-
-  loadVehGrpData(){
-    this.selectedVehGrpDataSource = new MatTableDataSource(this.confirmVehGrpData);
-    setTimeout(()=>{                     
-      this.selectedVehGrpDataSource.paginator = this.paginator.toArray()[2];
-      this.selectedVehGrpDataSource.sort = this.sort.toArray()[2];
-    });
-  }
 }

@@ -16,8 +16,7 @@ namespace net.atos.daf.ct2.account
         private readonly IDataAccess dataAccess;
         public AccountRepository(IDataAccess _dataAccess)
         {
-            dataAccess = _dataAccess;
-            //SqlMapper.AddTypeHandler(new StringEnumTypeHandler<AccountType>());
+            dataAccess = _dataAccess;            
         }
         public async Task<Account> Create(Account account)
         {
@@ -31,9 +30,11 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@first_name", account.FirstName);
                 parameter.Add("@last_name", account.LastName);
                 parameter.Add("@type", (char)account.AccountType);
+                parameter.Add("@driver_id", account.DriverId);
+                
 
-                string query = @"insert into master.account(email,salutation,first_name,last_name,type,is_active) " +
-                              "values(@email,@salutation,@first_name,@last_name,@type,true) RETURNING id";
+                string query = @"insert into master.account(email,salutation,first_name,last_name,type,driver_id,is_active,preference_id,blob_id) " +
+                              "values(@email,@salutation,@first_name,@last_name,@type,@driver_id,true,null,null) RETURNING id";
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 account.Id = id;
@@ -73,10 +74,10 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@first_name", account.FirstName);
                 parameter.Add("@last_name", account.LastName);
                 parameter.Add("@type", (char)account.AccountType);
-                string query = @"update master.account set id = @id,email = @email,salutation = @salutation,
-                                first_name = @first_name,last_name = @last_name ,type = @type
+                parameter.Add("@driver_id", account.DriverId);
+                string query = @"update master.account set email = @email,salutation = @salutation,
+                                first_name = @first_name,last_name = @last_name ,driver_id=@driver_id, type = @type
                                 where id = @id RETURNING id";
-
                 account.Id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
             catch (Exception ex)
@@ -93,9 +94,11 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@id", accountid);
                 parameter.Add("@organization_id", organization_id);
                 string query = string.Empty;
-                int result = 0;
+                int result = 0;                
+
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
+                    // check in user need to delete 
                     // Delete Account Group Reference
                     query = @"delete from master.groupref gr
                         using master.group g,master.accountorg ao 
@@ -103,7 +106,7 @@ namespace net.atos.daf.ct2.account
                          and g.id=gr.group_id and ao.is_active=true";
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                     // Delete preference
-                    query = @"update master.accountpreference set is_active=false where ref_id = @id;";
+                    query = @"update master.accountpreference set is_active=false from master.account where master.accountpreference.id=master.account.preference_id and master.account.id=@id;";
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
                     // Delete account role
@@ -113,6 +116,8 @@ namespace net.atos.daf.ct2.account
                     // De-Activate Account and Account Org
                     query = @"update master.account set is_active=false where id = @id ;update master.accountorg set is_active=false where account_id = @id and organization_id = @organization_id";
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+
+                    // disable account only if that is single account for organization
                     transactionScope.Complete();
                     return true;                    
                 }
@@ -131,7 +136,7 @@ namespace net.atos.daf.ct2.account
                 //List<Account> accounts = new List<Account>();
                 List<Account> accounts = new List<Account>();
                 string query = string.Empty;
-                query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.dob,a.type as accounttype,ag.organization_id as Organization_Id from master.account a join master.accountorg ag on a.id = ag.account_id and ag.is_active=true where 1=1 ";
+                query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.type as accounttype,ag.organization_id as Organization_Id,a.preference_id,a.blob_id from master.account a join master.accountorg ag on a.id = ag.account_id and a.is_active=true and ag.is_active=true where 1=1 ";
                 if (filter != null)
                 {
                     // id filter
@@ -384,17 +389,6 @@ namespace net.atos.daf.ct2.account
                     query = @"delete from master.accountrole where account_id = @account_id and organization_id=@organization_id";
                     await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                     result = true;
-                    //TODO: Do we need to remove specified roles only.
-                    // if (!string.IsNullOrEmpty(query))
-                    // {
-                    //     query = query.TrimEnd(',');
-                    //     List<int> roleIds = accountRoles.RoleIds.ToList();
-                    //     parameter.Add("@roleIds", roleIds);
-                    //     query = query + " and role_id = ANY(@roleIds)";
-
-                    //     await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                    // }
-
                 }
             }
             catch (Exception ex)
@@ -519,10 +513,12 @@ namespace net.atos.daf.ct2.account
             account.EmailId = record.email;
             account.Salutation = record.salutation;
             account.FirstName = record.first_name;
-            account.LastName = record.last_name;
-            account.Dob = record.dob;
+            account.LastName = record.last_name;            
             account.Organization_Id = record.organization_id;
             account.AccountType = (AccountType)Convert.ToChar(record.accounttype);
+            if ((object) record.preference_id != null)
+            account.PreferenceId = (int) record.preference_id;
+            if ( (object) record.blob_id != null ) account.BlobId  = (int)  record.blob_id;
             return account;
         }
         private AccessRelationship MapAccessRelationship(dynamic record)
@@ -534,7 +530,6 @@ namespace net.atos.daf.ct2.account
             entity.VehicleGroupId = record.vehicle_group_id;
             return entity;
         }
-
     }
 
 }

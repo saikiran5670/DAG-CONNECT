@@ -1,6 +1,6 @@
 using System;
 
-namespace net.atos.daf.ct2.portalservice
+namespace net.atos.daf.ct2.portalservicepoc
 {
     public class WeatherForecast
     {

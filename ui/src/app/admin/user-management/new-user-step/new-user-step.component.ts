@@ -18,17 +18,14 @@ import { UserDetailTableComponent } from './user-detail-table/user-detail-table.
 })
 export class NewUserStepComponent implements OnInit {
   @Input() roleData: any;
-  @Input() vehGrpData: any;
   @Input() defaultSetting: any;
   @Input() userGrpData: any;
   @Input() translationData: any;
   @Input() userDataForEdit: any;
   @Input() isCreateFlag: boolean;
   @Output() userCreate = new EventEmitter<object>();
-
   @ViewChild('stepper') stepper;
   roleDataSource: any = [];
-  vehGrpDataSource: any = [];
   userGrpDataSource: any = [];
   userCreatedMsg: any = '';
   grpTitleVisible: boolean = false;
@@ -36,23 +33,15 @@ export class NewUserStepComponent implements OnInit {
   isLinear = false;
   orgName: any;
   duplicateEmailMsg: boolean;
-
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
   thirdFormGroup: FormGroup;
-  fourthFormGroup: FormGroup;
-  
   selectionForRole = new SelectionModel(true, []);
-  selectionForVehGrp = new SelectionModel(true, []);
   selectionForUserGrp = new SelectionModel(true, []);
-  
   roleDisplayedColumns: string[] = ['select', 'roleName', 'featureIds'];
-  vehGrpDisplayedColumns: string[] = ['select', 'name', 'vehicles', 'registrationNumber'];
   userGrpDisplayedColumns: string[] = ['select',  'name', 'accountCount'];
-
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
- 
   solutationList: any = [
     {
       name: 'Mr'
@@ -64,7 +53,6 @@ export class NewUserStepComponent implements OnInit {
       name: 'Ms'
     }
   ];
-
   changePictureFlag: boolean = false;
   isAccountPictureSelected: boolean = false;
   droppedImage:any = '';
@@ -72,7 +60,6 @@ export class NewUserStepComponent implements OnInit {
   imageChangedEvent: any = '';
   croppedImage: any = '';
   summaryStepFlag: boolean = false;
-  
   dialogRef: MatDialogRef<UserDetailTableComponent>;
   userData: any;
   accountOrganizationId: any = 0;
@@ -92,8 +79,6 @@ export class NewUserStepComponent implements OnInit {
     this.roleDataSource.sort = this.sort.toArray()[0];
     this.userGrpDataSource.paginator = this.paginator.toArray()[1];
     this.userGrpDataSource.sort = this.sort.toArray()[1];
-    this.vehGrpDataSource.paginator = this.paginator.toArray()[2];
-    this.vehGrpDataSource.sort = this.sort.toArray()[2];
   }
 
   ngOnInit() {
@@ -124,19 +109,13 @@ export class NewUserStepComponent implements OnInit {
     });
     this.orgName = localStorage.getItem("organizationName");
     this.firstFormGroup.get('organization').setValue(this.orgName);
-
     this.secondFormGroup = this._formBuilder.group({
       secondCtrl: ['', Validators.required]
     });
     this.thirdFormGroup = this._formBuilder.group({
       thirdCtrl: ['', Validators.required]
     });
-    this.fourthFormGroup = this._formBuilder.group({
-      fourthCtrl: ['', Validators.required]
-    });
-
     this.roleDataSource = new MatTableDataSource(this.roleData);
-    this.vehGrpDataSource = new MatTableDataSource(this.vehGrpData);
     this.userGrpDataSource = new MatTableDataSource(this.userGrpData);
     this.setDefaultSetting();
   }
@@ -314,23 +293,6 @@ export class NewUserStepComponent implements OnInit {
       return `${this.selectionForRole.isSelected(row) ? 'deselect' : 'select'} row`;
   }
 
-  isAllSelectedForVehGrp(){
-    const numSelected = this.selectionForVehGrp.selected.length;
-    const numRows = this.vehGrpDataSource.data.length;
-    return numSelected === numRows;
-  }
-
-  masterToggleForVehGrp(){
-    this.isAllSelectedForVehGrp() ? this.selectionForVehGrp.clear() : this.vehGrpDataSource.data.forEach(row => this.selectionForVehGrp.select(row));
-  }
-
-  checkboxLabelForVehGrp(row?): string{
-    if(row)
-      return `${this.isAllSelectedForVehGrp() ? 'select' : 'deselect'} all`;
-    else  
-      return `${this.selectionForVehGrp.isSelected(row) ? 'deselect' : 'select'} row`;
-  }
-
   isAllSelectedForUserGrp(){
     const numSelected = this.selectionForUserGrp.selected.length;
     const numRows = this.userGrpDataSource.data.length;
@@ -355,15 +317,6 @@ export class NewUserStepComponent implements OnInit {
     }
     this.userCreate.emit(emitObj);
   }
-
-  // onCreateNewUser(){
-  //   this.userCreatedMsg = this.getUserCreatedMessage(true);
-  //   this.grpTitleVisible = true;
-  //   setTimeout(() => {  
-  //     this.grpTitleVisible = false;
-  //   }, 5000);
-  //   this.stepper.next();
-  // }
 
   nextToSummaryStep(){
     this.summaryStepFlag = true;
@@ -405,12 +358,6 @@ export class NewUserStepComponent implements OnInit {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); 
     this.userGrpDataSource.filter = filterValue;
-  }
-
-  applyFilterForVehGrp(filterValue: string) {
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); 
-    this.vehGrpDataSource.filter = filterValue;
   }
 
   onchangePictureClick(){
@@ -469,7 +416,6 @@ export class NewUserStepComponent implements OnInit {
   }
 
   viewUserGrpDetails(rowData: any){
-    //console.log("rowData:: ", rowData);
     let objData = {
       accountId: 0,
       organizationId: rowData.organizationId, 

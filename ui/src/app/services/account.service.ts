@@ -18,9 +18,21 @@ export class AccountService {
     this.accountServiceUrl = config.getSettings("foundationServices").accountRESTServiceURL;
   }
 
+  generateHeader(){
+    let genericHeader : object = {
+      'Content-Type' : 'application/json',
+      'accountId' : localStorage.getItem('accountId'),
+      'orgId' : localStorage.getItem('accountOrganizationId'),
+      'roleId' : localStorage.getItem('accountRoleId')
+    }
+    let getHeaderObj = JSON.stringify(genericHeader)
+    return getHeaderObj;
+  }
+  
   getAccountDetails(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
       .post<any[]>(
@@ -30,8 +42,9 @@ export class AccountService {
   }
 
   getAccount(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
       .post<any[]>(
@@ -41,14 +54,19 @@ export class AccountService {
   }
 
   getAccountPreference(id: number): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
     return this.httpClient
-      .get<any[]>(`${this.accountServiceUrl}/preference/get?accountId=${id}`)
+      .get<any[]>(`${this.accountServiceUrl}/preference/get?accountId=${id}`,headers)
       .pipe(catchError(this.handleError));
   }
 
   updateAccount(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
       .post<any[]>(
@@ -58,8 +76,9 @@ export class AccountService {
   }
 
   updateAccountPreference(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
       .post<any[]>(
@@ -69,8 +88,9 @@ export class AccountService {
   }
 
   changeAccountPassword(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
       responseType: 'text' as 'json'
     };
     return this.httpClient
@@ -82,9 +102,12 @@ export class AccountService {
 
 
   getAccountGroupDetails(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
+    // let headers = new HttpHeaders();
+    // headers = headers.set('h1', 'v1').set('h2','v2');
     return this.httpClient
       .post<any[]>(
         `${this.accountServiceUrl}/accountgroup/getdetails`, data, headers
@@ -93,8 +116,9 @@ export class AccountService {
   }
 
   getAccountDesc(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
       .post<any[]>(
@@ -104,8 +128,9 @@ export class AccountService {
   }
 
   createAccountGroup(data): Observable<any> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
    return this.httpClient
       .post<any>(`${this.accountServiceUrl}/accountgroup/create`, data, headers)
@@ -113,15 +138,20 @@ export class AccountService {
   }
 
   deleteAccount(data): Observable<void> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
     let emailId = encodeURIComponent(data.emailId); //-- encrypt special char. eg- @ -> %40
     return this.httpClient
-      .delete<void>(`${this.accountServiceUrl}/delete?EmailId=${emailId}&AccountId=${data.id}&OrganizationId=${data.organizationId}`)
+      .delete<void>(`${this.accountServiceUrl}/delete?EmailId=${emailId}&AccountId=${data.id}&OrganizationId=${data.organizationId}`,headers)
       .pipe(catchError(this.handleError));
   }
 
   updateAccountGroup(data): Observable<any> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
    return this.httpClient
       .post<any>(`${this.accountServiceUrl}/accountgroup/update`, data, headers)
@@ -129,8 +159,9 @@ export class AccountService {
   }
   
   deleteAccountGroup(data): Observable<any> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
    return this.httpClient
       .put<any>(`${this.accountServiceUrl}/accountgroup/delete?id=${data.id}`, data, headers)
@@ -138,8 +169,9 @@ export class AccountService {
   }
 
   createAccount(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
       .post<any[]>(
@@ -149,8 +181,9 @@ export class AccountService {
   }
 
   createPreference(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
       .post<any[]>(
@@ -160,8 +193,9 @@ export class AccountService {
   }
 
   addAccountRoles(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
       .post<any[]>(
@@ -171,8 +205,9 @@ export class AccountService {
   }
 
   addAccountGroups(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
       .post<any[]>(
@@ -182,8 +217,9 @@ export class AccountService {
   }
 
   getAccountRoles(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
       .post<any[]>(
@@ -193,8 +229,9 @@ export class AccountService {
   }
   
   deleteAccountRoles(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
       .post<any[]>(
@@ -204,8 +241,9 @@ export class AccountService {
   }
 
   deleteAccountGroupsForAccount(id: number): Observable<any> {
+    let headerObj = this.generateHeader();
     const headers = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      headers: new HttpHeaders({ headerObj }),
     };
    return this.httpClient
       .put<any>(`${this.accountServiceUrl}/accountgroup/deleteaccounts?id=${id}`, headers)

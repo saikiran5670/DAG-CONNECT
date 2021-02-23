@@ -1,15 +1,10 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-import { AlertService } from 'src/app/services/alert.service';
 import { MatSort } from '@angular/material/sort';
-import {
-  MatDialog,
-  MatDialogRef,MatDialogConfig,
-  MAT_DIALOG_DATA,
-} from '@angular/material/dialog';
-import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
-import { AccountGroup, Product, UserGroup,GetAccountGrp } from 'src/app/models/users.model';
+import { MatDialog, MatDialogRef, MatDialogConfig } from '@angular/material/dialog';
+import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
+import { AccountGroup, UserGroup, GetAccountGrp } from '../../models/users.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslationService } from '../../services/translation.service';
 import { AccountService } from '../../services/account.service';
@@ -21,23 +16,23 @@ import { UserDetailTableComponent } from '../user-management/new-user-step/user-
   templateUrl: './user-group-management.component.html',
   styleUrls: ['./user-group-management.component.less'],
 })
-export class UserGroupManagementComponent implements OnInit {
-  OrgId:number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-  dialogRef: MatDialogRef<UserDetailTableComponent>;
-  getAccountGrp: GetAccountGrp  = {
-    accountGroupId : null,
-    organizationId : null,
-    accountId : null,
-    accounts : true,
-    accountCount : true
-}
 
+export class UserGroupManagementComponent implements OnInit {
+  OrgId: number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+  dialogRef: MatDialogRef<UserDetailTableComponent>;
+  getAccountGrp: GetAccountGrp = {
+    accountGroupId: null,
+    organizationId: null,
+    accountId: null,
+    accounts: true,
+    accountCount: true
+  }
   accountgrp: AccountGroup = {
-    accountGroupId : 0,
-    organizationId : this.OrgId,
-    accountId : 0,
-    accounts : true,
-    accountCount : true,
+    accountGroupId: 0,
+    organizationId: this.OrgId,
+    accountId: 0,
+    accounts: true,
+    accountCount: true,
   }
   usrgrp: UserGroup = {
     organizationId: this.OrgId,
@@ -57,7 +52,6 @@ export class UserGroupManagementComponent implements OnInit {
   displayedColumns: string[] = ['name', 'vehicles', 'users', 'action'];
   roleData: any;
   vehGrpData: any;
-  products: any[] = [];
   initData: any = [];
   titleText: string;
   rowsData: any;
@@ -65,16 +59,13 @@ export class UserGroupManagementComponent implements OnInit {
   viewFlag: boolean = false;
   selectedRowData: any;
   grpTitleVisible: boolean = false;
-  dataSource = new MatTableDataSource(this.products);
-  // childUserGroupFormData : any;
-  // userName: string = '';
+  dataSource = new MatTableDataSource(this.initData);
   userCreatedMsg: any = '';
-
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   inputText: any;
   translationData: any;
-  localStLanguage = JSON.parse(localStorage.getItem("language"));
+  localStLanguage: any;
   showLoadingIndicator: any;
 
   ngAfterViewInit() {
@@ -83,7 +74,6 @@ export class UserGroupManagementComponent implements OnInit {
   }
 
   constructor(
-    private alertService: AlertService,
     private dialogService: ConfirmDialogService,
     private _snackBar: MatSnackBar,
     private translationService: TranslationService,
@@ -161,7 +151,7 @@ export class UserGroupManagementComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -173,7 +163,7 @@ export class UserGroupManagementComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data) => {
       this.processTranslation(data);
-      this.loadUserGroupData(1);
+      this.loadUserGroupData();
     });
   }
 
@@ -187,6 +177,7 @@ export class UserGroupManagementComponent implements OnInit {
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
   }
+
   openSnackBar(message: string, action: string) {
     let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
     snackBarRef.afterDismissed().subscribe(() => {
@@ -196,33 +187,31 @@ export class UserGroupManagementComponent implements OnInit {
       console.log('The snackbar action was triggered!');
     });
   }
-  DeleteGroup(item) {
+
+  deleteGroup(item: any) {
     const options = {
       title: this.translationData.lblDeleteGroup || "Delete Group",
       message: this.translationData.lblAreyousureyouwanttodeleteusergroup || "Are you sure you want to delete '$' user group?",
       cancelText: this.translationData.lblNo || "No",
       confirmText: this.translationData.lblYes || "Yes"
     };
-    this.OpenDialog(options, 'delete', item);
+    this.OpenDeleteDialog(options, item);
   }
 
-  NewUserGroup() {
-    this.titleText =
-      this.translationData.lblNewUserGroupName || "New User Group Name";
+  newUserGroup() {
+    this.titleText = this.translationData.lblNewUserGroupName || "New User Group Name";
     this.rowsData = [];
     this.createStatus = true;
   }
 
-  Viewgroup(element) {
-    
+  viewGroup(element: any) {
     this.selectedRowData = element;
-
     this.getAccountGrp = {
-      accountGroupId : this.selectedRowData.id,
-      organizationId : this.OrgId,
-      accountId : 0,
-      accounts : true,
-      accountCount : true
+      accountGroupId: this.selectedRowData.id,
+      organizationId: this.OrgId,
+      accountId: 0,
+      accounts: true,
+      accountCount: true
     }
     this.accountService.getAccountDesc(this.getAccountGrp).subscribe((usrlist) => {
       this.selectedRowData = usrlist[0];
@@ -230,107 +219,59 @@ export class UserGroupManagementComponent implements OnInit {
     });
   }
 
-
-  Editgroup(element) {
-      this.selectedRowData = element;
-      this.getAccountGrp = {
-      accountGroupId : this.selectedRowData.id,
-      organizationId : this.OrgId,
-      accountId : 0,
-      accounts : true,
-      accountCount : true
+  editGroup(element: any) {
+    this.selectedRowData = element;
+    this.getAccountGrp = {
+      accountGroupId: this.selectedRowData.id,
+      organizationId: this.OrgId,
+      accountId: 0,
+      accounts: true,
+      accountCount: true
     }
     this.accountService.getAccountDesc(this.getAccountGrp).subscribe((usrlist) => {
       this.selectedRowData = usrlist[0];
       this.editFlag = true;
     });
-
-    
-
-
-
   }
 
   onClose() {
     this.grpTitleVisible = false;
   }
 
-  onNavigate(productCode) {
-    console.log(`product code ${productCode}`);
-  }
-
-  loadUserGroupData(orgid) {
+  loadUserGroupData() {
     this.showLoadingIndicator = true;
-    this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp)=>{
-      this.hideloader();  
-      this.products = grp;
+    this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp) => {
+      this.hideloader();
       this.initData = grp;
       this.onUpdateDataSource(grp);
     });
   }
+
   onUpdateDataSource(updatedData: any) {
     this.dataSource = new MatTableDataSource(updatedData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-    }, 0);
+    });
   }
 
-  OpenDialog(options, flag, item) {
-    // this.alertService.success("sucess!");
-
-    if (flag == '') {
-      //Model for create
-
-      this.dialogService.open(options);
-      this.dialogService.confirmed().subscribe((res) => {
-        if (res.inputValue) {
-          //save data here
-          this.usrgrp = {
-            organizationId: this.OrgId,
-            name: res.inputValue,
-            isActive: true,
-            id: options.id,
-            usergroupId: options.usergroupId,
-            vehicles: options.vehicles,
-            users: options.users,
-            userGroupDescriptions: options.userGroupDescriptions
-          };
-
-
-
-          //check if its a new or update request
-          if (options.button2Text == 'Update') {
-            // this.loadUserGroupData(1);
-          }
-          else if (res.type == 'create') {
-            
-          }
-          else if (res.type == 'createContinue') {
-            
-          }
-        }
-      });
-    } else {
-      //Model for delete
-      let name = item.name;
-      this.dialogService.DeleteModelOpen(options, name);
-      this.dialogService.confirmedDel().subscribe((res) => {
-        if (res) {
-          this.accountService.deleteAccountGroup(item).subscribe((d) => {
-              console.log(d);
-              this.openSnackBar('Item delete', 'dismiss');
-            });
-          this.loadUserGroupData(item.organizationId);
-        }
-      });
-    }
+  OpenDeleteDialog(options: any, item: any) {
+    // Model for delete
+    let name = item.name;
+    this.dialogService.DeleteModelOpen(options, name);
+    this.dialogService.confirmedDel().subscribe((res) => {
+      if (res) {
+        this.accountService.deleteAccountGroup(item).subscribe((d) => {
+          this.openSnackBar('Item delete', 'dismiss');
+        });
+        this.loadUserGroupData();
+      }
+    });
   }
 
   onBackToPage(data: any) {
-
     if (data.editText == "create") {
-      // this.loadUserGroupData(1);
+      // this.loadUserGroupData();
       this.initData = data.gridData;
       this.userCreatedMsg = data.successMsg;
       this.grpTitleVisible = true;
@@ -345,12 +286,11 @@ export class UserGroupManagementComponent implements OnInit {
     this.onUpdateDataSource(this.initData);
   }
 
-  onUserClick(data : any){
-    console.log("---userclick row data---",data);
-    const colsList = ['firstName','emailId','roles'];
+  onUserClick(data: any) {
+    const colsList = ['firstName', 'emailId', 'roles'];
     const colsName = [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'];
-    const tableTitle = `${data.name} - ${this.translationData.lblUsers || 'Users'}`
-    
+    const tableTitle = `${data.name} - ${this.translationData.lblUsers || 'Users'}`;
+
     let obj: any = {
       "accountId": 0,
       "organizationId": data.organizationId,
@@ -360,21 +300,23 @@ export class UserGroupManagementComponent implements OnInit {
       "name": ""
     }
 
-    this.accountService.getAccountDetails(obj).subscribe((data)=>{
+    this.accountService.getAccountDetails(obj).subscribe((data) => {
       data = this.makeRoleAccountGrpList(data);
       this.callToCommonTable(data, colsList, colsName, tableTitle);
     });
   }
-  onVehicleClick(data : any) {
-    const colsList = ['name','vin','license_Plate_Number'];
+
+  onVehicleClick(data: any) {
+    const colsList = ['name', 'vin', 'license_Plate_Number'];
     const colsName = [this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
-    const tableTitle = `${data.name} - ${this.translationData.lblVehicles || 'Vehicles'}`
- 
-    this.vehicleService.getVehiclesDataByAccGrpID(data.id, data.organizationId).subscribe((data)=>{
+    const tableTitle = `${data.name} - ${this.translationData.lblVehicles || 'Vehicles'}`;
+
+    this.vehicleService.getVehiclesDataByAccGrpID(data.id, data.organizationId).subscribe((data) => {
       this.callToCommonTable(data, colsList, colsName, tableTitle);
-  });
+    });
   }
-  makeRoleAccountGrpList(initdata){
+
+  makeRoleAccountGrpList(initdata: any) {
     initdata.forEach((element, index) => {
       let roleTxt: any = '';
       let accGrpTxt: any = '';
@@ -385,27 +327,28 @@ export class UserGroupManagementComponent implements OnInit {
         accGrpTxt += resp.name + ', ';
       });
 
-      if(roleTxt != ''){
+      if (roleTxt != '') {
         roleTxt = roleTxt.slice(0, -2);
       }
-      if(accGrpTxt != ''){
+      if (accGrpTxt != '') {
         accGrpTxt = accGrpTxt.slice(0, -2);
       }
 
-      initdata[index].roleList = roleTxt; 
+      initdata[index].roleList = roleTxt;
       initdata[index].accountGroupList = accGrpTxt;
     });
-    
+
     return initdata;
   }
-  callToCommonTable(tableData: any,colsList,colsName,tableTitle){
+
+  callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any) {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
       tableData: tableData,
       colsList: colsList,
-      colsName:colsName,
+      colsName: colsName,
       tableTitle: tableTitle
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
@@ -413,7 +356,7 @@ export class UserGroupManagementComponent implements OnInit {
 
   hideloader() {
     // Setting display of spinner
-      this.showLoadingIndicator=false;
+    this.showLoadingIndicator = false;
   }
 
 }

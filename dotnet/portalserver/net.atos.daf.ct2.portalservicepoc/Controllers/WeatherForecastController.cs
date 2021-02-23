@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace net.atos.daf.ct2.portalservice.Controllers
+namespace net.atos.daf.ct2.portalservicepoc.Controllers
 {
     [ApiController]
     [Route("[controller]")]

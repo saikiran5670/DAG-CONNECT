@@ -97,7 +97,7 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData .lblBirthDate || 'Birth Date' }}</mat-label>
+          <mat-label>{{ translationData.lblBirthDate || 'Birth Date' }}</mat-label>
           <mat-form-field appearance="outline" class="full-width">
             <input formControlName="birthDate" [matDatepickerFilter]="myFilter" style="cursor:pointer;"
               placeholder="MM/DD/YYYY" [readonly]="true" matInput [matDatepicker]="Due_Date">
@@ -106,9 +106,9 @@
           </mat-form-field>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData .lblLanguage || 'Language' }}</mat-label>
+          <mat-label>{{ translationData.lblLanguage || 'Language' }}</mat-label>
           <mat-form-field appearance="outline" class="full-width">
-            <mat-select placeholder="{{ translationData .lblLanguage || 'Language' }}" formControlName="language">
+            <mat-select placeholder="{{ translationData.lblLanguage || 'Language' }}" formControlName="language">
               <!-- <mat-option>
                   <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                   </ngx-mat-select-search>
@@ -120,9 +120,9 @@
           </mat-form-field>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData .lblUnit || 'Unit' }}</mat-label>
+          <mat-label>{{ translationData.lblUnit || 'Unit' }}</mat-label>
           <mat-form-field appearance="outline" class="full-width">
-            <mat-select placeholder="{{ translationData .lblUnit || 'Unit' }}" formControlName="unit">
+            <mat-select placeholder="{{ translationData.lblUnit || 'Unit' }}" formControlName="unit">
               <!-- <mat-option>
                   <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                   </ngx-mat-select-search>
@@ -136,9 +136,9 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData .lblTimeZone || 'Time Zone' }}</mat-label>
+          <mat-label>{{ translationData.lblTimeZone || 'Time Zone' }}</mat-label>
           <mat-form-field appearance="outline" class="full-width">
-            <mat-select placeholder="{{ translationData .lblTimeZone || 'Time Zone' }}" formControlName="timeZone">
+            <mat-select placeholder="{{ translationData.lblTimeZone || 'Time Zone' }}" formControlName="timeZone">
               <!-- <mat-option>
                   <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                   </ngx-mat-select-search>
@@ -150,9 +150,9 @@
           </mat-form-field>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData .lblCurrency || 'Currency' }}</mat-label>
+          <mat-label>{{ translationData.lblCurrency || 'Currency' }}</mat-label>
           <mat-form-field appearance="outline" class="full-width">
-            <mat-select placeholder="{{ translationData .lblCurrency || 'Currency' }}" formControlName="currency">
+            <mat-select placeholder="{{ translationData.lblCurrency || 'Currency' }}" formControlName="currency">
               <!-- <mat-option>
                   <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
                   </ngx-mat-select-search>

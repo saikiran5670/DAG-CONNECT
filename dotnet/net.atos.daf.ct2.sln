@@ -117,6 +117,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "portalserver", "portalserve
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.portalservice", "portalserver\net.atos.daf.ct2.portalservice\net.atos.daf.ct2.portalservice.csproj", "{8C8698C7-41D9-4E79-9ACA-421EAF311F44}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.portalservicepoc", "portalserver\net.atos.daf.ct2.portalservicepoc\net.atos.daf.ct2.portalservicepoc.csproj", "{B875DBDD-1693-44A9-8974-E94B23E82406}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -706,6 +708,18 @@ Global
 		{8C8698C7-41D9-4E79-9ACA-421EAF311F44}.Release|x64.Build.0 = Release|Any CPU
 		{8C8698C7-41D9-4E79-9ACA-421EAF311F44}.Release|x86.ActiveCfg = Release|Any CPU
 		{8C8698C7-41D9-4E79-9ACA-421EAF311F44}.Release|x86.Build.0 = Release|Any CPU
+		{B875DBDD-1693-44A9-8974-E94B23E82406}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B875DBDD-1693-44A9-8974-E94B23E82406}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B875DBDD-1693-44A9-8974-E94B23E82406}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B875DBDD-1693-44A9-8974-E94B23E82406}.Debug|x64.Build.0 = Debug|Any CPU
+		{B875DBDD-1693-44A9-8974-E94B23E82406}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B875DBDD-1693-44A9-8974-E94B23E82406}.Debug|x86.Build.0 = Debug|Any CPU
+		{B875DBDD-1693-44A9-8974-E94B23E82406}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B875DBDD-1693-44A9-8974-E94B23E82406}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B875DBDD-1693-44A9-8974-E94B23E82406}.Release|x64.ActiveCfg = Release|Any CPU
+		{B875DBDD-1693-44A9-8974-E94B23E82406}.Release|x64.Build.0 = Release|Any CPU
+		{B875DBDD-1693-44A9-8974-E94B23E82406}.Release|x86.ActiveCfg = Release|Any CPU
+		{B875DBDD-1693-44A9-8974-E94B23E82406}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3B76D23F-3BCE-4CB2-9A75-B50AEEFFB647} = {2783CFF0-6071-4B9E-8414-18ACB95D1997}
@@ -759,5 +773,6 @@ Global
 		{9D3B67EE-D1C9-4B4F-809F-7C18336B5EF0} = {2783CFF0-6071-4B9E-8414-18ACB95D1997}
 		{92DF3F86-9589-4AD1-9B09-B7EB4A9BFECC} = {E42B6632-428F-4BDE-BB14-D8FA9DD42E87}
 		{8C8698C7-41D9-4E79-9ACA-421EAF311F44} = {E765D0F0-711A-11EB-B0FE-199B805E938F}
+		{B875DBDD-1693-44A9-8974-E94B23E82406} = {E765D0F0-711A-11EB-B0FE-199B805E938F}
 	EndGlobalSection
 EndGlobal

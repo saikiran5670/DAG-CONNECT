@@ -1,17 +1,16 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import * as data from './shared/menuData.json';
 import { DataInterchangeService } from './services/data-interchange.service';
 import { TranslationService } from './services/translation.service';
 import { DeviceDetectorService } from 'ngx-device-detector';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.less']
-
 })
 
 export class AppComponent {
@@ -44,7 +43,6 @@ export class AppComponent {
   isFullScreen= false;
   public userPreferencesFlag : boolean = false;
   appForm: FormGroup;
-
   private pagetTitles = {
     livefleet: 'live fleet',
     logbook: 'log book',
@@ -57,7 +55,8 @@ export class AppComponent {
     usermanagement: 'User Management',
     vehiclemanagement: 'Vehicle Management',
     drivermanagement: 'Driver Management',
-    userrolemanagement: 'User Role Management'
+    userrolemanagement: 'User Role Management',
+    vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship'
   }
   public menuStatus = {
     dashboard : {
@@ -95,7 +94,8 @@ export class AppComponent {
         usermanagement: 'User Management',
         drivermanagement: 'Driver Management',
         userrolemanagement: 'User Role Management',
-        vehiclemanagement: 'Vehicle Management'
+        vehiclemanagement: 'Vehicle Management',
+        vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship'
       }
     },
     tachograph : {
@@ -123,7 +123,6 @@ export class AppComponent {
       }
     }
   }
-
 
   constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any) {
     this.defaultTranslation();
@@ -164,19 +163,6 @@ export class AppComponent {
       'languageSelection': [this.localStLanguage ? this.localStLanguage.id : (this.accountInfo ? this.accountInfo.accountPreference.languageId : 8)]
     });
 
-    // this.dataInterchangeService.orgRoleInterface$.subscribe(resp => {
-    //   this.userFullName = `${resp.accountDetail.salutation} ${resp.accountDetail.firstName} ${resp.accountDetail.lastName}`;
-    //   let userRole = resp.role.filter(item => item.id === parseInt(localStorage.getItem("accountRoleId")));
-    //   this.userRole = userRole[0].name;
-    //   let userOrg = resp.organization.filter(item => item.id === parseInt(localStorage.getItem("accountOrganizationId")));
-    //   this.userOrg = userOrg[0].name;
-    //   this.organizationDropdown = resp.organization;
-    //   this.roleDropdown = resp.role;
-    //   this.setDropdownValues();
-
-    //   console.log(JSON.stringify(localStorage.getItem("accountInfo")));
-    // });
-
     router.events.subscribe((val:any) => {
       if(val instanceof NavigationEnd){
         this.isLogedIn = true;
@@ -213,7 +199,6 @@ export class AppComponent {
   }
 
   getAccountInfo(){
-    //console.log(accountInfo);
     this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
     if(this.accountInfo){
       this.userFullName = `${this.accountInfo.accountDetail.salutation} ${this.accountInfo.accountDetail.firstName} ${this.accountInfo.accountDetail.lastName}`;
@@ -268,6 +253,7 @@ export class AppComponent {
       lblUserGroupManagement: "User Group Management",
       lblUserManagement: "User Management",
       lblUserRoleManagement: "User Role Management",
+      lblVehicleAccountAccessRelationship: 'Vehicle/Account Access-Relationship',
       lblDriverManagement: "Driver Management",
       lblLiveFleet: "Live Fleet",
       lblLogBook: "Log Book",
@@ -286,7 +272,7 @@ export class AppComponent {
 
   getTranslationLabels(){
     // let accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
- // console.log("accountInfo.accountPreference:: ", this.accountInfo.accountPreference)
+    // console.log("accountInfo.accountPreference:: ", this.accountInfo.accountPreference)
     this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
     let preferencelanguageCode= "";
     let preferenceLanguageId = 1;
@@ -354,19 +340,6 @@ export class AppComponent {
     this.fileUploadedPath = 'assets/images/john.png';
 }
 
-// ngAfterViewInit (){
-//   console.log("---ngAfterViewChecked");
-//   var element = document.getElementById("sideMenuCollapseBtnContainer"),
-// style = window.getComputedStyle(element),
-// displayIcon = style.getPropertyValue('display');
-// console.log("-----display", displayIcon);
-
-// if(displayIcon == 'none'){
-// this.menuCollapsed = true;
-// }
-// }
-
-
 private setPageTitle() {
   if(this.subpage) {
     var _subPage = this.subpage.indexOf('?') !== -1 ? this.subpage.split('?')[0] : this.subpage;
@@ -407,12 +380,12 @@ private setPageTitle() {
 
     this.menuCollapsed = !this.menuCollapsed;
     this.hideAllOpenMenus();
+    if(this.openUserRoleDialog)
+      this.openUserRoleDialog = !this.openUserRoleDialog;
   }
 
   logOut() {
-    // localStorage.removeItem('accountOrganizationId');
-    // localStorage.removeItem('accountOrganizationId');
-    localStorage.clear();
+    localStorage.clear(); // clear all localstorage
     this.router.navigate(["/auth/login"]);
   }
 
@@ -441,26 +414,24 @@ private setPageTitle() {
     this.isFullScreen = false;
   }
   
-
   onClickUserRole(){
      this.openUserRoleDialog = !this.openUserRoleDialog;
-   }
+  }
 
-   onOrgChange(value){
+  onOrgChange(value: any){
     localStorage.setItem("accountOrganizationId", value);
     let orgname = this.organizationDropdown.filter(item => item.id === value);
     this.userOrg = orgname[0].name;
     localStorage.setItem("organizationName", this.userOrg);
-   }
+  }
 
-   onRoleChange(value){
+   onRoleChange(value: any){
     localStorage.setItem("accountRoleId", value);
     let rolename = this.roleDropdown.filter(item => item.id === value);
     this.userRole = rolename[0].name;
    }
 
-   onLanguageChange(value){
-    //console.log(value);
+   onLanguageChange(value: any){
     if(this.localStLanguage.id != value){
       let languageCode = '';
       let languageId = 1;
@@ -485,7 +456,6 @@ private setPageTitle() {
   reloadCurrentComponent() {
     // save current route 
     const currentRoute = this.router.url;
-
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
         this.router.navigate([currentRoute]); // navigate to same route
     }); 
@@ -494,4 +464,5 @@ private setPageTitle() {
   userPreferencesSetting(event){
     this.userPreferencesFlag  = !this.userPreferencesFlag;
   }
+  
 }
