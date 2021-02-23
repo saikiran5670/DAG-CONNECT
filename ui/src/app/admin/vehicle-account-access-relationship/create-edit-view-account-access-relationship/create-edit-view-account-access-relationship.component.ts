@@ -34,11 +34,11 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
       accessType: ['', [Validators.required]]
     });
     this.breadcumMsg = this.getBreadcum();
-    this.fillGridData(this.vehicleGrpList);
+    this.loadGridData(this.vehicleGrpList);
     this.selectedViewType = this.selectedViewType == '' ? 'both' : this.selectedViewType;
   }
 
-  fillGridData(tableData: any){
+  loadGridData(tableData: any){
     this.dataSource = new MatTableDataSource(tableData);
       setTimeout(()=>{
         this.dataSource.paginator = this.paginator;

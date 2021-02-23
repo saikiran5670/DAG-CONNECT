@@ -12,7 +12,6 @@ import { MatTableDataSource } from '@angular/material/table';
 })
 
 export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit {
-
   @Input() accountGrpList: any;
   @Input() vehicleGrpList: any;
   @Input() translationData: any;
@@ -35,11 +34,11 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
       accessType: ['', [Validators.required]]
     });
     this.breadcumMsg = this.getBreadcum();
-    this.fillGridData(this.accountGrpList);
+    this.loadGridData(this.accountGrpList);
     this.selectedViewType = this.selectedViewType == '' ? 'both' : this.selectedViewType;
   }
 
-  fillGridData(tableData: any){
+  loadGridData(tableData: any){
     this.dataSource = new MatTableDataSource(tableData);
       setTimeout(()=>{
         this.dataSource.paginator = this.paginator;
