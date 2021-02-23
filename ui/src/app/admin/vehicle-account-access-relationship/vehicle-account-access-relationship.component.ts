@@ -4,6 +4,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { AccountService } from '../../services/account.service';
 import { TranslationService } from '../../services/translation.service';
+import { VehicleService } from '../../services/vehicle.service';
 
 @Component({
   selector: 'app-vehicle-account-access-relationship',
@@ -12,14 +13,17 @@ import { TranslationService } from '../../services/translation.service';
 })
 
 export class VehicleAccountAccessRelationshipComponent implements OnInit {
-  userCreatedMsg : any;
+  accountGrpList: any = [];
+  vehicleGrpList: any = [];
+  accessRelationCreatedMsg : any;
   titleVisible: boolean = false;
   translationData: any;
   localStLanguage: any;
   accountOrganizationId: any;
   selectedViewType: any = '';
   selectedColumnType: any = '';
-  createAccessRelation: boolean = false;
+  createVehicleAccessRelation: boolean = false;
+  createAccountAccessRelation: boolean = false;
   displayedColumns: string[] = ['firstName','emailId','roles','accountGroups','action'];
   dataSource: any;
   initData: any = [];
@@ -28,7 +32,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   showLoadingIndicator: any;
   isViewListDisabled: boolean = false;
   
-  constructor(private translationService: TranslationService, private accountService: AccountService) { 
+  constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService) { 
     this.defaultTranslation();
   }
 
@@ -70,7 +74,37 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   }
 
   createNewAssociation(){
-    this.createAccessRelation = true;
+    //if(!this.isViewListDisabled){ // for vehicle association
+      let accountGrpObj: any = {
+        accountGroupId: 0,
+        organizationId: this.accountOrganizationId,
+        accountId: 0,
+        accounts: true,
+        accountCount: true,
+      }
+      let vehicleGrpObj: any = {
+        id: 0,
+        organizationID: this.accountOrganizationId,
+        vehicles: true,
+        vehiclesGroup: true,
+        groupIds: [0],
+      };
+      this.accountService.getAccountGroupDetails(accountGrpObj).subscribe((accountGrpList) => {
+        this.accountGrpList = accountGrpList;
+        this.vehicleService.getVehicleGroup(vehicleGrpObj).subscribe((vehGrpList) => {
+          this.vehicleGrpList = vehGrpList;
+          if(!this.isViewListDisabled){
+            this.createVehicleAccessRelation = true;
+          }
+          else{
+            this.createAccountAccessRelation = true;
+          }
+        });
+      });
+    // }
+    // else{ // for account association
+
+    // }
   }
 
   loadAccountData(){
@@ -130,7 +164,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   }
 
   editViewAccessRelationship(element: any, type: any) {
-
+    this.createNewAssociation();
   }
 
   deleteAccessRelationship(element: any){
@@ -154,8 +188,12 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     }
   }
 
-  checkCreation(item: any){
-    this.createAccessRelation = !this.createAccessRelation;
+  checkCreationForVehicle(item: any){
+    this.createVehicleAccessRelation = !this.createVehicleAccessRelation;
+  }
+
+  checkCreationForAccount(item: any){
+    this.createAccountAccessRelation = !this.createAccountAccessRelation;
   }
 
   hideloader() {

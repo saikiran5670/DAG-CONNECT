@@ -2,14 +2,14 @@
     <div *ngIf='titleVisible' fxLayout="row" fxLayoutAlign="center center"
     style='padding:10px; color:#fff; background: #5dc24e;'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
-      {{ userCreatedMsg }}
+      {{ accessRelationCreatedMsg }}
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
       <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
     </div>
   </div>
 
-  <mat-card class='mat-elevation-z' *ngIf='!createAccessRelation'> 
+  <mat-card class='mat-elevation-z' *ngIf='!createVehicleAccessRelation && !createAccountAccessRelation'> 
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllAccessRelationshipDetails || 'All Access Relationship Details' }}</span>
@@ -97,6 +97,6 @@
     </div>
     <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
   </mat-card>
-  <app-create-edit-view-access-relationship *ngIf='createAccessRelation' [translationData]='translationData' (userCreate)='checkCreation($event)'></app-create-edit-view-access-relationship>
+  <app-create-edit-view-vehicle-access-relationship *ngIf='createVehicleAccessRelation' [translationData]='translationData' [accountGrpList]='accountGrpList' [vehicleGrpList]='vehicleGrpList' (vehicleAccessRelationCreate)='checkCreationForVehicle($event)'></app-create-edit-view-vehicle-access-relationship>
+  <app-create-edit-view-account-access-relationship *ngIf='createAccountAccessRelation' [translationData]='translationData' [accountGrpList]='accountGrpList' [vehicleGrpList]='vehicleGrpList' (accountAccessRelationCreate)='checkCreationForAccount($event)'></app-create-edit-view-account-access-relationship>
 </div>
-<!-- <app-spinner *ngIf="showLoadingIndicator"></app-spinner> -->
