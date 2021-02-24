@@ -35,7 +35,7 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
       vehicleGroup: ['', [Validators.required]],
       accessType: ['', [Validators.required]]
     });
-    this.breadcumMsg = this.getBreadcum();
+    this.breadcumMsg = this.getBreadcum(this.actionType);
     if(this.actionType == 'view' || this.actionType == 'edit' ){
       this.setDropdownValue();
     }
@@ -72,8 +72,8 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
     });
   }
 
-  getBreadcum(){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblVehicleAccessRelationship ? this.translationData.lblVehicleAccessRelationship : "Vehicle Access Relationship"} / ${this.translationData.lblAccessRelationshipDetails ? this.translationData.lblAccessRelationshipDetails : 'Access Relationship Details'}`;
+  getBreadcum(type: any){
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblVehicleAccessRelationship ? this.translationData.lblVehicleAccessRelationship : "Vehicle Access Relationship"} / ${(type == 'view') ? (this.translationData.lblViewAssociationDetails ? this.translationData.lblViewAssociationDetails : 'View Association Details') : (this.translationData.lblAccessRelationshipDetails ? this.translationData.lblAccessRelationshipDetails : 'Access Relationship Details')}`;
   }
 
   toBack(){
