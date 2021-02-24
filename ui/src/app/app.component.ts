@@ -377,9 +377,12 @@ private setPageTitle() {
   }
 
   sidenavToggle() {
-
-    this.menuCollapsed = !this.menuCollapsed;
     this.hideAllOpenMenus();
+    setTimeout(() => {
+      this.menuCollapsed = !this.menuCollapsed;  
+    }, 500);
+    
+    
     if(this.openUserRoleDialog)
       this.openUserRoleDialog = !this.openUserRoleDialog;
   }

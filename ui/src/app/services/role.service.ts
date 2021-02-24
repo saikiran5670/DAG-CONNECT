@@ -46,7 +46,7 @@ export class RoleService {
     const headers =  new HttpHeaders({ headerObj });
     const options =  { params: new HttpParams(data), headers: headers };
     return this.httpClient
-      .get<any[]>(`${this.roleServiceUrl}/get`,options)
+      .get<any[]>(`${this.roleServiceUrl}/get`,{params: data})
       .pipe(catchError(this.handleError));
   }
 
