@@ -540,6 +540,28 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
 
   onListChange(event: any){
     this.selectedViewType = event.value;
+    this.changeGridOnList(event.value);
+  }
+
+  changeGridOnList(val: any){
+    this.cols = ['name','accessType','associatedAccount','action'];
+    this.columnNames = ['Vehicle Group/Vehicle','Access Type','Account Group/Account','Action'];
+    let data: any = [];
+    switch(val){
+      case "group":{
+        data = this.vehicleGrpVehicleAssociationDetails.filter((item: any) => item.isVehicleGroup == true);
+        break;
+      }
+      case "vehicle":{
+        data = this.vehicleGrpVehicleAssociationDetails.filter((item: any) => item.isVehicleGroup == false);
+        break;
+      }
+      case "both":{
+        data = this.vehicleGrpVehicleAssociationDetails;
+        break;
+      }
+    }
+    this.updateGridData(this.makeAssociatedAccountGrpList(data));
   }
 
   onColumnChange(event: any){
@@ -551,9 +573,10 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     }
     else{
       this.isViewListDisabled = false;
-      this.cols = ['name','accessType','associatedAccount','action'];
-      this.columnNames = ['Vehicle Group/Vehicle','Access Type','Account Group/Account','Action'];
-      this.updateGridData(this.makeAssociatedAccountGrpList(this.vehicleGrpVehicleAssociationDetails));
+      this.changeGridOnList(this.selectedViewType);
+      // this.cols = ['name','accessType','associatedAccount','action'];
+      // this.columnNames = ['Vehicle Group/Vehicle','Access Type','Account Group/Account','Action'];
+      // this.updateGridData(this.makeAssociatedAccountGrpList(this.vehicleGrpVehicleAssociationDetails));
     }
   }
 
