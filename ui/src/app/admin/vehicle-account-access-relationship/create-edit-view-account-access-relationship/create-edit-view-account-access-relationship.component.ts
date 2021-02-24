@@ -27,6 +27,7 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
   selectedViewType: any = '';
   @Input() actionType: any;
   @Input() selectedElementData: any;
+  initData: any = [];
 
   constructor(private _formBuilder: FormBuilder) { }
 
@@ -49,10 +50,22 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
   }
 
   loadGridData(tableData: any){
-      this.updateDataSource(tableData);
-      if(this.actionType == 'view' || this.actionType == 'edit' ){
-        this.selectTableRows();
-      }
+    let selectedVehicleList: any = [];
+    if(this.actionType == 'view'){
+      tableData.forEach((row: any) => {
+        let search = this.selectedElementData.associatedVehicle.filter((item: any) => item.id == row.id);
+        if (search.length > 0) {
+          selectedVehicleList.push(search[0]);
+        }
+      });
+      tableData = selectedVehicleList;
+      this.displayedColumns = ['name'];
+    }
+    this.initData = tableData;
+    this.updateDataSource(tableData);
+    if(this.actionType == 'edit' ){
+      this.selectTableRows();
+    }
   }
 
   updateDataSource(tableData: any){
@@ -116,15 +129,15 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
     let data: any = [];
     switch(event.value){
       case "group":{
-        data = this.vehicleGrpList.filter((item: any) => item.isVehicleGroup == true);
+        data = this.initData.filter((item: any) => item.isVehicleGroup == true);
         break;
       }
       case "vehicle":{
-        data = this.vehicleGrpList.filter((item: any) => item.isVehicleGroup == false);
+        data = this.initData.filter((item: any) => item.isVehicleGroup == false);
         break;
       }
       case "both":{
-        data = this.vehicleGrpList;
+        data = this.initData;
         break;
       }
     }
