@@ -609,9 +609,13 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     this.createVehicleAccessRelation = !this.createVehicleAccessRelation;
     if(this.isViewListDisabled){
       this.selectedColumnType = 'account';
+      this.selectedAccountViewType = 'both';
+      this.changeGridOnAccountList(this.selectedAccountViewType);
     }
     else{
       this.selectedColumnType = 'vehicle';
+      this.selectedVehicleViewType = 'both';
+      this.changeGridOnVehicleList(this.selectedVehicleViewType);
     }
   }
 
@@ -619,9 +623,13 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     this.createAccountAccessRelation = !this.createAccountAccessRelation;
     if(this.isViewListDisabled){
       this.selectedColumnType = 'account';
+      this.selectedAccountViewType = 'both';
+      this.changeGridOnAccountList(this.selectedAccountViewType);
     }
     else{
       this.selectedColumnType = 'vehicle';
+      this.selectedVehicleViewType = 'both';
+      this.changeGridOnVehicleList(this.selectedVehicleViewType);
     }
   }
 
