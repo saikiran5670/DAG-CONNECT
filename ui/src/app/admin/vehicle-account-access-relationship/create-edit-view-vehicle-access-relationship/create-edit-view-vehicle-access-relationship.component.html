@@ -19,29 +19,39 @@
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblVehicleGroupVehicle || 'Vehicle Group/Vehicle' }}<span class='mandatoryColor'>*</span></mat-label>
+            <div *ngIf="actionType != 'view'">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-select placeholder="{{ translationData.lblSelectVehicleGroupVehicle || 'Select Vehicle Group/Vehicle' }}" formControlName="vehicleGroup" required>
+                  <mat-option *ngFor="let rer of vehicleGrpList" [value]="rer.id">
+                    {{ rer.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-error *ngIf="vehicleAccessRelationshipFormGroup.get('vehicleGroup').hasError('required')">
+                {{ translationData.lblPleaseSelectVehicleGroupVehicle || 'Please Select Vehicle Group/Vehicle' }}
+              </mat-error>
+            </div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.name }}</span>
+            </div>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblAccessType || 'Access Type' }}<span class='mandatoryColor'>*</span></mat-label>
+          <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-select placeholder="{{ translationData.lblSelectVehicleGroupVehicle || 'Select Vehicle Group/Vehicle' }}" formControlName="vehicleGroup" required>
-                <mat-option *ngFor="let rer of vehicleGrpList" [value]="rer.id">
+              <mat-select placeholder="{{ translationData.lblSelectAccessType || 'Select Access Type' }}" formControlName="accessType" required>
+                <mat-option *ngFor="let rer of accessTypeList" [value]="rer.id">
                   {{ rer.name }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
-            <mat-error *ngIf="vehicleAccessRelationshipFormGroup.get('vehicleGroup').hasError('required')">
-              {{ translationData.lblPleaseSelectVehicleGroupVehicle || 'Please Select Vehicle Group/Vehicle' }}
+            <mat-error *ngIf="vehicleAccessRelationshipFormGroup.get('accessType').hasError('required')">
+              {{ translationData.lblPleaseSelectAccessType || 'Please Select Access Type' }}
             </mat-error>
-        </div>
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblAccessType || 'Access Type' }}<span class='mandatoryColor'>*</span></mat-label>
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-select placeholder="{{ translationData.lblSelectAccessType || 'Select Access Type' }}" formControlName="accessType" required>
-              <mat-option *ngFor="let rer of accessTypeList" [value]="rer.id">
-                {{ rer.name }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-error *ngIf="vehicleAccessRelationshipFormGroup.get('accessType').hasError('required')">
-            {{ translationData.lblPleaseSelectAccessType || 'Please Select Access Type' }}
-          </mat-error>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedElementData.accessType.name }}</span>
+          </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
       </div>

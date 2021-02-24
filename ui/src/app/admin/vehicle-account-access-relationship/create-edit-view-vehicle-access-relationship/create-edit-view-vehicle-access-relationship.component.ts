@@ -132,6 +132,7 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
   onReset(){
     this.selectionForAccountGrp.clear();
     this.selectTableRows();
+    this.setDropdownValue();
   }
 
 }
