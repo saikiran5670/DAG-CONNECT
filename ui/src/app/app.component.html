@@ -118,13 +118,13 @@
             <li #menuName *ngFor='let menu of menuPages; index as i' class="menuItem"
                 [ngClass]="{'active': pageName === menu.mainRoute}" [attr.menuName]="menu.mainRoute">
                 <span *ngIf="!menu.subMenuFlag; else elseBlock">
-                    <a matTooltip='{{menu.mainMenu | titlecase}}' class='selectedManu'
+                    <a class='selectedManu'
                         *ngIf="menu.mainMenu=='Dashboard'" [routerLink]="[ '/'+ menu.mainRoute]"
                         (click)='navigateToPage(menu.mainRoute)'>
                         <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
                         <span class="menuLabel">{{menu.mainMenu | titlecase}}</span>
                     </a>
-                    <a target="_blank" href="{{menu.mainRoute}}" matTooltip='{{menu.mainMenu | titlecase}}'
+                    <a target="_blank" href="{{menu.mainRoute}}" 
                         class='selectedManu' *ngIf="menu.mainMenu!='Dashboard'"
                         (click)='navigateToPage(menu.mainRoute)'>
                         <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
@@ -132,7 +132,7 @@
                     </a>
                 </span>
                 <ng-template #elseBlock>
-                    <a matTooltip='{{ menu.mainMenu | titlecase }}' class='selectedManu'
+                    <a class='selectedManu'
                         (click)="menuSelected(menu.mainRoute)">
                         <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
                         <span class="menuLabel">{{menu.mainMenu | titlecase}}</span>
@@ -146,7 +146,7 @@
                         <!-- <li *ngFor='let subMenuItem of menu.subMenu; index as j' [ngClass]="{'active': subpage === subMenuItem.subRoute}"> -->
                         <li *ngFor='let subMenuItem of menu.subMenu; index as j'
                             [ngClass]="{'linkActive': subpage === subMenuItem.subRoute}">
-                            <a matTooltip='{{ subMenuItem.name }}'
+                            <a 
                                 [routerLink]="[ '/'+menu.mainRoute+'/'+subMenuItem.subRoute ]"
                                 (click)="navigateToPage(subMenuItem.subRoute)">
                                 <mat-icon class='box-svg-css margin-right-5'>stop_circle</mat-icon>
