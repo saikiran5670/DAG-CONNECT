@@ -49,14 +49,18 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
   }
 
   loadGridData(tableData: any){
+    this.updateDataSource(tableData);
+    if(this.actionType == 'view' || this.actionType == 'edit' ){
+      this.selectTableRows();
+    }
+  }
+
+  updateDataSource(tableData: any){
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
-    if(this.actionType == 'view' || this.actionType == 'edit' ){
-      this.selectTableRows();
-    }
   }
 
   selectTableRows() {
@@ -109,7 +113,22 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
   }
 
   onListChange(event: any){
-
+    let data: any = [];
+    switch(event.value){
+      case "group":{
+        data = this.accountGrpList.filter((item: any) => item.isAccountGroup == true);
+        break;
+      }
+      case "account":{
+        data = this.accountGrpList.filter((item: any) => item.isAccountGroup == false);
+        break;
+      }
+      case "both":{
+        data = this.accountGrpList;
+        break;
+      }
+    }
+    this.updateDataSource(data);
   }
 
   onCancel(){
