@@ -385,6 +385,7 @@ private setPageTitle() {
   }
 
   logOut() {
+    this.isLogedIn = false;
     localStorage.clear(); // clear all localstorage
     this.router.navigate(["/auth/login"]);
   }
