@@ -33,6 +33,7 @@ export class LoginComponent implements OnInit {
   forgotPwdFlag: boolean = false;
   dialogRefLogin: MatDialogRef<LoginDialogComponent>;
   maintenancePopupFlag: boolean = false;
+  loginClicks = 0;
 
   constructor(private cookieService: CookieService, public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService, private dataInterchangeService: DataInterchangeService) {
     this.loginForm = this.fb.group({
@@ -52,6 +53,7 @@ export class LoginComponent implements OnInit {
   }
 
   public onLogin(values: Object) {
+    
     if (this.loginForm.valid) {
       //console.log("values:: ", values)
        this.authService.signIn(this.loginForm.value).subscribe((data:any) => {
@@ -68,11 +70,12 @@ export class LoginComponent implements OnInit {
               "name": "",
               "accountGroupId": 0
             }
-            if(!this.dialogRefLogin || this.dialogRefLogin == null){
+            if(this.loginClicks == 0){
               this.accountService.getAccount(loginObj).subscribe(resp => {
                 this.showOrganizationRolePopup(data.body, resp[0]);
               }, (error) => {});
             }
+            this.loginClicks = 1;
          }
          else if(data.status === 401){
           this.invalidUserMsg = true;
@@ -159,7 +162,7 @@ export class LoginComponent implements OnInit {
       }
       this.dialogRefLogin = this.dialog.open(LoginDialogComponent, dialogConfig);
       this.dialogRefLogin.afterClosed().subscribe(res => {
-        this.dialogRefLogin = null;
+        this.loginClicks = 0;
       });
     }
     else{ //-- skip popup
