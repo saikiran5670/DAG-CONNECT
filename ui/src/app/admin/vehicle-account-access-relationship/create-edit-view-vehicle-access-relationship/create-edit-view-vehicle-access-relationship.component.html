@@ -102,13 +102,13 @@
                 <mat-checkbox (change)='$event ? masterToggleForAccountGrp() : null'
                   [checked]='selectionForAccountGrp.hasValue() && isAllSelectedForAccountGrp()'
                   [indeterminate]='selectionForAccountGrp.hasValue() && !isAllSelectedForAccountGrp()'
-                  [aria-label]='checkboxLabelForAccountGrp()'>
+                  [aria-label]='checkboxLabelForAccountGrp()' [disabled]="actionType == 'view'">
                 </mat-checkbox>
-                <span style="margin: 5px 0px 0px 5px;"> All </span>
+                <span style="margin: 5px 0px 0px 5px;" [ngClass]="{'opacity-0-5': actionType == 'view'}">{{ translationData.lblAll || 'All' }}</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">
                 <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectionForAccountGrp.toggle(row) : null'
-                  [checked]='selectionForAccountGrp.isSelected(row)' [aria-label]='checkboxLabelForAccountGrp(row)'>
+                  [checked]='selectionForAccountGrp.isSelected(row)' [aria-label]='checkboxLabelForAccountGrp(row)' [disabled]="actionType == 'view'">
                 </mat-checkbox>
               </mat-cell>
             </div>

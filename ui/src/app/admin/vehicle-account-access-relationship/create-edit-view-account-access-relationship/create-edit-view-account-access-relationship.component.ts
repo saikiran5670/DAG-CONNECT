@@ -31,7 +31,6 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit() {
-    console.log("selectedElementData::", this.selectedElementData);
     this.accountAccessRelationshipFormGroup = this._formBuilder.group({
       accountGroup: ['', [Validators.required]],
       accessType: ['', [Validators.required]]

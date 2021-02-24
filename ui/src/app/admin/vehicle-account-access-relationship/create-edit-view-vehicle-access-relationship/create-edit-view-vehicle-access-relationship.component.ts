@@ -31,7 +31,6 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit() {
-    console.log("selectedElementData::", this.selectedElementData);
     this.vehicleAccessRelationshipFormGroup = this._formBuilder.group({
       vehicleGroup: ['', [Validators.required]],
       accessType: ['', [Validators.required]]
