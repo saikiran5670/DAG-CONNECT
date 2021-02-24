@@ -51,10 +51,22 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
 
   loadGridData(tableData: any){
     this.dataSource = new MatTableDataSource(tableData);
-      setTimeout(()=>{
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-      });
+    setTimeout(()=>{
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    });
+    if(this.actionType == 'view' || this.actionType == 'edit' ){
+      this.selectTableRows();
+    }
+  }
+
+  selectTableRows() {
+    this.dataSource.data.forEach((row: any) => {
+      let search = this.selectedElementData.associatedAccount.filter((item: any) => item.id == row.id);
+      if (search.length > 0) {
+        this.selectionForAccountGrp.select(row);
+      }
+    });
   }
 
   getBreadcum(){
@@ -115,6 +127,11 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
       msg: ""
     }    
     this.vehicleAccessRelationCreate.emit(emitObj); 
+  }
+
+  onReset(){
+    this.selectionForAccountGrp.clear();
+    this.selectTableRows();
   }
 
 }

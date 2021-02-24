@@ -55,6 +55,18 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
       });
+      if(this.actionType == 'view' || this.actionType == 'edit' ){
+        this.selectTableRows();
+      }
+  }
+
+  selectTableRows() {
+    this.dataSource.data.forEach((row: any) => {
+      let search = this.selectedElementData.associatedVehicle.filter((item: any) => item.id == row.id);
+      if (search.length > 0) {
+        this.selectionForVehicleGrp.select(row);
+      }
+    });
   }
 
   getBreadcum(){
@@ -115,6 +127,11 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
       msg: ""
     }    
     this.accountAccessRelationCreate.emit(emitObj); 
+  }
+
+  onReset(){
+    this.selectionForVehicleGrp.clear();
+    this.selectTableRows();
   }
 
 }
