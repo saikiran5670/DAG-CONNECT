@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<svg
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:cc="http://creativecommons.org/ns#"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:svg="http://www.w3.org/2000/svg"
+    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+    xmlns:ns1="http://sozi.baierouge.fr"
+    id="svg2"
+    viewBox="0 0 381.97 381.94"
+    version="1.1"
+  >
+  <defs
+      id="defs4"
+    >
+    <radialGradient
+        id="radialGradient3844"
+        gradientUnits="userSpaceOnUse"
+        cy="528.74"
+        cx="342.92"
+        gradientTransform="matrix(1.5134 -.0074917 .0056405 1.1394 -158.94 -73.998)"
+        r="190.97"
+      >
+      <stop
+          id="stop3774"
+          stop-color="#fff"
+          offset="0"
+      />
+      <stop
+          id="stop3776"
+          stop-opacity="0"
+          offset="1"
+      />
+    </radialGradient
+    >
+  </defs
+  >
+  <g
+      id="layer1"
+      transform="translate(-13.299 -14.25)"
+    >
+    <g
+        id="g3836"
+      >
+      <g
+          id="g3830"
+        >
+        <path
+            id="path2985"
+            stroke-linejoin="round"
+            style="color:#000000"
+            d="m545.71 645.22c0 98.622-79.949 178.57-178.57 178.57-98.622 0-178.57-79.949-178.57-178.57 0-98.622 79.949-178.57 178.57-178.57 98.622 0 178.57 79.949 178.57 178.57z"
+            transform="translate(-162.86 -440)"
+            stroke="#a00"
+            stroke-linecap="round"
+            stroke-width="24.8"
+            fill="#f00"
+        />
+        <path
+            id="path3755"
+            style="color:#000000"
+            transform="matrix(.94343 0 0 .94343 -142.09 -403.5)"
+            fill="#c50000"
+            d="m545.71 645.22c0 98.622-79.949 178.57-178.57 178.57-98.622 0-178.57-79.949-178.57-178.57 81.375 70.552 154.9 68.765 178.57 68.765 27.955 0 99.338 1.7865 178.57-68.765z"
+        />
+        <path
+            id="path3758"
+            style="color:#000000"
+            transform="matrix(.94343 0 0 .94343 -142.09 -403.5)"
+            fill="#800000"
+            d="m522.16 735.16c1.0707 5.4695-56.393 88.631-155.02 88.631-98.622 0-151.8-78.878-151.8-84.348 81.375 70.552 128.13 70.907 151.8 70.907 27.955 0 75.782-4.6379 155.02-75.19z"
+        />
+        <path
+            id="path3760"
+            opacity=".42636"
+            style="color:#000000"
+            d="m545.71 645.22c0 98.622-79.949 178.57-178.57 178.57-98.622 0-178.57-79.949-178.57-178.57 0-98.622 79.949-178.57 178.57-178.57 98.622 0 178.57 79.949 178.57 178.57z"
+            transform="matrix(.93481 0 0 .93481 -138.92 -397.94)"
+            fill="url(#radialGradient3844)"
+        />
+      </g
+      >
+      <path
+          id="path3786"
+          style="color:#000000"
+          fill="#fff"
+          d="m160.72 89.069c-6.8819 5.1785-15.62 6.6482-22.929 11.044-18.018 20.591 6.1649 53.02 16.258 71.084 5.6308 10.686 12.639 20.25 20.35 29.207-7.7389 8.1683-15.268 16.493-22.592 24.947-23.403 22.39-41.121 53.273-40.307 86.445 13.1-6.987 28.585-8.7001 40.924-17.267 1.9693-19.413 17.967-51.365 38.345-76.803 16.272 15.931 33.937 30.643 49.221 47.371 18.398 12.898 21.451 21.189 35.879 17.827 15.814-1.7638 11.56-20.191-0.61667-29.936-18.995-21.872-41.986-40.332-61.947-61.33 24.908-26.948 52.73-51.224 82.745-72.318 15.701-8.36 31.949-17.881 44.848-26.797-11.365 1.0465-22.067 5.7671-32.907 9.0818-40.735 17.534-76.554 43.773-108.76 74-4.9137-6.1599-9.4966-12.625-13.567-19.509-15.492-23.716-25.208-42.266-24.947-67.048z"
+      />
+    </g
+    >
+  </g
+  >
+  <metadata
+    >
+    <rdf:RDF
+      >
+      <cc:Work
+        >
+        <dc:format
+          >image/svg+xml</dc:format
+        >
+        <dc:type
+            rdf:resource="http://purl.org/dc/dcmitype/StillImage"
+        />
+        <cc:license
+            rdf:resource="http://creativecommons.org/licenses/publicdomain/"
+        />
+        <dc:publisher
+          >
+          <cc:Agent
+              rdf:about="http://openclipart.org/"
+            >
+            <dc:title
+              >Openclipart</dc:title
+            >
+          </cc:Agent
+          >
+        </dc:publisher
+        >
+        <dc:title
+          >Red cross</dc:title
+        >
+        <dc:date
+          >2013-11-08T13:18:01</dc:date
+        >
+        <dc:description
+          >Red Cross</dc:description
+        >
+        <dc:source
+          >https://openclipart.org/detail/188486/red-cross-by-pleiades-188486</dc:source
+        >
+        <dc:creator
+          >
+          <cc:Agent
+            >
+            <dc:title
+              >pleiades</dc:title
+            >
+          </cc:Agent
+          >
+        </dc:creator
+        >
+        <dc:subject
+          >
+          <rdf:Bag
+            >
+            <rdf:li
+              >Red cross</rdf:li
+            >
+          </rdf:Bag
+          >
+        </dc:subject
+        >
+      </cc:Work
+      >
+      <cc:License
+          rdf:about="http://creativecommons.org/licenses/publicdomain/"
+        >
+        <cc:permits
+            rdf:resource="http://creativecommons.org/ns#Reproduction"
+        />
+        <cc:permits
+            rdf:resource="http://creativecommons.org/ns#Distribution"
+        />
+        <cc:permits
+            rdf:resource="http://creativecommons.org/ns#DerivativeWorks"
+        />
+      </cc:License
+      >
+    </rdf:RDF
+    >
+  </metadata
+  >
+</svg
+>

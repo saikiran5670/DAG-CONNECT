@@ -11,34 +11,32 @@ import { FileValidator } from 'ngx-material-file-input';
 import * as XLSX from 'xlsx';
 import { TranslationService } from '../../services/translation.service';
 import { AccountService } from '../../services/account.service';
-import { AccountGroup } from 'src/app/models/users.model';
 
 @Component({
   selector: 'app-driver-management',
   templateUrl: './driver-management.component.html',
   styleUrls: ['./driver-management.component.less']
 })
+
 export class DriverManagementComponent implements OnInit {
+  //--------------Rest mock data----------------//
+  driverData: any = [];
+  //--------------------------------------------//
   grpTitleVisible : boolean = false;
   userCreatedMsg : any;
   accountOrganizationId: any = 0;
-  userGrpList: any = [];
   dataSource: any;
   initData: any = [];
   importDriverPopup: boolean = false;
-  displayedColumns: string[] = ['firstName','emailId','roles','accountGroups','action'];
+  displayedColumns: string[] = ['driverId','firstName','birthDate','consentStatus','action'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   importDriverFormGroup: FormGroup;
   userGrpName: string = '';
   templateFileUrl: string = 'assets/docs/driverTemplate.xlsx';
   templateFileName: string = 'driver-Template.xlsx';
-  
   dialogRef: MatDialogRef<ConsentOptComponent>;
-
-  // fileToUpload: File = null;
   @ViewChild('UploadFileInput') uploadFileInput: ElementRef;
-  //myfilename = 'Select File';
   readonly maxSize = 104857600;
   editFlag: boolean = false;
   rowData: any;
@@ -134,6 +132,14 @@ export class DriverManagementComponent implements OnInit {
   ngOnInit(){
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.importDriverFormGroup = this._formBuilder.group({
+      //userGroup: [],
+      uploadFile: [
+        undefined,
+        [Validators.required, FileValidator.maxContentSize(this.maxSize)]
+      ]
+    });
+
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -146,16 +152,38 @@ export class DriverManagementComponent implements OnInit {
 
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
+      this.mockData();
       this.loadUsersData();
     });
+  }
 
-    this.importDriverFormGroup = this._formBuilder.group({
-      //userGroup: [],
-      uploadFile: [
-        undefined,
-        [Validators.required, FileValidator.maxContentSize(this.maxSize)]
-      ]
-    });
+  mockData(){
+    this.driverData = [
+      {
+        driverId: "IN 0000000000000001",
+        firstName: "Driver",
+        lastName: "1",
+        birthDate: "01/01/2001",
+        consentStatus: 'Opt-In',
+        salutation: "Mr"
+      },
+      {
+        driverId: "IN 0000000000000002",
+        firstName: "Driver",
+        lastName: "2",
+        birthDate: "02/02/2002",
+        consentStatus: 'Opt-Out',
+        salutation: "Ms"
+      },
+      {
+        driverId: "IN 0000000000000003",
+        firstName: "Driver",
+        lastName: "3",
+        birthDate: "03/03/2003",
+        consentStatus: 'Opt-In',
+        salutation: "Mrs"
+      }
+    ];
   }
 
   processTranslation(transData: any){
@@ -164,63 +192,12 @@ export class DriverManagementComponent implements OnInit {
   }
 
   loadUsersData() {
-    this.showLoadingIndicator = true;
-    let obj: any = {
-      accountId: 0,
-      organizationId: this.accountOrganizationId,
-      accountGroupId: 0,
-      vehicleGroupGroupId: 0,
-      roleId: 0,
-      name: ""
-    }
-
-    let accountGrpObj: AccountGroup = {
-      accountGroupId : 0,
-      organizationId : this.accountOrganizationId,
-      accountId : 0,
-      accounts : true,
-      accountCount : true,
-    }
-
-    this.accountService.getAccountDetails(obj).subscribe((usrlist)=>{
-      this.hideloader();
-      this.initData = this.makeRoleAccountGrpList(usrlist);
-      this.accountService.getAccountGroupDetails(accountGrpObj).subscribe((grpData)=>{
-        this.dataSource = new MatTableDataSource(this.initData);
-        setTimeout(()=>{
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
-        });
-        this.userGrpList = grpData;
-      });
+    this.initData = this.driverData; 
+    this.dataSource = new MatTableDataSource(this.initData);
+    setTimeout(()=>{
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
     });
-  }
-
-  makeRoleAccountGrpList(initdata){
-    let accountId =  localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
-    initdata = initdata.filter(item => item.id != accountId);
-    initdata.forEach((element, index) => {
-      let roleTxt: any = '';
-      let accGrpTxt: any = '';
-      element.roles.forEach(resp => {
-        roleTxt += resp.name + ', ';
-      });
-      element.accountGroups.forEach(resp => {
-        accGrpTxt += resp.name + ', ';
-      });
-
-      if(roleTxt != ''){
-        roleTxt = roleTxt.slice(0, -2);
-      }
-      if(accGrpTxt != ''){
-        accGrpTxt = accGrpTxt.slice(0, -2);
-      }
-
-      initdata[index].roleList = roleTxt; 
-      initdata[index].accountGroupList = accGrpTxt;
-    });
-    
-    return initdata;
   }
 
   importDrivers(){ 

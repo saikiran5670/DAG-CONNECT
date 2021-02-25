@@ -115,21 +115,28 @@
             <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
             <div *ngIf='initData.length > 0'>
                 <mat-table [dataSource]="dataSource" matSort>
+                    <ng-container matColumnDef="driverId">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverId || 'Driver Id' }}</mat-header-cell>
+                        <mat-cell *matCellDef="let row">{{ row.driverId }}</mat-cell>
+                    </ng-container>
                     <ng-container matColumnDef="firstName">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Driver Name' }}</mat-header-cell>
                         <mat-cell *matCellDef="let row">{{ row.firstName }} {{ row.lastName }}</mat-cell>
                     </ng-container>
-                    <ng-container matColumnDef="emailId">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEmailID || 'Email ID' }}</mat-header-cell>
-                        <mat-cell *matCellDef="let row"> {{ row.emailId }} </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="roles">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRole || 'Role' }}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}"><span class="text-truncate">{{ row.roles.length > 0 ? row.roleList : '&nbsp; &nbsp; -' }}</span></mat-cell>
+                    <ng-container matColumnDef="birthDate">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblBirthDate || 'Birth Date' }}</mat-header-cell>
+                        <mat-cell *matCellDef="let row">{{ row.birthDate }}</mat-cell>
                       </ng-container>
-                      <ng-container matColumnDef="accountGroups">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserGroup || 'User Group' }}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}"><span class="text-truncate">{{ row.accountGroups.length > 0 ? row.accountGroupList : '&nbsp; &nbsp; -' }}</span></mat-cell>
+                      <ng-container matColumnDef="consentStatus">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblConsent || 'Consent' }}</mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <div *ngIf="row.consentStatus == 'Opt-In'">
+                                <img matTooltip='Opt-In' src='assets/images/icons/driverOpt/opt-in.svg' style="width: 20px; height: 20px;" />
+                            </div>
+                            <div *ngIf="row.consentStatus == 'Opt-Out'">
+                                <img matTooltip='Opt-Out' src='assets/images/icons/driverOpt/opt-out.svg' style="width: 20px; height: 20px;" />
+                            </div>
+                        </mat-cell>
                       </ng-container>
                     <ng-container matColumnDef="action">
                         <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action' }}</mat-header-cell>
