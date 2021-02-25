@@ -32,6 +32,7 @@ export class DriverManagementComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   importDriverFormGroup: FormGroup;
+  consentFormGroup: FormGroup;
   userGrpName: string = '';
   templateFileUrl: string = 'assets/docs/driverTemplate.xlsx';
   templateFileName: string = 'driver-Template.xlsx';
@@ -49,12 +50,16 @@ export class DriverManagementComponent implements OnInit {
   showLoadingIndicator: any;
   consentSelectionList: any = [
     {
+      name: 'All'
+    },
+    {
       name: 'Opt-In'
     },
     {
       name: 'Opt-Out'
     }
   ];
+  selectedConsentType: any = ''; 
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService,
     private _snackBar: MatSnackBar, private translationService: TranslationService, private accountService: AccountService) { 
@@ -139,7 +144,11 @@ export class DriverManagementComponent implements OnInit {
         [Validators.required, FileValidator.maxContentSize(this.maxSize)]
       ]
     });
+    this.consentFormGroup = this._formBuilder.group({
+      consentType: []
+    });
 
+    this.selectedConsentType = this.selectedConsentType == '' ? 'All' : this.selectedConsentType;
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -154,7 +163,12 @@ export class DriverManagementComponent implements OnInit {
       this.processTranslation(data);
       this.mockData();
       this.loadUsersData();
+      this.setConsentDropdown();
     });
+  }
+
+  setConsentDropdown(){
+    this.consentFormGroup.get('consentType').setValue(this.selectedConsentType);
   }
 
   mockData(){
@@ -191,14 +205,46 @@ export class DriverManagementComponent implements OnInit {
     //console.log("process translationData:: ", this.translationData)
   }
 
-  loadUsersData() {
-    this.initData = this.driverData; 
+  loadUsersData(){
+    this.onConsentChange(this.selectedConsentType);
+  }
+
+  onConsentStatusChange(){
+    this.onConsentChange(this.consentType.value);  
+  }
+
+  get consentType() {
+    return this.consentFormGroup.get('consentType');
+  }
+
+  onConsentChange(type: any){
+    let data = [];
+    switch(type){
+      case "All":{
+        data = this.driverData;
+        break;
+      }
+      case "Opt-In":{
+        data = this.driverData.filter((item: any) => item.consentStatus == 'Opt-In');
+        break;
+      }
+      case "Opt-Out":{
+        data = this.driverData.filter((item: any) => item.consentStatus == 'Opt-Out');
+        break;
+      }
+    }
+    this.updateGridData(data);
+  }
+
+  updateGridData(tableData: any){
+    this.initData = tableData; 
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
   }
+
 
   importDrivers(){ 
     this.importDriverPopup = true;
