@@ -117,6 +117,10 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAccountGroupAccount || 'Account Group/Account' }}</mat-header-cell>
             <mat-cell *matCellDef="let row">
               {{ row.name }}
+              <div [ngClass]="{'cursor-pointer': (row.isAccountGroup == true && row.accounts.length > 0)}" (click)="(row.isAccountGroup == true && row.accounts.length > 0) ? showAccountPopup(row) : ''" *ngIf="row.isAccountGroup == true">
+                <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
+                <span class='iconTxt'>{{ (row.accounts.length < 10) ? '0' : '' }}{{ row.accounts.length }}</span>
+              </div>
             </mat-cell>
           </ng-container>
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

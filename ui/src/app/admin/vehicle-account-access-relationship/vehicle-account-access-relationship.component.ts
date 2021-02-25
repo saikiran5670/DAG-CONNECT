@@ -6,6 +6,8 @@ import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog
 import { AccountService } from '../../services/account.service';
 import { TranslationService } from '../../services/translation.service';
 import { VehicleService } from '../../services/vehicle.service';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { UserDetailTableComponent } from '../user-management/new-user-step/user-detail-table/user-detail-table.component';
 
 @Component({
   selector: 'app-vehicle-account-access-relationship',
@@ -19,7 +21,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   accountGrpAccountAssociationDetails: any = [];
   vehicleGrpVehicleDetails: any = [];
   accountGrpAccountDetails: any = [];
-  //---------------//
+  //--------------------------------//
   accessRelationCreatedMsg : any = '';
   titleVisible: boolean = false;
   translationData: any;
@@ -40,8 +42,9 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   isViewListDisabled: boolean = false;
   actionType: any = '';
   selectedElementData: any;
+  dialogRef: MatDialogRef<UserDetailTableComponent>;
 
-  constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService, private dialogService: ConfirmDialogService) { 
+  constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private dialog: MatDialog) { 
     this.defaultTranslation();
   }
 
@@ -113,7 +116,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
                   }                
               ],
               "isVehicleGroup": true,
-              "vehicleCount": 0
+              "vehicleCount": 2
           },
           {
               "name": "Vehicle Group 2",
@@ -145,7 +148,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
                   }                
               ],
               "isVehicleGroup": true,
-              "vehicleCount": 2
+              "vehicleCount": 1
           },
           {
               "name": "Vehicle 1",
@@ -254,7 +257,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
                   }                
               ],
               "isAccountGroup": true,
-              "accountCount": 0
+              "accountCount": 2
           },
           {
               "name": "Account Group 2",
@@ -281,7 +284,34 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
                   }                
               ],
               "isAccountGroup": true,
-              "accountCount": 2
+              "accountCount": 3
+          },
+          {
+            "name": "Account Group 3",
+            "id": 10,
+            "accessType":{
+                "id": 1,
+                "name":"Full Access"
+            },
+            "associatedVehicle":[
+                {
+                    "name": "Vehicle Group 2",
+                    "id": 2,
+                    "isVehicleGroup": true
+                },
+                {
+                  "name": "Vehicle 1",
+                  "id": 3,
+                  "isVehicleGroup": false
+                },
+                {
+                    "name": "Vehicle 2",
+                    "id": 4,
+                    "isVehicleGroup": false
+                }                
+            ],
+            "isAccountGroup": true,
+            "accountCount": 0
           },
           {
               "name": "Account 1",
@@ -371,14 +401,89 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
 
       this.accountGrpAccountDetails = [
           {
-              "name": "Account Group 1",
-              "id": 1,
-              "isAccountGroup": true
+              name: "Account Group 1",
+              id: 1,
+              isAccountGroup: true,
+              accounts: [
+                {
+                  id: 1,
+                  firstName: 'Account',
+                  lastName: '1',
+                  emailId: 'acccount1@daftruck.net',
+                  roles: 'Roles',
+                  roleList: 'Role 1, Role 2, Role 3'
+                },
+                {
+                  id: 2,
+                  firstName: 'Account',
+                  lastName: '2',
+                  emailId: 'acccount2@daftruck.net',
+                  roles: 'Roles',
+                  roleList: 'Role 3, Role 4, Role 5'
+                }
+              ]
           },
           {
-              "name": "Account Group 2",
-              "id": 2,
-              "isAccountGroup": true
+              name: "Account Group 2",
+              id: 2,
+              isAccountGroup: true,
+              accounts: [
+                {
+                  id: 3,
+                  firstName: 'Account',
+                  lastName: '3',
+                  emailId: 'acccount3@daftruck.net',
+                  roles: 'Roles',
+                  roleList: 'Role 1, Role 2, Role 3'
+                },
+                {
+                  id: 4,
+                  firstName: 'Account',
+                  lastName: '4',
+                  emailId: 'acccount4@daftruck.net',
+                  roles: 'Roles',
+                  roleList: 'Role 4, Role 5, Role 6'
+                },
+                {
+                  id: 5,
+                  firstName: 'Account',
+                  lastName: '5',
+                  emailId: 'acccount5@daftruck.net',
+                  roles: 'Roles',
+                  roleList: 'Role 4, Role 5, Role 6'
+                }
+              ]
+          },
+          {
+            name: "Account Group 3",
+            id: 10,
+            isAccountGroup: true,
+            accounts: [
+              {
+                id: 3,
+                firstName: 'Account',
+                lastName: '3',
+                emailId: 'acccount3@daftruck.net',
+                roles: 'Roles',
+                roleList: 'Role 1, Role 2, Role 3'
+              },
+              {
+                id: 4,
+                firstName: 'Account',
+                lastName: '4',
+                emailId: 'acccount4@daftruck.net',
+                roles: 'Roles',
+                roleList: 'Role 4, Role 5, Role 6'
+              },
+              {
+                id: 5,
+                firstName: 'Account',
+                lastName: '5',
+                emailId: 'acccount5@daftruck.net',
+                roles: 'Roles',
+                roleList: 'Role 4, Role 5, Role 6'
+              }
+            ]
           },
           {
               "name": "Account 1",
@@ -404,14 +509,36 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
 
       this.vehicleGrpVehicleDetails = [
           {
-              "name": "Vehicle Group 1",
-              "id": 1,
-              "isVehicleGroup": true
+              name: "Vehicle Group 1",
+              id: 1,
+              isVehicleGroup: true,
+              vehicles: [
+                {
+                  id: 1,
+                  name: 'Vehicle 1',
+                  vin: 'VIN 1',
+                  license_Plate_Number: 'Lic 1',
+                },
+                {
+                  id: 2,
+                  name: 'Vehicle 2',
+                  vin: 'VIN 2',
+                  license_Plate_Number: 'Lic 2',
+                }
+              ]
           },
           {
-              "name": "Vehicle Group 2",
-              "id": 2,
-              "isVehicleGroup": true
+              name: "Vehicle Group 2",
+              id: 2,
+              isVehicleGroup: true,
+              vehicles: [
+                {
+                  id: 3,
+                  name: 'Vehicle 3',
+                  vin: 'VIN 3',
+                  license_Plate_Number: 'Lic 3',
+                }
+              ]
           },
           {
               "name": "Vehicle 1",
@@ -638,4 +765,41 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
       this.showLoadingIndicator=false;
   }
 
+  showAccountPopup(row: any){
+    const colsList = ['firstName','emailId','roles'];
+    const colsName = [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'];
+    const tableTitle = `${row.name} - ${this.translationData.lblUsers || 'Users'}`;
+
+    let data: any = this.accountGrpAccountDetails.filter((item: any) => item.id == row.id);
+    if(data.length > 0){
+      data = data[0].accounts;
+    }
+    this.callToCommonTable(data, colsList, colsName, tableTitle);
+  }
+
+  showVehiclePopup(row: any){
+    const colsList = ['name','vin','license_Plate_Number'];
+    const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
+    const tableTitle =`${row.name} - ${this.translationData.lblVehicles || 'Vehicles'}`;
+
+    let data: any = this.vehicleGrpVehicleDetails.filter((item: any) => item.id == row.id); 
+    if(data.length > 0){
+      data = data[0].vehicles;
+    }
+    this.callToCommonTable(data, colsList, colsName, tableTitle);
+  }
+
+  callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      tableData: tableData,
+      colsList: colsList,
+      colsName:colsName,
+      tableTitle: tableTitle
+    }
+    this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
+  }
+  
 }

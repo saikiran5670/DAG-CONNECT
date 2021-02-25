@@ -1,9 +1,11 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { UserDetailTableComponent } from '../../user-management/new-user-step/user-detail-table/user-detail-table.component';
 
 @Component({
   selector: 'app-create-edit-view-account-access-relationship',
@@ -28,8 +30,9 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
   @Input() actionType: any;
   @Input() selectedElementData: any;
   initData: any = [];
+  dialogRef: MatDialogRef<UserDetailTableComponent>;
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog) { }
 
   ngOnInit() {
     this.accountAccessRelationshipFormGroup = this._formBuilder.group({
@@ -55,7 +58,7 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
       tableData.forEach((row: any) => {
         let search = this.selectedElementData.associatedVehicle.filter((item: any) => item.id == row.id);
         if (search.length > 0) {
-          selectedVehicleList.push(search[0]);
+          selectedVehicleList.push(row);
         }
       });
       tableData = selectedVehicleList;
@@ -164,6 +167,27 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
     this.selectionForVehicleGrp.clear();
     this.selectTableRows();
     this.setDropdownValue();
+  }
+
+  showVehiclePopup(row: any){
+    const colsList = ['name','vin','license_Plate_Number'];
+    const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
+    const tableTitle =`${row.name} - ${this.translationData.lblVehicles || 'Vehicles'}`;
+    let data = row.vehicles;
+    this.callToCommonTable(data, colsList, colsName, tableTitle);
+  }
+
+  callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      tableData: tableData,
+      colsList: colsList,
+      colsName:colsName,
+      tableTitle: tableTitle
+    }
+    this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
 
 }

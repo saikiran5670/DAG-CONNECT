@@ -117,6 +117,10 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroupVehicle || 'Vehicle Group/Vehicle' }}</mat-header-cell>
             <mat-cell *matCellDef="let row">
               {{ row.name }}
+              <div [ngClass]="{'cursor-pointer': (row.isVehicleGroup == true && row.vehicles.length > 0)}" (click)="(row.isVehicleGroup == true && row.vehicles.length > 0) ? showVehiclePopup(row) : ''" *ngIf="row.isVehicleGroup == true">
+                <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
+                <span class='iconTxt'>{{ (row.vehicles.length < 10) ? '0' : '' }}{{ row.vehicles.length }}</span>
+              </div>
             </mat-cell>
           </ng-container>
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

@@ -3,6 +3,8 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { UserDetailTableComponent } from '../../user-management/new-user-step/user-detail-table/user-detail-table.component';
 import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
@@ -28,8 +30,9 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
   @ViewChild(MatSort) sort: MatSort;
   selectedViewType: any = '';
   initData: any = [];
+  dialogRef: MatDialogRef<UserDetailTableComponent>;
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog) { }
 
   ngOnInit() {
     this.vehicleAccessRelationshipFormGroup = this._formBuilder.group({
@@ -55,7 +58,7 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
       tableData.forEach((row: any) => {
         let search = this.selectedElementData.associatedAccount.filter((item: any) => item.id == row.id);
         if (search.length > 0) {
-          selectedAccountList.push(search[0]);
+          selectedAccountList.push(row);
         }
       });
       tableData = selectedAccountList;
@@ -164,6 +167,27 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
     this.selectionForAccountGrp.clear();
     this.selectTableRows();
     this.setDropdownValue();
+  }
+
+  showAccountPopup(row: any){
+    const colsList = ['firstName','emailId','roles'];
+    const colsName = [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'];
+    const tableTitle = `${row.name} - ${this.translationData.lblUsers || 'Users'}`;
+    let data = row.accounts;
+    this.callToCommonTable(data, colsList, colsName, tableTitle);
+  }
+
+  callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      tableData: tableData,
+      colsList: colsList,
+      colsName:colsName,
+      tableTitle: tableTitle
+    }
+    this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
 
 }
