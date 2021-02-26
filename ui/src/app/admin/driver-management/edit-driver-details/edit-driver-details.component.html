@@ -45,7 +45,7 @@
               <mat-datepicker #birthDate></mat-datepicker>
             </mat-form-field> -->
             <mat-form-field appearance="outline" class="full-width">
-              <input [min]="minDate" formControlName="birthDate" matInput [matDatepicker]="birthdDate" disabled>
+              <input style='color: #000;' [min]="minDate" formControlName="birthDate" matInput [matDatepicker]="birthdDate" disabled>
               <mat-datepicker-toggle matSuffix [for]="birthdDate"></mat-datepicker-toggle>
               <mat-datepicker #birthdDate [startAt]="startDate" disabled="false"></mat-datepicker>
             </mat-form-field>
@@ -57,7 +57,7 @@
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblDriverIDConsentStatus || 'Driver ID Consent Status' }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'" style='margin-top: 8px;'>
-            <mat-radio-group (change)='onConsentChange($event)' class='margin-top-10' formControlName="consentStatus" required>
+            <mat-radio-group (change)='onConsentChange($event)' class='margin-top-10' formControlName="consentStatus">
               <mat-radio-button style='margin-right: 20px;' [checked]="selectedConsentType === 'Opt-In' ? true : false" value="Opt-In">{{ translationData.lblOptIn || 'Opt-In' }}</mat-radio-button>
               <mat-radio-button [checked]="selectedConsentType === 'Opt-Out' ? true : false" value="Opt-Out">{{ translationData.lblOptOut || 'Opt-Out' }}</mat-radio-button>
             </mat-radio-group>

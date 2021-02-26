@@ -35,7 +35,7 @@ export class EditDriverDetailsComponent implements OnInit {
     this.driverFormGroup = this._formBuilder.group({
       driverId: ['', [Validators.required]],
       birthDate: ['', []],
-      consentStatus: ['', [Validators.required]],
+      consentStatus: ['', []],
       salutation: ['', [Validators.required]],
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
