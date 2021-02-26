@@ -11,14 +11,30 @@ export class ConsentOptComponent implements OnInit {
   showMsgFlag: boolean = false;
   consentMsg: any;
   consentMsgExtra: any;
+  checkedFlag: boolean = false;
+  totalDrivers: number = 0;
+  organizationName: any = '';
   
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     optValue: string,
-    translationData: any
+    translationData: any,
+    driverData: any
   }, private mdDialogRef: MatDialogRef<ConsentOptComponent>) {
-    this.showMsgFlag = data.optValue === 'opt-in' ? false : true;
+    this.organizationName = localStorage.getItem('organizationName');
+    this.showMsgFlag = data.optValue === 'Opt-In' ? false : true;
+    this.checkedFlag = data.optValue === 'Opt-In' ? true : false;
     this.getConsentMsg(data.optValue); 
     this.getConsentExtraMsg(data.optValue);  
+    this.getDriverCount();
+  }
+
+  getDriverCount(){
+    if(this.checkedFlag){
+      this.totalDrivers = this.data.driverData.filter((item: any) => item.consentStatus == 'Opt-In').length;
+    }
+    else{
+      this.totalDrivers = this.data.driverData.filter((item: any) => item.consentStatus == 'Opt-Out').length;
+    }
   }
 
   getConsentMsg(optValue: any){
@@ -58,7 +74,7 @@ export class ConsentOptComponent implements OnInit {
 
   onChange(event)
   {
-    if(event.value === 'opt-out'){
+    if(event.value === 'Opt-Out'){
       this.showMsgFlag = true;
       this.getConsentMsg(event.value);
       this.getConsentExtraMsg(event.value);
@@ -68,6 +84,23 @@ export class ConsentOptComponent implements OnInit {
       this.getConsentMsg(event.value);
       this.getConsentExtraMsg(event.value);
     }
+  }
+
+  onCheckboxChange(event: any)
+  {
+    if(event.source.value === 'Opt-Out'){
+      this.checkedFlag = !this.checkedFlag;
+      this.showMsgFlag = true;
+      this.getConsentMsg(event.source.value);
+      this.getConsentExtraMsg(event.source.value);
+    }
+    else{
+      this.showMsgFlag = false;
+      this.checkedFlag = !this.checkedFlag;
+      this.getConsentMsg(event.source.value);
+      this.getConsentExtraMsg(event.source.value);
+    }
+    this.getDriverCount();
   }
 
 }

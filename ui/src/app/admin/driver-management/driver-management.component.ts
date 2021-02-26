@@ -161,7 +161,7 @@ export class DriverManagementComponent implements OnInit {
 
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
-      this.mockData();
+      this.restMockData();
       this.loadUsersData();
       this.setConsentDropdown();
     });
@@ -171,13 +171,13 @@ export class DriverManagementComponent implements OnInit {
     this.consentFormGroup.get('consentType').setValue(this.selectedConsentType);
   }
 
-  mockData(){
+  restMockData(){
     this.driverRestData = [
       {
         driverId: "IN 0000000000000001",
         firstName: "Driver",
         lastName: "1",
-        birthDate: "01/01/2001",
+        birthDate: "01/01/1991", //----- MM/DD/YYYY
         consentStatus: 'Opt-In',
         salutation: "Mr"
       },
@@ -185,7 +185,7 @@ export class DriverManagementComponent implements OnInit {
         driverId: "IN 0000000000000002",
         firstName: "Driver",
         lastName: "2",
-        birthDate: "2/2/2002",
+        birthDate: "02/02/1992",
         consentStatus: 'Opt-Out',
         salutation: "Ms"
       },
@@ -193,7 +193,7 @@ export class DriverManagementComponent implements OnInit {
         driverId: "IN 0000000000000003",
         firstName: "Driver",
         lastName: "3",
-        birthDate: "3/3/2003",
+        birthDate: "03/03/1993",
         consentStatus: 'Opt-In',
         salutation: "Mrs"
       }
@@ -313,13 +313,13 @@ export class DriverManagementComponent implements OnInit {
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
       optValue: optVal,
-      translationData: this.translationData
+      translationData: this.translationData,
+      driverData: this.driverRestData
     }
     this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
   }
 
-  addfile(event)     
-  {    
+  addfile(event: any){    
     this.file = event.target.files[0];     
     let fileReader = new FileReader();    
     fileReader.readAsArrayBuffer(this.file);     
