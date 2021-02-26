@@ -1,13 +1,13 @@
 {
     "authentication": {
-      "authRESTServiceURL": "http://51.124.138.94"
+      "authRESTServiceURL": "https://api.dev2.ct2.atos.net"
     },
     "foundationServices": {
-      "vehicleGroupRESTServiceUrl": "http://51.124.8.28/vehicle",
-      "roleRESTServiceURL": "http://20.73.217.14/role",
-      "featureRESTServiceURL": "http://20.73.203.148/feature",
-      "accountRESTServiceURL": "http://20.54.198.157/account",
-      "translationRESTServiceURL": "http://20.71.11.150/translation",
-      "organizationRESTServiceURL": "http://51.124.8.28/vehicle"
+      "vehicleGroupRESTServiceUrl": "https://api.dev2.ct2.atos.net/vehicle",
+      "roleRESTServiceURL": "https://api.dev2.ct2.atos.net/role",
+      "featureRESTServiceURL": "https://api.dev2.ct2.atos.net/feature",
+      "accountRESTServiceURL": "https://api.dev2.ct2.atos.net/account",
+      "translationRESTServiceURL": "https://api.dev2.ct2.atos.net/translation",
+      "organizationRESTServiceURL": "https://api.dev2.ct2.atos.net/vehicle"
     }
 }

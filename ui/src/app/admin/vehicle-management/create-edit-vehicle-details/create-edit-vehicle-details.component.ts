@@ -92,7 +92,7 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
       this.vehicleFormGroup.controls.vehicleGroupDescription.setValue('');
     }
   }
-  
+
   selectCheckBox(vehGroupId,viewGroupMode) {
     this.vehService.getVehicleListById(vehGroupId).subscribe((req) => {
       this.dataSource.data.forEach((row) => {
@@ -130,8 +130,14 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
           vehicleId: row.id,
         });
       });
+      if(numSelected.length==0){
+        objData.vehicles.push({
+          vehicleGroupId: 0,
+          vehicleId: 0,
+        });
+      }
 
-      this.vehService.createVehicleGroup(JSON.stringify(objData)).subscribe(
+      this.vehService.createVehicleGroup(objData).subscribe(
         (res) => {
           this.backToPage.emit({
             editFlag: false,
@@ -165,7 +171,12 @@ export class CreateEditVehicleDetailsComponent implements OnInit {
           vehicleId: parseInt(row.id),
         });
       });
-
+      if(numSelected.length==0){
+        objDataUpdate.vehicles.push({
+          vehicleGroupId: 0,
+          vehicleId: 0,
+        });
+      }
       this.vehService.updateVehicleGroup(objDataUpdate).subscribe(
         (res) => {
           this.backToPage.emit({

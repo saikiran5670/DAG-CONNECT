@@ -573,6 +573,7 @@ export class VehicleManagementComponent implements OnInit {
     // if (this.bothData != null) {
     //   this.updateDataSource(this.bothData);
     // } else {
+      this.bothData=[];
       this.vehGrpRqst = {
         id: 0,
         organizationID: this.orgId ? this.orgId : 1,

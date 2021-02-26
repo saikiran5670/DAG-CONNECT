@@ -34,7 +34,7 @@ export class VehicleService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .post<any[]>(`${this.vehicleServiceUrl}/group/getgroupdetails`,JSON.stringify(data),headers)
+      .post<any[]>(`${this.vehicleServiceUrl}/group/getgroupdetails`,data,headers)
       .pipe(catchError(this.handleError));
   }
   getVehicleListById(groupId): Observable<any[]> {
@@ -63,7 +63,7 @@ export class VehicleService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .post<any[]>(`${this.vehicleServiceUrl}/get`,JSON.stringify(data),headers)
+      .post<any[]>(`${this.vehicleServiceUrl}/get`,data,headers)
       .pipe(catchError(this.handleError));
   }
   getAssociatedVehicleGroup(orgId:number,vehId:number): Observable<any[]> {
