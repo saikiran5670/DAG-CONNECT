@@ -20,7 +20,7 @@ import { AccountService } from '../../services/account.service';
 
 export class DriverManagementComponent implements OnInit {
   //--------------Rest mock data----------------//
-  driverData: any = [];
+  driverRestData: any = [];
   //--------------------------------------------//
   grpTitleVisible : boolean = false;
   userCreatedMsg : any;
@@ -40,13 +40,13 @@ export class DriverManagementComponent implements OnInit {
   @ViewChild('UploadFileInput') uploadFileInput: ElementRef;
   readonly maxSize = 104857600;
   editFlag: boolean = false;
-  rowData: any;
+  driverData: any = [];
   file: any;
   arrayBuffer: any;
   filelist: any;
   translationData: any;
   localStLanguage: any;
-  type: any = '';
+  actionType: any = '';
   showLoadingIndicator: any;
   consentSelectionList: any = [
     {
@@ -172,7 +172,7 @@ export class DriverManagementComponent implements OnInit {
   }
 
   mockData(){
-    this.driverData = [
+    this.driverRestData = [
       {
         driverId: "IN 0000000000000001",
         firstName: "Driver",
@@ -185,7 +185,7 @@ export class DriverManagementComponent implements OnInit {
         driverId: "IN 0000000000000002",
         firstName: "Driver",
         lastName: "2",
-        birthDate: "02/02/2002",
+        birthDate: "2/2/2002",
         consentStatus: 'Opt-Out',
         salutation: "Ms"
       },
@@ -193,7 +193,7 @@ export class DriverManagementComponent implements OnInit {
         driverId: "IN 0000000000000003",
         firstName: "Driver",
         lastName: "3",
-        birthDate: "03/03/2003",
+        birthDate: "3/3/2003",
         consentStatus: 'Opt-In',
         salutation: "Mrs"
       }
@@ -221,15 +221,15 @@ export class DriverManagementComponent implements OnInit {
     let data = [];
     switch(type){
       case "All":{
-        data = this.driverData;
+        data = this.driverRestData;
         break;
       }
       case "Opt-In":{
-        data = this.driverData.filter((item: any) => item.consentStatus == 'Opt-In');
+        data = this.driverRestData.filter((item: any) => item.consentStatus == 'Opt-In');
         break;
       }
       case "Opt-Out":{
-        data = this.driverData.filter((item: any) => item.consentStatus == 'Opt-Out');
+        data = this.driverRestData.filter((item: any) => item.consentStatus == 'Opt-Out');
         break;
       }
     }
@@ -263,9 +263,9 @@ export class DriverManagementComponent implements OnInit {
   }
 
   onEditView(element: any, type: any){
-    this.rowData = element;
+    this.driverData = element;
     this.editFlag = true;
-    this.type = type; 
+    this.actionType = type; 
   }
 
   onDelete(row: any){

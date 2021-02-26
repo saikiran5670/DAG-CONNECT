@@ -2,176 +2,124 @@
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
     <span>{{ breadcumMsg }}</span>
   </div>
-  <div *ngIf="type == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+  <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
     <span class='custom-font' (click)="onCancel()">
       <span><&nbsp;</span>
       <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
   </div>
 </div>
-<form [formGroup]="firstFormGroup">
+<form [formGroup]="driverFormGroup">
   <mat-card class='mat-elevation-z margin-bottom-xlg'>
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (type == 'edit') ? (translationData.lblEditDriverDetails || 'Edit Driver Details') : (translationData.lblViewDriverDetails || 'View Driver Details') }}</span>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'edit') ? (translationData.lblEditDriverDetails || 'Edit Driver Details') : (translationData.lblViewDriverDetails || 'View Driver Details') }}</span>
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
           <span style='color: red;'>*{{ translationData.lblAlldetailsaremandatory || 'All details are mandatory' }}</span>
         </div>
       </div>
-      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblDriverID || 'Driver ID' }}<span class='mandatoryColor'>*</span></mat-label>
-          <mat-form-field appearance="outline" class="full-width">
-            <!-- <input placeholder="Driver ID" matInput [(ngModel)]='rowData.usergroupId' formControlName="driverId" required> -->
-            <input (keypress)="numericOnly($event)" placeholder="{{ translationData.lblDriverID || 'Driver ID' }}" matInput formControlName="driverId" required>
-          </mat-form-field>
-          <mat-error *ngIf="firstFormGroup.get('driverId').hasError('required')">
-            Driver ID is required.
-          </mat-error>
+          <div *ngIf="actionType != 'view'">
+            <mat-form-field appearance="outline" class="full-width">
+              <!-- <input (keypress)="numericOnly($event)" placeholder="{{ translationData.lblDriverID || 'Driver ID' }}" matInput formControlName="driverId" required> -->
+              <input placeholder="{{ translationData.lblDriverID || 'Driver ID' }}" matInput formControlName="driverId" required>
+            </mat-form-field>
+            <mat-error *ngIf="driverFormGroup.get('driverId').hasError('required')">
+              Driver ID is required.
+            </mat-error>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ driverData.driverId }}</span>
+          </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblEmailID || 'Email ID' }}</mat-label>
-          <mat-form-field appearance="outline" class="full-width">
-            <!-- <input placeholder="Email ID" matInput [(ngModel)]='rowData.createdDate' formControlName="emailId"
-              pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}"> -->
-            <input placeholder="{{ translationData.lblEmailID || 'Email ID' }}" matInput formControlName="emailId"
-              pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}">
-          </mat-form-field>
-          <!-- <mat-error *ngIf="firstFormGroup.get('emailId').hasError('required')">
-              Login Email is required.
-            </mat-error>
-            <mat-error *ngIf="firstFormGroup.get('emailId').hasError('email')">
-              Please enter a valid login email
-            </mat-error> -->
+          <mat-label>{{ translationData.lblBirthDate || 'Birth Date' }}</mat-label>
+          <div *ngIf="actionType != 'view'">
+            <!-- <mat-form-field appearance="outline" class="full-width">
+              <input formControlName="birthDate" [matDatepickerFilter]="myFilter" style="cursor:pointer;"
+                placeholder="MM/DD/YYYY" [readonly]="true" matInput [matDatepicker]="birthDate">
+              <mat-datepicker-toggle matSuffix [for]="birthDate"></mat-datepicker-toggle>
+              <mat-datepicker #birthDate></mat-datepicker>
+            </mat-form-field> -->
+            <mat-form-field appearance="outline" class="full-width">
+              <input [min]="minDate" formControlName="birthDate" matInput [matDatepicker]="birthdDate" disabled>
+              <mat-datepicker-toggle matSuffix [for]="birthdDate"></mat-datepicker-toggle>
+              <mat-datepicker #birthdDate [startAt]="startDate" disabled="false"></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ driverData.birthDate }}</span>
+          </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblDriverIDConsentStatus || 'Driver ID Consent Status' }}<span class='mandatoryColor'>*</span></mat-label>
-          <mat-radio-group (change)='onChange($event)' class='margin-top-10' [(ngModel)]="optVal" formControlName="consentStatus" required>
-            <mat-radio-button style='margin-right: 20px;' [checked]="data.optValue === 'opt-in' ? true : false" value="opt-in">{{ translationData.lblOptIn || 'Opt-In' }}</mat-radio-button>
-            <mat-radio-button [checked]="data.optValue === 'opt-out' ? true : false" value="opt-out">{{ translationData.lblOptOut || 'Opt-Out' }}</mat-radio-button>
-          </mat-radio-group>
-          <!-- <p>Opt is: {{optVal}}</p> -->
-          <!-- <mat-form-field appearance="outline" class="full-width">
-            <input placeholder="Driver ID Consent Status" matInput formControlName="consentStatus" required>
-          </mat-form-field>
-          <mat-error *ngIf="firstFormGroup.get('consentStatus').hasError('required')">
-            Driver ID Consent Status is required.
-          </mat-error> -->
+          <div *ngIf="actionType != 'view'" style='margin-top: 8px;'>
+            <mat-radio-group (change)='onConsentChange($event)' class='margin-top-10' formControlName="consentStatus" required>
+              <mat-radio-button style='margin-right: 20px;' [checked]="selectedConsentType === 'Opt-In' ? true : false" value="Opt-In">{{ translationData.lblOptIn || 'Opt-In' }}</mat-radio-button>
+              <mat-radio-button [checked]="selectedConsentType === 'Opt-Out' ? true : false" value="Opt-Out">{{ translationData.lblOptOut || 'Opt-Out' }}</mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ driverData.consentStatus }}</span>
+          </div>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblSalutation || 'Salutation' }}<span class='mandatoryColor'>*</span></mat-label>
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-select placeholder="{{ translationData.lblSalutation || 'Salutation' }}" formControlName="salutation" required>
-              <mat-option *ngFor="let rer of selectList" [value]="rer.name">
-                {{rer.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-error *ngIf="firstFormGroup.get('salutation').hasError('required')">
-            Salutation is required
-          </mat-error>
+          <div *ngIf="actionType != 'view'">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-select placeholder="{{ translationData.lblSalutation || 'Salutation' }}" formControlName="salutation" required>
+                <mat-option *ngFor="let rer of salutationList" [value]="rer.name">
+                  {{rer.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-error *ngIf="driverFormGroup.get('salutation').hasError('required')">
+              Salutation is required
+            </mat-error>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ driverData.salutation }}</span>
+          </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblFirstName || 'First Name' }}<span class='mandatoryColor'>*</span></mat-label>
-          <mat-form-field appearance="outline" class="full-width">
-            <!-- <input placeholder="First Name" matInput [(ngModel)]='rowData.name' formControlName="firstName" required> -->
-            <input placeholder="{{ translationData.lblFirstName || 'First Name' }}" matInput formControlName="firstName" required>
-          </mat-form-field>
-          <mat-error *ngIf="firstFormGroup.get('firstName').hasError('required')">
-            First Name is required.
-          </mat-error>
+          <div *ngIf="actionType != 'view'">
+            <mat-form-field appearance="outline" class="full-width">
+              <input placeholder="{{ translationData.lblFirstName || 'First Name' }}" matInput formControlName="firstName" required>
+            </mat-form-field>
+            <mat-error *ngIf="driverFormGroup.get('firstName').hasError('required')">
+              First Name is required.
+            </mat-error>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ driverData.firstName }}</span>
+          </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblLastName || 'Last Name' }}<span class='mandatoryColor'>*</span></mat-label>
-          <mat-form-field appearance="outline" class="full-width">
-            <!-- <input placeholder="Last Name" matInput [(ngModel)]='rowData.name' formControlName="lastName" required> -->
-            <input placeholder="{{ translationData.lblLastName || 'Last Name' }}" matInput formControlName="lastName" required>
-          </mat-form-field>
-          <mat-error *ngIf="firstFormGroup.get('lastName').hasError('required')">
-            Last Name is required.
-          </mat-error>
-        </div>
-      </div>
-      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblBirthDate || 'Birth Date' }}</mat-label>
-          <mat-form-field appearance="outline" class="full-width">
-            <input formControlName="birthDate" [matDatepickerFilter]="myFilter" style="cursor:pointer;"
-              placeholder="MM/DD/YYYY" [readonly]="true" matInput [matDatepicker]="Due_Date">
-            <mat-datepicker-toggle matSuffix [for]="Due_Date"></mat-datepicker-toggle>
-            <mat-datepicker #Due_Date></mat-datepicker>
-          </mat-form-field>
-        </div>
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblLanguage || 'Language' }}</mat-label>
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-select placeholder="{{ translationData.lblLanguage || 'Language' }}" formControlName="language">
-              <!-- <mat-option>
-                  <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
-                  </ngx-mat-select-search>
-                </mat-option> -->
-              <mat-option *ngFor="let rer of selectList" [value]="rer.name">
-                {{rer.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblUnit || 'Unit' }}</mat-label>
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-select placeholder="{{ translationData.lblUnit || 'Unit' }}" formControlName="unit">
-              <!-- <mat-option>
-                  <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
-                  </ngx-mat-select-search>
-                </mat-option> -->
-              <mat-option *ngFor="let rer of selectList" [value]="rer.name">
-                {{rer.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-      </div>
-      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblTimeZone || 'Time Zone' }}</mat-label>
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-select placeholder="{{ translationData.lblTimeZone || 'Time Zone' }}" formControlName="timeZone">
-              <!-- <mat-option>
-                  <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
-                  </ngx-mat-select-search>
-                </mat-option> -->
-              <mat-option *ngFor="let rer of selectList" [value]="rer.name">
-                {{rer.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblCurrency || 'Currency' }}</mat-label>
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-select placeholder="{{ translationData.lblCurrency || 'Currency' }}" formControlName="currency">
-              <!-- <mat-option>
-                  <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="No matching data found">
-                  </ngx-mat-select-search>
-                </mat-option> -->
-              <mat-option *ngFor="let rer of selectList" [value]="rer.name">
-                {{rer.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-
+          <div *ngIf="actionType != 'view'">
+            <mat-form-field appearance="outline" class="full-width">
+              <input placeholder="{{ translationData.lblLastName || 'Last Name' }}" matInput formControlName="lastName" required>
+            </mat-form-field>
+            <mat-error *ngIf="driverFormGroup.get('lastName').hasError('required')">
+              Last Name is required.
+            </mat-error>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ driverData.lastName }}</span>
+          </div>
         </div>
       </div>
     </mat-card-content>
   </mat-card>
-  <div *ngIf="type == 'edit'" fxLayout="row" fxLayoutAlign="end end" class="full-width">
+  <div *ngIf="actionType == 'edit'" fxLayout="row" fxLayoutAlign="end end" class="full-width">
     <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
     <button class='margin-right-10' mat-raised-button color="primary" (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
-    <button [disabled]="!firstFormGroup.valid" mat-raised-button color="primary" (click)='onConfirm()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
+    <button [disabled]="!driverFormGroup.valid" mat-raised-button color="primary" (click)='onConfirm()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
   </div>
 </form>
