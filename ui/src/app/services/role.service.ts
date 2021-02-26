@@ -40,13 +40,14 @@ export class RoleService {
     let getHeaderObj = JSON.stringify(genericHeader)
     return getHeaderObj;
   }
-
   getUserRoles(data): Observable<any[]> {
    let headerObj = this.generateHeader();
-    const headers =  new HttpHeaders({ headerObj });
+   const headers = {
+    headers: new HttpHeaders({ headerObj }),
+  };
     const options =  { params: new HttpParams(data), headers: headers };
     return this.httpClient
-      .get<any[]>(`${this.roleServiceUrl}/get`,{params: data})
+      .get<any[]>(`${this.roleServiceUrl}/get?Organizationid=${data.Organizationid}&IsGlobal=${data.IsGlobal}`,headers)
       .pipe(catchError(this.handleError));
   }
 
