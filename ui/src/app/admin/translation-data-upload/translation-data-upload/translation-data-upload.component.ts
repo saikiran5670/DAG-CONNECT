@@ -12,7 +12,7 @@ import { MatTableDataSource } from '@angular/material/table';
 @Component({
   selector: 'app-translation-data-upload',
   templateUrl: './translation-data-upload.component.html',
-  styleUrls: ['./translation-data-upload.component.css']
+  styleUrls: ['./translation-data-upload.component.less']
 })
 export class TranslationDataUploadComponent implements OnInit {
   grpTitleVisible : boolean = false;
