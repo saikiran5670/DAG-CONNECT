@@ -35,8 +35,6 @@ describe('OrganisationDetailsComponent', () => {
   });
 
   it('should create', () => {
-    // spyOn(translationService, 'getTranslationLabel');
-    
     expect(component).toBeTruthy();
   });
 });

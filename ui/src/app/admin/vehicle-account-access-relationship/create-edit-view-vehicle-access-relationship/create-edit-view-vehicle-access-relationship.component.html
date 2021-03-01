@@ -1,0 +1,142 @@
+<div *ngIf="actionType == 'view'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+      <span>{{ breadcumMsg }}</span>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+      <span class='custom-font' (click)="toBack()">
+        <span><&nbsp;</span>
+        <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+    </div>
+</div>
+<form [formGroup]="vehicleAccessRelationshipFormGroup">
+  <mat-card class='mat-elevation-z'>
+    <mat-card-content>
+      <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddNewAssociation || 'Add New Association') : actionType == 'edit' ? (translationData.lblEditAssociation || 'Edit Association') : (translationData.lblViewAssociation || 'View Association') }}</span>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblVehicleGroupVehicle || 'Vehicle Group/Vehicle' }}<span class='mandatoryColor'>*</span></mat-label>
+            <div *ngIf="actionType != 'view'">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-select placeholder="{{ translationData.lblSelectVehicleGroupVehicle || 'Select Vehicle Group/Vehicle' }}" formControlName="vehicleGroup" required>
+                  <mat-option *ngFor="let rer of vehicleGrpList" [value]="rer.id">
+                    {{ rer.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-error *ngIf="vehicleAccessRelationshipFormGroup.get('vehicleGroup').hasError('required')">
+                {{ translationData.lblPleaseSelectVehicleGroupVehicle || 'Please Select Vehicle Group/Vehicle' }}
+              </mat-error>
+            </div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.name }}</span>
+            </div>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblAccessType || 'Access Type' }}<span class='mandatoryColor'>*</span></mat-label>
+          <div *ngIf="actionType != 'view'">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-select placeholder="{{ translationData.lblSelectAccessType || 'Select Access Type' }}" formControlName="accessType" required>
+                <mat-option *ngFor="let rer of accessTypeList" [value]="rer.id">
+                  {{ rer.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-error *ngIf="vehicleAccessRelationshipFormGroup.get('accessType').hasError('required')">
+              {{ translationData.lblPleaseSelectAccessType || 'Please Select Access Type' }}
+            </mat-error>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedElementData.accessType.name }}</span>
+          </div>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between center">
+        <div fxLayout="column" fxLayoutAlign="left">
+            <div fxLayout="row" fxLayoutAlign='center center'>
+                <mat-icon class='margin-right-10'>info</mat-icon>
+                <span>{{ translationData.lblVehicleAccessRelationCreateHintMessage || 'You can select multiple Account Group/Account from below list to map with selected Vehicle Group/Vehicle list' }}</span>
+            </div>
+        </div>
+      </div>
+      <div style='padding: 20px; position: relative;'>
+        <mat-divider></mat-divider>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectAccountGroupAccount || 'Select Account Group/Account' }}</span>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
+        <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+          <mat-form-field appearance="outline">
+              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+              <span matPrefix><mat-icon>search</mat-icon></span>
+          </mat-form-field>
+        </div>
+        <div class='areaWidth margin-right-10' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
+          <span>{{ translationData.lblViewlistby || 'View list by' }}:</span>
+        </div>
+        <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
+          <mat-radio-group (change)='onListChange($event)'>
+            <mat-radio-button style='margin-right: 20px;' value="group"
+              [checked]="selectedViewType ===  'group' ? true : false">{{ translationData.lblGroup || 'Group' }}
+            </mat-radio-button>
+            <mat-radio-button style='margin-right: 20px;' value="account"
+              [checked]="selectedViewType ===  'account' ? true : false">{{ translationData.lblAccount || 'Account' }}
+            </mat-radio-button>
+            <mat-radio-button value="both" [checked]="selectedViewType ===  'both' ? true : false">{{
+              translationData.lblBoth || 'Both' }}</mat-radio-button>
+          </mat-radio-group>
+        </div>
+      </div>
+      <div class='margin-bottom-xlg'>
+        <mat-table [dataSource]="dataSource" class="table-items" matSort>
+          <ng-container matColumnDef="select">
+            <div>
+              <mat-header-cell *matHeaderCellDef>
+                <mat-checkbox (change)='$event ? masterToggleForAccountGrp() : null'
+                  [checked]='selectionForAccountGrp.hasValue() && isAllSelectedForAccountGrp()'
+                  [indeterminate]='selectionForAccountGrp.hasValue() && !isAllSelectedForAccountGrp()'
+                  [aria-label]='checkboxLabelForAccountGrp()' [disabled]="actionType == 'view'">
+                </mat-checkbox>
+                <span style="margin: 5px 0px 0px 5px;" [ngClass]="{'opacity-0-5': actionType == 'view'}">{{ translationData.lblAll || 'All' }}</span>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectionForAccountGrp.toggle(row) : null'
+                  [checked]='selectionForAccountGrp.isSelected(row)' [aria-label]='checkboxLabelForAccountGrp(row)' [disabled]="actionType == 'view'">
+                </mat-checkbox>
+              </mat-cell>
+            </div>
+          </ng-container>
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAccountGroupAccount || 'Account Group/Account' }}</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              {{ row.name }}
+              <div [ngClass]="{'cursor-pointer': (row.isAccountGroup == true && row.accounts.length > 0)}" (click)="(row.isAccountGroup == true && row.accounts.length > 0) ? showAccountPopup(row) : ''" *ngIf="row.isAccountGroup == true">
+                <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
+                <span class='iconTxt'>{{ (row.accounts.length < 10) ? '0' : '' }}{{ row.accounts.length }}</span>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;">
+          </mat-row>
+        </mat-table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+      </div>
+      <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="end end" class="full-width">
+        <button class='margin-right-10' mat-raised-button color="primary"
+          (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+        <button *ngIf="actionType == 'edit'" class='margin-right-10' mat-raised-button color="primary"
+          (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
+        <button [disabled]="!vehicleAccessRelationshipFormGroup.valid" mat-raised-button color="primary"
+          (click)='onConfirm()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</form>

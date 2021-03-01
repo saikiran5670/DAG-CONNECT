@@ -1,25 +1,104 @@
 using System;
+using System.Collections.Generic;
 using AccountComponent = net.atos.daf.ct2.account;
 using Preference = net.atos.daf.ct2.accountpreference;
 using Group = net.atos.daf.ct2.group;
+using net.atos.daf.ct2.utilities;
+
 namespace net.atos.daf.ct2.accountservice
 {
     public class Mapper
     {
+        public AccountRequest ToAccount(AccountComponent.entity.Account account)
+        {
+            AccountRequest request = new AccountRequest();
+
+            request.Id = account.Id;
+            request.EmailId = account.EmailId;
+            request.Salutation = account.Salutation;
+            request.FirstName = account.FirstName;
+            request.LastName = account.LastName;
+            request.OrganizationId = account.Organization_Id;
+            if (account.PreferenceId.HasValue)
+                request.PreferenceId = account.PreferenceId.Value;
+            if (account.BlobId.HasValue)
+                request.BlobId = account.BlobId.Value;
+            if (!string.IsNullOrEmpty(account.DriverId)) request.DriverId = account.DriverId;
+            if (account.AccountType == AccountComponent.ENUM.AccountType.PortalAccount)
+            {
+                request.Type = Convert.ToString((char)AccountComponent.ENUM.AccountType.PortalAccount);
+            }
+            else
+            {
+                request.Type = Convert.ToString((char)AccountComponent.ENUM.AccountType.SystemAccount);
+            }
+            request.CreatedAt = (long)account.CreatedAt.Value;
+            return request;
+        }
         public AccountComponent.entity.Account ToAccountEntity(AccountRequest request)
         {
             var account = new AccountComponent.entity.Account();
             account.Id = request.Id;
             account.EmailId = request.EmailId;
+
+            if (!string.IsNullOrEmpty(request.Type))
+            {
+                char type = Convert.ToChar(request.Type);
+                if (type == 'p' || type == 'P')
+                {
+                    account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
+                }
+                else
+                {
+                    account.AccountType = AccountComponent.ENUM.AccountType.SystemAccount;
+                }
+            }
+            else
+            {
+                account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
+            }
             account.Salutation = request.Salutation;
             account.FirstName = request.FirstName;
             account.LastName = request.LastName;
             account.Password = request.Password;
             account.Organization_Id = request.OrganizationId;
+            account.DriverId = request.DriverId;
             account.StartDate = DateTime.Now;
             account.EndDate = null;
+            account.PreferenceId = request.PreferenceId;
+            account.BlobId = request.BlobId;
+            if(request.CreatedAt > 0)
+            {
+                account.CreatedAt = (long) request.CreatedAt;
+            }
+            else
+            {
+                account.CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            }            
             return account;
         }
+        public AccountComponent.entity.AccountBlob AccountBlob(AccountBlobRequest request)
+        {
+            AccountComponent.entity.AccountBlob accountBlob = new AccountComponent.entity.AccountBlob();
+
+            accountBlob.Id = request.Id;
+            accountBlob.AccountId = request.AccountId;
+            accountBlob.Type = (AccountComponent.ImageType)Convert.ToChar(request.ImageType);
+            if (request.Image != null)
+                accountBlob.Image = request.Image.ToByteArray();
+            return accountBlob;
+        }
+        public AccountBlobRequest AccountBlob(AccountComponent.entity.AccountBlob request)
+        {
+            AccountBlobRequest accountBlob = new AccountBlobRequest();
+            accountBlob.Id = request.Id;
+            accountBlob.AccountId = request.AccountId;
+            accountBlob.ImageType = Convert.ToString((AccountComponent.ImageType)request.Type);
+            if (request.Image != null)
+                accountBlob.Image.CopyTo(request.Image, 0);
+            return accountBlob;
+        }
+
         public AccountRequest ToAccountDetail(AccountComponent.entity.Account account)
         {
             AccountRequest response = new AccountRequest();
@@ -32,5 +111,147 @@ namespace net.atos.daf.ct2.accountservice
             response.OrganizationId = account.Organization_Id;
             return response;
         }
+        public accountpreference.AccountPreference ToPreference(AccountPreference request)
+        {
+            accountpreference.AccountPreference preference = new accountpreference.AccountPreference();
+            preference.Id = request.Id;
+            preference.RefId = request.RefId;
+            preference.PreferenceType = Preference.PreferenceType.Account;
+            preference.LanguageId = request.LanguageId;
+            preference.TimezoneId = request.TimezoneId;
+            preference.CurrencyId = request.CurrencyId;
+            preference.UnitId = request.UnitId;
+            preference.VehicleDisplayId = request.VehicleDisplayId;
+            preference.DateFormatTypeId = request.DateFormatId;
+            // preference.DriverId = request.DriverId;
+            preference.TimeFormatId = request.TimeFormatId;
+            preference.LandingPageDisplayId = request.LandingPageDisplayId;
+            return preference;
+        }
+        public AccountPreference ToPreferenceEntity(Preference.AccountPreference entity)
+        {
+            AccountPreference request = new AccountPreference();
+            request.Id = entity.Id.HasValue ? entity.Id.Value : 0;
+            request.RefId = entity.RefId;
+            request.LanguageId = entity.LanguageId;
+            request.TimezoneId = entity.TimezoneId;
+            request.CurrencyId = entity.CurrencyId;
+            request.UnitId = entity.UnitId;
+            request.VehicleDisplayId = entity.VehicleDisplayId;
+            request.DateFormatId = entity.DateFormatTypeId;
+            // request.DriverId = entity.DriverId;
+            request.TimeFormatId = entity.TimeFormatId;
+            request.LandingPageDisplayId = entity.LandingPageDisplayId;
+            return request;
+        }
+        // group mapping
+        public Group.Group ToGroup(AccountGroupRequest request)
+        {
+            Group.Group entity = new Group.Group();
+            entity.Id = request.Id;
+            entity.Name = request.Name;            
+            entity.Description = request.Description;
+            entity.Argument = "";//request.Argument;                
+            entity.FunctionEnum = group.FunctionEnum.None;
+            entity.RefId = null;
+            if (request.RefId >0) entity.RefId = request.RefId;
+
+            if (!string.IsNullOrEmpty(request.GroupType))
+            {
+                char type = Convert.ToChar(request.GroupType);
+                if (type == 'd' || type == 'D')
+                {
+                    entity.GroupType = Group.GroupType.Dynamic;
+                }
+                else if (type == 's' || type == 'S')
+                {
+                    entity.GroupType = Group.GroupType.Single;
+                }
+                else
+                {
+                    entity.GroupType = Group.GroupType.Group;
+                }
+            }
+            else
+            {
+                entity.GroupType = Group.GroupType.Group;
+            }            
+            entity.ObjectType = group.ObjectType.AccountGroup;
+            entity.OrganizationId = request.OrganizationId;
+            entity.GroupRef = new List<Group.GroupRef>();            
+            return entity;
+        }
+        public AccessRelationship ToAccessRelationShip(AccountComponent.entity.AccessRelationship entity)
+        {
+            AccessRelationship request = new AccessRelationship();
+            request.Id = entity.Id;
+            request.AccessRelationType = entity.AccessRelationType.ToString();
+            request.AccountGroupId = entity.AccountGroupId;
+            request.VehicleGroupId = entity.VehicleGroupId;
+            return request;
+        }
+        public AccountGroupRequest ToAccountGroup(Group.Group entity)
+        {
+            AccountGroupRequest request = new AccountGroupRequest();
+            request.Id = entity.Id;
+            request.Name = entity.Name;
+            request.Description = entity.Description;
+            //request.Argument = entity.Argument;
+            //request.FunctionEnum = (FunctionEnum)Enum.Parse(typeof(FunctionEnum), entity.FunctionEnum.ToString());
+            //request.FunctionEnum = entity.FunctionEnum.ToString();
+            //request.GroupType = (GroupType)Enum.Parse(typeof(GroupType), entity.GroupType.ToString());
+            //request.GroupType = entity.GroupType.ToString();
+            //request.ObjectType = (ObjectType)Enum.Parse(typeof(ObjectType), entity.ObjectType.ToString());
+            //request.ObjectType = entity.ObjectType.ToString();
+            request.OrganizationId = entity.OrganizationId;
+            request.GroupRefCount = entity.GroupRefCount;
+            if (entity.GroupRef != null)
+            {
+                foreach (var item in entity.GroupRef)
+                {
+                    request.GroupRef.Add(new AccountGroupRef() { RefId = item.Ref_Id, GroupId = item.Group_Id });
+                }
+            }
+            return request;
+        }
+
+        // private AccountType SetEnumAccountType(AccountComponent.ENUM.AccountType type)
+        // {
+        //     AccountType accountType = AccountType.None;
+
+        //     if (type == AccountComponent.ENUM.AccountType.None)
+        //     {
+        //         accountType = AccountType.None;
+        //     }
+        //     else if (type == AccountComponent.ENUM.AccountType.SystemAccount)
+        //     {
+        //         accountType = AccountType.SystemAccount;
+        //     }
+        //     else if (type == AccountComponent.ENUM.AccountType.PortalAccount)
+        //     {
+        //         accountType = AccountType.PortalAccount;
+        //     }
+        //     return accountType;
+        // }
+        // private AccountComponent.ENUM.AccountType GetEnum(int value)
+        // {
+        //     AccountComponent.ENUM.AccountType accountType;
+        //     switch (value)
+        //     {
+        //         case 0:
+        //             accountType = AccountComponent.ENUM.AccountType.None;
+        //             break;
+        //         case 1:
+        //             accountType = AccountComponent.ENUM.AccountType.SystemAccount;
+        //             break;
+        //         case 2:
+        //             accountType = AccountComponent.ENUM.AccountType.PortalAccount;
+        //             break;
+        //         default:
+        //             accountType = AccountComponent.ENUM.AccountType.PortalAccount;
+        //             break;
+        //     }
+        //     return accountType;
+        // }
     }
 }

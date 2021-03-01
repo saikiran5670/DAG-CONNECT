@@ -24,6 +24,12 @@
     <ProjectReference Include="..\..\net.atos.daf.ct2.identity\net.atos.daf.ct2.identity.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings.Test.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 
 
 </Project>

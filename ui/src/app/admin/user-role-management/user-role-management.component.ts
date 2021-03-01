@@ -12,8 +12,8 @@ import { RoleService } from 'src/app/services/role.service';
   templateUrl: './user-role-management.component.html',
   styleUrls: ['./user-role-management.component.less']
 })
+
 export class UserRoleManagementComponent implements OnInit {
-  //loggedInUser: string = 'admin';
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -21,7 +21,7 @@ export class UserRoleManagementComponent implements OnInit {
   editFlag: boolean = false;
   duplicateFlag: boolean = false;
   viewFlag: boolean = false;
-  initData: any;
+  initData: any = [];
   rowsData: any;
   createStatus: boolean;
   titleText: string;
@@ -30,7 +30,8 @@ export class UserRoleManagementComponent implements OnInit {
   displayMessage: any;
   organizationId: number;
   isGlobal: boolean;
-  localStLanguage = JSON.parse(localStorage.getItem("language"));
+  localStLanguage: any;
+  showLoadingIndicator: any;
 
   constructor(private translationService: TranslationService, private roleService: RoleService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar) {
     this.defaultTranslation();
@@ -83,6 +84,7 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.isGlobal = true;
     let translationObj = {
@@ -106,13 +108,16 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   loadInitData() {
+    this.showLoadingIndicator = true;
      let objData = { 
         Organizationid : this.organizationId,
         IsGlobal: this.isGlobal
      };
-    
+  
     this.roleService.getUserRoles(objData).subscribe((data) => {
       //this.initData = this.getNewTagData(data); //no createdDate present in API response
+      if(data)
+        this.hideloader();
       this.initData = data; //temporary 
       setTimeout(()=>{
         this.dataSource = new MatTableDataSource(this.initData);
@@ -140,7 +145,6 @@ export class UserRoleManagementComponent implements OnInit {
     return newTrueData;
   }
 
-
   newUserRole() {
     this.titleText = this.translationData.lblCreateNewUserRole || "Create New User Role";
     this.rowsData = [];
@@ -158,11 +162,11 @@ export class UserRoleManagementComponent implements OnInit {
     this.rowsData = [];
     this.rowsData.push(row);
     this.editFlag = true;
-    this.createStatus = false;
-    
+    this.createStatus = false;    
   }
 
   viewUserRole(row: any){
+    this.titleText = this.translationData.lblViewUserRole || "View User Role";
     this.editFlag = true;
     this.viewFlag = true;
     this.rowsData = [];
@@ -179,20 +183,16 @@ export class UserRoleManagementComponent implements OnInit {
     let name = row.roleName;
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
-     if (res) {
-       this.roleService
-         .deleteUserRole(row.roleId)
-         .subscribe((d) => {
-           //console.log(d);
-           //this.openSnackBar('Item deleted', 'dismiss');
-           this.successMsgBlink(this.getDeletMsg(name));
-           this.loadInitData();
-         });
-     }
+    if (res) {
+      this.roleService
+        .deleteUserRole(row.roleId)
+        .subscribe((d) => {
+          this.successMsgBlink(this.getDeletMsg(name));
+          this.loadInitData();
+        });
+    }
    });
   }
-
-
 
   getDeletMsg(roleName: any){
     if(this.translationData.lblUseraccountwassuccessfullydeleted)
@@ -209,24 +209,13 @@ export class UserRoleManagementComponent implements OnInit {
     }, 5000);
   }
 
-
-  openSnackBar(message: string, action: string) {
-    let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
-    snackBarRef.afterDismissed().subscribe(() => {
-      console.log('The snackbar is dismissed');
-    });
-    snackBarRef.onAction().subscribe(() => {
-      console.log('The snackbar action was triggered!');
-    });
-  }
-
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
   }
 
-  getCreateEditMsg(editText, name){
+  getCreateEditMsg(editText: any, name: any){
     if(editText == 'create'){
       if(this.translationData.lblUserRoleCreatedSuccessfully)
         return this.translationData.lblUserRoleCreatedSuccessfully.replace('$', name);
@@ -246,21 +235,19 @@ export class UserRoleManagementComponent implements OnInit {
     this.viewFlag = item.viewFlag;
     this.duplicateFlag = item.duplicateFlag;
     if(item.editText == 'create'){
-      //this.openSnackBar('Item created', 'dismiss');
       this.successMsgBlink(this.getCreateEditMsg(item.editText, item.rolename));
     }else if(item.editText == 'edit'){
-      //this.openSnackBar('Item edited', 'dismiss');
       this.successMsgBlink(this.getCreateEditMsg(item.editText, item.rolename));
     }
-    this.initData = this.loadInitData();
-    setTimeout(()=>{
-      this.dataSource = new MatTableDataSource(this.initData);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
+    this.loadInitData();
   }
 
   onClose(){
     this.grpTitleVisible = false;
+  }
+
+  hideloader() {
+    // Setting display of spinner
+      this.showLoadingIndicator=false;
   }
 }

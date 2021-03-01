@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.accountservicerest
         public int DateFormatTypeId { get; set; }
         public int TimeFormatId { get; set; }
         public int LandingPageDisplayId { get; set; }
-        public string DriverId { get; set; }
+        // public string DriverId { get; set; }
         
     }
 }

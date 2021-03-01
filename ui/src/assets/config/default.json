@@ -3,9 +3,6 @@
       "authRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#"
     },
     "foundationServices": {
-      "userServiceUrl": "http://localhost:3000",
-      "userGroupServiceUrl": "http://localhost:3000",
-      "roleServiceUrl": "http://localhost:3000",
       "vehicleGroupRESTServiceUrl": "#{AUTHENTICATIONSERVICEURL}#/vehicle",
       "roleRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/role",
       "featureRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/feature",

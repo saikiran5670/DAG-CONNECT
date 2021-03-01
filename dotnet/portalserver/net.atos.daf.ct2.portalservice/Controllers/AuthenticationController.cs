@@ -10,6 +10,7 @@ using net.atos.daf.ct2.authenticationservice;
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
+    [Route("authenticationpoc")]
     public class AuthenticationController: ControllerBase
     {
         private readonly ILogger logger;
@@ -71,7 +72,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("validate")]
         public async Task<IActionResult> Validate([FromBody] string token)
         {
-            bool valid=false;
             try 
             {
                 if(string.IsNullOrEmpty(token))
@@ -95,11 +95,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch(Exception ex)
             {
-                valid = false;
                 logger.LogError(ex.Message +" " +ex.StackTrace);
                 return StatusCode(500,"Please contact system administrator.");
             }           
-            return Ok(valid); 
         }
     }
 }

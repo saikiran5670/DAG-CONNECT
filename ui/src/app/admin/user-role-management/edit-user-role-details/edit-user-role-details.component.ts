@@ -12,7 +12,9 @@ import { CustomValidators } from 'src/app/shared/custom.validators';
   templateUrl: './edit-user-role-details.component.html',
   styleUrls: ['./edit-user-role-details.component.less']
 })
+
 export class EditUserRoleDetailsComponent implements OnInit {
+  breadcumMsg: any = '';
   loggedInUser : string = 'admin';
   userRoleFormGroup: FormGroup;
   @Output() backToPage = new EventEmitter<any>();
@@ -28,15 +30,12 @@ export class EditUserRoleDetailsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   selectionForFeatures = new SelectionModel(true, []);
-  //roleName: string = '';
   roleTypes = ['Global', 'Regular'];
   isUserRoleExist: boolean = false;
   doneFlag = false;
   featuresSelected = [];
   featuresData = [];
   organizationId: number;
-  //access: any = '';
-  //disabled : boolean = true;
 
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService) { }
 
@@ -51,23 +50,27 @@ export class EditUserRoleDetailsComponent implements OnInit {
     });
 
     let objData = {
-      "organization_Id": this.organizationId
+      organization_Id: this.organizationId
     }
+
     this.roleService.getFeatures(objData).subscribe((data) => {
       setTimeout(()=>{
         this.dataSource = new MatTableDataSource(data);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-
         if(!this.createStatus || this.duplicateFlag || this.viewFlag){
           this.onReset();
         }
       });
       this.featuresData = data;
-
     }, (error) => { });
 
     this.doneFlag = this.createStatus ? false : true;
+    this.breadcumMsg = this.getBreadcum();
+  }
+
+  getBreadcum(){
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblUserRoleManagement ? this.translationData.lblUserRoleManagement : "User Role Management"} / ${this.translationData.lblUserRoleDetails ? this.translationData.lblUserRoleDetails : 'User Role Details'}`;
   }
 
   onCancel() {
@@ -125,8 +128,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
-  createUserRole(enteredUserRoleValue: any) {//create func
-   // this.roleService.checkUserRoleExist(enteredUserRoleValue).subscribe((data: any) => {
+  createUserRole(enteredUserRoleValue: any) {
     let existingRole = this.roleData.filter(response => (response.roleName).toLowerCase() == enteredUserRoleValue.trim().toLowerCase());
     if (existingRole.length > 0) {
       this.isUserRoleExist = true;
@@ -135,35 +137,18 @@ export class EditUserRoleDetailsComponent implements OnInit {
     else {
         this.isUserRoleExist = false;
         this.doneFlag = true;
-        
-        // let mockVarForID = Math.random(); //id for mock api
-        // let objData = {
-        //   id: mockVarForID,  //id for mock api
-        //   roleMasterId: mockVarForID,
-        //   name: this.userRoleFormGroup.controls.userRoleName.value,
-        //   roleDescription: this.userRoleFormGroup.controls.userRoleDescription.value,
-        //   createdby: 5,
-        //   modifiedby: 0,
-        //   createddate: new Date(),
-        //   modifieddate: "0001-01-01T00:00:00",
-        //   isactive: true,
-        //   services: 2, // 2 hardcoded value for mock
-        //   roleType: this.userRoleFormGroup.controls.roleType.value,
-        //   features: this.selectionForFeatures.selected
-        // }
-
         let featureIds = [];
         this.selectionForFeatures.selected.forEach(feature => {
           featureIds.push(feature.id);
         })
         
         let objData = {
-          "organizationId": this.userRoleFormGroup.controls.roleType.value=='Global'? 0 : this.organizationId,
-          "roleId": 0,
-          "roleName": (this.userRoleFormGroup.controls.userRoleName.value).trim(),
-          "description": this.userRoleFormGroup.controls.userRoleDescription.value,
-          "featureIds": featureIds,
-          "createdby": 0
+          organizationId: this.userRoleFormGroup.controls.roleType.value=='Global'? 0 : this.organizationId,
+          roleId: 0,
+          roleName: (this.userRoleFormGroup.controls.userRoleName.value).trim(),
+          description: this.userRoleFormGroup.controls.userRoleDescription.value,
+          featureIds: featureIds,
+          createdby: 0
         }
         this.roleService.createUserRole(objData).subscribe((res) => {
           this.backToPage.emit({ editFlag: false, editText: 'create',  rolename: this.userRoleFormGroup.controls.userRoleName.value });
@@ -173,27 +158,11 @@ export class EditUserRoleDetailsComponent implements OnInit {
           }
         });
       }
-   // }, (error) => { });
   }
 
-  updateUserRole(){  // edit func
+  updateUserRole(){  
     this.isUserRoleExist = false;
     this.doneFlag = true;
-    // let objData = {
-    //   id: this.gridData[0].id,   //id for mock api
-    //   roleMasterId: this.gridData[0].roleMasterId,
-    //   name: this.userRoleFormGroup.controls.userRoleName.value,
-    //   roleDescription: this.userRoleFormGroup.controls.userRoleDescription.value,
-    //   createdby: this.gridData[0].createdby,
-    //   modifiedby: this.gridData[0].modifiedby,
-    //   createddate: this.gridData[0].createddate,
-    //   modifieddate: this.gridData[0].modifieddate,
-    //   isactive: this.gridData[0].isActive,
-    //   services:this.gridData[0].services, 
-    //   roleType: this.userRoleFormGroup.controls.roleType.value,
-    //   features: this.selectionForFeatures.selected
-    // }
-
     let featureIds = [];
         this.selectionForFeatures.selected.forEach(feature => {
           featureIds.push(feature.id);
@@ -203,13 +172,13 @@ export class EditUserRoleDetailsComponent implements OnInit {
       return;
     }
     let objData = {
-      "organizationId": this.userRoleFormGroup.controls.roleType.value=='Global'? 0 : this.gridData[0].organizationId,
-      "roleId": this.gridData[0].roleId,
-      "roleName": (this.userRoleFormGroup.controls.userRoleName.value).trim(),
-      "description": this.userRoleFormGroup.controls.userRoleDescription.value,
-      "featureIds": featureIds,
-      "createdby": 0,
-      "updatedby": 0
+      organizationId: (this.userRoleFormGroup.controls.roleType.value == 'Global') ? 0 : this.gridData[0].organizationId,
+      roleId: this.gridData[0].roleId,
+      roleName: (this.userRoleFormGroup.controls.userRoleName.value).trim(),
+      description: this.userRoleFormGroup.controls.userRoleDescription.value,
+      featureIds: featureIds,
+      createdby: 0,
+      updatedby: 0
     }
     this.roleService.updateUserRole(objData).subscribe((res) => {
       this.backToPage.emit({ editFlag: false, editText: 'edit', rolename: this.userRoleFormGroup.controls.userRoleName.value});
@@ -228,14 +197,14 @@ export class EditUserRoleDetailsComponent implements OnInit {
 
   }
 
-  checkboxLabelForFeatures(row?): string{
+  checkboxLabelForFeatures(row?: any): string{
     if(row)
       return `${this.isAllSelectedForFeatures() ? 'select' : 'deselect'} all`;
     else  
       return `${this.selectionForFeatures.isSelected(row) ? 'deselect' : 'select'} row`;
   }
 
-  onCheckboxChange(event, row){
+  onCheckboxChange(event: any, row: any){
     if(event.checked){  
       if(row.featureName.includes(" _fullAccess")){
         this.dataSource.data.forEach(item => {
@@ -277,4 +246,3 @@ export class EditUserRoleDetailsComponent implements OnInit {
     }
   }
 }
-

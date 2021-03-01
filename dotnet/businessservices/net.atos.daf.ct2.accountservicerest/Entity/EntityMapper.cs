@@ -46,7 +46,7 @@ namespace net.atos.daf.ct2.accountservicerest
             preference.UnitId = request.UnitId;
             preference.VehicleDisplayId = request.VehicleDisplayId;
             preference.DateFormatTypeId = request.DateFormatTypeId;
-            preference.DriverId = request.DriverId;
+            //preference.DriverId = request.DriverId;
             preference.TimeFormatId = request.TimeFormatId;
             preference.LandingPageDisplayId = request.LandingPageDisplayId;
             return preference;

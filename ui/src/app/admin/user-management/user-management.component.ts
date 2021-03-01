@@ -14,6 +14,7 @@ import { RoleService } from '../../services/role.service';
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.less']
 })
+
 export class UserManagementComponent implements OnInit {
   displayedColumns: string[] = ['firstName','emailId','roles','accountGroups','action'];
   stepFlag: boolean = false;
@@ -21,7 +22,6 @@ export class UserManagementComponent implements OnInit {
   viewFlag: boolean = false;
   dataSource: any;
   roleData: any;
-  vehGrpData: any;
   userGrpData: any;
   defaultSetting: any;
   selectedRoleData: any;
@@ -40,6 +40,7 @@ export class UserManagementComponent implements OnInit {
   accountOrganizationId: any = 0;
   localStLanguage: any;
   dialogRef: MatDialogRef<CommonTableComponent>;
+  showLoadingIndicator: any;
 
   constructor(
     private dialogService: ConfirmDialogService,
@@ -140,7 +141,7 @@ export class UserManagementComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
       id: 0,
-      code: this.localStLanguage.code, //-- TODO: Lang code based on account 
+      code: this.localStLanguage.code,
       type: "Menu",
       name: "",
       value: "",
@@ -183,7 +184,7 @@ export class UserManagementComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
-  deleteUser(item) {
+  deleteUser(item: any) {
     const options = {
       title: this.translationData.lblDeleteAccount || "Delete Account",
       message: this.translationData.lblAreyousureyouwanttodeleteuseraccount || "Are you sure you want to delete '$' user account?",
@@ -270,6 +271,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   loadUsersData(){
+    this.showLoadingIndicator = true;
     let obj: any = {
       accountId: 0,
       organizationId: this.accountOrganizationId,
@@ -280,7 +282,7 @@ export class UserManagementComponent implements OnInit {
     }
     this.accountService.getAccountDetails(obj).subscribe((usrlist)=>{
       this.filterFlag = true;
-      //this.initData = usrlist;
+      this.hideloader();
       this.initData = this.makeRoleAccountGrpList(usrlist);
       this.dataSource = new MatTableDataSource(this.initData);
       setTimeout(()=>{
@@ -290,7 +292,7 @@ export class UserManagementComponent implements OnInit {
     });
   }
 
-  makeRoleAccountGrpList(initdata){
+  makeRoleAccountGrpList(initdata: any){
     let accountId =  localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     initdata = initdata.filter(item => item.id != accountId);
     initdata.forEach((element, index) => {
@@ -393,13 +395,6 @@ export class UserManagementComponent implements OnInit {
     this.dataSource.sort = this.sort;
   }
 
-  viewUserGrpDetails(rowData: any){
-    //console.log("rowData:: ", rowData);
-    // this.userService.getUsers().subscribe((data)=>{
-    //   this.callToUserDetailTable(data);  
-    // });
-  }
-
   callToUserDetailTable(tableData: any){
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
@@ -411,6 +406,11 @@ export class UserManagementComponent implements OnInit {
       tableTitle: this.translationData.lblUserDetails || 'User Details'
     }
     this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
+  }
+
+  hideloader() {
+    // Setting display of spinner
+      this.showLoadingIndicator=false;
   }
 
 }

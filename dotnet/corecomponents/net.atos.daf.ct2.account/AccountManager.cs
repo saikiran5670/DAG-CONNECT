@@ -142,6 +142,15 @@ namespace net.atos.daf.ct2.account
         {
             return await repository.Get(filter);
         }
+        public async Task<AccountBlob> CreateBlob(AccountBlob accountBlob)
+        {
+            return await repository.CreateBlob(accountBlob);
+        }
+        public async Task<AccountBlob> GetBlob(int blobId)
+        {
+            return await repository.GetBlob(blobId);
+        }        
+
         public async Task<AccessRelationship> CreateAccessRelationship(AccessRelationship entity)
         {
             return await repository.CreateAccessRelationship(entity);

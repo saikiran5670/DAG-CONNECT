@@ -35,6 +35,10 @@ namespace net.atos.daf.ct2.authenticationservice
                 AccountEntity.AccountIdentity accIdentity = accountIdentityManager.Login(account).Result;
                 if(accIdentity !=null)
                 {
+                    if(accIdentity.AccountId>0)
+                    {
+                       response.AccountId = accIdentity.AccountId;
+                    }
                     if(accIdentity.AccountToken!=null)
                     {
                         AccountToken accToken = new AccountToken();
@@ -69,7 +73,7 @@ namespace net.atos.daf.ct2.authenticationservice
                         accPreference.DateFormatId= accIdentity.AccountPreference.DateFormatTypeId;                 
                         accPreference.TimeFormatId =accIdentity.AccountPreference.TimeFormatId;
                         accPreference.LandingPageDisplayId =accIdentity.AccountPreference.LandingPageDisplayId;
-                        accPreference.DriverId =accIdentity.AccountPreference.DriverId;
+                        //accPreference.DriverId =accIdentity.AccountPreference.DriverId;
                         accPreference.Active =accIdentity.AccountPreference.Active;
 
                         response.AccountPreference=accPreference;
@@ -82,7 +86,7 @@ namespace net.atos.daf.ct2.authenticationservice
                             acctOrganization = new AccountOrganization();
                             acctOrganization.Id = accOrg.Id;
                             acctOrganization.Name = accOrg.Name;
-                            response.AccountOrganizations.Add(acctOrganization);
+                            response.AccountOrganization.Add(acctOrganization);
                         }
                     }
                     if(accIdentity.AccountRole!=null && accIdentity.AccountRole.Count>0)
@@ -94,7 +98,7 @@ namespace net.atos.daf.ct2.authenticationservice
                             accRole.Id = accr.Id;
                             accRole.Name = accr.Name;
                             accRole.OrganizationId= accr.Organization_Id;
-                            response.AccountRoles.Add(accRole);
+                            response.AccountRole.Add(accRole);
                         }
                     }
                     return Task.FromResult(response);

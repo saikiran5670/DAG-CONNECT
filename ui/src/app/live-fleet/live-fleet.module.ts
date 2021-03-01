@@ -17,7 +17,7 @@ import { LogBookComponent } from './log-book/log-book.component';
     ReactiveFormsModule,
     SharedModule,
     ChartsModule
-    ]
-
+  ]
 })
+
 export class LiveFleetModule { }

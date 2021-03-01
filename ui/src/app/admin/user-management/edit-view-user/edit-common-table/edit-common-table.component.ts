@@ -57,6 +57,7 @@ export class EditCommonTableComponent implements OnInit {
     this.closePopup = false;
     this.mdDialogRef.close(val);
   }
+
   @HostListener('keydown.esc')
   public onEsc() {
     this.onClose(false);

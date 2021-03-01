@@ -63,8 +63,8 @@
                                           </mat-form-field>
                                     </div>
                                   </div> 
-                                <div class="text-right linkBtn">
-                                    <a (click)="onForgetPassword()">Forgot Password?</a>
+                                <div class="text-right">
+                                    <a class="linkBtn" (click)="onForgetPassword()">Forgot Password?</a>
                                 </div>
                                 <button [disabled]="!loginForm.valid" mat-raised-button color="primary" class="margin-top-20 mat-elevation-z box-button" type="submit">Login</button>
                             </div>
@@ -117,7 +117,7 @@
             <span>This site uses cookies to offer you a better browsing experience. No third party cookies are used on this site.<br><a href='https://www.daf.com/' target="_blank">Click here</a> to view the full details. By clicking accept you are accepting the policy.</span>
         </div>
         <div fxLayout="column">
-            <button mat-raised-button color="primary" class="cookieBtn" (click)='acceptCookies()'>Accept</button>
+            <button mat-raised-button color="primary" class="cookieBtn" (click)='acceptCookies()'>Accept To Login</button>
         </div>
     </div>
     <div fxLayout="row" fxLayoutAlign="space-between" class='loginFooter'>
@@ -137,10 +137,10 @@
         <div fxLayout="column" fxLayoutAlign="end">
             <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="30px">
                 <div fxLayout="column" fxLayoutAlign="left">
-                    <a href='https://www.daf.com/' target='_blank'><span>Support: DAF.Connect@DAFTRUCKS.com</span></a>
+                    <a href='mailto:DAF.Connect@DAFTRUCKS.com' target='_blank'><span>Support: DAF.Connect@DAFTRUCKS.com</span></a>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="left">
-                    <a href='https://www.daf.com/' target='_blank' class='display-flex'><span><mat-icon class='pdfIcon'>picture_as_pdf</mat-icon></span><span class='pdfLink'>Quick Reference Guide</span></a>
+                    <a href='https://connectinfo.daf.com/-/media/files/services/daf-connect/connect-info/qrg/connect-quick-reference-guide-en-v10.pdf' target='_blank' class='display-flex'><span><mat-icon class='pdfIcon'>picture_as_pdf</mat-icon></span><span class='pdfLink'>Quick Reference Guide</span></a>
                 </div>
             </div>
         </div>

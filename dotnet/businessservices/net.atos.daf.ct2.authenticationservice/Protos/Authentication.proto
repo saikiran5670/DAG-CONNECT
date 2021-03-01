@@ -18,10 +18,11 @@ message IdentityRequest {
 message AccountIdentityResponse {
     Responsecode code=1;
     string Message=2;
-    AccountToken AccountToken=3;
-    AccountPreference AccountPreference= 4;      
-    repeated AccountOrganization AccountOrganizations = 5;
-    repeated AccountOrgRole AccountRoles=6;
+    int32 AccountId=3;
+    AccountToken AccountToken=4;
+    AccountPreference AccountPreference= 5;      
+    repeated AccountOrganization AccountOrganization = 6;
+    repeated AccountOrgRole AccountRole=7;
 }
 message ValidateRequest {
     string Token=1;

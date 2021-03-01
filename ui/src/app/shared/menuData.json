@@ -30,6 +30,18 @@
         {
           "name": "Vehicle Management",
           "subRoute": "vehiclemanagement"
+        },
+        {
+          "name": "Driver Management",
+          "subRoute": "drivermanagement"
+        },
+        {
+          "name": "Vehicle/Account Access-Relationship",
+          "subRoute": "vehicleaccountaccessrelationship"
+        },
+        {
+          "name": "Translation Data Upload",
+          "subRoute": "translationdataupload"
         }
       ]
     },

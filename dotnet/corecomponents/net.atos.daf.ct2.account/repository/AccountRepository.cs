@@ -9,6 +9,8 @@ using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.account.ENUM;
+using System.Text;
+
 namespace net.atos.daf.ct2.account
 {
     public class AccountRepository : IAccountRepository
@@ -16,9 +18,10 @@ namespace net.atos.daf.ct2.account
         private readonly IDataAccess dataAccess;
         public AccountRepository(IDataAccess _dataAccess)
         {
-            dataAccess = _dataAccess;
-            //SqlMapper.AddTypeHandler(new StringEnumTypeHandler<AccountType>());
+            dataAccess = _dataAccess;            
         }
+
+        #region Account
         public async Task<Account> Create(Account account)
         {
             try
@@ -31,9 +34,11 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@first_name", account.FirstName);
                 parameter.Add("@last_name", account.LastName);
                 parameter.Add("@type", (char)account.AccountType);
+                parameter.Add("@driver_id", account.DriverId);
+                parameter.Add("@created_at",account.CreatedAt.Value);
 
-                string query = @"insert into master.account(email,salutation,first_name,last_name,type,is_active) " +
-                              "values(@email,@salutation,@first_name,@last_name,@type,true) RETURNING id";
+                string query = @"insert into master.account(email,salutation,first_name,last_name,type,driver_id,is_active,preference_id,blob_id,created_at) " +
+                              "values(@email,@salutation,@first_name,@last_name,@type,@driver_id,true,null,null,@created_at) RETURNING id";
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 account.Id = id;
@@ -73,10 +78,10 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@first_name", account.FirstName);
                 parameter.Add("@last_name", account.LastName);
                 parameter.Add("@type", (char)account.AccountType);
-                string query = @"update master.account set id = @id,email = @email,salutation = @salutation,
-                                first_name = @first_name,last_name = @last_name ,type = @type
+                parameter.Add("@driver_id", account.DriverId);
+                string query = @"update master.account set email = @email,salutation = @salutation,
+                                first_name = @first_name,last_name = @last_name ,driver_id=@driver_id, type = @type
                                 where id = @id RETURNING id";
-
                 account.Id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
             catch (Exception ex)
@@ -92,29 +97,42 @@ namespace net.atos.daf.ct2.account
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", accountid);
                 parameter.Add("@organization_id", organization_id);
-                string query = string.Empty;
-                int result = 0;
+                string query = string.Empty;                
+                int result = 0;                
+
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
+                    // check in user need to delete 
                     // Delete Account Group Reference
                     query = @"delete from master.groupref gr
-                        using master.group g,master.accountorg ao 
-                        where gr.ref_id = @id and ao.organization_id = @organization_id 
+                         using master.group g,master.accountorg ao 
+                         where gr.ref_id = @id and ao.organization_id = @organization_id 
                          and g.id=gr.group_id and ao.is_active=true";
-                    result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                    // Delete preference
-                    query = @"update master.accountpreference set is_active=false where ref_id = @id;";
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
                     // Delete account role
                     query = @"delete from master.accountrole where account_id = @id and organization_id = @organization_id;";
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
-                    // De-Activate Account and Account Org
-                    query = @"update master.account set is_active=false where id = @id ;update master.accountorg set is_active=false where account_id = @id and organization_id = @organization_id";
+                    // disable account with organization
+                    query = @"update master.accountorg set is_active=false where account_id = @id and organization_id = @organization_id";
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+
+                    // check if account associated with multiple organization
+                    query = @"select count(1) from master.accountorg where is_active=true and organization_id = @organization_id;";
+                    result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    if(result <=0)
+                    {
+                        // disable preference
+                        query = @"update master.accountpreference set is_active=false from master.account where master.accountpreference.id=master.account.preference_id and master.account.id=@id;";
+                        query += @"delete from master.accountblob ab using master.account a where a.id = @id and a.blob_id = ab.id and a.is_active = true;";
+                        result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                        // disable account 
+                        query = @"update master.account set is_active=false where id = @id;";
+                        result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    }                    
                     transactionScope.Complete();
-                    return true;                    
+                    return true;
                 }
             }
             catch (Exception ex)
@@ -131,7 +149,7 @@ namespace net.atos.daf.ct2.account
                 //List<Account> accounts = new List<Account>();
                 List<Account> accounts = new List<Account>();
                 string query = string.Empty;
-                query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.dob,a.type as accounttype,ag.organization_id as Organization_Id from master.account a join master.accountorg ag on a.id = ag.account_id and ag.is_active=true where 1=1 ";
+                query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.driver_id,a.type as accounttype,ag.organization_id as Organization_Id,a.preference_id,a.blob_id,a.created_at from master.account a join master.accountorg ag on a.id = ag.account_id and a.is_active=true and ag.is_active=true where 1=1 ";
                 if (filter != null)
                 {
                     // id filter
@@ -159,13 +177,13 @@ namespace net.atos.daf.ct2.account
                         parameter.Add("@organization_id", filter.OrganizationId);
                         query = query + " and ag.organization_id = @organization_id ";
                     }
-                    // account type filter 
-                    if (((char)filter.AccountType) != ((char)AccountType.None))
-                    {
-                        parameter.Add("@type", (char)filter.AccountType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                    //// account type filter 
+                    //if (((char)filter.AccountType) != ((char)AccountType.None))
+                    //{
+                    //    parameter.Add("@type", (char)filter.AccountType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
 
-                        query = query + " and a.type=@type";
-                    }
+                    //    query = query + " and a.type=@type";
+                    //}
 
                     // account ids filter                    
                     if ((!string.IsNullOrEmpty(filter.AccountIds)) && Convert.ToInt32(filter.AccountIds.Length) > 0)
@@ -185,7 +203,6 @@ namespace net.atos.daf.ct2.account
                         parameter.Add("@accountids", accountids);
                         query = query + " and a.id = ANY(@accountids)";
                     }
-
                     dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
 
                     foreach (dynamic record in result)
@@ -201,6 +218,76 @@ namespace net.atos.daf.ct2.account
                 throw ex;
             }
         }
+        #endregion
+
+        #region AccountBlon
+        public async Task<AccountBlob> CreateBlob(AccountBlob accountBlob)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                parameter.Add("@id", accountBlob.Id);
+                parameter.Add("@account_id", accountBlob.AccountId);
+                parameter.Add("@image_type", (char)accountBlob.Type);
+                parameter.Add("@image", accountBlob.Image);
+
+                // new profile picture
+                if (accountBlob.Id > 0)
+                {
+                    query = @"update master.accountblob set image_type=@image_type,image=@image where id=@id RETURNING id";
+                    var blobId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);                    
+                }
+                else // update profile picture
+                {
+                    query = @"insert into master.accountblob(image_type,image) values(@image_type,@image) RETURNING id";
+                    var blobId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    accountBlob.Id = blobId;
+                    if (blobId > 0)
+                    {
+                        parameter.Add("@blob_id", blobId);
+                        query = "update master.account set blob_id=@blob_id where id=@account_id";
+                        await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    }
+                }                
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return accountBlob;
+        }
+        public async Task<AccountBlob> GetBlob(int blobId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                AccountBlob accountBlob = null;
+                if (blobId <= 0) return accountBlob;
+
+                parameter.Add("@id", blobId);
+                query = @"select id,image_type,image from master.accountblob where id=@id";
+                dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                if (Enumerable.Count(result) > 0)
+                {
+                    accountBlob = new AccountBlob();
+                    foreach (dynamic record in result)
+                    {
+                        accountBlob = ToBlob(record);
+                    }
+                }
+                return accountBlob;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }            
+        }
+
+        #endregion
+
+        #region Account Access Relationship
         public async Task<AccessRelationship> CreateAccessRelationship(AccessRelationship entity)
         {
             try
@@ -323,6 +410,9 @@ namespace net.atos.daf.ct2.account
                 throw ex;
             }
         }
+        #endregion
+
+        #region Account Role
 
         // Begin Add Account to Role
         public async Task<bool> AddRole(AccountRole accountRoles)
@@ -384,17 +474,6 @@ namespace net.atos.daf.ct2.account
                     query = @"delete from master.accountrole where account_id = @account_id and organization_id=@organization_id";
                     await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                     result = true;
-                    //TODO: Do we need to remove specified roles only.
-                    // if (!string.IsNullOrEmpty(query))
-                    // {
-                    //     query = query.TrimEnd(',');
-                    //     List<int> roleIds = accountRoles.RoleIds.ToList();
-                    //     parameter.Add("@roleIds", roleIds);
-                    //     query = query + " and role_id = ANY(@roleIds)";
-
-                    //     await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                    // }
-
                 }
             }
             catch (Exception ex)
@@ -464,8 +543,10 @@ namespace net.atos.daf.ct2.account
             return Roles;
         }
         // End Add Account to Role
+        #endregion
 
-        // Begig - Account rendering
+        #region AccountOrg
+        // Begin - Account rendering
 
         public async Task<List<KeyValue>> GetAccountOrg(int accountId)
         {
@@ -510,19 +591,38 @@ namespace net.atos.daf.ct2.account
             return AccountOrgRoleList;
         }
         // End - Account Rendering
+        #endregion
 
+        #region Private Methods
+        private AccountBlob ToBlob(dynamic record)
+        {
+            AccountBlob accountBlob = new AccountBlob();
+            accountBlob.Id = record.id;
+            accountBlob.Type = (ImageType)Convert.ToChar(record.image_type);
+            accountBlob.Image = record.image;
+            return accountBlob;
 
-        private Account Map(dynamic record)
+        }
+            private Account Map(dynamic record)
         {
             Account account = new Account();
             account.Id = record.id;
             account.EmailId = record.email;
             account.Salutation = record.salutation;
             account.FirstName = record.first_name;
-            account.LastName = record.last_name;
-            account.Dob = record.dob;
+            account.LastName = record.last_name;            
             account.Organization_Id = record.organization_id;
             account.AccountType = (AccountType)Convert.ToChar(record.accounttype);
+            if ((object) record.preference_id != null)
+            account.PreferenceId = (int) record.preference_id;
+            if ( (object) record.blob_id != null ) account.BlobId  = (int)  record.blob_id;
+            if ((object) record.driver_id != null)   account.DriverId = record.driver_id;
+            account.CreatedAt = null;
+            if ((object)record.created_at != null)
+            {
+                account.CreatedAt = record.created_at;
+                //account.CreatedAt = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.created_at, "America/New_York", "yyyy-MM-ddTHH:mm:ss"));
+            }
             return account;
         }
         private AccessRelationship MapAccessRelationship(dynamic record)
@@ -534,7 +634,7 @@ namespace net.atos.daf.ct2.account
             entity.VehicleGroupId = record.vehicle_group_id;
             return entity;
         }
-
+        #endregion
     }
 
 }

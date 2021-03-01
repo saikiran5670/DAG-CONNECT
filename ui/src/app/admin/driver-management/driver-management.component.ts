@@ -2,7 +2,6 @@ import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core'
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { EmployeeService } from 'src/app/services/employee.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { ConsentOptComponent } from './consent-opt/consent-opt.component';
@@ -11,41 +10,59 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
 import { FileValidator } from 'ngx-material-file-input';
 import * as XLSX from 'xlsx';
 import { TranslationService } from '../../services/translation.service';
+import { AccountService } from '../../services/account.service';
 
 @Component({
   selector: 'app-driver-management',
   templateUrl: './driver-management.component.html',
   styleUrls: ['./driver-management.component.less']
 })
+
 export class DriverManagementComponent implements OnInit {
-  userGrpList: any = [];
+  //--------------Rest mock data----------------//
+  driverRestData: any = [];
+  //--------------------------------------------//
+  grpTitleVisible : boolean = false;
+  userCreatedMsg : any;
+  accountOrganizationId: any = 0;
   dataSource: any;
-  initData: any;
+  initData: any = [];
   importDriverPopup: boolean = false;
-  displayedColumns: string[] = ['usergroupId', 'name', 'isActive', 'action'];
+  displayedColumns: string[] = ['driverId','firstName','birthDate','consentStatus','action'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   importDriverFormGroup: FormGroup;
+  consentFormGroup: FormGroup;
   userGrpName: string = '';
   templateFileUrl: string = 'assets/docs/driverTemplate.xlsx';
   templateFileName: string = 'driver-Template.xlsx';
-  
   dialogRef: MatDialogRef<ConsentOptComponent>;
-
-  // fileToUpload: File = null;
   @ViewChild('UploadFileInput') uploadFileInput: ElementRef;
-  //myfilename = 'Select File';
   readonly maxSize = 104857600;
   editFlag: boolean = false;
-  rowData: any;
+  driverData: any = [];
   file: any;
   arrayBuffer: any;
   filelist: any;
   translationData: any;
-  localStLanguage = JSON.parse(localStorage.getItem("language"));
+  localStLanguage: any;
+  actionType: any = '';
+  showLoadingIndicator: any;
+  consentSelectionList: any = [
+    {
+      name: 'All'
+    },
+    {
+      name: 'Opt-In'
+    },
+    {
+      name: 'Opt-Out'
+    }
+  ];
+  selectedConsentType: any = ''; 
 
-  constructor(private _formBuilder: FormBuilder, private userService: EmployeeService, private dialog: MatDialog, private dialogService: ConfirmDialogService,
-    private _snackBar: MatSnackBar, private translationService: TranslationService) { 
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService,
+    private _snackBar: MatSnackBar, private translationService: TranslationService, private accountService: AccountService) { 
       this.defaultTranslation();
   }
 
@@ -118,6 +135,20 @@ export class DriverManagementComponent implements OnInit {
   }
 
   ngOnInit(){
+    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.importDriverFormGroup = this._formBuilder.group({
+      //userGroup: [],
+      uploadFile: [
+        undefined,
+        [Validators.required, FileValidator.maxContentSize(this.maxSize)]
+      ]
+    });
+    this.consentFormGroup = this._formBuilder.group({
+      consentType: []
+    });
+
+    this.selectedConsentType = this.selectedConsentType == '' ? 'All' : this.selectedConsentType;
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -130,16 +161,43 @@ export class DriverManagementComponent implements OnInit {
 
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
-      this.loadUserGroupData();
+      this.restMockData();
+      this.loadUsersData();
+      this.setConsentDropdown();
     });
+  }
 
-    this.importDriverFormGroup = this._formBuilder.group({
-      userGroup: [],
-      uploadFile: [
-        undefined,
-        [Validators.required, FileValidator.maxContentSize(this.maxSize)]
-      ]
-    });
+  setConsentDropdown(){
+    this.consentFormGroup.get('consentType').setValue(this.selectedConsentType);
+  }
+
+  restMockData(){
+    this.driverRestData = [
+      {
+        driverId: "IN 0000000000000001",
+        firstName: "Alan",
+        lastName: "Berry",
+        birthDate: "01/01/1991", //----- MM/DD/YYYY
+        consentStatus: 'Opt-In',
+        salutation: "Mr"
+      },
+      {
+        driverId: "IN 0000000000000002",
+        firstName: "Ritika",
+        lastName: "Joshi",
+        birthDate: "02/02/1992",
+        consentStatus: 'Opt-Out',
+        salutation: "Ms"
+      },
+      {
+        driverId: "IN 0000000000000003",
+        firstName: "Shanu",
+        lastName: "Pol",
+        birthDate: "03/03/1993",
+        consentStatus: 'Opt-In',
+        salutation: "Mrs"
+      }
+    ];
   }
 
   processTranslation(transData: any){
@@ -147,24 +205,66 @@ export class DriverManagementComponent implements OnInit {
     //console.log("process translationData:: ", this.translationData)
   }
 
-  loadUserGroupData() {
-    this.userService.getUserGroup(1, true).subscribe((data) => {
-      this.initData = data;
-      this.dataSource = new MatTableDataSource(data);
+  loadUsersData(){
+    this.onConsentChange(this.selectedConsentType);
+  }
+
+  onConsentStatusChange(){
+    this.onConsentChange(this.consentType.value);  
+  }
+
+  get consentType() {
+    return this.consentFormGroup.get('consentType');
+  }
+
+  onConsentChange(type: any){
+    let data = [];
+    switch(type){
+      case "All":{
+        data = this.driverRestData;
+        break;
+      }
+      case "Opt-In":{
+        data = this.driverRestData.filter((item: any) => item.consentStatus == 'Opt-In');
+        break;
+      }
+      case "Opt-Out":{
+        data = this.driverRestData.filter((item: any) => item.consentStatus == 'Opt-Out');
+        break;
+      }
+    }
+    this.updateGridData(data);
+  }
+
+  updateGridData(tableData: any){
+    this.initData = tableData; 
+    this.dataSource = new MatTableDataSource(this.initData);
+    setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      this.userGrpList = data;
     });
   }
 
+
   importDrivers(){ 
     this.importDriverPopup = true;
-    this.userGrpName = this.importDriverFormGroup.controls.userGroup.value;
+    this.userGrpName = 'Test User Group' ; //this.importDriverFormGroup.controls.userGroup.value;
     this.validateExcelFileField();
   }
 
   validateExcelFileField(){
-    console.log("filelist:: ", this.filelist)
+    let driverAPIData: any = [];
+    //-- Parse driver data--- //
+    this.filelist.map((item: any) => {
+      driverAPIData.push({
+        driverId: item.DriverID,
+        salutation: item.Civility,
+        firstName: item.FirstName,
+        lastName: item.LastName,
+        birthDate: item.BirthDate,
+      });
+    });
+    console.log("Parse excel driver:: ", driverAPIData)
   }
 
   applyFilter(filterValue: string) {
@@ -173,12 +273,13 @@ export class DriverManagementComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
-  editgroup(row: any){
-    this.rowData = row;
+  onEditView(element: any, type: any){
+    this.driverData = element;
     this.editFlag = true;
+    this.actionType = type; 
   }
 
-  deleteGroup(row: any){
+  onDelete(row: any){
     const options = {
       title: this.translationData.lblDeleteDriver || "Delete Driver",
       message: this.translationData.lblAreyousureyouwanttodeletedriver || "Are you sure you want to delete driver '$'? ",
@@ -186,77 +287,38 @@ export class DriverManagementComponent implements OnInit {
       confirmText: this.translationData.lblYes || "Yes"
     };
    
-    let name = row.name;
+    let name = `${row.salutation} ${row.firstName} ${row.lastName}`;
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
-     if (res) {
-       this.userService
-         .deleteUserGroup(row.usergroupId, row.organizationId)
-         .subscribe((d) => {
-           //console.log(d);
-           this.loadUserGroupData();
-           this.openSnackBar('Item delete', 'dismiss');
-         });
-     }
+      if (res) {
+        this.accountService.deleteAccount(row).subscribe(d => {
+          this.successMsgBlink(this.getDeletMsg(name));
+          this.loadUsersData();
+        });
+      }
    });
   }
 
-  openSnackBar(message: string, action: string) {
-    //"openSnackBar('Item Deleted', 'Dismiss')"
-    let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
-    snackBarRef.afterDismissed().subscribe(() => {
-      console.log('The snackbar is dismissed');
-    });
-    snackBarRef.onAction().subscribe(() => {
-      console.log('The snackbar action was triggered!');
-    });
+  getDeletMsg(userName: any){
+    if(this.translationData.lblDriversuccessfullydeleted)
+      return this.translationData.lblDriversuccessfullydeleted.replace('$', userName);
+    else
+      return ("Driver '$' successfully deleted").replace('$', userName);
+  }
+
+  successMsgBlink(msg: any){
+    this.grpTitleVisible = true;
+    this.userCreatedMsg = msg;
+    setTimeout(() => {  
+      this.grpTitleVisible = false;
+    }, 5000);
   }
 
   onClose(){
     this.importDriverPopup = false;
   }
 
-  onConsentClick(optVal: string){
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.disableClose = true;
-    dialogConfig.autoFocus = true;
-    dialogConfig.data = {
-      optValue: optVal,
-      translationData: this.translationData
-    }
-    this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
-  }
-
-  // fileChangeEvent(fileInput: any) {
-  //     if (fileInput.target.files && fileInput.target.files[0]) {
-  //       this.myfilename = '';
-  //       Array.from(fileInput.target.files).forEach((file: File) => {
-  //         console.log(file);
-  //         this.myfilename += file.name + ',';
-  //       });
-  //       const reader = new FileReader();
-  //       reader.onload = (e: any) => {
-  //         const image = new Image();
-  //         image.src = e.target.result;
-  //         image.onload = rs => {
-  //           // Return Base64 Data URL
-  //           const imgBase64Path = e.target.result;
-  //         };
-  //       };
-  //       reader.readAsDataURL(fileInput.target.files[0]);
-  //       // Reset File Input to Selct Same file again
-  //       this.uploadFileInput.nativeElement.value = "";
-  //     } else {
-  //       this.myfilename = 'Select File';
-  //     }
-  // }
-
-  // handleFileInput(files: FileList) {
-  //   this.fileToUpload = files.item(0);
-  // }
-
-  addfile(event)     
-  {    
+  addfile(event: any){    
     this.file = event.target.files[0];     
     let fileReader = new FileReader();    
     fileReader.readAsArrayBuffer(this.file);     
@@ -283,6 +345,36 @@ export class DriverManagementComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
+  }
+
+  onCloseMsg(){
+    this.grpTitleVisible = false;
+  }
+
+  hideloader() {
+    // Setting display of spinner
+      this.showLoadingIndicator=false;
+  }
+
+  changeOptStatus(driverData: any){ //--- single opt-in/out mode
+    this.callToCommonTable(driverData, false, driverData.consentStatus);
+  }
+  
+  onConsentClick(consentType: string){ //--- All opt-in/out mode
+    this.callToCommonTable(this.driverRestData, true, consentType);
+  }
+
+  callToCommonTable(driverData: any, actionType: any, consentType: any){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      translationData: this.translationData,
+      driverData: driverData,
+      actionType: actionType,
+      consentType: consentType
+    }
+    this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
   }
 
 }

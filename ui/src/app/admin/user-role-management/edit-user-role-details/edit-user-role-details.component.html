@@ -1,7 +1,14 @@
-<form [formGroup]="userRoleFormGroup">
-    <div fxLayout="row" fxLayoutAlign="end end" class='margin-bottom-sm'>
-        <button *ngIf="viewFlag" mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblBack || 'Back' }}</button>
+<div *ngIf="viewFlag" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+      <span>{{ breadcumMsg }}</span>
     </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+      <span class='custom-font' (click)="onCancel()">
+        <span><&nbsp;</span>
+        <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+    </div>
+</div>
+<form [formGroup]="userRoleFormGroup">
     <mat-card class='mat-elevation-z margin-bottom-xlg' *ngIf="viewFlag">
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
@@ -114,13 +121,14 @@
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ createStatus ? ( translationData.lblSelectRoleAccess || 'Select Role Access') : (translationData.lblSelectedRoleAccess || 'Selected Role Access') }}</span>
             </div>
         </div>
-        <div *ngIf='createStatus' fxLayout="row" fxLayoutAlign="start start" class='margin-top-xlg'>
-            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <mat-form-field>
-                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblFilter || 'Filter' }}">
-                </mat-form-field>
+        <div *ngIf='createStatus' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+              <mat-form-field appearance="outline">
+                  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                  <span matPrefix><mat-icon>search</mat-icon></span>
+              </mat-form-field>
             </div>
-        </div>
+          </div>
         <div fxLayout="row" class='margin-top-xlg'>
             <div fxLayout="column" class='full-width'>
                 <mat-table [dataSource]="dataSource" matSort>      
@@ -129,21 +137,6 @@
                         <mat-cell *matCellDef="let row; let index"> {{row.featureName}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="select">
-                        <!-- <mat-header-cell *matHeaderCellDef>
-                          <mat-checkbox (change)='$event ? masterToggleForFeatures() : null;' [disabled]="viewFlag"
-                            [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
-                            [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
-                            [aria-label]='checkboxLabelForFeatures()'>
-                          </mat-checkbox>
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                          <mat-checkbox (click)='$event.stopPropagation()' [disabled]="viewFlag"
-                            (change)='$event ? selectionForFeatures.toggle(row) : null; onCheckboxChange($event, row)'
-                            [checked]='selectionForFeatures.isSelected(row)'
-                            [aria-label]='checkboxLabelForFeatures(row)'>
-                          </mat-checkbox>
-                        </mat-cell> -->
-
                         <mat-header-cell *matHeaderCellDef>{{ translationData.lblAccess || 'Access'}}
                             <mat-slide-toggle color="primary" (change)='$event ? masterToggleForFeatures() : null;' [disabled]="viewFlag"
                               [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
@@ -158,8 +151,6 @@
                               [aria-label]='checkboxLabelForFeatures(row)'>
                             </mat-slide-toggle>
                           </mat-cell>
-                        
-
                     </ng-container> 
                     <mat-header-row *matHeaderRowDef="featureDisplayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: featureDisplayedColumns;">

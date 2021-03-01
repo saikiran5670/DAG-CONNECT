@@ -29,15 +29,34 @@ export class OrganizationService {
     );
   }
 
+  generateHeader(){
+    let genericHeader : object = {
+      'Content-Type' : 'application/json',
+      'accountId' : localStorage.getItem('accountId'),
+      'orgId' : localStorage.getItem('accountOrganizationId'),
+      'roleId' : localStorage.getItem('accountRoleId')
+    }
+    let getHeaderObj = JSON.stringify(genericHeader)
+    return getHeaderObj;
+  }
+  
   getOrganizationDetails(id): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
     return this.httpClient
-      .get<any[]>(`${this.organizationServiceUrl}/organization/get?OrganizationId=${id}`)
+      .get<any[]>(`${this.organizationServiceUrl}/organization/get?OrganizationId=${id}`,headers)
       .pipe(catchError(this.handleError));
   }
 
   getVehicleList(id): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
     return this.httpClient
-      .get<any[]>(`${this.organizationServiceUrl}/group/getvehiclelist?GroupId=${id}`)
+      .get<any[]>(`${this.organizationServiceUrl}/group/getvehiclelist?GroupId=${id}`,headers)
       .pipe(catchError(this.handleError));
   }
 }

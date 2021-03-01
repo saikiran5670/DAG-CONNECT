@@ -10,7 +10,6 @@ namespace net.atos.daf.ct2.accountpreference
     {
         IAccountPreferenceRepository repository;
         IAuditTraillib auditlog;
-
         public PreferenceManager(IAccountPreferenceRepository _repository, IAuditTraillib _auditlog)
         {
             repository = _repository;
@@ -24,9 +23,9 @@ namespace net.atos.daf.ct2.accountpreference
         {
             return await repository.Update(preference);
         }
-        public async  Task<bool> Delete(int preferenceId)
+        public async  Task<bool> Delete(int preferenceId, PreferenceType preferenceType)
         {
-            return await repository.Delete(preferenceId);
+            return await repository.Delete(preferenceId, preferenceType);
         }       
         public async Task<IEnumerable<AccountPreference>> Get(AccountPreferenceFilter filter)
         {
