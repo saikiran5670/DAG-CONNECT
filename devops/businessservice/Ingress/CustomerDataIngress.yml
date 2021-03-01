@@ -16,7 +16,7 @@ spec:
           serviceName: customerdataservice
           servicePort: 80
         path: /customer-data
-        pathType: Prefix
+        pathType: Exact
       - backend:
           serviceName: authenticationservice
           servicePort: 80
