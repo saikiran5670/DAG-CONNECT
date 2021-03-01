@@ -12,28 +12,28 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="30px" class='margin-20'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ data.translationData.lblOrgnization || 'Orgnization' }}</span>
-                    <span class='custom-font'>{{ organizationName }}</span>
+                    <span>{{ data.translationData.lblName || 'Name' }}</span>
+                    <span class='custom-font'>{{ data.driverData.firstName }} {{ data.driverData.lastName }}</span>
                 </div>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ data.translationData.lblTotalDrivers || 'Total Drivers' }}</span>
-                    <span class='custom-font'>{{ totalDrivers }}</span>
+                    <span>{{ data.translationData.lblDriverId || 'Driver Id' }}</span>
+                    <span class='custom-font'>{{ data.driverData.driverId }}</span>
                 </div>
                 <div fxLayout="column" fxLayoutGap="7px" fxLayoutAlign="left">
                     <div fxLayout="row" fxLayoutAlign="space-between">
-                        <span>{{ data.translationData.lblCurrentConsentStatusForSubscriber || 'Current Consent Status For Subscriber' }} 'DAF Connect' = {{ checkedFlag ? (data.translationData.lblOptIn || 'Opt-In') : (data.translationData.lblOptOut || 'Opt-Out') }}</span>
+                        <span>{{ data.translationData.lblCurrentConsentStatusForSubscriber || 'Current Consent Status For Subscriber' }} 'DAF Connect' = {{ showOptOutMsg ? (data.translationData.lblOptOut || 'Opt-Out') : (data.translationData.lblOptIn || 'Opt-In') }}</span>
                     </div>
                     <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="30px">
-                        <div class='consentCheckbox' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                            <mat-checkbox [disabled]='checkedFlag' value='Opt-In' (change)="onCheckboxChange($event)" [checked]="checkedFlag">Opt-In All</mat-checkbox>
-                        </div>
-                        <div class='consentCheckbox' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                            <mat-checkbox [disabled]='!checkedFlag' value='Opt-Out' (change)="onCheckboxChange($event)" [checked]= "!checkedFlag">Opt-Out All</mat-checkbox>
+                        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                            <mat-radio-group (change)='onChange($event)'>
+                                <mat-radio-button style='margin-right: 20px;' value="Opt-In" [checked]="data.driverData.consentStatus === 'Opt-In' ? true : false">{{ data.translationData.lblOptIn || 'Opt-In' }}</mat-radio-button>
+                                <mat-radio-button value="Opt-Out" [checked]="data.driverData.consentStatus === 'Opt-Out' ? true : false">{{ data.translationData.lblOptOut || 'Opt-Out' }}</mat-radio-button>
+                            </mat-radio-group>
                         </div>
                     </div>
                 </div>
             </div>
-            <div *ngIf='showMsgFlag' fxLayout="row" fxLayoutAlign="space-between" class='margin-20 padding-10' style='background: #d62a29; color: #fff;'>
+            <div *ngIf='showOptOutMsg' fxLayout="row" fxLayoutAlign="space-between" class='margin-20 padding-10' style='background: #d62a29; color: #fff;'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     {{ data.translationData.lblOptOutMessage || "Now you are proceeding with Driver ID Consent Opt-Out operation, Click 'Confirm' to change the
                     consent status." }}
@@ -44,7 +44,7 @@
                     <div>{{ consentMsg }}</div>
                     <div>{{ consentMsgExtra }}</div>
                 </div>
-            </div>
+            </div> 
         </mat-card-content>
         <mat-card-actions fxLayoutAlign="end end" class='no-margin' style="padding: 0px 20px;">
             <div fxLayout="row" fxLayoutAlign="end end" class="full-width">

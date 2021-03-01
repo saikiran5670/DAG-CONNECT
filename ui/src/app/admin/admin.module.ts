@@ -33,6 +33,7 @@ import { VehicleAccountAccessRelationshipComponent } from './vehicle-account-acc
 import { CreateEditViewVehicleAccessRelationshipComponent } from './vehicle-account-access-relationship/create-edit-view-vehicle-access-relationship/create-edit-view-vehicle-access-relationship.component';
 import { CreateEditViewAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/create-edit-view-account-access-relationship/create-edit-view-account-access-relationship.component';
 import { TranslationDataUploadComponent } from './translation-data-upload/translation-data-upload/translation-data-upload.component';
+import { ConsentSingleOptComponent } from './driver-management/consent-single-opt/consent-single-opt.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { TranslationDataUploadComponent } from './translation-data-upload/transl
     VehicleAccountAccessRelationshipComponent,
     CreateEditViewVehicleAccessRelationshipComponent,
     CreateEditViewAccountAccessRelationshipComponent,
-    TranslationDataUploadComponent
+    TranslationDataUploadComponent,
+    ConsentSingleOptComponent
   ],
   imports: [
       CommonModule,

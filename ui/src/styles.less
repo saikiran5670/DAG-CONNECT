@@ -558,13 +558,12 @@ mat-dialog-container{
     padding: 0 !important;
 }
 
-app-consent-opt{
-    .mat-radio-button {
-        &.mat-accent {
-            .mat-radio-ripple{
-                .mat-ripple-element {
-                    background-color: rgba(0, 0, 0, .1) !important;
-                }
+// disable radio ripple
+.mat-radio-button {
+    &.mat-accent {
+        .mat-radio-ripple{
+            .mat-ripple-element {
+                background-color: rgba(0, 0, 0, .1) !important;
             }
         }
     }

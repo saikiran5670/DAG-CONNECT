@@ -132,10 +132,10 @@
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblConsent || 'Consent' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <div class='margin-left-10-per' *ngIf="row.consentStatus == 'Opt-In'">
-                                    <img (click)='changeOptStatus(row)' matTooltip="{{ translationData.lblOptIn || 'Opt-In' }}" src='assets/images/icons/driverOpt/opt-in.svg' style="width: 20px; height: 20px;" />
+                                    <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ translationData.lblOptIn || 'Opt-In' }}" src='assets/images/icons/driverOpt/opt-in.svg' style="width: 20px; height: 20px;" />
                                 </div>
                                 <div class='margin-left-10-per' *ngIf="row.consentStatus == 'Opt-Out'">
-                                    <img (click)='changeOptStatus(row)' matTooltip="{{ translationData.lblOptOut || 'Opt-Out' }}" src='assets/images/icons/driverOpt/opt-out.svg' style="width: 20px; height: 20px;" />
+                                    <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ translationData.lblOptOut || 'Opt-Out' }}" src='assets/images/icons/driverOpt/opt-out.svg' style="width: 20px; height: 20px;" />
                                 </div>
                             </mat-cell>
                         </ng-container>

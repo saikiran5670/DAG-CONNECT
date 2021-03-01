@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CustomValidators } from '../../../shared/custom.validators';
 
 @Component({
   selector: 'app-edit-driver-details',
@@ -37,8 +38,16 @@ export class EditDriverDetailsComponent implements OnInit {
       birthDate: ['', []],
       consentStatus: ['', []],
       salutation: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
+      firstName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
+      lastName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForName('firstName'),
+        CustomValidators.numberValidationForName('firstName'),
+        CustomValidators.specialCharValidationForName('lastName'), 
+        CustomValidators.numberValidationForName('lastName')
+      ]
     });
     this.breadcumMsg = this.getBreadcum(this.actionType);
     this.setDefaultData();
