@@ -121,7 +121,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.portalserv
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "applicationservice", "applicationservice", "{D5996B23-D87C-4053-926C-61C2D4971030}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.applicationservice", "net.atos.daf.ct2.applicationservice\net.atos.daf.ct2.applicationservice.csproj", "{C5BD55BA-CCC4-4FE1-AF06-ACF70DF5BC9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.applicationservice", "net.atos.daf.ct2.applicationservice\net.atos.daf.ct2.applicationservice.csproj", "{C5BD55BA-CCC4-4FE1-AF06-ACF70DF5BC9B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.feature.test", "corecomponents\test\net.atos.daf.ct2.feature.test\net.atos.daf.ct2.feature.test.csproj", "{0C527220-B783-44ED-AF88-7BFBD2D76B9B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -733,6 +735,18 @@ Global
 		{C5BD55BA-CCC4-4FE1-AF06-ACF70DF5BC9B}.Release|x64.Build.0 = Release|Any CPU
 		{C5BD55BA-CCC4-4FE1-AF06-ACF70DF5BC9B}.Release|x86.ActiveCfg = Release|Any CPU
 		{C5BD55BA-CCC4-4FE1-AF06-ACF70DF5BC9B}.Release|x86.Build.0 = Release|Any CPU
+		{0C527220-B783-44ED-AF88-7BFBD2D76B9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C527220-B783-44ED-AF88-7BFBD2D76B9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C527220-B783-44ED-AF88-7BFBD2D76B9B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0C527220-B783-44ED-AF88-7BFBD2D76B9B}.Debug|x64.Build.0 = Debug|Any CPU
+		{0C527220-B783-44ED-AF88-7BFBD2D76B9B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0C527220-B783-44ED-AF88-7BFBD2D76B9B}.Debug|x86.Build.0 = Debug|Any CPU
+		{0C527220-B783-44ED-AF88-7BFBD2D76B9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C527220-B783-44ED-AF88-7BFBD2D76B9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C527220-B783-44ED-AF88-7BFBD2D76B9B}.Release|x64.ActiveCfg = Release|Any CPU
+		{0C527220-B783-44ED-AF88-7BFBD2D76B9B}.Release|x64.Build.0 = Release|Any CPU
+		{0C527220-B783-44ED-AF88-7BFBD2D76B9B}.Release|x86.ActiveCfg = Release|Any CPU
+		{0C527220-B783-44ED-AF88-7BFBD2D76B9B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -791,6 +805,7 @@ Global
 		{8C8698C7-41D9-4E79-9ACA-421EAF311F44} = {E765D0F0-711A-11EB-B0FE-199B805E938F}
 		{B875DBDD-1693-44A9-8974-E94B23E82406} = {E765D0F0-711A-11EB-B0FE-199B805E938F}
 		{C5BD55BA-CCC4-4FE1-AF06-ACF70DF5BC9B} = {D5996B23-D87C-4053-926C-61C2D4971030}
+		{0C527220-B783-44ED-AF88-7BFBD2D76B9B} = {A8B3E117-26FF-4FC1-A381-ED115B3104D5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD5CC07A-2F4F-48DF-AB1C-BE925A46D5B7}
