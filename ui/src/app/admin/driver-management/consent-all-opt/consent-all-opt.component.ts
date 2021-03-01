@@ -19,7 +19,7 @@ export class ConsentAllOptComponent implements OnInit {
     optValue: string,
     translationData: any,
     driverData: any
-  }, private mdDialogRef: MatDialogRef<ConsentOptComponent>) {
+  }, private mdDialogRef: MatDialogRef<ConsentAllOptComponent>) {
     this.organizationName = localStorage.getItem('organizationName');
     this.showMsgFlag = data.optValue === 'Opt-In' ? false : true;
     this.checkedFlag = data.optValue === 'Opt-In' ? true : false;
