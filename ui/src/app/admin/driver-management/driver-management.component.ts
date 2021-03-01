@@ -5,6 +5,7 @@ import { MatSort } from '@angular/material/sort';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { ConsentAllOptComponent } from './consent-all-opt/consent-all-opt.component';
+import { ConsentSingleOptComponent } from './consent-single-opt/consent-single-opt.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { FileValidator } from 'ngx-material-file-input';
@@ -37,6 +38,7 @@ export class DriverManagementComponent implements OnInit {
   templateFileUrl: string = 'assets/docs/driverTemplate.xlsx';
   templateFileName: string = 'driver-Template.xlsx';
   dialogRef: MatDialogRef<ConsentAllOptComponent>;
+  dialogSingleRef: MatDialogRef<ConsentSingleOptComponent>;
   @ViewChild('UploadFileInput') uploadFileInput: ElementRef;
   readonly maxSize = 104857600;
   editFlag: boolean = false;
@@ -175,24 +177,24 @@ export class DriverManagementComponent implements OnInit {
     this.driverRestData = [
       {
         driverId: "IN 0000000000000001",
-        firstName: "Driver",
-        lastName: "1",
+        firstName: "Alan",
+        lastName: "Berry",
         birthDate: "01/01/1991", //----- MM/DD/YYYY
         consentStatus: 'Opt-In',
         salutation: "Mr"
       },
       {
         driverId: "IN 0000000000000002",
-        firstName: "Driver",
-        lastName: "2",
+        firstName: "Ritika",
+        lastName: "Joshi",
         birthDate: "02/02/1992",
         consentStatus: 'Opt-Out',
         salutation: "Ms"
       },
       {
         driverId: "IN 0000000000000003",
-        firstName: "Driver",
-        lastName: "3",
+        firstName: "Shanu",
+        lastName: "Pol",
         birthDate: "03/03/1993",
         consentStatus: 'Opt-In',
         salutation: "Mrs"
@@ -357,8 +359,15 @@ export class DriverManagementComponent implements OnInit {
       this.showLoadingIndicator=false;
   }
 
-  changeOptStatus(rowData: any){
-
+  changeOptStatus(driverData: any){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      translationData: this.translationData,
+      driverData: driverData
+    }
+    this.dialogSingleRef = this.dialog.open(ConsentSingleOptComponent, dialogConfig);
   }
 
 }

@@ -24,8 +24,7 @@
           <mat-label>{{ translationData.lblDriverID || 'Driver ID' }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
-              <!-- <input (keypress)="numericOnly($event)" placeholder="{{ translationData.lblDriverID || 'Driver ID' }}" matInput formControlName="driverId" required> -->
-              <input placeholder="{{ translationData.lblDriverID || 'Driver ID' }}" matInput formControlName="driverId" required>
+              <input maxlength="19" placeholder="{{ translationData.lblDriverID || 'Driver ID' }}" matInput formControlName="driverId" required>
             </mat-form-field>
             <mat-error *ngIf="driverFormGroup.get('driverId').hasError('required')">
               Driver ID is required.
@@ -84,11 +83,20 @@
           <mat-label>{{ translationData.lblFirstName || 'First Name' }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
-              <input placeholder="{{ translationData.lblFirstName || 'First Name' }}" matInput formControlName="firstName" required>
+              <input maxlength="30" placeholder="{{ translationData.lblFirstName || 'First Name' }}" matInput formControlName="firstName" required>
             </mat-form-field>
             <mat-error *ngIf="driverFormGroup.get('firstName').hasError('required')">
-              First Name is required.
+              {{ translationData.lblPleaseenterFirstName || 'Please enter First Name' }}
             </mat-error>
+            <mat-error *ngIf="driverFormGroup.get('firstName').hasError('specialCharsNotAllowed')">
+              {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+            </mat-error>
+            <mat-error *ngIf="driverFormGroup.get('firstName').hasError('numberNotAllowed')">
+              {{ translationData.lblNumbersNotAllowed || 'Numbers not allowed' }}
+            </mat-error>
+            <mat-error *ngIf="!driverFormGroup.get('firstName').hasError('required')  && driverFormGroup.get('firstName').hasError('whitespace')">
+              {{ translationData.lblFirstNamecannotcontainonlywhitespace || 'First Name cannot contain only whitespace' }}
+             </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
             <span style='font-weight: 500!important;'>{{ driverData.firstName }}</span>
@@ -98,11 +106,20 @@
           <mat-label>{{ translationData.lblLastName || 'Last Name' }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
-              <input placeholder="{{ translationData.lblLastName || 'Last Name' }}" matInput formControlName="lastName" required>
+              <input maxlength="20" placeholder="{{ translationData.lblLastName || 'Last Name' }}" matInput formControlName="lastName" required>
             </mat-form-field>
             <mat-error *ngIf="driverFormGroup.get('lastName').hasError('required')">
-              Last Name is required.
+              {{ translationData.lblPleaseenterLastName || 'Please enter Last Name' }}
             </mat-error>
+            <mat-error *ngIf="driverFormGroup.get('lastName').hasError('specialCharsNotAllowed')">
+              {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+            </mat-error>
+            <mat-error *ngIf="driverFormGroup.get('lastName').hasError('numberNotAllowed')">
+              {{ translationData.lblNumbersNotAllowed || 'Numbers not allowed' }}
+            </mat-error>
+            <mat-error *ngIf="!driverFormGroup.get('lastName').hasError('required')  && driverFormGroup.get('lastName').hasError('whitespace')">
+              {{ translationData.lblLastNamecannotcontainonlywhitespace || 'Last Name cannot contain only whitespace' }}
+             </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
             <span style='font-weight: 500!important;'>{{ driverData.lastName }}</span>
