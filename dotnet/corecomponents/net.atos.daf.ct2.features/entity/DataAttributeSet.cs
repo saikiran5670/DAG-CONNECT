@@ -3,18 +3,17 @@ using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.features.entity
 {
-    public class FeatureSet
+    public class DataAttributeSet
     {
-        public int FeatureSetID { get; set; }
+        public int ID { get; set; }
         public string Name { get; set; }
-        public string description { get; set; }
-        public bool Is_Active { get; set; } 
-        public bool is_custom_feature_set { get; set; }
-        public List<Feature> Features { get; set; }
+        public bool isActive { get; set; }
+        public string Description { get; set; }
+        public string Is_exlusive { get; set; }
         public long created_at { get; set; }
         public int created_by { get; set; }
         public long modified_at { get; set; }
         public int modified_by { get; set; }
-        
+        public List<DataAttribute> DataAttributes { get; set; }
     }
 }
