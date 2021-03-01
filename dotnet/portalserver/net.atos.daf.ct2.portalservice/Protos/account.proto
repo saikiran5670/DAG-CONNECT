@@ -5,7 +5,7 @@ option csharp_namespace = "net.atos.daf.ct2.accountservice";
 
 package net.atos.daf.ct2.accountservice;
 
-// The greeting service definition.
+// The accountservice service definition.
 service AccountService {
   // Account Methods 
   rpc Create (AccountRequest) returns (AccountData);
@@ -14,12 +14,14 @@ service AccountService {
   rpc ChangePassword (AccountRequest) returns (AccountResponse);
   rpc Get (AccountFilter) returns (AccountDataList);
   rpc GetAccountDetail (AccountGroupDetailsRequest) returns (AccountDetailsResponse); 
+  rpc SaveProfilePicture (AccountBlobRequest) returns (AccountBlobResponse); 
+  rpc GetProfilePicture (IdRequest) returns (AccountBlobResponse); 
 
   // Account Preference Mthod
   rpc CreatePreference (AccountPreference) returns (AccountPreferenceResponse);
   rpc UpdatePreference (AccountPreference) returns (AccountPreferenceResponse);
   rpc DeletePreference (IdRequest) returns (AccountPreferenceResponse);
-  rpc GetPreference (AccountPreferenceFilter) returns (AccountPreferenceDataList);
+  rpc GetPreference (AccountPreferenceFilter) returns (AccountPreferenceResponse);
 
   // Access Relationship
   rpc CreateAccessRelationship (AccessRelationship) returns (AccessRelationshipResponse);
@@ -47,12 +49,13 @@ enum AccountType
         None = 0;
         SystemAccount = 1;
         PortalAccount = 2;        
-    }
-    // response code  
+    }   
+   // response code  
     enum Responcecode{
       Success = 0;
       Failed = 1;
       Conflict = 2;
+      NotFound = 3;
     }
 // common response 
 message AccountResponse {
@@ -98,10 +101,11 @@ message AccountRequest {
     string LastName=5;
     string Password=6;    
     int32 OrganizationId=7;
-    int32 PreferenceId=8;
-    int32 BlobId=9;
-    
-
+    string Type=8;
+    string DriverId=9;
+    int32 PreferenceId=10;
+    int32 BlobId=11;
+    int64 CreatedAt=12;
   }
 
 message AccountId
@@ -159,16 +163,16 @@ message AccountFilter {
     {
         int32 Id =1;
         int32 Ref_Id =2;
-        //PreferenceType preferenceType =3;
-        int32 LanguageId =3;
-        int32 TimezoneId =4;
-        int32 CurrencyId =5;
-        int32 UnitId = 6;
-        int32 VehicleDisplayId =7;
-        int32 DateFormatId =8;
-        string DriverId =9;
-        int32 TimeFormatId=10;
-        int32 LandingPageDisplayId=11;        
+        string preferenceType =3;
+        int32 LanguageId =4;
+        int32 TimezoneId =5;
+        int32 CurrencyId =6;
+        int32 UnitId = 7;
+        int32 VehicleDisplayId =8;
+        int32 DateFormatId =9;
+        string DriverId =10;
+        int32 TimeFormatId=11;
+        int32 LandingPageDisplayId=12;
     }
     message AccountPreferenceResponse
     {
@@ -190,22 +194,6 @@ message AccountFilter {
     }
 // End - Account Preference 
 
-// Begin Account Group
-enum ObjectType{
-  VehicleGroup = 0;
-  AccountGroup = 1;
-}
-
-enum GroupType{
-  Single = 0;
-  Group = 1;
-  Dynamic = 2;
-}
-
-enum FunctionEnum{
-  All = 0;
-}
-
 message AccountGroupRefResponce{
   Responcecode code=1;
   string message = 2;    
@@ -221,13 +209,14 @@ message AccountGroupRefRequest{
 }
 message AccountGroupRequest{
   int32 Id=1;
-  string Name= 2;   
+  string Name= 2;     
   int32 OrganizationId = 3;
   int32 RefId = 4;
   string Description= 5;
-  int32 GroupRefCount=6;
-  repeated AccountGroupRef GroupRef = 7;
-  bool Exists=8;   
+  string GroupType= 6;   
+  int32 GroupRefCount=7;
+  repeated AccountGroupRef GroupRef = 8;
+  bool Exists=9;
 }
 message AccountGroupResponce{
   Responcecode code=1;  
@@ -342,3 +331,22 @@ message AccessRelationshipDataList
   repeated AccessRelationship AccessRelationship=3;
 }
 // End Account Relationship 
+
+// Begin - Profile picture
+
+message AccountBlobRequest
+{
+  int32 Id=1;
+  int32 AccountId=2;
+  string ImageType=3;
+  bytes Image=4;
+}
+message AccountBlobResponse
+{
+  int32 BlobId=1;
+  bytes Image=2;
+  Responcecode Code=3;
+  string Message = 4;
+}
+
+// End - Profile picture

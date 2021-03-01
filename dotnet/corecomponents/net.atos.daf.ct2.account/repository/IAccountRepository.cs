@@ -10,7 +10,9 @@ namespace net.atos.daf.ct2.account
         Task<Account> Create(Account account);
         Task<Account> Update(Account account);
         Task<bool> Delete(int accountId, int organizationId);
-        Task<List<Account>> Get(AccountFilter filter);  
+        Task<List<Account>> Get(AccountFilter filter);
+        Task<AccountBlob> CreateBlob(AccountBlob accountBlob);
+        Task<AccountBlob> GetBlob(int blobId);
         Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter);    
         Task<AccessRelationship> CreateAccessRelationship(AccessRelationship entity);
         Task<AccessRelationship> UpdateAccessRelationship(AccessRelationship entity);

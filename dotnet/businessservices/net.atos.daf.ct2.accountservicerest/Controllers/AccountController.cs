@@ -459,6 +459,52 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
             }
         }
 
+
+        [HttpPost]
+        [Route("updateblob")]
+        public async Task<IActionResult> SaveBlob(byte [] image)
+        {
+            try
+            {
+                //// Validation 
+                //if ((accountBlob.AccountId <= 0) || (accountBlob.Image.Length <=0))                    
+                //{
+                //    return StatusCode(404, "The account id and profile picture is required.");
+                //} 
+                account.entity.AccountBlob accountBlob = new AccountComponent.entity.AccountBlob();
+                accountBlob.AccountId = 242;
+                var result = await accountmanager.CreateBlob(accountBlob);                
+                _logger.LogInformation("Account Service - Get.");
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:create accounts blob with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+        [HttpPost]
+        [Route("getblob")]
+        public async Task<IActionResult> GetBlob(int blobId)
+        {
+            try
+            {
+                // Validation 
+                if ((blobId <= 0))
+                    
+                {
+                    return StatusCode(404, "The blob id is required.");
+                }
+                var result = await accountmanager.GetBlob(blobId);
+                _logger.LogInformation("Account Service - Get Blob.");
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:create accounts blob with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
         // Begin Account Preference
         [HttpPost]
         [Route("preference/create")]
@@ -547,7 +593,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 {
                     return StatusCode(400, "The Account Id is required");
                 }
-                var result = await preferencemanager.Delete(preferenceId);
+                var result = await preferencemanager.Delete(preferenceId,Preference.PreferenceType.Account);
                 var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Preference Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Preference", 1, 2, Convert.ToString(preferenceId));
                 if (result) return Ok(result);
                 else return StatusCode(404, "Preference for this account is not configured.");

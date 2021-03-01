@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.accountpreference
     {
         Task<AccountPreference> Create(AccountPreference preference);
         Task<AccountPreference> Update(AccountPreference preference);
-        Task<bool> Delete(int preferenceId);        
+        Task<bool> Delete(int preferenceId, PreferenceType preferenceType);        
         Task<IEnumerable<AccountPreference>> Get(AccountPreferenceFilter filter);
     }
 }

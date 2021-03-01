@@ -73,7 +73,7 @@ namespace net.atos.daf.ct2.authenticationservice
                         accPreference.DateFormatId= accIdentity.AccountPreference.DateFormatTypeId;                 
                         accPreference.TimeFormatId =accIdentity.AccountPreference.TimeFormatId;
                         accPreference.LandingPageDisplayId =accIdentity.AccountPreference.LandingPageDisplayId;
-                        accPreference.DriverId =accIdentity.AccountPreference.DriverId;
+                        //accPreference.DriverId =accIdentity.AccountPreference.DriverId;
                         accPreference.Active =accIdentity.AccountPreference.Active;
 
                         response.AccountPreference=accPreference;

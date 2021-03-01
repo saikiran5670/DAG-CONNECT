@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using Dapper;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.data;
+using System.Transactions;
+using System.Text;
+
 namespace net.atos.daf.ct2.accountpreference
 {
     public class AccountPreferenceRepository : IAccountPreferenceRepository
@@ -86,7 +89,7 @@ namespace net.atos.daf.ct2.accountpreference
                     queryCheck = "update master.account set preference_id=@preference_id where id=@ref_id";                    
                     
                 }
-                else if (preference.PreferenceType == PreferenceType.Account)
+                else if (preference.PreferenceType == PreferenceType.Organization)
                 {
                     queryCheck = "update master.organization set preference_id=@preference_id where id=@ref_id";
                 }                
@@ -132,14 +135,34 @@ namespace net.atos.daf.ct2.accountpreference
             return preference;
 
         }
-        public async Task<bool> Delete(int preferenceID)
+        public async Task<bool> Delete(int preferenceID,PreferenceType preferenceType)
         {
             try
             {
                 var parameter = new DynamicParameters();
+                StringBuilder query = new StringBuilder();
+                string checkPreferenceQuery = string.Empty;
+                int id = 0;
                 parameter.Add("@id", preferenceID);
-                var query = @"update master.accountpreference set is_active=false where id = @id";
-                await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                checkPreferenceQuery = @"select id from master.accountpreference where id=@id and is_active=true";
+                id = await dataAccess.ExecuteScalarAsync<int>(checkPreferenceQuery, parameter);
+                if (id == 0) return false;                
+                //using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                //{
+                    query.Append("update master.accountpreference set is_active=false where id=@id");
+                    //result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);                    
+                    // Update preference id for account or organization
+                    if (preferenceType == PreferenceType.Account)
+                    {
+                        query.Append (" ; " + "update master.account set preference_id=null where preference_id=@id;");
+                    }
+                    else if (preferenceType == PreferenceType.Organization)
+                    {
+                        query.Append(" ; " + "update master.organization set preference_id=null where preference_id=@id;");
+                    }
+                    await dataAccess.ExecuteScalarAsync<int>(query.ToString(), parameter);
+                    //transactionScope.Complete();
+                //}
                 return true;
             }
             catch (Exception ex)

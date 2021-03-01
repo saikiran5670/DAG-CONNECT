@@ -4,6 +4,10 @@ namespace net.atos.daf.ct2.account.entity
 {
     public class Account
     {
+        //public Account()
+        //{
+        //    AccountType = AccountType.PortalAccount;
+        //}
         public int Id { get; set; }        
         public string EmailId { get; set; }
         public string Salutation { get; set; }
@@ -17,10 +21,10 @@ namespace net.atos.daf.ct2.account.entity
         public DateTime StartDate { get; set; }   
         public DateTime ? EndDate { get; set; }  
         public bool isDuplicate { get; set; }
-        public bool isError { get; set; }
-        
+        public bool isError { get; set; }        
         public int ? PreferenceId { get; set; } 
-        public int ? BlobId { get; set; } 
-        
+        public int ? BlobId { get; set; }
+        public long ? CreatedAt { get; set; }
+
     }
 }

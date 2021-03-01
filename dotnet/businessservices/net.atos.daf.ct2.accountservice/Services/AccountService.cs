@@ -9,7 +9,7 @@ using Preference = net.atos.daf.ct2.accountpreference;
 using Group = net.atos.daf.ct2.group;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
-
+using Google.Protobuf;
 
 namespace net.atos.daf.ct2.accountservice
 {
@@ -22,6 +22,7 @@ namespace net.atos.daf.ct2.accountservice
         private readonly IAuditTraillib auditlog;
         private readonly Mapper _mapper;
 
+        #region Constructor
         public AccountManagementService(ILogger<GreeterService> logger, AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, IAuditTraillib _auditlog)
         {
             _logger = logger;
@@ -31,15 +32,15 @@ namespace net.atos.daf.ct2.accountservice
             auditlog = _auditlog;
             _mapper = new Mapper();
         }
+        #endregion
 
+        #region Account
         public override async Task<AccountData> Create(AccountRequest request, ServerCallContext context)
         {
             try
             {
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
                 account = _mapper.ToAccountEntity(request);
-                account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
-
                 account = await accountmanager.Create(account);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Account Create", 1, 2, account.EmailId);
                 // response 
@@ -166,7 +167,6 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
-
         public override async Task<AccountDataList> Get(AccountFilter request, ServerCallContext context)
         {
             try
@@ -247,7 +247,6 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
-
         public override async Task<AccountDetailsResponse> GetAccountDetail(AccountGroupDetailsRequest request, ServerCallContext context)
         {
             try
@@ -416,8 +415,71 @@ namespace net.atos.daf.ct2.accountservice
             }
         }
         // End Account
+        #endregion
 
-        // Begin AccessRelationship
+        #region Account Blob
+        public override async Task<AccountBlobResponse> SaveProfilePicture(AccountBlobRequest request, ServerCallContext context)
+        {
+            try
+            {
+                AccountBlobResponse response = new AccountBlobResponse();
+                AccountComponent.entity.AccountBlob accountBlob = new AccountComponent.entity.AccountBlob();
+                accountBlob = _mapper.AccountBlob(request);
+                var accountResponse = await accountmanager.CreateBlob(accountBlob);
+                request = _mapper.AccountBlob(accountResponse);
+                response.BlobId = request.Id;
+                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Account Blob Create", 1, 2, accountBlob.AccountId.ToString());
+                // response 
+                response.Message = "Account Profile Picture Updated.";
+                response.Code = Responcecode.Success;                
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Account Service:Create Blob: " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new AccountBlobResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Account Blob Creation Faile due to - " + ex.Message                    
+                });
+            }
+        }
+        public override async Task<AccountBlobResponse> GetProfilePicture(IdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                AccountBlobResponse response = new AccountBlobResponse();
+                AccountComponent.entity.AccountBlob accountBlob = new AccountComponent.entity.AccountBlob();                
+                var accountResponse = await accountmanager.GetBlob(request.Id);
+                if(accountResponse == null)
+                {
+                    response.BlobId = request.Id;
+                    response.Message = "Not Found.";
+                    response.Code = Responcecode.NotFound;
+                    return await Task.FromResult(response);
+                }
+                response.BlobId = accountResponse.Id;                
+                response.Image = ByteString.CopyFrom(accountResponse.Image);
+                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Account Blob Create", 1, 2, accountBlob.AccountId.ToString());
+                // response 
+                response.Message = "Account Profile Picture Updated.";
+                response.Code = Responcecode.Success;
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Account Service:Create Blob: " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new AccountBlobResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Account Blob Creation Faile due to - " + ex.Message
+                });                
+            }
+        }
+
+        #endregion
+
+        #region AccessRelationship
         public override async Task<AccessRelationshipResponse> CreateAccessRelationship(AccessRelationship request, ServerCallContext context)
         {
             string validationMessage = string.Empty;
@@ -600,7 +662,9 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
-        // Begin AccountPreference
+        #endregion
+
+        #region AccountPreference
 
         public override async Task<AccountPreferenceResponse> CreatePreference(AccountPreference request, ServerCallContext context)
         {
@@ -630,7 +694,6 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
-
         public override async Task<AccountPreferenceResponse> UpdatePreference(AccountPreference request, ServerCallContext context)
         {
             try
@@ -663,12 +726,21 @@ namespace net.atos.daf.ct2.accountservice
         {
             try
             {
-                var result = await preferencemanager.Delete(request.Id);
+                var result = await preferencemanager.Delete(request.Id,Preference.PreferenceType.Account);
                 var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Preference", 1, 2, Convert.ToString(request.Id)).Result;
                 // response 
                 AccountPreferenceResponse response = new AccountPreferenceResponse();
-                response.Code = Responcecode.Success;
-                response.Message = "Preference Delete.";
+                if (result)
+                {
+                    response.Code = Responcecode.Success;
+                    response.Message = "Preference Delete.";
+                    
+                }
+                else
+                {
+                    response.Code = Responcecode.NotFound;
+                    response.Message = "Preference Not Found.";
+                }
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -682,7 +754,7 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
-        public override async Task<AccountPreferenceDataList> GetPreference(AccountPreferenceFilter request, ServerCallContext context)
+        public override async Task<AccountPreferenceResponse> GetPreference(AccountPreferenceFilter request, ServerCallContext context)
         {
             try
             {
@@ -693,19 +765,19 @@ namespace net.atos.daf.ct2.accountservice
                 _logger.LogInformation("Get account preference.");
                 var result = await preferencemanager.Get(preferenceFilter);
                 // response 
-                AccountPreferenceDataList response = new AccountPreferenceDataList();
+                AccountPreferenceResponse response = new AccountPreferenceResponse();
                 response.Code = Responcecode.Success;
                 response.Message = "Get";
                 foreach (Preference.AccountPreference entity in result)
                 {
-                    response.Preference.Add(_mapper.ToPreferenceEntity(entity));
+                    response.AccountPreference = _mapper.ToPreferenceEntity(entity);
                 }
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:get account preference with exception - " + ex.Message + ex.StackTrace);
-                return await Task.FromResult(new AccountPreferenceDataList
+                return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
                     Message = "Preference Get Faile due to - " + ex.Message
@@ -713,9 +785,9 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
-        // End Account Preference
+        #endregion
 
-        // Begin Account Group
+        #region Account Group
         public override async Task<AccountGroupResponce> CreateGroup(AccountGroupRequest request, ServerCallContext context)
         {
             try
@@ -735,7 +807,7 @@ namespace net.atos.daf.ct2.accountservice
                     return response;
                 }
                 // Add group reference.                               
-                if (group.Id > 0 && request.GroupRef != null)
+                if (group.Id > 0 && request.GroupRef != null && group.GroupType == Group.GroupType.Group)
                 {
                     group.GroupRef = new List<Group.GroupRef>();
                     foreach (var item in request.GroupRef)
@@ -744,7 +816,6 @@ namespace net.atos.daf.ct2.accountservice
                             group.GroupRef.Add(new Group.GroupRef() { Ref_Id = item.RefId, Group_Id = group.Id });
                     }
                     bool accountRef = await groupmanager.AddRefToGroups(group.GroupRef);
-
                 }
                 request.Id = group.Id;
                 var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Account Group ", 1, 2, Convert.ToString(group.Id)).Result;
@@ -885,8 +956,8 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
+        
         // Delete account from group
-
         public override async Task<AccountGroupResponce> DeleteAccountFromGroups(IdRequest request, ServerCallContext context)
         {
             try
@@ -958,6 +1029,7 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
+        
         // Get group details
         public async override Task<AccountGroupDetailsDataList> GetAccountGroupDetail(AccountGroupDetailsRequest request, ServerCallContext context)
         {
@@ -1028,9 +1100,10 @@ namespace net.atos.daf.ct2.accountservice
             }
         }
 
-        // End Account Group
+        #endregion
 
-        // Begin Account Role
+        #region Account Role
+        
         public async override Task<AccountRoleResponse> AddRoles(AccountRoleRequest request, ServerCallContext context)
         {
             try
@@ -1138,7 +1211,7 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
-        // End Account Role
+        #endregion
 
     }
 }
