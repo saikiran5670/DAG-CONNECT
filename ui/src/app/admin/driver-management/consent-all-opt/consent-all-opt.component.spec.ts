@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ConsentOptComponent } from './consent-opt.component';
+import { ConsentAllOptComponent } from './consent-all-opt.component';
 
 describe('ConsentOptComponent', () => {
-  let component: ConsentOptComponent;
-  let fixture: ComponentFixture<ConsentOptComponent>;
+  let component: ConsentAllOptComponent;
+  let fixture: ComponentFixture<ConsentAllOptComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ConsentOptComponent ]
+      declarations: [ ConsentAllOptComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ConsentOptComponent);
+    fixture = TestBed.createComponent(ConsentAllOptComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

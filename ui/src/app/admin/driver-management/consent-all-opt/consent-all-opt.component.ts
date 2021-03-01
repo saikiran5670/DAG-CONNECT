@@ -2,11 +2,11 @@ import { Component, OnInit, HostListener, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-consent-opt',
-  templateUrl: './consent-opt.component.html',
-  styleUrls: ['./consent-opt.component.less']
+  selector: 'app-consent-all-opt',
+  templateUrl: './consent-all-opt.component.html',
+  styleUrls: ['./consent-all-opt.component.less']
 })
-export class ConsentOptComponent implements OnInit {
+export class ConsentAllOptComponent implements OnInit {
 
   showMsgFlag: boolean = false;
   consentMsg: any;

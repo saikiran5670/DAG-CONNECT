@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { ConsentOptComponent } from './consent-opt/consent-opt.component';
+import { ConsentAllOptComponent } from './consent-all-opt/consent-all-opt.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { FileValidator } from 'ngx-material-file-input';
@@ -36,7 +36,7 @@ export class DriverManagementComponent implements OnInit {
   userGrpName: string = '';
   templateFileUrl: string = 'assets/docs/driverTemplate.xlsx';
   templateFileName: string = 'driver-Template.xlsx';
-  dialogRef: MatDialogRef<ConsentOptComponent>;
+  dialogRef: MatDialogRef<ConsentAllOptComponent>;
   @ViewChild('UploadFileInput') uploadFileInput: ElementRef;
   readonly maxSize = 104857600;
   editFlag: boolean = false;
@@ -316,7 +316,7 @@ export class DriverManagementComponent implements OnInit {
       translationData: this.translationData,
       driverData: this.driverRestData
     }
-    this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
+    this.dialogRef = this.dialog.open(ConsentAllOptComponent, dialogConfig);
   }
 
   addfile(event: any){    
@@ -355,6 +355,10 @@ export class DriverManagementComponent implements OnInit {
   hideloader() {
     // Setting display of spinner
       this.showLoadingIndicator=false;
+  }
+
+  changeOptStatus(rowData: any){
+
   }
 
 }

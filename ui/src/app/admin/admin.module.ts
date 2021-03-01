@@ -14,7 +14,7 @@ import { UserManagementComponent } from './user-management/user-management.compo
 import { NewUserStepComponent } from './user-management/new-user-step/new-user-step.component';
 import { SummaryStepComponent } from './user-management/new-user-step/summary-step/summary-step.component';
 import { DriverManagementComponent } from './driver-management/driver-management.component';
-import { ConsentOptComponent } from './driver-management/consent-opt/consent-opt.component';
+import { ConsentAllOptComponent } from './driver-management/consent-all-opt/consent-all-opt.component';
 import { EditDriverDetailsComponent } from './driver-management/edit-driver-details/edit-driver-details.component';
 import { UserRoleManagementComponent } from './user-role-management/user-role-management.component';
 import { EditUserRoleDetailsComponent } from './user-role-management/edit-user-role-details/edit-user-role-details.component';
@@ -45,7 +45,7 @@ import { TranslationDataUploadComponent } from './translation-data-upload/transl
     NewUserStepComponent,
     SummaryStepComponent,
     DriverManagementComponent,
-    ConsentOptComponent,
+    ConsentAllOptComponent,
     EditDriverDetailsComponent,
     UserRoleManagementComponent,
     EditUserRoleDetailsComponent,
