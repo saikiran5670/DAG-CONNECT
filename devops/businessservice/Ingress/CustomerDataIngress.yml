@@ -15,75 +15,88 @@ spec:
       - backend:
           serviceName: customerdataservice
           servicePort: 80
-        path: /swagger
-      - backend:
-          serviceName: customerdataservice
-          servicePort: 80
         path: /customer-data
+        pathType: Prefix
       - backend:
           serviceName: authenticationservice
           servicePort: 80
         path: /auth
+        pathType: Prefix
       - backend:
           serviceName: authenticationservice
           servicePort: 80
         path: /login
+        pathType: Prefix
       - backend:
           serviceName: authenticationservice
           servicePort: 80
         path: /validate
+        pathType: Prefix
       - backend:
           serviceName: accountservice
           servicePort: 80
         path: /account
+        pathType: Prefix
       - backend:
           serviceName: organizationservice
           servicePort: 80
         path: /organization   
+        pathType: Prefix
       - backend:
           serviceName: vehicleservice
           servicePort: 80
-        path: /vehicle   
+        path: /vehicle  
+        pathType: Prefix 
       - backend:
           serviceName: roleservice 
           servicePort: 80
         path: /role   
+        pathType: Prefix
       - backend:
           serviceName: translationservice 
           servicePort: 80
         path: /translation
+        pathType: Prefix
       - backend:
           serviceName: auditservice 
           servicePort: 80
         path: /audit
+        pathType: Prefix
       - backend:
           serviceName: auditservicegrpc
           servicePort: 80
         path: /auditgrpc
+        pathType: Prefix
       - backend:
           serviceName: featureservice 
           servicePort: 80
         path: /feature
+        pathType: Prefix
       - backend:
           serviceName: portalservicepoc
           servicePort: 80
         path: /portalservice
+        pathType: Prefix
       - backend:
           serviceName: portalservicepoc
           servicePort: 80
         path: /accountpoc
+        pathType: Prefix
       - backend:
           serviceName: portalservicepoc
           servicePort: 80
-        path: /authenticationpoc    
+        path: /authenticationpoc  
+        pathType: Prefix  
       - backend:
           serviceName: portalservicepoc
           servicePort: 80
-        path: /demopoc   
+        path: /demopoc  
+        pathType: Prefix 
       - backend:
           serviceName: uimanagement-service
           servicePort: 80
         path: /  
+        pathType: Prefix
   tls:
   - hosts:
     - #{IngressURL}#
