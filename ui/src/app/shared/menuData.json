@@ -38,6 +38,10 @@
         {
           "name": "Vehicle/Account Access-Relationship",
           "subRoute": "vehicleaccountaccessrelationship"
+        },
+        {
+          "name": "Translation Data Upload",
+          "subRoute": "translationdataupload"
         }
       ]
     },

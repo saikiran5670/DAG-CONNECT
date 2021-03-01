@@ -14,6 +14,7 @@ import { RoleService } from '../../services/role.service';
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.less']
 })
+
 export class UserManagementComponent implements OnInit {
   displayedColumns: string[] = ['firstName','emailId','roles','accountGroups','action'];
   stepFlag: boolean = false;
@@ -183,7 +184,7 @@ export class UserManagementComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
-  deleteUser(item) {
+  deleteUser(item: any) {
     const options = {
       title: this.translationData.lblDeleteAccount || "Delete Account",
       message: this.translationData.lblAreyousureyouwanttodeleteuseraccount || "Are you sure you want to delete '$' user account?",
@@ -291,7 +292,7 @@ export class UserManagementComponent implements OnInit {
     });
   }
 
-  makeRoleAccountGrpList(initdata){
+  makeRoleAccountGrpList(initdata: any){
     let accountId =  localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     initdata = initdata.filter(item => item.id != accountId);
     initdata.forEach((element, index) => {

@@ -14,6 +14,7 @@ using net.atos.daf.ct2.organization;
 using net.atos.daf.ct2.audit.repository;  
 using net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.group;
 using  net.atos.daf.ct2.vehicle.repository;
 using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Http;
@@ -65,6 +66,9 @@ namespace net.atos.daf.ct2.organizationservicerest
             services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();
             services.AddTransient<AccountComponent.IAccountRepository,AccountComponent.AccountRepository>();
             services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();   
+            services.AddTransient<IGroupManager,GroupManager>();
+            services.AddTransient<IGroupRepository, GroupRepository>();
+           
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             
             services.AddCors(c =>  

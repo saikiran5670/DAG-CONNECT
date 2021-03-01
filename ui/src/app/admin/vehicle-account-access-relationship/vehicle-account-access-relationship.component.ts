@@ -1,5 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
+import { AccountService } from '../../services/account.service';
 import { TranslationService } from '../../services/translation.service';
+import { VehicleService } from '../../services/vehicle.service';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { UserDetailTableComponent } from '../user-management/new-user-step/user-detail-table/user-detail-table.component';
 
 @Component({
   selector: 'app-vehicle-account-access-relationship',
@@ -8,13 +16,35 @@ import { TranslationService } from '../../services/translation.service';
 })
 
 export class VehicleAccountAccessRelationshipComponent implements OnInit {
-  userCreatedMsg : any;
+  //-------Rest mock variable--------//
+  vehicleGrpVehicleAssociationDetails: any = [];
+  accountGrpAccountAssociationDetails: any = [];
+  vehicleGrpVehicleDetails: any = [];
+  accountGrpAccountDetails: any = [];
+  //--------------------------------//
+  accessRelationCreatedMsg : any = '';
   titleVisible: boolean = false;
   translationData: any;
   localStLanguage: any;
   accountOrganizationId: any;
+  selectedVehicleViewType: any = '';
+  selectedAccountViewType: any = '';
+  selectedColumnType: any = '';
+  createVehicleAccessRelation: boolean = false;
+  createAccountAccessRelation: boolean = false;
+  cols: string[] = ['name','accessType','associatedAccount','action'];
+  columnNames: string[] = ['Vehicle Group/Vehicle','Access Type','Account Group/Account','Action'];
+  dataSource: any;
+  initData: any = [];
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+  showLoadingIndicator: any;
+  isViewListDisabled: boolean = false;
+  actionType: any = '';
+  selectedElementData: any;
+  dialogRef: MatDialogRef<UserDetailTableComponent>;
 
-  constructor(private translationService: TranslationService) { 
+  constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private dialog: MatDialog) { 
     this.defaultTranslation();
   }
 
@@ -40,26 +70,736 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
+      this.restMockdata();
+      this.selectedVehicleViewType = this.selectedVehicleViewType == '' ? 'both' : this.selectedVehicleViewType;
+      this.selectedAccountViewType = this.selectedAccountViewType == '' ? 'both' : this.selectedAccountViewType;
+      this.selectedColumnType = this.selectedColumnType == '' ? 'vehicle' : this.selectedColumnType;
+      if(this.selectedColumnType == 'account'){
+        this.isViewListDisabled = true;
+      }
+      else{
+        this.isViewListDisabled = false;
+      }
+      this.updateGridData(this.makeAssociatedAccountGrpList(this.vehicleGrpVehicleAssociationDetails));
     });
   }
 
+  restMockdata(){
+      this.vehicleGrpVehicleAssociationDetails = [
+          {
+              "name": "Vehicle Group 1",
+              "id": 1,
+              "accessType":{
+                  "id": 1,
+                  "name":"Full Access"
+              },
+              "associatedAccount":[
+                  {
+                      "name": "Account Group 1",
+                      "id": 1,
+                      "isAccountGroup": true
+                  },
+                  {
+                      "name": "Account Group 2",
+                      "id": 2,
+                      "isAccountGroup": true
+                  },
+                  {
+                      "name": "Account 1",
+                      "id": 3,
+                      "isAccountGroup": false
+                  },
+                  {
+                      "name": "Account 2",
+                      "id": 4,
+                      "isAccountGroup": false
+                  }                
+              ],
+              "isVehicleGroup": true,
+              "vehicleCount": 2
+          },
+          {
+              "name": "Vehicle Group 2",
+              "id": 2,
+              "accessType":{
+                  "id": 1,
+                  "name":"Full Access"
+              },
+              "associatedAccount":[
+                  {
+                      "name": "Account Group 1",
+                      "id": 1,
+                      "isAccountGroup": true
+                  },
+                  {
+                      "name": "Account Group 2",
+                      "id": 2,
+                      "isAccountGroup": true
+                  },
+                  {
+                      "name": "Account 1",
+                      "id": 3,
+                      "isAccountGroup": false
+                  },
+                  {
+                      "name": "Account 2",
+                      "id": 4,
+                      "isAccountGroup": false
+                  }                
+              ],
+              "isVehicleGroup": true,
+              "vehicleCount": 1
+          },
+          {
+              "name": "Vehicle 1",
+              "id": 3,
+              "accessType":{
+                  "id": 2,
+                  "name":"View Only"
+              },
+              "associatedAccount":[
+                  {
+                      "name": "Account Group 1",
+                      "id": 1,
+                      "isAccountGroup": true
+                  },
+                  {
+                      "name": "Account 1",
+                      "id": 3,
+                      "isAccountGroup": false
+                  }                
+              ],
+              "isVehicleGroup": false
+          },
+          {
+              "name": "Vehicle 2",
+              "id": 4,
+              "accessType":{
+                  "id": 2,
+                  "name":"View Only"
+              },
+              "associatedAccount":[
+                  {
+                      "name": "Account Group 2",
+                      "id": 2,
+                      "isAccountGroup": true
+                  },
+                  {
+                      "name": "Account 2",
+                      "id": 4,
+                      "isAccountGroup": false
+                  }                
+              ],
+              "isVehicleGroup": false
+          },
+          {
+              "name": "Vehicle 3",
+              "id": 5,
+              "accessType":{
+                  "id": 2,
+                  "name":"View Only"
+              },
+              "associatedAccount":[
+                  {
+                      "name": "Account Group 2",
+                      "id": 2,
+                      "isAccountGroup": true
+                  },
+                  {
+                      "name": "Account 2",
+                      "id": 4,
+                      "isAccountGroup": false
+                  }                
+              ],
+              "isVehicleGroup": false
+          },
+          {
+              "name": "Vehicle 4",
+              "id": 6,
+              "accessType":{
+                  "id": 2,
+                  "name":"View Only"
+              },
+              "associatedAccount":[
+                  {
+                      "name": "Account Group 2",
+                      "id": 2,
+                      "isAccountGroup": true
+                  },
+                  {
+                      "name": "Account 2",
+                      "id": 4,
+                      "isAccountGroup": false
+                  }                
+              ],
+              "isVehicleGroup": false
+          }
+      ];
+      
+      this.accountGrpAccountAssociationDetails = [
+          {
+              "name": "Account Group 1",
+              "id": 1,
+              "accessType":{
+                  "id": 2,
+                  "name":"View Only"
+              },
+              "associatedVehicle":[
+                  {
+                      "name": "Vehicle Group 2",
+                      "id": 2,
+                      "isVehicleGroup": true
+                  },
+                  {
+                      "name": "Vehicle 2",
+                      "id": 4,
+                      "isVehicleGroup": false
+                  }                
+              ],
+              "isAccountGroup": true,
+              "accountCount": 2
+          },
+          {
+              "name": "Account Group 2",
+              "id": 2,
+              "accessType":{
+                  "id": 1,
+                  "name":"Full Access"
+              },
+              "associatedVehicle":[
+                  {
+                      "name": "Vehicle Group 2",
+                      "id": 2,
+                      "isVehicleGroup": true
+                  },
+                  {
+                    "name": "Vehicle 1",
+                    "id": 3,
+                    "isVehicleGroup": false
+                  },
+                  {
+                      "name": "Vehicle 2",
+                      "id": 4,
+                      "isVehicleGroup": false
+                  }                
+              ],
+              "isAccountGroup": true,
+              "accountCount": 3
+          },
+          {
+            "name": "Account Group 3",
+            "id": 10,
+            "accessType":{
+                "id": 1,
+                "name":"Full Access"
+            },
+            "associatedVehicle":[
+                {
+                    "name": "Vehicle Group 2",
+                    "id": 2,
+                    "isVehicleGroup": true
+                },
+                {
+                  "name": "Vehicle 1",
+                  "id": 3,
+                  "isVehicleGroup": false
+                },
+                {
+                    "name": "Vehicle 2",
+                    "id": 4,
+                    "isVehicleGroup": false
+                }                
+            ],
+            "isAccountGroup": true,
+            "accountCount": 0
+          },
+          {
+              "name": "Account 1",
+              "id": 3,
+              "accessType":{
+                  "id": 2,
+                  "name":"View Only"
+              },
+              "associatedVehicle":[
+                  {
+                      "name": "Vehicle Group 2",
+                      "id": 2,
+                      "isVehicleGroup": true
+                  },
+                  {
+                      "name": "Vehicle 2",
+                      "id": 4,
+                      "isVehicleGroup": false
+                  }                
+              ],
+              "isAccountGroup": false
+          },
+          {
+              "name": "Account 2",
+              "id": 4,
+              "accessType":{
+                  "id": 2,
+                  "name":"View Only"
+              },
+              "associatedVehicle":[
+                  {
+                      "name": "Vehicle Group 2",
+                      "id": 2,
+                      "isVehicleGroup": true
+                  },
+                  {
+                      "name": "Vehicle 2",
+                      "id": 4,
+                      "isVehicleGroup": false
+                  }                
+              ],
+              "isAccountGroup": false
+          },
+          {
+              "name": "Account 3",
+              "id": 5,
+              "accessType":{
+                  "id": 2,
+                  "name":"View Only"
+              },
+              "associatedVehicle":[
+                  {
+                      "name": "Vehicle Group 2",
+                      "id": 2,
+                      "isVehicleGroup": true
+                  },
+                  {
+                      "name": "Vehicle 2",
+                      "id": 4,
+                      "isVehicleGroup": false
+                  }                
+              ],
+              "isAccountGroup": false
+          },
+          {
+              "name": "Account 4",
+              "id": 6,
+              "accessType":{
+                  "id": 2,
+                  "name":"View Only"
+              },
+              "associatedVehicle":[
+                  {
+                      "name": "Vehicle Group 2",
+                      "id": 2,
+                      "isVehicleGroup": true
+                  },
+                  {
+                      "name": "Vehicle 2",
+                      "id": 4,
+                      "isVehicleGroup": false
+                  }                
+              ],
+              "isAccountGroup": false
+          }
+      ];
+
+      this.accountGrpAccountDetails = [
+          {
+              name: "Account Group 1",
+              id: 1,
+              isAccountGroup: true,
+              accounts: [
+                {
+                  id: 1,
+                  firstName: 'Account',
+                  lastName: '1',
+                  emailId: 'acccount1@daftruck.net',
+                  roles: 'Roles',
+                  roleList: 'Role 1, Role 2, Role 3'
+                },
+                {
+                  id: 2,
+                  firstName: 'Account',
+                  lastName: '2',
+                  emailId: 'acccount2@daftruck.net',
+                  roles: 'Roles',
+                  roleList: 'Role 3, Role 4, Role 5'
+                }
+              ]
+          },
+          {
+              name: "Account Group 2",
+              id: 2,
+              isAccountGroup: true,
+              accounts: [
+                {
+                  id: 3,
+                  firstName: 'Account',
+                  lastName: '3',
+                  emailId: 'acccount3@daftruck.net',
+                  roles: 'Roles',
+                  roleList: 'Role 1, Role 2, Role 3'
+                },
+                {
+                  id: 4,
+                  firstName: 'Account',
+                  lastName: '4',
+                  emailId: 'acccount4@daftruck.net',
+                  roles: 'Roles',
+                  roleList: 'Role 4, Role 5, Role 6'
+                },
+                {
+                  id: 5,
+                  firstName: 'Account',
+                  lastName: '5',
+                  emailId: 'acccount5@daftruck.net',
+                  roles: 'Roles',
+                  roleList: 'Role 4, Role 5, Role 6'
+                }
+              ]
+          },
+          {
+            name: "Account Group 3",
+            id: 10,
+            isAccountGroup: true,
+            accounts: [
+              {
+                id: 3,
+                firstName: 'Account',
+                lastName: '3',
+                emailId: 'acccount3@daftruck.net',
+                roles: 'Roles',
+                roleList: 'Role 1, Role 2, Role 3'
+              },
+              {
+                id: 4,
+                firstName: 'Account',
+                lastName: '4',
+                emailId: 'acccount4@daftruck.net',
+                roles: 'Roles',
+                roleList: 'Role 4, Role 5, Role 6'
+              },
+              {
+                id: 5,
+                firstName: 'Account',
+                lastName: '5',
+                emailId: 'acccount5@daftruck.net',
+                roles: 'Roles',
+                roleList: 'Role 4, Role 5, Role 6'
+              }
+            ]
+          },
+          {
+              "name": "Account 1",
+              "id": 3,
+              "isAccountGroup": false
+          },
+          {
+              "name": "Account 2",
+              "id": 4,
+              "isAccountGroup": false
+          },
+          {
+              "name": "Account 3",
+              "id": 5,
+              "isAccountGroup": false
+          },
+          {
+              "name": "Account 4",
+              "id": 6,
+              "isAccountGroup": false
+          }
+      ];
+
+      this.vehicleGrpVehicleDetails = [
+          {
+              name: "Vehicle Group 1",
+              id: 1,
+              isVehicleGroup: true,
+              vehicles: [
+                {
+                  id: 1,
+                  name: 'Vehicle 1',
+                  vin: 'VIN 1',
+                  license_Plate_Number: 'Lic 1',
+                },
+                {
+                  id: 2,
+                  name: 'Vehicle 2',
+                  vin: 'VIN 2',
+                  license_Plate_Number: 'Lic 2',
+                }
+              ]
+          },
+          {
+              name: "Vehicle Group 2",
+              id: 2,
+              isVehicleGroup: true,
+              vehicles: [
+                {
+                  id: 3,
+                  name: 'Vehicle 3',
+                  vin: 'VIN 3',
+                  license_Plate_Number: 'Lic 3',
+                }
+              ]
+          },
+          {
+              "name": "Vehicle 1",
+              "id": 3,
+              "isVehicleGroup": false
+          },
+          {
+              "name": "Vehicle 2",
+              "id": 4,
+              "isVehicleGroup": false
+          },
+          {
+              "name": "Vehicle 3",
+              "id": 5,
+              "isVehicleGroup": false
+          },
+          {
+              "name": "Vehicle 4",
+              "id": 6,
+              "isVehicleGroup": false
+          }
+      ];
+  }
+
   processTranslation(transData: any){
-    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
   }
 
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    //this.dataSource.filter = filterValue;
+    this.dataSource.filter = filterValue;
   }
 
-  newAssociation(){
+  createNewAssociation(){
+    this.actionType = 'create';
+    if(!this.isViewListDisabled){
+      this.createVehicleAccessRelation = true;
+    }
+    else{
+      this.createAccountAccessRelation = true;
+    }
+  }
 
+  updateGridData(tableData: any){
+    this.initData = tableData;
+    this.dataSource = new MatTableDataSource(this.initData);
+    setTimeout(()=>{
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    });
+  }
+
+  makeAssociatedAccountGrpList(initdata: any){
+    initdata.forEach((element: any, index: any) => {
+      let list: any = '';
+      element.associatedAccount.forEach((resp: any) => {
+        list += resp.name + ', ';
+      });
+      if(list != ''){
+        list = list.slice(0, -2);
+      }
+      initdata[index].associatedAccountList = list; 
+    });
+    return initdata;
+  }
+
+  makeAssociatedVehicleGrpList(initdata: any){
+    initdata.forEach((element: any, index: any) => {
+      let list: any = '';
+      element.associatedVehicle.forEach((resp: any) => {
+        list += resp.name + ', ';
+      });
+      if(list != ''){
+        list = list.slice(0, -2);
+      }
+      initdata[index].associatedVehicleList = list; 
+    });
+    return initdata;
+  }
+
+  editViewAccessRelationship(element: any, type: any) {
+    this.actionType = type;
+    this.selectedElementData = element;
+    if(!this.isViewListDisabled){
+      this.createVehicleAccessRelation = true;
+    }
+    else{
+      this.createAccountAccessRelation = true;
+    }
+  }
+
+  deleteAccessRelationship(element: any){
+    //console.log("delete item:: ", element);
+    const options = {
+        title: this.translationData.lblDelete || "Delete",
+        message: this.translationData.lblAreyousureyouwanttodeleteAssociationRelationship || "Are you sure you want to delete '$' Association Relationship?",
+        cancelText: this.translationData.lblNo || "No",
+        confirmText: this.translationData.lblYes || "Yes"
+      };
+    this.dialogService.DeleteModelOpen(options, element.name);
+    this.dialogService.confirmedDel().subscribe((res) => {
+      if (res) {
+          this.successMsgBlink(this.getDeletMsg(element.name));
+        }
+    });
+  }
+
+  successMsgBlink(msg: any){
+    this.titleVisible = true;
+    this.accessRelationCreatedMsg = msg;
+    setTimeout(() => {  
+      this.titleVisible = false;
+    }, 5000);
+  }
+
+  getDeletMsg(userName: any){
+    if(this.translationData.lblAssociationRelationshipwassuccessfullydeleted)
+      return this.translationData.lblAssociationRelationshipwassuccessfullydeleted.replace('$', userName);
+    else
+      return ("Association Relationship '$' was successfully deleted").replace('$', userName);
   }
 
   onClose(){
-
+    this.titleVisible = false;
   }
 
+  onVehicleListChange(event: any){
+    this.selectedVehicleViewType = event.value;
+    this.changeGridOnVehicleList(event.value);
+  }
+
+  onAccountListChange(event: any){
+    this.selectedAccountViewType = event.value;
+    this.changeGridOnAccountList(event.value);
+  }
+
+  changeGridOnVehicleList(val: any){
+    this.cols = ['name','accessType','associatedAccount','action'];
+    this.columnNames = ['Vehicle Group/Vehicle','Access Type','Account Group/Account','Action'];
+    let data: any = [];
+    switch(val){
+      case "group":{
+        data = this.vehicleGrpVehicleAssociationDetails.filter((item: any) => item.isVehicleGroup == true);
+        break;
+      }
+      case "vehicle":{
+        data = this.vehicleGrpVehicleAssociationDetails.filter((item: any) => item.isVehicleGroup == false);
+        break;
+      }
+      case "both":{
+        data = this.vehicleGrpVehicleAssociationDetails;
+        break;
+      }
+    }
+    this.updateGridData(this.makeAssociatedAccountGrpList(data));
+  }
+
+  changeGridOnAccountList(val: any){
+    this.cols = ['name','accessType','associatedVehicle','action'];
+    this.columnNames = ['Account Group/Account','Access Type','Vehicle Group/Vehicle','Action'];
+    let data: any = [];
+    switch(val){
+      case "group":{
+        data = this.accountGrpAccountAssociationDetails.filter((item: any) => item.isAccountGroup == true);
+        break;
+      }
+      case "account":{
+        data = this.accountGrpAccountAssociationDetails.filter((item: any) => item.isAccountGroup == false);
+        break;
+      }
+      case "both":{
+        data = this.accountGrpAccountAssociationDetails;
+        break;
+      }
+    }
+    this.updateGridData(this.makeAssociatedVehicleGrpList(data));
+  }
+
+  onColumnChange(event: any){
+    if(event.value == 'account'){
+      this.isViewListDisabled = true;
+      this.selectedAccountViewType = 'both';
+      this.changeGridOnAccountList(this.selectedAccountViewType);
+    }
+    else{
+      this.isViewListDisabled = false;
+      this.selectedVehicleViewType = 'both';
+      this.changeGridOnVehicleList(this.selectedVehicleViewType);
+    }
+  }
+
+  checkCreationForVehicle(item: any){
+    this.createVehicleAccessRelation = !this.createVehicleAccessRelation;
+    if(this.isViewListDisabled){
+      this.selectedColumnType = 'account';
+      this.selectedAccountViewType = 'both';
+      this.changeGridOnAccountList(this.selectedAccountViewType);
+    }
+    else{
+      this.selectedColumnType = 'vehicle';
+      this.selectedVehicleViewType = 'both';
+      this.changeGridOnVehicleList(this.selectedVehicleViewType);
+    }
+  }
+
+  checkCreationForAccount(item: any){
+    this.createAccountAccessRelation = !this.createAccountAccessRelation;
+    if(this.isViewListDisabled){
+      this.selectedColumnType = 'account';
+      this.selectedAccountViewType = 'both';
+      this.changeGridOnAccountList(this.selectedAccountViewType);
+    }
+    else{
+      this.selectedColumnType = 'vehicle';
+      this.selectedVehicleViewType = 'both';
+      this.changeGridOnVehicleList(this.selectedVehicleViewType);
+    }
+  }
+
+  hideloader() {
+    // Setting display of spinner
+      this.showLoadingIndicator=false;
+  }
+
+  showAccountPopup(row: any){
+    const colsList = ['firstName','emailId','roles'];
+    const colsName = [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'];
+    const tableTitle = `${row.name} - ${this.translationData.lblUsers || 'Users'}`;
+
+    let data: any = this.accountGrpAccountDetails.filter((item: any) => item.id == row.id);
+    if(data.length > 0){
+      data = data[0].accounts;
+    }
+    this.callToCommonTable(data, colsList, colsName, tableTitle);
+  }
+
+  showVehiclePopup(row: any){
+    const colsList = ['name','vin','license_Plate_Number'];
+    const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
+    const tableTitle =`${row.name} - ${this.translationData.lblVehicles || 'Vehicles'}`;
+
+    let data: any = this.vehicleGrpVehicleDetails.filter((item: any) => item.id == row.id); 
+    if(data.length > 0){
+      data = data[0].vehicles;
+    }
+    this.callToCommonTable(data, colsList, colsName, tableTitle);
+  }
+
+  callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      tableData: tableData,
+      colsList: colsList,
+      colsName:colsName,
+      tableTitle: tableTitle
+    }
+    this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
+  }
+  
 }

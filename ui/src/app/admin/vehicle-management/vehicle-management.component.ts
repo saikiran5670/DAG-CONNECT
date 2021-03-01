@@ -167,7 +167,7 @@ export class VehicleManagementComponent implements OnInit {
     let tempData = [];
     let tempDataForGroup = [];
     this.dataSource = new MatTableDataSource(tempData);
-    
+
     this.vehService
       .getVehicleGroup(this.vehGrpRqst)
       //.pipe(map((data) => data.filter((d) => d.isVehicleGroup == true)))
@@ -228,7 +228,7 @@ export class VehicleManagementComponent implements OnInit {
   deleteFunc(row: any) {
     if(this.selectedType === 'group'){
       this.deleteVehicleGroup(row);
-    } 
+    }
     else if(this.selectedType === 'vehicle'){
       this.deleteVehicle(row);
     }
@@ -343,7 +343,7 @@ export class VehicleManagementComponent implements OnInit {
     this.viewMode = false;
     this.vinData = item;
   }
-  
+
   viewVehicleDetails(item: any) {
     this.viewMode = true;
     this.viewFlag = true;
@@ -534,7 +534,7 @@ export class VehicleManagementComponent implements OnInit {
         this.vehicleGroupData = _data;
         this.initData = this.vehicleGroupData;
       });
-    
+
     this.updateDataSource(this.vehicleGroupData);
   }
 
@@ -544,7 +544,7 @@ export class VehicleManagementComponent implements OnInit {
 
     if(this.vehicleData != null){
       this.updateDataSource(this.vehicleData);
-    } 
+    }
     else{
       this.vehGrpRqst = {
         id: 0,
@@ -569,10 +569,11 @@ export class VehicleManagementComponent implements OnInit {
   loadBothDataSource() {
     this.cols = ['name', 'vin', 'license_Plate_Number', 'model', 'status', 'action', 'isVehicleGroup'];
     this.columnNames = ['Vehicle Group/Vehicle', 'VIN', 'Registration Number', 'Model', 'Status', 'Actions', 'isVehicleGroup'];
-    
-    if (this.bothData != null) {
-      this.updateDataSource(this.bothData);
-    } else {
+
+    // if (this.bothData != null) {
+    //   this.updateDataSource(this.bothData);
+    // } else {
+      this.bothData=[];
       this.vehGrpRqst = {
         id: 0,
         organizationID: this.orgId ? this.orgId : 1,
@@ -582,9 +583,10 @@ export class VehicleManagementComponent implements OnInit {
       };
       this.vehService.getVehicleGroup(this.vehGrpRqst).subscribe((_data) => {
         this.bothData = _data;
+        this.updateDataSource(this.bothData);
       });
-      this.updateDataSource(this.bothData);
-    }
+
+    //}
   }
 
 }

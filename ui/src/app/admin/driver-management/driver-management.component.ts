@@ -4,52 +4,54 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { ConsentOptComponent } from './consent-opt/consent-opt.component';
+import { ConsentAllOptComponent } from './consent-all-opt/consent-all-opt.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { FileValidator } from 'ngx-material-file-input';
 import * as XLSX from 'xlsx';
 import { TranslationService } from '../../services/translation.service';
 import { AccountService } from '../../services/account.service';
-import { AccountGroup } from 'src/app/models/users.model';
 
 @Component({
   selector: 'app-driver-management',
   templateUrl: './driver-management.component.html',
   styleUrls: ['./driver-management.component.less']
 })
+
 export class DriverManagementComponent implements OnInit {
+  //--------------Rest mock data----------------//
+  driverRestData: any = [];
+  //--------------------------------------------//
   grpTitleVisible : boolean = false;
   userCreatedMsg : any;
   accountOrganizationId: any = 0;
-  userGrpList: any = [];
   dataSource: any;
   initData: any = [];
   importDriverPopup: boolean = false;
-  displayedColumns: string[] = ['firstName','emailId','roles','accountGroups','action'];
+  displayedColumns: string[] = ['driverId','firstName','birthDate','consentStatus','action'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   importDriverFormGroup: FormGroup;
+  consentFormGroup: FormGroup;
   userGrpName: string = '';
   templateFileUrl: string = 'assets/docs/driverTemplate.xlsx';
   templateFileName: string = 'driver-Template.xlsx';
-  
-  dialogRef: MatDialogRef<ConsentOptComponent>;
-
-  // fileToUpload: File = null;
+  dialogRef: MatDialogRef<ConsentAllOptComponent>;
   @ViewChild('UploadFileInput') uploadFileInput: ElementRef;
-  //myfilename = 'Select File';
   readonly maxSize = 104857600;
   editFlag: boolean = false;
-  rowData: any;
+  driverData: any = [];
   file: any;
   arrayBuffer: any;
   filelist: any;
   translationData: any;
   localStLanguage: any;
-  type: any = '';
+  actionType: any = '';
   showLoadingIndicator: any;
   consentSelectionList: any = [
+    {
+      name: 'All'
+    },
     {
       name: 'Opt-In'
     },
@@ -57,6 +59,7 @@ export class DriverManagementComponent implements OnInit {
       name: 'Opt-Out'
     }
   ];
+  selectedConsentType: any = ''; 
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService,
     private _snackBar: MatSnackBar, private translationService: TranslationService, private accountService: AccountService) { 
@@ -134,6 +137,18 @@ export class DriverManagementComponent implements OnInit {
   ngOnInit(){
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.importDriverFormGroup = this._formBuilder.group({
+      //userGroup: [],
+      uploadFile: [
+        undefined,
+        [Validators.required, FileValidator.maxContentSize(this.maxSize)]
+      ]
+    });
+    this.consentFormGroup = this._formBuilder.group({
+      consentType: []
+    });
+
+    this.selectedConsentType = this.selectedConsentType == '' ? 'All' : this.selectedConsentType;
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -146,16 +161,43 @@ export class DriverManagementComponent implements OnInit {
 
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
+      this.restMockData();
       this.loadUsersData();
+      this.setConsentDropdown();
     });
+  }
 
-    this.importDriverFormGroup = this._formBuilder.group({
-      //userGroup: [],
-      uploadFile: [
-        undefined,
-        [Validators.required, FileValidator.maxContentSize(this.maxSize)]
-      ]
-    });
+  setConsentDropdown(){
+    this.consentFormGroup.get('consentType').setValue(this.selectedConsentType);
+  }
+
+  restMockData(){
+    this.driverRestData = [
+      {
+        driverId: "IN 0000000000000001",
+        firstName: "Driver",
+        lastName: "1",
+        birthDate: "01/01/1991", //----- MM/DD/YYYY
+        consentStatus: 'Opt-In',
+        salutation: "Mr"
+      },
+      {
+        driverId: "IN 0000000000000002",
+        firstName: "Driver",
+        lastName: "2",
+        birthDate: "02/02/1992",
+        consentStatus: 'Opt-Out',
+        salutation: "Ms"
+      },
+      {
+        driverId: "IN 0000000000000003",
+        firstName: "Driver",
+        lastName: "3",
+        birthDate: "03/03/1993",
+        consentStatus: 'Opt-In',
+        salutation: "Mrs"
+      }
+    ];
   }
 
   processTranslation(transData: any){
@@ -163,65 +205,46 @@ export class DriverManagementComponent implements OnInit {
     //console.log("process translationData:: ", this.translationData)
   }
 
-  loadUsersData() {
-    this.showLoadingIndicator = true;
-    let obj: any = {
-      accountId: 0,
-      organizationId: this.accountOrganizationId,
-      accountGroupId: 0,
-      vehicleGroupGroupId: 0,
-      roleId: 0,
-      name: ""
-    }
+  loadUsersData(){
+    this.onConsentChange(this.selectedConsentType);
+  }
 
-    let accountGrpObj: AccountGroup = {
-      accountGroupId : 0,
-      organizationId : this.accountOrganizationId,
-      accountId : 0,
-      accounts : true,
-      accountCount : true,
-    }
+  onConsentStatusChange(){
+    this.onConsentChange(this.consentType.value);  
+  }
 
-    this.accountService.getAccountDetails(obj).subscribe((usrlist)=>{
-      this.hideloader();
-      this.initData = this.makeRoleAccountGrpList(usrlist);
-      this.accountService.getAccountGroupDetails(accountGrpObj).subscribe((grpData)=>{
-        this.dataSource = new MatTableDataSource(this.initData);
-        setTimeout(()=>{
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
-        });
-        this.userGrpList = grpData;
-      });
+  get consentType() {
+    return this.consentFormGroup.get('consentType');
+  }
+
+  onConsentChange(type: any){
+    let data = [];
+    switch(type){
+      case "All":{
+        data = this.driverRestData;
+        break;
+      }
+      case "Opt-In":{
+        data = this.driverRestData.filter((item: any) => item.consentStatus == 'Opt-In');
+        break;
+      }
+      case "Opt-Out":{
+        data = this.driverRestData.filter((item: any) => item.consentStatus == 'Opt-Out');
+        break;
+      }
+    }
+    this.updateGridData(data);
+  }
+
+  updateGridData(tableData: any){
+    this.initData = tableData; 
+    this.dataSource = new MatTableDataSource(this.initData);
+    setTimeout(()=>{
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
     });
   }
 
-  makeRoleAccountGrpList(initdata){
-    let accountId =  localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
-    initdata = initdata.filter(item => item.id != accountId);
-    initdata.forEach((element, index) => {
-      let roleTxt: any = '';
-      let accGrpTxt: any = '';
-      element.roles.forEach(resp => {
-        roleTxt += resp.name + ', ';
-      });
-      element.accountGroups.forEach(resp => {
-        accGrpTxt += resp.name + ', ';
-      });
-
-      if(roleTxt != ''){
-        roleTxt = roleTxt.slice(0, -2);
-      }
-      if(accGrpTxt != ''){
-        accGrpTxt = accGrpTxt.slice(0, -2);
-      }
-
-      initdata[index].roleList = roleTxt; 
-      initdata[index].accountGroupList = accGrpTxt;
-    });
-    
-    return initdata;
-  }
 
   importDrivers(){ 
     this.importDriverPopup = true;
@@ -240,9 +263,9 @@ export class DriverManagementComponent implements OnInit {
   }
 
   onEditView(element: any, type: any){
-    this.rowData = element;
+    this.driverData = element;
     this.editFlag = true;
-    this.type = type; 
+    this.actionType = type; 
   }
 
   onDelete(row: any){
@@ -290,13 +313,13 @@ export class DriverManagementComponent implements OnInit {
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
       optValue: optVal,
-      translationData: this.translationData
+      translationData: this.translationData,
+      driverData: this.driverRestData
     }
-    this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
+    this.dialogRef = this.dialog.open(ConsentAllOptComponent, dialogConfig);
   }
 
-  addfile(event)     
-  {    
+  addfile(event: any){    
     this.file = event.target.files[0];     
     let fileReader = new FileReader();    
     fileReader.readAsArrayBuffer(this.file);     
@@ -332,6 +355,10 @@ export class DriverManagementComponent implements OnInit {
   hideloader() {
     // Setting display of spinner
       this.showLoadingIndicator=false;
+  }
+
+  changeOptStatus(rowData: any){
+
   }
 
 }

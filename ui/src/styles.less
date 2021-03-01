@@ -429,6 +429,23 @@ footer{
             background-color: #4fa746;
             font-weight: normal;
         }
+        @keyframes glowing {
+            0% {
+              background-color: #ffffff;
+              box-shadow: 0 0 3px #ffffff;
+            }
+            50% {
+              background-color: #ffffff;
+              box-shadow: 0 0 10px #ffffff;
+            }
+            100% {
+              background-color: #ffffff;
+              box-shadow: 0 0 3px #ffffff;
+            }
+        }
+            .cookieBtn {
+            animation: glowing 1300ms infinite;
+        }
     }
     .loginFooter{
         bottom: 0;
@@ -737,6 +754,9 @@ app-consent-opt{
 .min-width-75-per{
     min-width: 75%;
 }
+.margin-left-10-per{
+    margin-left: 10%;
+}
 .custom-font{
     font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;
 }
@@ -746,6 +766,10 @@ app-consent-opt{
 .margin-20{
     margin: 20px;
 }
+
+.opacity-0-5{
+    opacity: 0.5;
+}   
 
 .cursor-pointer{
     cursor: pointer;
@@ -944,5 +968,31 @@ input:-webkit-autofill {
 mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-type{
     @media @mobile {
         padding-left: 10px !important;
+    }
+}
+
+.disableRadioBtn {
+    .mat-radio-button {
+        &.mat-accent{
+            &.mat-radio-checked{
+                .mat-radio-outer-circle{
+                    border-color: #29539c61;
+                }
+            }
+            .mat-radio-inner-circle{
+                background-color: #29539c61;
+            }
+        }
+    }
+    .radioLabel{
+        color: rgba(0,0,0,.38);
+    }
+}
+
+.consentCheckbox{
+    .mat-checkbox-disabled {
+        .mat-checkbox-label{
+            color: #000 !important;
+        }
     }
 }

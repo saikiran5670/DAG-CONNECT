@@ -13,33 +13,57 @@ export class TranslationService {
         this.translationUrl = config.getSettings("foundationServices").translationRESTServiceURL;
     }
 
+    generateHeader(){
+        let genericHeader : object = {
+          'Content-Type' : 'application/json',
+          'accountId' : localStorage.getItem('accountId'),
+          'orgId' : localStorage.getItem('accountOrganizationId'),
+          'roleId' : localStorage.getItem('accountRoleId')
+        }
+        let getHeaderObj = JSON.stringify(genericHeader)
+        return getHeaderObj;
+      }
+
     getMenuTranslations(dataObj: any): Observable<any[]> {
-        const headers = {
-            headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-        };
+     let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
         return this.httpClient
             .post<any[]>(`${this.translationUrl}/menutranslations`, dataObj, headers)
             .pipe(catchError(this.handleError));
     }
 
     getTranslationsForDropdowns(langCode:any, dropdownType: any): Observable<any[]> {
+        let headerObj = this.generateHeader();
+        const headers = {
+          headers: new HttpHeaders({ headerObj }),
+        };
         return this.httpClient
-            .get<any[]>(`${this.translationUrl}/translationsfordropdowns?Dropdownname=${dropdownType}&languagecode=${langCode}`)
+            .get<any[]>(`${this.translationUrl}/translationsfordropdowns?Dropdownname=${dropdownType}&languagecode=${langCode}`,headers)
             .pipe(catchError(this.handleError));
     }
 
     getPreferences(langCode: string): Observable<any> {
+        let headerObj = this.generateHeader();
+        const headers = {
+          headers: new HttpHeaders({ headerObj }),
+        };
         return this.httpClient
             .get<any>(
-                `${this.translationUrl}/preferences?languagecode=${langCode}`
+                `${this.translationUrl}/preferences?languagecode=${langCode}`,headers
                 )
             .pipe(catchError(this.handleError));
     }
 
     getLanguageCodes(): Observable<any> {
+        let headerObj = this.generateHeader();
+        const headers = {
+          headers: new HttpHeaders({ headerObj }),
+        };
         return this.httpClient
             .get<any>(
-                `${this.translationUrl}/languagecodes`
+                `${this.translationUrl}/languagecodes`,headers
                 )
             .pipe(catchError(this.handleError));
     }

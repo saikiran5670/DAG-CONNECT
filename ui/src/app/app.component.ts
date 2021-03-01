@@ -56,7 +56,8 @@ export class AppComponent {
     vehiclemanagement: 'Vehicle Management',
     drivermanagement: 'Driver Management',
     userrolemanagement: 'User Role Management',
-    vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship'
+    vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship',
+    translationdataupload: 'Translation Data Upload'
   }
   public menuStatus = {
     dashboard : {
@@ -95,7 +96,8 @@ export class AppComponent {
         drivermanagement: 'Driver Management',
         userrolemanagement: 'User Role Management',
         vehiclemanagement: 'Vehicle Management',
-        vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship'
+        vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship',
+        translationdataupload: 'Translation Data Upload'
       }
     },
     tachograph : {
@@ -255,6 +257,7 @@ export class AppComponent {
       lblUserRoleManagement: "User Role Management",
       lblVehicleAccountAccessRelationship: 'Vehicle/Account Access-Relationship',
       lblDriverManagement: "Driver Management",
+      lblTranslationDataUpload: "Translation Data Upload",
       lblLiveFleet: "Live Fleet",
       lblLogBook: "Log Book",
       lblTripReport: "Trip Report",
@@ -377,14 +380,18 @@ private setPageTitle() {
   }
 
   sidenavToggle() {
-
-    this.menuCollapsed = !this.menuCollapsed;
     this.hideAllOpenMenus();
+    setTimeout(() => {
+      this.menuCollapsed = !this.menuCollapsed;  
+    }, 500);
+    
+    
     if(this.openUserRoleDialog)
       this.openUserRoleDialog = !this.openUserRoleDialog;
   }
 
   logOut() {
+    this.isLogedIn = false;
     localStorage.clear(); // clear all localstorage
     this.router.navigate(["/auth/login"]);
   }

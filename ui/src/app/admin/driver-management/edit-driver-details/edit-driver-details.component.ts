@@ -6,14 +6,15 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   templateUrl: './edit-driver-details.component.html',
   styleUrls: ['./edit-driver-details.component.less']
 })
+
 export class EditDriverDetailsComponent implements OnInit {
   @Output() backToPage = new EventEmitter<boolean>();
-  @Input() rowData: any;
+  @Input() driverData: any;
   @Input() translationData: any;
-  @Input() type: any;
-  firstFormGroup: FormGroup;
+  @Input() actionType: any;
+  driverFormGroup: FormGroup;
   breadcumMsg: any = '';
-  selectList: any = [
+  salutationList: any = [
     {
       name: 'Mr'
     },
@@ -24,33 +25,36 @@ export class EditDriverDetailsComponent implements OnInit {
       name: 'Ms'
     }
   ];
-  data: any = {
-    optValue: 'opt-in'
-  };
-  optVal: string = '';
+  selectedConsentType: any = '';
+  startDate: any; //new Date(2021, 2, 31);
+  minDate: any = new Date(new Date().setFullYear(new Date().getFullYear() - 100)); // 100 years
 
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit() {
-    this.firstFormGroup = this._formBuilder.group({
+    this.driverFormGroup = this._formBuilder.group({
       driverId: ['', [Validators.required]],
-      emailId: ['', []],
-      consentStatus: ['', [Validators.required]],
+      birthDate: ['', []],
+      consentStatus: ['', []],
       salutation: ['', [Validators.required]],
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
-      birthDate: ['', []],
-      language: ['', []],
-      unit: ['', []],
-      timeZone: ['', []],
-      currency: ['', []]
     });
-    //this.optVal = this.rowData.isActive ? this.data.optValue : 'opt-out';
-    this.optVal = this.data.optValue;
-    this.breadcumMsg = this.getBreadcum(this.type);
+    this.breadcumMsg = this.getBreadcum(this.actionType);
+    this.setDefaultData();
   }
 
-  getBreadcum(type: any){
+  setDefaultData(){
+    this.driverFormGroup.get('driverId').setValue(this.driverData.driverId);
+    this.startDate = new Date(this.driverData.birthDate);
+    this.driverFormGroup.get('birthDate').setValue(this.startDate);
+    this.driverFormGroup.get('salutation').setValue(this.driverData.salutation);
+    this.driverFormGroup.get('firstName').setValue(this.driverData.firstName);
+    this.driverFormGroup.get('lastName').setValue(this.driverData.lastName);
+    this.selectedConsentType = this.driverData.consentStatus;
+  }
+
+  getBreadcum(actionType: any){
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblDriverManagement ? this.translationData.lblDriverManagement : "Driver Management"} / ${this.translationData.lblDriverDetails ? this.translationData.lblDriverDetails : 'Driver Details'}`;
   }
 
@@ -65,18 +69,20 @@ export class EditDriverDetailsComponent implements OnInit {
     this.backToPage.emit(false);
   }
   
-  onReset(){}
+  onReset(){
+    this.setDefaultData();
+  }
   
   onConfirm(){
-    //console.log(this.firstFormGroup.controls)
+    console.log(this.driverFormGroup.controls)
     this.backToPage.emit(false);
   }
 
-  onChange(event){
-    //console.log(event.value)
+  onConsentChange(event: any){
+    this.selectedConsentType = event.value;
   }
 
-  numericOnly(event): boolean {    
+  numericOnly(event: any): boolean {    
     let patt = /^([0-9])$/;
     let result = patt.test(event.key);
     return result;

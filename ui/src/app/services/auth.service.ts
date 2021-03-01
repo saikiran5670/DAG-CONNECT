@@ -12,10 +12,22 @@ export class AuthService {
         this.domainUrl = config.getSettings("authentication").authRESTServiceURL;
     }
 
+    generateHeader(){
+        let genericHeader : object = {
+          'Content-Type' : 'application/json',
+          'accountId' : localStorage.getItem('accountId'),
+          'orgId' : localStorage.getItem('accountOrganizationId'),
+          'roleId' : localStorage.getItem('accountRoleId')
+        }
+        let getHeaderObj = JSON.stringify(genericHeader)
+        return getHeaderObj;
+      }
+
     public signIn(userInfo) {
+        let headerObj = this.generateHeader();
         const httpOptions = {
             headers: new HttpHeaders({
-                'Content-Type': 'application/json',
+                headerObj,
                 //'Authorization': 'Basic ' + btoa('username:password')
                 'Authorization': 'Basic ' + btoa(`${userInfo.username.replace(/\s+/g, '').toLowerCase()}:${userInfo.password.replace(/\s+/g, '')}`)  //-- trim()
             }),

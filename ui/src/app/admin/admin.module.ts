@@ -14,7 +14,7 @@ import { UserManagementComponent } from './user-management/user-management.compo
 import { NewUserStepComponent } from './user-management/new-user-step/new-user-step.component';
 import { SummaryStepComponent } from './user-management/new-user-step/summary-step/summary-step.component';
 import { DriverManagementComponent } from './driver-management/driver-management.component';
-import { ConsentOptComponent } from './driver-management/consent-opt/consent-opt.component';
+import { ConsentAllOptComponent } from './driver-management/consent-all-opt/consent-all-opt.component';
 import { EditDriverDetailsComponent } from './driver-management/edit-driver-details/edit-driver-details.component';
 import { UserRoleManagementComponent } from './user-role-management/user-role-management.component';
 import { EditUserRoleDetailsComponent } from './user-role-management/edit-user-role-details/edit-user-role-details.component';
@@ -30,6 +30,9 @@ import { EditVINSettingComponent } from '../admin/vehicle-management/edit-vin-se
 import { VehicleService } from '../services/vehicle.service';
 import { VehicleManagementComponent } from '../admin/vehicle-management/vehicle-management.component';
 import { VehicleAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/vehicle-account-access-relationship.component';
+import { CreateEditViewVehicleAccessRelationshipComponent } from './vehicle-account-access-relationship/create-edit-view-vehicle-access-relationship/create-edit-view-vehicle-access-relationship.component';
+import { CreateEditViewAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/create-edit-view-account-access-relationship/create-edit-view-account-access-relationship.component';
+import { TranslationDataUploadComponent } from './translation-data-upload/translation-data-upload/translation-data-upload.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +45,7 @@ import { VehicleAccountAccessRelationshipComponent } from './vehicle-account-acc
     NewUserStepComponent,
     SummaryStepComponent,
     DriverManagementComponent,
-    ConsentOptComponent,
+    ConsentAllOptComponent,
     EditDriverDetailsComponent,
     UserRoleManagementComponent,
     EditUserRoleDetailsComponent,
@@ -53,7 +56,10 @@ import { VehicleAccountAccessRelationshipComponent } from './vehicle-account-acc
     VehicleManagementComponent,
     CreateEditVehicleDetailsComponent,
     EditVINSettingComponent,
-    VehicleAccountAccessRelationshipComponent
+    VehicleAccountAccessRelationshipComponent,
+    CreateEditViewVehicleAccessRelationshipComponent,
+    CreateEditViewAccountAccessRelationshipComponent,
+    TranslationDataUploadComponent
   ],
   imports: [
       CommonModule,

@@ -263,8 +263,9 @@ export class UserGroupManagementComponent implements OnInit {
       if (res) {
         this.accountService.deleteAccountGroup(item).subscribe((d) => {
           this.openSnackBar('Item delete', 'dismiss');
+          this.loadUserGroupData();
         });
-        this.loadUserGroupData();
+        
       }
     });
   }
