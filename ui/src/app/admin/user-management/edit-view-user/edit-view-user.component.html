@@ -177,9 +177,9 @@
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
             <div>
               <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting || 'User General Setting' }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }})</span></span>
-              <button *ngIf="fromEdit == 'edit'" class='actionBtn' mat-flat-button  matTooltip="Edit">
+              <!-- <button *ngIf="fromEdit == 'edit'" class='actionBtn' mat-flat-button  matTooltip="Edit">
                 <mat-icon *ngIf='!editGeneralSettingsFlag' style="cursor: pointer;" (click)="editGeneralSettings()">create</mat-icon>
-              </button>
+              </button> -->
             </div>
         </div>
         <div *ngIf="!editGeneralSettingsFlag" fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
