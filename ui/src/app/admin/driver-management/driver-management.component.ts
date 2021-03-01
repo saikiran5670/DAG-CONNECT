@@ -4,8 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { ConsentAllOptComponent } from './consent-all-opt/consent-all-opt.component';
-import { ConsentSingleOptComponent } from './consent-single-opt/consent-single-opt.component';
+import { ConsentOptComponent } from './consent-opt/consent-opt.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { FileValidator } from 'ngx-material-file-input';
@@ -37,8 +36,7 @@ export class DriverManagementComponent implements OnInit {
   userGrpName: string = '';
   templateFileUrl: string = 'assets/docs/driverTemplate.xlsx';
   templateFileName: string = 'driver-Template.xlsx';
-  dialogRef: MatDialogRef<ConsentAllOptComponent>;
-  dialogSingleRef: MatDialogRef<ConsentSingleOptComponent>;
+  dialogRef: MatDialogRef<ConsentOptComponent>;
   @ViewChild('UploadFileInput') uploadFileInput: ElementRef;
   readonly maxSize = 104857600;
   editFlag: boolean = false;
@@ -309,18 +307,6 @@ export class DriverManagementComponent implements OnInit {
     this.importDriverPopup = false;
   }
 
-  onConsentClick(optVal: string){
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.disableClose = true;
-    dialogConfig.autoFocus = true;
-    dialogConfig.data = {
-      optValue: optVal,
-      translationData: this.translationData,
-      driverData: this.driverRestData
-    }
-    this.dialogRef = this.dialog.open(ConsentAllOptComponent, dialogConfig);
-  }
-
   addfile(event: any){    
     this.file = event.target.files[0];     
     let fileReader = new FileReader();    
@@ -359,15 +345,25 @@ export class DriverManagementComponent implements OnInit {
       this.showLoadingIndicator=false;
   }
 
-  changeOptStatus(driverData: any){
+  changeOptStatus(driverData: any){ //--- single opt-in/out mode
+    this.callToCommonTable(driverData, false, driverData.consentStatus);
+  }
+  
+  onConsentClick(consentType: string){ //--- All opt-in/out mode
+    this.callToCommonTable(this.driverRestData, true, consentType);
+  }
+
+  callToCommonTable(driverData: any, actionType: any, consentType: any){
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
       translationData: this.translationData,
-      driverData: driverData
+      driverData: driverData,
+      actionType: actionType,
+      consentType: consentType
     }
-    this.dialogSingleRef = this.dialog.open(ConsentSingleOptComponent, dialogConfig);
+    this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
   }
 
 }

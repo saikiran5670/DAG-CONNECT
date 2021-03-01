@@ -14,7 +14,6 @@ import { UserManagementComponent } from './user-management/user-management.compo
 import { NewUserStepComponent } from './user-management/new-user-step/new-user-step.component';
 import { SummaryStepComponent } from './user-management/new-user-step/summary-step/summary-step.component';
 import { DriverManagementComponent } from './driver-management/driver-management.component';
-import { ConsentAllOptComponent } from './driver-management/consent-all-opt/consent-all-opt.component';
 import { EditDriverDetailsComponent } from './driver-management/edit-driver-details/edit-driver-details.component';
 import { UserRoleManagementComponent } from './user-role-management/user-role-management.component';
 import { EditUserRoleDetailsComponent } from './user-role-management/edit-user-role-details/edit-user-role-details.component';
@@ -33,7 +32,7 @@ import { VehicleAccountAccessRelationshipComponent } from './vehicle-account-acc
 import { CreateEditViewVehicleAccessRelationshipComponent } from './vehicle-account-access-relationship/create-edit-view-vehicle-access-relationship/create-edit-view-vehicle-access-relationship.component';
 import { CreateEditViewAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/create-edit-view-account-access-relationship/create-edit-view-account-access-relationship.component';
 import { TranslationDataUploadComponent } from './translation-data-upload/translation-data-upload/translation-data-upload.component';
-import { ConsentSingleOptComponent } from './driver-management/consent-single-opt/consent-single-opt.component';
+import { ConsentOptComponent } from './driver-management/consent-opt/consent-opt.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +45,6 @@ import { ConsentSingleOptComponent } from './driver-management/consent-single-op
     NewUserStepComponent,
     SummaryStepComponent,
     DriverManagementComponent,
-    ConsentAllOptComponent,
     EditDriverDetailsComponent,
     UserRoleManagementComponent,
     EditUserRoleDetailsComponent,
@@ -61,7 +59,7 @@ import { ConsentSingleOptComponent } from './driver-management/consent-single-op
     CreateEditViewVehicleAccessRelationshipComponent,
     CreateEditViewAccountAccessRelationshipComponent,
     TranslationDataUploadComponent,
-    ConsentSingleOptComponent
+    ConsentOptComponent
   ],
   imports: [
       CommonModule,
