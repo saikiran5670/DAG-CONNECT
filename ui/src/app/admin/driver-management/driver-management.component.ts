@@ -253,7 +253,18 @@ export class DriverManagementComponent implements OnInit {
   }
 
   validateExcelFileField(){
-    console.log("filelist:: ", this.filelist)
+    let driverAPIData: any = [];
+    //-- Parse driver data--- //
+    this.filelist.map((item: any) => {
+      driverAPIData.push({
+        driverId: item.DriverID,
+        salutation: item.Civility,
+        firstName: item.FirstName,
+        lastName: item.LastName,
+        birthDate: item.BirthDate,
+      });
+    });
+    console.log("Parse excel driver:: ", driverAPIData)
   }
 
   applyFilter(filterValue: string) {
