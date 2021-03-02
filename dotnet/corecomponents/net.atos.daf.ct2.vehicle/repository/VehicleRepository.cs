@@ -23,24 +23,28 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         public async Task<Vehicle> Create(Vehicle vehicle)
         {
+            try
+            {
             var QueryStatement = @"INSERT INTO master.vehicle
                                       (
                                        organization_id
-                                      ,name
-                                      ,vin
-                                      ,license_plate_number
-                                      ,status
-                                      ,status_changed_date
-                                      ,termination_date
-                                      ,vid
-                                      ,type
-                                      ,model
-                                      ,tcu_id
-                                      ,tcu_serial_number
-                                      ,tcu_brand
-                                      ,tcu_version
-                                      ,is_tcu_register
-                                      ,reference_date) 
+                                       ,name 
+                                       ,vin
+                                       ,license_plate_number 
+                                       ,status 
+                                       ,status_changed_date 
+                                       ,termination_date 
+                                       ,vid 
+                                       ,type 
+                                       ,tcu_id
+                                       ,tcu_serial_number 
+                                       ,tcu_brand 
+                                       ,tcu_version 
+                                       ,is_tcu_register 
+                                       ,reference_date 
+                                       ,vehicle_property_id                                       
+                                       ,created_at 
+                                       ,model_id) 
                             	VALUES(
                                        @organization_id 
                                       ,@name
@@ -50,14 +54,17 @@ namespace net.atos.daf.ct2.vehicle.repository
                                       ,@status_changed_date
                                       ,@termination_date
                                       ,@vid
-                                      ,@type
-                                      ,@model
+                                      ,@type                                      
                                       ,@tcu_id
                                       ,@tcu_serial_number
                                       ,@tcu_brand
                                       ,@tcu_version
                                       ,@is_tcu_register
-                                      ,@reference_date) RETURNING id";
+                                      ,@reference_date
+                                      ,@vehicle_property_id                                      
+                                      ,@created_at
+                                      ,@model_id
+                                      ) RETURNING id";
 
 
             var parameter = new DynamicParameters();
@@ -69,60 +76,59 @@ namespace net.atos.daf.ct2.vehicle.repository
             {
                 parameter.Add("@organization_id", null);
             }
-            parameter.Add("@name", vehicle.Name);
-            parameter.Add("@vin", vehicle.VIN);
-            parameter.Add("@license_plate_number", vehicle.License_Plate_Number);
-            //parameter.Add("@status", ((char)vehicle.Status).ToString() != null ? (char)vehicle.Status:'P');
-            //TODO This needs to be fix
-            // if (vehicle.Organization_Id > 0)
-            // {
-            //     bool QrgOptStatus = await dataAccess.QuerySingleAsync<bool>("SELECT optout_status FROM master.organization where id=@id", new { id = vehicle.Organization_Id });
-            //     parameter.Add("@status", QrgOptStatus == false ? (char)VehicleStatusType.OptIn : (char)VehicleStatusType.OptOut);
-            // }
-            // else
-            // {
-                parameter.Add("@status", (char)VehicleStatusType.OptIn);
-            //}
+            parameter.Add("@name", string.IsNullOrEmpty(vehicle.Name)?null:vehicle.Name);
+            parameter.Add("@vin", string.IsNullOrEmpty(vehicle.VIN)? null:vehicle.VIN);
+            parameter.Add("@license_plate_number", string.IsNullOrEmpty(vehicle.License_Plate_Number)?null:vehicle.License_Plate_Number);           
+            parameter.Add("@status", (char)VehicleStatusType.OptIn);            
             parameter.Add("@status_changed_date", (vehicle.Status_Changed_Date != null && DateTime.Compare(DateTime.MinValue, vehicle.Status_Changed_Date) > 0) ? UTCHandling.GetUTCFromDateTime(vehicle.Status_Changed_Date.ToString()) : 0);
             parameter.Add("@termination_date", vehicle.Termination_Date != null  ? UTCHandling.GetUTCFromDateTime(vehicle.Termination_Date.ToString()) : (long ?)null);
-            parameter.Add("@vid", vehicle.Vid);
-            parameter.Add("@type", (char)vehicle.Type);
-            parameter.Add("@model", vehicle.Model);
-            parameter.Add("@tcu_id", vehicle.Tcu_Id);
-            parameter.Add("@tcu_serial_number", vehicle.Tcu_Serial_Number);
-            parameter.Add("@tcu_brand", vehicle.Tcu_Brand);
-            parameter.Add("@tcu_version", vehicle.Tcu_Version);
+            parameter.Add("@vid", string.IsNullOrEmpty(vehicle.Vid)? null:vehicle.Vid);
+            parameter.Add("@type", null);            
+            parameter.Add("@tcu_id", string.IsNullOrEmpty(vehicle.Tcu_Id)? null:vehicle.Tcu_Id);
+            parameter.Add("@tcu_serial_number", string.IsNullOrEmpty(vehicle.Tcu_Serial_Number)? null:vehicle.Tcu_Serial_Number);
+            parameter.Add("@tcu_brand", string.IsNullOrEmpty(vehicle.Tcu_Brand)? null:vehicle.Tcu_Brand);
+            parameter.Add("@tcu_version", string.IsNullOrEmpty(vehicle.Tcu_Version)? null:vehicle.Tcu_Version);
             parameter.Add("@is_tcu_register", vehicle.Is_Tcu_Register);
             parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : (long ?)null);
-           
+            parameter.Add("@vehicle_property_id", vehicle.VehiclePropertiesId);            
+            parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+            parameter.Add("@model_id", string.IsNullOrEmpty(vehicle.ModelId)?null:vehicle.ModelId);
             parameter.Add("@id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
             int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
             vehicle.ID = vehicleID;
             return vehicle;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<IEnumerable<Vehicle>> Get(VehicleFilter vehiclefilter)
         {
 
             var QueryStatement = @"select id
-                                    ,organization_id
-                                    ,name
-                                    ,vin
-                                    ,license_plate_number
-                                    ,status
-                                    ,status_changed_date
-                                    ,termination_date
-                                    ,model
-                                    ,vid
-                                    ,type
-                                    ,tcu_id
-                                    ,tcu_serial_number
-                                    ,tcu_brand
-                                    ,tcu_version
-                                    ,is_tcu_register
-                                    ,reference_date
-                                    from master.vehicle 
-                                    where 1=1";
+                                   ,organization_id 
+                                   ,name 
+                                   ,vin 
+                                   ,license_plate_number 
+                                   ,status 
+                                   ,status_changed_date 
+                                   ,termination_date 
+                                   ,vid 
+                                   ,type 
+                                   ,tcu_id 
+                                   ,tcu_serial_number 
+                                   ,tcu_brand 
+                                   ,tcu_version 
+                                   ,is_tcu_register 
+                                   ,reference_date 
+                                   ,vehicle_property_id 
+                                   ,vehicle_communication_state 
+                                   ,created_at 
+                                   ,model_id
+                                   from master.vehicle 
+                                   where 1=1";
             var parameter = new DynamicParameters();
 
             // Vehicle Id Filter
@@ -186,7 +192,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 vehicle.Status_Changed_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.status_changed_date,"America/New_York", "yyyy-MM-ddTHH:mm:ss"));
             if (record.termination_date != null)
                 vehicle.Termination_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.termination_date, "Africa/Mbabane", "yyyy-MM-ddTHH:mm:ss"));
-            vehicle.Model = record.model;
+            vehicle.ModelId = record.model_id;
             vehicle.Vid = record.vid;
             vehicle.Type = (VehicleType)(Convert.ToChar(record.type == null ? 'N' : record.type));
             vehicle.Tcu_Id = record.tcu_id;
@@ -355,192 +361,301 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         public async Task<VehicleProperty> UpdateProperty(VehicleProperty vehicleproperty)
         {
+            try
+            {
             Vehicle objVeh=new Vehicle();
             var InsertQueryStatement = string.Empty;
             var UpdateQueryStatement = string.Empty;
-            int VehicleId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = vehicleproperty.VIN });
-            int OrgId= await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.organization where org_id=@org_id), null)", new { org_id = vehicleproperty.Org_Id });
-
-            vehicleproperty.VehicleId=VehicleId;
-            objVeh.Organization_Id=OrgId;
-            objVeh.VIN=vehicleproperty.VIN;
-            objVeh.Model=vehicleproperty.Classification_Model;
-            objVeh.License_Plate_Number=vehicleproperty.License_Plate_Number;
-            objVeh.Type=(VehicleType)vehicleproperty.Classification_Type;
-            objVeh.ID=VehicleId;
-
-            var parameter = new DynamicParameters();
-            if (VehicleId > 0)
+            int VehiclePropertiesId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT vehicle_property_id FROM master.vehicle where vin=@vin), 0)", new { vin = vehicleproperty.VIN });
+            //int OrgId= await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.organization where org_id=@org_id), null)", new { org_id = vehicleproperty.Org_Id });
+            
+            vehicleproperty.ID = VehiclePropertiesId;
+            //objVeh.Organization_Id = OrgId;
+            objVeh.VIN = vehicleproperty.VIN;
+            objVeh.ModelId = vehicleproperty.Classification_Model_Id;
+            objVeh.License_Plate_Number = vehicleproperty.License_Plate_Number;           
+            objVeh.VehiclePropertiesId=VehiclePropertiesId;            
+            
+            if (VehiclePropertiesId > 0)
             {
-                
-              
-
-                UpdateQueryStatement = @" UPDATE master.vehicleproperties
+                UpdateQueryStatement = @"UPDATE master.vehicleproperties
                                     SET
-                                      manufacture_date = @manufacture_date
-                                      ,registration_date = @registration_date
-                                      ,delivery_date = @delivery_date
-                                      ,make = @make                                     
-                                      ,series = @series                                      
-                                      ,length = @length
-                                      ,widht = @widht
-                                      ,height = @height
-                                      ,weight = @weight
-                                      ,engine_id = @engine_id
-                                      ,engine_type = @engine_type
-                                      ,engine_power = @engine_power
-                                      ,engine_coolant = @engine_coolant
-                                      ,engine_emission_level = @engine_emission_level
-                                      ,chasis_id = @chasis_id
-                                      ,is_chasis_side_skirts = @is_chasis_side_skirts
-                                      ,is_chasis_side_collar = @is_chasis_side_collar
-                                      ,chasis_rear_overhang = @chasis_rear_overhang
-                                      ,chasis_fuel_tank_number = @chasis_fuel_tank_number
-                                      ,chasis_fuel_tank_volume = @chasis_fuel_tank_volume
-                                      ,driveline_axle_configuration = @driveline_axle_configuration
-                                      ,driveline_wheel_base = @driveline_wheel_base
-                                      ,driveline_tire_size = @driveline_tire_size
-                                      ,driveline_front_axle_position = @driveline_front_axle_position
-                                      ,driveline_front_axle_load = @driveline_front_axle_load
-                                      ,driveline_rear_axle_position = @driveline_rear_axle_position
-                                      ,driveline_rear_axle_load = @driveline_rear_axle_load
-                                      ,driveline_rear_axle_ratio = @driveline_rear_axle_ratio
-                                      ,transmission_gearbox_id = @transmission_gearbox_id
-                                      ,transmission_gearbox_type = @transmission_gearbox_type
-                                      ,cabin_id = @cabin_id
-                                      ,cabin_color_id = @cabin_color_id
-                                      ,cabin_color_value = @cabin_color_value
-                                       WHERE vehicle_id = @vehicle_id
-                                       RETURNING vehicle_id";
+                                      manufacture_date = @manufacture_date 
+                                      ,delivery_date = @delivery_date 
+                                      ,make = @make 
+                                      ,length = @length 
+                                      ,height = @height 
+                                      ,weight = @weight 
+                                      ,engine_id = @engine_id 
+                                      ,engine_type = @engine_type 
+                                      ,engine_power = @engine_power 
+                                      ,engine_coolant = @engine_coolant 
+                                      ,engine_emission_level = @engine_emission_level 
+                                      ,chasis_id = @chasis_id 
+                                      ,chasis_rear_overhang = @chasis_rear_overhang 
+                                      ,driveline_axle_configuration = @driveline_axle_configuration 
+                                      ,driveline_wheel_base = @driveline_wheel_base 
+                                      ,driveline_tire_size = @driveline_tire_size 
+                                      ,transmission_gearbox_id = @transmission_gearbox_id 
+                                      ,transmission_gearbox_type = @transmission_gearbox_type 
+                                      ,cabin_id = @cabin_id 
+                                      ,series_id = @series_id 
+                                      ,series_vehicle_range = @series_vehicle_range 
+                                      ,model_year = @model_year                                      
+                                      ,cabin_type = @cabin_type 
+                                      ,cabin_roofspoiler = @cabin_roofspoiler 
+                                      ,electronic_control_unit_type = @electronic_control_unit_type 
+                                      ,electronic_control_unit_name = @electronic_control_unit_name 
+                                      ,weight_type = @weight_type 
+                                      ,chasis_side_skirts = @chasis_side_skirts 
+                                      ,chasis_side_collar = @chasis_side_collar 
+                                      ,width = @width
+                                      ,type_id = @type_id
+                                      WHERE id = @id
+                                      RETURNING id";
             }
             else
             {
 
-                objVeh = await Create(objVeh);
-
                 InsertQueryStatement = @"INSERT INTO master.vehicleproperties
                                       (
-                                       vehicle_id
-                                      ,manufacture_date
-                                      ,registration_date
-                                      ,delivery_date
-                                      ,make                                      
-                                      ,series                                      
-                                      ,length
-                                      ,widht
-                                      ,height
-                                      ,weight
-                                      ,engine_id
-                                      ,engine_type
-                                      ,engine_power
-                                      ,engine_coolant
-                                      ,engine_emission_level
-                                      ,chasis_id
-                                      ,is_chasis_side_skirts
-                                      ,is_chasis_side_collar
-                                      ,chasis_rear_overhang
-                                      ,chasis_fuel_tank_number
-                                      ,chasis_fuel_tank_volume
-                                      ,driveline_axle_configuration
-                                      ,driveline_wheel_base
-                                      ,driveline_tire_size
-                                      ,driveline_front_axle_position
-                                      ,driveline_front_axle_load
-                                      ,driveline_rear_axle_position
-                                      ,driveline_rear_axle_load
-                                      ,driveline_rear_axle_ratio
-                                      ,transmission_gearbox_id
-                                      ,transmission_gearbox_type
-                                      ,cabin_id
-                                      ,cabin_color_id
-                                      ,cabin_color_value) 
+                                        manufacture_date 
+                                        ,delivery_date 
+                                        ,make 
+                                        ,length 
+                                        ,height 
+                                        ,weight 
+                                        ,engine_id 
+                                        ,engine_type 
+                                        ,engine_power 
+                                        ,engine_coolant 
+                                        ,engine_emission_level 
+                                        ,chasis_id 
+                                        ,chasis_rear_overhang 
+                                        ,driveline_axle_configuration 
+                                        ,driveline_wheel_base 
+                                        ,driveline_tire_size 
+                                        ,transmission_gearbox_id 
+                                        ,transmission_gearbox_type 
+                                        ,cabin_id 
+                                        ,series_id 
+                                        ,series_vehicle_range 
+                                        ,model_year                                        
+                                        ,cabin_type 
+                                        ,cabin_roofspoiler 
+                                        ,electronic_control_unit_type 
+                                        ,electronic_control_unit_name 
+                                        ,weight_type 
+                                        ,chasis_side_skirts 
+                                        ,chasis_side_collar 
+                                        ,width
+                                        ,type_id) 
                             	VALUES(
-                                       @vehicle_id
-                                      ,@manufacture_date
-                                      ,@registration_date
-                                      ,@delivery_date
-                                      ,@make                                      
-                                      ,@series                                     
-                                      ,@length
-                                      ,@widht
-                                      ,@height
-                                      ,@weight
-                                      ,@engine_id
-                                      ,@engine_type
-                                      ,@engine_power
-                                      ,@engine_coolant
-                                      ,@engine_emission_level
-                                      ,@chasis_id
-                                      ,@is_chasis_side_skirts
-                                      ,@is_chasis_side_collar
-                                      ,@chasis_rear_overhang
-                                      ,@chasis_fuel_tank_number
-                                      ,@chasis_fuel_tank_volume
-                                      ,@driveline_axle_configuration
-                                      ,@driveline_wheel_base
-                                      ,@driveline_tire_size
-                                      ,@driveline_front_axle_position
-                                      ,@driveline_front_axle_load
-                                      ,@driveline_rear_axle_position
-                                      ,@driveline_rear_axle_load
-                                      ,@driveline_rear_axle_ratio
-                                      ,@transmission_gearbox_id
-                                      ,@transmission_gearbox_type
-                                      ,@cabin_id
-                                      ,@cabin_color_id
-                                      ,@cabin_color_value) RETURNING id";
+                                        @manufacture_date 
+                                        ,@delivery_date 
+                                        ,@make 
+                                        ,@length 
+                                        ,@height 
+                                        ,@weight 
+                                        ,@engine_id 
+                                        ,@engine_type 
+                                        ,@engine_power 
+                                        ,@engine_coolant 
+                                        ,@engine_emission_level 
+                                        ,@chasis_id 
+                                        ,@chasis_rear_overhang 
+                                        ,@driveline_axle_configuration 
+                                        ,@driveline_wheel_base 
+                                        ,@driveline_tire_size 
+                                        ,@transmission_gearbox_id 
+                                        ,@transmission_gearbox_type 
+                                        ,@cabin_id 
+                                        ,@series_id 
+                                        ,@series_vehicle_range 
+                                        ,@model_year                                        
+                                        ,@cabin_type 
+                                        ,@cabin_roofspoiler 
+                                        ,@electronic_control_unit_type 
+                                        ,@electronic_control_unit_name 
+                                        ,@weight_type 
+                                        ,@chasis_side_skirts 
+                                        ,@chasis_side_collar 
+                                        ,@width
+                                        ,@type_id) RETURNING id";
 
             }
-           
-            parameter.Add("@vehicle_id", objVeh.ID);
-            parameter.Add("@manufacture_date", vehicleproperty.ManufactureDate != null ? UTCHandling.GetUTCFromDateTime(vehicleproperty.ManufactureDate.ToString()) : 0);
-            parameter.Add("@registration_date", vehicleproperty.RegistrationDateTime != null ? UTCHandling.GetUTCFromDateTime(vehicleproperty.RegistrationDateTime.ToString()) : 0);
+
+            var parameter = new DynamicParameters();
+           if(VehiclePropertiesId>0)
+           {
+               vehicleproperty.ID=VehiclePropertiesId;
+               parameter.Add("@id", vehicleproperty.ID);  
+           }         
+                      
+            parameter.Add("@manufacture_date", vehicleproperty.ManufactureDate != null ? UTCHandling.GetUTCFromDateTime(vehicleproperty.ManufactureDate.ToString()) : 0);            
             parameter.Add("@delivery_date", vehicleproperty.DeliveryDate != null ? UTCHandling.GetUTCFromDateTime(vehicleproperty.DeliveryDate.ToString()) : 0);
-            parameter.Add("@make", vehicleproperty.Classification_Make);
-            // parameter.Add("@model", vehicleproperty.Classification_Model);
-            parameter.Add("@series", vehicleproperty.Classification_Series);
-            // parameter.Add("@type", vehicleproperty.Classification_Type);
+            parameter.Add("@make", vehicleproperty.Classification_Make);             
             parameter.Add("@length", vehicleproperty.Dimensions_Size_Length);
-            parameter.Add("@widht", vehicleproperty.Dimensions_Size_Width);
             parameter.Add("@height", vehicleproperty.Dimensions_Size_Height);
-            parameter.Add("@weight", vehicleproperty.Dimensions_Size_Weight);
+            parameter.Add("@weight", vehicleproperty.Dimensions_Size_Weight_Value);
             parameter.Add("@engine_id", vehicleproperty.Engine_ID);
             parameter.Add("@engine_type", vehicleproperty.Engine_Type);
             parameter.Add("@engine_power", vehicleproperty.Engine_Power);
             parameter.Add("@engine_coolant", vehicleproperty.Engine_Coolant);
             parameter.Add("@engine_emission_level", vehicleproperty.Engine_EmissionLevel);
-            parameter.Add("@chasis_id", vehicleproperty.Chasis_Id);
-            parameter.Add("@is_chasis_side_skirts", vehicleproperty.SideSkirts);
-            parameter.Add("@is_chasis_side_collar", vehicleproperty.SideCollars);
-            parameter.Add("@chasis_rear_overhang", vehicleproperty.RearOverhang);
-            parameter.Add("@chasis_fuel_tank_number", vehicleproperty.Tank_Nr);
-            parameter.Add("@chasis_fuel_tank_volume", vehicleproperty.Tank_Volume);
+            parameter.Add("@chasis_id", vehicleproperty.Chassis_Id);
+            parameter.Add("@chasis_rear_overhang", vehicleproperty.Chassis_RearOverhang);
             parameter.Add("@driveline_axle_configuration", vehicleproperty.DriverLine_AxleConfiguration);
             parameter.Add("@driveline_wheel_base", vehicleproperty.DriverLine_Wheelbase);
             parameter.Add("@driveline_tire_size", vehicleproperty.DriverLine_Tire_Size);
-            parameter.Add("@driveline_front_axle_position", vehicleproperty.DriverLine_FrontAxle_Position);
-            parameter.Add("@driveline_front_axle_load", vehicleproperty.DriverLine_FrontAxle_Load);
-            parameter.Add("@driveline_rear_axle_position", vehicleproperty.DriverLine_RearAxle_Position);
-            parameter.Add("@driveline_rear_axle_load", vehicleproperty.DriverLine_RearAxle_Load);
-            parameter.Add("@driveline_rear_axle_ratio", vehicleproperty.DriverLine_RearAxle_Ratio);
             parameter.Add("@transmission_gearbox_id", vehicleproperty.GearBox_Id);
             parameter.Add("@transmission_gearbox_type", vehicleproperty.GearBox_Type);
             parameter.Add("@cabin_id", vehicleproperty.DriverLine_Cabin_ID);
-            parameter.Add("@cabin_color_id", vehicleproperty.DriverLine_Cabin_Color_ID);
-            parameter.Add("@cabin_color_value", vehicleproperty.DriverLine_Cabin_Color_Value);
+            parameter.Add("@series_id", vehicleproperty.Classification_Series_Id);
+            parameter.Add("@series_vehicle_range", vehicleproperty.Classification_Series_VehicleRange);
+            parameter.Add("@model_year", vehicleproperty.Classification_ModelYear);           
+            parameter.Add("@cabin_type", vehicleproperty.DriverLine_Cabin_Type);
+            parameter.Add("@cabin_roofspoiler", vehicleproperty.DriverLine_Cabin_RoofSpoiler);
+            parameter.Add("@electronic_control_unit_type", vehicleproperty.DriverLine_ElectronicControlUnit_Type);
+            parameter.Add("@electronic_control_unit_name", vehicleproperty.DriverLine_ElectronicControlUnit_Name);
+            parameter.Add("@weight_type", vehicleproperty.Dimensions_Size_Weight_Type);
+            parameter.Add("@chasis_side_skirts", vehicleproperty.Chassis_SideSkirts);
+            parameter.Add("@chasis_side_collar", vehicleproperty.Chassis_SideCollars);
+            parameter.Add("@width", vehicleproperty.Dimensions_Size_Width);
+            parameter.Add("@type_id", vehicleproperty.Classification_Type_Id);
             parameter.Add("@id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
 
             
-            if (VehicleId > 0)
+            if (VehiclePropertiesId > 0)
             {
-                await dataAccess.ExecuteAsync("UPDATE master.vehicle SET model = @model ,type = @type,license_plate_number = @license_plate_number WHERE vin = @vin",new {model=objVeh.Model, type=(char)objVeh.Type,license_plate_number=objVeh.License_Plate_Number,vin=objVeh.VIN});
-                vehicleproperty.ID = await dataAccess.ExecuteScalarAsync<int>(UpdateQueryStatement, parameter);
+                await dataAccess.ExecuteAsync("UPDATE master.vehicle SET model_id = @model_id , license_plate_number = @license_plate_number WHERE vin = @vin",new {model_id=objVeh.ModelId,license_plate_number=objVeh.License_Plate_Number,vin=objVeh.VIN});
+                vehicleproperty.ID = await dataAccess.ExecuteScalarAsync<int>(UpdateQueryStatement, parameter);  
+                objVeh.ID = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT vehicle_property_id FROM master.vehicle where vehicle_property_id=@id), 0)", new { id = vehicleproperty.ID });             
             }
             else
             {
                 vehicleproperty.ID = await dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, parameter);
+                objVeh.VehiclePropertiesId=vehicleproperty.ID;
+                objVeh = await Create(objVeh);                
             }
+            if(objVeh.ID>0)
+            {
+                //Create axelproperties                
+                await CreateVehicleAxelInformation(vehicleproperty.VehicleAxelInformation,objVeh.ID);
+                //Create Fuel Tank Properties
+                await CreateVehicleFuelTank(vehicleproperty.VehicleFuelTankProperties,objVeh.ID);
+            }
+
             return vehicleproperty;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<bool> CreateVehicleAxelInformation(List<VehicleAxelInformation> vehicleaxelinfo,int vehicleId)
+        {
+            bool is_result=false;
+            int VehicleId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT vehicle_id FROM master.vehicleaxleproperties where vehicle_id=@vehicle_id), 0)", new { vehicle_id = vehicleId });
+            
+            if(VehicleId>0)
+            {
+                await DeleteVehicleAxelInformation(vehicleId);
+            }
+            var QueryStatement = @"INSERT INTO master.vehicleaxleproperties
+                                      (
+                                        vehicle_id 
+                                       ,axle_type 
+                                       ,position 
+                                       ,type 
+                                       ,springs 
+                                       ,load 
+                                       ,ratio) 
+                            	VALUES(                                       
+                                        @vehicle_id 
+                                       ,@axle_type 
+                                       ,@position 
+                                       ,@type 
+                                       ,@springs 
+                                       ,@load 
+                                       ,@ratio
+                                      ) RETURNING id";
+
+            foreach(var axelInfo in vehicleaxelinfo)
+            {
+                var parameter = new DynamicParameters();            
+                parameter.Add("@vehicle_id", vehicleId);
+                parameter.Add("@axle_type", (char)axelInfo.AxelType);
+                parameter.Add("@position", axelInfo.Position);           
+                parameter.Add("@type", axelInfo.Type);            
+                parameter.Add("@springs", axelInfo.Springs);
+                parameter.Add("@load", axelInfo.Load);
+                parameter.Add("@ratio", axelInfo.Ratio); 
+                int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                is_result=true;
+            }            
+            
+            return is_result;
+        }
+
+        public async Task<int> DeleteVehicleAxelInformation(int vehicleId)
+        {
+           
+            var QueryStatement = @"DELETE FROM master.vehicleaxleproperties
+                                    Where vehicle_id= @vehicle_id
+                                    RETURNING vehicle_id";
+                var parameter = new DynamicParameters();            
+                parameter.Add("@vehicle_id", vehicleId);
+                int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);                                  
+            
+            return vehicleID;
+        }
+
+        public async Task<bool> CreateVehicleFuelTank(List<VehicleFuelTankProperties> vehiclefuelTank,int vehicleId)
+        {
+            bool is_result=false;
+            int VehicleId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT vehicle_id FROM master.vehiclefueltankproperties where vehicle_id=@vehicle_id), 0)", new { vehicle_id = vehicleId });
+            
+            if(VehicleId>0)
+            {
+                await DeleteVehicleFuelTank(vehicleId);
+            }
+            var QueryStatement = @"INSERT INTO master.vehiclefueltankproperties
+                                      (
+                                        vehicle_id 
+                                       ,chasis_fuel_tank_number 
+                                       ,chasis_fuel_tank_volume 
+                                       ) 
+                            	VALUES(                                       
+                                        @vehicle_id 
+                                       ,@chasis_fuel_tank_number 
+                                       ,@chasis_fuel_tank_volume                                        
+                                      ) RETURNING id";
+
+            foreach(var fuelTank in vehiclefuelTank)
+            {
+                var parameter = new DynamicParameters();            
+                parameter.Add("@vehicle_id", vehicleId);
+                parameter.Add("@chasis_fuel_tank_number", fuelTank.Chassis_Tank_Nr);
+                parameter.Add("@chasis_fuel_tank_volume", fuelTank.Chassis_Tank_Volume);          
+               
+                int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                is_result=true;
+            }            
+            
+            return is_result;
+        }
+
+        public async Task<int> DeleteVehicleFuelTank(int vehicleId)
+        {           
+            var QueryStatement = @"DELETE FROM master.vehiclefueltankproperties
+                                    Where vehicle_id= @vehicle_id
+                                    RETURNING vehicle_id";
+                var parameter = new DynamicParameters();            
+                parameter.Add("@vehicle_id", vehicleId);
+                int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);                                  
+            
+            return vehicleID;
         }
         public async Task<IEnumerable<VehicleGroup>> GetVehicleGroup(int organizationId,int vehicleId)
         {

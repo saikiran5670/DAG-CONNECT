@@ -14,38 +14,66 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     public class VehicleClassification
     {
         public string Make { get; set; }
-        public string Series { get; set; }
-        public string Model { get; set; }
-        public string Type { get; set; }
+        public Series Series { get; set; }
+        public Model Model { get; set; }
+        public int ModelYear{ get; set;}
+        public Type Type { get; set; }
     }
 
-    public class Tank
+    public class Series
     {
-        public string nr { get; set; }
-        public string Volume { get; set; }
+        public string ID { get; set; } 
+        public string vehicleRange{get; set;}
     }
 
-    public class FuelTanks
+    public class Model
     {
-        public Tank Tank { get; set; }
+        public string ID { get; set; } 
+    }
+    public class Type
+    {
+        public string ID { get; set; } 
     }
 
+    public class VehicleNamedStructure
+    {
+        public Chassis Chassis { get; set; }
+        public Engine Engine { get; set; }
+        public Transmission Transmission { get; set; }
+        public DriveLine DriveLine { get; set; }
+        public Cabin Cabin { get; set; }
+        public ElectronicControlUnits ElectronicControlUnits {get; set;}
+    }
     public class Chassis
     {
         public string ID { get; set; }
         public FuelTanks FuelTanks { get; set; }
         public string SideSkirts { get; set; }
         public string SideCollars { get; set; }
-        public string RearOverhang { get; set; }
+        public int RearOverhang { get; set; }
     }
+    public class Tank
+    {
+        public int nr { get; set; }
+        public int Volume { get; set; }
+    }
+
+    public class FuelTanks
+    {
+        public Tank[] Tank { get; set; }
+    }    
 
     public class Engine
     {
         public string ID { get; set; }
         public string Type { get; set; }
-        public string Power { get; set; }
+        public int Power { get; set; }
         public string Coolant { get; set; }
         public string EmissionLevel { get; set; }
+    }
+    public class Transmission
+    {
+        public GearBox GearBox { get; set; }
     }
 
     public class GearBox
@@ -54,11 +82,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         public string Type { get; set; }
     }
 
-    public class Transmission
-    {
-        public GearBox GearBox { get; set; }
-    }
-
+   
     public class Tire
     {
         public string Size { get; set; }
@@ -71,57 +95,69 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
 
     public class FrontAxle
     {
-        public string position { get; set; }
-        public string Load { get; set; }
+        public int position { get; set; }
+        public string Type { get; set; }
+        public string Springs {get; set;}        
+        public AxleSpecificWheels AxleSpecificWheels {get; set;}
     }
 
     public class RearAxle
     {
-        public string position { get; set; }
-        public string Load { get; set; }
-        public string Ratio { get; set; }
+        public int position { get; set; }
+        public int Load { get; set; }
+        public decimal? Ratio { get; set; }
+        public string Springs {get; set;}
+        public AxleSpecificWheels AxleSpecificWheels {get; set;}
+    }
+
+    public class AxleSpecificWheels
+    {
+        public Tire Tire { get; set; }
     }
 
     public class DriveLine
     {
         public string AxleConfiguration { get; set; }
-        public string WheelBase { get; set; }
+        public decimal WheelBase { get; set; }
         public Wheels Wheels { get; set; }
-        public FrontAxle FrontAxle { get; set; }
-        public RearAxle RearAxle { get; set; }
+        public FrontAxle[] FrontAxle { get; set; }
+        public RearAxle[] RearAxle { get; set; }
     }
 
-    public class Color
-    {
-        public string ID { get; set; }
-        public string value { get; set; }
-    }
+   
 
     public class Cabin
     {
         public string ID { get; set; }
-        public Color Color { get; set; }
+        public string Type { get; set; }
+        public string RoofSpoiler { get; set; }
     }
 
-    public class VehicleNamedStructure
+    public class ElectronicControlUnits
     {
-        public Chassis Chassis { get; set; }
-        public Engine Engine { get; set; }
-        public Transmission Transmission { get; set; }
-        public DriveLine DriveLine { get; set; }
-        public Cabin Cabin { get; set; }
+        public ElectronicControlUnit ElectronicControlUnit {get; set;}
+    }
+    public class ElectronicControlUnit
+    {
+        public string type {get; set;}
+        public string Name {get; set;}
     }
 
     public class Size
     {
-        public string Length { get; set; }
-        public string Width { get; set; }
-        public string Height { get; set; }
+        public int Length { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
     }
 
     public class Weights
     {
-        public string Weight { get; set; }
+        public Weight Weight { get; set; }
+    }
+    public class Weight
+    {
+        public string type { get; set; }
+        public int value { get; set; }
     }
 
     public class VehicleDimensions
@@ -130,19 +166,10 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         public Weights Weights { get; set; }
     }
 
-    public class Party
-    {
-        public string role { get; set; }
-        public string ID { get; set; }
-        public string Name { get; set; }
-        public string CountryCode { get; set; }
-    }
-
     public class VehicleDelivery
     {
-        public string RegistrationDate { get; set; }
         public string DeliveryDate { get; set; }
-        public List<Party> Party { get; set; }
+       
     }
 
     public class Vehicle
