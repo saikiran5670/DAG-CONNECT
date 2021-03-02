@@ -1,0 +1,183 @@
+<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+    <span>abc</span>
+  </div>
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+    <span class='custom-font' >
+      <span>&nbsp;</span>
+      <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+  </div>
+</div>
+<form [formGroup]="featureFormGroup" #createVehicleForm="ngForm">
+  <mat-card class='mat-elevation-z margin-bottom-xlg'>
+      <mat-card-content>
+          <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+              <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+                  <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ title }}</span>
+              </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label>{{ createStatus ? (translationData.lblNewFeatureName || 'New Feature Name') : (translationData.lblFeatureName || 'Feature Name') }}<span class='mandatoryColor'>*</span>
+                  </mat-label>
+                  <mat-form-field appearance="outline" class="full-width">
+                      <input  placeholder="{{ translationData.lblEnterVehicleGroupName || 'Enter Feature Name' }}" [(ngModel)]="createStatus ? '' : vehGrpName"
+                          matInput formControlName="featureName" required maxlength="50">
+                  </mat-form-field>
+                  <mat-error *ngIf="featureFormGroup.get('featureName').hasError('required')">
+                      {{ translationData.lblPleaseentertheFeaturename || 'Please enter the new Feature name'}}
+                  </mat-error>
+                  <mat-error *ngIf="!featureFormGroup.get('featureName').hasError('required')  && featureFormGroup.get('featureName').hasError('whitespace')">
+                   Feature Name cannot contain only whitespace
+                  </mat-error>
+                  <mat-error *ngIf="duplicateMsg">{{translationData.lblFeaturealreadyexistsPleasechooseadifferentname || 'Duplicate Feature Name' }}</mat-error>
+              </div>
+              <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label style='display: flex; place-content: space-between;'>
+                      <span>{{ translationData.lblFeatureDescriptionOptional || 'Feature Description' }}</span>
+                      <span>{{ translationData.lbl120CharMax || '120 characters max' }}</span>
+                  </mat-label>
+                  <mat-form-field appearance="outline" class="full-width">
+                      <input maxlength="100" placeholder="{{ translationData.lblEnterFeatureDescription || 'Enter Feature Description' }}" matInput
+                          formControlName="featureDescription">
+                  </mat-form-field>
+                  <mat-error *ngIf="  featureFormGroup.get('featureDescription').hasError('whitespace')">
+                    Feature Description cannot contain only whitespace
+                  </mat-error>
+              </div>
+
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label style='display: flex; place-content: space-between;'>
+                <span>{{ translationData.lblFeatureType || 'Feature Type' }}</span>
+
+            </mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+                <input maxlength="100" placeholder="{{ translationData.lblEnterlblFeatureType || 'Enter Feature Type' }}" matInput
+                    formControlName="featureType">
+            </mat-form-field>
+            <mat-error *ngIf="  featureFormGroup.get('featureType').hasError('whitespace')">
+              Feature Type cannot contain only whitespace
+            </mat-error>
+          </div>
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label style='display: flex; place-content: space-between;'>
+                <span>{{ translationData.lblDataAttribute || 'Data Attribute Set Name' }}</span>
+
+            </mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+                <input maxlength="100" placeholder="{{ translationData.lblEnterDataAttribute || 'Data Attribute Set Name' }}" matInput
+                    formControlName="featureAttributeName">
+            </mat-form-field>
+            <mat-error *ngIf="  featureFormGroup.get('featureAttributeName').hasError('whitespace')">
+              Data Attribute Set cannot contain only whitespace
+            </mat-error>
+          </div>
+          <div class='areaWidth min-width-20-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
+            <span>{{ translationData.lblViewby || 'Data Attribute Set Type' }}:</span>
+            <mat-radio-group >
+              <mat-radio-button style='margin-right: 20px;' value="exclude">{{ translationData.lblExcluded || 'Excluded' }}
+              </mat-radio-button>
+              <mat-radio-button style='margin-right: 20px;' value="inactive" >{{ translationData.lblInActive || 'InActive' }}
+              </mat-radio-button>
+
+            </mat-radio-group>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+          <div class='areaWidth min-width-30-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
+            <span>{{ translationData.lblViewby || 'Status' }}:</span>
+            <mat-radio-group >
+              <mat-radio-button style='margin-right: 20px;' value="Active">{{ translationData.lblActive || 'Active' }}
+              </mat-radio-button>
+              <mat-radio-button style='margin-right: 20px;' value="inactive" >{{ translationData.lblInActive || 'InActive' }}
+              </mat-radio-button>
+
+            </mat-radio-group>
+          </div>
+          <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label style='display: flex; place-content: space-between;'>
+                  <span>{{ translationData.lblDataAttrDescription || 'Data Attribute Description' }}</span>
+                  <span>{{ translationData.lbl120CharMax || '120 characters max' }}</span>
+              </mat-label>
+              <mat-form-field appearance="outline" class="full-width">
+                  <input maxlength="100" placeholder="{{ translationData.lblDataAttrDescriptionOptional || 'Enter Data Attribute Description' }}" matInput
+                      formControlName="AttributeDescription">
+              </mat-form-field>
+              <mat-error *ngIf="  featureFormGroup.get('AttributeDescription').hasError('whitespace')">
+                Data Attribute Description cannot contain only whitespace
+              </mat-error>
+          </div>
+
+      </div>
+      </mat-card-content>
+      <mat-card-actions class='no-margin no-padding'>
+          <div fxLayout="row" fxLayoutAlign="space-between center">
+              <div fxLayout="column" fxLayoutAlign="left">
+                  <div fxLayout="row" fxLayoutAlign='center center'>
+                      <mat-icon class='margin-right-10'>info</mat-icon>
+                      <span>{{ createStatus ? (translationData.lblFeatureHintMessage || 'You can select multiple "Data Attributes" from below list to map with this Feature Relationship') : (translationData.lblEditFeatureHintMessage || 'You can select multiple "Data Attributes" from below list to map with this Feature Relationship') }}</span>
+                  </div>
+              </div>
+              <div fxLayout="column" fxLayoutAlign="end">
+                  <div fxLayout="row">
+                      <button class='margin-right-10' mat-raised-button color="primary"
+                          (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+
+                      <button class='no-margin' [disabled]="!featureFormGroup.valid" mat-raised-button color="primary"
+                          (click)='onCreate()'>{{ createStatus ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm || 'Confirm') }}</button>
+                  </div>
+              </div>
+          </div>
+      </mat-card-actions>
+  </mat-card>
+  <mat-card class='mat-elevation-z'>
+      <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+          <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectDataAttribute || 'Select Data Attribute' }}</span>
+          </div>
+      </div>
+      <div *ngIf='createStatus' fxLayout="row" fxLayoutAlign="start start" class='margin-bottom-sm'>
+          <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+              <mat-form-field appearance="outline">
+                  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                  <span matPrefix><mat-icon>search</mat-icon></span>
+              </mat-form-field>
+          </div>
+      </div>
+      <!-- <div fxLayout="row" class='margin-top-xlg'>
+          <div fxLayout="column" class='full-width'>
+              <mat-table [dataSource]="dataSource" class="table-items" matSort>
+                  <ng-container *ngFor="let disCol of displayedColumns; let colIndex = index" matColumnDef="{{disCol}}">
+                    <div *ngIf="disCol == 'select' "  >
+                      <mat-header-cell *matHeaderCellDef >
+                          <mat-checkbox (change)='$event ? masterToggleForVehGrp() : null'  *ngIf="!viewGroupMode"
+                              [checked]='selectionForVehGrp.hasValue() && isAllSelectedForVehGrp()'
+                              [indeterminate]='selectionForVehGrp.hasValue() && !isAllSelectedForVehGrp()'
+                              [aria-label]='checkboxLabelForVehGrp()'>
+                          </mat-checkbox><span style="padding-left:10px" *ngIf="!viewGroupMode">{{displayColumnHeaders[colIndex]}}</span>
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row">
+                          <mat-checkbox (click)='$event.stopPropagation()' *ngIf="!viewGroupMode"
+                              (change)='$event ? selectionForVehGrp.toggle(row) : null'
+                              [checked]='selectionForVehGrp.isSelected(row)'
+                              [aria-label]='checkboxLabelForVehGrp(row)'>
+                          </mat-checkbox>
+                      </mat-cell>
+                    </div>
+                    <div *ngIf="disCol != 'select'">
+                      <mat-header-cell *matHeaderCellDef>{{displayColumnHeaders[colIndex]}}</mat-header-cell>
+                      <mat-cell *matCellDef="let element "> {{element[disCol]}} </mat-cell>
+                    </div>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+              </mat-table>
+              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+          </div>
+      </div> -->
+  </mat-card>
+</form>
+

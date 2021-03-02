@@ -34,6 +34,7 @@ import { CreateEditViewAccountAccessRelationshipComponent } from './vehicle-acco
 import { TranslationDataUploadComponent } from './translation-data-upload/translation-data-upload.component';
 import { ConsentOptComponent } from './driver-management/consent-opt/consent-opt.component';
 import { FeatureManagementComponent } from './feature-management/feature-management.component';
+import { CreateEditFeaturesComponent } from './feature-management/create-edit-features/create-edit-features.component';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import { FeatureManagementComponent } from './feature-management/feature-managem
     CreateEditViewAccountAccessRelationshipComponent,
     TranslationDataUploadComponent,
     ConsentOptComponent,
-    FeatureManagementComponent
+    FeatureManagementComponent,
+    CreateEditFeaturesComponent
   ],
   imports: [
       CommonModule,
