@@ -81,7 +81,7 @@ namespace net.atos.daf.ct2.feature.test
             dataAttributeSet.Name = "AttributeSet_" + iSessionStartedAt;
             dataAttributeSet.isActive = true;
             dataAttributeSet.Description = "Testdescription";
-            dataAttributeSet.Is_exlusive = "E";
+            dataAttributeSet.Is_exlusive = DataAttributeSetType.Exclusive;
             dataAttributeSet.created_at = iSessionStartedAt;
             dataAttributeSet.created_by = 1;
             dataAttributeSet.modified_at = iSessionExpireddAt;
@@ -117,7 +117,7 @@ namespace net.atos.daf.ct2.feature.test
             dataAttributeSet.Name = "AttributeSet_" + iSessionStartedAt;
             dataAttributeSet.isActive = true;
             dataAttributeSet.Description = "Testdescription";
-            dataAttributeSet.Is_exlusive = "E";
+            dataAttributeSet.Is_exlusive = DataAttributeSetType.Exclusive;
             dataAttributeSet.created_at = iSessionStartedAt;
             dataAttributeSet.created_by = 1;
             dataAttributeSet.modified_at = iSessionExpireddAt;
@@ -195,12 +195,12 @@ namespace net.atos.daf.ct2.feature.test
             //objattribute.Id = 3;
             features.entity.Feature objattribute1 = new features.entity.Feature();
             objattribute1.Id = 2;
-            features.entity.Feature objattribute2 = new features.entity.Feature();
-            objattribute2.Id = 1;
+            //features.entity.Feature objattribute2 = new features.entity.Feature();
+            //objattribute2.Id = 1;
 
             //featureSet.Features.Add(objattribute);
             featureSet.Features.Add(objattribute1);
-            featureSet.Features.Add(objattribute2);
+            //featureSet.Features.Add(objattribute2);
 
             var result = await _FeatureManager.UpdateFeatureSet(featureSet);
             Assert.IsNotNull(result);

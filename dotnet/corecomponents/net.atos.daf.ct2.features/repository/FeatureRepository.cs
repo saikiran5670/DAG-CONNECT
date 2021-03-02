@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using net.atos.daf.ct2.data;
 using Dapper;
 using net.atos.daf.ct2.features.entity;
+using System.Transactions;
 
 namespace net.atos.daf.ct2.features.repository
 {
@@ -310,39 +311,45 @@ namespace net.atos.daf.ct2.features.repository
                 throw ex ;
             }
         }
-        public async Task<bool> RemoveFeatureSetMapping(int FeatureSetId , List<int> IDs)
+       // public async Task<bool> RemoveFeatureSetMapping(int FeatureSetId , List<int> IDs)
+        public async Task<IEnumerable<featuresetfeature>> RemoveFeatureSetMapping(int FeatureSetId, List<int> IDs)
         {
             try
             {
-                var test = string.Empty;
-
-                if (IDs != null)
+                int result = 0;
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                   test=   string.Join(",", IDs);
-                }
+                    var test = string.Empty;
 
-                var FSFSelectQueryStatement = @"select feature_id  FROM master.featuresetfeature  
-                                    WHERE feature_set_id=@featuresetid and feature_id not in (@IDs);";
+                    if (IDs != null)
+                    {
+                        test =  string.Join(" , ", IDs) ;
+                    }
 
-                var FSparameter = new DynamicParameters();
-                FSparameter.Add("@featuresetid", FeatureSetId);
-                FSparameter.Add("@IDs", test);
+                    var FSFSelectQueryStatement = @"select feature_id  FROM master.featuresetfeature  
+                                    WHERE feature_set_id=  @featuresetid and feature_id not in ( '" + test + "');";
 
-                int resultSelectFeature = await dataAccess.ExecuteScalarAsync<int>(FSFSelectQueryStatement, FSparameter);
+                    var FSparameter = new DynamicParameters();
+                    FSparameter.Add("@featuresetid", FeatureSetId);
+                    FSparameter.Add("@IDs", test);
 
-                //var FSFDeleteQueryStatement = @"DELETE FROM master.featuresetfeature  
-                //                    WHERE feature_set_id = @featuresetid AND feature_id=@resultSelectFeature
-                //                    RETURNING feature_set_id;";
 
-                //FSparameter.Add("@resultSelectFeature", resultSelectFeature);
-                //int resultDeleteFeature = await dataAccess.ExecuteScalarAsync<int>(FSFDeleteQueryStatement, FSparameter);
-                if (resultSelectFeature > 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
+
+                    IEnumerable<featuresetfeature> FeatureSetDetails = await dataAccess.QueryAsync<featuresetfeature>(FSFSelectQueryStatement, FSparameter);
+                    // await dataAccess.ExecuteScalarAsync<int>(FSFSelectQueryStatement, FSparameter);
+
+                    foreach (var item in FeatureSetDetails)
+                    {
+
+                        var FSFDeleteQueryStatement = @"DELETE FROM master.featuresetfeature  
+                                        WHERE feature_set_id = @featuresetid AND feature_id=@resultSelectFeature
+                                        RETURNING feature_set_id;";
+
+                        FSparameter.Add("@resultSelectFeature", item.feature_id);
+                        int resultDeleteFeature = await dataAccess.ExecuteScalarAsync<int>(FSFDeleteQueryStatement, FSparameter);
+                    }
+                    transactionScope.Complete();
+                    return FeatureSetDetails;
                 }
 
             }
@@ -504,7 +511,7 @@ namespace net.atos.daf.ct2.features.repository
                 if (UpdatedDataAttributeSetId >0)
                 {
                     dataAttributeSet.ID = UpdatedDataAttributeSetId;
-                    var mapdataattribute = RemoveDataAttributeSetMapping(UpdatedDataAttributeSetId);
+                   // var mapdataattribute = RemoveDataAttributeSetMapping(UpdatedDataAttributeSetId);
                 }
                 
                 List<int> temp = new List<int>();
@@ -513,6 +520,8 @@ namespace net.atos.daf.ct2.features.repository
                     temp.Add(item.ID);
 
                 }
+               
+                var removeFeatureID = await RemoveDataAttributeSetMapping(UpdatedDataAttributeSetId, temp);
 
                 if (dataAttributeSet.DataAttributes != null)
                 {
@@ -550,9 +559,9 @@ namespace net.atos.daf.ct2.features.repository
             {
                 if (dataAttributeSetID != 0)
                 {
-                    int MapDataAttributeSetID = RemoveDataAttributeSetMapping(dataAttributeSetID);
+                    //int MapDataAttributeSetID = RemoveDataAttributeSetMapping(dataAttributeSetID);
                     int MapDataAttributeSetIDFeature = RemoveDataAttributeSetMappingWithFeature(dataAttributeSetID);
-                    var FSQueryStatement = @"delete from master.dataattributeset where id = @dataAttributeSetID  RETURNING id;";
+                    var FSQueryStatement = @"update master.dataattributeset set is_active=false where id =  @dataAttributeSetID  RETURNING id;";
                     var parameter = new DynamicParameters();
                     parameter.Add("@dataAttributeSetID", dataAttributeSetID);
                     int DeleteDataAttributeSetId = await dataAccess.ExecuteScalarAsync<int>(FSQueryStatement, parameter);
@@ -567,17 +576,50 @@ namespace net.atos.daf.ct2.features.repository
             }
         }
 
-        public int RemoveDataAttributeSetMapping( int dataAttributeSetID)
+        //public int RemoveDataAttributeSetMapping( int dataAttributeSetID , List<int> IDs)
+         public async Task<IEnumerable<DataAttributeSetAttribute>> RemoveDataAttributeSetMapping(int dataAttributeSetID, List<int> IDs)
         {
-            if (dataAttributeSetID != 0)
+            try
             {
-                var FSQueryStatement = @"delete from master.dataattributesetattribute where data_attribute_set_id = @dataAttributeSetID  RETURNING data_attribute_set_id;";
-                var parameter = new DynamicParameters();
-                parameter.Add("@dataAttributeSetID", dataAttributeSetID);
-                int result = dataAccess.Execute(FSQueryStatement, parameter);
-                return result;
+                int result = 0;
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    var test = string.Empty;
+
+                    if (IDs != null)
+                    {
+                        test = string.Join(" , ", IDs);
+                    }
+
+                    var FSFSelectQueryStatement = @"select data_attribute_id  FROM master.dataattributesetattribute  
+                                    WHERE data_attribute_set_id=  @dataAttributeSetID and data_attribute_id not in ( '" + test + "');";
+
+                    var FSparameter = new DynamicParameters();
+                    FSparameter.Add("@dataAttributeSetID", dataAttributeSetID);
+                    FSparameter.Add("@IDs", test);
+
+                    IEnumerable<DataAttributeSetAttribute> DataAttributeSetDetails = await dataAccess.QueryAsync<DataAttributeSetAttribute>(FSFSelectQueryStatement, FSparameter);
+
+
+                    foreach (var item in DataAttributeSetDetails)
+                    {
+
+                        var FSFDeleteQueryStatement = @"DELETE FROM master.dataattributesetattribute  
+                                        WHERE data_attribute_set_id = @dataAttributeSetID AND data_attribute_id=@resultSelectFeature
+                                        RETURNING data_attribute_id;";
+
+                        FSparameter.Add("@resultSelectFeature", item.data_attribute_id);
+                        int resultDeleteFeature = await dataAccess.ExecuteScalarAsync<int>(FSFDeleteQueryStatement, FSparameter);
+                    }
+                    transactionScope.Complete();
+                    return DataAttributeSetDetails;
+                }
+
             }
-            return dataAttributeSetID;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         public int RemoveDataAttributeSetMappingWithFeature(int dataAttributeSetID)
         {
@@ -696,7 +738,9 @@ namespace net.atos.daf.ct2.features.repository
         {
             try
             {
-                var FSQueryStatement = @" UPDATE master.featureset 
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    var FSQueryStatement = @" UPDATE master.featureset 
                                  SET 
                                     name= @name,
                                     description= @description, 
@@ -707,41 +751,42 @@ namespace net.atos.daf.ct2.features.repository
                                     modified_by=@modified_by
                                 WHERE id = @id
                                 RETURNING id;";
-                var parameter = new DynamicParameters();
-                parameter.Add("@id", featureSet.FeatureSetID);
-                parameter.Add("@name", featureSet.Name);
-                parameter.Add("@description", featureSet.description);
-                parameter.Add("@is_active", featureSet.Is_Active);
-                parameter.Add("@created_at", featureSet.created_at);
-                parameter.Add("@created_by", featureSet.created_by);
-                parameter.Add("@modified_at", featureSet.modified_at);
-                parameter.Add("@modified_by", featureSet.modified_by);
-                int UpdateFeatureSetID = await dataAccess.ExecuteScalarAsync<int>(FSQueryStatement, parameter);
-                if (UpdateFeatureSetID > 0)
-                {
-                    featureSet.FeatureSetID = UpdateFeatureSetID;
-                }
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@id", featureSet.FeatureSetID);
+                    parameter.Add("@name", featureSet.Name);
+                    parameter.Add("@description", featureSet.description);
+                    parameter.Add("@is_active", featureSet.Is_Active);
+                    parameter.Add("@created_at", featureSet.created_at);
+                    parameter.Add("@created_by", featureSet.created_by);
+                    parameter.Add("@modified_at", featureSet.modified_at);
+                    parameter.Add("@modified_by", featureSet.modified_by);
+                    int UpdateFeatureSetID = await dataAccess.ExecuteScalarAsync<int>(FSQueryStatement, parameter);
+                    if (UpdateFeatureSetID > 0)
+                    {
+                        featureSet.FeatureSetID = UpdateFeatureSetID;
+                    }
 
-                List<int> temp = new List<int>();
-                foreach (var item in featureSet.Features)
-                {
-                    temp.Add(item.Id);
-
-                }
-                var removeFeatureID = RemoveFeatureSetMapping(UpdateFeatureSetID, temp);
-
-                if (featureSet.Features != null)
-                {
+                    List<int> temp = new List<int>();
                     foreach (var item in featureSet.Features)
                     {
-                        if (featureSet.Is_Active == true)
+                        temp.Add(item.Id);
+
+                    }
+                    var removeFeatureID = await RemoveFeatureSetMapping(UpdateFeatureSetID, temp);
+
+                    if (featureSet.Features != null)
+                    {
+                        foreach (var item in featureSet.Features)
                         {
-                            var parameterfeature = UpdateFeatureSetMapping(UpdateFeatureSetID, item.Id);
+                            if (featureSet.Is_Active == true)
+                            {
+                                var parameterfeature = UpdateFeatureSetMapping(UpdateFeatureSetID, item.Id);
+                            }
                         }
                     }
+                    transactionScope.Complete();
+                    return featureSet;
                 }
-
-                return featureSet;
             }
             catch (Exception ex)
             {
@@ -758,11 +803,7 @@ namespace net.atos.daf.ct2.features.repository
                 // insert
                 var parameterfeature = CreateFeatureSetMapping(UpdateFeatureSetID, ID);
             }
-            else
-            {
-                //delete
-               // var parameterfeature = RemoveFeatureSetMapping(UpdateFeatureSetID, ID);
-            }
+           
             return UpdateFeatureSetID;
         }
 

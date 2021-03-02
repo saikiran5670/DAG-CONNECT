@@ -15,6 +15,8 @@ namespace net.atos.daf.ct2.features.entity
         public int created_by { get; set; }
         public long modified_at { get; set; }
         public int modified_by { get; set; }
-        
+        public StatusType status { get; set; }
+
+
     }
 }
