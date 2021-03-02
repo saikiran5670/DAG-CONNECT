@@ -94,16 +94,18 @@ namespace net.atos.daf.ct2.package.repository
             var packages = new List<Package>();
             try
             {
-                var packageExits = GetPackage();
+                var packageExits = PackageExists(packageList);
+                var newPackages = from package in packageList
+                                  where !packageExits.Any(x => x.Code == package.Code)
+                                  select package;
 
                 var parameter = new DynamicParameters();
                 string query = string.Empty;
                 if (packageList != null)
                 {
-                    foreach (Package package in packageList)
+                    foreach (Package package in newPackages)
                     {
-
-                        var featureId = _featureManager.AddFeatureSet(new FeatureSet() { Features = package.Features.Cast<Feature>().ToList() });
+                        package.FeatureSetID = CreateFeatureSet(package.Features).Result;
                         if (package.Code != null && package.FeatureSetID > 0)
                         {
                             parameter = new DynamicParameters();
@@ -135,31 +137,35 @@ namespace net.atos.daf.ct2.package.repository
             return packages;
         }
 
-        public async Task<List<Package>> GetPackage()
+        private Task<int> CreateFeatureSet(List<string> featues)
         {
-            List<Package> packageList = new List<Package>();
-            try
-            {
-                var parameter = new DynamicParameters();
-                string query = string.Empty;
-                query = @"select * from master.package";
-                IEnumerable<dynamic> packages = await _dataAccess.QueryAsync<dynamic>(query, parameter);
-                foreach (dynamic package in packages)
-                {
-                    packageList.Add(package);
-                }
-                return packageList;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            var pkgFeatures = featues.Select(x => new Feature() { Name = x }).ToList();
+
+            long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            long iSessionExpireddAt = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(30));
+            FeatureSet featureSet = new FeatureSet();
+            featureSet.Name = "FeatureSet_" + iSessionStartedAt;
+            featureSet.description = "PackageTest data";
+            featureSet.Is_Active = true;
+            featureSet.created_at = iSessionStartedAt;
+            featureSet.created_by = 1;
+            featureSet.modified_at = iSessionExpireddAt;
+            featureSet.modified_by = 1;
+            featureSet.Features = pkgFeatures;
+            var featureId = _featureManager.AddFeatureSet(featureSet);
+            return featureId;
 
         }
+        private List<Package> PackageExists(List<Package> packageList)
+        {
+            var packageFilter = new PackageFilter();
+            var packages = Get(packageFilter);
+            var PackageExist = from package in packages.Result
+                               where packageList.Any(x => x.Code == package.Code)
+                               select package;
+            return PackageExist.ToList();
 
-
-
-
+        }
 
 
         public Task<FeatureSet> Create(FeatureSet featureSet)
@@ -181,7 +187,6 @@ namespace net.atos.daf.ct2.package.repository
             try
             {
                 var parameter = new DynamicParameters();
-                //List<Account> accounts = new List<Account>();
                 List<Package> packages = new List<Package>();
                 string query = string.Empty;
 
@@ -214,22 +219,22 @@ namespace net.atos.daf.ct2.package.repository
                         parameter.Add("@feature_set_id", filter.FeatureSetId);
                         query = query + " and pkg.feature_set_id = @feature_set_id ";
                     }
-                    // package type filter 
-                    if (((char)filter.Type) != ((char)PackageType.Organization))
+                    // package type filter
+                    if (filter.Type != 0)// (((char)filter.Type) != ((char)PackageType.Organization))
                     {
-                        parameter.Add("@type", (char)filter.Type, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                        parameter.Add("@type", (char)filter.Type);//, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
 
                         query = query + " and pkg.type=@type";
                     }
 
 
-                    // package status filter 
-                    if (((char)filter.Status) != ((char)PackageStatus.Active))
-                    {
-                        parameter.Add("@status", (char)filter.Status, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                    //// package status filter 
+                    //if (((char)filter.Status) != ((char)PackageStatus.Active))
+                    //{
+                    //    parameter.Add("@status", (char)filter.Status, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
 
-                        query = query + " and pkg.status=@status";
-                    }
+                    //    query = query + " and pkg.status=@status";
+                    //}
 
 
                     // account ids filter                    
@@ -271,7 +276,8 @@ namespace net.atos.daf.ct2.package.repository
             Package package = new Package();
             package.Id = record.id;
             package.Code = record.code;
-            package.Status = record.status;
+
+            // package.Status = record.status;
             package.Pack_Type = (PackageType)Convert.ToChar(record.type);
             package.Name = record.name;
             package.ShortDescription = record.short_description;
@@ -294,10 +300,10 @@ namespace net.atos.daf.ct2.package.repository
             throw new NotImplementedException();
         }
 
-       
+
         public async Task<bool> Delete(int packageId)
         {
-            log.Info("Delete Organization method called in repository");
+            log.Info("Delete Package method called in repository");
             try
             {
                 var parameter = new DynamicParameters();
@@ -308,7 +314,7 @@ namespace net.atos.daf.ct2.package.repository
             }
             catch (Exception ex)
             {
-                log.Info("Delete Organization method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(packageId));
+                log.Info("Delete Package method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(packageId));
                 log.Error(ex.ToString());
                 throw ex;
             }

@@ -1,7 +1,7 @@
 {
   "packages": [
     {
-      "code": "PKG005",
+      "code": "PKG001",
       "is_default": "True",
       "features": [
         "V_EXCESSIVE_AVG_SPEED_ALERT_REALTIME",
@@ -26,7 +26,27 @@
         "V_FUEL_CONSUMPTION_DIGEST",
         "V_FUEL_CONSUMPTION_ALERT_DIGEST",
         "V_FUEL_CONSUMPTION_VIEW"
-      ],       
+      ],
+      "status": "Active",
+      "name": "Standard",
+      "type": "Organization",
+      "short_description": "Package with default featureset",
+      "start_date": "2019-02-02T12:34:56",
+      "end_date": "2019-02-02T12:34:56"
+    },
+    {
+      "code": "PKG006",
+      "is_default": "True",
+      "features": [
+        "V_EXCESSIVE_AVG_SPEED_ALERT_REALTIME",
+        "V_HOURS_OF_SERVICE_ALERT_REALTIME",
+        "V_HOURS_OF_SERVICE_ALERT_TRIP",
+        "V_MILEAGE_DIGEST",
+        "V_POI_ENTERING_ALERT_REALTIME",
+        "V_POI_EXITING_ALERT_REALTIME",
+        "V_ROAD_DIGEST",
+        "V_TRACING_VIEW"        
+      ],
       "status": "Active",
       "name": "Standard",
       "type": "Organization",
