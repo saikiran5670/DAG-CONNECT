@@ -34,7 +34,7 @@ import { CreateEditViewAccountAccessRelationshipComponent } from './vehicle-acco
 import { TranslationDataUploadComponent } from './translation-data-upload/translation-data-upload.component';
 import { ConsentOptComponent } from './driver-management/consent-opt/consent-opt.component';
 import { FeatureManagementComponent } from './feature-management/feature-management.component';
-import { CreateEditFeaturesComponent } from './feature-management/create-edit-features/create-edit-features.component';
+import { CreateEditViewFeaturesComponent } from './feature-management/create-edit-view-features/create-edit-view-features.component';
 import { RelationshipManagementComponent } from './relationship-management/relationship-management.component';
 import { CreateViewEditRelationshipComponent } from './relationship-management/create-view-edit-relationship/create-view-edit/create-view-edit-relationship.component';
 
@@ -65,7 +65,7 @@ import { CreateViewEditRelationshipComponent } from './relationship-management/c
     TranslationDataUploadComponent,
     ConsentOptComponent,
     FeatureManagementComponent,
-    CreateEditFeaturesComponent,
+    CreateEditViewFeaturesComponent,
     RelationshipManagementComponent,
     CreateViewEditRelationshipComponent
   ],
