@@ -249,7 +249,11 @@ export class DriverManagementComponent implements OnInit {
   importDrivers(){ 
     this.importDriverPopup = true;
     this.userGrpName = 'Test User Group' ; //this.importDriverFormGroup.controls.userGroup.value;
-    this.validateExcelFileField();
+    if(this.filelist.length > 0){
+      this.validateExcelFileField();
+    }else{
+      console.log("Empty File...");
+    }
   }
 
   validateExcelFileField(){
@@ -265,6 +269,58 @@ export class DriverManagementComponent implements OnInit {
       });
     });
     console.log("Parse excel driver:: ", driverAPIData)
+    let finalList = this.validateFields(driverAPIData);
+    console.log("Final list:: ", finalList)
+  }
+
+  validateFields(driverList: any){
+    let validData: any = [];
+    let invalidData: any = [];
+    driverList.forEach((item: any) => {
+      let driverId: any;
+      let fname: any;
+      let lname: any;
+      let salutation: any;
+      for (const [key, value] of Object.entries(item)) {
+        console.log(`${key}: ${value}`);
+        switch(key){
+          case "driverId":{
+            driverId = this.requiredField(value);  
+            console.log("driverId:: ", driverId)
+            break;
+          }
+          case "firstName":{
+            fname = this.requiredField(value); 
+            console.log("fname:: ", fname)
+            break;
+          }
+          case "lastName":{
+            this.requiredField(value); 
+            console.log("lname:: ", lname)
+            break;
+          }
+          case "salutation":{
+            this.requiredField(value); 
+            console.log("salutation:: ", salutation)
+            break;
+          }
+        }
+      }
+      if(driverId && fname && lname && salutation){
+        validData.push(item);
+      }
+      else{
+        invalidData.push(item);
+      }
+    });
+    console.log("validData:: ", validData)
+    console.log("invalidData:: ", invalidData)
+    return validData;
+  }
+
+  requiredField(value: any)
+  {
+    return (value == '' || value.lenght == 0) ? true : false;
   }
 
   applyFilter(filterValue: string) {
