@@ -530,7 +530,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             {
                 await dataAccess.ExecuteAsync("UPDATE master.vehicle SET model_id = @model_id , license_plate_number = @license_plate_number WHERE vin = @vin",new {model_id=objVeh.ModelId,license_plate_number=objVeh.License_Plate_Number,vin=objVeh.VIN});
                 vehicleproperty.ID = await dataAccess.ExecuteScalarAsync<int>(UpdateQueryStatement, parameter);  
-                objVeh.ID = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT vehicle_property_id FROM master.vehicle where vehicle_property_id=@id), 0)", new { id = vehicleproperty.ID });             
+                objVeh.ID = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vehicle_property_id=@id), 0)", new { id = vehicleproperty.ID });             
             }
             else
             {
