@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 namespace net.atos.daf.ct2.applicationservice.Controllers
 {
     [ApiController]
-    [Route("application")]
+   // [Route("application")]
     public class ApplicationController : ControllerBase
     {
         [HttpGet]
-        [Route("get")]
+     //   [Route("get")]
         public IActionResult Get()
         {
             string result = "Get Method Response";
