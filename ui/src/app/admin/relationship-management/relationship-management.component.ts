@@ -144,26 +144,26 @@ export class RelationshipManagementComponent implements OnInit {
 
   newRelationship(){
     this.titleText = this.translationData.lblAddNewRelationship || "Add New Relationship";
-    this.rowsData = [];
-    this.rowsData = this.initData; 
-    this.editFlag = true;
-    this.createStatus = true;
+    // this.rowsData = [];
+    // this.rowsData = this.initData; 
+    // this.editFlag = true;
+    // this.createStatus = true;
   }
 
   viewRelationship(row: any){
     this.titleText = this.translationData.lblRelationshipDetails || "Relationship Details";
-    this.editFlag = true;
-    this.viewFlag = true;
-    this.rowsData = [];
-    this.rowsData.push(row);
+    // this.editFlag = true;
+    // this.viewFlag = true;
+    // this.rowsData = [];
+    // this.rowsData.push(row);
   }
 
   editRelationship(row: any){
     this.titleText = this.translationData.lblRelationshipDetails || "Relationship Details";
-    this.rowsData = [];
-    this.rowsData.push(row);
-    this.editFlag = true;
-    this.createStatus = false;    
+    // this.rowsData = [];
+    // this.rowsData.push(row);
+    // this.editFlag = true;
+    // this.createStatus = false;    
   }
 
   deleteRelationship(row: any){
