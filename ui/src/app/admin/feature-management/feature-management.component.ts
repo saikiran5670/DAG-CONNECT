@@ -57,11 +57,11 @@ export class FeatureManagementComponent implements OnInit {
       filter: "",
       menuId: 3 //-- for user mgnt
     }
-   // this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
-      //this.processTranslation(data);
+    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+      this.processTranslation(data);
       this.loadRestData();
       this.loadFeatureData();
-   // });
+    });
   }
 
   loadFeatureData(){
