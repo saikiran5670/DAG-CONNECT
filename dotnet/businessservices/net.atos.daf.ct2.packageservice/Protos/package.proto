@@ -1,0 +1,33 @@
+
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+option csharp_namespace = "net.atos.daf.ct2.packageservice";
+package pacakge;
+
+service PackageService{
+   rpc Create (PackageRequest) returns (PackageData);
+}
+
+
+message PackageRequest {
+    int32 Id= 1;
+    string EmailId=2;
+    string Salutation=3;
+    string FirstName=4;
+    string LastName=5;
+    string Password=6;
+    //google.protobuf.Timestamp Dob=7; 
+    //AccountType Type=7;    
+    int32 OrganizationId=7;
+    //int32 Account_OrgId =10;k
+    //google.protobuf.Timestamp StartDate=10;
+    //google.protobuf.Timestamp EndDate=11;
+    //bool Active =12;
+    //bool Active =11;
+  }
+
+  message PackageData {
+ 
+  string Message = 2;
+  PackageRequest Account = 3;
+}
