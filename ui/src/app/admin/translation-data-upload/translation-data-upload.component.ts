@@ -117,7 +117,8 @@ export class TranslationDataUploadComponent implements OnInit {
       uploadFile: [
         undefined,
         [Validators.required, FileValidator.maxContentSize(this.maxSize)]
-      ]
+      ],
+      fileDescription: []
     });
 
     let translationObj = {
@@ -132,38 +133,33 @@ export class TranslationDataUploadComponent implements OnInit {
 
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
-      //this.mockData();
-      //this.loadUsersData();
-    });
+      
+    });this.mockData();
   }
 
   mockData(){
-    this.initData = [
+    let data = [
       {
-        driverId: "IN 0000000000000001",
-        firstName: "Driver",
-        lastName: "1",
-        birthDate: "01/01/2001",
-        consentStatus: 'Opt-In',
-        salutation: "Mr"
+        fileName: "File1.xlsx",
+        uploadedDate: "01/01/2001",
+        fileSize: "100kb",
+        description: "File 1"
       },
       {
-        driverId: "IN 0000000000000002",
-        firstName: "Driver",
-        lastName: "2",
-        birthDate: "02/02/2002",
-        consentStatus: 'Opt-Out',
-        salutation: "Ms"
+        fileName: "File2.xlsx",
+        uploadedDate: "02/01/2001",
+        fileSize: "100kb",
+        description: "File 2"
       },
       {
-        driverId: "IN 0000000000000003",
-        firstName: "Driver",
-        lastName: "3",
-        birthDate: "03/03/2003",
-        consentStatus: 'Opt-In',
-        salutation: "Mrs"
+        fileName: "File3.xlsx",
+        uploadedDate: "03/01/2001",
+        fileSize: "100kb",
+        description: "File 3"
       }
     ];
+
+    this.updateGridData(data);
   }
 
   processTranslation(transData: any){

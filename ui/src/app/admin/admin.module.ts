@@ -35,6 +35,8 @@ import { TranslationDataUploadComponent } from './translation-data-upload/transl
 import { ConsentOptComponent } from './driver-management/consent-opt/consent-opt.component';
 import { FeatureManagementComponent } from './feature-management/feature-management.component';
 import { CreateEditFeaturesComponent } from './feature-management/create-edit-features/create-edit-features.component';
+import { RelationshipManagementComponent } from './relationship-management/relationship-management.component';
+import { CreateViewEditRelationshipComponent } from './relationship-management/create-view-edit-relationship/create-view-edit/create-view-edit-relationship.component';
 
 @NgModule({
   declarations: [
@@ -63,7 +65,9 @@ import { CreateEditFeaturesComponent } from './feature-management/create-edit-fe
     TranslationDataUploadComponent,
     ConsentOptComponent,
     FeatureManagementComponent,
-    CreateEditFeaturesComponent
+    CreateEditFeaturesComponent,
+    RelationshipManagementComponent,
+    CreateViewEditRelationshipComponent
   ],
   imports: [
       CommonModule,
