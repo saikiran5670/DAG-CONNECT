@@ -42,6 +42,10 @@
         {
           "name": "Translation Data Upload",
           "subRoute": "translationdataupload"
+        },
+        {
+          "name": "Feature Management",
+          "subRoute": "featuremanagement"
         }
       ]
     },

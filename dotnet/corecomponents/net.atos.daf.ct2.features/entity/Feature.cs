@@ -1,5 +1,6 @@
  using System;
  using System.Text.Json.Serialization;
+using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.features.entity
 {
@@ -15,6 +16,8 @@ namespace net.atos.daf.ct2.features.entity
         public int Data_attribute_Set_id { get; set; }
         public int RoleId { get; set; }
         public int Organization_Id { get; set; }
+        public string  Key { get; set; }
+        public List<DataAttributeSet> DataAttributeSets { get; set; }
 
     }
 }
