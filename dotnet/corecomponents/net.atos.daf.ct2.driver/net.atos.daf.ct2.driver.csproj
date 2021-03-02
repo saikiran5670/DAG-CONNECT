@@ -11,4 +11,8 @@
       <HintPath>..\..\dlls\net.atos.daf.ct2.data.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.audit\net.atos.daf.ct2.audit.csproj" />
+  </ItemGroup>
 </Project>
