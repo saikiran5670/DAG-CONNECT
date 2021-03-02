@@ -22,7 +22,7 @@ using Identity = net.atos.daf.ct2.identity;
 using AccountPreference = net.atos.daf.ct2.accountpreference;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.OpenApi.Models;
-
+using net.atos.daf.ct2.group;
 
 
 namespace net.atos.daf.ct2.vehicledataservice
@@ -53,6 +53,8 @@ namespace net.atos.daf.ct2.vehicledataservice
             services.AddTransient<Identity.IAccountManager,Identity.AccountManager>();
             services.AddTransient<Identity.ITokenManager,Identity.TokenManager>();
             services.AddTransient<Identity.IAccountAuthenticator,Identity.AccountAuthenticator>();
+            services.AddTransient<IGroupManager,GroupManager>();
+            services.AddTransient<IGroupRepository, GroupRepository>();
             
             services.AddTransient<AccountComponent.IAccountIdentityManager,AccountComponent.AccountIdentityManager>();
             

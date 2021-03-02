@@ -46,6 +46,10 @@
         {
           "name": "Feature Management",
           "subRoute": "featuremanagement"
+        },
+        {
+          "name": "Relationship Management",
+          "subRoute": "relationshipmanagement"
         }
       ]
     },

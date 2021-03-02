@@ -8,7 +8,7 @@
         <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
         </div>
   </div>
-  <mat-card class='mat-elevation-z'>
+  <mat-card class='mat-elevation-z' *ngIf='!createEditViewFeatureFlag'>
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFeatureRelationshipDetails || 'Feature Relationship Details' }}</span>
@@ -82,4 +82,5 @@
           <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
     </div>
   </mat-card>
+  <app-create-edit-view-features *ngIf='createEditViewFeatureFlag' [translationData]='translationData' [actionType]='actionType' [dataAttributeList]='dataAttributeList' (createViewEditFeatureEmit)='checkCreationForFeature($event)'></app-create-edit-view-features>
 </div>

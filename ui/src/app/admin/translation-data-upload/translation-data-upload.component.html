@@ -18,8 +18,10 @@
                 <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="15px">
                     <div style='width: 60%' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                         <span style='display: flex; align-items: center;'>
-                            <mat-icon style="margin-right: 5px;">cloud_upload</mat-icon><a [download]="templateFileName" [href]="templateFileUrl"
-                                style='font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>{{ translationData.lblExportTranslatedData || 'Export Translated Data' }}</a>
+                            <img matTooltip='Download Excel' src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 30px; height: 30px;" />&nbsp;
+                            <a [download]="templateFileName" [href]="templateFileUrl"
+                                style='font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>{{ translationData.lblExportTranslatedData || 'Export Translated Data' }}
+                            </a>
                         </span>
                         <span>{{ translationData.lblDownloadaTemplateMessage || 'Download final template from here and upload it here with updated details.'}}</span>
                     </div>
@@ -47,6 +49,18 @@
                                             <mat-icon>arrow_circle_up</mat-icon> {{ translationData.lblUploadFile || 'Upload File' }}
                                         </button>
                                     </div>
+                                </div>
+                                <div class="areaWidth full-width myform-wrappe" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
+                                    <mat-label>
+                                        {{ translationData.lblDescription || 'Description'}}
+                                        {{ translationData.lbl120CharMax || '120 characters max'}}
+                                    </mat-label><br>
+                                    <mat-form-field appearance="outline">
+                                        <input maxlength="120" placeholder="{{ translationData.lblEnterFileDescription || 'Enter File Description' }}" matInput formControlName="fileDescription">
+                                    </mat-form-field>
+                                    <mat-error *ngIf="  uploadTranslationDataFormGroup.get('fileDescription').hasError('whitespace')">
+                                        Description cannot contain only whitespace
+                                    </mat-error>
                                 </div>
                             </div>
                         </div>
@@ -116,7 +130,7 @@
                             <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <button class='actionBtn' mat-flat-button (click)="onDownloadExcel(row)" matTooltip="{{ translationData.lblDownload || 'Download' }}">
-                                    <mat-icon>File</mat-icon> Download
+                                    <img matTooltip='Download Excel' src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 20px; height: 20px;" /> {{ translationData.lblDownload || 'Download' }} Download
                                 </button>
                             </mat-cell>
                         </ng-container>

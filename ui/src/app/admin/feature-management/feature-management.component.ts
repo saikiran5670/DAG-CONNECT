@@ -13,6 +13,7 @@ import { TranslationService } from '../../services/translation.service';
 export class FeatureManagementComponent implements OnInit {
   //--------Rest data-----------//
   featureRestData: any = [];
+  dataAttributeList: any = [];
   displayedColumns = ['name','type', 'setName', 'setType', 'dataAttribute', 'status', 'action'];
   //-------------------------//
   titleVisible : boolean = false;
@@ -24,6 +25,8 @@ export class FeatureManagementComponent implements OnInit {
   localStLanguage: any;
   dataSource: any;
   translationData: any;
+  createEditViewFeatureFlag: boolean = false;
+  actionType: any;
 
   constructor(private translationService: TranslationService) { 
     this.defaultTranslation();
@@ -89,6 +92,32 @@ export class FeatureManagementComponent implements OnInit {
         status: "InActive"
       }
     ];
+    this.dataAttributeList = [
+      {
+        id: 1,
+        dataAttribute: "Vehicle.vin" 
+      },
+      {
+        id: 2,
+        dataAttribute: "Vehicle.name" 
+      },
+      {
+        id: 3,
+        dataAttribute: "Data Attribute 1" 
+      },
+      {
+        id: 4,
+        dataAttribute: "Data Attribute 2" 
+      },
+      {
+        id: 5,
+        dataAttribute: "Data Attribute 3" 
+      },
+      {
+        id: 6,
+        dataAttribute: "Data Attribute 4" 
+      }
+    ];
   }
 
   processTranslation(transData: any){
@@ -103,7 +132,8 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   createNewFeature(){
-
+    this.actionType = 'create';
+    this.createEditViewFeatureFlag = true;
   }
 
   onClose(){
@@ -115,11 +145,16 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   editViewFeature(rowData: any, type: any){
-
+    this.actionType = type;
+    this.createEditViewFeatureFlag = true;
   }
 
   deleteFeature(rowData: any){
 
+  }
+
+  checkCreationForFeature(item: any){
+    this.createEditViewFeatureFlag = !this.createEditViewFeatureFlag;
   }
 
 }
