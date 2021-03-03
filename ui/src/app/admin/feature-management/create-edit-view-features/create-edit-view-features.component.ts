@@ -4,8 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { TranslationService } from 'src/app/services/translation.service';
-import { CustomValidators } from 'src/app/shared/custom.validators';
+import { CustomValidators } from '../../../shared/custom.validators';
 
 @Component({
   selector: 'app-create-edit-view-features',
@@ -17,6 +16,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   @Input() translationData: any;
   @Input() actionType: any;
   @Input() dataAttributeList: any;
+  @Input() selectedElementData: any;
   @Output() createViewEditFeatureEmit = new EventEmitter<object>();
   breadcumMsg: any = '';  
   displayedColumns: string[] = ['select', 'dataAttribute'];
@@ -47,7 +47,20 @@ export class CreateEditViewFeaturesComponent implements OnInit {
       dataAttributeDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
     });
     this.breadcumMsg = this.getBreadcum(this.actionType);
+    if(this.actionType == 'view' || this.actionType == 'edit' ){
+      this.setDefaultValue();
+    }
     this.loadGridData(this.dataAttributeList);
+  }
+
+  setDefaultValue(){
+    this.featureFormGroup.get("featureName").setValue(this.selectedElementData.name);
+    this.featureFormGroup.get("featureDescription").setValue(this.selectedElementData.featureDescription);
+    this.featureFormGroup.get("featureType").setValue(this.selectedElementData.type);
+    this.featureFormGroup.get("dataAttributeSetName").setValue(this.selectedElementData.setName);
+    this.selectedSetType = this.selectedElementData.setType.toLowerCase();
+    this.selectedStatus = this.selectedElementData.status.toLowerCase();
+    this.featureFormGroup.get("dataAttributeDescription").setValue(this.selectedElementData.dataAttributeDescription);
   }
 
   getBreadcum(type: any){
@@ -57,6 +70,18 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   loadGridData(tableData: any){
     this.initData = tableData;
     this.updateDataSource(tableData);
+    if(this.actionType == 'edit' ){
+      this.selectTableRows();
+    }
+  }
+
+  selectTableRows() {
+    this.dataSource.data.forEach((row: any) => {
+      let search = this.selectedElementData.dataAttribute.filter((item: any) => item.id == row.id);
+      if (search.length > 0) {
+        this.selectionForDataAttribute.select(row);
+      }
+    });
   }
 
   updateDataSource(tableData: any){
@@ -98,7 +123,9 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   onReset(){
-
+    this.selectionForDataAttribute.clear();
+    this.setDefaultValue();
+    this.selectTableRows();
   }
 
   masterToggleForDataAttribute() {
@@ -121,6 +148,14 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     else
       return `${this.selectionForDataAttribute.isSelected(row) ? 'deselect' : 'select'
         } row`;
+  }
+
+  onSetTypeChange(event: any){
+    this.selectedSetType = event.value;
+  }
+
+  onStatusChange(event: any){
+    this.selectedStatus = event.value;
   }
 
 }

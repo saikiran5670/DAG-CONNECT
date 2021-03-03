@@ -52,7 +52,7 @@
             </ng-container>
             <ng-container matColumnDef="dataAttribute">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttribute || 'Data Attribute' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.dataAttribute }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.dataAttribute.length }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="status">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
@@ -82,5 +82,5 @@
           <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
     </div>
   </mat-card>
-  <app-create-edit-view-features *ngIf='createEditViewFeatureFlag' [translationData]='translationData' [actionType]='actionType' [dataAttributeList]='dataAttributeList' (createViewEditFeatureEmit)='checkCreationForFeature($event)'></app-create-edit-view-features>
+  <app-create-edit-view-features *ngIf='createEditViewFeatureFlag' [translationData]='translationData' [actionType]='actionType' [dataAttributeList]='dataAttributeList' [selectedElementData]='selectedElementData' (createViewEditFeatureEmit)='checkCreationForFeature($event)'></app-create-edit-view-features>
 </div>

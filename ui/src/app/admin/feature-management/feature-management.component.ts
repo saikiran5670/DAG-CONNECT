@@ -15,6 +15,7 @@ export class FeatureManagementComponent implements OnInit {
   featureRestData: any = [];
   dataAttributeList: any = [];
   displayedColumns = ['name','type', 'setName', 'setType', 'dataAttribute', 'status', 'action'];
+  selectedElementData: any;
   //-------------------------//
   titleVisible : boolean = false;
   feautreCreatedMsg : any = '';
@@ -80,7 +81,22 @@ export class FeatureManagementComponent implements OnInit {
         type: "Data Attribute",
         setName: "DA Set Name A",
         setType: "Excluded",
-        dataAttribute: 10,
+        featureDescription: "Feature 1 Description",
+        dataAttributeDescription: "Data Attribute 1 Description",
+        dataAttribute: [
+          {
+            id: 1,
+            dataAttribute: "Vehicle.vin" 
+          },
+          {
+            id: 2,
+            dataAttribute: "Vehicle.name" 
+          },
+          {
+            id: 3,
+            dataAttribute: "Data Attribute 1" 
+          }
+        ],
         status: "Active"
       },
       {
@@ -88,8 +104,27 @@ export class FeatureManagementComponent implements OnInit {
         type: "Data Attribute",
         setName: "DA Set Name B",
         setType: "Included",
-        dataAttribute: 15,
-        status: "InActive"
+        featureDescription: "feature 2 Description",
+        dataAttributeDescription: "Data Attribute 2 Description",
+        dataAttribute: [
+          {
+            id: 3,
+            dataAttribute: "Data Attribute 1" 
+          },
+          {
+            id: 4,
+            dataAttribute: "Data Attribute 2" 
+          },
+          {
+            id: 5,
+            dataAttribute: "Data Attribute 3" 
+          },
+          {
+            id: 6,
+            dataAttribute: "Data Attribute 4" 
+          }
+        ],
+        status: "Inactive"
       }
     ];
     this.dataAttributeList = [
@@ -146,6 +181,7 @@ export class FeatureManagementComponent implements OnInit {
 
   editViewFeature(rowData: any, type: any){
     this.actionType = type;
+    this.selectedElementData = rowData;
     this.createEditViewFeatureFlag = true;
   }
 

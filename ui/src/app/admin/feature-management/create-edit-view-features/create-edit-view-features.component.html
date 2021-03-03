@@ -70,18 +70,18 @@
             </div>
             <div class='areaWidth min-width-20-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
             <span>{{ translationData.lblDataAttributeSetType || 'Data Attribute Set Type' }}:</span>
-            <mat-radio-group class='margin-top-5'>
+            <mat-radio-group class='margin-top-5' (change)='onSetTypeChange($event)'>
                 <mat-radio-button [checked]="selectedSetType ===  'excluded' ? true : false" style='margin-right: 20px;' value="excluded">{{ translationData.lblExcluded || 'Excluded' }}
                 </mat-radio-button>
-                <mat-radio-button [checked]="selectedSetType ===  'inactive' ? true : false" style='margin-right: 20px;' value="inactive" >{{ translationData.lblInactive || 'Inactive' }}
+                <mat-radio-button [checked]="selectedSetType ===  'included' ? true : false" style='margin-right: 20px;' value="included" >{{ translationData.lblIncluded || 'Included' }}
                 </mat-radio-button>
             </mat-radio-group>
             </div>
             </div>
-            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
             <div class='areaWidth min-width-30-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
             <span>{{ translationData.lblStatus || 'Status' }}</span>
-            <mat-radio-group class='margin-top-5'>
+            <mat-radio-group class='margin-top-5' (change)='onStatusChange($event)'>
                 <mat-radio-button [checked]="selectedStatus ===  'active' ? true : false" style='margin-right: 20px;' value="active">{{ translationData.lblActive || 'Active' }}
                 </mat-radio-button>
                 <mat-radio-button [checked]="selectedStatus ===  'inactive' ? true : false" style='margin-right: 20px;' value="inactive" >{{ translationData.lblInactive || 'Inactive' }}
