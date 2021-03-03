@@ -43,9 +43,10 @@ import { CommonFilterComponent } from './common-filter/common-filter.component';
 import { RemoveDuplicatesPipe } from './pipes/remove-duplicates.pipe';
 import { CustomPaginationComponent } from './custom-pagination/custom-pagination.component';
 import { SpinnerComponent } from './spinner/spinner.component';
+import { ActiveInactiveDailogComponent } from './active-inactive-dailog/active-inactive-dailog.component';
 
 @NgModule({
-  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, CustomPaginationComponent, SpinnerComponent],
+  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, CustomPaginationComponent, SpinnerComponent, ActiveInactiveDailogComponent],
   imports: [
     CommonModule,
     FlexLayoutModule,

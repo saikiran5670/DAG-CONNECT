@@ -29,23 +29,16 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 
 	private static final long serialVersionUID = 1L;
 
-	// String livefleetdriver = "INSERT INTO
-	// livefleet.livefleet_trip_driver_activity (trip_id , trip_start_time_stamp ,
-	// trip_end_time_stamp , activity_date, vin , driver_id , code , start_time ,
-	// end_time , duration , created_at_m2m , created_at_kafka , created_at_dm ,
-	// modified_at , last_processed_message_time_stamp ) VALUES ( ? , ? , ? , ? , ?
-	// , ? , ? , ? , ? , ? , ? , ? , ? , ? ,?) ";
-	// String readquery = "SELECT * FROM livefleet.livefleet_trip_driver_activity
-	// WHERE trip_start_time_stamp !=0 AND trip_id = ?";
-
 	private PreparedStatement statement_driver;
 	private PreparedStatement stmt;
 	private PreparedStatement statement_trip;
 	Connection connection = null;
+	private PreparedStatement stmt1;
 
 	String livefleetdriver = null;
 	String readquery = null;
 	String livefleettrip = null;
+	String readtrip = null;
 
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
@@ -60,10 +53,12 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 		livefleettrip = envParams.get(DafConstants.QUERY_LIVEFLEET_TRIP_STATISTICS);
 		livefleetdriver = envParams.get(DafConstants.QUERY_DRIVER_ACTIVITY);
 		readquery = envParams.get(DafConstants.QUERY_DRIVER_ACTIVITY_READ);
+		readtrip = envParams.get(DafConstants.QUERY_LIVEFLEET_TRIP_READ);
 
 		System.out.println("livefleetdriver --> " + livefleetdriver);
 		System.out.println("readquery --> " + readquery);
 		System.out.println("livefleettrip --> " + livefleettrip);
+		System.out.println("livefleettripread --> " + readtrip);
 
 		try {
 
@@ -89,6 +84,7 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 			statement_driver = connection.prepareStatement(livefleetdriver);
 			statement_trip = connection.prepareStatement(livefleettrip);
 			stmt = connection.prepareStatement(readquery);
+			stmt1 = connection.prepareStatement(readtrip);
 
 		} catch (Exception e) {
 			log.error("Error in Live fleet driver" + e.getMessage());
@@ -99,10 +95,18 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 
 	public void invoke(KafkaRecord<Index> row) throws Exception {
 		// this function is used to write data into postgres table
+		
+		//Live Fleet Driver Activity
 
 		int varVEvtid = row.getValue().getVEvtID();
 		long trip_Start_time = 0;
 		String varTripID = row.getValue().getDocument().getTripID();
+
+		String trip_ID = "";
+		long start_time_stamp = 0;
+		long end_time_stamp = 0;
+		double start_position_lattitude = 0;
+		double start_position_longitude = 0;
 
 		stmt.setString(1, varTripID);
 
@@ -175,6 +179,27 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 		statement_driver.setLong(15, row.getValue().getReceivedTimestamp()); // last_processed_message_time
 
 		statement_driver.executeUpdate();
+		
+		
+		//Live Fleet CURRENT TRIP Activity
+
+		String KafkaTripID = row.getValue().getDocument().getTripID();
+
+		stmt1.setString(1, KafkaTripID);
+
+		ResultSet rs1 = stmt1.executeQuery();
+
+		while (rs1.next()) {
+
+			start_time_stamp = rs1.getLong("start_time_stamp");
+
+			end_time_stamp = rs1.getLong("end_time_stamp");
+
+			start_position_lattitude = rs1.getDouble("start_position_lattitude");
+
+			start_position_longitude = rs1.getDouble("start_position_longitude");
+		}
+		rs1.close();
 
 		if (varTripID != null) {
 			statement_trip.setString(1, row.getValue().getDocument().getTripID()); // tripID
@@ -193,7 +218,7 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 			statement_trip.setLong(3, row.getValue().getReceivedTimestamp()); // trip_start_time_stamp
 
 		else
-			statement_trip.setLong(3, 0);
+			statement_trip.setLong(3, start_time_stamp);
 
 		statement_trip.setLong(4, row.getValue().getReceivedTimestamp()); // trip_end_time_stamp
 
@@ -203,50 +228,61 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 			statement_trip.setDouble(6, row.getValue().getGpsLatitude()); // start_position_lattitude
 
 		else
-			statement_trip.setDouble(6, 0);
+			statement_trip.setDouble(6, start_position_lattitude);
 
 		if (varVEvtid == 4)
 			statement_trip.setDouble(7, row.getValue().getGpsLongitude()); // start_position_longitude
 
 		else
-			statement_trip.setDouble(7, 0);
+			statement_trip.setDouble(7, start_position_longitude);
 
-		// 8 start_position - blank
+		statement_trip.setString(8, " "); // 8 start_position - blank
 
 		statement_trip.setDouble(9, row.getValue().getGpsLatitude());
 		statement_trip.setDouble(10, row.getValue().getGpsLatitude());
 
-		// 11 last_known_position - blank
+		statement_trip.setString(11, " "); // 11 last_known_position - blank
 
 		Integer[] ttvalue = row.getValue().getDocument().getTt_ListValue(); // 12 vehicle status
+		if (ttvalue.length == 0) {
+			System.out.println("ttvalue is empty");
+			statement_trip.setInt(12, 0);
 
-		int status = ttvalue[ttvalue.length - 1];
+		} else {
+			int status = ttvalue[ttvalue.length - 1];
 
-		if (status == 0) {
-			statement_trip.setInt(12, 2);
+			if (status == 0) {
+				statement_trip.setInt(12, 2);
+			}
+
+			if (status == 1 || status == 2 || status == 3) {
+				statement_trip.setInt(12, 1);
+			}
+
+			if (status == 4 || status == 5 || status == 6) {
+				statement_trip.setInt(12, 3);
+			}
+
+			if (status == 7) {
+				statement_trip.setInt(12, 4);
+			}
 		}
-
-		if (status == 1 || status == 2 || status == 3) {
-			statement_trip.setInt(12, 1);
-		}
-
-		if (status == 4 || status == 5 || status == 6) {
-			statement_trip.setInt(12, 3);
-		}
-
-		if (status == 7) {
-			statement_trip.setInt(12, 4);
-		}
-
 		statement_trip.setInt(13, row.getValue().getDocument().getDriver1WorkingState()); // driver1 working state
 
-		// 14 vehicle_health_status - blank
+		statement_trip.setInt(14, 0); // 14 for time being vehicle_health_status - blank (inserting 0)
 
 		Integer[] tacho = row.getValue().getDocument().getTotalTachoMileage(); // 15 odometer value
 
-		int odometer_val = tacho[tacho.length - 1];
+		if (tacho.length == 0) {
+			System.out.println("odometer is empty");
+			statement_trip.setInt(15, 0);
+		} else {
+			int odometer_val = tacho[tacho.length - 1];
 
-		statement_trip.setInt(15, odometer_val);
+			statement_trip.setInt(15, odometer_val);
+		}
+
+		statement_trip.setInt(16, 0); // for time being distance_until_next_service - blank (inserting 0)
 
 		statement_trip.setLong(17, row.getValue().getReceivedTimestamp()); // last_processed_message_time
 

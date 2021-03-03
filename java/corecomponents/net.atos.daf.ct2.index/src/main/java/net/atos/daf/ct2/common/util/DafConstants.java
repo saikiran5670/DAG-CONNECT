@@ -84,6 +84,8 @@ public class DafConstants {
 	public static final String QUERY_DRIVER_ACTIVITY_READ = "driver.activity.read.query";
 	public static final String QUERY_LIVEFLEET_POSITION = "livefleet.position.query";
 	public static final String QUERY_LIVEFLEET_TRIP_STATISTICS="livefleet.trip.statistics.query";
+	public static final String QUERY_LIVEFLEET_TRIP_READ="livefleet.trip.read.query";
+	
 	
 
 }
