@@ -7,7 +7,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslationService } from 'src/app/services/translation.service';
 import { FileValidator } from 'ngx-material-file-input';
 import { MatTableDataSource } from '@angular/material/table';
+import * as FileSaver from 'file-saver';
 
+const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 
 @Component({
   selector: 'app-translation-data-upload',
@@ -37,6 +39,7 @@ export class TranslationDataUploadComponent implements OnInit {
   type: any = '';
   showLoadingIndicator: any;
   isTranslationDataUploaded: boolean = false;
+  
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) { 
       this.defaultTranslation();
@@ -226,7 +229,43 @@ export class TranslationDataUploadComponent implements OnInit {
   }
 
   onDownloadExcel(row: any){
+    //TODO: send file id to backend and get JSON data
+    //mock data
+    let data = [
+      {
+        fileName: "File1.xlsx",
+        uploadedDate: "01/01/2001",
+        fileSize: "100kb",
+        description: "File 1"
+      },
+      {
+        fileName: "File2.xlsx",
+        uploadedDate: "02/01/2001",
+        fileSize: "100kb",
+        description: "File 2"
+      },
+      {
+        fileName: "File3.xlsx",
+        uploadedDate: "03/01/2001",
+        fileSize: "100kb",
+        description: "File 3"
+      }
+    ];
 
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+    console.log('worksheet',worksheet);
+    const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    //const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+    this.saveAsExcelFile(excelBuffer, row.fileName);
+
+  }
+
+  private saveAsExcelFile(buffer: any, fileName: string): void {
+    const data: Blob = new Blob([buffer], {
+      type: EXCEL_TYPE
+    });
+    FileSaver.saveAs(data, fileName);
   }
 
   onCloseMsg(){
