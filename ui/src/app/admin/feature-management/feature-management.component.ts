@@ -4,6 +4,8 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 import { TranslationService } from '../../services/translation.service';
+import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-feature-management',
@@ -29,8 +31,9 @@ export class FeatureManagementComponent implements OnInit {
   translationData: any;
   createEditViewFeatureFlag: boolean = false;
   actionType: any;
+  dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
 
-  constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService) { 
+  constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog) { 
     this.defaultTranslation();
   }
 
@@ -176,18 +179,34 @@ export class FeatureManagementComponent implements OnInit {
     this.titleVisible = false;
   }
 
-  changeFeatureStatus(rowData: any){
-
-  }
-
   editViewFeature(rowData: any, type: any){
     this.actionType = type;
     this.selectedElementData = rowData;
     this.createEditViewFeatureFlag = true;
   }
 
+  changeFeatureStatus(rowData: any){
+    const options = {
+      title: this.translationData.lblAlert || "Alert",
+      message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
+      cancelText: this.translationData.lblNo || "No",
+      confirmText: this.translationData.lblYes || "Yes",
+      status: rowData.status == 'Active' ? 'Inactive' : 'Active' ,
+      name: rowData.name
+    };
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = options;
+    this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
+    this.dialogRef.afterClosed().subscribe((res: any) => {
+      if(res){ 
+        //TODO: change status with latest grid data
+      }
+    });
+  }
+
   deleteFeature(rowData: any){
-    //console.log("delete item:: ", element);
     const options = {
       title: this.translationData.lblDelete || "Delete",
       message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
