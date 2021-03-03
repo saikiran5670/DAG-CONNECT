@@ -13,6 +13,8 @@ namespace net.atos.daf.ct2.package
         Task<Package> Update(Package package);
         Task<IEnumerable<Package>> Get(PackageFilter packageFilter);
         Task<List<Package>> Import(List<Package> packageList);
+        Task<bool> Delete(int packageId);
+        Task<List<Package>> Export();
 
         // Task<Feature> GetFeature(int featureId);
 

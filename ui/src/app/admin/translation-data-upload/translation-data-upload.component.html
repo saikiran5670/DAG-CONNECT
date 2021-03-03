@@ -130,7 +130,7 @@
                             <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <button class='actionBtn' mat-flat-button (click)="onDownloadExcel(row)" matTooltip="{{ translationData.lblDownload || 'Download' }}">
-                                    <img matTooltip='Download Excel' src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 20px; height: 20px;" /> {{ translationData.lblDownload || 'Download' }} Download
+                                    <img src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 20px; height: 20px;" />
                                 </button>
                             </mat-cell>
                         </ng-container>
