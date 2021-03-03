@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 import { TranslationService } from '../../services/translation.service';
 
 @Component({
@@ -29,7 +30,7 @@ export class FeatureManagementComponent implements OnInit {
   createEditViewFeatureFlag: boolean = false;
   actionType: any;
 
-  constructor(private translationService: TranslationService) { 
+  constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService) { 
     this.defaultTranslation();
   }
 
@@ -186,7 +187,34 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   deleteFeature(rowData: any){
+    //console.log("delete item:: ", element);
+    const options = {
+      title: this.translationData.lblDelete || "Delete",
+      message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
+      cancelText: this.translationData.lblNo || "No",
+      confirmText: this.translationData.lblYes || "Yes"
+    };
+    this.dialogService.DeleteModelOpen(options, rowData.name);
+    this.dialogService.confirmedDel().subscribe((res) => {
+    if (res) {
+        this.successMsgBlink(this.getDeletMsg(rowData.name));
+      }
+    });
+  }
 
+  getDeletMsg(featureName: any){
+    if(this.translationData.lblFeatureRelationshipwassuccessfullydeleted)
+      return this.translationData.lblFeatureRelationshipwassuccessfullydeleted.replace('$', featureName);
+    else
+      return ("Feature Relationship '$' was successfully deleted").replace('$', featureName);
+  }
+
+  successMsgBlink(msg: any){
+    this.titleVisible = true;
+    this.feautreCreatedMsg = msg;
+    setTimeout(() => {  
+      this.titleVisible = false;
+    }, 5000);
   }
 
   checkCreationForFeature(item: any){
