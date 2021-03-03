@@ -3,9 +3,10 @@
       <span>{{ breadcumMsg }}</span>
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
-      <span class='custom-font' (click)="toBack()">
-        <span><&nbsp;</span>
-        <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+        <span class='custom-font' (click)="toBack()">
+            <span><&nbsp;</span>
+            <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
+        </span>
     </div>
 </div>
 <form [formGroup]="featureFormGroup">
@@ -19,28 +20,38 @@
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblFeatureName || 'Feature Name' }}<span class='mandatoryColor'>*</span></mat-label>
-                    <mat-form-field appearance="outline" class="full-width">
-                        <input  placeholder="{{ translationData.lblEnterFeatureName || 'Enter Feature Name' }}" matInput formControlName="featureName" maxlength="50" required>
-                    </mat-form-field>
-                    <mat-error *ngIf="featureFormGroup.get('featureName').hasError('required')">
-                        {{ translationData.lblPleaseenterfeaturename || 'Please enter feature name'}}
-                    </mat-error>
-                    <mat-error *ngIf="!featureFormGroup.get('featureName').hasError('required') && featureFormGroup.get('featureName').hasError('whitespace')">
-                        {{ translationData.lblFeatureNamcannotcontainonlywhitespace || 'Feature Name cannot contain only whitespace' }}
-                    </mat-error>
+                    <div *ngIf="actionType != 'view'">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <input  placeholder="{{ translationData.lblEnterFeatureName || 'Enter Feature Name' }}" matInput formControlName="featureName" maxlength="50" required>
+                        </mat-form-field>
+                        <mat-error *ngIf="featureFormGroup.get('featureName').hasError('required')">
+                            {{ translationData.lblPleaseenterfeaturename || 'Please enter feature name'}}
+                        </mat-error>
+                        <mat-error *ngIf="!featureFormGroup.get('featureName').hasError('required') && featureFormGroup.get('featureName').hasError('whitespace')">
+                            {{ translationData.lblFeatureNamcannotcontainonlywhitespace || 'Feature Name cannot contain only whitespace' }}
+                        </mat-error>
+                    </div>
+                    <div *ngIf="actionType == 'view'">
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.name }}</span>
+                    </div>
                 </div>
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
                         <span>{{ translationData.lblFeatureDescription || 'Feature Description' }}</span>
-                        <span>{{ translationData.lbl120CharMax || '120 characters max' }}</span>
+                        <span *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax || '120 characters max' }}</span>
                     </mat-label>
-                    <mat-form-field appearance="outline" class="full-width">
-                        <input maxlength="100" placeholder="{{ translationData.lblEnterFeatureDescription || 'Enter Feature Description' }}" matInput
-                            formControlName="featureDescription">
-                    </mat-form-field>
-                    <mat-error *ngIf="  featureFormGroup.get('featureDescription').hasError('whitespace')">
-                        {{ translationData.lblFeatureDescriptioncannotcontainonlywhitespace || 'Feature Description cannot contain only whitespace' }}
-                    </mat-error>
+                    <div *ngIf="actionType != 'view'">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <input maxlength="100" placeholder="{{ translationData.lblEnterFeatureDescription || 'Enter Feature Description' }}" matInput
+                                formControlName="featureDescription">
+                        </mat-form-field>
+                        <mat-error *ngIf="  featureFormGroup.get('featureDescription').hasError('whitespace')">
+                            {{ translationData.lblFeatureDescriptioncannotcontainonlywhitespace || 'Feature Description cannot contain only whitespace' }}
+                        </mat-error>
+                    </div>
+                    <div *ngIf="actionType == 'view'">
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.featureDescription }}</span>
+                    </div>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
@@ -48,61 +59,86 @@
             <mat-label style='display: flex; place-content: space-between;'>
                 <span>{{ translationData.lblFeatureType || 'Feature Type' }}</span>
             </mat-label>
-            <mat-form-field appearance="outline" class="full-width">
-                <input maxlength="100" placeholder="{{ translationData.lblEnterFeatureType || 'Enter Feature Type' }}" matInput
-                    formControlName="featureType">
-            </mat-form-field>
-            <mat-error *ngIf="  featureFormGroup.get('featureType').hasError('whitespace')">
-                {{ translationData.lblFeatureTypecannotcontainonlywhitespace || 'Feature Type cannot contain only whitespace' }}
-            </mat-error>
+            <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                    <input maxlength="100" placeholder="{{ translationData.lblEnterFeatureType || 'Enter Feature Type' }}" matInput
+                        formControlName="featureType">
+                </mat-form-field>
+                <mat-error *ngIf="featureFormGroup.get('featureType').hasError('whitespace')">
+                    {{ translationData.lblFeatureTypecannotcontainonlywhitespace || 'Feature Type cannot contain only whitespace' }}
+                </mat-error>
+            </div>
+            <div *ngIf="actionType == 'view'">
+                <span style='font-weight: 500!important;'>{{ selectedElementData.type }}</span>
+            </div>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label style='display: flex; place-content: space-between;'>
                 <span>{{ translationData.lblDataAttributeSetName || 'Data Attribute Set Name' }}</span>
             </mat-label>
-            <mat-form-field appearance="outline" class="full-width">
-                <input maxlength="100" placeholder="{{ translationData.lblEnterDataAttributeSetName || 'Enter Data Attribute Set Name' }}" matInput
-                    formControlName="dataAttributeSetName">
-            </mat-form-field>
-            <mat-error *ngIf="featureFormGroup.get('dataAttributeSetName').hasError('whitespace')">
-                {{ translationData.lblDataAttributeSetcannotcontainonlywhitespace || 'Data Attribute Set cannot contain only whitespace' }}
-            </mat-error>
+            <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                    <input maxlength="100" placeholder="{{ translationData.lblEnterDataAttributeSetName || 'Enter Data Attribute Set Name' }}" matInput
+                        formControlName="dataAttributeSetName">
+                </mat-form-field>
+                <mat-error *ngIf="featureFormGroup.get('dataAttributeSetName').hasError('whitespace')">
+                    {{ translationData.lblDataAttributeSetcannotcontainonlywhitespace || 'Data Attribute Set cannot contain only whitespace' }}
+                </mat-error>
+            </div> 
+            <div *ngIf="actionType == 'view'">
+                <span style='font-weight: 500!important;'>{{ selectedElementData.setName }}</span>
+            </div> 
             </div>
             <div class='areaWidth min-width-20-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
             <span>{{ translationData.lblDataAttributeSetType || 'Data Attribute Set Type' }}:</span>
-            <mat-radio-group class='margin-top-5' (change)='onSetTypeChange($event)'>
-                <mat-radio-button [checked]="selectedSetType ===  'excluded' ? true : false" style='margin-right: 20px;' value="excluded">{{ translationData.lblExcluded || 'Excluded' }}
-                </mat-radio-button>
-                <mat-radio-button [checked]="selectedSetType ===  'included' ? true : false" style='margin-right: 20px;' value="included" >{{ translationData.lblIncluded || 'Included' }}
-                </mat-radio-button>
-            </mat-radio-group>
+            <div *ngIf="actionType != 'view'">
+                <mat-radio-group class='margin-top-5' (change)='onSetTypeChange($event)'>
+                    <mat-radio-button [checked]="selectedSetType ===  'excluded' ? true : false" style='margin-right: 20px;' value="excluded">{{ translationData.lblExcluded || 'Excluded' }}
+                    </mat-radio-button>
+                    <mat-radio-button [checked]="selectedSetType ===  'included' ? true : false" style='margin-right: 20px;' value="included" >{{ translationData.lblIncluded || 'Included' }}
+                    </mat-radio-button>
+                </mat-radio-group>
+            </div>
+            <div *ngIf="actionType == 'view'">
+                <span style='font-weight: 500!important;'>{{ selectedElementData.setType }}</span>
+            </div>
             </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
             <div class='areaWidth min-width-30-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
             <span>{{ translationData.lblStatus || 'Status' }}</span>
-            <mat-radio-group class='margin-top-5' (change)='onStatusChange($event)'>
-                <mat-radio-button [checked]="selectedStatus ===  'active' ? true : false" style='margin-right: 20px;' value="active">{{ translationData.lblActive || 'Active' }}
-                </mat-radio-button>
-                <mat-radio-button [checked]="selectedStatus ===  'inactive' ? true : false" style='margin-right: 20px;' value="inactive" >{{ translationData.lblInactive || 'Inactive' }}
-                </mat-radio-button>
-            </mat-radio-group>
+            <div *ngIf="actionType != 'view'">
+                <mat-radio-group class='margin-top-5' (change)='onStatusChange($event)'>
+                    <mat-radio-button [checked]="selectedStatus ===  'active' ? true : false" style='margin-right: 20px;' value="active">{{ translationData.lblActive || 'Active' }}
+                    </mat-radio-button>
+                    <mat-radio-button [checked]="selectedStatus ===  'inactive' ? true : false" style='margin-right: 20px;' value="inactive" >{{ translationData.lblInactive || 'Inactive' }}
+                    </mat-radio-button>
+                </mat-radio-group>
+            </div>
+            <div *ngIf="actionType == 'view'">
+                <span style='font-weight: 500!important;'>{{ selectedElementData.status }}</span>
+            </div>
             </div>
             <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label style='display: flex; place-content: space-between;'>
                     <span>{{ translationData.lblDataAttributeDescription || 'Data Attribute Description' }}</span>
-                    <span>{{ translationData.lbl120CharMax || '120 characters max' }}</span>
+                    <span *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax || '120 characters max' }}</span>
                 </mat-label>
-                <mat-form-field appearance="outline" class="full-width">
-                    <input maxlength="100" placeholder="{{ translationData.lblEnterDataAttributeDescription || 'Enter Data Attribute Description' }}" matInput
-                        formControlName="dataAttributeDescription">
-                </mat-form-field>
-                <mat-error *ngIf="featureFormGroup.get('dataAttributeDescription').hasError('whitespace')">
-                {{ translationData.lblDataAttributeDescriptioncannotcontainonlywhitespace || 'Data Attribute Description cannot contain only whitespace' }}
-                </mat-error>
+                <div *ngIf="actionType != 'view'">
+                    <mat-form-field appearance="outline" class="full-width">
+                        <input maxlength="100" placeholder="{{ translationData.lblEnterDataAttributeDescription || 'Enter Data Attribute Description' }}" matInput
+                            formControlName="dataAttributeDescription">
+                    </mat-form-field>
+                    <mat-error *ngIf="featureFormGroup.get('dataAttributeDescription').hasError('whitespace')">
+                    {{ translationData.lblDataAttributeDescriptioncannotcontainonlywhitespace || 'Data Attribute Description cannot contain only whitespace' }}
+                    </mat-error>
+                </div>
+                <div *ngIf="actionType == 'view'">
+                    <span style='font-weight: 500!important;'>{{ selectedElementData.dataAttributeDescription }}</span>
+                </div>
             </div>
             </div> 
-            <div fxLayout="row" fxLayoutAlign="space-between center">
+            <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="space-between center">
                 <div fxLayout="column" fxLayoutAlign="left">
                     <div fxLayout="row" fxLayoutAlign='center center'>
                         <mat-icon class='margin-right-10'>info</mat-icon>

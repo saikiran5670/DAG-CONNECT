@@ -42,8 +42,6 @@ export class CreateEditViewFeaturesComponent implements OnInit {
       featureDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
       featureType: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
       dataAttributeSetName: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
-      dataAttributeSetType: [],
-      status: [],
       dataAttributeDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
     });
     this.breadcumMsg = this.getBreadcum(this.actionType);
@@ -68,6 +66,17 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   loadGridData(tableData: any){
+    let selectedDataAttributeList: any = [];
+    if(this.actionType == 'view'){
+      tableData.forEach((row: any) => {
+        let search = this.selectedElementData.dataAttribute.filter((item: any) => item.id == row.id);
+        if (search.length > 0) {
+          selectedDataAttributeList.push(row);
+        }
+      });
+      tableData = selectedDataAttributeList;
+      this.displayedColumns = ['dataAttribute'];
+    }
     this.initData = tableData;
     this.updateDataSource(tableData);
     if(this.actionType == 'edit' ){
