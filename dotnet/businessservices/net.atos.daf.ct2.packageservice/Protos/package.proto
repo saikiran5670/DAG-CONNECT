@@ -9,7 +9,8 @@ service PackageService{
 }
 
 message PackageResponse {
-  string Message = 1;
+  Responsecode Code=1;
+  string Message = 2;
 }
 message PackageCreateRequest {
    int32 Id= 1;   
@@ -55,4 +56,8 @@ message PackageCreateRequest {
         Vehicle =0;// 'V'=0;
         Organization = 1;//'O'=1;
         ReadWrite = 2;//'W'=2;
+    }
+    enum Responsecode {
+     Success = 0;
+     Failed = 1;
     }

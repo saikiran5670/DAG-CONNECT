@@ -8,6 +8,7 @@ using System;
 using net.atos.daf.ct2.features;
 using net.atos.daf.ct2.features.repository;
 using System.IO;
+using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.package.test
 {
@@ -100,15 +101,14 @@ namespace net.atos.daf.ct2.package.test
             Assert.IsTrue(result != null);
         }
         [TestMethod]
-        public void ImportPackage() {
+        public void ImportPackage() 
+        {
             using (StreamReader r = new StreamReader("package.json"))
             {
                 string json = r.ReadToEnd();
-                var packages = Newtonsoft.Json.JsonConvert.DeserializeObject<PackageMaster>(json);
-
-                var result = _packageManager.Import(packages.packages);
-            }
-            
+                var packages = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Package>>(json);
+                var result = _packageManager.Import(packages);
+            }           
            
         }
         [TestMethod]
@@ -117,8 +117,6 @@ namespace net.atos.daf.ct2.package.test
             var result = _packageRepository.Delete(1).Result;
             Console.WriteLine(result);
             Assert.IsTrue(result);
-
-
         }
 
     }

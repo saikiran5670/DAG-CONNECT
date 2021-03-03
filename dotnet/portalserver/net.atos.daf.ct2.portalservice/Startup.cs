@@ -15,6 +15,7 @@ using Swashbuckle.AspNetCore.Swagger;
 
 using net.atos.daf.ct2.authenticationservice;
 using net.atos.daf.ct2.accountservice;
+using net.atos.daf.ct2.packageservice;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -33,6 +34,7 @@ namespace net.atos.daf.ct2.portalservice
         {
             var authservice = Configuration["ServiceConfiguration:authservice"];
             var accountservice = Configuration["ServiceConfiguration:accountservice"];
+            var packageservice = Configuration["ServiceConfiguration:packageservice"];
             // We are enforcing to call Insercure service             
             AppContext.SetSwitch(
                     "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
@@ -49,7 +51,11 @@ namespace net.atos.daf.ct2.portalservice
             services.AddGrpcClient<AccountService.AccountServiceClient>(o =>
             {
                 o.Address = new Uri(accountservice);
-            });   
+            });
+            services.AddGrpcClient<PackageService.PackageServiceClient>(o =>
+            {
+                o.Address = new Uri(packageservice);
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portal Service", Version = "v1" });
