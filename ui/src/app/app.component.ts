@@ -59,6 +59,7 @@ export class AppComponent {
     vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship',
     translationdataupload: 'Translation Data Upload',
     featuremanagement: 'Feature Management',
+    packagemanagement: 'Package Management',
     relationshipmanagement: 'Relationship management'
   }
   public menuStatus = {
@@ -101,6 +102,7 @@ export class AppComponent {
         vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship',
         translationdataupload: 'Translation Data Upload',
         featuremanagement: 'Feature Management',
+        packagemanagement: 'Package Management',
         relationshipmanagement: 'Relationship Management'
       }
     },
@@ -263,6 +265,7 @@ export class AppComponent {
       lblDriverManagement: "Driver Management",
       lblTranslationDataUpload: "Translation Data Upload",
       lblFeatureManagement: "Feature Management",
+      lblPackageManagement: "Package Management",
       lblRelationshipManagement: 'Relationship Management',
       lblLiveFleet: "Live Fleet",
       lblLogBook: "Log Book",
