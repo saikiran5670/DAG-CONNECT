@@ -14,7 +14,7 @@
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddFeatureRelationship || 'Add Feature Relationship') : actionType == 'edit' ? (translationData.lblEditFeatureRelationship || 'Edit Feature Relationship') : (translationData.lblViewFeatureRelationship || 'View Feature Relationship') }}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddFeatureRelationship || 'Add Feature Relationship') : actionType == 'edit' ? (translationData.lblEditFeatureRelationship || 'Edit Feature Relationship') : (translationData.lblFeatureRelationshipDetails || 'Feature Relationship Details') }}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
@@ -161,7 +161,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectDataAttribute || 'Select Data Attribute' }}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'view' ? (translationData.lblSelectedDataAttribute || 'Selected Data Attribute') : (translationData.lblSelectDataAttribute || 'Select Data Attribute') }}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
