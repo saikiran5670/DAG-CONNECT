@@ -25,17 +25,31 @@ namespace net.atos.daf.ct2.package
         {
             return await _packageRepository.Create(package);
         }
-
-        public async Task<int> Create(FeatureSet featureSet) //as per LLD return set sholud be featureset
+        public async Task<bool> Delete(int packageId)
         {
-            return await _featureManager.AddFeatureSet(featureSet);
+            return await _packageRepository.Delete(packageId);
+        }
+        public async Task<List<Package>> Import(List<Package> packageList)
+        {
+            return await _packageRepository.Import(packageList);
+        }
+        public async Task<Package> Update(Package package) 
+        {
+            return await _packageRepository.Update(package);
+        }
+        public async Task<List<Package>> Export()
+        {
+            return await _packageRepository.Export();
         }
 
         public async Task<IEnumerable<Package>> Get(PackageFilter packageFilter )
         {
             return await _packageRepository.Get(packageFilter);
         }
-
+        public async Task<int> Create(FeatureSet featureSet) //as per LLD return set sholud be featureset
+        {
+            return await _featureManager.AddFeatureSet(featureSet);
+        }
         //public async Task<Feature> GetFeature(int featureId)
         //{
         //    return await _featureManager.GetFeatures(featureId,1);
@@ -46,15 +60,9 @@ namespace net.atos.daf.ct2.package
             return await _featureManager.GetFeatureSet(featureSetId, is_active);
         }
 
-        public async Task<List<Package>> Import(List<Package> packageList)
-        {
-            return await _packageRepository.Import(packageList);
-        }
+      
 
-        public async Task<Package> Update(Package package) //as per LLD return set sholud be featureset
-        {
-            return await _packageRepository.Update(package);
-        }
+       
 
         //public async Task<int> Update(FeatureSet featureSet)
         //{
