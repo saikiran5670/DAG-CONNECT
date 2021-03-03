@@ -265,7 +265,7 @@ export class DriverManagementComponent implements OnInit {
         salutation: item.Civility,
         firstName: item.FirstName,
         lastName: item.LastName,
-        birthDate: item.BirthDate,
+        birthDate: item.BirthDate ? item.BirthDate : '01/01/1931',
       });
     });
     console.log("Parse excel driver:: ", driverAPIData)
@@ -282,30 +282,47 @@ export class DriverManagementComponent implements OnInit {
       let lname: any;
       let salutation: any;
       for (const [key, value] of Object.entries(item)) {
-        console.log(`${key}: ${value}`);
+        //console.log(`${key}: ${value}`);
         switch(key){
           case "driverId":{
-            driverId = this.requiredField(value);  
-            console.log("driverId:: ", driverId)
+            let objData: any = driverId = this.driveIdValidation(value);  
+            driverId = objData.status;
+            //console.log("driverId:: ", driverId)
+            if(!driverId){
+              item.failReason = objData.reason;
+            }
             break;
           }
           case "firstName":{
-            fname = this.requiredField(value); 
-            console.log("fname:: ", fname)
+            let objData: any = this.nameValidation(value, 30); 
+            fname = objData.status;
+            //console.log("fname:: ", fname)
+            if(!fname){
+              item.failReason = objData.reason;
+            }
             break;
           }
           case "lastName":{
-            this.requiredField(value); 
-            console.log("lname:: ", lname)
+            let objData: any = this.nameValidation(value, 20); 
+            lname = objData.status;
+            //console.log("lname:: ", lname)
+            if(!lname){
+              item.failReason = objData.reason;
+            }
             break;
           }
           case "salutation":{
-            this.requiredField(value); 
-            console.log("salutation:: ", salutation)
+            let objData: any = this.salutationValidation(value); 
+            salutation = objData.status;
+            //console.log("salutation:: ", salutation)
+            if(!salutation){
+              item.failReason = objData.reason;
+            }
             break;
           }
         }
       }
+
       if(driverId && fname && lname && salutation){
         validData.push(item);
       }
@@ -318,9 +335,56 @@ export class DriverManagementComponent implements OnInit {
     return validData;
   }
 
-  requiredField(value: any)
-  {
-    return (value == '' || value.lenght == 0) ? true : false;
+  driveIdValidation(value: any){
+    let obj: any = { status: true, reason: 'correct data'};
+    const regx = /[A-Z]{1,1}[A-Z\s]{1,1}[\s]{1,1}[A-Z0-9]{16,16}/;
+    if(!value || value == '' || value.length == 0){
+      obj.status = false;
+      obj.reason = 'Required field';
+      return obj;  
+    }
+    if(value.length > 19){
+      obj.status = false;
+      obj.reason = 'Max length (>19)';  
+      return obj;
+    }
+    if(!regx.test(value)){
+      obj.status = false;
+      obj.reason = 'Mismatch Regx pattern e.g.(F  1234567890123456) or (FF 1234567890123456)';  
+      return obj;
+    }
+    return obj;
+  }
+
+  nameValidation(value: any, maxLength: any){
+    let obj: any = { status: true, reason: 'correct data'};
+    if(!value || value == '' || value.length == 0){
+      obj.status = false;
+      obj.reason = 'Required field';  
+      return obj;
+    }
+    if(value.length > maxLength){
+      obj.status = false;
+      obj.reason = 'Max length (>30)'; 
+      return obj;
+    }
+    return obj;
+  }
+
+  salutationValidation(value: any){
+    let obj: any = { status: true, reason: 'correct data'};
+    if(!value || value == '' || value.length == 0){
+      obj.status = false;
+      obj.reason = 'Required field';  
+      return obj;
+    }
+    if(value != 'Mr' && value != 'Ms' && value != 'Mrs')
+    {
+      obj.status = false;
+      obj.reason = 'Incorrect salutation (Ms, Mr, Mrs)';  
+      return obj;
+    }
+    return obj;
   }
 
   applyFilter(filterValue: string) {
