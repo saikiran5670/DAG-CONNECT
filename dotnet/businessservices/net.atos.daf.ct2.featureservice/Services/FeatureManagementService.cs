@@ -85,7 +85,7 @@ namespace net.atos.daf.ct2.featureservice
                 }
                 else
                 {
-                    var feature = await _FeaturesManager.GetFeatures(featurefilterRequest.RoleID, featurefilterRequest.OrganizationID, 'D');
+                    var feature = await _FeaturesManager.GetFeatures(featurefilterRequest.RoleID, featurefilterRequest.OrganizationID, '0');
                     foreach (var item in feature)
                     {
                         FeatureRequest ObjResponce = new FeatureRequest();
