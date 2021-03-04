@@ -24,7 +24,7 @@ message ImportPackageRequest
 
 message ImportPackageResponce
 {
-  repeated GetPackageRequest ImportResponse=1;
+  repeated GetPackageRequest PackageList=1;
   Responsecode Responsecode=2;
    string Message = 3;
    Responsecode Code=4;

@@ -63,7 +63,7 @@ namespace net.atos.daf.ct2.portalservice
             {
                 o.Address = new Uri(vehicleservice);
             });
-            });
+          
             services.AddGrpcClient<FeatureService.FeatureServiceClient>(o =>
             {
                 o.Address = new Uri(accountservice);
