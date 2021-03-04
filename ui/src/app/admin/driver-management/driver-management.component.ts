@@ -511,15 +511,6 @@ export class DriverManagementComponent implements OnInit {
     this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
   }
 
-  showDriverListPopup(driverList: any){
-  //   const dialogConfig = new MatDialogConfig();
-  //   dialogConfig.disableClose = true;
-  //   dialogConfig.autoFocus = true;
-  //   dialogConfig.data = {
-  //     translationData: this.translationData,
-  //     driverList: driverList
-  //   }
-  //   this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
-  }
+  showDriverListPopup(driverList: any){ }
 
 }
