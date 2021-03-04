@@ -103,6 +103,7 @@ export class AppComponent {
         translationdataupload: 'Translation Data Upload',
         featuremanagement: 'Feature Management',
         packagemanagement: 'Package Management',
+        subscriptionmanagement: 'Subscription Management',
         relationshipmanagement: 'Relationship Management'
       }
     },
@@ -266,6 +267,7 @@ export class AppComponent {
       lblTranslationDataUpload: "Translation Data Upload",
       lblFeatureManagement: "Feature Management",
       lblPackageManagement: "Package Management",
+      lblSubscriptionmanagement: "Subscription Management",
       lblRelationshipManagement: 'Relationship Management',
       lblLiveFleet: "Live Fleet",
       lblLogBook: "Log Book",
