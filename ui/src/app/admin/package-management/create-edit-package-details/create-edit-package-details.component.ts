@@ -25,7 +25,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   packageFormGroup: FormGroup;
   initData: any = [];
   selectionForFeatures = new SelectionModel(true, []);
-  selectedSetType: any = 'org VIN';
+  selectedType: any = 'org VIN';
   selectedStatus: any = 'active';
   
  
@@ -96,7 +96,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     this.packageFormGroup.get("name").setValue(this.selectedElementData.name);
     // this.packageFormGroup.get("type").setValue(this.selectedElementData.type);
     // this.packageFormGroup.get("feature").setValue(this.selectedElementData.setName);
-    this.selectedSetType = this.selectedElementData.setType.toLowerCase();
+    this.selectedType = this.selectedElementData.setType.toLowerCase();
     this.selectedStatus = this.selectedElementData.status.toLowerCase();
     this.packageFormGroup.get("description").setValue(this.selectedElementData.description);
   }
