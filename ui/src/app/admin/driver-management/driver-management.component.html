@@ -125,9 +125,9 @@
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Driver Name' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">{{ row.firstName }} {{ row.lastName }}</mat-cell>
                         </ng-container>
-                        <ng-container matColumnDef="birthDate">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblBirthDate || 'Birth Date' }}</mat-header-cell>
-                            <mat-cell *matCellDef="let row">{{ row.birthDate }}</mat-cell>
+                        <ng-container matColumnDef="emailId">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEmailId || 'Email Id' }}</mat-header-cell>
+                            <mat-cell *matCellDef="let row">{{ row.emailId }}</mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="consentStatus">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblConsent || 'Consent' }}</mat-header-cell>

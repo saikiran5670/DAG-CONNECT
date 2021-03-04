@@ -35,16 +35,23 @@
           </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblBirthDate || 'Birth Date' }}</mat-label>
+          <mat-label>{{ translationData.lblEmailId || 'Email Id' }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
-              <input placeholder="MM/DD/YYYY" style='color: #000;' [min]="minDate" formControlName="birthDate" matInput [matDatepicker]="birthdDate" disabled>
-              <mat-datepicker-toggle matSuffix [for]="birthdDate"></mat-datepicker-toggle>
-              <mat-datepicker #birthdDate [startAt]="startDate" disabled="false"></mat-datepicker>
+              <input maxlength="50" placeholder="{{ translationData.lblEmailId || 'Email Id' }}" matInput formControlName="emailId" pattern="[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}" required>
             </mat-form-field>
+            <mat-error *ngIf="driverFormGroup.get('emailId').hasError('required')">
+              {{ translationData.lblPleaseenteremailID || 'Please enter email ID' }}
+            </mat-error>
+            <mat-error *ngIf="driverFormGroup.get('emailId').hasError('email')">
+              {{ translationData.lblPleaseentervalidemailID || 'Please enter valid email ID' }}
+            </mat-error>
+            <mat-error *ngIf="duplicateEmailMsg">
+              {{ translationData.lblEmailIDAlreadyExists || 'Email ID already exists' }}
+            </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ driverData.birthDate }}</span>
+            <span style='font-weight: 500!important;'>{{ driverData.emailId }}</span>
           </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -61,24 +68,6 @@
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblSalutation || 'Salutation' }}<span class='mandatoryColor'>*</span></mat-label>
-          <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-select placeholder="{{ translationData.lblSalutation || 'Salutation' }}" formControlName="salutation" required>
-                <mat-option *ngFor="let rer of salutationList" [value]="rer.name">
-                  {{rer.name}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-error *ngIf="driverFormGroup.get('salutation').hasError('required')">
-              Salutation is required
-            </mat-error>
-          </div>
-          <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ driverData.salutation }}</span>
-          </div>
-        </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblFirstName || 'First Name' }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
@@ -125,6 +114,7 @@
             <span style='font-weight: 500!important;'>{{ driverData.lastName }}</span>
           </div>
         </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
       </div>
     </mat-card-content>
   </mat-card>
