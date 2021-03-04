@@ -44,29 +44,29 @@ namespace net.atos.daf.ct2.account
                 // user already exits in IDP.
                 if (identityresult.StatusCode == System.Net.HttpStatusCode.Conflict)
                 {
-                    account.isDuplicate = true;
-                    // get account by email , if not exists in DB-- create it
+                   // get account by email , if not exists in DB-- create it
                     AccountFilter filter = new AccountFilter();
                     filter.Email = account.EmailId;
-                    filter.OrganizationId =0 ;        
+                    filter.OrganizationId = account.Organization_Id;
+                    int Organization_Id = account.Organization_Id;
                     filter.AccountType = AccountType.None;
                     filter.AccountIds = string.Empty;
                     filter.Name = string.Empty;
-                    var result = await repository.Get(filter);
-                    var accountGet = result.FirstOrDefault();
+                    var accountGet = await repository.Duplicate(filter);                    
                     if (accountGet == null)
                     {
                         account = await repository.Create(account);
-                        await identity.UpdateUser(identityEntity);
-                        account.isDuplicate = false;
+                        await identity.UpdateUser(identityEntity);                        
                     }
-                    // else 
-                    // {
-                    //     if ( Convert.ToInt32(accountGet.Id) <=0 )
-                    //     {
-                    //         account = await repository.Create(account);
-                    //     }
-                    // }
+                    else
+                    {
+                        account = accountGet;
+                        account.isDuplicate = true;
+                        if (Organization_Id == account.Organization_Id)
+                        {
+                            account.isDuplicateInOrg = true;
+                        }
+                    }
                 }
                 // inter server error in IDP.
                 else if (identityresult.StatusCode == System.Net.HttpStatusCode.InternalServerError)
@@ -141,6 +141,10 @@ namespace net.atos.daf.ct2.account
         public async Task<IEnumerable<Account>> Get(AccountFilter filter)
         {
             return await repository.Get(filter);
+        }
+        public async Task<Account> AddAccountToOrg(Account account)
+        {
+            return await repository.AddAccountToOrg(account);
         }
         public async Task<AccountBlob> CreateBlob(AccountBlob accountBlob)
         {

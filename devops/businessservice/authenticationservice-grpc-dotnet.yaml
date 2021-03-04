@@ -35,7 +35,7 @@ variables:
 steps:
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.authenticationservicerest/appsettings.json'
+    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.authenticationservice/appsettings.json'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -48,11 +48,11 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/businessservices/net.atos.daf.ct2.authenticationservicerest/appsettings.json
+      cat dotnet/businessservices/net.atos.daf.ct2.authenticationservice/appsettings.json
 
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.authenticationservicerest/log4net.config'
+    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.authenticationservice/log4net.config'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -65,15 +65,15 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/businessservices/net.atos.daf.ct2.authenticationservicerest/log4net.config
+      cat dotnet/businessservices/net.atos.daf.ct2.authenticationservice/log4net.config
 
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
-    dockerFile: dotnet/AuthenticationService_Dockerfile
-    imageName: authenticationservicegrpc
+    dockerFile: dotnet/AuthenticationServicegRPC_Dockerfile_POC
+    imageName: authenticationservice_grpc
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -81,5 +81,5 @@ steps:
     azureSubscription: $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
-    imageName: authenticationservicegrpc
+    imageName: authenticationservice_grpc
 

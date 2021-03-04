@@ -31,7 +31,7 @@
                   <mat-label>{{ translationData.lblLevelOnlyForDAFPlatformAdmin || 'Level(Only for DAF/platform admin)' }}</mat-label>
                   <mat-label class='custom-font'>{{ this.gridData[0].level  }}</mat-label>
                 </div>
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblCodeOnlyForDAFPlatformAdmin || 'Code(Only for DAF/platform admin)' }}</mat-label>
                   <mat-label class='custom-font'>{{ this.gridData[0].code  }}</mat-label>
                 </div>
@@ -77,7 +77,7 @@
                       Relationship description cannot contain only whitespace
                     </mat-error>
                 </div>
-            </div>
+            </div><br>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>
@@ -151,11 +151,11 @@
                             </mat-checkbox>
                           </mat-header-cell>
                           <mat-cell *matCellDef="let row">
-                            <mat-slide-toggle color="primary" (click)='$event.stopPropagation()' [disabled]="viewFlag"
+                            <mat-checkbox color="primary" (click)='$event.stopPropagation()' [disabled]="viewFlag"
                               (change)='$event ? selectionForFeatures.toggle(row) : null; onCheckboxChange($event, row)'
                               [checked]='selectionForFeatures.isSelected(row)'
                               [aria-label]='checkboxLabelForFeatures(row)'>
-                            </mat-slide-toggle>
+                            </mat-checkbox>
                           </mat-cell>
                     </ng-container> 
                     <ng-container matColumnDef="featureName">

@@ -2,7 +2,10 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 import { TranslationService } from '../../services/translation.service';
+import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-feature-management',
@@ -15,6 +18,7 @@ export class FeatureManagementComponent implements OnInit {
   featureRestData: any = [];
   dataAttributeList: any = [];
   displayedColumns = ['name','type', 'setName', 'setType', 'dataAttribute', 'status', 'action'];
+  selectedElementData: any;
   //-------------------------//
   titleVisible : boolean = false;
   feautreCreatedMsg : any = '';
@@ -27,8 +31,9 @@ export class FeatureManagementComponent implements OnInit {
   translationData: any;
   createEditViewFeatureFlag: boolean = false;
   actionType: any;
+  dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
 
-  constructor(private translationService: TranslationService) { 
+  constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog) { 
     this.defaultTranslation();
   }
 
@@ -80,7 +85,22 @@ export class FeatureManagementComponent implements OnInit {
         type: "Data Attribute",
         setName: "DA Set Name A",
         setType: "Excluded",
-        dataAttribute: 10,
+        featureDescription: "Feature 1 Description",
+        dataAttributeDescription: "Data Attribute 1 Description",
+        dataAttribute: [
+          {
+            id: 1,
+            dataAttribute: "Vehicle.vin" 
+          },
+          {
+            id: 2,
+            dataAttribute: "Vehicle.name" 
+          },
+          {
+            id: 3,
+            dataAttribute: "Data Attribute 1" 
+          }
+        ],
         status: "Active"
       },
       {
@@ -88,8 +108,27 @@ export class FeatureManagementComponent implements OnInit {
         type: "Data Attribute",
         setName: "DA Set Name B",
         setType: "Included",
-        dataAttribute: 15,
-        status: "InActive"
+        featureDescription: "feature 2 Description",
+        dataAttributeDescription: "Data Attribute 2 Description",
+        dataAttribute: [
+          {
+            id: 3,
+            dataAttribute: "Data Attribute 1" 
+          },
+          {
+            id: 4,
+            dataAttribute: "Data Attribute 2" 
+          },
+          {
+            id: 5,
+            dataAttribute: "Data Attribute 3" 
+          },
+          {
+            id: 6,
+            dataAttribute: "Data Attribute 4" 
+          }
+        ],
+        status: "Inactive"
       }
     ];
     this.dataAttributeList = [
@@ -140,17 +179,61 @@ export class FeatureManagementComponent implements OnInit {
     this.titleVisible = false;
   }
 
-  changeFeatureStatus(rowData: any){
-
-  }
-
   editViewFeature(rowData: any, type: any){
     this.actionType = type;
+    this.selectedElementData = rowData;
     this.createEditViewFeatureFlag = true;
   }
 
-  deleteFeature(rowData: any){
+  changeFeatureStatus(rowData: any){
+    const options = {
+      title: this.translationData.lblAlert || "Alert",
+      message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
+      cancelText: this.translationData.lblNo || "No",
+      confirmText: this.translationData.lblYes || "Yes",
+      status: rowData.status == 'Active' ? 'Inactive' : 'Active' ,
+      name: rowData.name
+    };
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = options;
+    this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
+    this.dialogRef.afterClosed().subscribe((res: any) => {
+      if(res){ 
+        //TODO: change status with latest grid data
+      }
+    });
+  }
 
+  deleteFeature(rowData: any){
+    const options = {
+      title: this.translationData.lblDelete || "Delete",
+      message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
+      cancelText: this.translationData.lblNo || "No",
+      confirmText: this.translationData.lblYes || "Yes"
+    };
+    this.dialogService.DeleteModelOpen(options, rowData.name);
+    this.dialogService.confirmedDel().subscribe((res) => {
+    if (res) {
+        this.successMsgBlink(this.getDeletMsg(rowData.name));
+      }
+    });
+  }
+
+  getDeletMsg(featureName: any){
+    if(this.translationData.lblFeatureRelationshipwassuccessfullydeleted)
+      return this.translationData.lblFeatureRelationshipwassuccessfullydeleted.replace('$', featureName);
+    else
+      return ("Feature Relationship '$' was successfully deleted").replace('$', featureName);
+  }
+
+  successMsgBlink(msg: any){
+    this.titleVisible = true;
+    this.feautreCreatedMsg = msg;
+    setTimeout(() => {  
+      this.titleVisible = false;
+    }, 5000);
   }
 
   checkCreationForFeature(item: any){

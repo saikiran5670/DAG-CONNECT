@@ -24,7 +24,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   @Input() duplicateFlag: boolean;
   @Input() viewFlag: boolean;
   @Input() translationData: any;
-  @Input() roleData:any;
+  @Input() relationshipData:any;
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -35,8 +35,8 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   featuresSelected = [];
   featuresData = [];
   organizationId: number;
-  levels= [];
-  codes= [];
+  levels= ['Level 1', 'Level 2', 'Level 3'];
+  codes= ['Code 1', 'Code 2', 'Code 3'];
 
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService) { }
 
@@ -45,9 +45,10 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   ngOnInit() {
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.relationshipFormGroup = this._formBuilder.group({
-      userRoleName: ['', [Validators.required, Validators.maxLength(60),CustomValidators.noWhitespaceValidator]],
-      roleType: ['Regular', [Validators.required]],
-      userRoleDescription: ['',[CustomValidators.noWhitespaceValidatorforDesc]]
+      relationshipName: ['', [Validators.required, Validators.maxLength(60),CustomValidators.noWhitespaceValidator]],
+      relationshipDescription: ['',[CustomValidators.noWhitespaceValidatorforDesc]],
+      level: ['Regular', [Validators.required]],
+      code: ['Regular', [Validators.required]]
     });
 
     let objData = {
@@ -59,7 +60,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
         this.dataSource = new MatTableDataSource(data);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-        if(!this.createStatus || this.duplicateFlag || this.viewFlag){
+        if(!this.createStatus || this.viewFlag){
           this.onReset();
         }
       });
@@ -71,18 +72,20 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   }
 
   getBreadcum(){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblUserRoleManagement ? this.translationData.lblUserRoleManagement : "User Role Management"} / ${this.translationData.lblUserRoleDetails ? this.translationData.lblUserRoleDetails : 'User Role Details'}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblRelationshipManagement ? this.translationData.lblRelationshipManagement : "Relationship Management"} / ${this.translationData.lblRelationshipDetails ? this.translationData.lblRelationshipDetails : 'Relationship Details'}`;
   }
 
   onCancel() {
-    this.backToPage.emit({ viewFlag: false, editFlag: false, duplicateFlag: false, editText: 'cancel' });
+    this.backToPage.emit({ viewFlag: false, editFlag: false, editText: 'cancel' });
   }
 
   onReset(){
     this.featuresSelected = this.gridData[0].featureIds;
       this.relationshipFormGroup.patchValue({
-        userRoleName: this.gridData[0].roleName,
-        userRoleDescription: this.gridData[0].description,
+        relationshipName: this.gridData[0].name,
+        relationshipDescription: this.gridData[0].description,
+        level: this.gridData[0].level,
+        code: this.gridData[0].code
       })
       
       this.dataSource.data.forEach(row => {
@@ -101,22 +104,22 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   }
 
   onCreate() {
-    const UserRoleInputvalues = this.relationshipFormGroup.controls.userRoleName.value;
-    if(this.createStatus || this.duplicateFlag){
-      this.createUserRole(UserRoleInputvalues);
+    const relationshipnameInput = this.relationshipFormGroup.controls.relationshipName.value;
+    if(this.createStatus){
+      this.createRelationship(relationshipnameInput);
     }
     else{
-      if(this.gridData[0].roleName == this.relationshipFormGroup.controls.userRoleName.value){
-        this.updateUserRole();
+      if(this.gridData[0].name == this.relationshipFormGroup.controls.relationshipName.value){
+        this.updateRelationship();
       }
       else{
-        let existingRole = this.roleData.filter(response => (response.roleName).toLowerCase() == UserRoleInputvalues.trim().toLowerCase());
-        if (existingRole.length > 0) {
+        let existingRelationship = this.relationshipData.filter(response => (response.name).toLowerCase() == relationshipnameInput.trim().toLowerCase());
+        if (existingRelationship.length > 0) {
           this.isRelationshipExist = true;
           this.doneFlag = false;
         }
         else {
-            this.updateUserRole();
+            this.updateRelationship();
         }
       }
     }
@@ -128,9 +131,9 @@ export class CreateViewEditRelationshipComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
-  createUserRole(enteredUserRoleValue: any) {
-    let existingRole = this.roleData.filter(response => (response.roleName).toLowerCase() == enteredUserRoleValue.trim().toLowerCase());
-    if (existingRole.length > 0) {
+  createRelationship(enteredRelationshipValue: any) {
+    let existingRelationship = this.relationshipData.filter(response => (response.name).toLowerCase() == enteredRelationshipValue.trim().toLowerCase());
+    if (existingRelationship.length > 0) {
       this.isRelationshipExist = true;
       this.doneFlag = false;
     }
@@ -143,24 +146,21 @@ export class CreateViewEditRelationshipComponent implements OnInit {
         })
         
         let objData = {
-          organizationId: this.relationshipFormGroup.controls.roleType.value=='Global'? 0 : this.organizationId,
-          roleId: 0,
-          roleName: (this.relationshipFormGroup.controls.userRoleName.value).trim(),
-          description: this.relationshipFormGroup.controls.userRoleDescription.value,
+          organizationId: this.organizationId,
           featureIds: featureIds,
           createdby: 0
         }
-        this.roleService.createUserRole(objData).subscribe((res) => {
-          this.backToPage.emit({ editFlag: false, editText: 'create',  rolename: this.relationshipFormGroup.controls.userRoleName.value });
-        }, (error) => { 
-          if(error.status == 409){
-            this.isRelationshipExist = true;
-          }
-        });
+       // this.roleService.createUserRole(objData).subscribe((res) => {
+          this.backToPage.emit({ editFlag: false, editText: 'create',  name: this.relationshipFormGroup.controls.relationshipName.value });
+        // }, (error) => { 
+        //   if(error.status == 409){
+        //     this.isRelationshipExist = true;
+        //   }
+        // });
       }
   }
 
-  updateUserRole(){  
+  updateRelationship(){  
     this.isRelationshipExist = false;
     this.doneFlag = true;
     let featureIds = [];
@@ -172,17 +172,14 @@ export class CreateViewEditRelationshipComponent implements OnInit {
       return;
     }
     let objData = {
-      organizationId: (this.relationshipFormGroup.controls.roleType.value == 'Global') ? 0 : this.gridData[0].organizationId,
-      roleId: this.gridData[0].roleId,
-      roleName: (this.relationshipFormGroup.controls.userRoleName.value).trim(),
-      description: this.relationshipFormGroup.controls.userRoleDescription.value,
+      organizationId: this.gridData[0].organizationId,
       featureIds: featureIds,
       createdby: 0,
       updatedby: 0
     }
-    this.roleService.updateUserRole(objData).subscribe((res) => {
-      this.backToPage.emit({ editFlag: false, editText: 'edit', rolename: this.relationshipFormGroup.controls.userRoleName.value});
-    }, (error) => { });
+   // this.roleService.updateUserRole(objData).subscribe((res) => {
+      this.backToPage.emit({ editFlag: false, editText: 'edit', name: this.relationshipFormGroup.controls.relationshipName.value});
+    //}, (error) => { });
   }
 
   isAllSelectedForFeatures(){

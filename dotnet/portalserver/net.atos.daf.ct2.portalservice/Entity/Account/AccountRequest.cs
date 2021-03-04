@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.portalservice.Account
         public string Password { get; set; }
         public int OrganizationId { get; set; }
         public string DriverId { get; set; }
-        public string CreatedAt { get; set; }
+        //public string CreatedAt { get; set; }
 
     }
     public class AccountResponse
@@ -33,6 +33,7 @@ namespace net.atos.daf.ct2.portalservice.Account
         public string DriverId { get; set; }
         public int PreferenceId { get; set; }
         public int BlobId { get; set; }
+        public long CreatedAt { get; set; }
 
     }
     public class AccountDetailRequest
@@ -49,7 +50,7 @@ namespace net.atos.daf.ct2.portalservice.Account
         public int Id { get; set; }
         public string AccessRelationType { get; set; }
         public int AccountGroupId { get; set; }
-        public int VehicleGroupId { get; set; }        
+        public int VehicleGroupId { get; set; }
     }
     public class AccessRelationshipFilter
     {
@@ -62,4 +63,10 @@ namespace net.atos.daf.ct2.portalservice.Account
         public string Password { get; set; }
     }
 
+    public class AccountOrganizationRequest
+    {
+ 
+        public int AccountId { get; set; }
+        public int OrganizationId { get; set; }
+    }
 }
