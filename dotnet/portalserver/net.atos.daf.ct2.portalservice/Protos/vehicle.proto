@@ -74,6 +74,7 @@ message VehicleRequest {
   string LicensePlateNumber=3;
 }
 
+
 // The response message containing the greetings.
 message VehicleResponce {
   Responcecode code=1;
@@ -87,13 +88,12 @@ message VehicleCreateResponce {
   VehicleCreateRequest vehicle=3;
 }
 
-
 message VehicleFilterRequest {
   int32 VehicleId = 1;
   int32 OrganizationId = 2;
-  string VehicleIdList = 3;
-  string VIN = 4;
-  VehicleStatusType Status=5;
+  string VehicleIdList = 7;
+  string VIN = 8;
+  VehicleStatusType Status=9;
 }
 
 message VehicleDetails {

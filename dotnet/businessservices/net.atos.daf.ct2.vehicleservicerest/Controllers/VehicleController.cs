@@ -490,7 +490,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                         ObjGroupRef.VIN = item.VIN== null ? "" : item.VIN;
                         ObjGroupRef.Status = (VehicleStatusType)Enum.Parse(typeof(VehicleStatusType), item.Status.ToString());
                         ObjGroupRef.IsVehicleGroup = false;
-                        ObjGroupRef.Model = item.Model == null ? "" : item.Model;
+                        ObjGroupRef.ModelId = item.ModelId == null ? "" : item.ModelId;
                         ObjGroupRef.Organization_Id=item.Organization_Id;
                         ObjVehicleList.Add(ObjGroupRef);
                     }
@@ -550,7 +550,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                         ObjGroupRef.Name = item.Name== null ? "" : item.Name;
                         ObjGroupRef.License_Plate_Number = item.License_Plate_Number== null ? "" : item.License_Plate_Number;
                         ObjGroupRef.VIN = item.VIN== null ? "" : item.VIN;
-                        ObjGroupRef.Model = item.Model;
+                        ObjGroupRef.ModelId = item.ModelId;
                         //ObjGroupRef.StatusDate = item.Status_Changed_Date.ToString();
                         //ObjGroupRef.TerminationDate = item.Termination_Date.ToString();
                         ObjVehicleList.Add(ObjGroupRef);
@@ -698,7 +698,7 @@ namespace net.atos.daf.ct2.vehicleservicerest.Controllers
                         ObjGroupRef.Name = item.Name== null ? "" : item.Name;
                         ObjGroupRef.License_Plate_Number = item.License_Plate_Number== null ? "" : item.License_Plate_Number;
                         ObjGroupRef.VIN = item.VIN== null ? "" : item.VIN;
-                        ObjGroupRef.Model = item.Model;
+                        ObjGroupRef.ModelId = item.ModelId;
                         ObjGroupRef.Organization_Id = item.Organization_Id;
                         ObjVehicleList.Add(ObjGroupRef);
                     }
