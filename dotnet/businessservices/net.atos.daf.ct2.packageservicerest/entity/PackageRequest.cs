@@ -14,10 +14,10 @@ namespace net.atos.daf.ct2.packageservicerest.entity
         public FeatureSet feature_set { get; set; }
         public string name { get; set; }
         public PackageType type { get; set; }
-        public string short_description { get; set; }
-        public PackageDefault is_default { get; set; }     
+        public string description { get; set; }
+      //  public PackageDefault is_default { get; set; }     
         public DateTime start_date { get; set; }
         public DateTime end_date { get; set; }
-        public bool is_active { get; set; }
+        public PackageStatus is_active { get; set; }
     }
 }

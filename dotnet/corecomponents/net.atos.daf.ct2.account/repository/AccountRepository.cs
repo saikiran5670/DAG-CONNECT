@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.account
         private readonly IDataAccess dataAccess;
         public AccountRepository(IDataAccess _dataAccess)
         {
-            dataAccess = _dataAccess;            
+            dataAccess = _dataAccess;
         }
 
         #region Account
@@ -29,13 +29,13 @@ namespace net.atos.daf.ct2.account
                 var parameter = new DynamicParameters();
 
                 //parameter.Add("@id", account.Id);
-                parameter.Add("@email", String.IsNullOrEmpty(account.EmailId)? account.EmailId : account.EmailId.ToLower());
+                parameter.Add("@email", String.IsNullOrEmpty(account.EmailId) ? account.EmailId : account.EmailId.ToLower());
                 parameter.Add("@salutation", account.Salutation);
                 parameter.Add("@first_name", account.FirstName);
                 parameter.Add("@last_name", account.LastName);
                 parameter.Add("@type", (char)account.AccountType);
                 parameter.Add("@driver_id", account.DriverId);
-                parameter.Add("@created_at",account.CreatedAt.Value);
+                parameter.Add("@created_at", account.CreatedAt.Value);
 
                 string query = @"insert into master.account(email,salutation,first_name,last_name,type,driver_id,is_active,preference_id,blob_id,created_at) " +
                               "values(@email,@salutation,@first_name,@last_name,@type,@driver_id,true,null,null,@created_at) RETURNING id";
@@ -44,10 +44,12 @@ namespace net.atos.daf.ct2.account
                 account.Id = id;
                 if (account.Organization_Id > 0)
                 {
-                    parameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(account.StartDate.ToString()));
+                    if (account.StartDate == null || account.StartDate <= 0) account.StartDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                    account.EndDate = null;
+                    parameter.Add("@start_date", account.StartDate);
                     if (account.EndDate.HasValue)
                     {
-                        parameter.Add("@end_date", UTCHandling.GetUTCFromDateTime(account.EndDate.ToString()));
+                        parameter.Add("@end_date", account.EndDate);
                     }
                     else
                     {
@@ -58,7 +60,7 @@ namespace net.atos.daf.ct2.account
                     parameter.Add("@organization_Id", account.Organization_Id);
                     query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,is_active)  
                                    values(@account_id,@organization_Id,@start_date,@end_date,@is_active) RETURNING id";
-                    account.Account_OrgId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    var AccountOrgId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
             }
             catch (Exception ex)
@@ -67,13 +69,14 @@ namespace net.atos.daf.ct2.account
             }
             return account;
         }
+
         public async Task<Account> Update(Account account)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", account.Id);
-                parameter.Add("@email", String.IsNullOrEmpty(account.EmailId)? account.EmailId : account.EmailId.ToLower());
+                parameter.Add("@email", String.IsNullOrEmpty(account.EmailId) ? account.EmailId : account.EmailId.ToLower());
                 parameter.Add("@salutation", account.Salutation);
                 parameter.Add("@first_name", account.FirstName);
                 parameter.Add("@last_name", account.LastName);
@@ -97,8 +100,8 @@ namespace net.atos.daf.ct2.account
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", accountid);
                 parameter.Add("@organization_id", organization_id);
-                string query = string.Empty;                
-                int result = 0;                
+                string query = string.Empty;
+                int result = 0;
 
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
@@ -117,23 +120,83 @@ namespace net.atos.daf.ct2.account
                     // disable account with organization
                     query = @"update master.accountorg set is_active=false where account_id = @id and organization_id = @organization_id";
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-
-                    // check if account associated with multiple organization
-                    query = @"select count(1) from master.accountorg where is_active=true and organization_id = @organization_id;";
-                    result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                    if(result <=0)
-                    {
-                        // disable preference
-                        query = @"update master.accountpreference set is_active=false from master.account where master.accountpreference.id=master.account.preference_id and master.account.id=@id;";
-                        query += @"delete from master.accountblob ab using master.account a where a.id = @id and a.blob_id = ab.id and a.is_active = true;";
-                        result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                        // disable account 
-                        query = @"update master.account set is_active=false where id = @id;";
-                        result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                    }                    
                     transactionScope.Complete();
-                    return true;
                 }
+                // check if account associated with multiple organization
+                query = @"select count(1) from master.accountorg where is_active=true and account_id = @id";
+                result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                if (result <= 0)
+                {
+                    // disable preference
+                    query = @"update master.accountpreference set is_active=false from master.account where master.accountpreference.id=master.account.preference_id and master.account.id=@id;";
+                    //query += @"delete from master.accountblob ab using master.account a where a.id = @id and a.blob_id = ab.id and a.is_active = true;";
+                    result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    // disable account 
+                    query = @"update master.account set is_active=false where id = @id;";
+                    result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                }
+                return true;
+            }
+
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<Account> Duplicate(AccountFilter filter)
+        {
+            var parameter = new DynamicParameters();
+            Account account = null;
+            string query = string.Empty;
+            try
+            {
+                query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.driver_id,a.type as accounttype,ag.organization_id as 
+                Organization_Id,a.preference_id,a.blob_id,a.created_at from master.account a join master.accountorg ag on a.id = ag.account_id and a.is_active=true 
+                and ag.is_active=true where 1=1 ";
+
+                // organization id filter
+                if (filter.OrganizationId > 0)
+                {
+                    parameter.Add("@organization_id", filter.OrganizationId);
+                    query = query + " and ag.organization_id = @organization_id ";
+                }
+                // email id filter
+                if (!string.IsNullOrEmpty(filter.Email))
+                {
+                    parameter.Add("@email", filter.Email.ToLower());
+                    query = query + " and LOWER(a.email) = @email ";
+                }
+                dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                foreach (dynamic record in result)
+                {
+
+                    account = Map(record);
+                    account.isDuplicateInOrg = true;
+                }
+                // account is part of other organization
+                if (account == null)
+                {
+                    query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.driver_id,a.type as accounttype,ag.organization_id as 
+                    Organization_Id,a.preference_id,a.blob_id,a.created_at from master.account a join master.accountorg ag on a.id = ag.account_id and a.is_active=true 
+                    and ag.is_active=true where 1=1 ";
+
+                    // email id filter
+                    if (!string.IsNullOrEmpty(filter.Email))
+                    {
+                        parameter.Add("@email", filter.Email.ToLower());
+                        query = query + " and LOWER(a.email) = @email ";
+                    }
+                    query = query + "limit 1";
+                    result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                    foreach (dynamic record in result)
+                    {
+
+                        account = Map(record);
+                        account.isDuplicate = true;                        
+                    }
+                }
+                return account;
             }
             catch (Exception ex)
             {
@@ -149,9 +212,18 @@ namespace net.atos.daf.ct2.account
                 //List<Account> accounts = new List<Account>();
                 List<Account> accounts = new List<Account>();
                 string query = string.Empty;
-                query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.driver_id,a.type as accounttype,ag.organization_id as Organization_Id,a.preference_id,a.blob_id,a.created_at from master.account a join master.accountorg ag on a.id = ag.account_id and a.is_active=true and ag.is_active=true where 1=1 ";
+                query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.driver_id,a.type as accounttype,ag.organization_id as 
+                Organization_Id,a.preference_id,a.blob_id,a.created_at from master.account a join master.accountorg ag on a.id = ag.account_id and a.is_active=true 
+                and ag.is_active=true where 1=1 ";
+
                 if (filter != null)
                 {
+                    // organization id filter
+                    if (filter.OrganizationId > 0)
+                    {
+                        parameter.Add("@organization_id", filter.OrganizationId);
+                        query = query + " and ag.organization_id = @organization_id ";
+                    }
                     // id filter
                     if (filter.Id > 0)
                     {
@@ -161,7 +233,6 @@ namespace net.atos.daf.ct2.account
                     // email id filter
                     if (!string.IsNullOrEmpty(filter.Email))
                     {
-                        
                         parameter.Add("@email", filter.Email.ToLower());
                         query = query + " and LOWER(a.email) = @email ";
                     }
@@ -171,12 +242,7 @@ namespace net.atos.daf.ct2.account
                         parameter.Add("@name", filter.Name + "%");
                         query = query + " and (a.first_name || ' ' || a.last_name) like @name ";
                     }
-                    // organization id filter
-                    if (filter.OrganizationId > 0)
-                    {
-                        parameter.Add("@organization_id", filter.OrganizationId);
-                        query = query + " and ag.organization_id = @organization_id ";
-                    }
+
                     //// account type filter 
                     //if (((char)filter.AccountType) != ((char)AccountType.None))
                     //{
@@ -218,9 +284,39 @@ namespace net.atos.daf.ct2.account
                 throw ex;
             }
         }
+
+        public async Task<Account> AddAccountToOrg(Account account)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                parameter.Add("@account_id", account.Id);
+                parameter.Add("@organization_Id", account.Organization_Id);
+                parameter.Add("@start_date", account.StartDate);
+                if (account.EndDate.HasValue)
+                {
+                    parameter.Add("@end_date", account.EndDate);
+                }
+                else
+                {
+                    parameter.Add("@end_date", null);
+                }
+                query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,is_active)  
+                                   values(@account_id,@organization_Id,@start_date,@end_date,true) RETURNING id";
+                var AccountOrgId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                account.Id = AccountOrgId;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return account;
+        }
         #endregion
 
-        #region AccountBlon
+        #region AccountBlob
         public async Task<AccountBlob> CreateBlob(AccountBlob accountBlob)
         {
             try
@@ -236,7 +332,7 @@ namespace net.atos.daf.ct2.account
                 if (accountBlob.Id > 0)
                 {
                     query = @"update master.accountblob set image_type=@image_type,image=@image where id=@id RETURNING id";
-                    var blobId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);                    
+                    var blobId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
                 else // update profile picture
                 {
@@ -249,7 +345,7 @@ namespace net.atos.daf.ct2.account
                         query = "update master.account set blob_id=@blob_id where id=@account_id";
                         await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                     }
-                }                
+                }
             }
             catch (Exception ex)
             {
@@ -282,7 +378,7 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 throw ex;
-            }            
+            }
         }
 
         #endregion
@@ -603,20 +699,20 @@ namespace net.atos.daf.ct2.account
             return accountBlob;
 
         }
-            private Account Map(dynamic record)
+        private Account Map(dynamic record)
         {
             Account account = new Account();
             account.Id = record.id;
             account.EmailId = record.email;
             account.Salutation = record.salutation;
             account.FirstName = record.first_name;
-            account.LastName = record.last_name;            
+            account.LastName = record.last_name;
             account.Organization_Id = record.organization_id;
             account.AccountType = (AccountType)Convert.ToChar(record.accounttype);
-            if ((object) record.preference_id != null)
-            account.PreferenceId = (int) record.preference_id;
-            if ( (object) record.blob_id != null ) account.BlobId  = (int)  record.blob_id;
-            if ((object) record.driver_id != null)   account.DriverId = record.driver_id;
+            if ((object)record.preference_id != null)
+                account.PreferenceId = (int)record.preference_id;
+            if ((object)record.blob_id != null) account.BlobId = (int)record.blob_id;
+            if ((object)record.driver_id != null) account.DriverId = record.driver_id;
             account.CreatedAt = null;
             if ((object)record.created_at != null)
             {

@@ -10,7 +10,9 @@ import { VehicleManagementComponent } from './vehicle-management/vehicle-managem
 import { VehicleAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/vehicle-account-access-relationship.component';
 import { TranslationDataUploadComponent } from './translation-data-upload/translation-data-upload.component';
 import { FeatureManagementComponent } from './feature-management/feature-management.component';
+import { PackageManagementComponent } from './package-management/package-management.component';
 import { RelationshipManagementComponent } from './relationship-management/relationship-management.component';
+import { OrganisationRelationshipComponent } from './organisation-relationship/organisation-relationship.component'
 
 const routes: Routes = [
   {
@@ -29,7 +31,9 @@ const routes: Routes = [
       { path: "vehicleaccountaccessrelationship", component: VehicleAccountAccessRelationshipComponent},
       { path: "translationdataupload", component: TranslationDataUploadComponent},
       { path: "featuremanagement", component: FeatureManagementComponent},
-      { path: 'relationshipmanagement', component: RelationshipManagementComponent }
+      { path: 'packagemanagement', component: PackageManagementComponent },
+      { path: 'relationshipmanagement', component: RelationshipManagementComponent },
+      { path: 'organisationrelationship', component: OrganisationRelationshipComponent }
     ],
   },
 ];

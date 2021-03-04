@@ -45,15 +45,15 @@ namespace net.atos.daf.ct2.package.test
             var ObjPackage = new Package()
             {
                 Code = "PKG001",
-                Default = PackageDefault.True,
+                Status = PackageStatus.Active,
                // FeatureSet = new features.entity.FeatureSet() { FeatureSetID = 5 },
                 FeatureSetID = 1,
                // Is_Active = true,
                 Name = "Standard",
-                Pack_Type = PackageType.Organization,
-                ShortDescription = "Package with default featureset",
-                StartDate = Convert.ToDateTime("2019-02-02T12:34:56"),
-                EndDate = Convert.ToDateTime("2019-02-02T12:34:56")
+                Type = PackageType.Organization,
+                Description = "Package with default featureset",
+               // StartDate = Convert.ToDateTime("2019-02-02T12:34:56"),
+               // EndDate = Convert.ToDateTime("2019-02-02T12:34:56")
 
             };
             var resultPackage = _packageRepository.Create(ObjPackage).Result;
