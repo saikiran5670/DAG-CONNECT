@@ -10,7 +10,7 @@ using net.atos.daf.ct2.authenticationservice;
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
-    [Route("testpoc")]
+    [Route("test")]
     public class TestController: ControllerBase
     {
         public TestController()
