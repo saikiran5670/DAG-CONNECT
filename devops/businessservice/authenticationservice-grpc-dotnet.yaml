@@ -72,7 +72,7 @@ steps:
   inputs:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
-    dockerFile: dotnet/AuthenticationServicegRPC_Dockerfile_POC
+    dockerFile: dotnet/AuthenticationService_Dockerfile
     imageName: authenticationservice_grpc
 
 - task: Docker@0
