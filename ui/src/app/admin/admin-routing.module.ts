@@ -8,7 +8,10 @@ import { DriverManagementComponent } from './driver-management/driver-management
 import { UserRoleManagementComponent } from './user-role-management/user-role-management.component';
 import { VehicleManagementComponent } from './vehicle-management/vehicle-management.component';
 import { VehicleAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/vehicle-account-access-relationship.component';
-import { TranslationDataUploadComponent } from './translation-data-upload/translation-data-upload/translation-data-upload.component';
+import { TranslationDataUploadComponent } from './translation-data-upload/translation-data-upload.component';
+import { FeatureManagementComponent } from './feature-management/feature-management.component';
+import { PackageManagementComponent } from './package-management/package-management.component';
+import { RelationshipManagementComponent } from './relationship-management/relationship-management.component';
 
 const routes: Routes = [
   {
@@ -25,7 +28,10 @@ const routes: Routes = [
       { path: 'drivermanagement', component: DriverManagementComponent },
       { path: "vehiclemanagement", component: VehicleManagementComponent},
       { path: "vehicleaccountaccessrelationship", component: VehicleAccountAccessRelationshipComponent},
-      { path: "translationdataupload", component: TranslationDataUploadComponent}
+      { path: "translationdataupload", component: TranslationDataUploadComponent},
+      { path: "featuremanagement", component: FeatureManagementComponent},
+      { path: 'packagemanagement', component: PackageManagementComponent },
+      { path: 'relationshipmanagement', component: RelationshipManagementComponent }
     ],
   },
 ];

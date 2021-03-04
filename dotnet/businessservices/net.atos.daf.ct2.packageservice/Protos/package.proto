@@ -1,0 +1,63 @@
+
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+option csharp_namespace = "net.atos.daf.ct2.packageservice";
+package pacakge;
+
+service PackageService{
+    rpc Create (PackageCreateRequest) returns (PackageResponse);
+}
+
+message PackageResponse {
+  Responsecode Code=1;
+  string Message = 2;
+}
+message PackageCreateRequest {
+   int32 Id= 1;   
+    string Code=2;
+    int32 FeatureSetID =3;
+    repeated string Features =4;
+    string Name=5;
+    PackageType Type =6;
+    string ShortDescription=7;
+    PackageDefault Default =8;
+    google.protobuf.Timestamp StartDate=9;
+    google.protobuf.Timestamp EndDate =10;
+    PackageStatus Status =11;
+  }
+
+  message GetPackageResponce {  
+    int32 Id=1;
+    string Code= 2;
+    int32 FeatureSetID =3;
+    repeated  string  Features =4;
+    string Name=5;
+    PackageType Type =6;
+    string ShortDescription=7;
+    PackageDefault Default =8;
+    google.protobuf.Timestamp StartDate=9;
+    google.protobuf.Timestamp EndDate =10;
+    PackageStatus Status =11;
+}
+
+ enum PackageDefault
+    { 
+        False = 0;
+        True = 1;
+       
+    }
+    enum PackageStatus
+    {
+        Active =0;//'A'=0;
+        Inactive =1;// 'I'=1;
+    }
+    enum PackageType
+    {
+        Vehicle =0;// 'V'=0;
+        Organization = 1;//'O'=1;
+        ReadWrite = 2;//'W'=2;
+    }
+    enum Responsecode {
+     Success = 0;
+     Failed = 1;
+    }

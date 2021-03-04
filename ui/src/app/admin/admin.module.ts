@@ -14,7 +14,6 @@ import { UserManagementComponent } from './user-management/user-management.compo
 import { NewUserStepComponent } from './user-management/new-user-step/new-user-step.component';
 import { SummaryStepComponent } from './user-management/new-user-step/summary-step/summary-step.component';
 import { DriverManagementComponent } from './driver-management/driver-management.component';
-import { ConsentAllOptComponent } from './driver-management/consent-all-opt/consent-all-opt.component';
 import { EditDriverDetailsComponent } from './driver-management/edit-driver-details/edit-driver-details.component';
 import { UserRoleManagementComponent } from './user-role-management/user-role-management.component';
 import { EditUserRoleDetailsComponent } from './user-role-management/edit-user-role-details/edit-user-role-details.component';
@@ -32,8 +31,14 @@ import { VehicleManagementComponent } from '../admin/vehicle-management/vehicle-
 import { VehicleAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/vehicle-account-access-relationship.component';
 import { CreateEditViewVehicleAccessRelationshipComponent } from './vehicle-account-access-relationship/create-edit-view-vehicle-access-relationship/create-edit-view-vehicle-access-relationship.component';
 import { CreateEditViewAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/create-edit-view-account-access-relationship/create-edit-view-account-access-relationship.component';
-import { TranslationDataUploadComponent } from './translation-data-upload/translation-data-upload/translation-data-upload.component';
-import { ConsentSingleOptComponent } from './driver-management/consent-single-opt/consent-single-opt.component';
+import { TranslationDataUploadComponent } from './translation-data-upload/translation-data-upload.component';
+import { ConsentOptComponent } from './driver-management/consent-opt/consent-opt.component';
+import { FeatureManagementComponent } from './feature-management/feature-management.component';
+import { CreateEditViewFeaturesComponent } from './feature-management/create-edit-view-features/create-edit-view-features.component';
+import { PackageManagementComponent } from './package-management/package-management.component';
+import { CreateEditPackageDetailsComponent } from './package-management/create-edit-package-details/create-edit-package-details.component';
+import { RelationshipManagementComponent } from './relationship-management/relationship-management.component';
+import { CreateViewEditRelationshipComponent } from './relationship-management/create-view-edit-relationship/create-view-edit/create-view-edit-relationship.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +51,6 @@ import { ConsentSingleOptComponent } from './driver-management/consent-single-op
     NewUserStepComponent,
     SummaryStepComponent,
     DriverManagementComponent,
-    ConsentAllOptComponent,
     EditDriverDetailsComponent,
     UserRoleManagementComponent,
     EditUserRoleDetailsComponent,
@@ -61,7 +65,13 @@ import { ConsentSingleOptComponent } from './driver-management/consent-single-op
     CreateEditViewVehicleAccessRelationshipComponent,
     CreateEditViewAccountAccessRelationshipComponent,
     TranslationDataUploadComponent,
-    ConsentSingleOptComponent
+    ConsentOptComponent,
+    FeatureManagementComponent,
+    CreateEditViewFeaturesComponent,
+    RelationshipManagementComponent,
+    CreateViewEditRelationshipComponent,
+    PackageManagementComponent,
+    CreateEditPackageDetailsComponent
   ],
   imports: [
       CommonModule,

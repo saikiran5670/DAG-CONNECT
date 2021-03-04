@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../shared/custom.validators';
 
 @Component({
@@ -34,7 +34,7 @@ export class EditDriverDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.driverFormGroup = this._formBuilder.group({
-      driverId: ['', [Validators.required]],
+      driverId: new FormControl({value: null, disabled: true}),
       birthDate: ['', []],
       consentStatus: ['', []],
       salutation: ['', [Validators.required]],

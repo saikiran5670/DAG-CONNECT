@@ -136,8 +136,8 @@ namespace net.atos.daf.ct2.role.test
         public void GetFeatures()
         {
             char Type = 'D';
-           var result= _FeatureRepository.GetFeatures(Type,true).Result;
-            Assert.IsNotNull(result);
+          // var result= _FeatureRepository.GetFeatures(Type,true).Result;
+           // Assert.IsNotNull(result);
             // Assert.IsTrue(result.da > 0);
         }
     }

@@ -1,0 +1,64 @@
+<div>
+    <mat-card class='mat-elevation-z margin-bottom-xlg no-padding'>
+        <mat-card-content>
+            <div fxLayout="row" fxLayoutAlign="start space-around"
+                style='padding: 10px 20px !important; background: #65c3f8; color: #fff;'>
+                <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span class='custom-font'>{{ data.translationData.lblDriverIDConsent || 'Driver ID Consent' }}</span>
+                </div>
+                <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
+                    <mat-icon (click)='onCancel()' style='cursor: pointer; color: #000;'>close</mat-icon>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="30px" class='margin-20'>
+                <div *ngIf='!data.actionType' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span>{{ data.translationData.lblName || 'Name' }}</span>
+                    <span class='custom-font'>{{ data.driverData.firstName }} {{ data.driverData.lastName }}</span>
+                </div>
+                <div *ngIf='!data.actionType' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span>{{ data.translationData.lblDriverId || 'Driver Id' }}</span>
+                    <span class='custom-font'>{{ data.driverData.driverId }}</span>
+                </div>
+                <div *ngIf='data.actionType' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span>{{ data.translationData.lblOrgnization || 'Orgnization' }}</span>
+                    <span class='custom-font'>{{ organizationName }}</span>
+                </div>
+                <div *ngIf='data.actionType' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span>{{ data.translationData.lblTotalDrivers || 'Total Drivers' }}</span>
+                    <span class='custom-font'>{{ totalDrivers }}</span>
+                </div>
+                <div fxLayout="column" fxLayoutGap="7px" fxLayoutAlign="left">
+                    <div fxLayout="row" fxLayoutAlign="space-between">
+                        <span>{{ data.translationData.lblCurrentConsentStatusForSubscriber || 'Current Consent Status For Subscriber' }} 'DAF Connect'= {{ (data.actionType == true) ? (showOptOutMsg ? (data.translationData.lblOptOutAll || 'Opt-Out All') : (data.translationData.lblOptInAll || 'Opt-In All')) : (showOptOutMsg ? (data.translationData.lblOptOut || 'Opt-Out') : (data.translationData.lblOptIn || 'Opt-In')) }}</span>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="30px">
+                        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                            <mat-radio-group (change)='onChange($event)'>
+                                <mat-radio-button style='margin-right: 20px;' value="Opt-In" [checked]="data.consentType === 'Opt-In' ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptInAll || 'Opt-In All') : (data.translationData.lblOptIn || 'Opt-In') }}</mat-radio-button>
+                                <mat-radio-button value="Opt-Out" [checked]="data.consentType === 'Opt-Out' ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptOutAll || 'Opt-Out All') : (data.translationData.lblOptOut || 'Opt-Out') }}</mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf='showOptOutMsg' fxLayout="row" fxLayoutAlign="space-between" class='margin-20 padding-10' style='background: #d62a29; color: #fff;'>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    {{ data.translationData.lblOptOutMessage || "Now you are proceeding with Driver ID Consent Opt-Out operation, Click 'Confirm' to change the
+                    consent status." }}
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-20 padding-10' style='background: #f1f1f1;'>
+                <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="left">
+                    <div>{{ consentMsg }}</div>
+                    <div>{{ consentMsgExtra }}</div>
+                </div>
+            </div> 
+        </mat-card-content>
+        <mat-card-actions fxLayoutAlign="end end" class='no-margin' style="padding: 0px 20px;">
+            <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
+                <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ data.translationData.lblCancel || 'Cancel' }}</button>
+                <button (click)="onConfirm()" class='no-margin' mat-raised-button color="primary">{{ data.translationData.lblConfirm || 'Confirm' }}</button>
+            </div>
+        </mat-card-actions>
+    </mat-card>
+</div>
