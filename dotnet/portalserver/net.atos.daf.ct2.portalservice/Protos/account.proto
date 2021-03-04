@@ -5,14 +5,16 @@ option csharp_namespace = "net.atos.daf.ct2.accountservice";
 
 package net.atos.daf.ct2.accountservice;
 
-// The accountservice service definition.
-service AccountService {
+// The account service definition.
+service AccountService 
+{
   // Account Methods 
   rpc Create (AccountRequest) returns (AccountData);
   rpc Update (AccountRequest) returns (AccountData);
   rpc Delete (AccountRequest) returns (AccountResponse);
   rpc ChangePassword (AccountRequest) returns (AccountResponse);
   rpc Get (AccountFilter) returns (AccountDataList);
+  rpc AddAccountToOrg (AccountOrganization) returns (AccountOrganizationResponse);  
   rpc GetAccountDetail (AccountGroupDetailsRequest) returns (AccountDetailsResponse); 
   rpc SaveProfilePicture (AccountBlobRequest) returns (AccountBlobResponse); 
   rpc GetProfilePicture (IdRequest) returns (AccountBlobResponse); 
@@ -49,8 +51,8 @@ enum AccountType
         None = 0;
         SystemAccount = 1;
         PortalAccount = 2;        
-    }   
-   // response code  
+    }
+    // response code  
     enum Responcecode{
       Success = 0;
       Failed = 1;
@@ -106,6 +108,8 @@ message AccountRequest {
     int32 PreferenceId=10;
     int32 BlobId=11;
     int64 CreatedAt=12;
+    int64 StartDate=13;
+    int64 EndDate=14;    
   }
 
 message AccountId
@@ -120,45 +124,7 @@ message AccountFilter {
   string Email=4;  
   string AccountIds = 5;
   int32 AccountGroupId=6;
-
 }
-
-// // Account Preference
-// enum CurrencyType
-//     {
-//         //None = 'N',
-//         Euro = 0;
-//         Usdollar = 1;
-//         PondSterling = 2;
-//     }
-//     enum DateFormatDisplayType
-//     {
-//          //None = 'N',
-//         DayMonthYear= 0;
-//         MonthDayYear= 1;
-//         YearMonthDay= 2;
-//     }
-//     enum PreferenceType
-//     {
-//         //None = 'N',
-//         Account = 0;
-//         Organization = 1;
-//     }
-//     enum UnitType
-//     {
-//         // None = 'N',
-//         Metric= 0;
-//         Imperial= 1;
-//         Usimperial = 2;
-//     }
-//     enum VehicleDisplayType    
-//     {
-//         //None = 'N',
-//         RegistrationNumber= 0;
-//         Name= 1;
-//         Vin = 2;   
-//     }
-
     message AccountPreference
     {
         int32 Id =1;
@@ -169,10 +135,9 @@ message AccountFilter {
         int32 CurrencyId =6;
         int32 UnitId = 7;
         int32 VehicleDisplayId =8;
-        int32 DateFormatId =9;
-        string DriverId =10;
-        int32 TimeFormatId=11;
-        int32 LandingPageDisplayId=12;
+        int32 DateFormatId =9;        
+        int32 TimeFormatId=10;
+        int32 LandingPageDisplayId=11;
     }
     message AccountPreferenceResponse
     {
@@ -217,6 +182,7 @@ message AccountGroupRequest{
   int32 GroupRefCount=7;
   repeated AccountGroupRef GroupRef = 8;
   bool Exists=9;
+  int64 CreatedAt=10;
 }
 message AccountGroupResponce{
   Responcecode code=1;  
@@ -278,6 +244,18 @@ message NameIdResponse {
 }
 message AccountRoles{
   repeated NameIdResponse Roles=1;
+  Responcecode Code=2;
+  string Message = 3; 
+}
+
+message AccountOrganization{
+  int32 AccountId=1;
+  int32 OrganizationId=2;
+  int64 StartDate=3;
+  int64 EndDate=4;
+}
+message AccountOrganizationResponse{
+  int32 AccountOrgId=1;
   Responcecode Code=2;
   string Message = 3; 
 }
@@ -350,3 +328,5 @@ message AccountBlobResponse
 }
 
 // End - Profile picture
+
+ 

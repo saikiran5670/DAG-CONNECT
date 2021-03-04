@@ -5,29 +5,81 @@ option csharp_namespace = "net.atos.daf.ct2.packageservice";
 package pacakge;
 
 service PackageService{
-   rpc Create (PackageRequest) returns (PackageData);
+    rpc Create (PackageCreateRequest) returns (PackageResponse);
+    rpc Update (PackageUpdateRequest) returns (PackageResponse);
+    rpc Delete ((PackageDeleteRequest) returns (PackageResponse);
+    rpc Get (GetPackageRequest) returns (GetOrganizationResponce);   
+    rpc Import (ImportPackageRequest) returns (ImportPackageResponce);    
 }
 
-
-message PackageRequest {
-    int32 Id= 1;
-    string EmailId=2;
-    string Salutation=3;
-    string FirstName=4;
-    string LastName=5;
-    string Password=6;
-    //google.protobuf.Timestamp Dob=7; 
-    //AccountType Type=7;    
-    int32 OrganizationId=7;
-    //int32 Account_OrgId =10;k
-    //google.protobuf.Timestamp StartDate=10;
-    //google.protobuf.Timestamp EndDate=11;
-    //bool Active =12;
-    //bool Active =11;
+message PackageResponse {
+  Responsecode Code=1;
+  string Message = 2;
+}
+message PackageCreateRequest {   
+    string Code=1;
+    int32 FeatureSetID=2;
+    repeated string Features =3;
+    string Name=4;
+    PackageType Type =5;
+    string Description=6;
+    PackageDefault Default =7;
+    google.protobuf.Timestamp StartDate=8;
+    google.protobuf.Timestamp EndDate =9;
+    PackageStatus Status =10;
   }
 
-  message PackageData {
- 
-  string Message = 2;
-  PackageRequest Account = 3;
+  message PackageUpdateRequest { 
+    int32 Id=1;
+    string Code=2;
+    int32 FeatureSetID=3;
+    repeated string Features =4;
+    string Name=5;
+    PackageType Type =6;
+    string Description=7;
+    PackageDefault Default =8;
+    google.protobuf.Timestamp StartDate=9;
+    google.protobuf.Timestamp EndDate =10;
+    PackageStatus Status =11;
+  }
+   message PackageDeleteRequest {
+  int32 Id = 1;  
 }
+
+
+
+  message GetPackageResponce {  
+    int32 Id=1;
+    string Code= 2;
+    int32 FeatureSetID =3;
+    repeated  string  Features =4;
+    string Name=5;
+    PackageType Type =6;
+    string Description=7;
+    PackageDefault Default =8;
+    google.protobuf.Timestamp StartDate=9;
+    google.protobuf.Timestamp EndDate =10;
+    PackageStatus Status =11;
+}
+
+    enum PackageDefault
+    { 
+        False = 0;
+        True = 1;
+       
+    }
+    enum PackageStatus
+    {
+        Active =0;//'A'=0;
+        Inactive =1;// 'I'=1;
+    }
+    enum PackageType
+    {
+        Vehicle =0;// 'V'=0;
+        Organization = 1;//'O'=1;
+        ReadWrite = 2;//'W'=2;
+    }
+    enum Responsecode {
+     Success = 0;
+     Failed = 1;
+    }

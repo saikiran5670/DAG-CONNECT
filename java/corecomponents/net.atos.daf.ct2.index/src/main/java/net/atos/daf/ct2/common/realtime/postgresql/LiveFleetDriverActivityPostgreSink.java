@@ -29,23 +29,16 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 
 	private static final long serialVersionUID = 1L;
 
-	// String livefleetdriver = "INSERT INTO
-	// livefleet.livefleet_trip_driver_activity (trip_id , trip_start_time_stamp ,
-	// trip_end_time_stamp , activity_date, vin , driver_id , code , start_time ,
-	// end_time , duration , created_at_m2m , created_at_kafka , created_at_dm ,
-	// modified_at , last_processed_message_time_stamp ) VALUES ( ? , ? , ? , ? , ?
-	// , ? , ? , ? , ? , ? , ? , ? , ? , ? ,?) ";
-	// String readquery = "SELECT * FROM livefleet.livefleet_trip_driver_activity
-	// WHERE trip_start_time_stamp !=0 AND trip_id = ?";
-
 	private PreparedStatement statement_driver;
 	private PreparedStatement stmt;
 	private PreparedStatement statement_trip;
 	Connection connection = null;
+	private PreparedStatement stmt1;
 
 	String livefleetdriver = null;
 	String readquery = null;
 	String livefleettrip = null;
+	String readtrip = null;
 
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
@@ -60,10 +53,12 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 		livefleettrip = envParams.get(DafConstants.QUERY_LIVEFLEET_TRIP_STATISTICS);
 		livefleetdriver = envParams.get(DafConstants.QUERY_DRIVER_ACTIVITY);
 		readquery = envParams.get(DafConstants.QUERY_DRIVER_ACTIVITY_READ);
+		readtrip = envParams.get(DafConstants.QUERY_LIVEFLEET_TRIP_READ);
 
 		System.out.println("livefleetdriver --> " + livefleetdriver);
 		System.out.println("readquery --> " + readquery);
 		System.out.println("livefleettrip --> " + livefleettrip);
+		System.out.println("livefleettripread --> " + readtrip);
 
 		try {
 
@@ -89,6 +84,7 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 			statement_driver = connection.prepareStatement(livefleetdriver);
 			statement_trip = connection.prepareStatement(livefleettrip);
 			stmt = connection.prepareStatement(readquery);
+			stmt1 = connection.prepareStatement(readtrip);
 
 		} catch (Exception e) {
 			log.error("Error in Live fleet driver" + e.getMessage());
@@ -100,9 +96,16 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 	public void invoke(KafkaRecord<Index> row) throws Exception {
 		// this function is used to write data into postgres table
 
+		// Live Fleet Driver Activity
+
 		int varVEvtid = row.getValue().getVEvtID();
 		long trip_Start_time = 0;
 		String varTripID = row.getValue().getDocument().getTripID();
+
+		long start_time_stamp = 0;
+		long end_time_stamp = 0;
+		double start_position_lattitude = 0;
+		double start_position_longitude = 0;
 
 		stmt.setString(1, varTripID);
 
@@ -116,38 +119,38 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 		rs.close();
 
 		if (row.getValue().getDocument().getTripID() != null)
-			statement_driver.setString(1, row.getValue().getDocument().getTripID());
+			statement_driver.setString(1, row.getValue().getDocument().getTripID()); // 1 trip id
 		else
 			statement_driver.setString(1, row.getValue().getRoName());
 
 		if (varVEvtid == 4)
-			statement_driver.setLong(2, row.getValue().getReceivedTimestamp());
-		// trip_start_time_stamp
+			statement_driver.setLong(2, row.getValue().getReceivedTimestamp()); // 2 trip_start_time_stamp
+
 		else
 			statement_driver.setLong(2, 0);
 
 		if (varVEvtid == 5)
-			statement_driver.setLong(3, row.getValue().getReceivedTimestamp()); // trip_end_time_stamp
+			statement_driver.setLong(3, row.getValue().getReceivedTimestamp()); // 3 trip_end_time_stamp
 		else
 			statement_driver.setLong(3, 0);
 
 		if (row.getValue().getReceivedTimestamp() != null)
-			statement_driver.setLong(4, row.getValue().getReceivedTimestamp()); // Activity_date
+			statement_driver.setLong(4, row.getValue().getReceivedTimestamp()); // 4 Activity_date
 		else
 			statement_driver.setLong(4, 0);
 
 		if (row.getValue().getVin() != null)
-			statement_driver.setString(5, (String) row.getValue().getVin());
+			statement_driver.setString(5, (String) row.getValue().getVin()); // 5 vin
 		else
 			statement_driver.setString(5, (String) row.getValue().getVid());
 
 		if (row.getValue().getDriverID() != null)
-			statement_driver.setString(6, (String) row.getValue().getDriverID()); // Driver ID
+			statement_driver.setString(6, (String) row.getValue().getDriverID()); // 6 Driver ID
 		else
 			statement_driver.setLong(6, 0);
 
 		if (row.getValue().getDocument().getDriver1WorkingState() != null)
-			statement_driver.setInt(7, row.getValue().getDocument().getDriver1WorkingState()); // Working state code
+			statement_driver.setInt(7, row.getValue().getDocument().getDriver1WorkingState()); // 7 Working state code
 		else
 			statement_driver.setLong(7, 0);
 
@@ -155,29 +158,50 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 				&& ((row.getValue().getDocument().getDriver1WorkingState() == 1)
 						|| (row.getValue().getDocument().getDriver1WorkingState() == 2)
 						|| (row.getValue().getDocument().getDriver1WorkingState() == 3)))
-			statement_driver.setLong(8, row.getValue().getReceivedTimestamp()); // start_time
+			statement_driver.setLong(8, row.getValue().getReceivedTimestamp()); // 8 start_time
 		else
 			statement_driver.setInt(8, 0);
 
 		if ((row.getValue().getDocument().getDriver1CardInserted() == false)
 				|| ((row.getValue().getDocument().getDriver1CardInserted() == true)
 						&& (row.getValue().getDocument().getDriver1WorkingState() == 3)))
-			statement_driver.setLong(9, row.getValue().getReceivedTimestamp()); // end_time
+			statement_driver.setLong(9, row.getValue().getReceivedTimestamp()); // 9 end_time
 		else
 			statement_driver.setInt(9, 0);
 
-		statement_driver.setLong(10, (row.getValue().getReceivedTimestamp() - trip_Start_time)); // Duration
+		statement_driver.setLong(10, (row.getValue().getReceivedTimestamp() - trip_Start_time)); // 10 Duration
 
-		statement_driver.setLong(11, row.getValue().getReceivedTimestamp()); // created_at_m2m
-		statement_driver.setLong(12, row.getValue().getReceivedTimestamp()); // created_at_kafka
-		statement_driver.setLong(13, row.getValue().getReceivedTimestamp()); // created_at_dm
-		statement_driver.setLong(14, row.getValue().getReceivedTimestamp()); // modified_at
-		statement_driver.setLong(15, row.getValue().getReceivedTimestamp()); // last_processed_message_time
+		statement_driver.setLong(11, row.getValue().getReceivedTimestamp()); // 11 created_at_m2m
+		statement_driver.setLong(12, row.getValue().getReceivedTimestamp()); // 12 created_at_kafka
+		statement_driver.setLong(13, row.getValue().getReceivedTimestamp()); // 13 created_at_dm
+		statement_driver.setLong(14, row.getValue().getReceivedTimestamp()); // 14 modified_at
+		statement_driver.setLong(15, row.getValue().getReceivedTimestamp()); // 15 last_processed_message_time
 
 		statement_driver.executeUpdate();
 
+		// Live Fleet CURRENT TRIP Activity
+
+		if (varVEvtid != 4) {
+
+			stmt1.setString(1, varTripID);
+
+			ResultSet rs1 = stmt1.executeQuery();
+
+			while (rs1.next()) {
+
+				start_time_stamp = rs1.getLong("start_time_stamp");
+
+				end_time_stamp = rs1.getLong("end_time_stamp");
+
+				start_position_lattitude = rs1.getDouble("start_position_lattitude");
+
+				start_position_longitude = rs1.getDouble("start_position_longitude");
+			}
+			rs1.close();
+		}
+
 		if (varTripID != null) {
-			statement_trip.setString(1, row.getValue().getDocument().getTripID()); // tripID
+			statement_trip.setString(1, row.getValue().getDocument().getTripID()); // 1 tripID
 		}
 
 		else {
@@ -185,82 +209,94 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 		}
 
 		if (row.getValue().getVin() != null)
-			statement_trip.setString(2, (String) row.getValue().getVin()); // vin
+			statement_trip.setString(2, (String) row.getValue().getVin()); // 2 vin
 		else
 			statement_trip.setString(2, (String) row.getValue().getVid());
 
 		if (varVEvtid == 4)
-			statement_trip.setLong(3, row.getValue().getReceivedTimestamp()); // trip_start_time_stamp
+			statement_trip.setLong(3, row.getValue().getReceivedTimestamp()); // 3 trip_start_time_stamp
 
 		else
-			statement_trip.setLong(3, 0);
+			statement_trip.setLong(3, start_time_stamp);
 
-		statement_trip.setLong(4, row.getValue().getReceivedTimestamp()); // trip_end_time_stamp
+		statement_trip.setLong(4, row.getValue().getReceivedTimestamp()); // 4 trip_end_time_stamp
 
-		statement_trip.setString(5, (String) row.getValue().getDriverID());// DriverID
+		statement_trip.setString(5, (String) row.getValue().getDriverID());// 5 DriverID
 
 		if (varVEvtid == 4)
-			statement_trip.setDouble(6, row.getValue().getGpsLatitude()); // start_position_lattitude
+			statement_trip.setDouble(6, row.getValue().getGpsLatitude()); // 6 start_position_lattitude
 
 		else
-			statement_trip.setDouble(6, 0);
+			statement_trip.setDouble(6, start_position_lattitude);
 
 		if (varVEvtid == 4)
-			statement_trip.setDouble(7, row.getValue().getGpsLongitude()); // start_position_longitude
+			statement_trip.setDouble(7, row.getValue().getGpsLongitude()); // 7 start_position_longitude
 
 		else
-			statement_trip.setDouble(7, 0);
+			statement_trip.setDouble(7, start_position_longitude);
 
-		// 8 start_position - blank
+		statement_trip.setString(8, " "); // 8 start_position - blank
 
-		statement_trip.setDouble(9, row.getValue().getGpsLatitude());
-		statement_trip.setDouble(10, row.getValue().getGpsLatitude());
+		statement_trip.setDouble(9, row.getValue().getGpsLatitude()); // 9 last_received_position_lattitude
+		statement_trip.setDouble(10, row.getValue().getGpsLatitude()); // 10 last_received_position_longitude
 
-		// 11 last_known_position - blank
+		statement_trip.setString(11, " "); // 11 last_known_position - blank
 
 		Integer[] ttvalue = row.getValue().getDocument().getTt_ListValue(); // 12 vehicle status
 
-		int status = ttvalue[ttvalue.length - 1];
+		if (ttvalue.length == 0) {
+			System.out.println("ttvalue is empty");
+			statement_trip.setInt(12, 0);
 
-		if (status == 0) {
-			statement_trip.setInt(12, 2);
+		} else {
+			int status = ttvalue[ttvalue.length - 1];
+
+			if (status == 0) {
+				statement_trip.setInt(12, 2);
+			}
+
+			if (status == 1 || status == 2 || status == 3) {
+				statement_trip.setInt(12, 1);
+			}
+
+			if (status == 4 || status == 5 || status == 6) {
+				statement_trip.setInt(12, 3);
+			}
+
+			if (status == 7) {
+				statement_trip.setInt(12, 4);
+			}
 		}
+		statement_trip.setInt(13, row.getValue().getDocument().getDriver1WorkingState()); // 13 driver1 working state
 
-		if (status == 1 || status == 2 || status == 3) {
-			statement_trip.setInt(12, 1);
-		}
-
-		if (status == 4 || status == 5 || status == 6) {
-			statement_trip.setInt(12, 3);
-		}
-
-		if (status == 7) {
-			statement_trip.setInt(12, 4);
-		}
-
-		statement_trip.setInt(13, row.getValue().getDocument().getDriver1WorkingState()); // driver1 working state
-
-		// 14 vehicle_health_status - blank
+		statement_trip.setInt(14, 0); // 14 for time being vehicle_health_status - blank (inserting 0)
 
 		Integer[] tacho = row.getValue().getDocument().getTotalTachoMileage(); // 15 odometer value
 
-		int odometer_val = tacho[tacho.length - 1];
+		if (tacho.length == 0) {
+			System.out.println("odometer is empty");
+			statement_trip.setInt(15, 0);
+		} else {
+			int odometer_val = tacho[tacho.length - 1];
 
-		statement_trip.setInt(15, odometer_val);
+			statement_trip.setInt(15, odometer_val);
+		}
 
-		statement_trip.setLong(17, row.getValue().getReceivedTimestamp()); // last_processed_message_time
+		statement_trip.setInt(16, 0); // for time being distance_until_next_service - blank (inserting 0)
 
-		statement_trip.setString(18, (String) row.getValue().getDocument().getDriver2ID()); // Driver2ID
+		statement_trip.setLong(17, row.getValue().getReceivedTimestamp()); // 17 last_processed_message_time
 
-		statement_trip.setInt(19, row.getValue().getDocument().getDriver2WorkingState()); // driver2 working state
+		statement_trip.setString(18, (String) row.getValue().getDocument().getDriver2ID()); // 18 Driver2ID
 
-		statement_trip.setLong(20, row.getValue().getReceivedTimestamp()); // created_at_m2m
+		statement_trip.setInt(19, row.getValue().getDocument().getDriver2WorkingState()); // 19 driver2 working state
 
-		statement_trip.setLong(21, row.getValue().getReceivedTimestamp()); // created_at_kafka
+		statement_trip.setLong(20, row.getValue().getReceivedTimestamp()); // 20 created_at_m2m
 
-		statement_trip.setLong(22, row.getValue().getReceivedTimestamp()); // created_at_dm
+		statement_trip.setLong(21, row.getValue().getReceivedTimestamp()); // 21 created_at_kafka
 
-		statement_trip.setLong(23, row.getValue().getReceivedTimestamp()); // modified_at
+		statement_trip.setLong(22, row.getValue().getReceivedTimestamp()); // 22 created_at_dm
+
+		statement_trip.setLong(23, row.getValue().getReceivedTimestamp()); // 23 modified_at
 
 		statement_trip.executeUpdate();
 

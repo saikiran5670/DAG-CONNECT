@@ -45,8 +45,7 @@ namespace net.atos.daf.ct2.packageservice
             services.AddSingleton(dataAccess);
             services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
-            services.AddTransient<IPackageManager, PackageManager>(); 
-
+            services.AddTransient<IPackageManager, PackageManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

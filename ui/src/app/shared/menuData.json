@@ -46,6 +46,18 @@
         {
           "name": "Feature Management",
           "subRoute": "featuremanagement"
+        },
+        {
+          "name": "Package Management",
+          "subRoute": "packagemanagement"
+        },
+        {
+          "name": "Relationship Management",
+          "subRoute": "relationshipmanagement"
+        },
+        {
+          "name": "Organisation Relationship",
+          "subRoute": "organisationrelationship"
         }
       ]
     },

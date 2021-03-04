@@ -57,7 +57,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
                 account = _mapper.ToAccountEntity(request);
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
-                account.StartDate = DateTime.Now;
+                //account.StartDate = DateTime.Now;
                 account.isDuplicate = false;
                 account.isError = false;
                 account.EndDate = null;
@@ -110,7 +110,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
                 account = _mapper.ToAccountEntity(request);
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
-                account.StartDate = DateTime.Now;
+                //account.StartDate = DateTime.Now;
                 account.EndDate = null;
                 account.isDuplicate = false;
                 account.isError = false;
@@ -157,7 +157,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 account.Organization_Id = OrganizationId;
                 account.EmailId = EmailId;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
-                account.StartDate = DateTime.Now;
+                //account.StartDate = DateTime.Now;
                 account.EndDate = null;
                 var result = await accountmanager.Delete(account);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Service", "Account Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Account Delete", 1, 2, account.Id.ToString());
@@ -182,7 +182,7 @@ namespace net.atos.daf.ct2.accountservicerest.Controllers
                 account.EmailId = request.EmailId;
                 account.Password = request.Password;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
-                account.StartDate = DateTime.Now;
+                //account.StartDate = DateTime.Now;
                 account.EndDate = null;
                 // Validation 
                 if (string.IsNullOrEmpty(account.EmailId) || string.IsNullOrEmpty(account.Password))
