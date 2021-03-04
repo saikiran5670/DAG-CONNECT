@@ -9,6 +9,7 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
 import { FileValidator } from 'ngx-material-file-input';
 import * as XLSX from 'xlsx';
 import { TranslationService } from '../../services/translation.service';
+import { CommonTableComponent } from '../.././shared/common-table/common-table.component';
 
 @Component({
   selector: 'app-driver-management',
@@ -60,6 +61,7 @@ export class DriverManagementComponent implements OnInit {
   selectedConsentType: any = ''; 
   importedDriverlist: any = [];
   rejectedDriverList: any = [];
+  driverDialogRef: MatDialogRef<CommonTableComponent>;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService, private translationService: TranslationService) { 
       this.defaultTranslation();
@@ -509,7 +511,16 @@ export class DriverManagementComponent implements OnInit {
   }
 
   showDriverListPopup(driverList: any){ 
-    
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      tableData: driverList,
+      colsList: ['driverId','firstName','lastName','emailId','failReason'],
+      colsName: [this.translationData.lblDriverId || 'Driver Id', this.translationData.lblFirstName || 'First Name', this.translationData.lblLastName || 'Last Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblFailedReason || 'Failed Reason'],
+      tableTitle: this.translationData.lblRejectedDriverDetails || 'Rejected Driver Details'
+    }
+    this.driverDialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
   }
 
 }

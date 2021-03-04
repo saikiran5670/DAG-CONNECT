@@ -67,7 +67,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="start space-between">
                 <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ translationData.lblImported || 'Imported' }} <span (click)='showDriverListPopup(importedDriverlist)' style='color: green'>{{ importedDriverlist.length }} {{ translationData.lblnewdrivers || 'new drivers' }}</span></span>
+                    <span>{{ translationData.lblImported || 'Imported' }} <span style='color: green'>{{ importedDriverlist.length }} {{ translationData.lblnewdrivers || 'new drivers' }}</span></span>
                 </div>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <span>{{ translationData.lblRole || 'Role' }}: <span class='custom-font'>{{ translationData.lblDriver || 'Driver' }}</span></span>
@@ -75,7 +75,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="start space-between">
                 <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ translationData.lblRejected || 'Rejected' }} <span (click)='showDriverListPopup(rejectedDriverList)' style='color: red'>{{ rejectedDriverList.length }} {{ translationData.lbldrivers || 'drivers' }}</span></span>
+                    <span>{{ translationData.lblRejected || 'Rejected' }} <span [ngClass]="{'cursor-pointer': rejectedDriverList.length > 0}" (click)="(rejectedDriverList.length > 0) ? showDriverListPopup(rejectedDriverList) : ''" style='color: red'>{{ rejectedDriverList.length }} {{ translationData.lbldrivers || 'drivers' }}</span></span>
                 </div>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <span>{{ translationData.lblUserGroup || 'User Group' }}: <span class='custom-font'>{{ userGrpName }}</span></span>
