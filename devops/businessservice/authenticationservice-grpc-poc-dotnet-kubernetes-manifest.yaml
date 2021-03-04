@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: authenticationservice-poc
-        image: dafdev017756.azurecr.io/authenticationservicegrpc_poc
+        image: dafdev017756.azurecr.io/authenticationservice-grpc
         imagePullPolicy: Always
         resources:
           limits:
