@@ -9,6 +9,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["businessservices/net.atos.daf.ct2.roleservice/net.atos.daf.ct2.roleservice.csproj", "businessservices/net.atos.daf.ct2.roleservice/"]
 COPY ["commoncomponent/net.atos.daf.ct2.data/net.atos.daf.ct2.data.csproj", "commoncomponent/net.atos.daf.ct2.data/"]
+COPY ["corecomponents/net.atos.daf.ct2.features/net.atos.daf.ct2.features.csproj", "corecomponents/net.atos.daf.ct2.features/"]
 COPY ["corecomponents/net.atos.daf.ct2.role/net.atos.daf.ct2.role.csproj", "corecomponents/net.atos.daf.ct2.role/"]
 COPY ["commoncomponent/net.atos.daf.ct2.utilities/net.atos.daf.ct2.utilities.csproj", "commoncomponent/net.atos.daf.ct2.utilities/"]
 RUN dotnet restore "businessservices/net.atos.daf.ct2.roleservice/net.atos.daf.ct2.roleservice.csproj"
@@ -21,8 +22,5 @@ RUN dotnet publish "net.atos.daf.ct2.roleservice.csproj" -c Release -o /app/publ
 
 FROM base AS final
 WORKDIR /app
-RUN mkdir log
-RUN mkdir log/Error
-RUN mkdir log/Info
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "net.atos.daf.ct2.roleservice.dll"]

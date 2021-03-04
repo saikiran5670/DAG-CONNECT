@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: accountservice-poc-deployment
+  name: portalservice-deployment
   labels:
-    app.kubernetes.io/name: accountservice-poc
+    app.kubernetes.io/name: portalservice
     app.kubernetes.io/type: businessservice
 spec:
   template:
@@ -11,7 +11,7 @@ spec:
       annotations:
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
       labels:
-        app.kubernetes.io/name: accountservice-poc
+        app.kubernetes.io/name: portalservice
         app.kubernetes.io/type: businessservice
     spec:
       automountServiceAccountToken: false
@@ -27,15 +27,15 @@ spec:
               - key: app.kubernetes.io/name
                 operator: In
                 values:
-                - accountservice-poc
+                - portalservice
               - key: app.kubernetes.io/type
                 operator: In
                 values:
                 - businessservice
             topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: accountservice-poc-container
-        image: #{acrurl}#/accountservice-poc
+      - name: portalservice-container
+        image: #{acrurl}#/portalservice
         imagePullPolicy: "Always"
         securityContext:
           allowPrivilegeEscalation: false
@@ -61,15 +61,15 @@ spec:
         agentpool: npuser01         
   selector:
     matchLabels:
-        app.kubernetes.io/name: accountservice-poc
+        app.kubernetes.io/name: portalservice
         app.kubernetes.io/type: businessservice
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: accountservice-poc
+  name: portalservicepoc
   labels:
-    svc.kubernetes.io/name: accountservice-poc
+    svc.kubernetes.io/name: portalservice
     svc.kubernetes.io/type: businessservice
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
@@ -80,16 +80,16 @@ spec:
     port: 80
     targetPort: 8080
   selector:
-    app.kubernetes.io/name: accountservice-poc
+    app.kubernetes.io/name: portalservice
     app.kubernetes.io/type: businessservice
 
 ---
 kind: HorizontalPodAutoscaler 
 apiVersion: autoscaling/v2beta1 
 metadata: 
-  name: accountservice-poc-hpa
+  name: portalservice-hpa
   labels:
-    hpa.kubernetes.io/name: accountservice-poc
+    hpa.kubernetes.io/name: portalservice
     hpa.kubernetes.io/type: businessservice 
 spec: 
   maxReplicas: 5 
@@ -97,7 +97,7 @@ spec:
   scaleTargetRef: 
     apiVersion: apps/v1 
     kind: Deployment 
-    name: accountservice-poc-deployment 
+    name: portalservice-deployment 
   metrics: 
   - type: Resource 
     resource: 

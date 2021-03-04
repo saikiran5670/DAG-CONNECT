@@ -5,12 +5,10 @@ import { MatSort } from '@angular/material/sort';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { ConsentOptComponent } from './consent-opt/consent-opt.component';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { FileValidator } from 'ngx-material-file-input';
 import * as XLSX from 'xlsx';
 import { TranslationService } from '../../services/translation.service';
-import { AccountService } from '../../services/account.service';
 
 @Component({
   selector: 'app-driver-management',
@@ -60,9 +58,10 @@ export class DriverManagementComponent implements OnInit {
     }
   ];
   selectedConsentType: any = ''; 
+  importedDriverlist: any = [];
+  rejectedDriverList: any = [];
 
-  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService,
-    private _snackBar: MatSnackBar, private translationService: TranslationService, private accountService: AccountService) { 
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService, private translationService: TranslationService) { 
       this.defaultTranslation();
   }
 
@@ -125,7 +124,7 @@ export class DriverManagementComponent implements OnInit {
       lblErrorinupdatingdriverrecordPleasetryagain: "Error in updating driver record '$'. Please try again.",
       lblDeleteDriver: "Delete Driver ",
       lblAreyousureyouwanttodeletedriver: "Are you sure you want to delete driver '$'?",
-      lblDriversuccessfullydeleted: "Driver '$' successfully deleted",
+      lblDriverwassuccessfullydeleted: "Driver '$' was successfully deleted",
       lblErrordeletingdriver: "Error deleting driver",
       lblThedriverwasoptedinsuccessfully: "The driver '$' was opted-in successfully",
       lblThedrivercouldnobeoptedin: "The driver could not be opted-in '$'",
@@ -182,7 +181,7 @@ export class DriverManagementComponent implements OnInit {
         salutation: "Mr"
       },
       {
-        driverId: "IN 0000000000000002",
+        driverId: "I 0000000000000002",
         firstName: "Ritika",
         lastName: "Joshi",
         birthDate: "02/02/1992",
@@ -247,10 +246,10 @@ export class DriverManagementComponent implements OnInit {
 
 
   importDrivers(){ 
-    this.importDriverPopup = true;
     this.userGrpName = 'Test User Group' ; //this.importDriverFormGroup.controls.userGroup.value;
     if(this.filelist.length > 0){
       this.validateExcelFileField();
+      this.importDriverPopup = true;
     }else{
       console.log("Empty File...");
     }
@@ -258,19 +257,20 @@ export class DriverManagementComponent implements OnInit {
 
   validateExcelFileField(){
     let driverAPIData: any = [];
-    //-- Parse driver data--- //
+    //--- Parse driver data ---//
     this.filelist.map((item: any) => {
       driverAPIData.push({
         driverId: item.DriverID,
         salutation: item.Civility,
         firstName: item.FirstName,
         lastName: item.LastName,
-        birthDate: item.BirthDate,
+        birthDate: item.BirthDate ? item.BirthDate : '01/01/1931',
       });
     });
     console.log("Parse excel driver:: ", driverAPIData)
-    let finalList = this.validateFields(driverAPIData);
-    console.log("Final list:: ", finalList)
+    let finalList: any = this.validateFields(driverAPIData);
+    this.importedDriverlist = finalList.validDriverList;
+    this.rejectedDriverList = finalList.invalidDriverList;
   }
 
   validateFields(driverList: any){
@@ -282,30 +282,47 @@ export class DriverManagementComponent implements OnInit {
       let lname: any;
       let salutation: any;
       for (const [key, value] of Object.entries(item)) {
-        console.log(`${key}: ${value}`);
+        //console.log(`${key}: ${value}`);
         switch(key){
           case "driverId":{
-            driverId = this.requiredField(value);  
-            console.log("driverId:: ", driverId)
+            let objData: any = driverId = this.driveIdValidation(value);  
+            driverId = objData.status;
+            //console.log("driverId:: ", driverId)
+            if(!driverId){
+              item.failReason = objData.reason;
+            }
             break;
           }
           case "firstName":{
-            fname = this.requiredField(value); 
-            console.log("fname:: ", fname)
+            let objData: any = this.nameValidation(value, 30, 'firstName'); 
+            fname = objData.status;
+            //console.log("fname:: ", fname)
+            if(!fname){
+              item.failReason = objData.reason;
+            }
             break;
           }
           case "lastName":{
-            this.requiredField(value); 
-            console.log("lname:: ", lname)
+            let objData: any = this.nameValidation(value, 20, 'lastName'); 
+            lname = objData.status;
+            //console.log("lname:: ", lname)
+            if(!lname){
+              item.failReason = objData.reason;
+            }
             break;
           }
           case "salutation":{
-            this.requiredField(value); 
-            console.log("salutation:: ", salutation)
+            let objData: any = this.salutationValidation(value); 
+            salutation = objData.status;
+            //console.log("salutation:: ", salutation)
+            if(!salutation){
+              item.failReason = objData.reason;
+            }
             break;
           }
         }
       }
+
       if(driverId && fname && lname && salutation){
         validData.push(item);
       }
@@ -315,12 +332,76 @@ export class DriverManagementComponent implements OnInit {
     });
     console.log("validData:: ", validData)
     console.log("invalidData:: ", invalidData)
-    return validData;
+    return { validDriverList: validData, invalidDriverList: invalidData };
   }
 
-  requiredField(value: any)
-  {
-    return (value == '' || value.lenght == 0) ? true : false;
+  driveIdValidation(value: any){
+    let obj: any = { status: true, reason: 'correct data'};
+    const regx = /[A-Z]{1,1}[A-Z\s]{1,1}[\s]{1,1}[A-Z0-9]{16,16}/;
+    if(!value || value == '' || value.length == 0){
+      obj.status = false;
+      obj.reason = 'Required driverId field';
+      return obj;  
+    }
+    if(value.length > 19){
+      obj.status = false;
+      obj.reason = 'DriverId length can not be (>19)';  
+      return obj;
+    }
+    if(!regx.test(value)){
+      obj.status = false;
+      obj.reason = 'Mismatch Regx pattern e.g.(F  1234567890123456) or (FF 1234567890123456) in driverId';  
+      return obj;
+    }
+    return obj;
+  }
+
+  nameValidation(value: any, maxLength: any, type: any){
+    let obj: any = { status: true, reason: 'correct data'};
+    let numberRegex = /[^0-9]+$/;
+    let SpecialCharRegex = /[^!@#\$%&*]+$/;
+    if(!value || value == '' || value.length == 0){
+      obj.status = false;
+      obj.reason = `Required ${type} field `;  
+      return obj;
+    }
+    if(value.length > maxLength){
+      obj.status = false;
+      obj.reason = `${type} length can not be (>${maxLength})`; 
+      return obj;
+    }
+    if(!numberRegex.test(value)){
+      obj.status = false;
+      obj.reason = `Number not allowed in ${type}`; 
+      return obj;
+    }
+    if(!SpecialCharRegex.test(value)){
+      obj.status = false;
+      obj.reason = `Special character not allowed in ${type}`; 
+      return obj;
+    }
+    if(value.toString().trim().length == 0){
+      obj.status = false;
+      obj.reason = `Whitespaces not allowed in ${type}`; 
+      return obj;
+    }
+    return obj;
+  }
+
+  salutationValidation(value: any){
+    let obj: any = { status: true, reason: 'correct data'};
+    if(!value || value == '' || value.length == 0){
+      obj.status = false;
+      obj.reason = 'Required salutation field';  
+      return obj;
+    }
+    if(value != 'Mr' && value != 'Ms' && value != 'Mrs')
+    {
+      obj.status = false;
+      obj.reason = 'Incorrect salutation (Ms, Mr, Mrs)';  
+      return obj;
+    }
+    return obj;
   }
 
   applyFilter(filterValue: string) {
@@ -347,19 +428,16 @@ export class DriverManagementComponent implements OnInit {
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
       if (res) {
-        this.accountService.deleteAccount(row).subscribe(d => {
-          this.successMsgBlink(this.getDeletMsg(name));
-          this.loadUsersData();
-        });
+        this.successMsgBlink(this.getDeletMsg(name));
       }
    });
   }
 
   getDeletMsg(userName: any){
-    if(this.translationData.lblDriversuccessfullydeleted)
-      return this.translationData.lblDriversuccessfullydeleted.replace('$', userName);
+    if(this.translationData.lblDriverwassuccessfullydeleted)
+      return this.translationData.lblDriverwassuccessfullydeleted.replace('$', userName);
     else
-      return ("Driver '$' successfully deleted").replace('$', userName);
+      return ("Driver '$' was successfully deleted").replace('$', userName);
   }
 
   successMsgBlink(msg: any){
@@ -432,5 +510,7 @@ export class DriverManagementComponent implements OnInit {
     }
     this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
   }
+
+  showDriverListPopup(driverList: any){ }
 
 }

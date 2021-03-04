@@ -45,10 +45,17 @@ namespace net.atos.daf.ct2.accountservice
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Account Create", 1, 2, account.EmailId);
                 // response 
                 AccountData response = new AccountData();
+                if (account.isDuplicateInOrg)
+                {
+                    response.Message = "The duplicate account.";
+                    response.Code = Responcecode.Failed;
+                    response.Account = null;
+                }
                 if (account.isDuplicate)
                 {
-                    response.Message = "The duplicate account, please provide unique email address.";
+                    response.Message = "The duplicate account.";
                     response.Code = Responcecode.Failed;
+                    response.Account = _mapper.ToAccount(account);
                 }
                 else if (account.isError)
                 {
@@ -112,8 +119,10 @@ namespace net.atos.daf.ct2.accountservice
                 account.EmailId = request.EmailId;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
                 account.Organization_Id = request.OrganizationId;
-                account.StartDate = DateTime.Now;
+                account.StartDate = null;
                 account.EndDate = null;
+                if (request.StartDate>0 ) account.StartDate = request.StartDate;
+                if (request.EndDate > 0) account.EndDate = request.EndDate;
                 var result = await accountmanager.Delete(account);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Service", "Account Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Account Delete", 1, 2, account.Id.ToString());
                 // response 
@@ -247,6 +256,38 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
+
+        public override async Task<AccountOrganizationResponse> AddAccountToOrg(AccountOrganization request, ServerCallContext context)
+        {
+            try
+            {
+                AccountComponent.entity.Account account = new AccountComponent.entity.Account();
+                AccountOrganizationResponse response = new AccountOrganizationResponse();
+                account.Id = request.AccountId;
+                account.Organization_Id = request.OrganizationId;
+                account.StartDate = null;
+                account.EndDate = null;
+                if (request.StartDate > 0) account.StartDate = request.StartDate;
+                if (request.StartDate > 0) account.StartDate = request.StartDate;               
+                var result = await accountmanager.AddAccountToOrg(account);
+                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Service", "Account Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Account Delete", 1, 2, account.Id.ToString());
+                // response
+                response.Code = Responcecode.Success;
+                response.Message = "Account Added to organization.";
+                response.AccountOrgId = account.Id;
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:delete account with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new AccountOrganizationResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Account Deletion Faile due to - " + ex.Message
+                });
+            }
+        }
+
         public override async Task<AccountDetailsResponse> GetAccountDetail(AccountGroupDetailsRequest request, ServerCallContext context)
         {
             try
@@ -818,6 +859,7 @@ namespace net.atos.daf.ct2.accountservice
                     bool accountRef = await groupmanager.AddRefToGroups(group.GroupRef);
                 }
                 request.Id = group.Id;
+                request.CreatedAt = group.CreatedAt.Value;
                 var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Account Group ", 1, 2, Convert.ToString(group.Id)).Result;
                 _logger.LogInformation("Group Created:" + Convert.ToString(group.Name));
                 return await Task.FromResult(new AccountGroupResponce
@@ -889,7 +931,6 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
-
         public override async Task<AccountGroupResponce> RemoveGroup(IdRequest request, ServerCallContext context)
         {
             try
@@ -955,8 +996,7 @@ namespace net.atos.daf.ct2.accountservice
                     Code = Responcecode.Failed
                 });
             }
-        }
-        
+        }        
         // Delete account from group
         public override async Task<AccountGroupResponce> DeleteAccountFromGroups(IdRequest request, ServerCallContext context)
         {
@@ -989,7 +1029,6 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
-
         public async override Task<AccountGroupDataList> GetAccountGroup(AccountGroupFilterRequest request, ServerCallContext context)
         {
             try
@@ -1005,7 +1044,7 @@ namespace net.atos.daf.ct2.accountservice
 
                 ObjGroupFilter.FunctionEnum = Group.FunctionEnum.None;
                 ObjGroupFilter.ObjectType = Group.ObjectType.AccountGroup;
-                ObjGroupFilter.GroupType = Group.GroupType.Group;
+                ObjGroupFilter.GroupType = Group.GroupType.None;
 
                 IEnumerable<Group.Group> ObjRetrieveGroupList = await groupmanager.Get(ObjGroupFilter);
                 _logger.LogInformation("Get account group.");
@@ -1028,8 +1067,7 @@ namespace net.atos.daf.ct2.accountservice
                     Code = Responcecode.Failed
                 });
             }
-        }
-        
+        }        
         // Get group details
         public async override Task<AccountGroupDetailsDataList> GetAccountGroupDetail(AccountGroupDetailsRequest request, ServerCallContext context)
         {

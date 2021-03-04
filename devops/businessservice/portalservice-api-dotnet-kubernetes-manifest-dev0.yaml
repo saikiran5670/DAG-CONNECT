@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: portalservice
-        image: dafdev017756.azurecr.io/portalservice-poc
+        image: dafdev017756.azurecr.io/portalservice
         imagePullPolicy: Always
         resources:
           limits:
@@ -28,7 +28,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: portalservicepoc
+  name: portalservice
 spec:
   type: LoadBalancer
   ports:

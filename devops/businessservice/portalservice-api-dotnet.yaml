@@ -68,7 +68,7 @@ steps:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
     dockerFile: dotnet/PortalService_Dockerfile
-    imageName: portalservice-poc
+    imageName: portalservice
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -76,5 +76,5 @@ steps:
     azureSubscription: $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
-    imageName: portalservice-poc
+    imageName: portalservice
 

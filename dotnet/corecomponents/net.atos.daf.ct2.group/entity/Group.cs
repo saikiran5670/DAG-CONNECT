@@ -17,7 +17,8 @@ namespace net.atos.daf.ct2.group
         public List<GroupRef> GroupRef { get; set; }
         public int GroupRefCount { get; set; }
         public bool Exists { get; set; }
+        public long? CreatedAt { get; set; }
 
-   
+
     }
 }
