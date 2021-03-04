@@ -39,6 +39,7 @@ import { PackageManagementComponent } from './package-management/package-managem
 import { CreateEditPackageDetailsComponent } from './package-management/create-edit-package-details/create-edit-package-details.component';
 import { RelationshipManagementComponent } from './relationship-management/relationship-management.component';
 import { CreateViewEditRelationshipComponent } from './relationship-management/create-view-edit-relationship/create-view-edit/create-view-edit-relationship.component';
+import { OrganisationRelationshipComponent } from './organisation-relationship/organisation-relationship.component';
 
 @NgModule({
   declarations: [
@@ -71,7 +72,8 @@ import { CreateViewEditRelationshipComponent } from './relationship-management/c
     RelationshipManagementComponent,
     CreateViewEditRelationshipComponent,
     PackageManagementComponent,
-    CreateEditPackageDetailsComponent
+    CreateEditPackageDetailsComponent,
+    OrganisationRelationshipComponent
   ],
   imports: [
       CommonModule,
