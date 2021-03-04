@@ -60,8 +60,9 @@ export class AppComponent {
     translationdataupload: 'Translation Data Upload',
     featuremanagement: 'Feature Management',
     packagemanagement: 'Package Management',
+    subscriptionmanagement: 'Subscription Management',
     relationshipmanagement: 'Relationship management',
-    organisationrelationship: 'Relationship management'
+    organisationrelationship: 'Organisation Relationship'
   }
   public menuStatus = {
     dashboard : {
@@ -104,6 +105,7 @@ export class AppComponent {
         translationdataupload: 'Translation Data Upload',
         featuremanagement: 'Feature Management',
         packagemanagement: 'Package Management',
+        subscriptionmanagement: 'Subscription Management',
         relationshipmanagement: 'Relationship Management',
         organisationrelationship: 'Organisation Relationship'
       }
@@ -268,6 +270,7 @@ export class AppComponent {
       lblTranslationDataUpload: "Translation Data Upload",
       lblFeatureManagement: "Feature Management",
       lblPackageManagement: "Package Management",
+      lblSubscriptionmanagement: "Subscription Management",
       lblRelationshipManagement: 'Relationship Management',
       lblOrganisationRelationship: 'Organisation Relationship',
       lblLiveFleet: "Live Fleet",

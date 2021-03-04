@@ -26,7 +26,7 @@ export class DriverManagementComponent implements OnInit {
   dataSource: any;
   initData: any = [];
   importDriverPopup: boolean = false;
-  displayedColumns: string[] = ['driverId','firstName','birthDate','consentStatus','action'];
+  displayedColumns: string[] = ['driverId','firstName','emailId','consentStatus','action'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   importDriverFormGroup: FormGroup;
@@ -176,25 +176,22 @@ export class DriverManagementComponent implements OnInit {
         driverId: "IN 0000000000000001",
         firstName: "Alan",
         lastName: "Berry",
-        birthDate: "01/01/1991", //----- MM/DD/YYYY
-        consentStatus: 'Opt-In',
-        salutation: "Mr"
+        emailId: "alanb@daf.com",
+        consentStatus: 'Opt-In'
       },
       {
         driverId: "I 0000000000000002",
         firstName: "Ritika",
         lastName: "Joshi",
-        birthDate: "02/02/1992",
-        consentStatus: 'Opt-Out',
-        salutation: "Ms"
+        emailId: "ritikaj@daf.com",
+        consentStatus: 'Opt-Out'
       },
       {
         driverId: "IN 0000000000000003",
         firstName: "Shanu",
         lastName: "Pol",
-        birthDate: "03/03/1993",
-        consentStatus: 'Opt-In',
-        salutation: "Mrs"
+        emailId: "shanup@daf.com",
+        consentStatus: 'Opt-In'
       }
     ];
   }
@@ -261,10 +258,9 @@ export class DriverManagementComponent implements OnInit {
     this.filelist.map((item: any) => {
       driverAPIData.push({
         driverId: item.DriverID,
-        salutation: item.Civility,
         firstName: item.FirstName,
         lastName: item.LastName,
-        birthDate: item.BirthDate ? item.BirthDate : '01/01/1931',
+        emailId: item.Email,
       });
     });
     console.log("Parse excel driver:: ", driverAPIData)
@@ -280,14 +276,13 @@ export class DriverManagementComponent implements OnInit {
       let driverId: any;
       let fname: any;
       let lname: any;
-      let salutation: any;
+      let emailId: any
       for (const [key, value] of Object.entries(item)) {
         //console.log(`${key}: ${value}`);
         switch(key){
           case "driverId":{
             let objData: any = driverId = this.driveIdValidation(value);  
             driverId = objData.status;
-            //console.log("driverId:: ", driverId)
             if(!driverId){
               item.failReason = objData.reason;
             }
@@ -296,7 +291,6 @@ export class DriverManagementComponent implements OnInit {
           case "firstName":{
             let objData: any = this.nameValidation(value, 30, 'firstName'); 
             fname = objData.status;
-            //console.log("fname:: ", fname)
             if(!fname){
               item.failReason = objData.reason;
             }
@@ -305,17 +299,15 @@ export class DriverManagementComponent implements OnInit {
           case "lastName":{
             let objData: any = this.nameValidation(value, 20, 'lastName'); 
             lname = objData.status;
-            //console.log("lname:: ", lname)
             if(!lname){
               item.failReason = objData.reason;
             }
             break;
           }
-          case "salutation":{
-            let objData: any = this.salutationValidation(value); 
-            salutation = objData.status;
-            //console.log("salutation:: ", salutation)
-            if(!salutation){
+          case "emailId":{
+            let objData: any = this.emailIdValidation(value); 
+            emailId = objData.status;
+            if(!emailId){
               item.failReason = objData.reason;
             }
             break;
@@ -323,7 +315,7 @@ export class DriverManagementComponent implements OnInit {
         }
       }
 
-      if(driverId && fname && lname && salutation){
+      if(driverId && fname && lname && emailId){
         validData.push(item);
       }
       else{
@@ -333,6 +325,27 @@ export class DriverManagementComponent implements OnInit {
     console.log("validData:: ", validData)
     console.log("invalidData:: ", invalidData)
     return { validDriverList: validData, invalidDriverList: invalidData };
+  }
+
+  emailIdValidation(value: any){
+    let obj: any = { status: true, reason: 'correct data'};
+    const regx = /[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}/;
+    if(!value || value == '' || value.length == 0){
+      obj.status = false;
+      obj.reason = 'Required emailId field';
+      return obj;  
+    }
+    if(value.length > 50){
+      obj.status = false;
+      obj.reason = 'EmailId length can not be (>50)';  
+      return obj;
+    }
+    if(!regx.test(value)){
+      obj.status = false;
+      obj.reason = 'Email id pattern invalid';  
+      return obj;
+    }
+    return obj;
   }
 
   driveIdValidation(value: any){
@@ -388,22 +401,6 @@ export class DriverManagementComponent implements OnInit {
     return obj;
   }
 
-  salutationValidation(value: any){
-    let obj: any = { status: true, reason: 'correct data'};
-    if(!value || value == '' || value.length == 0){
-      obj.status = false;
-      obj.reason = 'Required salutation field';  
-      return obj;
-    }
-    if(value != 'Mr' && value != 'Ms' && value != 'Mrs')
-    {
-      obj.status = false;
-      obj.reason = 'Incorrect salutation (Ms, Mr, Mrs)';  
-      return obj;
-    }
-    return obj;
-  }
-
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
@@ -424,7 +421,7 @@ export class DriverManagementComponent implements OnInit {
       confirmText: this.translationData.lblYes || "Yes"
     };
    
-    let name = `${row.salutation} ${row.firstName} ${row.lastName}`;
+    let name = `${row.firstName} ${row.lastName}`;
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
       if (res) {
@@ -511,6 +508,8 @@ export class DriverManagementComponent implements OnInit {
     this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
   }
 
-  showDriverListPopup(driverList: any){ }
+  showDriverListPopup(driverList: any){ 
+    
+  }
 
 }

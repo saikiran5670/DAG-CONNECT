@@ -4,19 +4,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.organization.repository;
-using net.atos.daf.ct2.organizationservice.Services;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.organization;
 using net.atos.daf.ct2.audit.repository;  
 using net.atos.daf.ct2.accountpreference;
-using net.atos.daf.ct2.vehicle.repository;
 using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.group;
+using net.atos.daf.ct2.vehicle.repository;
+using Microsoft.Net.Http.Headers;
+using Microsoft.AspNetCore.Http;
+using AccountComponent = net.atos.daf.ct2.account;
+using Identity = net.atos.daf.ct2.identity;
+using AccountPreference = net.atos.daf.ct2.accountpreference;
+//using Swashbuckle.AspNetCore.Swagger;
+//using Microsoft.OpenApi.Models;
 
 namespace net.atos.daf.ct2.organizationservice
 {
@@ -47,14 +53,28 @@ namespace net.atos.daf.ct2.organizationservice
           // var connectionString="Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y\\97;Ssl Mode=Require;";
             //IDataAccess dataAccess = new PgSQLDataAccess(connectionString);           
             services.AddSingleton(dataAccess); 
-             services.AddTransient<IAuditTraillib,AuditTraillib>(); 
-             services.AddTransient<IAuditLogRepository, AuditLogRepository>(); 
+            services.AddTransient<IAuditTraillib,AuditTraillib>(); 
+            services.AddTransient<IAuditLogRepository, AuditLogRepository>(); 
             services.AddTransient<IOrganizationManager,OrganizationManager>();
             services.AddTransient<IOrganizationRepository, OrganizationRepository>();
             services.AddTransient<IPreferenceManager,PreferenceManager>();
             services.AddTransient<IAccountPreferenceRepository, AccountPreferenceRepository>();
-             services.AddTransient<IVehicleManager,VehicleManager>();
             services.AddTransient<IVehicleRepository, VehicleRepository>();
+            services.AddTransient<IVehicleManager,VehicleManager>();
+            //services.AddTransient<IVehicleManagerRepository, VehicleManagerRepository>();
+
+             services.AddTransient<Identity.IAccountManager,Identity.AccountManager>();
+            services.AddTransient<Identity.ITokenManager,Identity.TokenManager>();
+            services.AddTransient<Identity.IAccountAuthenticator,Identity.AccountAuthenticator>();            
+            services.AddTransient<AccountComponent.IAccountIdentityManager,AccountComponent.AccountIdentityManager>();            
+           // services.AddTransient<AccountPreference.IPreferenceManager,AccountPreference.PreferenceManager>();
+            //services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();
+            services.AddTransient<AccountComponent.IAccountRepository,AccountComponent.AccountRepository>();
+            services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();   
+            services.AddTransient<IGroupManager,GroupManager>();
+            services.AddTransient<IGroupRepository, GroupRepository>();
+           
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
