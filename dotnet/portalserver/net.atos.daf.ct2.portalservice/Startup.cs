@@ -15,6 +15,7 @@ using Swashbuckle.AspNetCore.Swagger;
 
 using net.atos.daf.ct2.authenticationservice;
 using net.atos.daf.ct2.accountservice;
+using net.atos.daf.ct2.featureservice;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -49,7 +50,11 @@ namespace net.atos.daf.ct2.portalservice
             services.AddGrpcClient<AccountService.AccountServiceClient>(o =>
             {
                 o.Address = new Uri(accountservice);
-            });   
+            });
+            services.AddGrpcClient<FeatureService.FeatureServiceClient>(o =>
+            {
+                o.Address = new Uri(accountservice);
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portal Service", Version = "v1" });
