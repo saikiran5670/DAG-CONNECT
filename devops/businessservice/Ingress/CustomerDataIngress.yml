@@ -83,7 +83,11 @@ spec:
       - backend:
           serviceName: portalservicerest
           servicePort: 80
-        path: /account   
+        path: /account  
+      - backend:
+          serviceName: portalservicerest
+          servicePort: 80
+        path: /demopoc 
       - backend:
           serviceName: uimanagement-service
           servicePort: 80
