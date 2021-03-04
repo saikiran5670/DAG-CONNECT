@@ -35,7 +35,7 @@ spec:
             topologyKey: "kubernetes.io/hostname"
       containers:
       - name: authenticationservice-poc-container
-        image: #{acrurl}#/authenticationservicegrpc_poc
+        image: #{acrurl}#/authenticationservice-grpc
         imagePullPolicy: "Always"
         securityContext:
           allowPrivilegeEscalation: false
