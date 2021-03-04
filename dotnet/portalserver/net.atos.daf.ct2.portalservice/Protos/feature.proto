@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+
+
+option csharp_namespace = "net.atos.daf.ct2.featureservice";
+
+package feature;
+
+
+enum Responcecode{
+  Success = 0;
+  Failed = 1;
+}
+
+// The greeting service definition.
+service FeatureService {  
+  rpc Create (FeatureRequest) returns (FeatureResponce);
+  rpc CreateFeatureSet (FetureSetRequest) returns (FeatureSetResponce);
+  rpc Update (FeatureRequest) returns (FeatureResponce);  
+  rpc Delete (FeatureRequest) returns (FeatureResponce);
+  rpc GetFeatures (FeaturesFilterRequest) returns (FeaturesListResponce);
+
+}
+
+ message FeatureRequest
+  {
+    int32 Id = 1;
+    string Name= 2;
+    string Key =3;
+    string type= 4;
+    bool Active=5;
+    int32 data_attribute_set_id= 6;
+
+  }
+
+  message FeatureResponce
+  {
+  Responcecode Code=1;
+  string Message = 2;  
+}
+
+ message FeatureSetResponce
+  {
+  Responcecode Code=1;
+  string Message = 2;  
+}
+  
+  message FeaturesFilterRequest
+  {
+  int32 level=1;
+  int32 FeatureSetID=2;
+  int32 RoleID=3;
+  int32 OrganizationID=4;
+  }
+
+  message FeaturesResponce
+  {
+    int32 Id = 1;
+    string Name= 2;
+    string Key =3;
+    string type= 4;
+    bool Active=5;
+    int32 data_attribute_set_id= 6;
+
+  }
+
+  message FetureSetRequest
+  {
+    int32 FeatureSetID = 1;
+    string Name= 2;
+    string Key =3;
+    string type= 4;
+    bool Active=5;
+    int32 data_attribute_set_id= 6;
+    repeated int32 Features = 7;
+    int32 Created_by= 8;
+  }
+
+  
+
+  message FeaturesListResponce
+  {
+    Responcecode code=1;
+    string message = 2;
+    repeated FeatureRequest Features = 3;
+  }

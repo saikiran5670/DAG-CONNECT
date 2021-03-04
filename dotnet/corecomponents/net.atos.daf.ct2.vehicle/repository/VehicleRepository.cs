@@ -136,8 +136,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                    ,tcu_version 
                                    ,is_tcu_register 
                                    ,reference_date 
-                                   ,vehicle_property_id 
-                                   ,vehicle_communication_state 
+                                   ,vehicle_property_id                                   
                                    ,created_at 
                                    ,model_id
                                    from master.vehicle 
@@ -148,14 +147,14 @@ namespace net.atos.daf.ct2.vehicle.repository
             if (vehiclefilter.VehicleId > 0)
             {
                 parameter.Add("@id", vehiclefilter.VehicleId);
-                QueryStatement = QueryStatement + " and id  = @id";
+                QueryStatement = QueryStatement + " and id=@id";
 
             }
             // organization id filter
             if (vehiclefilter.OrganizationId > 0)
             {
                 parameter.Add("@organization_id", vehiclefilter.OrganizationId);
-                QueryStatement = QueryStatement + " and organization_id  = @organization_id";
+                QueryStatement = QueryStatement + " and organization_id=@organization_id";
 
             }
 
@@ -178,7 +177,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             if (vehiclefilter.Status != VehicleStatusType.None && vehiclefilter.Status != 0)
             {
                 parameter.Add("@status", (char)vehiclefilter.Status);
-                QueryStatement = QueryStatement + " and status  = @status";
+                QueryStatement = QueryStatement + " and status=@status";
 
             }
 

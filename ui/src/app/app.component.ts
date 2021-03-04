@@ -60,7 +60,9 @@ export class AppComponent {
     translationdataupload: 'Translation Data Upload',
     featuremanagement: 'Feature Management',
     packagemanagement: 'Package Management',
-    relationshipmanagement: 'Relationship management'
+    subscriptionmanagement: 'Subscription Management',
+    relationshipmanagement: 'Relationship management',
+    organisationrelationship: 'Organisation Relationship'
   }
   public menuStatus = {
     dashboard : {
@@ -103,7 +105,9 @@ export class AppComponent {
         translationdataupload: 'Translation Data Upload',
         featuremanagement: 'Feature Management',
         packagemanagement: 'Package Management',
-        relationshipmanagement: 'Relationship Management'
+        subscriptionmanagement: 'Subscription Management',
+        relationshipmanagement: 'Relationship Management',
+        organisationrelationship: 'Organisation Relationship'
       }
     },
     tachograph : {
@@ -266,7 +270,9 @@ export class AppComponent {
       lblTranslationDataUpload: "Translation Data Upload",
       lblFeatureManagement: "Feature Management",
       lblPackageManagement: "Package Management",
+      lblSubscriptionmanagement: "Subscription Management",
       lblRelationshipManagement: 'Relationship Management',
+      lblOrganisationRelationship: 'Organisation Relationship',
       lblLiveFleet: "Live Fleet",
       lblLogBook: "Log Book",
       lblTripReport: "Trip Report",

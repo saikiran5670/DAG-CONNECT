@@ -63,8 +63,8 @@ namespace net.atos.daf.ct2.accountservice
             account.Password = request.Password;
             account.Organization_Id = request.OrganizationId;
             account.DriverId = request.DriverId;
-            account.StartDate = DateTime.Now;
-            account.EndDate = null;
+            if (request.StartDate > 0) account.StartDate = request.StartDate;
+            if (request.EndDate > 0) account.EndDate = request.EndDate;            
             account.PreferenceId = request.PreferenceId;
             account.BlobId = request.BlobId;
             if(request.CreatedAt > 0)
@@ -122,8 +122,7 @@ namespace net.atos.daf.ct2.accountservice
             preference.CurrencyId = request.CurrencyId;
             preference.UnitId = request.UnitId;
             preference.VehicleDisplayId = request.VehicleDisplayId;
-            preference.DateFormatTypeId = request.DateFormatId;
-            // preference.DriverId = request.DriverId;
+            preference.DateFormatTypeId = request.DateFormatId;            
             preference.TimeFormatId = request.TimeFormatId;
             preference.LandingPageDisplayId = request.LandingPageDisplayId;
             return preference;
@@ -138,8 +137,7 @@ namespace net.atos.daf.ct2.accountservice
             request.CurrencyId = entity.CurrencyId;
             request.UnitId = entity.UnitId;
             request.VehicleDisplayId = entity.VehicleDisplayId;
-            request.DateFormatId = entity.DateFormatTypeId;
-            // request.DriverId = entity.DriverId;
+            request.DateFormatId = entity.DateFormatTypeId;            
             request.TimeFormatId = entity.TimeFormatId;
             request.LandingPageDisplayId = entity.LandingPageDisplayId;
             return request;
@@ -178,6 +176,14 @@ namespace net.atos.daf.ct2.accountservice
             }            
             entity.ObjectType = group.ObjectType.AccountGroup;
             entity.OrganizationId = request.OrganizationId;
+            if (request.CreatedAt > 0)
+            {
+                entity.CreatedAt = (long)request.CreatedAt;
+            }
+            else
+            {
+                entity.CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            }
             entity.GroupRef = new List<Group.GroupRef>();            
             return entity;
         }
@@ -205,6 +211,7 @@ namespace net.atos.daf.ct2.accountservice
             //request.ObjectType = entity.ObjectType.ToString();
             request.OrganizationId = entity.OrganizationId;
             request.GroupRefCount = entity.GroupRefCount;
+            request.CreatedAt = entity.CreatedAt.Value;
             if (entity.GroupRef != null)
             {
                 foreach (var item in entity.GroupRef)

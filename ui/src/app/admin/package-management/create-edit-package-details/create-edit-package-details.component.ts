@@ -20,12 +20,12 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   breadcumMsg: any = ''; 
-  displayedColumns: string[] = ['select'];
+  displayedColumns: string[] = ['select', 'featureName'];
   dataSource: any;
   packageFormGroup: FormGroup;
   initData: any = [];
   selectionForFeatures = new SelectionModel(true, []);
-  selectedSetType: any = 'org VIN';
+  selectedType: any = 'org VIN';
   selectedStatus: any = 'active';
   
  
@@ -46,27 +46,27 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     if(this.actionType == 'view' || this.actionType == 'edit' ){
       this.setDefaultValue();
     }
-    this.loadGridData(this.featureList);
+    // this.loadGridData(this.featureList);
   }
 
-  loadGridData(tableData: any){
-    let selectedfeaturesList: any = [];
-    if(this.actionType == 'view'){
-      tableData.forEach((row: any) => {
-        let search = this.selectedElementData.features.filter((item: any) => item.id == row.id);
-        if (search.length > 0) {
-          selectedfeaturesList.push(row);
-        }
-      });
-      tableData = selectedfeaturesList;
-      this.displayedColumns = ['featureName'];
-    }
-    this.initData = tableData;
-    this.updateDataSource(tableData);
-    if(this.actionType == 'edit' ){
-      this.selectTableRows();
-    }
-  }
+  // loadGridData(tableData: any){
+  //   let selectedfeaturesList: any = [];
+  //   if(this.actionType == 'view'){
+  //     tableData.forEach((row: any) => {
+  //       let search = this.selectedElementData.featureName.filter((item: any) => item.id == row.id);
+  //       if (search.length > 0) {
+  //         selectedfeaturesList.push(row);
+  //       }
+  //     });
+  //     tableData = selectedfeaturesList;
+  //     this.displayedColumns = ['featureName'];
+  //   }
+  //   this.initData = tableData;
+  //   this.updateDataSource(tableData);
+  //   if(this.actionType == 'edit' ){
+  //     this.selectTableRows();
+  //   }
+  // }
 
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
@@ -96,7 +96,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     this.packageFormGroup.get("name").setValue(this.selectedElementData.name);
     // this.packageFormGroup.get("type").setValue(this.selectedElementData.type);
     // this.packageFormGroup.get("feature").setValue(this.selectedElementData.setName);
-    this.selectedSetType = this.selectedElementData.setType.toLowerCase();
+    this.selectedType = this.selectedElementData.type.toLowerCase();
     this.selectedStatus = this.selectedElementData.status.toLowerCase();
     this.packageFormGroup.get("description").setValue(this.selectedElementData.description);
   }

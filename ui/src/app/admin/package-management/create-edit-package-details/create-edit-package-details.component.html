@@ -123,7 +123,7 @@
              <div style='padding: 20px; position: relative;'>
                 <mat-divider></mat-divider>
             </div>
-            <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+            <!-- <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectFeatures || 'Select Features' }}</span>
                 </div>
@@ -135,8 +135,8 @@
                       <span matPrefix><mat-icon>search</mat-icon></span>
                   </mat-form-field>
                 </div>
-            </div> 
-            <!-- <div class='margin-bottom-xlg'>
+            </div>  -->
+            <!-- <div class='margin-bottom-xlg' >
                 <mat-table [dataSource]="dataSource" class="table-items" matSort>
                   <ng-container matColumnDef="select">
                     <div>
@@ -155,7 +155,7 @@
                       </mat-cell>
                     </div>
                   </ng-container>
-                  <ng-container matColumnDef="features">
+                  <ng-container matColumnDef="featureName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatureName || 'Feature Name' }}</mat-header-cell>
                     <mat-cell *matCellDef="let row">
                       {{ row.featureName }}

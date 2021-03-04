@@ -6,41 +6,67 @@ package pacakge;
 
 service PackageService{
     rpc Create (PackageCreateRequest) returns (PackageResponse);
+    rpc Update (PackageUpdateRequest) returns (PackageResponse);
+    rpc Delete (PackageDeleteRequest) returns (PackageResponse);
+    rpc Get (GetPackageRequest) returns (GetPackageResponce);   
+    rpc Import (ImportPackageRequest) returns (ImportPackageResponce);    
 }
 
 message PackageResponse {
   Responsecode Code=1;
   string Message = 2;
 }
-message PackageCreateRequest {
-   int32 Id= 1;   
+
+message ImportPackageRequest
+{
+  repeated PackageCreateRequest  Packages=1;
+}
+
+message ImportPackageResponce
+{
+  repeated GetPackageRequest ImportResponse=1;
+  Responsecode Responsecode=2;
+   string Message = 3;
+   Responsecode Code=4;
+}
+message PackageCreateRequest {   
+    string Code=1;
+    int32 FeatureSetID=2;
+    repeated string Features =3;
+    string Name=4;
+    PackageType Type =5;
+    string Description=6;   
+    PackageStatus Status =7;
+  }
+  message PackageUpdateRequest { 
+    int32 Id=1;
     string Code=2;
-    int32 FeatureSetID =3;
+    int32 FeatureSetID=3;
     repeated string Features =4;
     string Name=5;
     PackageType Type =6;
-    string ShortDescription=7;
-    PackageDefault Default =8;
-    google.protobuf.Timestamp StartDate=9;
-    google.protobuf.Timestamp EndDate =10;
-    PackageStatus Status =11;
+    string Description=7;    
+    PackageStatus Status =8;
   }
-
-  message GetPackageResponce {  
+   message PackageDeleteRequest {
+    int32 Id = 1;  
+    }
+  message GetPackageRequest {  
     int32 Id=1;
     string Code= 2;
-    int32 FeatureSetID =3;
-    repeated  string  Features =4;
+    int32 FeatureSetID =3;    
+    repeated string Features =4;
     string Name=5;
     PackageType Type =6;
-    string ShortDescription=7;
-    PackageDefault Default =8;
-    google.protobuf.Timestamp StartDate=9;
-    google.protobuf.Timestamp EndDate =10;
-    PackageStatus Status =11;
+    string Description=7; 
+    PackageStatus Status =8;
 }
-
- enum PackageDefault
+message GetPackageResponce { 
+   Responsecode code=1;  
+  string message = 2;
+   repeated GetPackageRequest PacakageList=3;
+}
+    enum PackageDefault
     { 
         False = 0;
         True = 1;
@@ -48,8 +74,9 @@ message PackageCreateRequest {
     }
     enum PackageStatus
     {
-        Active =0;//'A'=0;
-        Inactive =1;// 'I'=1;
+        Inactive = 0;
+        Active = 1;
+       
     }
     enum PackageType
     {

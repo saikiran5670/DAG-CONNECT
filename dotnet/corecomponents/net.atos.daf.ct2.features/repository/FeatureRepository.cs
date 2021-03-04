@@ -222,8 +222,9 @@ namespace net.atos.daf.ct2.features.repository
 
          public async Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int feature_set_id)
          {
-             var QueryStatement = @"SELECT feature_id as id
-                                   FROM master.featuresetfeature
+             var QueryStatement = @"Select f.id,f.name,f.type,f.is_active,f.data_attribute_set_id,f.key,f.level,fs.feature_set_id from master.feature f
+	                                Left join master.featuresetfeature fS
+	                                on f.id=fs.feature_set_id
                                     Where feature_set_id = @feature_set_id
                                     ";
 

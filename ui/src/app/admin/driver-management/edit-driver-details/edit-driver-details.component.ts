@@ -15,29 +15,16 @@ export class EditDriverDetailsComponent implements OnInit {
   @Input() actionType: any;
   driverFormGroup: FormGroup;
   breadcumMsg: any = '';
-  salutationList: any = [
-    {
-      name: 'Mr'
-    },
-    {
-      name: 'Mrs'
-    },
-    {
-      name: 'Ms'
-    }
-  ];
   selectedConsentType: any = '';
-  startDate: any; //new Date(2021, 2, 31);
-  minDate: any = new Date(new Date().setFullYear(new Date().getFullYear() - 100)); // 100 years
+  duplicateEmailMsg: boolean = false;
 
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit() {
     this.driverFormGroup = this._formBuilder.group({
       driverId: new FormControl({value: null, disabled: true}),
-      birthDate: ['', []],
+      emailId: ['', [Validators.required, Validators.email]],
       consentStatus: ['', []],
-      salutation: ['', [Validators.required]],
       firstName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       lastName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
     },
@@ -55,9 +42,7 @@ export class EditDriverDetailsComponent implements OnInit {
 
   setDefaultData(){
     this.driverFormGroup.get('driverId').setValue(this.driverData.driverId);
-    this.startDate = new Date(this.driverData.birthDate);
-    this.driverFormGroup.get('birthDate').setValue(this.startDate);
-    this.driverFormGroup.get('salutation').setValue(this.driverData.salutation);
+    this.driverFormGroup.get('emailId').setValue(this.driverData.emailId);
     this.driverFormGroup.get('firstName').setValue(this.driverData.firstName);
     this.driverFormGroup.get('lastName').setValue(this.driverData.lastName);
     this.selectedConsentType = this.driverData.consentStatus;
@@ -83,7 +68,7 @@ export class EditDriverDetailsComponent implements OnInit {
   }
   
   onConfirm(){
-    console.log(this.driverFormGroup.controls)
+    //console.log(this.driverFormGroup.controls)
     this.backToPage.emit(false);
   }
 

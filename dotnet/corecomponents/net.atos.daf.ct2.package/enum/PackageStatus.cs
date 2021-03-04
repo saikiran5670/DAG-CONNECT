@@ -6,7 +6,7 @@ namespace net.atos.daf.ct2.package.ENUM
 {
     public enum PackageStatus
     {
-        Active ='A',
-        Inactive = 'I'
+        Active = 1,
+        Inactive = 0
     }
 }

@@ -1,0 +1,239 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+option csharp_namespace = "net.atos.daf.ct2.vehicleservice";
+
+package vehicle;
+
+// The greeting service definition.
+service VehicleService {
+  // Sends a greeting
+  rpc Create (VehicleCreateRequest) returns (VehicleCreateResponce);
+  rpc Update (VehicleRequest) returns (VehicleResponce);
+  rpc Get (VehicleFilterRequest) returns (VehicleListResponce);
+  rpc UpdateStatus (VehicleOptInOptOutRequest) returns (VehicleOptInOptOutResponce);
+  rpc CreateGroup (VehicleGroupRequest) returns (VehicleGroupResponce);
+  rpc UpdateGroup (VehicleGroupRequest) returns (VehicleGroupResponce);
+  rpc DeleteGroup (VehicleGroupIdRequest) returns (VehicleGroupResponce);
+  rpc GetGroupDetails (GroupFilterRequest) returns (VehicleGroupRefResponce);
+  rpc GetVehiclesByVehicleGroup (VehicleGroupIdRequest) returns (VehicleGroupRefResponce);
+  rpc GetOrganizationVehicleGroupdetails (OrganizationIdRequest) returns (OrgVehicleGroupListResponse);
+  rpc GetVehicleGroup (OrgvehicleIdRequest) returns (VehicleGroupDetailsResponse);
+  rpc GetVehiclesByAccountGroup (OrgAccountIdRequest) returns (VehicleGroupRefResponce);
+}
+
+enum VehicleStatusType{
+    None = 0;
+    OptIn = 1;
+    OptOut = 2;
+    Terminate = 3;
+    Ota = 4;
+}
+
+enum Type{
+  VehicleLevel = 0;
+  OrganizationLevel = 1;
+}
+
+enum Responcecode{
+  Success = 0;
+  Failed = 1;
+  Conflict = 2;
+  NotFound = 3;
+}
+
+enum ObjectType{
+  VehicleGroup = 0;
+  AccountGroup = 1;
+}
+
+enum GroupType{
+        Single = 0;
+        Group = 1;
+        Dynamic = 2;
+    }
+
+enum FunctionEnum{
+        All = 0;
+    }
+// The request message containing the vehicle details.
+message VehicleCreateRequest {
+  int32 Id=1;
+  google.protobuf.Int32Value OrganizationId=2;
+  string Name = 3;
+  string Vin=4;
+  string LicensePlateNumber=5;
+  string Status=6;
+}
+
+message VehicleRequest {
+  int32 Id=1;
+  string Name = 2;
+  string LicensePlateNumber=3;
+}
+
+
+// The response message containing the greetings.
+message VehicleResponce {
+  Responcecode code=1;
+  string message = 2;
+  VehicleRequest vehicle=3;
+}
+
+message VehicleCreateResponce {
+  Responcecode code=1;
+  string message = 2;
+  VehicleCreateRequest vehicle=3;
+}
+
+message VehicleFilterRequest {
+  int32 VehicleId = 1;
+  int32 OrganizationId = 2;
+  string VehicleIdList = 7;
+  string VIN = 8;
+  VehicleStatusType Status=9;
+}
+
+message VehicleDetails {
+  int32 Id=1;
+  google.protobuf.Int32Value Organizationid=2;
+  string Name = 3;
+  string Vin=4;
+  string LicensePlateNumber=5;
+VehicleStatusType Status=6;
+google.protobuf.StringValue StatusDate=7;
+google.protobuf.StringValue TerminationDate=8;
+google.protobuf.StringValue Vid=9;
+google.protobuf.StringValue Type=10;
+google.protobuf.StringValue ModelId=11;
+google.protobuf.StringValue TcuId=12;
+google.protobuf.StringValue Tcu_Serial_Number=13;
+google.protobuf.StringValue Tcu_Brand=14;
+google.protobuf.StringValue Tcu_Version=15;
+bool Is_Tcu_Register=16;
+google.protobuf.StringValue reference_date=17;
+}
+
+message VehicleListResponce {
+  Responcecode code=1;
+  string message = 2;
+  repeated VehicleDetails vehicles = 3;
+}
+
+message VehicleOptInOptOutRequest{
+  int32 Refid=1;
+  int32 Accountid=2;
+  VehicleStatusType Status=3;
+  google.protobuf.Timestamp StatusDate=4;
+  Type OptInOptOutType=5;
+}
+
+message VehicleOptInOptOutResponce{
+  Responcecode code=1;
+  string message = 2;
+}
+
+message VehicleGroupRequest{
+  int32 Id=1;
+  string Name= 2; 
+  ObjectType ObjectType = 3;
+  string GroupType = 4;
+  string Argument = 5;
+  FunctionEnum FunctionEnum = 6;
+  int32 OrganizationId = 7;
+  int32 RefId = 8;
+  string Description= 9;
+  repeated VehicleListResquest GroupRef = 10;
+  bool Exists=11;
+}
+
+message VehicleListResquest{
+  
+  int32 Group_Id = 1;
+  int32 Ref_Id = 2;
+}
+
+message VehicleGroupIdRequest{
+  int32 Group_Id = 1;
+}
+
+message VehicleGroupResponce{
+  Responcecode code=1;
+  string message = 2;
+  VehicleGroupRequest VehicleGroup=3; 
+}
+
+
+message GroupFilterRequest{
+  int32 Id=1;
+  int32 OrganizationId = 2;
+  bool VehiclesGroup = 3;
+  bool Vehicles = 4;
+  repeated int32 GroupIds = 5;
+}
+
+message VehicleGroupRefDetails{
+  int32 Id=1;
+  string Name= 2; 
+  string VIN= 3; 
+  string License_Plate_Number= 4;
+  google.protobuf.StringValue ModelId= 5;
+  int32 VehicleCount= 6;
+  VehicleStatusType Status=7;
+  bool IsVehicleGroup=8;
+  google.protobuf.Int32Value OrganizationId=9;
+  string Description=10;
+  
+}
+
+message VehicleGroupRefResponce{
+  repeated VehicleGroupRefDetails GroupRefDetails = 1;
+  Responcecode code=2;
+  string message = 3;
+}
+
+message OrganizationIdRequest {
+  int32 OrganizationId = 1;
+}
+
+message OrgVehicleGroupDetails{
+ int32 VehicleGroupId =1;
+ string VehicleGroupName =2;
+ int32 VehicleCount =3;
+ int32 UserCount =4;
+ bool IsGroup =5;
+}
+
+message OrgVehicleGroupListResponse{
+ repeated OrgVehicleGroupDetails OrgVehicleGroupList = 1;
+  Responcecode code=2;
+  string message = 3;
+}
+
+message OrgvehicleIdRequest {
+  int32 OrganizationId = 1;
+  int32 VehicleId = 2;
+}
+
+message VehicleGroupDetails {
+  int32 Id = 1;
+  int32 Group_Id = 2;
+  string Name =3;
+}
+
+
+message VehicleGroupDetailsResponse {
+  repeated VehicleGroupDetails vehicleGroups = 1;
+  Responcecode code= 2;
+  string message = 3;
+ 
+}
+
+message OrgAccountIdRequest {
+  int32 OrganizationId = 1;
+  int32 AccountGroupId = 2;
+}
+
+

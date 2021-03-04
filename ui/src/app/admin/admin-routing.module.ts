@@ -11,7 +11,9 @@ import { VehicleAccountAccessRelationshipComponent } from './vehicle-account-acc
 import { TranslationDataUploadComponent } from './translation-data-upload/translation-data-upload.component';
 import { FeatureManagementComponent } from './feature-management/feature-management.component';
 import { PackageManagementComponent } from './package-management/package-management.component';
+import { SubscriptionManagementComponent } from './subscription-management/subscription-management.component';
 import { RelationshipManagementComponent } from './relationship-management/relationship-management.component';
+import { OrganisationRelationshipComponent } from './organisation-relationship/organisation-relationship.component';
 
 const routes: Routes = [
   {
@@ -31,7 +33,9 @@ const routes: Routes = [
       { path: "translationdataupload", component: TranslationDataUploadComponent},
       { path: "featuremanagement", component: FeatureManagementComponent},
       { path: 'packagemanagement', component: PackageManagementComponent },
-      { path: 'relationshipmanagement', component: RelationshipManagementComponent }
+      { path: 'subscriptionmanagement', component: SubscriptionManagementComponent },
+      { path: 'relationshipmanagement', component: RelationshipManagementComponent },
+      { path: 'organisationrelationship', component: OrganisationRelationshipComponent }
     ],
   },
 ];
