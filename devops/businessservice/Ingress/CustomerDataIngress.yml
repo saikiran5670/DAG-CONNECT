@@ -85,6 +85,38 @@ spec:
           servicePort: 80
         path: /account
       - backend:
+          serviceName: portalservicerest
+          servicePort: 80
+        path: /authentication
+      - backend:
+          serviceName: portalservicerest
+          servicePort: 80
+        path: /package
+      - backend:
+          serviceName: portalservicerest
+          servicePort: 80
+        path: /feature
+      - backend:
+          serviceName: portalservicerest
+          servicePort: 80
+        path: /organization
+      - backend:
+          serviceName: portalservicerest
+          servicePort: 80
+        path: /role
+      - backend:
+          serviceName: portalservicerest
+          servicePort: 80
+        path: /vehicle
+      - backend:
+          serviceName: portalservicerest
+          servicePort: 80
+        path: /audit
+      - backend:
+          serviceName: portalservicerest
+          servicePort: 80
+        path: /translation
+      - backend:
           serviceName: applicationservice
           servicePort: 80
         path: /  

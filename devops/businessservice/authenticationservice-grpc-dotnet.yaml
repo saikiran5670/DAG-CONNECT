@@ -72,8 +72,8 @@ steps:
   inputs:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
-    dockerFile: dotnet/AuthenticationServicegRPC_Dockerfile_POC
-    imageName: authenticationservice_grpc
+    dockerFile: dotnet/AuthenticationService_Dockerfile
+    imageName: authenticationservice-grpc
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -81,5 +81,5 @@ steps:
     azureSubscription: $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
-    imageName: authenticationservice_grpc
+    imageName: authenticationservice-grpc
 
