@@ -111,7 +111,7 @@ namespace net.atos.daf.ct2.package.repository
                             parameter.Add("@packagecode", package.Code);
                             parameter.Add("@feature_set_id", package.FeatureSetID);
                             parameter.Add("@name", package.Name);
-                            parameter.Add("@type", (char)package.Type);
+                            parameter.Add("@type", package.Type);
                             parameter.Add("@description", package.Description);
                             //parameter.Add("@is_default", Convert.ToBoolean(package.Default));                         
                             parameter.Add("@is_active", Convert.ToBoolean(package.Status));
