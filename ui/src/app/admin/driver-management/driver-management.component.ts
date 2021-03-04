@@ -58,6 +58,8 @@ export class DriverManagementComponent implements OnInit {
     }
   ];
   selectedConsentType: any = ''; 
+  importedDriverlist: any = [];
+  rejectedDriverList: any = [];
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService, private translationService: TranslationService) { 
       this.defaultTranslation();
@@ -179,7 +181,7 @@ export class DriverManagementComponent implements OnInit {
         salutation: "Mr"
       },
       {
-        driverId: "IN 0000000000000002",
+        driverId: "I 0000000000000002",
         firstName: "Ritika",
         lastName: "Joshi",
         birthDate: "02/02/1992",
@@ -244,10 +246,10 @@ export class DriverManagementComponent implements OnInit {
 
 
   importDrivers(){ 
-    this.importDriverPopup = true;
     this.userGrpName = 'Test User Group' ; //this.importDriverFormGroup.controls.userGroup.value;
     if(this.filelist.length > 0){
       this.validateExcelFileField();
+      this.importDriverPopup = true;
     }else{
       console.log("Empty File...");
     }
@@ -255,7 +257,7 @@ export class DriverManagementComponent implements OnInit {
 
   validateExcelFileField(){
     let driverAPIData: any = [];
-    //-- Parse driver data--- //
+    //--- Parse driver data ---//
     this.filelist.map((item: any) => {
       driverAPIData.push({
         driverId: item.DriverID,
@@ -266,8 +268,9 @@ export class DriverManagementComponent implements OnInit {
       });
     });
     console.log("Parse excel driver:: ", driverAPIData)
-    let finalList = this.validateFields(driverAPIData);
-    console.log("Final list:: ", finalList)
+    let finalList: any = this.validateFields(driverAPIData);
+    this.importedDriverlist = finalList.validDriverList;
+    this.rejectedDriverList = finalList.invalidDriverList;
   }
 
   validateFields(driverList: any){
@@ -329,7 +332,7 @@ export class DriverManagementComponent implements OnInit {
     });
     console.log("validData:: ", validData)
     console.log("invalidData:: ", invalidData)
-    return validData;
+    return { validDriverList: validData, invalidDriverList: invalidData };
   }
 
   driveIdValidation(value: any){
@@ -506,6 +509,17 @@ export class DriverManagementComponent implements OnInit {
       consentType: consentType
     }
     this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
+  }
+
+  showDriverListPopup(driverList: any){
+  //   const dialogConfig = new MatDialogConfig();
+  //   dialogConfig.disableClose = true;
+  //   dialogConfig.autoFocus = true;
+  //   dialogConfig.data = {
+  //     translationData: this.translationData,
+  //     driverList: driverList
+  //   }
+  //   this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
   }
 
 }
