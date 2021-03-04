@@ -1,300 +1,259 @@
 using System;
 using System.Threading.Tasks;
-using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.organization.entity;
 using net.atos.daf.ct2.organization;
-using AccountPreferenceComponent = net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.audit;
-using net.atos.daf.ct2.audit.repository;
-using System.Collections.Generic;
-using net.atos.daf.ct2.vehicle.repository;
+using Preference = net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.vehicle;
-namespace net.atos.daf.ct2.organizationservice.Services
+using AccountComponent = net.atos.daf.ct2.account;
+using Grpc.Core;
+using net.atos.daf.ct2.audit.Enum;
+using net.atos.daf.ct2.organizationservice.entity;
+namespace net.atos.daf.ct2.organizationservice
 {
     public class OrganizationManagementService : OrganizationService.OrganizationServiceBase
     {
-      //  private readonly ILogger<GreeterService> _logger;
-        private readonly ILogger _logger;        
-        private readonly IAuditLogRepository _IAuditLogRepository;       
+      
+        private readonly ILogger _logger;                
         private readonly IAuditTraillib _AuditTrail;      
+        private readonly IAuditTraillib auditlog;
         private readonly IOrganizationManager organizationtmanager;
         private readonly IPreferenceManager preferencemanager;
-         private readonly IVehicleManager vehicleManager;
-
+        private readonly IVehicleManager vehicleManager;
+        AccountComponent.IAccountIdentityManager accountIdentityManager;
+      
+       private readonly EntityMapper _mapper;
+        private string FK_Constraint = "violates foreign key constraint";
         
-        public OrganizationManagementService(ILogger<OrganizationManagementService> logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager)
+        public OrganizationManagementService(ILogger<OrganizationManagementService> logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager,IAuditTraillib _auditlog)
         {
             _logger = logger;
             _AuditTrail = AuditTrail;
             organizationtmanager = _organizationmanager;
             preferencemanager=_preferencemanager;
             vehicleManager=_vehicleManager;
+            auditlog = _auditlog;
+            _mapper = new EntityMapper();
         }
-        public override Task<OrganizationResponse> Create(OrganizationCreateRequest request, ServerCallContext context)
-        {
+
+       public override async Task<OrganizationData> Create(OrgRequest request, ServerCallContext context)
+        {             
             try
-            {   
-                Organization organization = new Organization();
-                organization.OrganizationId = request.OrganizationId;
-                organization.Type = request.Type;
-                organization.Name = request.Name;
-                organization.AddressType = request.AddressType;
-                organization.AddressStreet = request.AddressStreet;                
-                organization.AddressStreetNumber = request.AddressStreetNumber;
-                organization.PostalCode = request.PostalCode;
-                organization.City = request.City;
-                organization.CountryCode = request.CountryCode;
-                organization.ReferencedDate = request.ReferencedDate;
-                organization.OptOutStatus = request.OptOutStatus;
-                organization.OptOutStatusChangedDate = request.OptOutStatusChangedDate;
-                organization.IsActive = request.IsActive;
-                
-                organization = organizationtmanager.Create(organization).Result;
-
-                 AccountPreferenceComponent.AccountPreference accountPreference=new AccountPreferenceComponent.AccountPreference();
-                 accountPreference.RefId=organization.Id;
-                 accountPreference.PreferenceType=GetPreferenceType(request.PreferenceType);                 
-                 accountPreference.LanguageId= request.LanguageId;
-                 accountPreference.TimezoneId= request.TimezoneId;
-                 accountPreference.CurrencyId=request.CurrencyType;
-                 accountPreference.UnitId=request.UnitType;
-                 accountPreference.TimeFormatId=request.TimeFormatId;
-                 accountPreference.VehicleDisplayId=request.VehicleDisplayType;
-                 accountPreference.DateFormatTypeId=request.DateFormatType;
-                 accountPreference.DriverId= string.Empty;
-                 accountPreference.Active= request.IsActive;
-                 accountPreference.LandingPageDisplayId= request.LandingPageDisplayId;              
-
-                 accountPreference = preferencemanager.Create(accountPreference).Result;
-                
-                return Task.FromResult(new OrganizationResponse
-                {
-                    Message = "Organization Created " + organization.Id
-                });
-            }
+            {                 
+                Organization organization = new Organization();      
+                OrganizationData response = new OrganizationData();     
+                organization.OrganizationId=request.OrgId;
+                organization.Type=request.Type;
+                organization.Name=request.Name;
+                organization.AddressType=request.AddressType;
+                organization.AddressStreet=request.Street;
+                organization.AddressStreetNumber=request.StreetNumber;
+                organization.City=request.City;
+                organization.CountryCode=request.CountryCode;
+                organization.reference_date=Convert.ToDateTime(request.ReferenceDate);
+                organization = await organizationtmanager.Create(organization);
+                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Component", "Organization Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Organization Create", 1, 2, organization.Id.ToString());
+                response.Code = Responcecode.Success;
+                response.Message = "Created";
+                request.Id= organization.Id;
+                response.Organization = request;
+                return await Task.FromResult(response);
+             }
             catch (Exception ex)
-            {
-                return Task.FromResult(new OrganizationResponse
+            {              
+                _logger.LogError("Orgganization Service: Create : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new OrganizationData
                 {
-                    Message = "Exception " + ex.Message
+                    Code = Responcecode.Failed,
+                    Message = "Organization Creation failed due to - " + ex.Message,
+                    Organization = null
                 });
             }
-        }    
-         public override Task<OrganizationResponse> Update(OrganizationUpdateRequest request, ServerCallContext context)
-        {
-            try
-            {
-                Organization organization = new Organization();
-                organization.Id = request.Id;
-                organization.OrganizationId = request.OrganizationId;
-                organization.Type = request.Type;
-                organization.Name = request.Name;
-                organization.AddressType = request.AddressType;
-                organization.AddressStreet = request.AddressStreet;                
-                organization.AddressStreetNumber = request.AddressStreetNumber;
-                organization.PostalCode = request.PostalCode;
-                organization.City = request.City;
-                organization.CountryCode = request.CountryCode;
-                organization.ReferencedDate = request.ReferencedDate;
-                organization.OptOutStatus = request.OptOutStatus;
-                organization.OptOutStatusChangedDate = request.OptOutStatusChangedDate;
-                organization.IsActive = request.IsActive;
-                
-                organization = organizationtmanager.Update(organization).Result;
+        }   
 
-                 AccountPreferenceComponent.AccountPreference accountPreference=new AccountPreferenceComponent.AccountPreference();
-                 accountPreference.RefId=organization.Id;
-                 accountPreference.PreferenceType=GetPreferenceType(request.PreferenceType);                 
-                 accountPreference.LanguageId= request.LanguageId;
-                 accountPreference.TimezoneId= request.TimezoneId;
-                 accountPreference.CurrencyId=request.CurrencyType;
-                 accountPreference.UnitId=request.UnitType;
-                 accountPreference.VehicleDisplayId=request.VehicleDisplayType;
-                 accountPreference.DateFormatTypeId=request.DateFormatType;
-                 accountPreference.DriverId= string.Empty;
-                 accountPreference.Active= request.IsActive;
-                 accountPreference.TimeFormatId=request.TimeFormatId;
-                 accountPreference.LandingPageDisplayId= request.LandingPageDisplayId;   
-                 
-                 accountPreference = preferencemanager.Update(accountPreference).Result;
-
-                return Task.FromResult(new OrganizationResponse
-                {
-                    Message = "Organization Updated " + organization.OrganizationId
-                });
-            }
-            catch (Exception ex)
-            {
-                return Task.FromResult(new OrganizationResponse
-                {
-                    Message = "Exception " + ex.Message
-                });
-            }
-        }
-         public override Task<OrganizationResponse> Delete(OrganizationDeleteRequest request, ServerCallContext context)
-        {
+        public override async Task<OrganizationData> Update(OrgRequest request, ServerCallContext context)
+        {             
             try
-            {                                 
-                bool isOrgDeleted=organizationtmanager.Delete(request.Id).Result; 
-                bool isPreferenceDeleted=preferencemanager.Delete(request.Id).Result;
-                if(isOrgDeleted && isPreferenceDeleted) 
+            {                 
+                Organization organization = new Organization();      
+                OrganizationData response = new OrganizationData();     
+                organization.Id=request.Id;
+                organization.OrganizationId=request.OrgId;
+                organization.Type=request.Type;
+                organization.Name=request.Name;
+                organization.AddressType=request.AddressType;
+                organization.AddressStreet=request.Street;
+                organization.AddressStreetNumber=request.StreetNumber;
+                organization.City=request.City;
+                organization.CountryCode=request.CountryCode;
+                organization.reference_date=Convert.ToDateTime(request.ReferenceDate);                                            
+                var OrgId= await organizationtmanager.Update(organization);                  
+               
+                if(OrgId.Id==0)
                 {
-                return Task.FromResult(new OrganizationResponse
-                {
-                    Message = "Organization Deleted "
-                });
+                     response.Message ="Organization ID not exist"; 
                 }
-                else{
-                    return Task.FromResult(new OrganizationResponse
+                else if(OrgId.Id==-1)
                 {
-                    Message = "Organization Not Deleted " 
-                });
+                    response.Message ="This organization is already exist"; 
                 }
+                else
+                {
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Component", "Organization Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Organization Updated", 1, 2, organization.Id.ToString());
+                    response.Code = Responcecode.Success;
+                    response.Message = "Organization updated";
+                    request.Id= organization.Id;
+                    response.Organization = request;                     
+                }       
+
+                return await Task.FromResult(response);             
+            }
+            catch (Exception ex)
+            {              
+                _logger.LogError("Orgganization Service: Updated : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new OrganizationData
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Organization update failed due to - " + ex.Message,
+                    Organization = null
+                });
+            }
+        } 
+
+        public override async Task<OrganizationResponse> Get(IdRequest request, ServerCallContext context)
+        {
+           
+                net.atos.daf.ct2.organization.entity.OrganizationResponse  organization=new net.atos.daf.ct2.organization.entity.OrganizationResponse();
+                OrganizationResponse response=new OrganizationResponse();                
+                _logger.LogInformation("Get Organization .");    
+                organization = await organizationtmanager.Get(request.Id);
+                response.Id=organization.Id;
+                response.OrganizationId=organization.org_id;
+                response.Type=organization.type;
+                response.Name=organization.name;
+                response.AddressType=organization.address_type;
+                response.AddressStreetNumber=organization.street_number;
+                response.PostalCode=organization.postal_code;
+                response.City=organization.city;
+                response.CountryCode=organization.country_code;
+                response.IsActive=organization.is_active;                           
+                response.Referenced=organization.reference_date;  
+                return await Task.FromResult(response);           
+        }
+       public override async Task<AccountPreferenceResponse> CreatePreference(AccountPreference request, ServerCallContext context)
+        {
+            try
+            {
+                Preference.AccountPreference preference = new Preference.AccountPreference();
+                preference = _mapper.ToOrganizationPreference(request);
+                preference.Exists = false;
+                preference = await preferencemanager.Create(preference);
+                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Preference", 1, 2, Convert.ToString(preference.Id)).Result;
+                if (preference.Id.HasValue) request.Id = preference.Id.Value;
+                // response 
+                AccountPreferenceResponse response = new AccountPreferenceResponse();
+                response.Code = Responcecode.Success;
+                response.Message = "Preference Created";
+                response.AccountPreference = request;
+                return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
-               return Task.FromResult(new OrganizationResponse
+                _logger.LogError("Error in organization service:create preference with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new AccountPreferenceResponse
                 {
-                    Message = "Exception " + ex.Message
+                    Code = Responcecode.Failed,
+                    Message = "Preference Creation Faile due to - " + ex.Message,
+                    AccountPreference = null
                 });
-            }            
-        }
-
-        public override Task<GetOrganizationResponce> Get(GetOrganizationRequest request, ServerCallContext context)
-        {            
-           Organization  organization = organizationtmanager.Get(request.Id).Result;         
-           return Task.FromResult(new GetOrganizationResponce
-                {                 
-                    Id=organization.Id,
-                    OrganizationId=organization.OrganizationId,
-                    Type = organization.Type,
-                    Name = organization.Name,
-                    AddressType = organization.AddressType,
-                    AddressStreet = organization.AddressStreet,       
-                    AddressStreetNumber = organization.AddressStreetNumber,
-                    PostalCode = organization.PostalCode,
-                    City = organization.City,
-                    CountryCode = organization.CountryCode,
-                    Referenced =Convert.ToString(organization.Referenced),
-                    OptOutStatus = organization.OptOutStatus,
-                    OptOutStatusChanged = Convert.ToString(organization.OptOutStatusDate),
-                    IsActive = organization.IsActive,
-                    RefId=organization.RefId,                   
-                    Language=organization.Languagename,
-                    Timezone=organization.Timezone,
-                    Currency=organization.Currency,                   
-                    VehicleDisplay=organization.Vehicledisplay,
-                    DateFormatType=organization.Dateformat,
-                    DriverId=organization.DriverId,
-                    TimeFormat=organization.Timeformat,
-                    LandingPageDisplay=organization.LandingpageDisplay,
-                    Unit=organization.Unit,
-                    PrefType=organization.PrefType
-                });                           
-        }
-    //      private AccountPreferenceComponent.CurrencyType GetCurrencyType(int value)
-    //     {
-    //         AccountPreferenceComponent.CurrencyType currencyType;
-    //         switch(value)
-    //         {
-    //             case 0:
-    //             currencyType = AccountPreferenceComponent.CurrencyType.None;
-    //             break;
-    //             case 1:
-    //             currencyType = AccountPreferenceComponent.CurrencyType.Euro;
-    //             break;
-    //             case 2:
-    //             currencyType = AccountPreferenceComponent.CurrencyType.Usdollar;
-    //             break;
-    //             default:
-    //             currencyType = AccountPreferenceComponent.CurrencyType.PondSterling;
-    //             break;
-    //         }
-            
-    //         return currencyType;
-    //     }
-
-    //    private AccountPreferenceComponent.UnitType GetUnitType(int value)
-    //     {
-    //         AccountPreferenceComponent.UnitType unitType;
-    //         switch(value)
-    //         {
-    //             case 0:
-    //             unitType = AccountPreferenceComponent.UnitType.None;
-    //             break;
-                 
-    //             case 1:
-    //             unitType = AccountPreferenceComponent.UnitType.Metric;
-    //             break;
-    //             case 2:
-    //             unitType = AccountPreferenceComponent.UnitType.Imperial;
-    //             break;
-    //             default:
-    //             unitType = AccountPreferenceComponent.UnitType.Usimperial;
-    //             break;
-    //         }
-    //         return unitType;
-    //     }
-
-    //     private AccountPreferenceComponent.VehicleDisplayType GetVehicleDisplayType(int value)
-    //     {
-    //         AccountPreferenceComponent.VehicleDisplayType vehicleDisplayType;
-    //         switch(value)
-    //         {
-    //             case 0:
-    //             vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.None;
-    //             break;
-    //             case 1:
-    //             vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.RegistrationNumber;
-    //             break;
-    //             case 2:
-    //             vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.Name;
-    //             break;
-    //             default:
-    //             vehicleDisplayType = AccountPreferenceComponent.VehicleDisplayType.Vin;
-    //             break;
-    //         }
-    //         return vehicleDisplayType;
-    //     }
-    //     private AccountPreferenceComponent.DateFormatDisplayType GetDateFormatDisplayType(int value)
-    //     {
-    //         AccountPreferenceComponent.DateFormatDisplayType dateFormatDisplayType;
-    //         switch(value)
-    //         {
-    //             case 0:
-    //             dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.None;
-    //             break;
-    //             case 1:
-    //             dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.DayMonthYear;
-    //             break;
-    //             case 2:
-    //             dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.MonthDayYear;
-    //             break;
-    //             default:
-    //             dateFormatDisplayType = AccountPreferenceComponent.DateFormatDisplayType.YearMonthDay;
-    //             break;
-    //         }
-    //         return dateFormatDisplayType;
-    //     }
-
-         private AccountPreferenceComponent.PreferenceType GetPreferenceType(int value)
-         {
-            AccountPreferenceComponent.PreferenceType preferenceType;
-            switch(value)
-            {
-                case 0:
-                preferenceType = AccountPreferenceComponent.PreferenceType.None;
-                break;
-                case 1:
-                preferenceType = AccountPreferenceComponent.PreferenceType.Account;
-                break;
-                default:
-                preferenceType = AccountPreferenceComponent.PreferenceType.Organization;
-                break;             
             }
-            return preferenceType;
+        }
+        public override async Task<AccountPreferenceResponse> UpdatePreference(AccountPreference request, ServerCallContext context)
+        {
+            try
+            {
+                Preference.AccountPreference preference = new Preference.AccountPreference();
+                preference = _mapper.ToOrganizationPreference(request);
+                preference.Exists = false;
+                preference = await preferencemanager.Update(preference);
+                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Component", "Update Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Update Preference", 1, 2, Convert.ToString(preference.Id)).Result;
+                if (preference.Id.HasValue) request.Id = preference.Id.Value;
+                // response 
+                AccountPreferenceResponse response = new AccountPreferenceResponse();
+                response.Code = Responcecode.Success;
+                response.Message = "Preference Updated";
+                response.AccountPreference = request;
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in organization service:update preference with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new AccountPreferenceResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Preference update Faile due to - " + ex.Message,
+                    AccountPreference = null
+                });
+            }
+        }
+        public override async Task<AccountPreferenceResponse> DeletePreference(IdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var result = await preferencemanager.Delete(request.Id,Preference.PreferenceType.Account);
+                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Oeganization Component", "Delete Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Preference", 1, 2, Convert.ToString(request.Id)).Result;
+                // response 
+                AccountPreferenceResponse response = new AccountPreferenceResponse();
+                if (result)
+                {
+                    response.Code = Responcecode.Success;
+                    response.Message = "Preference Delete.";                    
+                }
+                else
+                {
+                    response.Code = Responcecode.NotFound;
+                    response.Message = "Preference Not Found.";
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in organization service:delete organization preference with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new AccountPreferenceResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Preference Deletion Faile due to - " + ex.Message,
+                    AccountPreference = null
+                });
+            }
+        }
+    
+        public override async Task<AccountPreferenceResponse> GetPreference(IdRequest request, ServerCallContext context)
+        {
+             try
+            {
+                Preference.AccountPreferenceFilter preferenceFilter = new Preference.AccountPreferenceFilter();
+                preferenceFilter.Id = request.Id;
+                preferenceFilter.PreferenceType = Preference.PreferenceType.Organization; // (Preference.PreferenceType)Enum.Parse(typeof(Preference.PreferenceType), request.Preference.ToString());
+                _logger.LogInformation("Get account preference.");
+                var result = await preferencemanager.Get(preferenceFilter);
+                // response 
+                AccountPreferenceResponse response = new AccountPreferenceResponse();
+                response.Code = Responcecode.Success;
+                response.Message = "Get";
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in organization service:get organization preference with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new AccountPreferenceResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Organization Preference Get Faile due to - " + ex.Message
+                });
+            }
         }
     }
 }

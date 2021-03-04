@@ -49,14 +49,14 @@ namespace net.atos.daf.ct2.packageservicerest.Controllers
                 var ObjPackage = new Package()
                 {
                     Code = request.code,
-                    Default = request.is_default,
+                    //Default = request.is_default,
                     FeatureSetID = request.feature_set.FeatureSetID,
-                   // Status = request.status,
+                    Status =request.is_active,
                     Name = request.name,
-                    Pack_Type = request.type,
-                    ShortDescription = request.short_description,
-                    StartDate = request.start_date,
-                    EndDate = request.end_date
+                    Type = request.type,
+                    Description = request.description,
+                   // StartDate = request.start_date,
+                   // EndDate = request.end_date
 
                 };
 

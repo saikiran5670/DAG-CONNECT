@@ -66,12 +66,12 @@ namespace net.atos.daf.ct2.organization.repository
                 parameter.Add("@City", organization.City);
                 parameter.Add("@CountryCode", organization.CountryCode);    
                 parameter.Add("@ReferencedDate",organization.reference_date != null ? UTCHandling.GetUTCFromDateTime(organization.reference_date.ToString()) : (long ?)null);               
-                parameter.Add("@OptOutStatus", organization.OptOutStatus);
-                parameter.Add("@OptOutStatusChangedDate",organization.optout_status_changed_date != null ? UTCHandling.GetUTCFromDateTime(organization.optout_status_changed_date.ToString()) : (long ?)null); 
+               // parameter.Add("@OptOutStatus", organization.OptOutStatus);
+              //  parameter.Add("@OptOutStatusChangedDate",organization.optout_status_changed_date != null ? UTCHandling.GetUTCFromDateTime(organization.optout_status_changed_date.ToString()) : (long ?)null); 
                // parameter.Add("@IsActive", organization.IsActive);               
 
-                string queryInsert= "insert into master.organization(org_id, type, name, address_type, street, street_number, postal_code, city,country_code,reference_date,optout_status,optout_status_changed_date,preference_id) " +
-                              "values(@OrganizationId, @OrganizationType, @Name, @AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@ReferencedDate, @OptOutStatus,@OptOutStatusChangedDate,NULL) RETURNING id";
+                string queryInsert= "insert into master.organization(org_id, type, name, address_type, street, street_number, postal_code, city,country_code,reference_date,preference_id) " +
+                              "values(@OrganizationId, @OrganizationType, @Name, @AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@ReferencedDate,NULL) RETURNING id";
 
                 var orgid =   await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);                
                 organization.Id = orgid;
@@ -164,14 +164,13 @@ namespace net.atos.daf.ct2.organization.repository
                 parameter.Add("@City", organization.City);
                 parameter.Add("@CountryCode", organization.CountryCode);    
                 parameter.Add("@ReferencedDate",organization.reference_date != null ? UTCHandling.GetUTCFromDateTime(organization.reference_date.ToString()) : (long ?)null);               
-                parameter.Add("@OptOutStatus", organization.OptOutStatus);
-                parameter.Add("@OptOutStatusChangedDate",organization.optout_status_changed_date != null ? UTCHandling.GetUTCFromDateTime(organization.optout_status_changed_date.ToString()) : (long ?)null); 
+               // parameter.Add("@OptOutStatus", organization.OptOutStatus);
+               // parameter.Add("@OptOutStatusChangedDate",organization.optout_status_changed_date != null ? UTCHandling.GetUTCFromDateTime(organization.optout_status_changed_date.ToString()) : (long ?)null); 
                 //parameter.Add("@IsActive", organization.IsActive);  
 
                 var queryUpdate = @"update master.organization set org_id=@OrganizationId, type=@OrganizationType, name=@Name,
                  address_type=@AddressType, street=@AddressStreet, street_number=@AddressStreetNumber,
-                  postal_code=@PostalCode, city=@City,country_code=@CountryCode,reference_date=@ReferencedDate,
-                  optout_status=@OptOutStatus,optout_status_changed_date=@OptOutStatusChangedDate
+                  postal_code=@PostalCode, city=@City,country_code=@CountryCode,reference_date=@ReferencedDate                  
 	                                 WHERE id = @Id RETURNING id;";
                 var orgid = await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameter);     
                 if (orgid<1)
@@ -195,7 +194,7 @@ namespace net.atos.daf.ct2.organization.repository
             try
             {                
                 var parameter = new DynamicParameters();
-                var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date , optout_status, optout_status_changed_date, is_active
+                var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date, is_active
 	                        FROM master.organization where id=@Id and is_active=true";               
                 parameter.Add("@Id", organizationId);
                 IEnumerable<OrganizationResponse> OrganizationDetails = await dataAccess.QueryAsync<OrganizationResponse>(query, parameter);
@@ -214,7 +213,7 @@ namespace net.atos.daf.ct2.organization.repository
                          objOrganization.country_code=item.country_code;         
                          objOrganization.is_active=item.is_active;                                
                          objOrganization.reference_date=UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(item.reference_date),"America/New_York", "yyyy-MM-ddTHH:mm:ss");
-                         objOrganization.optout_status_changed_date=UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(item.optout_status_changed_date),"America/New_York", "yyyy-MM-ddTHH:mm:ss");
+                        // objOrganization.optout_status_changed_date=UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(item.optout_status_changed_date),"America/New_York", "yyyy-MM-ddTHH:mm:ss");
                     } 
                     if (objOrganization.Id<1)             
                     {

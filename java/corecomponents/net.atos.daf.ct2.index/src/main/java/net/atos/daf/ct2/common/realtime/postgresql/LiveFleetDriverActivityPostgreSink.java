@@ -180,12 +180,18 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 		statement_driver.executeUpdate();
 
 		// Live Fleet CURRENT TRIP Activity
+		
+		System.out.println("trip activity starting and VEvt ID is --> " + varVEvtid);
+		
+		System.out.println("outside query");
 
 		if (varVEvtid != 4) {
 
 			stmt1.setString(1, varTripID);
 
 			ResultSet rs1 = stmt1.executeQuery();
+			
+			System.out.println("inside query");
 
 			while (rs1.next()) {
 
@@ -196,12 +202,15 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 				start_position_lattitude = rs1.getDouble("start_position_lattitude");
 
 				start_position_longitude = rs1.getDouble("start_position_longitude");
+				
+				System.out.println("inside query , result set data" +start_time_stamp);
 			}
 			rs1.close();
 		}
 
 		if (varTripID != null) {
 			statement_trip.setString(1, row.getValue().getDocument().getTripID()); // 1 tripID
+			System.out.println("trip id " +row.getValue().getDocument().getTripID());
 		}
 
 		else {
@@ -223,11 +232,12 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 
 		statement_trip.setString(5, (String) row.getValue().getDriverID());// 5 DriverID
 
-		if (varVEvtid == 4)
+		if (varVEvtid == 4) {
 			statement_trip.setDouble(6, row.getValue().getGpsLatitude()); // 6 start_position_lattitude
-
-		else
-			statement_trip.setDouble(6, start_position_lattitude);
+			System.out.println("start position lattitude " +row.getValue().getGpsLatitude());
+		}
+		else {
+			statement_trip.setDouble(6, start_position_lattitude);}
 
 		if (varVEvtid == 4)
 			statement_trip.setDouble(7, row.getValue().getGpsLongitude()); // 7 start_position_longitude

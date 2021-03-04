@@ -13,6 +13,7 @@ import { FeatureManagementComponent } from './feature-management/feature-managem
 import { PackageManagementComponent } from './package-management/package-management.component';
 import { SubscriptionManagementComponent } from './subscription-management/subscription-management.component';
 import { RelationshipManagementComponent } from './relationship-management/relationship-management.component';
+import { OrganisationRelationshipComponent } from './organisation-relationship/organisation-relationship.component';
 
 const routes: Routes = [
   {
@@ -33,7 +34,8 @@ const routes: Routes = [
       { path: "featuremanagement", component: FeatureManagementComponent},
       { path: 'packagemanagement', component: PackageManagementComponent },
       { path: 'subscriptionmanagement', component: SubscriptionManagementComponent },
-      { path: 'relationshipmanagement', component: RelationshipManagementComponent }
+      { path: 'relationshipmanagement', component: RelationshipManagementComponent },
+      { path: 'organisationrelationship', component: OrganisationRelationshipComponent }
     ],
   },
 ];

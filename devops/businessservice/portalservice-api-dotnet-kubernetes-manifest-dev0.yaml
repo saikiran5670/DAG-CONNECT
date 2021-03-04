@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: portalservice
+  name: portalservicerest-deployment
 spec:
   selector:
     matchLabels:
-      run: portalservice
+      run: portalservicerest
   replicas: 2
   template:
     metadata:
       labels:
-        run: portalservice
+        run: portalservicerest
     spec:
       containers:
-      - name: portalservice
-        image: dafdev017756.azurecr.io/portalservice
+      - name: portalservicerest
+        image: dafdev017756.azurecr.io/portalservicerest
         imagePullPolicy: Always
         resources:
           limits:
@@ -28,7 +28,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: portalservice
+  name: portalservicerest
 spec:
   type: LoadBalancer
   ports:
@@ -36,4 +36,4 @@ spec:
     port: 80
     targetPort: 80
   selector:
-    run: portalservice
+    run: portalservicerest

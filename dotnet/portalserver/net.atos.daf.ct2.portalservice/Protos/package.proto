@@ -19,7 +19,7 @@ message PackageCreateRequest {
     repeated string Features =4;
     string Name=5;
     PackageType Type =6;
-    string ShortDescription=7;
+    string Description=7;
     PackageDefault Default =8;
     google.protobuf.Timestamp StartDate=9;
     google.protobuf.Timestamp EndDate =10;
@@ -33,7 +33,7 @@ message PackageCreateRequest {
     repeated  string  Features =4;
     string Name=5;
     PackageType Type =6;
-    string ShortDescription=7;
+    string Description=7;
     PackageDefault Default =8;
     google.protobuf.Timestamp StartDate=9;
     google.protobuf.Timestamp EndDate =10;

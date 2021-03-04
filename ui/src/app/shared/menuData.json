@@ -58,6 +58,10 @@
         {
           "name": "Relationship Management",
           "subRoute": "relationshipmanagement"
+        },
+        {
+          "name": "Organisation Relationship",
+          "subRoute": "organisationrelationship"
         }
       ]
     },

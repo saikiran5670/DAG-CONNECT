@@ -29,14 +29,14 @@ namespace net.atos.daf.ct2.packageservice
             {
                 var package = new Package();
                 package.Code = request.Code;
-                package.Default = package.Default;
+             //   package.Default = package.Default;
                 package.FeatureSetID = package.FeatureSetID;
                 // Is_Active = package.Default;,
                 package.Name = package.Name;
-                package.Pack_Type = package.Pack_Type;
-                package.ShortDescription = package.ShortDescription;
-                package.StartDate = Convert.ToDateTime(package.StartDate);
-                package.EndDate = Convert.ToDateTime(package.EndDate);
+                package.Type = package.Type;
+                package.Description = package.Description;
+               // package.StartDate = Convert.ToDateTime(package.StartDate);
+              //  package.EndDate = Convert.ToDateTime(package.EndDate);
                 package = _packageManager.Create(package).Result;
                 return Task.FromResult(new PackageResponse
                 {

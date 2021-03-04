@@ -1,8 +1,7 @@
 {
   "packages": [
     {
-      "code": "PKG001",
-      "is_default": "True",
+      "code": "PKG001",     
       "features": [
         "V_EXCESSIVE_AVG_SPEED_ALERT_REALTIME",
         "V_HOURS_OF_SERVICE_ALERT_REALTIME",
@@ -30,13 +29,12 @@
       "status": "Active",
       "name": "Standard",
       "type": "Organization",
-      "short_description": "Package with default featureset",
+      "description": "Package with default featureset",
       "start_date": "2019-02-02T12:34:56",
       "end_date": "2019-02-02T12:34:56"
     },
     {
-      "code": "PKG006",
-      "is_default": "True",
+      "code": "PKG006",     
       "features": [
         "V_EXCESSIVE_AVG_SPEED_ALERT_REALTIME",
         "V_HOURS_OF_SERVICE_ALERT_REALTIME",
@@ -50,7 +48,7 @@
       "status": "Active",
       "name": "Standard",
       "type": "Organization",
-      "short_description": "Package with default featureset",
+      "description": "Package with default featureset",
       "start_date": "2019-02-02T12:34:56",
       "end_date": "2019-02-02T12:34:56"
     }
