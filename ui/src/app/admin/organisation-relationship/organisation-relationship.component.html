@@ -1,1 +1,72 @@
-<p>organisation-relationship works!</p>
+<div *ngIf='!editFlag'>
+    <mat-card class='mat-elevation-z'>
+        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblOrganisationRelationshipDetails || 'Organisation Relationship Details' }}</span>
+            </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+              <mat-form-field appearance="outline">
+                  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                  <span matPrefix><mat-icon>search</mat-icon></span>
+              </mat-form-field>
+            </div>
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                <button mat-flat-button color="primary" (click)="newRelationship()">
+                    <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewRelationship || 'New Relationship'}}
+                </button>
+            </div>
+        </div>
+        <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+        <div *ngIf='initData.length > 0' fxLayout="row" class='margin-top-xlg'>
+            <div fxLayout="column" class='full-width'>
+                <mat-table [dataSource]="dataSource" matSort>
+                    <!-- <ng-container matColumnDef="newTag">
+                        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <mat-icon *ngIf="row.newTag" inline="true" color="warn"> fiber_new </mat-icon>
+                        </mat-cell>
+                    </ng-container> -->
+                    <ng-container matColumnDef="relationshipName">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRelationshipName || 'Relationship Name' }}</mat-header-cell>
+                        <mat-cell *matCellDef="let row" style="word-break: 'break-word'">{{row.relationshipName}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="vehicleGroup">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group'}}</mat-header-cell>
+                        <mat-cell *matCellDef="let row">{{row.vehicleGroup}} </mat-cell>
+                    </ng-container>
+                    <!-- <ng-container matColumnDef="level">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblLevel || 'Level'}}</mat-header-cell>
+                        <mat-cell *matCellDef="let row">{{row.level}} </mat-cell>
+                    </ng-container> -->
+                    <ng-container matColumnDef="targetOrg">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblTargetOrganisation || 'Target Organisation'}}</mat-header-cell>
+                        <mat-cell *matCellDef="let row">{{row.targetOrg}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="chainRelationship">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblChainRelationship || 'Chain Relationship'}}</mat-header-cell>
+                        <mat-cell *matCellDef="let row" matTooltip="{{ row.description }}"><span class="text-truncate">{{row.chainRelationship}}</span> </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="actions">
+                        <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Actions' }}</mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <button class='actionBtn' mat-flat-button matTooltip="View" >
+                                <mat-icon>visibility</mat-icon>
+                            </button>
+
+                            <button class='actionBtn'  mat-flat-button  matTooltip="Delete">
+                                <mat-icon class="deleteIcon">delete_outline</mat-icon>
+                            </button>
+                        </mat-cell>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="orgrelationshipDisplayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: orgrelationshipDisplayedColumns;">
+                    </mat-row>
+                </mat-table>
+                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+            </div>
+            <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
+        </div>
+    </mat-card>
+</div>
