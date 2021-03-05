@@ -7,6 +7,7 @@ import { CustomValidators } from 'src/app/shared/custom.validators';
 import { AccountService } from '../../services/account.service';
 import { TranslationService } from '../../services/translation.service';
 import { DataInterchangeService } from 'src/app/services/data-interchange.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-account-info-settings',
@@ -72,7 +73,8 @@ export class AccountInfoSettingsComponent implements OnInit {
     return date > now;
   }
 
-  constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService) { }
+  constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService,
+              private domSanitizer: DomSanitizer) { }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -124,6 +126,13 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.setDefaultAccountInfo();
       this.loadGeneralSettingData();
     });
+
+    this.accountService.getAccountPicture(12).subscribe(data => {
+      if(data){
+        this.croppedImage = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
+      }
+    })
+
   }
 
   loadGeneralSettingData(){
@@ -299,7 +308,28 @@ export class AccountInfoSettingsComponent implements OnInit {
   onSelectPictureConfirm(){
     this.isSelectPictureConfirm = true;
     this.isAccountPictureSelected = false;
+    console.log(this.croppedImage.split(",")[1]);
     //TODO : send cropped image to backend 
+    let objData = {
+      "blobId": 0,
+      "accountId": 18,
+      "imageType": "P",
+      "image": this.croppedImage.split(",")[1]
+
+    }
+
+    this.accountService.saveAccountPicture(objData).subscribe(data => {
+      if(data){
+        //alert("Profile pic saved successfully")
+        let msg = '';
+        if(this.translationData.lblAccountSettingsSuccessfullyUpdated)
+          msg= this.translationData.lblAccountSettingsSuccessfullyUpdated;
+        else
+          msg= "Account settings successfully updated";
+
+        this.successMsgBlink(msg);  
+      }
+    })
   }
   
   fileChangeEvent(event: any): void {
