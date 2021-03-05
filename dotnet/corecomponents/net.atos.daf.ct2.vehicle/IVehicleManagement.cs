@@ -25,6 +25,8 @@ namespace net.atos.daf.ct2.vehiclerepository
             Task<IEnumerable<Vehicle>> Get(VehicleFilter vehiclefilter);   
             Task<VehicleOptInOptOut> UpdateStatus(VehicleOptInOptOut vehicleOptInOptOut);
             Task<VehicleProperty> UpdateProperty(VehicleProperty vehicleproperty);
+            Task<char> GetCalculatedVehicleStatus(char opt_in, bool is_ota);
+            Task<char> GetOrganisationStatusofVehicle(int org_id);
             // Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime);
             // Task<int> Create(int orgID, string vin,string tcuId,string tcuactivation,string referenceDateTime);
     }
