@@ -17,6 +17,7 @@ using net.atos.daf.ct2.authenticationservice;
 using net.atos.daf.ct2.accountservice;
 using net.atos.daf.ct2.packageservice;
 using net.atos.daf.ct2.vehicleservice;
+using net.atos.daf.ct2.featureservice;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -61,6 +62,11 @@ namespace net.atos.daf.ct2.portalservice
             services.AddGrpcClient<VehicleService.VehicleServiceClient>(o =>
             {
                 o.Address = new Uri(vehicleservice);
+            });
+          
+            services.AddGrpcClient<FeatureService.FeatureServiceClient>(o =>
+            {
+                o.Address = new Uri(accountservice);
             });
             services.AddSwaggerGen(c =>
             {

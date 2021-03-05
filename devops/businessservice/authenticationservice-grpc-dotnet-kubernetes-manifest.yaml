@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: authenticationservice
+  name: authenticationservice-grpc-deployment
 spec:
   selector:
     matchLabels:
-      run: authenticationservice
+      run: authenticationservice-grpc
   replicas: 2
   template:
     metadata:
       labels:
-        run: authenticationservice
+        run: authenticationservice-grpc
     spec:
       containers:
-      - name: authenticationservice
-        image: dafdev017756.azurecr.io/authenticationservicegrpc
+      - name: authenticationservice-grpc
+        image: dafdev017756.azurecr.io/authenticationservice-grpc
         imagePullPolicy: Always
         resources:
           limits:
@@ -28,12 +28,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: authenticationservice
+  name: authenticationservice-grpc
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - protocol: TCP
     port: 80
     targetPort: 80
   selector:
-    run: authenticationservice
+    run: authenticationservice-grpc

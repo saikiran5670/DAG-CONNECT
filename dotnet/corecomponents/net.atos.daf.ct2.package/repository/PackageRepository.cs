@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.package.repository
                 parameter.Add("@packagecode", package.Code);
                 parameter.Add("@feature_set_id", package.FeatureSetID);
                 parameter.Add("@name", package.Name);
-                parameter.Add("@type", (char)package.Type);
+                parameter.Add("@type", package.Type);
                 parameter.Add("@description", package.Description);
                 // parameter.Add("@is_default", Convert.ToBoolean(package.Default));
                 //parameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(package.StartDate));
@@ -103,15 +103,15 @@ namespace net.atos.daf.ct2.package.repository
                 {
                     foreach (Package package in newPackages)
                     {
-                        package.FeatureSetID = 9;
+                        package.FeatureSetID = 9;//this line is just for testing purpose
                        // package.FeatureSetID = CreateFeatureSet(package.Features).Result;
                         if (package.Code != null && package.FeatureSetID > 0)
                         {
                             parameter = new DynamicParameters();
                             parameter.Add("@packagecode", package.Code);
-                            parameter.Add("@feature_set_id", 9);// package.FeatureSetID);
+                            parameter.Add("@feature_set_id", package.FeatureSetID);
                             parameter.Add("@name", package.Name);
-                            parameter.Add("@type", (char)package.Type);
+                            parameter.Add("@type", package.Type);
                             parameter.Add("@description", package.Description);
                             //parameter.Add("@is_default", Convert.ToBoolean(package.Default));                         
                             parameter.Add("@is_active", Convert.ToBoolean(package.Status));

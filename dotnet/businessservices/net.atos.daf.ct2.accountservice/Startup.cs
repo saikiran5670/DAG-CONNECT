@@ -51,6 +51,8 @@ namespace net.atos.daf.ct2.accountservice
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<Identity.IAccountManager, Identity.AccountManager>();
+            services.AddTransient<Identity.ITokenManager, Identity.TokenManager>();
+            services.AddTransient<Identity.IAccountAuthenticator, Identity.AccountAuthenticator>();
             services.AddTransient<IGroupRepository, GroupRepository>();
             services.AddTransient<IGroupManager, GroupManager>();
             services.AddTransient<IAccountRepository, AccountRepository>();
@@ -59,6 +61,7 @@ namespace net.atos.daf.ct2.accountservice
             services.AddTransient<IVehicleManager, VehicleManager>();
             services.AddTransient<IAccountPreferenceRepository, AccountPreferenceRepository>();
             services.AddTransient<IPreferenceManager, PreferenceManager>();
+            services.AddTransient<IAccountIdentityManager, AccountIdentityManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
