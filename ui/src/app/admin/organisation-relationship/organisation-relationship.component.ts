@@ -131,6 +131,15 @@ export class OrganisationRelationshipComponent implements OnInit {
     this.grpTitleVisible = false;
   }
 
+  changeStatus(data) {
+
+  }
+  editViewFeature(data, viewEdit){
+
+  }
+  deleteRow(row){
+
+  }
   hideloader() {
     // Setting display of spinner
       this.showLoadingIndicator=false;
