@@ -50,6 +50,7 @@ namespace net.atos.daf.ct2.accountservice
                 AccountComponent.entity.AccountIdentity accIdentity = accountIdentityManager.Login(account).Result;
                 if (accIdentity != null && accIdentity.Authenticated)
                 {
+                    accIdentity.Authenticated = accIdentity.Authenticated;
                     if (accIdentity.accountInfo != null)
                     {
                         response.AccountInfo =_mapper.ToAccount(accIdentity.accountInfo);
@@ -79,6 +80,15 @@ namespace net.atos.daf.ct2.accountservice
                     }
                     return Task.FromResult(response);
                 }
+                if (accIdentity != null && !accIdentity.Authenticated)
+                {
+                    return Task.FromResult(new AccountIdentityResponse
+                    {
+                        //Account not present  in IDP or IDP related error
+                        Code = Responcecode.Failed,
+                        Message = "Account is not configured.",
+                    });
+                }
                 else
                 {
                     return Task.FromResult(new AccountIdentityResponse
@@ -86,6 +96,8 @@ namespace net.atos.daf.ct2.accountservice
                         //Account not present  in IDP or IDP related error
                         Code = Responcecode.Failed,
                         Message = "Account is not configured.",
+                        Authenticated=false,
+
                     });
                 }
             }
@@ -95,6 +107,7 @@ namespace net.atos.daf.ct2.accountservice
                 {
                     Code = Responcecode.Failed,
                     Message = " Authentication is failed due to - " + ex.Message,
+                    Authenticated = false,
                 });
             }
         }

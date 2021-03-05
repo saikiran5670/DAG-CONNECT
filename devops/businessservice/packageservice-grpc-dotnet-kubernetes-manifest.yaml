@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: portalservicerest-deployment
+  name: packageservice-grpc-deployment
 spec:
   selector:
     matchLabels:
-      run: portalservicerest
+      run: packageservice-grpc
   replicas: 2
   template:
     metadata:
       labels:
-        run: portalservicerest
+        run: packageservice-grpc
     spec:
       containers:
-      - name: portalservicerest
-        image: dafdev017756.azurecr.io/portalservicerest
+      - name: packageservice-grpc
+        image: dafdev017756.azurecr.io/packageservice-grpc
         imagePullPolicy: Always
         resources:
           limits:
@@ -28,12 +28,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: portalservice
+  name: packageservice
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - protocol: TCP
     port: 80
     targetPort: 80
   selector:
-    run: portalservicerest
+    run: packageservice-grpc

@@ -397,7 +397,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             char org_status= await GetOrganisationStatusofVehicle(OrgId);
             objVeh.Opt_In=VehicleStatusType.Inherit;
             objVeh.Is_Ota=false;           
-            objVeh.Status= (VehicleCalculatedStatus)await GetCalculatedVehicleStatus(org_status,objVeh.Is_Ota);
+            objVeh.Status= (VehicleCalculatedStatus) await GetCalculatedVehicleStatus(org_status,objVeh.Is_Ota);
             if (VehiclePropertiesId > 0)
             {
                 UpdateQueryStatement = @"UPDATE master.vehicleproperties
@@ -694,7 +694,7 @@ namespace net.atos.daf.ct2.vehicle.repository
            
             return result;
         }
-        private async Task<char> GetOrganisationStatusofVehicle(int org_id)
+        public async Task<char> GetOrganisationStatusofVehicle(int org_id)
         {
             
             char optin=await dataAccess.QuerySingleAsync<char>("SELECT vehicle_default_opt_in FROM master.organization where id=@id", new { id = org_id });
@@ -702,7 +702,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             return optin;    
         }
 
-        private async Task<char> GetCalculatedVehicleStatus(char opt_in, bool is_ota)
+        public async Task<char> GetCalculatedVehicleStatus(char opt_in, bool is_ota)
         {
             char calVehicleStatus='I';
             //Connected

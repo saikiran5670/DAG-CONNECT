@@ -28,6 +28,8 @@ namespace net.atos.daf.ct2.vehicle.repository
             Task<VehicleProperty> UpdateProperty(VehicleProperty vehicleproperty);
             Task<IEnumerable<VehicleGroupRequest>> GetOrganizationVehicleGroupdetails(long OrganizationId);
             Task<IEnumerable<VehicleGroup>> GetVehicleGroup(int organizationId,int vehicleId);
+            Task<char> GetCalculatedVehicleStatus(char opt_in, bool is_ota);
+            Task<char> GetOrganisationStatusofVehicle(int org_id);
             // Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime);
             // Task<int> Create(int orgID, string vin,string tcuId,string tcuactivation,string referenceDateTime);
     }

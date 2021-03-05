@@ -1,20 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using net.atos.daf.ct2.portalservice.Account;
 using AccountBusinessService = net.atos.daf.ct2.accountservice;
 using net.atos.daf.ct2.portalservice.Identity;
-
-//using net.atos.daf.ct2.authenticationservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
-    [Route("authentication")]
     public class AuthenticationController: ControllerBase
     {
         private readonly ILogger<AuthenticationController> _logger;
@@ -26,7 +20,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _logger = logger;
         }        
         [HttpPost]        
-        [Route("login")]
+        [Route("auth")]
         public async Task<IActionResult> Login()
         {
             try 
@@ -53,36 +47,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     if(response !=null && response.Code == AccountBusinessService.Responcecode.Success)
                     {
                         Identity.Identity accIdentity = new Identity.Identity();
-                        accIdentity.accountInfo = new Identity.Account(); ;
-                        accIdentity.accountInfo.id = response.AccountInfo.Id;
-                        accIdentity.accountInfo.emailId = response.AccountInfo.EmailId;
-                        accIdentity.accountInfo.salutation = response.AccountInfo.Salutation;
-                        accIdentity.accountInfo.firstName = response.AccountInfo.FirstName;
-                        accIdentity.accountInfo.lastName = response.AccountInfo.LastName;
-                        accIdentity.accountInfo.organization_Id = response.AccountInfo.OrganizationId;
-                        accIdentity.accountInfo.preferenceId = response.AccountInfo.PreferenceId;
-                        accIdentity.accountInfo.blobId = response.AccountInfo.BlobId;
+                        accIdentity.AccountInfo = new Identity.Account(); ;
+                        accIdentity.AccountInfo.Id = response.AccountInfo.Id;
+                        accIdentity.AccountInfo.EmailId = response.AccountInfo.EmailId;
+                        accIdentity.AccountInfo.Salutation = response.AccountInfo.Salutation;
+                        accIdentity.AccountInfo.FirstName = response.AccountInfo.FirstName;
+                        accIdentity.AccountInfo.LastName = response.AccountInfo.LastName;
+                        accIdentity.AccountInfo.Organization_Id = response.AccountInfo.OrganizationId;
+                        accIdentity.AccountInfo.PreferenceId = response.AccountInfo.PreferenceId;
+                        accIdentity.AccountInfo.BlobId = response.AccountInfo.BlobId;
                         if (response.AccOrganization != null && response.AccOrganization.Count > 0)
                         {
+                            accIdentity.AccountOrganization = new List<Identity.KeyValue>();
                             Identity.KeyValue keyValue = new Identity.KeyValue();
                             foreach (var accOrg in response.AccOrganization)
                             {
                                 keyValue = new Identity.KeyValue();
-                                keyValue.id = accOrg.Id;
-                                keyValue.name = accOrg.Name;
-                                accIdentity.accountOrganization.Add(keyValue);
+                                keyValue.Id = accOrg.Id;
+                                keyValue.Name = accOrg.Name;
+                                accIdentity.AccountOrganization.Add(keyValue);
                             }
                         }
                         if (response.AccountRole != null && response.AccountRole.Count > 0)
                         {
+                             accIdentity.AccountRole = new List<AccountOrgRole>();
                             Identity.AccountOrgRole accRole = new Identity.AccountOrgRole();
                             foreach (var accrole in response.AccountRole)
                             {
                                 accRole = new Identity.AccountOrgRole();
-                                accRole.id = accrole.Id;
-                                accRole.name = accrole.Name;
-                                accRole.organization_Id= accrole.OrganizationId;
-                                accIdentity.accountRole.Add(accRole);
+                                accRole.Id = accrole.Id;
+                                accRole.Name = accrole.Name;
+                                accRole.Organization_Id= accrole.OrganizationId;
+                                accIdentity.AccountRole.Add(accRole);
                             }
                         }
                         return Ok(accIdentity); 

@@ -1,5 +1,6 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
 
 option csharp_namespace = "net.atos.daf.ct2.translationservice";
 
@@ -8,6 +9,13 @@ package net.atos.daf.ct2.translationservice;
 
 service TranslationService {
 rpc GetTranslations(TranslationsRequest) returns (TranslationsResponce);
+rpc GetCommonTranslations(CodeRequest) returns (CodeResponce);
+rpc GetLangagugeTranslationByKey (KeyRequest) returns (KeyResponce);
+rpc GetKeyTranslationByLanguageCode (KeyCodeRequest) returns (KeyCodeResponce);
+rpc GetTranslationsForDropDowns(dropdownnameRequest) returns (dropdownnameResponce);
+rpc GetTranslationsFormultipleDropDowns(dropdownarrayRequest) returns (dropdownarrayResponce);
+rpc GetTranslationsPreferencDropDowns(PreferenceRequest) returns (PreferenceResponse);
+rpc GetAllLangaugecodes(Request) returns (TranslationListResponce);
 }
 
 enum TranslationType{
@@ -28,21 +36,129 @@ enum TranslationType{
   }
   message TranslationsRequest
     {
-      TranslationType Menutype =1;
-      string  Langaugecode = 2;
-      string Name=3;
-      string value = 4;
-      string filter = 8;
-      Contenttype Contenttype = 6;
-      int32 ID =5; 
-      int32 MenuId= 7;
+     int32 Id =1;
+         string Code =2;
+         string Type =3;
+         string Name =4;
+         string  Value =5;
+         string Filter =6;
+         int32 MenuId =7;
+
     }
   
     message TranslationsResponce
     {
       Responcecode code=1;
       string message = 2;
-      repeated TranslationsRequest Translations = 3;
+      repeated Translation TranslationsList = 3;
   
+    }
+    message CodeRequest {
+    string Langaugecode = 1;
+    }
+
+     message CodeResponce {
+     Responcecode code=1;
+     string message = 2;
+     repeated Translation CodeTranslationsList = 3;
+    }
+
+    message KeyRequest {
+    string Key = 1;
+    }
+    message KeyResponce {
+     Responcecode code=1;
+      string message = 2;
+     repeated Translation KeyTranslationsList = 3;
+    }
+
+    message KeyCodeRequest {
+    string Langaugecode = 1;
+    string Key = 2;
+    }
+    message KeyCodeResponce {
+     Responcecode code=1;
+      string message = 2;
+     repeated Translation KeyCodeTranslationsList = 3;
+    }
+
+    message dropdownnameRequest {
+    string Dropdownname = 1;
+    string Langaugecode = 2;
+    }
+
+
+      message dropdownnameResponce {
+     Responcecode code=1;
+      string message = 2;
+     repeated Translation dropdownnameTranslationsList = 3;
+    }
+
+     message dropdownnameResponces {
+     Responcecode code=1;
+      string message = 2;
+     repeated dropdownnameRequest dropdownnameTranslations = 3;
+    }
+
+    message Request {}
+
+  
+
+     message dropdownarrayRequest {
+    repeated string Dropdownname = 1;
+    string Langaugecode = 2;
+    }
+      message dropdownarrayResponce {
+     Responcecode code=1;
+      string message = 2;
+     repeated Translation dropdownnamearrayList = 3;
+    }
+
+     message PreferenceRequest {
+    string Langaugecode = 1;
+    }
+    
+     message PreferenceResponse {
+    Responcecode Code=1;
+    string Message = 2; 
+    repeated Translation language =3;
+    repeated Translation unit =4;
+    repeated Translation timezone =5;
+    repeated Translation currency =6;
+    repeated Translation landingpagedisplay =7;
+    repeated Translation dateformat =8;
+    repeated Translation timeformat =9;
+    repeated Translation vehicledisplay =10;
+    PreferenceRequest  TranslationsPreferencDropDowns =11;
+    }
+
+   message Translation{
+         int32 Id =1;
+        string Code =2;
+        string Type=3;
+         string Name =4;
+        string  Value =5;
+         string Filter =6;
+         int32 MenuId =7;
+   } 
+
+  message PreferenceResponceList
+{
+    int32 Id=1;
+    string Name=2;
+}
+
+message Language{
+        string  Code =1;
+        string  Description =2;
+          int32 Id =3;
+            string Key =4;
+         string Name =5;
+         
+   } 
+     message TranslationListResponce {
+    Responcecode code=1;
+    string message = 2;
+    repeated Language languagelist = 3;
     }
   

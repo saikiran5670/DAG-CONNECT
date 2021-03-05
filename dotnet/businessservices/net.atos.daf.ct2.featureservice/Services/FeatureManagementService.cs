@@ -10,7 +10,7 @@ using net.atos.daf.ct2.features.entity;
 
 namespace net.atos.daf.ct2.featureservice
 {
-    public class FeatureManagementService : FeatureServiceTest.FeatureServiceTestBase
+    public class FeatureManagementService : FeatureService.FeatureServiceBase
     {
         private readonly ILogger<FeatureManagementService> _logger;
         private readonly IFeatureManager _FeaturesManager;

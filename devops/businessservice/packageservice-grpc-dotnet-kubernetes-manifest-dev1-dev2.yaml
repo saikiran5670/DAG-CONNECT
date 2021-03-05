@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: portalservicerest-deployment
+  name: packageservice-grpc-deployment
   labels:
-    app.kubernetes.io/name: portalservicerest
+    app.kubernetes.io/name: packageservice-grpc
     app.kubernetes.io/type: businessservice
 spec:
   template:
@@ -11,7 +11,7 @@ spec:
       annotations:
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
       labels:
-        app.kubernetes.io/name: portalservicerest
+        app.kubernetes.io/name: packageservice-grpc
         app.kubernetes.io/type: businessservice
     spec:
       automountServiceAccountToken: false
@@ -27,15 +27,15 @@ spec:
               - key: app.kubernetes.io/name
                 operator: In
                 values:
-                - portalservicerest
+                - packageservice-grpc
               - key: app.kubernetes.io/type
                 operator: In
                 values:
                 - businessservice
             topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: portalservicerest-container
-        image: #{acrurl}#/portalservicerest
+      - name: packageservice-grpc-container
+        image: #{acrurl}#/packageservice-grpc
         imagePullPolicy: "Always"
         securityContext:
           allowPrivilegeEscalation: false
@@ -61,35 +61,35 @@ spec:
         agentpool: npuser01         
   selector:
     matchLabels:
-        app.kubernetes.io/name: portalservicerest
+        app.kubernetes.io/name: packageservice-grpc
         app.kubernetes.io/type: businessservice
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: portalservice
+  name: packageservice
   labels:
-    svc.kubernetes.io/name: portalservicerest
+    svc.kubernetes.io/name: packageservice-grpc
     svc.kubernetes.io/type: businessservice
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - protocol: TCP
     port: 80
     targetPort: 8080
   selector:
-    app.kubernetes.io/name: portalservicerest
+    app.kubernetes.io/name: packageservice-grpc
     app.kubernetes.io/type: businessservice
 
 ---
 kind: HorizontalPodAutoscaler 
 apiVersion: autoscaling/v2beta1 
 metadata: 
-  name: portalservicerest-hpa
+  name: packageservice-grpc-hpa
   labels:
-    hpa.kubernetes.io/name: portalservicerest
+    hpa.kubernetes.io/name: packageservice-grpc
     hpa.kubernetes.io/type: businessservice 
 spec: 
   maxReplicas: 5 
@@ -97,7 +97,7 @@ spec:
   scaleTargetRef: 
     apiVersion: apps/v1 
     kind: Deployment 
-    name: portalservicerest-deployment 
+    name: packageservice-grpc-deployment 
   metrics: 
   - type: Resource 
     resource: 
