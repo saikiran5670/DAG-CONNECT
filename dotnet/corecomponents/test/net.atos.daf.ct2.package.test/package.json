@@ -1,0 +1,58 @@
+{
+  "packages": [
+    {
+      "code": "PKG001",     
+      "features": [
+        "V_EXCESSIVE_AVG_SPEED_ALERT_REALTIME",
+        "V_HOURS_OF_SERVICE_ALERT_REALTIME",
+        "V_HOURS_OF_SERVICE_ALERT_TRIP",
+        "V_MILEAGE_DIGEST",
+        "V_POI_ENTERING_ALERT_REALTIME",
+        "V_POI_EXITING_ALERT_REALTIME",
+        "V_ROAD_DIGEST",
+        "V_TRACING_VIEW",
+        "V_TRACKING_VIEW",
+        "V_TRIP_REPORT_VIEW",
+        "V_CORRIDORING_EXITING_ALERT_REALTIME",
+        "V_EXCESSIVE_AVG_SPEED_ALERT_TRIP",
+        "V_EXCESSIVE_DISTANCE_DONE_ALERT_TRIP",
+        "V_EXCESSIVE_DRIVING_DURATION_ALERT_TRIP",
+        "V_EXCESSIVE_GLOBAL_MILEAGE_ALERT_TRIP",
+        "V_EXCESSIVE_IDLES_ALERT_REALTIME",
+        "V_EXCESSIVE_IDLES_ALERT_TRIP",
+        "V_EXCESSIVE_IMMOBILISATION_IN_DAYS_ALERT_BATCH",
+        "V_EXCESSIVE_IMMOBILISATION_IN_HOURS_ALERT_BATCH",
+        "V_FUEL_CONSUMPTION_DIGEST",
+        "V_FUEL_CONSUMPTION_ALERT_DIGEST",
+        "V_FUEL_CONSUMPTION_VIEW"
+      ],
+      "status": "Active",
+      "name": "Standard",
+      "type": "Organization",
+      "description": "Package with default featureset",
+      "start_date": "2019-02-02T12:34:56",
+      "end_date": "2019-02-02T12:34:56"
+    },
+    {
+      "code": "PKG006",     
+      "features": [
+        "V_EXCESSIVE_AVG_SPEED_ALERT_REALTIME",
+        "V_HOURS_OF_SERVICE_ALERT_REALTIME",
+        "V_HOURS_OF_SERVICE_ALERT_TRIP",
+        "V_MILEAGE_DIGEST",
+        "V_POI_ENTERING_ALERT_REALTIME",
+        "V_POI_EXITING_ALERT_REALTIME",
+        "V_ROAD_DIGEST",
+        "V_TRACING_VIEW"        
+      ],
+      "status": "Active",
+      "name": "Standard",
+      "type": "Organization",
+      "description": "Package with default featureset",
+      "start_date": "2019-02-02T12:34:56",
+      "end_date": "2019-02-02T12:34:56"
+    }
+   
+  ]
+
+}

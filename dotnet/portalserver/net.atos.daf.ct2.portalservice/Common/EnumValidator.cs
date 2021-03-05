@@ -35,6 +35,16 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
             return false;
         }
+
+        public static bool ValidateVehicleStatus(char statusType)
+        {
+            string enumList = "nNiIuUtToO";
+            if (enumList.Contains(statusType))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }
 

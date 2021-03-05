@@ -12,4 +12,10 @@ namespace net.atos.daf.ct2.vehicle
         Vl='V', 
         SemiTrailer='S'
     }
+    public enum AxelType
+    {
+        FrontAxle='F',
+        RearAxle='R'
+    }
+    
 }

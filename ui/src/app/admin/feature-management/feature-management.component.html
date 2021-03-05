@@ -8,7 +8,7 @@
         <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
         </div>
   </div>
-  <mat-card class='mat-elevation-z'>
+  <mat-card class='mat-elevation-z' *ngIf='!createEditViewFeatureFlag'>
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFeatureRelationshipDetails || 'Feature Relationship Details' }}</span>
@@ -52,7 +52,7 @@
             </ng-container>
             <ng-container matColumnDef="dataAttribute">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttribute || 'Data Attribute' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.dataAttribute }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.dataAttribute.length }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="status">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
@@ -62,7 +62,7 @@
               <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
               <mat-cell *matCellDef="let row">
                 <button class='actionBtn' mat-flat-button (click)="changeFeatureStatus(row)" matTooltip="{{ row.status == 'Active' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}">
-                    <mat-icon>{{ row.status == 'Active' ? 'airplanemode_active' : 'airplanemode_inactive' }}</mat-icon>
+                    <mat-icon>{{ row.status == 'Active' ? 'sync' : 'sync_disabled' }}</mat-icon>
                 </button>
                 <button class='actionBtn' mat-flat-button (click)="editViewFeature(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
                   <mat-icon>visibility</mat-icon>
@@ -82,4 +82,5 @@
           <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
     </div>
   </mat-card>
+  <app-create-edit-view-features *ngIf='createEditViewFeatureFlag' [translationData]='translationData' [actionType]='actionType' [dataAttributeList]='dataAttributeList' [selectedElementData]='selectedElementData' (createViewEditFeatureEmit)='checkCreationForFeature($event)'></app-create-edit-view-features>
 </div>

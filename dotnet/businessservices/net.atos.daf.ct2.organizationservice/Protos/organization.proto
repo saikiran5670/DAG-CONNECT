@@ -2,82 +2,57 @@ syntax ="proto3";
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/timestamp.proto";
 option csharp_namespace = "net.atos.daf.ct2.organizationservice";
+package net.atos.daf.ct2.organizationservice;
 
-package organization;
 
 // The greeting service definition.
 service OrganizationService {
   // Sends a greeting
-  rpc Create (OrganizationCreateRequest) returns (OrganizationResponse);
-  rpc Update (OrganizationUpdateRequest) returns (OrganizationResponse);
-  rpc Delete (OrganizationDeleteRequest) returns (OrganizationResponse);
-  rpc Get (GetOrganizationRequest) returns (GetOrganizationResponce);    
+  rpc Create (OrgRequest) returns (OrganizationData);
+  rpc Update (OrgRequest) returns (OrganizationData);
+  rpc Delete (IdRequest) returns (OrganizationResponse);
+  rpc Get (IdRequest) returns (OrganizationResponse); 
+
+  // Account Preference Mthod
+   rpc CreatePreference (AccountPreference) returns (AccountPreferenceResponse);
+  rpc UpdatePreference (AccountPreference) returns (AccountPreferenceResponse);
+  rpc DeletePreference (IdRequest) returns (AccountPreferenceResponse);
+  rpc GetPreference (IdRequest) returns (AccountPreferenceResponse);
 }
 
-// The request request.
-message OrganizationUpdateRequest {
-    int32 Id=1;
-    string OrganizationId= 2;
-    string Type=3;
-    string Name=4;
-    string AddressType=5;
-    string AddressStreet=6;
-    string AddressStreetNumber=7; 
-    string PostalCode=8;    
-    string City=9;
-    string CountryCode=10;
-    int64 ReferencedDate=11;
-    bool OptOutStatus=12;
-    int64 OptOutStatusChangedDate=13;
-    bool IsActive=14;
-    int32 Ref_Id=15;
-    int32 PreferenceType=16;
-    int32 Language_Id=17;
-    int32 Timezone_Id=18;
-    int32 Currency_Type=19;
-    int32 Unit_Type=20;
-    int32 VehicleDisplay_Type=21;
-    int32 DateFormat_Type=22;
-    string DriverId=23;
-    int32 TimeFormatId=24;
-    int32 LandingPageDisplayId=25;
-  }
-  message OrganizationCreateRequest {   
-    string OrganizationId= 1;
-    string Type=2;
-    string Name=3;
-    string AddressType=4;
-    string AddressStreet=5;
-    string AddressStreetNumber=6; 
-    string PostalCode=7;    
-    string City=8;
-    string CountryCode=9;
-    int64 ReferencedDate=10;
-    bool OptOutStatus=11;
-    int64 OptOutStatusChangedDate=12;
-    bool IsActive=13;
-    int32 PreferenceType=14;
-    int32 Language_Id=15;
-    int32 Timezone_Id=16;
-    int32 Currency_Type=17;
-    int32 Unit_Type=18;
-    int32 VehicleDisplay_Type=19;
-    int32 DateFormat_Type=20;
-    string DriverId=21;
-    int32 TimeFormatId=22;
-    int32 LandingPageDisplayId=23;
+// The request 
+message OrganizationRequest {
+    int32 id = 1;
+    string org_id=2;
+    string type =3;
+    string name=4;
+    string address_Type=5;
+    string street=6;
+    string street_number =7; 
+    string postal_code =8;    
+    string city=9;
+    string country_code =10;
+    int64 reference_date =11;
+    bool optout_status =12;
+    int64 optout_status_changed_date =13;
   }
 
-  message OrganizationDeleteRequest {
-  int32 Id = 1;  
-}
+  message OrgRequest {
+    int32 id = 1;
+    string org_id=2;
+    string type =3;
+    string name=4;
+    string address_Type=5;
+    string street=6;
+    string street_number =7; 
+    string postal_code =8;    
+    string city=9;
+    string country_code =10;
+    string reference_date =11;   
+  }
 
 // The response message containing the greetings.
-message OrganizationResponse {
-  string Message = 1;
-}
-
-message GetOrganizationResponce {  
+message OrganizationResponse {  
     int32 Id=1;
     string OrganizationId= 2;
     google.protobuf.StringValue Type=3;
@@ -90,20 +65,69 @@ message GetOrganizationResponce {
     google.protobuf.StringValue CountryCode=10;   
     google.protobuf.StringValue Referenced=11;
     bool OptOutStatus=12;  
-    google.protobuf.StringValue OptOutStatusChanged=13;
-    bool IsActive=14;
-    int32 RefId=15;
-    google.protobuf.StringValue PrefType=16;
-    google.protobuf.StringValue Language=17;
-    google.protobuf.StringValue Timezone=18;
-    google.protobuf.StringValue Currency=19;
-    google.protobuf.StringValue Unit=20;
-    google.protobuf.StringValue VehicleDisplay=21;
-    google.protobuf.StringValue DateFormatType=22;
-    google.protobuf.StringValue DriverId=23;
-    google.protobuf.StringValue TimeFormat=24;
-    google.protobuf.StringValue LandingPageDisplay=25; 
+    google.protobuf.StringValue OptOutStatusChanged=13;  
+    bool IsActive=14;  
 }
-  message GetOrganizationRequest {
-  int32 Id = 1;  
+
+// The response message containing the greetings.
+message OrgResponse {  
+    int32 Id=1;
+    string OrganizationId= 2;
+    google.protobuf.StringValue Type=3;
+    google.protobuf.StringValue Name=4;
+    google.protobuf.StringValue AddressType=5;
+    google.protobuf.StringValue AddressStreet=6;
+    google.protobuf.StringValue AddressStreetNumber=7; 
+    google.protobuf.StringValue PostalCode=8;    
+    google.protobuf.StringValue City=9;
+    google.protobuf.StringValue CountryCode=10;   
+    int64 Referenced=11;
+    bool OptOutStatus=12;  
+    google.protobuf.StringValue OptOutStatusChanged=13;    
 }
+
+ message AccountPreference
+    {
+        int32 Id =1;
+        int32 Ref_Id =2;
+        string preferenceType =3;
+        int32 LanguageId =4;
+        int32 TimezoneId =5;
+        int32 CurrencyId =6;
+        int32 UnitId = 7;
+        int32 VehicleDisplayId =8;
+        int32 DateFormatId =9;
+        string DriverId =10;
+        int32 TimeFormatId=11;
+        int32 LandingPageDisplayId=12;
+    }
+    message AccountPreferenceResponse
+    {
+     Responcecode Code=1;
+     string Message = 2;
+     AccountPreference AccountPreference= 3;      
+    }
+
+  message IdRequest {
+  int32 Id = 1;
+}
+
+message OrganizationData {
+  Responcecode Code=1;
+  string Message = 2;
+  OrgRequest Organization = 3;
+}
+
+  enum Responcecode{
+      Success = 0;
+      Failed = 1;
+      Conflict = 2;
+      NotFound = 3;
+    }
+ message AccountPreferenceFilter
+    {
+        int32 Id =1;
+    }
+    
+    
+    

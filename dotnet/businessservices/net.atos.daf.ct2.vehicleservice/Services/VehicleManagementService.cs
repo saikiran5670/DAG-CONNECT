@@ -8,8 +8,13 @@ using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehicle;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using net.atos.daf.ct2.group;
+using Group = net.atos.daf.ct2.group;
 using System.Text;
+using net.atos.daf.ct2.vehicleservice.Entity;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.Enum;
+using AccountComponent = net.atos.daf.ct2.account;
+using System.Linq;
 
 namespace net.atos.daf.ct2.vehicleservice.Services
 {
@@ -17,50 +22,37 @@ namespace net.atos.daf.ct2.vehicleservice.Services
     {
         private readonly ILogger<VehicleManagementService> _logger;
         private readonly IVehicleManager _vehicelManager;
-        private readonly IGroupManager _groupManager;
+        private readonly Group.IGroupManager _groupManager;
+        private readonly Mapper _mapper;
+        private readonly IAuditTraillib _auditlog;
+        private readonly AccountComponent.IAccountManager accountmanager;
 
-        public VehicleManagementService(ILogger<VehicleManagementService> logger, IVehicleManager vehicelManager, IGroupManager groupManager)
+        public VehicleManagementService(ILogger<VehicleManagementService> logger, IVehicleManager vehicelManager, Group.IGroupManager groupManager, IAuditTraillib auditlog,AccountComponent.IAccountManager _accountmanager)
         {
             _logger = logger;
             _vehicelManager = vehicelManager;
             _groupManager = groupManager;
+            _auditlog = auditlog;
+            accountmanager = _accountmanager;
+            _mapper = new Mapper();
 
         }
 
-        public override Task<VehicleResponce> Create(VehicleRequest request, ServerCallContext context)
+        public override async Task<VehicleCreateResponce> Create(VehicleCreateRequest request, ServerCallContext context)
         {
             try
             {
                 Vehicle Objvehicle = new Vehicle();
-                Vehicle ObjvehicleResponse = new Vehicle();
-
-                Objvehicle.Organization_Id = request.Organizationid;
-                Objvehicle.Name = request.Name;
-                Objvehicle.VIN = request.Vin;
-                Objvehicle.License_Plate_Number = request.LicensePlateNumber;
-                //Objvehicle.ManufactureDate = request.ManufactureDate;
-                //Objvehicle.ChassisNo = request.ChassisNo;
-                Objvehicle.Status_Changed_Date = DateTime.Now;
-                Objvehicle.Status = (vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), request.Status.ToString()); //GetVehicleStatusEnum((int)request.Status);
-                Objvehicle.Termination_Date = DateTime.Now;
-                Objvehicle.Vid = request.Vid;
-                Objvehicle.Type = (vehicle.VehicleType)Enum.Parse(typeof(vehicle.VehicleType), request.VehicleType.ToString());
-                Objvehicle.Model = request.Model;
-                Objvehicle.Tcu_Id = request.TcuId;
-                Objvehicle.Tcu_Serial_Number = request.TcuSerialNumber;
-                Objvehicle.Tcu_Brand = request.TcuBrand;
-                Objvehicle.Tcu_Version = request.TcuVersion;
-                Objvehicle.Is_Tcu_Register = request.IsTcuRegister;
-                Objvehicle.Reference_Date = Convert.ToDateTime(request.ReferenceDate);
-
-                ObjvehicleResponse = _vehicelManager.Create(Objvehicle).Result;
-
+                Objvehicle = _mapper.ToVehicleEntity(request);
+                Objvehicle = await _vehicelManager.Create(Objvehicle);
+                await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "vehicle Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Vehicle Create", 1, 2, JsonConvert.SerializeObject(request));
                 _logger.LogInformation("Create method in vehicle service called.");
 
-                return Task.FromResult(new VehicleResponce
+                return await Task.FromResult(new VehicleCreateResponce
                 {
-                    Message = "Vehicle created with id:- " + ObjvehicleResponse.ID,
-                    Code = Responcecode.Success
+                    Message = "Vehicle created with id:- " + Objvehicle.ID,
+                    Code = Responcecode.Success,
+                    Vehicle=request
 
                 });
 
@@ -68,143 +60,77 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             catch (Exception ex)
             {
                 _logger.LogError("Error in vehicle service Create method.");
-                return Task.FromResult(new VehicleResponce
+                return await Task.FromResult(new VehicleCreateResponce
                 {
                     Message = "Exception :-" + ex.Message,
-                    Code = Responcecode.Failed
+                    Code = Responcecode.Failed,
+                    Vehicle = null
                 });
             }
 
         }
 
-        public override Task<VehicleResponce> Update(VehicleRequest request, ServerCallContext context)
+        public override async Task<VehicleResponce> Update(VehicleRequest request, ServerCallContext context)
         {
             try
             {
                 Vehicle Objvehicle = new Vehicle();
-                Vehicle ObjvehicleResponse = new Vehicle();
-                Objvehicle.ID = request.Id;
-                Objvehicle.Name = request.Name;
-                Objvehicle.VIN = request.Vin;
-                Objvehicle.License_Plate_Number = request.LicensePlateNumber;
-                Objvehicle.Vid = request.Vid;
-                Objvehicle.Type = (vehicle.VehicleType)Enum.Parse(typeof(vehicle.VehicleType), request.VehicleType.ToString());
-                Objvehicle.Model = request.Model;
-                Objvehicle.Tcu_Id = request.TcuId;
-                Objvehicle.Tcu_Serial_Number = request.TcuSerialNumber;
-                Objvehicle.Tcu_Brand = request.TcuBrand;
-                Objvehicle.Tcu_Version = request.TcuVersion;
-                Objvehicle.Is_Tcu_Register = request.IsTcuRegister;
-                if (!string.IsNullOrEmpty(request.ReferenceDate))
-                    Objvehicle.Reference_Date = Convert.ToDateTime(request.ReferenceDate);
-
-                ObjvehicleResponse = _vehicelManager.Update(Objvehicle).Result;
-
+                Objvehicle = _mapper.ToVehicleEntity(request);
+                Objvehicle = await _vehicelManager.Update(Objvehicle);
+                await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "vehicle Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Update method in vehicle service", 1, 2, JsonConvert.SerializeObject(request));
                 _logger.LogInformation("Update method in vehicle service called.");
-                return Task.FromResult(new VehicleResponce
+                return await Task.FromResult(new VehicleResponce
                 {
-                    Message = "Vehicle updated for id:- " + ObjvehicleResponse.ID,
-                    Code = Responcecode.Success
+                    Message = "Vehicle updated for id:- " + Objvehicle.ID,
+                    Code = Responcecode.Success,
+                    Vehicle = request
                 });
 
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service Update method.");
-                return Task.FromResult(new VehicleResponce
+                _logger.LogError("Vehicle Service:Update : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new VehicleResponce
                 {
-                    Message = "Exception " + ex.Message,
-                    Code = Responcecode.Failed
+                    Message = "Vehicle Updation Faile due to - " + ex.Message,
+                    Code = Responcecode.Failed,
+                    Vehicle = null
                 });
             }
 
         }
 
-        public async override Task<VehicleListResponce> Get(VehicleFilterRequest request, ServerCallContext context)
+        public override async Task<VehicleListResponce> Get(VehicleFilterRequest request, ServerCallContext context)
         {
             try
             {
                 VehicleFilter ObjVehicleFilter = new VehicleFilter();
-                VehicleListResponce ObjVehicleList = new VehicleListResponce();
-
-                ObjVehicleFilter.VehicleId = request.VehicleId;
-                ObjVehicleFilter.OrganizationId = request.OrganizationId;
-                ObjVehicleFilter.AccountId = request.AccountId;
-                ObjVehicleFilter.VehicleGroupId = request.VehicleGroupId;
-                ObjVehicleFilter.AccountGroupId = request.AccountGroupId;
-                ObjVehicleFilter.FeatureId = request.FeatureId;
-                ObjVehicleFilter.VehicleIdList = request.VehicleIdList;
-                ObjVehicleFilter.VIN = request.VIN;
-                ObjVehicleFilter.Status = (vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), request.Status.ToString());
-
-                IEnumerable<Vehicle> ObjRetrieveVehicleList = _vehicelManager.Get(ObjVehicleFilter).Result;
+                ObjVehicleFilter = _mapper.ToVehicleFilterEntity(request);
+                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.Get(ObjVehicleFilter);
+                VehicleListResponce responce = new VehicleListResponce();
                 foreach (var item in ObjRetrieveVehicleList)
                 {
-                    VehicleRequest ObjResponce = new VehicleRequest();
-                    ObjResponce.Id = item.ID;
-                    ObjResponce.Organizationid = item.Organization_Id;
-                    ObjResponce.Name = item.Name==null?"":item.Name;
-                    ObjResponce.Vin = item.VIN;
-                    ObjResponce.LicensePlateNumber = item.License_Plate_Number==null?"":item.License_Plate_Number;;
-                    ObjResponce.Vid = item.Vid;
-                    ObjResponce.Model = item.Model;
-                    if (item.Type != vehicle.VehicleType.None)
-                        ObjResponce.VehicleType = (VehicleType)Enum.Parse(typeof(VehicleType), item.Type.ToString());
-                    ObjResponce.TcuId = item.Tcu_Id;
-                    ObjResponce.TcuBrand = item.Tcu_Brand;
-                    ObjResponce.TcuSerialNumber = item.Tcu_Serial_Number;
-                    ObjResponce.TcuVersion = item.Tcu_Version;
-                    ObjResponce.IsTcuRegister = item.Is_Tcu_Register;
-                    ObjResponce.ReferenceDate = item.Reference_Date.ToString();
-                    ObjResponce.TerminationDate = item.Termination_Date.ToString();
-                    ObjResponce.StatusDate = item.Status_Changed_Date.ToString();
-                    //ObjResponce.Status = SetEnumVehicleStatusType(item.Status); //GetEnum(item.Status); //(vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), item.Status.ToString().ToUpper());
-
-                    ObjVehicleList.Vehicles.Add(ObjResponce);
+                    responce.Vehicles.Add(_mapper.ToVehicle(item));
                 }
-                ObjVehicleList.Message = "Vehicles data retrieved";
-                ObjVehicleList.Code = Responcecode.Success;
-
+                responce.Message = "Vehicles data retrieved";
+                responce.Code = Responcecode.Success;
                 _logger.LogInformation("Get method in vehicle service called.");
-                return await Task.FromResult(ObjVehicleList);
+                return await Task.FromResult(responce);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service get method.");
+                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
                 return await Task.FromResult(new VehicleListResponce
                 {
-                    Message = "Exception " + ex.Message,
-                    Code = Responcecode.Failed
+                    Code = Responcecode.Failed,
+                    Message = "Get faile due to with reason : " + ex.Message
                 });
             }
 
 
         }
 
-        // private VehicleStatusType GetEnum(int value)
-        // {
-        //     VehicleStatusType vehicleStatusType;
-        //     switch(value)
-        //     {
-        //         case 0:
-        //         vehicleStatusType = VehicleStatusType.None;
-        //         break;
-        //         case 1:
-        //         vehicleStatusType = VehicleStatusType.Optin;
-        //         break;
-        //         case 2:
-        //         vehicleStatusType = VehicleStatusType.Optout;
-        //         case 3:
-        //         vehicleStatusType = VehicleStatusType.Terminate;
-        //         case 4:
-        //         vehicleStatusType = VehicleStatusType.Ota;
-        //         break;
-        //         default:
-        //          vehicleStatusType = VehicleStatusType.Optin;
-        //          break;
-        //     }
-        //     return vehicleStatusType;
-        // }
+
         public override Task<VehicleOptInOptOutResponce> UpdateStatus(VehicleOptInOptOutRequest request, ServerCallContext context)
         {
             try
@@ -238,167 +164,236 @@ namespace net.atos.daf.ct2.vehicleservice.Services
 
         }
 
-        public override Task<VehicleGroupResponce> CreateGroup(VehicleGroupRequest request, ServerCallContext context)
+        public override async Task<VehicleGroupResponce> CreateGroup(VehicleGroupRequest request, ServerCallContext context)
         {
             try
             {
-                Group ObjVehicleGroup = new Group();
-                ObjVehicleGroup.Name = request.Name;
-                ObjVehicleGroup.Description = request.Description;
-                ObjVehicleGroup.Argument = request.Argument;
-                ObjVehicleGroup.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
-                ObjVehicleGroup.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
-                ObjVehicleGroup.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
-                ObjVehicleGroup.OrganizationId = request.OrganizationId;
-
-                ObjVehicleGroup.GroupRef = new List<GroupRef>();
-                foreach (var item in request.GroupRef)
+                VehicleGroupResponce response = new VehicleGroupResponce();
+                response.VehicleGroup = new VehicleGroupRequest();
+                Group.Group group = new Group.Group();
+                group = _mapper.ToGroup(request);
+                group = await _groupManager.Create(group);
+                // check for exists
+                response.VehicleGroup.Exists = false;
+                if (group.Exists)
                 {
-                    ObjVehicleGroup.GroupRef.Add(new GroupRef() { Ref_Id = item.RefId });
+                    response.VehicleGroup.Exists = true;
+                    response.Message = "Duplicate Group";
+                    response.Code = Responcecode.Conflict;
+                    return response;
                 }
-                Group VehicleGroupResponce = _groupManager.Create(ObjVehicleGroup).Result;
-
-                if (VehicleGroupResponce.Id > 0)
+                // Add group reference.                               
+                if (group.Id > 0 && request.GroupRef != null && group.GroupType == Group.GroupType.Group)
                 {
-                    bool AddvehicleGroupRef = _groupManager.UpdateRef(ObjVehicleGroup).Result;
-                }
-                _logger.LogInformation("Create group method in vehicle service called.");
-                return Task.FromResult(new VehicleGroupResponce
-                {
-                    Message = "Vehicle group created with id:- " + VehicleGroupResponce.Id,
-                    Code = Responcecode.Success
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error in vehicle service create group method.");
-                return Task.FromResult(new VehicleGroupResponce
-                {
-                    Message = "Exception :-" + ex.Message,
-                    Code = Responcecode.Failed
-                });
-            }
-        }
-
-        public override Task<VehicleGroupResponce> UpdateGroup(VehicleGroupRequest request, ServerCallContext context)
-        {
-            try
-            {
-                Group ObjVehicleGroup = new Group();
-                ObjVehicleGroup.Id = request.Id;
-                ObjVehicleGroup.Name = request.Name;
-                ObjVehicleGroup.Description = request.Description;
-                ObjVehicleGroup.Argument = request.Argument;
-                ObjVehicleGroup.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
-                ObjVehicleGroup.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
-                ObjVehicleGroup.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
-                ObjVehicleGroup.OrganizationId = request.OrganizationId;
-                Group VehicleGroupResponce = _groupManager.Update(ObjVehicleGroup).Result;
-
-                ObjVehicleGroup.GroupRef = new List<GroupRef>();
-                foreach (var item in request.GroupRef)
-                {
-                    ObjVehicleGroup.GroupRef.Add(new GroupRef() { Ref_Id = item.RefId });
-                }
-
-                if (VehicleGroupResponce.Id > 0)
-                {
-                    bool AddvehicleGroupRef = _groupManager.UpdateRef(ObjVehicleGroup).Result;
-                }
-                _logger.LogInformation("Update group method in vehicle service called.");
-                return Task.FromResult(new VehicleGroupResponce
-                {
-                    Message = "Vehicle group updated with id:- " + VehicleGroupResponce.Id,
-                    Code = Responcecode.Success
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error in vehicle service update group method.");
-                return Task.FromResult(new VehicleGroupResponce
-                {
-                    Message = "Exception :-" + ex.Message,
-                    Code = Responcecode.Failed
-                });
-            }
-        }
-
-        // public override Task<VehicleGroupResponce> DeleteGroup(VehicleGroupIdRequest request, ServerCallContext context)
-        // {
-        //     try
-        //     {
-        //         bool IsVehicleGroupDeleted = _groupManager.Delete(request.GroupId).Result;
-
-        //         _logger.LogInformation("Delete group method in vehicle service called.");
-
-        //         return Task.FromResult(new VehicleGroupResponce
-        //         {
-        //             Message = "Vehicle group deleted with id:- " + request.GroupId,
-        //             Code = Responcecode.Success
-        //         });
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         _logger.LogError("Error in vehicle service delete group method.");
-
-        //         return Task.FromResult(new VehicleGroupResponce
-        //         {
-        //             Message = "Exception :-" + ex.Message,
-        //             Code = Responcecode.Failed
-        //         });
-        //     }
-        // }
-
-        public async override Task<VehicleGroupRefResponce> GetGroupDetails(GroupFilterRequest request, ServerCallContext context)
-        {
-            try
-            {
-                GroupFilter ObjGroupFilter = new GroupFilter();
-                ObjGroupFilter.Id = request.Id;
-                ObjGroupFilter.OrganizationId = request.OrganizationId;
-                //ObjGroupFilter.FunctionEnum = (group.FunctionEnum)Convert.ToChar(request.FunctionEnum);
-                ObjGroupFilter.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
-                ObjGroupFilter.GroupRef = request.GroupRef;
-                ObjGroupFilter.GroupRefCount = request.GroupRefCount;
-                ObjGroupFilter.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
-                ObjGroupFilter.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
-                //ObjGroupFilter.ObjectType = (group.ObjectType)Convert.ToChar(request.ObjectType);
-                //ObjGroupFilter.GroupType = GetEnum(Convert.ToChar(request.GroupType));//(group.GroupType)Convert.ToChar(request.GroupType);
-                VehicleGroupRefResponce ObjVehicleGroupRes = new VehicleGroupRefResponce();
-                if (ObjectType.VehicleGroup.ToString() == ObjGroupFilter.ObjectType.ToString())
-                {
-                    IEnumerable<Group> ObjRetrieveGroupList = _groupManager.Get(ObjGroupFilter).Result;
-            
-                    foreach (var item in ObjRetrieveGroupList)
+                    group.GroupRef = new List<Group.GroupRef>();
+                    foreach (var item in request.GroupRef)
                     {
-                        VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
+                        if (item.RefId > 0)
+                            group.GroupRef.Add(new Group.GroupRef() { Ref_Id = item.RefId, Group_Id = group.Id });
+                    }
+                    bool vehicleRef = await _groupManager.AddRefToGroups(group.GroupRef);
+                }
+                request.Id = group.Id;
+                var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Vehicle Group ", 1, 2, Convert.ToString(group.Id)).Result;
+                _logger.LogInformation("Group Created:" + Convert.ToString(group.Name));
+                return await Task.FromResult(new VehicleGroupResponce
+                {
+                    Message = "Vehicle group created with id:- ",
+                    Code = Responcecode.Success,
+                    VehicleGroup = request
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in create vehicle group :CreateGroup with exception - " + ex.Message);
+                return await Task.FromResult(new VehicleGroupResponce
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
 
-                        ObjGroupRef.Id = item.Id;
-                        ObjGroupRef.VehicleGroupORVehicleName = item.Name;
-                        ObjGroupRef.VehicleCount = item.GroupRefCount;
-                        ObjGroupRef.IsVehicleGroup = true;
-                        ObjVehicleGroupRes.GroupRefDetails.Add(ObjGroupRef);
+        public override async Task<VehicleGroupResponce> UpdateGroup(VehicleGroupRequest request, ServerCallContext context)
+        {
+            try
+            {
+                //    Group ObjVehicleGroup = new Group();
+                //    ObjVehicleGroup.Id = request.Id;
+                //    ObjVehicleGroup.Name = request.Name;
+                //    ObjVehicleGroup.Description = request.Description;
+                //    ObjVehicleGroup.Argument = request.Argument;
+                //    ObjVehicleGroup.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
+                //    ObjVehicleGroup.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
+                //    ObjVehicleGroup.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
+                //    ObjVehicleGroup.OrganizationId = request.OrganizationId;
+                //    Group VehicleGroupResponce = _groupManager.Update(ObjVehicleGroup).Result;
+
+                //    ObjVehicleGroup.GroupRef = new List<GroupRef>();
+                //    foreach (var item in request.GroupRef)
+                //    {
+                //        ObjVehicleGroup.GroupRef.Add(new GroupRef() { Ref_Id = item.RefId });
+                //    }
+
+                //    if (VehicleGroupResponce.Id > 0)
+                //    {
+                //        bool AddvehicleGroupRef = _groupManager.UpdateRef(ObjVehicleGroup).Result;
+                //    }
+                //    _logger.LogInformation("Update group method in vehicle service called.");
+                //    return Task.FromResult(new VehicleGroupResponce
+                //    {
+                //        Message = "Vehicle group updated with id:- " + VehicleGroupResponce.Id,
+                //        Code = Responcecode.Success
+                //    });
+                //}
+                //catch (Exception ex)
+                //{
+                //    _logger.LogError("Error in vehicle service update group method.");
+                //    return Task.FromResult(new VehicleGroupResponce
+                //    {
+                //        Message = "Exception :-" + ex.Message,
+                //        Code = Responcecode.Failed
+                //    });
+                //}
+                Group.Group entity = new Group.Group();
+                entity = _mapper.ToGroup(request);
+                entity = await _groupManager.Update(entity);
+                if (entity.Id > 0 && entity != null)
+                {
+                    if (request.GroupRef != null && Convert.ToInt16(request.GroupRef.Count) > 0)
+                    {
+                        entity.GroupRef = new List<Group.GroupRef>();
+                        foreach (var item in request.GroupRef)
+                        {
+                            if (item.RefId > 0)
+                                entity.GroupRef.Add(new Group.GroupRef() { Ref_Id = item.RefId, Group_Id = entity.Id });
+                        }
+                        if ((entity.GroupRef != null) && Convert.ToInt16(entity.GroupRef.Count) > 0)
+                        {
+                            bool vehicleRef = await _groupManager.UpdateRef(entity);
+                        }
+                        else
+                        {
+                            // delete existing reference
+                            await _groupManager.RemoveRef(entity.Id);
+                        }
+                    }
+                    else
+                    {
+                        // delete existing reference
+                        await _groupManager.RemoveRef(entity.Id);
+                    }
+                }
+                _logger.LogInformation("Update vehicle Group :" + Convert.ToString(entity.Name));
+                var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Update vehicle Group ", 1, 2, Convert.ToString(entity.Id)).Result;
+                return await Task.FromResult(new VehicleGroupResponce
+                {
+                    Message = "Vehicle group updated for id: " + entity.Id,
+                    Code = Responcecode.Success,
+                    VehicleGroup = request
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in create vehicle group :UpdateGroup with exception - " + ex.Message);
+                return await Task.FromResult(new VehicleGroupResponce
+                {
+                    Message = "vehicle Group Update Failed :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+
+        public override async Task<VehicleGroupResponce> DeleteGroup(VehicleGroupIdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                bool result = await _groupManager.Delete(request.GroupId, Group.ObjectType.VehicleGroup);
+                var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Create Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Delete Vehicle Group ", 1, 2, Convert.ToString(request.GroupId)).Result;
+                return await Task.FromResult(new VehicleGroupResponce
+                {
+                    Message = "Vehicle Group deleted.",
+                    Code = Responcecode.Success
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in delete vehicle group :DeleteGroup with exception - " + ex.StackTrace + ex.Message);
+                return await Task.FromResult(new VehicleGroupResponce
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+
+        public override async Task<VehicleGroupRefResponce> GetGroupDetails(GroupFilterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                Group.GroupFilter ObjGroupFilter = new Group.GroupFilter();
+                ObjGroupFilter = _mapper.ToGroupFilterEntity(request);
+
+                VehicleGroupRefResponce ObjVehicleGroupRes = new VehicleGroupRefResponce();
+                StringBuilder VehicleIdList = new StringBuilder();
+                IEnumerable<Group.Group> ObjRetrieveGroupList = null;
+                if (request.VehiclesGroup == true)
+                {
+                    ObjGroupFilter.GroupRef = false;
+                    ObjGroupFilter = _mapper.ToGroupFilterEntity(request);
+                    ObjRetrieveGroupList = await _groupManager.Get(ObjGroupFilter);
+                    ObjGroupFilter.GroupRef = request.Vehicles;
+                    if (ObjRetrieveGroupList != null)
+                    {
+                        foreach (var item in ObjRetrieveGroupList)
+                        {
+                            VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
+
+                            ObjGroupRef.Id = item.Id;
+                            ObjGroupRef.Name = item.Name;
+                            ObjGroupRef.VehicleCount = item.GroupRefCount;
+                            ObjGroupRef.IsVehicleGroup = true;
+                            ObjGroupRef.OrganizationId = item.OrganizationId;
+                            ObjGroupRef.Description = item.Description;
+                            ObjVehicleGroupRes.GroupRefDetails.Add(ObjGroupRef);
+                        }
+                    }
+
+                    if (ObjGroupFilter.GroupRef == true)
+                    {
+                        List<Group.GroupRef> VehicleDetails = await _groupManager.GetRef(ObjGroupFilter.Id);
+
+                        foreach (var item in VehicleDetails)
+                        {
+                            if (VehicleIdList.Length > 0)
+                            {
+                                VehicleIdList.Append(",");
+                            }
+                            VehicleIdList.Append(item.Ref_Id);
+                        }
                     }
                 }
 
-                if (ObjGroupFilter.GroupRef == true)
+                if ((ObjGroupFilter.GroupRef == true && ObjRetrieveGroupList != null && ObjGroupFilter.Id > 0) || (ObjGroupFilter.GroupRef == true && ObjGroupFilter.OrganizationId > 0 || VehicleIdList.Length > 0))
                 {
                     VehicleFilter ObjVehicleFilter = new VehicleFilter();
-                    ObjVehicleFilter.OrganizationId = request.OrganizationId;
-                    IEnumerable<Vehicle> ObjRetrieveVehicleList = _vehicelManager.Get(ObjVehicleFilter).Result;
+                    ObjVehicleFilter.OrganizationId = ObjGroupFilter.OrganizationId;
+                    ObjVehicleFilter.VehicleIdList = VehicleIdList.ToString();
+                    IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.Get(ObjVehicleFilter);
 
                     foreach (var item in ObjRetrieveVehicleList)
                     {
                         VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
 
                         ObjGroupRef.Id = item.ID;
-                        ObjGroupRef.VehicleGroupORVehicleName = item.Name== null ? "" : item.Name;
-                        ObjGroupRef.RegistartionNo = item.License_Plate_Number== null ? "" : item.License_Plate_Number;
-                        ObjGroupRef.VIN = item.VIN== null ? "" : item.VIN;
+                        ObjGroupRef.Name = item.Name == null ? "" : item.Name;
+                        ObjGroupRef.LicensePlateNumber = item.License_Plate_Number == null ? "" : item.License_Plate_Number;
+                        ObjGroupRef.VIN = item.VIN == null ? "" : item.VIN;
                         //ObjGroupRef.Status = SetEnumVehicleStatusType(item.Status);
                         ObjGroupRef.Status = (VehicleStatusType)Enum.Parse(typeof(VehicleStatusType), item.Status.ToString());
                         ObjGroupRef.IsVehicleGroup = false;
-                        ObjGroupRef.Model = item.Model == null ? "" : item.Model;
+                        ObjGroupRef.ModelId = item.ModelId == null ? "" : item.ModelId;
+                        ObjGroupRef.OrganizationId = item.Organization_Id;
                         ObjVehicleGroupRes.GroupRefDetails.Add(ObjGroupRef);
                     }
                 }
@@ -412,7 +407,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service GetGroupDetails method.");
+                _logger.LogError("Error in Get group details for group id :GetGroupDetails with exception - " + ex.StackTrace + ex.Message);
                 return await Task.FromResult(new VehicleGroupRefResponce
                 {
                     Message = "Exception " + ex.Message,
@@ -421,12 +416,12 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
         }
 
-        public async override Task<VehicleGroupRefResponce> GetVehiclesByVehicleGroup(VehicleGroupIdRequest request, ServerCallContext context)
+        public override async Task<VehicleGroupRefResponce> GetVehiclesByVehicleGroup(VehicleGroupIdRequest request, ServerCallContext context)
         {
             try
             {
 
-                List<GroupRef> VehicleDetails = _groupManager.GetRef(request.GroupId).Result;
+                List<Group.GroupRef> VehicleDetails = _groupManager.GetRef(request.GroupId).Result;
                 StringBuilder VehicleIdList = new StringBuilder();
                 foreach (var item in VehicleDetails)
                 {
@@ -438,26 +433,26 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 }
 
                 VehicleGroupRefResponce ObjVehicleRes = new VehicleGroupRefResponce();
-                if(VehicleIdList.Length >0)
+                if (VehicleIdList.Length > 0)
                 {
-                VehicleFilter ObjVehicleFilter = new VehicleFilter();
-                ObjVehicleFilter.VehicleIdList = VehicleIdList.ToString();
-                IEnumerable<Vehicle> ObjRetrieveVehicleList = _vehicelManager.Get(ObjVehicleFilter).Result;
-                
-                foreach (var item in ObjRetrieveVehicleList)
-                {
-                    VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
-                    ObjGroupRef.Id = item.ID;
-                    ObjGroupRef.VehicleGroupORVehicleName = item.Name== null ? "" : item.Name;
-                    ObjGroupRef.RegistartionNo = item.License_Plate_Number== null ? "" : item.License_Plate_Number;
-                    ObjGroupRef.VIN = item.VIN== null ? "" : item.VIN;
-                    ObjGroupRef.Model = item.Model;
-                    ObjGroupRef.StatusDate = item.Status_Changed_Date.ToString();
-                    ObjGroupRef.TerminationDate = item.Termination_Date.ToString();
-                    ObjVehicleRes.GroupRefDetails.Add(ObjGroupRef);
-                }
-                ObjVehicleRes.Message = "List of Vehicle generated for vehicle group";
-                ObjVehicleRes.Code = Responcecode.Success;
+                    VehicleFilter ObjVehicleFilter = new VehicleFilter();
+                    ObjVehicleFilter.VehicleIdList = VehicleIdList.ToString();
+                    IEnumerable<Vehicle> ObjRetrieveVehicleList = _vehicelManager.Get(ObjVehicleFilter).Result;
+
+                    foreach (var item in ObjRetrieveVehicleList)
+                    {
+                        VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
+                        ObjGroupRef.Id = item.ID;
+                        ObjGroupRef.Name = item.Name == null ? "" : item.Name;
+                        ObjGroupRef.LicensePlateNumber = item.License_Plate_Number == null ? "" : item.License_Plate_Number;
+                        ObjGroupRef.VIN = item.VIN == null ? "" : item.VIN;
+                        ObjGroupRef.ModelId = item.ModelId;
+                        //ObjGroupRef.StatusDate = item.Status_Changed_Date.ToString();
+                        //ObjGroupRef.TerminationDate = item.Termination_Date.ToString();
+                        ObjVehicleRes.GroupRefDetails.Add(ObjGroupRef);
+                    }
+                    ObjVehicleRes.Message = "List of Vehicle generated for vehicle group";
+                    ObjVehicleRes.Code = Responcecode.Success;
                 }
                 else
                 {
@@ -470,7 +465,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service GetVehiclesByVehicleGroup method.");
+                _logger.LogError("Error in Get vehicle details for group id :GetVehiclesByVehicleGroup with exception - " + ex.StackTrace + ex.Message);
 
                 return await Task.FromResult(new VehicleGroupRefResponce
                 {
@@ -480,32 +475,147 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
         }
 
-        //  private VehicleStatusType SetEnumVehicleStatusType(vehicle.VehicleStatusType type)
-        // {
-        //     VehicleStatusType vehicleStatusType = VehicleStatusType.None;
+        public override async Task<OrgVehicleGroupListResponse> GetOrganizationVehicleGroupdetails(OrganizationIdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("Get vehicle list by group id method in vehicle API called.");
+                OrgVehicleGroupListResponse response = new OrgVehicleGroupListResponse();
+                IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroupRequest> ObjOrgVehicleGroupList = await _vehicelManager.GetOrganizationVehicleGroupdetails(request.OrganizationId);
+                foreach (var item in ObjOrgVehicleGroupList)
+                {
+                    response.OrgVehicleGroupList.Add(_mapper.ToOrgVehicleGroup(item));
+                }
 
-        //     if ( type == vehicle.VehicleStatusType.NONE)
-        //     {
-        //         vehicleStatusType = VehicleStatusType.None;
-        //     }
-        //     else if ( type == vehicle.VehicleStatusType.OPTIN)
-        //     {
-        //         vehicleStatusType = VehicleStatusType.Optin;
-        //     }
-        //     else if ( type == vehicle.VehicleStatusType.OPTOUT)
-        //     {
-        //         vehicleStatusType = VehicleStatusType.Optout;
-        //     }
-        //     else if ( type == vehicle.VehicleStatusType.TERMINATE)
-        //     {
-        //         vehicleStatusType = VehicleStatusType.Terminate;
-        //     }
-        //     else if ( type == vehicle.VehicleStatusType.OTA)
-        //     {
-        //         vehicleStatusType = VehicleStatusType.Ota;
-        //     }
-        //     return vehicleStatusType;
-        // }
+                response.Code = Responcecode.Success;
+                response.Message = "Organization vehicle Group details fetched.";
+                return await Task.FromResult(response);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in Get vehicle group details for organization id :GetOrganizationVehicleGroupdetails with exception - " + ex.StackTrace + ex.Message);
+
+                return await Task.FromResult(new OrgVehicleGroupListResponse
+                {
+                    Message = "Exception " + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+
+        public override async Task<VehicleGroupDetailsResponse> GetVehicleGroup(OrgvehicleIdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("Get vehicle group list by orgnization & vehicle id method in vehicle API called.");
+                VehicleGroupDetailsResponse response = new VehicleGroupDetailsResponse();
+                IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroup> vehicleGroupList = await _vehicelManager.GetVehicleGroup(request.OrganizationId, request.VehicleId);
+
+                foreach (var item in vehicleGroupList)
+                {
+                    response.VehicleGroups.Add(_mapper.ToVehicleGroupDetails(item));
+                }
+
+                response.Code = Responcecode.Success;
+                response.Message = "Organization vehicle Group details fetched.";
+                return await Task.FromResult(response);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in Get vehicle group details for organization id and vehice id:GetVehicleGroup with exception - " + ex.StackTrace + ex.Message);
+
+                return await Task.FromResult(new VehicleGroupDetailsResponse
+                {
+                    Message = "Exception " + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+
+        public override async Task<VehicleGroupRefResponce> GetVehiclesByAccountGroup(OrgAccountIdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("Get vehicle list by group id method in vehicle API called.");
+
+                StringBuilder VehicleIdList = new StringBuilder();
+                // Get Access Relationship
+                AccountComponent.entity.AccessRelationshipFilter accessFilter = new AccountComponent.entity.AccessRelationshipFilter();
+                accessFilter.AccountId = 0;
+                accessFilter.AccountGroupId = request.AccountGroupId;
+                accessFilter.VehicleGroupId = 0;
+                // get account group and vehicle group access relationship.
+                var accessResult = await accountmanager.GetAccessRelationship(accessFilter);
+                if (Convert.ToInt32(accessResult.Count) > 0)
+                {
+                    List<int> vehicleGroupIds = new List<int>();
+                    //List<int> accountIdList = new List<int>();
+                    vehicleGroupIds.AddRange(accessResult.Select(c => c.VehicleGroupId).ToList());
+                    var groupFilter = new Group.GroupFilter();
+                    groupFilter.GroupIds = vehicleGroupIds;
+                    groupFilter.OrganizationId = request.OrganizationId;
+                    groupFilter.GroupRefCount = false;
+                    groupFilter.GroupRef = true;
+                    groupFilter.ObjectType = Group.ObjectType.None;
+                    groupFilter.GroupType = Group.GroupType.None;
+                    groupFilter.FunctionEnum = Group.FunctionEnum.None;
+                    var vehicleGroups = await _groupManager.Get(groupFilter);
+                    // Get group reference
+                    foreach (Group.Group vGroup in vehicleGroups)
+                    {
+                        foreach (Group.GroupRef groupRef in vGroup.GroupRef)
+                        {
+                            if (groupRef.Ref_Id > 0)
+                                if (VehicleIdList.Length > 0)
+                                {
+                                    VehicleIdList.Append(",");
+                                }
+                            VehicleIdList.Append(groupRef.Ref_Id);
+                        }
+                    }
+                }
+                VehicleGroupRefResponce response = new VehicleGroupRefResponce();
+                List<Vehicle> ObjVehicleList = new List<Vehicle>();
+                if (VehicleIdList.Length > 0)
+                {
+                    VehicleFilter ObjVehicleFilter = new VehicleFilter();
+                    ObjVehicleFilter.VehicleIdList = VehicleIdList.ToString();
+                    ObjVehicleFilter.OrganizationId = request.OrganizationId;
+                    IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.Get(ObjVehicleFilter);
+                  
+                    foreach (var item in ObjRetrieveVehicleList)
+                    {
+                        VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
+                        ObjGroupRef.Id = item.ID;
+                        ObjGroupRef.Name = item.Name == null ? "" : item.Name;
+                        ObjGroupRef.LicensePlateNumber = item.License_Plate_Number == null ? "" : item.License_Plate_Number;
+                        ObjGroupRef.VIN = item.VIN == null ? "" : item.VIN;
+                        ObjGroupRef.ModelId = item.ModelId;
+                        ObjGroupRef.OrganizationId = item.Organization_Id;
+                        response.GroupRefDetails.Add(ObjGroupRef);
+                    }
+                }
+                response.Code = Responcecode.Success;
+                response.Message = "Organization vehicle Group details fetched.";
+                return await Task.FromResult(response);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in Get vehicle group details for organization id :GetVehiclesByAccountGroup with exception - " + ex.StackTrace + ex.Message);
+
+                return await Task.FromResult(new VehicleGroupRefResponce
+                {
+                    Message = "Exception " + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+
+
+
 
         private group.GroupType GetEnum(char value)
         {

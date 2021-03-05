@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using net.atos.daf.ct2.portalservice.Account;
 using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.utilities;
 using AccountBusinessService = net.atos.daf.ct2.accountservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
@@ -57,6 +58,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The EmailId address, first name, last name and organization id should be valid.");
                 }
+                // The account type should be single character
+                if (request.Type.Length > 1)
+                {
+                    return StatusCode(400, "The account type is not valid.");
+                }
                 // validate account type
                 char accountType = Convert.ToChar(request.Type);
                 if (!EnumValidator.ValidateAccountType(accountType))
@@ -64,26 +70,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "The Account type is not valid.");
                 } 
                 var accountRequest = _mapper.ToAccount(request);
+                
                 AccountBusinessService.AccountData accountResponse = await _accountClient.CreateAsync(accountRequest);
-                var response = _mapper.ToAccount(accountResponse.Account);
-                 
-                if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed
-                    && accountResponse.Message == "The duplicate account, please provide unique email address.")
+                AccountResponse response = new AccountResponse();
+
+                response = _mapper.ToAccount(accountResponse.Account);
+                if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed)
                 {
                     return StatusCode(409, response);
-
-                    //    return StatusCode(409, object);
-                    //    //{
-                    //    //    MessageExtensions = ""
-                    //    //        Account = {
-
-                    //    //    }
-                    //}
-
-                    // Object with message and 
-                    // Duplicate within organization. 
-                    // Duplicate across organization. 
-                    // Yes (Get by id and organization.)
                 }
                 else if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed
                     && accountResponse.Message == "There is an error creating account.")
@@ -96,7 +90,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "accountResponse is null");
+                    return StatusCode(500, "Internal Server Error.(00)");
                 }
             }            
             catch (Exception ex)
@@ -297,6 +291,47 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("organization/add")]
+        public async Task<IActionResult> AddAccountOrg(AccountOrganizationRequest request)
+        {
+            try
+            {
+                // Validation 
+                if ( (request.OrganizationId <= 0) || (request.AccountId <=0))
+                {
+                    return StatusCode(400, "The organization id and account id is required.");
+                }
+
+                var accountRequest = new AccountBusinessService.AccountOrganization();
+                accountRequest.OrganizationId = request.OrganizationId;
+                accountRequest.AccountId = request.AccountId;
+                accountRequest.StartDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                accountRequest.EndDate = 0;
+
+                AccountBusinessService.AccountOrganizationResponse response = await _accountClient.AddAccountToOrgAsync(accountRequest);                
+                if (response != null && response.Code == AccountBusinessService.Responcecode.Failed)
+                {
+                    return StatusCode(500, "Internal Server Error.(0)");
+                }
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Account Service:AddAccountToOrg : " + ex.Message + " " + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(500, "Internal Server Error.(01)");
+                }
+                // check for fk violation
+                if (ex.Message.Contains(SocketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
 
         #region Account Picture

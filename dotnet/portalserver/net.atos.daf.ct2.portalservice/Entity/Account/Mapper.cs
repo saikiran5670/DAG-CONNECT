@@ -7,6 +7,7 @@ using Google.Protobuf;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using net.atos.daf.ct2.utilities;
 using AccountBusinessService = net.atos.daf.ct2.accountservice;
 
 
@@ -26,7 +27,9 @@ namespace net.atos.daf.ct2.portalservice.Account
             account.Password = request.Password;
             account.OrganizationId = request.OrganizationId;
             account.DriverId = request.DriverId;
-            account.CreatedAt = Convert.ToInt64(DateTime.Now.ToString());
+            account.CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            account.StartDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            account.EndDate = 0;
             return account;
         }
         public  AccountResponse ToAccount(AccountBusinessService.AccountRequest response)
@@ -44,6 +47,7 @@ namespace net.atos.daf.ct2.portalservice.Account
             account.DriverId = response.DriverId;
             account.PreferenceId = response.PreferenceId;
             account.BlobId = response.BlobId;
+            account.CreatedAt = response.CreatedAt;
             return account;
         }        
         public List<AccountResponse> ToAccounts(AccountBusinessService.AccountDataList response)

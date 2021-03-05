@@ -1,0 +1,172 @@
+<div *ngIf="actionType == 'view'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+      <span>{{ breadcumMsg }}</span>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+        <span class='custom-font' (click)="toBack()">
+            <span>&nbsp;</span>
+            <span class='backBtnCss'>Back</span>
+        </span>
+    </div>
+</div>
+<form [formGroup]="packageFormGroup">
+    <mat-card class='mat-elevation-z'>
+        <mat-card-content>
+            <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddPackage || 'Add New Package') : actionType == 'edit' ? (translationData.lblEditPackage || 'Edit Package') : (translationData.lblViewPacakge|| 'View Package') }}</span>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblPackageCode || 'Package Code' }}</mat-label>
+                    <div *ngIf="actionType != 'view'">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <input  placeholder="{{ translationData.lblEnterPackageCode || 'Enter Package Code ' }}" matInput formControlName="packageCode" maxlength="50" >
+                        </mat-form-field>
+                        <!-- <mat-error *ngIf="packageFormGroup.get('packageCode').hasError('required')">
+                            {{ translationData.lblPleaseenterfeaturename || 'Please enter Package code'}}
+                        </mat-error> -->
+                        <!-- <mat-error *ngIf="packageFormGroup.get('packageCode').hasError('whitespace')">
+                            {{ translationData.lblPackageCodecannotcontainonlywhitespace || 'Package Code cannot contain only whitespace' }}
+                        </mat-error> -->
+                    </div>
+                    <div *ngIf="actionType == 'view'">
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.packageCode }}</span>
+                    </div>
+                </div>
+                <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label style='display: flex; place-content: space-between;'>
+                        <span>{{ translationData.lblPackageName || 'Package Name' }}</span>
+                    </mat-label>
+                    <div *ngIf="actionType != 'view'">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <input maxlength="100" placeholder="{{ translationData.lblEnterPackageName || 'Enter Package Name' }}" matInput
+                                formControlName="name">
+                        </mat-form-field>
+                        <mat-error *ngIf="packageFormGroup.get('name').hasError('whitespace')">
+                            {{ translationData.lblNAmecannotcontainonlywhitespace || 'Name cannot contain only whitespace' }}
+                        </mat-error>
+                    </div>
+                    <div *ngIf="actionType == 'view'">
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.name }}</span>
+                    </div>
+                    </div>
+                <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label style='display: flex; place-content: space-between;'>
+                        <span>{{ translationData.lblDescription || 'Description' }}</span>
+                        <span *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax || '120 characters max' }}</span>
+                    </mat-label>
+                    <div *ngIf="actionType != 'view'">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <input maxlength="100" placeholder="{{ translationData.lblEnterDescription || 'Enter Description' }}" matInput
+                                formControlName="description">
+                        </mat-form-field>
+                        <mat-error *ngIf=" packageFormGroup.get('description').hasError('whitespace')">
+                            {{ translationData.lblDescriptioncannotcontainonlywhitespace || 'Feature Description cannot contain only whitespace' }}
+                        </mat-error>
+                    </div>
+                    <div *ngIf="actionType == 'view'">
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.description }}</span>
+                    </div>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+                <!-- <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label style='display: flex; place-content: space-between;'>
+                        {{ translationData.lblSelectType || 'Select Type' }}
+                    </mat-label>
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-select placeholder="{{ translationData.lblSelectType || 'Select Type' }}">
+                            <mat-option > Org VIN</mat-option>
+                             <mat-option *ngFor="let role of roles | removeDuplicates" [value]="role"> -->
+                            <!-- <mat-option>
+                                Org VIN
+                            </mat-option>
+                            <mat-option >Org pkg</mat-option>
+                        </mat-select>
+                    </mat-form-field> -->
+                <!-- </div> --> 
+                <div class='areaWidth min-width-30-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
+                    <span>{{ translationData.lblSelectStatus || 'Select Status' }}</span>
+                    <div *ngIf="actionType != 'view'" class='margin-top-5'>
+                        <mat-radio-group (change)='onStatusChange($event)'>
+                            <mat-radio-button [checked]="selectedStatus ===  'active' ? true : false" style='margin-right: 20px;' value="active">{{ translationData.lblActive || 'Active' }}
+                            </mat-radio-button>
+                            <mat-radio-button [checked]="selectedStatus ===  'inactive' ? true : false" style='margin-right: 20px;' value="inactive" >{{ translationData.lblInactive || 'Inactive' }}
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                    <div *ngIf="actionType == 'view'">
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.status }}</span>
+                    </div>
+                    </div>
+            </div>
+            <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="space-between center">
+                <div fxLayout="column" fxLayoutAlign="left">
+                    <div fxLayout="row" fxLayoutAlign='center center'>
+                        <mat-icon class='margin-right-10'>info</mat-icon>
+                        <span>{{ actionType == 'create' ? (translationData.lblPackgeHintMessage || 'You can select multiple Features from below list to map with this Package') : (translationData.lblEditPackageHintMessage || 'You can select multiple Features from below list to map with this Package') }}</span>
+                    </div>
+                </div>
+                <div fxLayout="column" fxLayoutAlign="end">
+                    <div fxLayout="row">
+                      <button class='margin-right-10' mat-raised-button color="primary"
+                            (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+                      <button class='margin-right-10'  mat-raised-button color="primary" *ngIf="actionType == 'edit'"
+                              (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
+                      <button class='no-margin' [disabled]="!packageFormGroup.valid" mat-raised-button color="primary"
+                            (click)='onCreate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm || 'Confirm') }}</button>   
+                    </div>
+                </div>
+            </div> 
+             <div style='padding: 20px; position: relative;'>
+                <mat-divider></mat-divider>
+            </div>
+            <!-- <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectFeatures || 'Select Features' }}</span>
+                </div>
+            </div>
+           <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
+                <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                  <mat-form-field appearance="outline">
+                      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                      <span matPrefix><mat-icon>search</mat-icon></span>
+                  </mat-form-field>
+                </div>
+            </div>  -->
+            <!-- <div class='margin-bottom-xlg' >
+                <mat-table [dataSource]="dataSource" class="table-items" matSort>
+                  <ng-container matColumnDef="select">
+                    <div>
+                      <mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox (change)='$event ? masterToggleForFeatures() : null'
+                          [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
+                          [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
+                          [aria-label]='checkboxLabelForFeatures()' [disabled]="actionType == 'view'">
+                        </mat-checkbox>
+                        <span style="margin: 5px 0px 0px 5px;" [ngClass]="{'opacity-0-5': actionType == 'view'}">{{ translationData.lblAll || 'All' }}</span>
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row">
+                        <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectionForFeatures.toggle(row) : null'
+                          [checked]='selectionForFeatures.isSelected(row)' [aria-label]='checkboxLabelForFeatures(row)' [disabled]="actionType == 'view'">
+                        </mat-checkbox>
+                      </mat-cell>
+                    </div>
+                  </ng-container>
+                  <ng-container matColumnDef="featureName">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatureName || 'Feature Name' }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                      {{ row.featureName }}
+                    </mat-cell>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;">
+                  </mat-row>
+                </mat-table>
+                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+              </div>  -->
+        </mat-card-content>
+    </mat-card>
+</form>

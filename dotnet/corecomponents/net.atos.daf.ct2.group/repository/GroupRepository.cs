@@ -38,8 +38,9 @@ namespace net.atos.daf.ct2.group
                 parameter.Add("@ref_id", group.RefId);
                 parameter.Add("@name", group.Name);
                 parameter.Add("@description", group.Description);
-                string query = "insert into master.group(object_type, group_type, argument, function_enum, organization_id, ref_id, name, description) " +
-                              "values(@object_type, @group_type, @argument, @function_enum, @organization_id, @ref_id, @name, @description) RETURNING id";
+                parameter.Add("@created_at", group.CreatedAt.Value);
+                string query = "insert into master.group(object_type, group_type, argument, function_enum, organization_id, ref_id, name, description,created_at) " +
+                              "values(@object_type, @group_type, @argument, @function_enum, @organization_id, @ref_id, @name, @description,@created_at) RETURNING id";
 
                 var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
@@ -127,7 +128,7 @@ namespace net.atos.daf.ct2.group
             {
                 var parameter = new DynamicParameters();
                 List<Group> groupList = new List<Group>();
-                var query = @"select id,object_type,group_type,argument,function_enum,organization_id,ref_id,name,description from master.group where 1=1 ";
+                var query = @"select id,object_type,group_type,argument,function_enum,organization_id,ref_id,name,description,created_at from master.group where 1=1 ";
 
                 if (groupFilter != null)
                 {
@@ -154,6 +155,13 @@ namespace net.atos.daf.ct2.group
                         parameter.Add("@group_type", (char)groupFilter.GroupType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and group_type=@group_type";
                     }
+                    else
+                    {
+                        parameter.Add("@group_type_group", (char)GroupType.Group, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                        parameter.Add("@group_type_dynamic", (char)GroupType.Dynamic, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                        query = query + " and (group_type=@group_type_group or group_type=@group_type_dynamic) ";
+                    }
+                    
 
                     // function functional enum filter
                     if (((char)groupFilter.FunctionEnum) != ((char)FunctionEnum.None))
@@ -331,6 +339,10 @@ namespace net.atos.daf.ct2.group
             entity.FunctionEnum = (FunctionEnum)Convert.ToChar(record.function_enum);
             entity.OrganizationId = record.organization_id;
             entity.RefId = record.ref_id;
+            if ((object)record.created_at != null)
+            {
+                entity.CreatedAt = record.created_at;
+            }
             return entity;
         }
 
