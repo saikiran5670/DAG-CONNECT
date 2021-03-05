@@ -27,7 +27,7 @@ spec:
       - backend:
           serviceName: portalservice
           servicePort: 80
-        path: /authentication
+        path: /auth
       - backend:
           serviceName: portalservice
           servicePort: 80
