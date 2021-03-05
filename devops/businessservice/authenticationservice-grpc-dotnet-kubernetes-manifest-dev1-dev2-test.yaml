@@ -67,7 +67,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: authenticationservice-grpc
+  name: authenticationservice
   labels:
     svc.kubernetes.io/name: authenticationservice-grpc
     svc.kubernetes.io/type: businessservice
