@@ -118,13 +118,14 @@ namespace net.atos.daf.ct2.packageservice
                 packageFilter.Type = (package.ENUM.PackageType)(int)request.Type;
                 var packages = _packageManager.Get(packageFilter).Result;
                 response.PacakageList.AddRange(packages
-                                     .Select(x => new GetPackageRequest() 
-                                     { Id=x.Id,
-                                       Code = x.Code, 
-                                       Description=x.Description,
-                                       Name=x.Name,
-                                       Status=(PackageStatus)x.Status,
-                                       Type= (PackageType)x.Type}).ToList());
+                                     .Select(x => new GetPackageRequest()
+                                     { Id = x.Id,
+                                         Code = x.Code,
+                                         Description = x.Description,
+                                         Name = x.Name,
+                                         FeatureSetID=x.FeatureSetID,                                          
+                                         Status = (PackageStatus)x.Status,
+                                         Type = (PackageType)x.Type }).ToList()); 
                 _logger.LogInformation("Get package details.");
                 return await Task.FromResult(response);
             }

@@ -38,6 +38,10 @@ message PackageCreateRequest {
     string Description=6;   
     PackageStatus Status =7;
   }
+  message StringValue{
+  string value=1;
+  
+  }
   message PackageUpdateRequest { 
     int32 Id=1;
     string Code=2;
