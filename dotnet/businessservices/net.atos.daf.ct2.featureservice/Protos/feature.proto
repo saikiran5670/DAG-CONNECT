@@ -13,7 +13,7 @@ enum Responcecode{
 }
 
 // The greeting service definition.
-service FeatureServiceTest {  
+service FeatureService {  
   rpc Create (FeatureRequest) returns (FeatureResponce);
   rpc CreateFeatureSet (FetureSetRequest) returns (FeatureSetResponce);
   rpc Update (FeatureRequest) returns (FeatureResponce);  

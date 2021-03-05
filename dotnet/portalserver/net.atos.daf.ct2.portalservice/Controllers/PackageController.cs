@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 var featureFilterRequest = new FeaturesFilterRequest();
-
+                featureFilterRequest.FeatureSetID = 103;
                 var featureList = await _featureclient.GetFeaturesAsync(featureFilterRequest);
 
             }
