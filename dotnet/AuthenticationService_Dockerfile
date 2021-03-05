@@ -24,5 +24,9 @@ RUN dotnet publish "net.atos.daf.ct2.authenticationservice.csproj" -c Release -o
 
 FROM base AS final
 WORKDIR /app
+RUN mkdir log
+RUN mkdir log/Error
+RUN mkdir log/Info
+
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "net.atos.daf.ct2.authenticationservice.dll"]
