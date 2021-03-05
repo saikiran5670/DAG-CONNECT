@@ -8,6 +8,9 @@ package net.atos.daf.ct2.accountservice;
 // The account service definition.
 service AccountService 
 {
+  //Identity Methods
+  rpc Auth (IdentityRequest) returns (AccountIdentityResponse);
+
   // Account Methods 
   rpc Create (AccountRequest) returns (AccountData);
   rpc Update (AccountRequest) returns (AccountData);
@@ -329,4 +332,27 @@ message AccountBlobResponse
 
 // End - Profile picture
 
- 
+// Start - Identity  
+message IdentityRequest {
+    string UserName=1;
+    string Password=2;
+}
+message AccountIdentityResponse {
+    Responcecode code=1;
+    string Message=2;
+    repeated AccountIdentityOrg AccOrganization = 3;
+    repeated AccountIdentityRole AccountRole=4;
+    AccountRequest accountInfo=5;
+}
+message AccountIdentityOrg
+{
+    int32 Id=1;
+    string Name=2;
+}
+message AccountIdentityRole 
+{
+    int32 Id=1;
+    string Name=2;
+    int32 OrganizationId=3;
+}
+// End - Identity  

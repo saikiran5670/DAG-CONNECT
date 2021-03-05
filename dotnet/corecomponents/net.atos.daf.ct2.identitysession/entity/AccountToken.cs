@@ -5,7 +5,7 @@ namespace net.atos.daf.ct2.identitysession.entity
 {
     public class AccountToken
     {
-        
+        public int Id { get; set; } 
         public string UserName { get; set; }  
         public string AccessToken { get; set; }
         public int ExpireIn { get; set; }  

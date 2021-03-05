@@ -1,4 +1,16 @@
 {
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://localhost/net.atos.daf.ct2.accountservice",
+      "sslPort": 0
+    },
+    "iisExpress": {
+      "applicationUrl": "http://localhost:57428/",
+      "sslPort": 0
+    }
+  },
   "profiles": {
     "net.atos.daf.ct2.accountservice": {
       "commandName": "Project",

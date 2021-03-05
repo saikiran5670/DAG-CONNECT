@@ -6,7 +6,7 @@ option csharp_namespace = "net.atos.daf.ct2.authenticationservice";
 package net.atos.daf.ct2.authenticationservice;
 
 service AuthService {
-  rpc Auth (IdentityRequest ) returns (AccountIdentityResponse);
+  rpc Auth (IdentityRequest) returns (AccountIdentityResponse);
   rpc Validate (ValidateRequest) returns (ValidateResponse);
   rpc ChangePassword (IdentityRequest ) returns (CommonResponse);
   //rpc SignOut (AuthRequest) returns (AuthResponse);
@@ -23,6 +23,7 @@ message AccountIdentityResponse {
     AccountPreference AccountPreference= 5;      
     repeated AccountOrganization AccountOrganization = 6;
     repeated AccountOrgRole AccountRole=7;
+    AccountResponse accountInfo=8;
 }
 message ValidateRequest {
     string Token=1;
@@ -72,6 +73,22 @@ message AccountPreference
     google.protobuf.StringValue DriverId =12;
     bool Active =13;
 }
+message AccountResponse {
+    int32 Id= 1;
+    string EmailId=2;
+    string Salutation=3;
+    string FirstName=4;
+    string LastName=5;
+    string Password=6;    
+    int32 OrganizationId=7;
+    string Type=8;
+    string DriverId=9;
+    int32 PreferenceId=10;
+    int32 BlobId=11;
+    int64 CreatedAt=12;
+    int64 StartDate=13;
+    int64 EndDate=14;    
+  }
 enum Responsecode{
     Success = 0;
     Failed = 1;
