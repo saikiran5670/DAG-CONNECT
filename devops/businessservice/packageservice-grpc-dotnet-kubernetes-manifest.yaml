@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: packageservice-grpc
+  name: packageservice-grpc-deployment
 spec:
   selector:
     matchLabels:
