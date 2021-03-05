@@ -1,4 +1,4 @@
-<div *ngIf='!editFlag'>
+<div *ngIf='!createStatus'>
     <mat-card class='mat-elevation-z'>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -75,4 +75,13 @@
             <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
         </div>
     </mat-card>
+</div>
+<div *ngIf='createStatus || editFlag || viewFlag' >
+<app-create-edit-view-organisation-relationship 
+[createStatus]='createStatus' 
+[translationData]='translationData'
+[editFlag]='editFlag'
+[viewFlag]='viewFlag'
+ ></app-create-edit-view-organisation-relationship>
+
 </div>
