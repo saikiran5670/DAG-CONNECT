@@ -16,7 +16,7 @@ using FeatuseBusinessService = net.atos.daf.ct2.featureservice;
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
-    [Route("account")]
+    [Route("feature")]
     public class FeatureController : Controller
     {
 
