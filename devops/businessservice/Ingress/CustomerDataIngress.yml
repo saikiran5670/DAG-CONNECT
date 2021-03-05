@@ -15,71 +15,11 @@ spec:
       - backend:
           serviceName: customerdataservice
           servicePort: 80
-        path: /swagger
-      - backend:
-          serviceName: customerdataservice
-          servicePort: 80
         path: /customer-data
       - backend:
-          serviceName: authenticationservice
-          servicePort: 80
-        path: /auth
-      - backend:
-          serviceName: authenticationservice
-          servicePort: 80
-        path: /login
-      - backend:
-          serviceName: authenticationservice
-          servicePort: 80
-        path: /validate
-      - backend:
-          serviceName: accountservice
-          servicePort: 80
-        path: /account
-      - backend:
-          serviceName: organizationservice
-          servicePort: 80
-        path: /organization   
-      - backend:
-          serviceName: vehicleservice
-          servicePort: 80
-        path: /vehicle   
-      - backend:
-          serviceName: roleservice 
-          servicePort: 80
-        path: /role   
-      - backend:
-          serviceName: translationservice 
-          servicePort: 80
-        path: /translation
-      - backend:
-          serviceName: auditservice 
-          servicePort: 80
-        path: /audit
-      - backend:
-          serviceName: auditservicegrpc
-          servicePort: 80
-        path: /auditgrpc
-      - backend:
-          serviceName: featureservice 
-          servicePort: 80
-        path: /feature
-      - backend:
-          serviceName: portalservicerest
+          serviceName: portalservice
           servicePort: 80
         path: /portalservice
-      - backend:
-          serviceName: portalservicepoc
-          servicePort: 80
-        path: /accountpoc
-      - backend:
-          serviceName: portalservicepoc
-          servicePort: 80
-        path: /authenticationpoc    
-      - backend:
-          serviceName: portalservicepoc
-          servicePort: 80
-        path: /demopoc
       - backend:
           serviceName: portalservice
           servicePort: 80
