@@ -38,6 +38,7 @@ namespace net.atos.daf.ct2.portalservice
             var accountservice = Configuration["ServiceConfiguration:accountservice"];
             var packageservice = Configuration["ServiceConfiguration:packageservice"];
             var vehicleservice = Configuration["ServiceConfiguration:vehicleservice"];
+            var featureservice= Configuration["ServiceConfiguration:featureservice"];
             // We are enforcing to call Insercure service             
             AppContext.SetSwitch(
                     "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
@@ -66,7 +67,7 @@ namespace net.atos.daf.ct2.portalservice
           
             services.AddGrpcClient<FeatureService.FeatureServiceClient>(o =>
             {
-                o.Address = new Uri(accountservice);
+                o.Address = new Uri(featureservice);
             });
             services.AddSwaggerGen(c =>
             {

@@ -3,7 +3,7 @@
     "net.atos.daf.ct2.featureservice": {
       "commandName": "Project",
       "launchBrowser": false,
-      "applicationUrl": "http://localhost:5000",
+      "applicationUrl": "http://localhost:5009",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

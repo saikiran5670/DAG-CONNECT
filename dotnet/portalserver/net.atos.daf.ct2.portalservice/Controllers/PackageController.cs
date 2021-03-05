@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.packageservice;
 using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.featureservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -17,12 +18,36 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     {
         private readonly ILogger<PackageController> _logger;
         private readonly PackageService.PackageServiceClient _packageClient;
+        private readonly FeatureService.FeatureServiceClient _featureclient;
 
-        public PackageController(PackageService.PackageServiceClient packageClient, ILogger<PackageController> logger)
+        public PackageController(PackageService.PackageServiceClient packageClient,
+            FeatureService.FeatureServiceClient featureclient,
+            ILogger<PackageController> logger)
         {
             _packageClient = packageClient;
+            _featureclient = featureclient;
             _logger = logger;
 
+        }
+
+
+
+        private async void RetrieveFeatureSetId(List<string> features) {
+
+            try
+            {
+                var featureFilterRequest = new FeaturesFilterRequest();
+
+                var featureList = await _featureclient.GetFeaturesAsync(featureFilterRequest);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+           
+        
         }
 
         [HttpPost]
@@ -31,12 +56,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+
+                var features = new List<string>();
+                features.AddRange(request.Features.Select(x => x.ToString()).ToList());
+                RetrieveFeatureSetId(features);
+
                 // Validation 
                 if ((string.IsNullOrEmpty(request.Code)) || (string.IsNullOrEmpty(request.Name))
                 || (request.Features.Count == 0) || !EnumValidator.ValidateAccountType((char)request.Type))
                 {
                     return StatusCode(400, "The Package code,name,type and features are required.");
                 }
+              
+
+
                 var packageResponse = await _packageClient.CreateAsync(request);
                 if (packageResponse != null
                    && packageResponse.Message == "There is an error creating package.")
@@ -103,7 +136,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         //Get/Export Packages
         [HttpPost]
-        [Route("getpackages")]
+        [Route("get")]
         public async Task<IActionResult> Get(GetPackageRequest request)
         {
             try
@@ -118,7 +151,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(404, "Accounts details are found.");
+                        return StatusCode(404, "Package details are found.");
                     }
                 }
                 else
