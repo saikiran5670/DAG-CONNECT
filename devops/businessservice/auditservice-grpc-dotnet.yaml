@@ -73,7 +73,7 @@ steps:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
     dockerFile: dotnet/AuditService_Dockerfile
-    imageName: auditservicegrpc
+    imageName: auditservice-grpc
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -81,5 +81,5 @@ steps:
     azureSubscription: $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
-    imageName: auditservicegrpc
+    imageName: auditservice-grpc
 
