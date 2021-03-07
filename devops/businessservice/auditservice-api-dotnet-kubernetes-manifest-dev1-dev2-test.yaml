@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auditservicegrpc-deployment
+  name: auditservice-grpc-deployment
   labels:
-    app.kubernetes.io/name: auditservicegrpc
+    app.kubernetes.io/name: auditservice-grpc
     app.kubernetes.io/type: businessservice
 spec:
   template:
@@ -11,7 +11,7 @@ spec:
       annotations:
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
       labels:
-        app.kubernetes.io/name: auditservicegrpc
+        app.kubernetes.io/name: auditservice-grpc
         app.kubernetes.io/type: businessservice
     spec:
       automountServiceAccountToken: false
@@ -27,15 +27,15 @@ spec:
               - key: app.kubernetes.io/name
                 operator: In
                 values:
-                - auditservicegrpc
+                - auditservice-grpc
               - key: app.kubernetes.io/type
                 operator: In
                 values:
                 - businessservice
             topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: auditservicegrpc-container
-        image: #{acrurl}#/auditservicegrpc
+      - name: auditservice-grpc-container
+        image: #{acrurl}#/auditservice-grpc
         imagePullPolicy: "Always"
         securityContext:
           allowPrivilegeEscalation: false
@@ -61,35 +61,35 @@ spec:
         agentpool: npuser01         
   selector:
     matchLabels:
-        app.kubernetes.io/name: auditservicegrpc
+        app.kubernetes.io/name: auditservice-grpc
         app.kubernetes.io/type: businessservice
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: auditservicegrpc
+  name: auditservice
   labels:
-    svc.kubernetes.io/name: auditservicegrpc
+    svc.kubernetes.io/name: auditservice-grpc
     svc.kubernetes.io/type: businessservice
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - protocol: TCP
     port: 80
     targetPort: 8080
   selector:
-    app.kubernetes.io/name: auditservicegrpc
+    app.kubernetes.io/name: auditservice-grpc
     app.kubernetes.io/type: businessservice
 
 ---
 kind: HorizontalPodAutoscaler 
 apiVersion: autoscaling/v2beta1 
 metadata: 
-  name: auditservicegrpc-hpa
+  name: auditservice-grpc-hpa
   labels:
-    hpa.kubernetes.io/name: auditservicegrpc
+    hpa.kubernetes.io/name: auditservice-grpc
     hpa.kubernetes.io/type: businessservice 
 spec: 
   maxReplicas: 5 
@@ -97,7 +97,7 @@ spec:
   scaleTargetRef: 
     apiVersion: apps/v1 
     kind: Deployment 
-    name: auditservicegrpc-deployment 
+    name: auditservice-grpc-deployment 
   metrics: 
   - type: Resource 
     resource: 
