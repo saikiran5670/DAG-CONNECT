@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: roleservice
+  name: roleservice-grpc
 spec:
   selector:
     matchLabels:
-      run: roleservice
+      run: roleservice-grpc
   replicas: 2
   template:
     metadata:
       labels:
-        run: roleservice
+        run: roleservice-grpc
     spec:
       containers:
-      - name: roleservice
-        image: dafdev017756.azurecr.io/roleservice
+      - name: roleservice-grpc
+        image: dafdev017756.azurecr.io/roleservice-grpc
         imagePullPolicy: Always
         resources:
           limits:
@@ -30,10 +30,10 @@ kind: Service
 metadata:
   name: roleservice
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - protocol: TCP
     port: 80
     targetPort: 80
   selector:
-    run: roleservice
+    run: roleservice-grpc
