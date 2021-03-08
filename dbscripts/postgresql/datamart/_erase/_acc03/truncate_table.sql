@@ -1,0 +1,1 @@
+truncate table public.__yuniql_schema_version
