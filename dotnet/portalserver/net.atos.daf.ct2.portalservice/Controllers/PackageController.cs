@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
 
 
-       
+
 
         [HttpPost]
         [Route("create")]
@@ -98,7 +98,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "The packageId and package code are required.");
                 }
 
-                var featureSetId = await _packageMapper.RetrieveFeatureSetId(request.Features);
+                var featureSetId = request.FeatureSetID > 0 ? request.FeatureSetID : await _packageMapper.RetrieveFeatureSetId(request.Features);
                 if (featureSetId > 0)
                 {
                     var createPackageRequest = _packageMapper.ToCreatePackage(request);
@@ -143,7 +143,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         //Get/Export Packages
         [HttpGet]
         [Route("get")]
-        public async Task<IActionResult> Get([FromQuery]GetPackageRequest request)
+        public async Task<IActionResult> Get([FromQuery] GetPackageRequest request)
         {
             try
             {
@@ -225,7 +225,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Package data is required.");
                 }
-                var packageRequest =_packageMapper.ToImportPackage(request);
+                var packageRequest = _packageMapper.ToImportPackage(request);
                 var packageResponse = await _packageClient.ImportAsync(packageRequest);
 
                 if (packageResponse != null
