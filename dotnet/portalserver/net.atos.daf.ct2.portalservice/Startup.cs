@@ -18,6 +18,9 @@ using net.atos.daf.ct2.accountservice;
 using net.atos.daf.ct2.packageservice;
 using net.atos.daf.ct2.vehicleservice;
 using net.atos.daf.ct2.featureservice;
+using net.atos.daf.ct2.translationservice;
+using net.atos.daf.ct2.auditservice;
+
 using net.atos.daf.ct2.organizationservice;
 namespace net.atos.daf.ct2.portalservice
 {
@@ -38,6 +41,8 @@ namespace net.atos.daf.ct2.portalservice
             var accountservice = Configuration["ServiceConfiguration:accountservice"];
             var packageservice = Configuration["ServiceConfiguration:packageservice"];
             var vehicleservice = Configuration["ServiceConfiguration:vehicleservice"];
+            var translationservice = Configuration["ServiceConfiguration:translationservice"];
+            var auditservice = Configuration["ServiceConfiguration:auditservice"];
             var featureservice= Configuration["ServiceConfiguration:featureservice"];
             var organizationservice = Configuration["ServiceConfiguration:organizationservice"];
             // We are enforcing to call Insercure service             
@@ -78,7 +83,14 @@ namespace net.atos.daf.ct2.portalservice
             {
                 o.Address = new Uri(featureservice);
             });
-            
+            services.AddGrpcClient<TranslationService.TranslationServiceClient>(o =>
+            {
+                o.Address = new Uri(translationservice);
+            });
+            services.AddGrpcClient<AuditService.AuditServiceClient>(o =>
+            {
+                o.Address = new Uri(auditservice);
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portal Service", Version = "v1" });

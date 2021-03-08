@@ -65,7 +65,7 @@ namespace net.atos.daf.ct2.package.repository
                 parameter.Add("@packagecode", package.Code);
                 parameter.Add("@feature_set_id", package.FeatureSetID);
                 parameter.Add("@name", package.Name);
-                parameter.Add("@type", (char)package.Type);
+                parameter.Add("@type", package.Type);
                 parameter.Add("@description", package.Description);
                 // parameter.Add("@is_default", Convert.ToBoolean(package.Default));
                 //   parameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(package.StartDate));
@@ -276,7 +276,7 @@ namespace net.atos.daf.ct2.package.repository
             package.Code = record.packagecode;
 
             package.Status = record.is_active ? PackageStatus.Active : PackageStatus.Inactive;
-            package.Type = (PackageType)Convert.ToChar(record.type);
+           // package.Type = (PackageType)(record.type);
             package.Name = record.name;
             package.Description = record.description;
             package.FeatureSetID = record.feature_set_id;

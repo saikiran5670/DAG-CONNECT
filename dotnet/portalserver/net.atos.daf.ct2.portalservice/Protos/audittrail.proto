@@ -16,6 +16,7 @@ service AuditService {
 
     
 message AuditRecord {
+    
     google.protobuf.Timestamp  Performed_at=1;     
     int32 Performed_by =2;
     string Component_name =3;
@@ -92,4 +93,3 @@ enum Responcecode{
         ABORTED = 3;
     }
 
-    

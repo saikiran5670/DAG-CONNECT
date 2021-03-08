@@ -10,6 +10,9 @@ using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.auditservice;
 using System.Text;
+//using Google.Protobuf.WellKnownTypes;
+
+
 
 namespace net.atos.daf.ct2.auditservice.Services
 {
@@ -28,7 +31,7 @@ namespace net.atos.daf.ct2.auditservice.Services
         }
 
          
-        public override Task<AuditResponce> Addlogs(AuditRecord request, ServerCallContext context)
+        public override async Task<AuditResponce> Addlogs(AuditRecord request, ServerCallContext context)
         {
             try
             {
@@ -47,27 +50,66 @@ namespace net.atos.daf.ct2.auditservice.Services
                 logs.Targetobject_id = request.TargetobjectId;  
                 logs.Updated_data = request.UpdatedData;     
                 _logger.LogError("Logs running fine");
-                var result = _AuditTrail.AddLogs(logs).Result;
-               
-                 return Task.FromResult(new AuditResponce
+                int result = _AuditTrail.AddLogs(logs).Result;
+
+                return await Task.FromResult(new AuditResponce
                 {
-                    Statuscode = "Success" + request.SourceobjectId,
-                    Message = "Log Added " 
+                    Message = "Add Logs " + result
                 });
             }
             catch (Exception ex)
             {
-                 _logger.LogError("test logs logs");
-                 return Task.FromResult(new AuditResponce
+                _logger.LogError("Audit Service:Addlogs : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new AuditResponce
                 {
-                    Statuscode = "Error",
-                    Message = ex.ToString()
+                    Code = Responcecode.Failed,
+                    Message = "Addlogs Faile due to - " + ex.Message
                 });
 
             }
                
 
            
+        }
+       
+        public override async Task<AuditLogResponse> GetAllLangaugecodes(AuditLogRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("All langauges method get");
+                var auditlogs = await _AuditTrail.GetAuditLogs(request.PerformedBy,request.ComponentName);
+
+                AuditLogResponse auditLogList = new AuditLogResponse();
+                foreach (var item in auditlogs)
+                {
+                    var logs = new audittrailproperty();
+                    logs.Audittrailid = item.Audittrailid;
+                    //logs.CreatedAt = Timestamp.FromDateTime(DateTime.UtcNow)
+                    //logs.PerformedAt = item.Performed_at;
+                    logs.PerformedBy = item.Performed_by;
+                    logs.ComponentName = item.Component_name == null ? "" : item.Component_name;
+                    logs.ServiceName = item.Service_name == null ? "" : item.Service_name;
+                    logs.Type = (Event_type)(int)item.Event_type;
+                    logs.Status = (Event_status)(int)item.Event_status;
+                    logs.Message = item.Message == null ? "" : item.Message;
+                    logs.SourceobjectId = item.Sourceobject_id;
+                    logs.TargetobjectId = item.Targetobject_id;
+                    logs.UpdatedData = item.Updated_data == null ? "" : item.Updated_data;
+                    auditLogList.Audittraillist.Add(logs);
+                }
+                return await Task.FromResult(auditLogList);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Audit Service:GetAllLangaugecodes : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new AuditLogResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "GetAllLangaugecodes Faile due to - " + ex.Message
+                });
+            }
+
         }
 
     }
