@@ -79,7 +79,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@name", string.IsNullOrEmpty(vehicle.Name)?null:vehicle.Name);
             parameter.Add("@vin", string.IsNullOrEmpty(vehicle.VIN)? null:vehicle.VIN);
             parameter.Add("@license_plate_number", string.IsNullOrEmpty(vehicle.License_Plate_Number)?null:vehicle.License_Plate_Number);           
-            parameter.Add("@status", (char)VehicleStatusType.OptIn);            
+            parameter.Add("@status", (char)VehicleStatusType.OptOut);            
             parameter.Add("@status_changed_date", (vehicle.Status_Changed_Date != null && DateTime.Compare(DateTime.MinValue, vehicle.Status_Changed_Date) > 0) ? UTCHandling.GetUTCFromDateTime(vehicle.Status_Changed_Date.ToString()) : 0);
             parameter.Add("@termination_date", vehicle.Termination_Date != null  ? UTCHandling.GetUTCFromDateTime(vehicle.Termination_Date.ToString()) : (long ?)null);
             parameter.Add("@vid", string.IsNullOrEmpty(vehicle.Vid)? null:vehicle.Vid);
@@ -186,7 +186,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             vehicle.VIN = record.vin;
             vehicle.License_Plate_Number = record.license_plate_number;
             if (record.status != null)
-            vehicle.Status = (VehicleStatusType)(Convert.ToChar(record.status));
+            vehicle.Status =record.status;
             if (record.status_changed_date != null)
                 vehicle.Status_Changed_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.status_changed_date,"America/New_York", "yyyy-MM-ddTHH:mm:ss"));
             if (record.termination_date != null)
