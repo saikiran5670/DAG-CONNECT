@@ -54,12 +54,12 @@
                             <button class='actionBtn' mat-flat-button (click)="changeStatus(row)" matTooltip="{{ row.chainRelationship == 'Active' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}">
                                 <mat-icon>{{ row.chainRelationship == 'Active' ? 'sync' : 'sync_disabled' }}</mat-icon>
                             </button>
-                            <button class='actionBtn' mat-flat-button (click)="editViewFeature(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
+                            <!-- <button class='actionBtn' mat-flat-button (click)="editViewFeature(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
                               <mat-icon>visibility</mat-icon>
                             </button>
                             <button class='actionBtn' mat-flat-button (click)="editViewFeature(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
                               <mat-icon>create</mat-icon>
-                            </button>
+                            </button> -->
 
                             <button class='actionBtn'  mat-flat-button  (click)="deleteRow(row)" matTooltip="Delete">
                                 <mat-icon class="deleteIcon">delete_outline</mat-icon>
@@ -82,6 +82,7 @@
 [translationData]='translationData'
 [editFlag]='editFlag'
 [viewFlag]='viewFlag'
+[applyFilter]='applyFilter'
  ></app-create-edit-view-organisation-relationship>
 
 </div>

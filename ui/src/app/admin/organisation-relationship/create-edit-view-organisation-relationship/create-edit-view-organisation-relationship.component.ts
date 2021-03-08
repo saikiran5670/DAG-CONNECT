@@ -20,11 +20,18 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   @Input() editFlag: boolean;
   @Input() viewFlag: boolean;
   @Input() translationData:any;
+  @Input() applyFilter:any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   dataSource: any = new MatTableDataSource([]);
   OrganisationRelationshipFormGroup: FormGroup;
   selectedType: any = '';
+  organizationId: number;
+  localStLanguage: any;
+  vehicleGroupDisplayColumn: string[]= ['all', 'vehicleGroupName'];
+  organisationNameDisplayColumn: string[]= ['all', 'organisationName'];
+  initData: any;
+
   relationshipList: any = [
     {
       name: 'Relationship 1'
@@ -43,8 +50,55 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
       relationship: ['', [Validators.required]],
       // userGroupDescription: [],
     });
+    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+
+    // this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+    //   this.processTranslation(data);
+    //   this.loadInitData();
+    // });
+    this.loadInitData();//temporary
+
   }
 
+  loadInitData() {
+    //this.showLoadingIndicator = true;
+     this.mockData(); //temporary
+    //api call to get relationship data
+        this.dataSource = new MatTableDataSource(this.initData);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+    
+  }
+  mockData(){
+    this.initData = [
+      {
+        all:"",
+        vehicleGroupName: 'Vehicle Group  1',
+        organisationName: 'Organisation 1'
+      },
+      {
+        all:"",
+        vehicleGroupName: 'Vehicle Group 2',
+        organisationName: 'Organisation 2'
+      },
+      {
+        all:"",
+        vehicleGroupName: 'Vehicle Group  3',
+        organisationName: 'Organisation 3'
+      },
+      {
+        all:"",
+        vehicleGroupName: 'Vehicle Group  4',
+        organisationName: 'Organisation 4'
+      },
+      {
+        all:"",
+        vehicleGroupName: 'Vehicle Group  5',
+        organisationName: 'Organisation 5'
+      }
+    ]
+  }
  onInputChange(event: any) {
 
   }
