@@ -63,13 +63,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("getlogs")]
-        public async Task<IActionResult> GetAllLangaugecodes(AuditLogRequest request)
+        public async Task<IActionResult> GetAuditLogs([FromQuery] AuditLogRequest request)
         {
             try
             {
                 _logger.LogInformation("All langauges method get");
                 
-                AuditLogResponse allauditLogs = await _auditService.GetAllLangaugecodesAsync(request);
+                AuditLogResponse allauditLogs = await _auditService.GetAuditLogsAsync(request);
                 if (allauditLogs != null
                  && allauditLogs.Message == "There is an error In GetTranslation.")
                 {

@@ -37,13 +37,13 @@ namespace net.atos.daf.ct2.auditservice.Services
             {
                 AuditTrail logs= new AuditTrail();
                 logs.Created_at= DateTime.Now;
-                logs.Performed_at = request.PerformedAt.ToDateTime();
+                logs.Performed_at = DateTime.Now;
                 logs.Performed_by=request.PerformedBy;
                 logs.Component_name=request.ComponentName;
-                logs.Service_name = request.ServiceName;                
-                logs.Event_type=  (AuditTrailEnum.Event_type)Enum.Parse(typeof(AuditTrailEnum.Event_type), request.Type.ToString().ToUpper());
-                logs.Event_status =   (AuditTrailEnum.Event_status)Enum.Parse(typeof(AuditTrailEnum.Event_status), request.Status.ToString().ToUpper());  
-                // logs.Event_type=  AuditTrailEnum.Event_type.CREATE;
+                logs.Service_name = request.ServiceName;
+                logs.Event_type = (AuditTrailEnum.Event_type)Enum.Parse(typeof(AuditTrailEnum.Event_type), request.Type.ToString().ToUpper());
+                logs.Event_status =   (AuditTrailEnum.Event_status)Enum.Parse(typeof(AuditTrailEnum.Event_status), request.Status.ToString().ToUpper());
+                // logs.Event_type=  AuditTrailEnum.Event_type.CREATE; // (AuditTrailEnum.Event_type)Enum.Parse(typeof(AuditTrailEnum.Event_type), request.Type.ToString().ToUpper());
                 // logs.Event_status =  AuditTrailEnum.Event_status.SUCCESS; 
                 logs.Message = request.Message;  
                 logs.Sourceobject_id = request.SourceobjectId;  
@@ -72,20 +72,22 @@ namespace net.atos.daf.ct2.auditservice.Services
            
         }
        
-        public override async Task<AuditLogResponse> GetAllLangaugecodes(AuditLogRequest request, ServerCallContext context)
+        public override async Task<AuditLogResponse> GetAuditLogs(AuditLogRequest request, ServerCallContext context)
         {
             try
             {
                 _logger.LogInformation("All langauges method get");
                 var auditlogs = await _AuditTrail.GetAuditLogs(request.PerformedBy,request.ComponentName);
 
+                
+
                 AuditLogResponse auditLogList = new AuditLogResponse();
                 foreach (var item in auditlogs)
                 {
                     var logs = new audittrailproperty();
                     logs.Audittrailid = item.Audittrailid;
-                    //logs.CreatedAt = Timestamp.FromDateTime(DateTime.UtcNow)
-                    //logs.PerformedAt = item.Performed_at;
+                    //logs.CreatedAt = item.Created_at.ToDateTime();
+                   // logs.PerformedAt = item.Performed_at.ToDateTime();
                     logs.PerformedBy = item.Performed_by;
                     logs.ComponentName = item.Component_name == null ? "" : item.Component_name;
                     logs.ServiceName = item.Service_name == null ? "" : item.Service_name;
