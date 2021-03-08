@@ -1,0 +1,866 @@
+/* You can add global styles to this file, and also import other style files */
+
+@font-face {
+    font-family: "Helvetica Neue LT Std";
+    src: local("Helvetica Neue LT Std"), url( ./assets/fonts/helveticaneueltstdblk/HelveticaNeueLTStd-Lt.otf) format("opentype");
+}
+@font-face {
+    font-family: "Helvetica Neue LT Std-Md";
+    src: local("Helvetica Neue LT Std-Md"), url( ./assets/fonts/helveticaneueltstdblk/HelveticaNeueLTStd-Md.otf) format("opentype");
+}
+
+
+/* body {
+    margin: 0;
+    font-family: PT Sans, "PT Sans" !important;
+    background-color: #f1f6fa;
+    font-size: 13px;
+    color: rgba(0, 0, 0, 1);
+    letter-spacing: .2px;
+    height: 100%;
+    line-height: 1.3;
+} */
+
+/* DAF core styles */
+
+body {
+    margin: 0;
+    font-family: HelveticaNeue,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;
+    /* background-color: #f1f6fa;
+    color: rgba(0, 0, 0, 1); */
+    font-size: .875rem;
+    line-height: 1.5;
+    font-weight: 400;
+}
+
+* {
+    box-sizing: border-box;
+}
+*:focus{
+    outline: none !important;
+}
+
+h1, .page-title {
+    line-height: .97368;
+    margin: 0 0 1.5625rem;
+    font-size: 2.375rem;
+    font-weight: 700;
+}
+h2, .title {
+    line-height: 1;
+    margin: 0 0 .625rem;
+    font-size: 1.5rem;
+    font-weight: 200;
+}
+h3, .subtitle {
+    line-height: 1.55556;
+    margin: 0 0 1.25rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+}
+h4, .para-title{
+    line-height: 1.25;
+    font-size: .875rem;
+    font-weight: 500;
+}
+.intro-text {
+    line-height: 1.4375;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.bg-none {
+    background: none;
+}
+.bg-light {
+    background: #ffffff !important;
+}
+.bg-medium {
+    background: #f1f1f1;
+}
+.bg-medium-dark {
+    background: #4d545a;
+}
+.bg-dark {
+    background: #353c45;
+}
+.bg-blue {
+    background: #00529c;
+}
+
+/* titles, intro and body text on dark and blue backgrounds */
+.text-tib-on-db {
+    color: #ffffff;
+}
+/* titles on light and medium backgrounds backgrounds */
+.text-t-on-lm {
+    color: #353c45;
+}
+/* intro and body text on light and medium backgrounds */
+.text-ib-on-lm {
+    color: #656b6f;
+}
+/* links and highlighted text */
+.text-links {
+    color: #00529c;
+}
+/* links and highlighted text (clicked) */
+.text-links-clicked {
+    color: #fc5f01;
+}
+
+.warning-success {
+    color: #00ae10;
+}
+.warning-alert {
+    color: #ffd800;
+}
+.warning-danger {
+    color: #d50017;
+}
+
+/*
+WIP - Colors for Buttons
+Refer : https://styleguide.daf.com/en/guidelines-for-developers/use-of-colors
+*/
+
+/* icons on dark and blue backgrounds */
+.icon-on-db {
+    color: #ffffff;
+}
+/* icons on light and medium backgrounds */
+.icon-on-lm1 {
+    color: #353c45;
+}
+/* icons on light, medium and dark backgrounds */
+.icon-on-lmd {
+    color: #fc5f01;
+}
+/* icons on light and medium backgrounds */
+.icon-on-lm2 {
+    color: #00529c;
+}
+
+/* misc elements styles */
+.logo{
+    display: flex;
+    flex: auto;
+    flex-shrink: 0;
+    flex-grow: 0;
+    width: 210px; //200px
+    align-items: center;
+    border-right: 2px solid #f2f2f2;
+
+    @media @mobile {
+        //width: 50px;
+        border-right: 0px solid #f2f2f2;
+    }
+}
+.mat-toolbar-row {
+    padding: 0 !important;
+    height: 45px !important;
+    border-bottom: 1px solid #e0e0e0;
+}
+.dashboard-box-shadow{
+    border: none !important;
+    -webkit-box-shadow: 0px 13px 22px -6px rgba(0,0,0,0.3) !important;
+    -moz-box-shadow: 0px 13px 22px -6px rgba(0,0,0,0.3) !important;
+    box-shadow: 0px 13px 22px -6px rgba(0,0,0,0.3) !important;
+}
+.rightContainer {
+    padding-left: 210px; //200px
+    height: calc(100vh - 45px) !important;
+}
+.mat-toolbar.mat-primary{
+    background-color: #fff;
+}
+.mat-toolbar-multiple-rows{
+    min-height: 45px !important;
+}
+.slider.closed {
+    max-height: 0;
+}
+.slider {
+    overflow-y: hidden;
+    max-height: 500px;
+    box-sizing: border-box;
+    transition-property: all;
+    transition-duration: 0.5s;
+    transition-timing-function: ease;
+}
+.mat-drawer-container {
+    background-color: #f0f3f8;
+}
+.rightContainer{
+    &.menuCollapsed {
+        padding-left: 65px;
+        @media @mobile {
+            padding-left: 0px;
+        }
+    }
+}
+
+// ---- Mat-UI component ----- //
+/*--checkbox---*/
+.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element, .mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element{
+    background: #ffffff;
+}
+// .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background, .mat-checkbox-checked.mat-accent .mat-checkbox-background {
+//     background-color: #29539c;
+// }
+/*--radio btn---*/
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+    border-color: #29539c;
+}
+.mat-radio-button.mat-accent .mat-radio-inner-circle, .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element:not(.mat-radio-persistent-ripple), .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-persistent-ripple, .mat-radio-button.mat-accent:active .mat-radio-persistent-ripple {
+    background-color: #29539c;
+}
+.mat-expansion-header{
+  background-color: #3a5177  !important;
+
+}
+//----------------------------------------------------//
+
+//----------- login style----------//
+.loginPageContainer{
+    height: 610px;
+    width: 100%;
+    .loginPageBg{
+        background-image: url(assets/daf-login-bg.png); 
+        background-repeat: no-repeat; 
+        background-size: 100% 100%;
+        .logo-icon{
+            padding: 20px 30px;
+        }
+    }
+    .txtContainer{ 
+        padding: 0px 150px 0px 0px; 
+        height: 100%;       
+        .loginTxtContainer{
+            width:430px; 
+            padding: 50px; 
+            background: #f1f1f1;
+            .invalidMsgContainer{
+                margin-top:10px;
+                color: #f44336;
+                height: 20px;
+            }
+            .fieldContainer{
+                margin-top:20px;
+                .loginField {
+                    .linkBtn{
+                        a{
+                            text-decoration: underline;
+                            cursor: pointer;
+                        }
+                    }
+                    .emailField{
+                        mat-label{
+                            font-size: 1em;
+                            font-weight: bold;
+                            margin-bottom: 3px;
+                            .asterick{
+                                color: red;
+                            }
+                        }
+                    }
+                    .resetText{
+                        font-size: 1.3em;
+                        font-weight: bold;
+                    }
+                    .infoTxt{
+                        font-size: 1.1em;
+                    }
+                    .loginIcon {
+                        background: #c8c8c8;
+                        height: 45px;
+                        padding: 10px;
+                        border-bottom-left-radius: 5px;
+                        border-top-left-radius: 5px;
+                    }
+                    .mat-form-field-appearance-fill {
+                        .mat-form-field-flex {
+                            border-radius: 0px 5px 5px 0px;
+                            padding: 0em .75em 0 .75em;
+                            background: #fff;
+                            //height: 50px;
+                        }
+                        .mat-form-field-underline {
+                            &::before {
+                                background-color: #fff;
+                            }
+                        }
+                        .mat-form-field-infix {
+                            padding: .25em 0 1em 0;
+                        }
+                    }
+                    .mat-form-field-ripple{
+                        background-color: rgb(255 255 255);
+                    }
+                    .mat-form-field{
+                        &.mat-form-field-invalid {
+                            .mat-form-field-ripple, .mat-form-field-ripple.mat-accent{
+                                background-color: #ffffff;
+                            }
+                        }   
+                        &.mat-focused {
+                            .mat-form-field-ripple{
+                                background-color: #fff;
+                            }
+                        }
+                    }
+                    .mat-flat-button, .mat-raised-button, .mat-fab, .mat-mini-fab {
+                        &.mat-primary {
+                            background-color: #2f61a4;
+                        }
+
+                    }
+                    .mat-form-field-infix {
+                        //border-top: 1.25em solid transparent;
+                    }
+                    .margin-top-10{
+                        margin-top: 10px;
+                    }
+                    .margin-top-20{
+                        margin-top: 20px;
+                    }
+                    .text-right{
+                        text-align: right;
+                    }
+                    mat-form-field {
+                        .pwdVisibleIcon{
+                            top: 0.3em;
+                        }
+                    }
+                }
+                mat-error{
+                    font-size: 100%;
+                }
+            }
+        }
+    }
+    .mat-raised-button{
+        &.mat-primary{
+            &.mat-button-disabled{
+                background-color: rgba(0,0,0,.12) !important;
+            }
+        }
+    }
+}
+//-----------------------------------//
+::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+  }
+   
+  ::-webkit-scrollbar-thumb {
+    background: #888; 
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+  }
+  .badge{
+    position: absolute;
+    top: 0px;
+    left: 11px;
+    font-size: 9px;
+    line-height: 1.2;
+    border-radius: 50%;
+    padding: 0.5em .25em;
+    width: 18px;
+    height: 18px;
+    background-color: #ff0000;
+    border: 0px solid #ff0000;
+    color: #ffffff;
+    text-align: center;
+  }
+.navIcon {
+    color: #000 !important;
+    margin-left: 0.4em;
+    margin-right: 0.4em;
+    position: relative;
+        mat-icon{
+            margin-top: 5px;
+        }
+        &.countryflag{
+            border: 1px solid #000; 
+            width: 25px; 
+            height: 20px;
+            border-radius: 0;
+            margin-top: 5px;
+        }
+}
+.toolbarRightContainer{
+    padding: 0px 10px;
+    display: flex;
+    color: #000;
+}
+
+footer{
+    .cookieContainer {
+        position: fixed;
+        bottom: 0;
+        height: 70px;
+        width: 100%;
+        background: #252a30; 
+        //z-index: 9999;
+        color: #fff;
+        font-size: 1.2em;
+        .cookieBtn{
+            display: flex;
+            align-items: center;
+            height: 30px;
+            background-color: #4fa746;
+            font-weight: normal;
+        }
+    }
+    .loginFooter{
+        bottom: 0;
+        padding: 10px;
+        width: 100%;
+        background:#353c45;
+        z-index: -1;
+        text-align: right;
+        color: #fff;
+        //margin-top: -47px;
+        .pdfIcon{
+            font-size: 20px;
+            margin-top: 0.1em;
+        }
+        .pdfLink{
+            margin-left: .4em;
+            margin-bottom: 0.3em;
+        }
+        a{
+            color: #fff;
+        }
+    }
+}
+
+.subMenuItems{
+    a{
+        &:before{
+            position: absolute;
+            height: 15px;
+            width: 1.5px;
+            background-color: #416cb7;
+            left: 24px;
+            top: 0px;
+            content: '';
+        }   
+        &:after{
+            position: absolute;
+            height: 20px;
+            width: 1.5px;
+            background-color: #416cb7;
+            left: 24px;
+            top: 20px;
+            content: ''; 
+        }
+    }
+}
+
+.menuCollapsed{
+    .subMenuItems{
+        a{
+            &:before{
+                left: 14px;
+            }
+            &:after{
+                left: 14px;
+                height: 15px;
+            }
+        }
+    }
+}
+
+
+//app-user-group-step, app-new-user-step, app-common-table, app-vehicle-selection, app-driver-management, app-edit-driver-details, app-edit-user-role-details, app-create-edit-vehicle-details, app-login-dialog, app-account-info-settings,app-change-password, app-edit-vin-setting, app-user-management {
+    .mat-stepper-horizontal, .mat-stepper-vertical {
+        background-color: #f0f3f8;
+        .mat-step-header {
+            pointer-events: none !important;
+        }
+        .mat-horizontal-content-container{
+            padding: 0px;
+            .mat-card{
+                .mat-card-actions{
+                    padding: 0px;
+                    margin: 0px;
+                }
+            }
+        }
+    }
+ 
+    .areaWidth{
+        .mat-form-field {
+            .mat-form-field-wrapper {
+                padding-bottom: 0em;
+            }
+            .mat-form-field-infix {
+                padding: 1em 0 0.65em 0 !important;
+                border-top: 0em solid transparent !important;
+                .mat-select-arrow-wrapper {
+                    transform: none !important;
+                }
+            }
+        }
+    }   
+    // mat-error{
+    //     font-size: 0.8em;
+    // }
+    .mandatoryColor{
+        color: red;
+    }
+//}
+
+mat-dialog-container{
+    padding: 0 !important;
+}
+
+app-consent-opt{
+    .mat-radio-button {
+        &.mat-accent {
+            .mat-radio-ripple{
+                .mat-ripple-element {
+                    background-color: rgba(0, 0, 0, .1) !important;
+                }
+            }
+        }
+    }
+}
+
+.uploadArea{
+    .mat-form-field-appearance-outline {
+        .mat-form-field-suffix {
+            top: -1.6px;
+            left: 10px;
+        }
+    }
+}
+
+.user-preferences{
+    .preferences-container {
+      position: absolute;
+      transition-property: all;
+      transition-duration: 2s;
+      transition-timing-function: ease;
+      right: 0px;
+      top: 45px;
+      width: 30px;
+      height: calc(100vh - 45px);
+      z-index: 3;
+      background: #f1f2f3;
+      overflow-y: auto;
+    }
+    
+    .preferences-sidenav-content {
+      position: absolute;
+      right: 0px;
+      top: 50px;
+      width: 50px;
+      height: 35px;
+      background: #416cb7;
+      z-index: 3;
+      cursor: pointer;
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+    }
+}
+  
+.linkBtn{
+    text-decoration: underline;
+    cursor: pointer;
+}
+    
+.change-password-popup{
+    .password-box {
+      border: 1px solid grey !important;
+      box-shadow: 0px 13px 22px -6px rgba(0,0,0,0.3) !important;
+      background-color: lightgray;
+      box-sizing: content-box;  
+      width: 300px;
+      height: 170px;
+      padding: 30px;  
+    }
+  
+    .password-box.arrow-left:after {
+      content: " ";
+      position: absolute;
+      left: -15px;
+      top: 15px;
+      border-top: 15px solid transparent;
+      border-right: 15px grey;
+      border-left: none;
+      border-bottom: 15px solid transparent;
+    }
+}
+
+//-------- Utility css--------//
+.full-width{
+    width: 100%;
+}
+.border-none{
+   border: none !important;
+}
+.no-padding{
+    padding: 0 !important;
+}
+.no-margin{
+    margin: 0 !important;
+}
+.bor-box {
+    border-radius: 4px !important;
+}
+.padding-10 {
+    padding: 10px !important;
+}
+.margin-top-10{
+    margin-top: 10px !important;
+}
+.margin-top-30{
+    margin-top: 30px;
+}
+.bold-txt{
+    font-weight: bold;
+}
+.float-left{
+    float: left;
+}
+.margin-left-sm{
+    margin-left: 10px;
+}
+.margin-right-lg {
+    margin-right: 15px !important;
+}
+.margin-top-lg{
+    margin-top: 20px;
+}
+.half-width{
+    width: 50%;
+}
+.font-size-0-8{
+    font-size: .8em;
+}
+.display-flex{
+    display: flex !important;
+} 
+.align-items-center{
+    align-items: center !important;
+}
+.margin-right-10{
+    margin-right: 10px !important;
+}
+.margin-right-5{
+    margin-right: 5px !important;
+}
+.font-size-0-9{
+    font-size: 0.9em;
+}
+.font-size-20{
+    font-size: 20px;
+}
+.bgtrans{
+    padding: 20px 30px;
+    @media @mobile {
+        padding: 10px 5px !important;
+    }
+}
+.margin-bottom-xlg{
+    margin-bottom: 20px;
+}
+.margin-bottom-sm{
+    margin-bottom: 10px;
+}
+.bg-theme{
+    background: #f0f3f8;
+}    
+.min-width-25-per{
+    min-width: 25%;
+}
+.min-width-30-per{
+    min-width: 30%;
+}
+.min-width-60-per{
+    min-width: 60%;
+}
+.min-width-75-per{
+    min-width: 75%;
+}
+.custom-font{
+    font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;
+}
+.margin-10{
+    margin: 10px;
+}
+.margin-20{
+    margin: 20px;
+}
+.mat-paginator-range-actions {
+    .mat-paginator-range-label {
+      @media @mobile {
+        margin: 0px !important;
+      }
+    }
+  }
+  .min-width-75-per{
+    min-width: 75%
+  }
+  .min-width-20-per{
+    min-width: 20%
+  }
+  //-------- common css for table ----------------//
+  .mat-table{
+    // font-family: 'Helvetica Neue LT Std';
+    // font-style: normal;
+    // font-size: 14px;
+
+    .mat-header-row {
+        min-height: 40px !important;
+        background: #BEE3F8 !important;
+        font-family: "Helvetica Neue LT Std-Md";
+        
+        
+        .mat-header-cell{
+            // font-size: 1em;
+            font-weight: bold;
+            font-size: 16px;
+            color: #353C45;
+        }
+        .mat-sort-header-arrow {
+            color: #353C45;
+        }
+    }
+    .mat-row {
+        font-family: 'Helvetica Neue LT Std';
+        min-height: 40px !important;
+        .mat-cell{
+            font-size: 15px;
+            button{
+                background: transparent;
+                &.actionBtn{
+                    min-width: 40px; 
+                    padding: 0px 5px;
+    
+                    @media @mobile {
+                        min-width: 0px;
+                    }
+                }
+            }
+        } 
+        &:nth-child(even){
+            background-color:#ffffff;
+        }
+        &:nth-child(odd){
+            background-color:#ECF7FE;
+        }
+    }
+    .mat-checkbox{
+        .mat-checkbox-layout{
+            margin-bottom: 0px;
+        }
+    }
+    //---common css for mat-icons------
+    .mat-icon {
+        color: #656B6F !important;
+    &.deleteIcon {
+        color: #DB3E51 !important;
+    }
+    }
+}
+ 
+//--------Common style for Form elements-------
+    .mat-form-field-outline {
+        &.mat-form-field-outline-thick {
+            color: #D50017 !important;
+        }
+    }
+    .mat-error {
+        color: #D50017 !important;
+        font-size: 14px;
+    }
+
+
+
+//-----------Common Css for Buttons-----------//
+.mat-flat-button{
+ &.mat-button-base{
+ &.mat-primary{
+     background-color: #00529C !important;
+     font-size: 15px; // keeping 15px for now as it is mentioned 20px in StyleGuide which looks too large
+     font-weight: 500;
+ }}}
+ //for sub pages only primary buttons
+ .mat-button-base{
+    &.mat-primary{
+        background-color: #00529C !important;
+        font-size: 15px; 
+        font-weight: 500;
+        color: #ffffff !important;
+    }}
+//  .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background, .mat-checkbox-checked.mat-accent .mat-checkbox-background
+ .mat-checkbox-checked,.mat-checkbox-indeterminate,.mat-checkbox {
+     &.mat-accent{
+         .mat-checkbox-background {
+             background-color: #ffffff;
+             border: 1px solid #B9C1C6;
+             border-radius: 2px;
+             
+            .mat-checkbox-checkmark {
+                fill: #00529C !important;
+                    .mat-checkbox-checkmark-path{
+                        stroke:  #00529C !important;
+                    }
+             }
+         }
+     }
+ }
+ //----common pagination style--------
+ .table-paginator {
+     color: #353C45 !important;
+     ::ng-deep.mat-form-field{
+        margin: 0px !important;
+     }
+     ::ng-deep.mat-select {
+         background-color: lightgrey !important;
+         padding: 5px !important;
+         border:solid 1px #F1F1F1;
+         border-radius: 5px;
+
+         ::ng-deep.mat-select-value-text{
+             font-size: 14px;
+             font-weight: 500;
+         }
+     }
+     ::ng-deep.mat-form-field-underline{
+         display: none !important;
+     }
+     ::ng-deep.mat-paginator-range-label {
+        margin: 2px !important;
+     }
+  }
+
+//---------------------------------------//
+
+
+  //**************Media Queries Mixins************************
+
+  // Breakpoints
+
+@mobile:      ~"only screen and (max-width: 529px)";
+@tablet:      ~"only screen and (min-width: 530px) and (max-width: 949px)";
+@desktop:     ~"only screen and (min-width: 950px)";
+@mobileToTablet: ~"only screen and (min-width: 320px) and (max-width: 949px)";
+@tabletToDesktop: ~"only screen and (min-width: 530px)";
+// @desktop-xl:  ~"only screen and (min-width: 1129px)";
+
+//--How to use :- Simply include @media "required breakpoints"
+//Example:- @media @tablet{
+//     background: orange !important;
+//     background-color: red !important;
+//     color: pink !important;
+// }

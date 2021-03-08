@@ -1,0 +1,29 @@
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
+
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
+WORKDIR /src
+COPY ["businessservices/net.atos.daf.ct2.roleservicerest/net.atos.daf.ct2.roleservicerest.csproj", "businessservices/net.atos.daf.ct2.roleservicerest/"]
+COPY ["commoncomponent/net.atos.daf.ct2.data/net.atos.daf.ct2.data.csproj", "commoncomponent/net.atos.daf.ct2.data/"]
+COPY ["corecomponents/net.atos.daf.ct2.role/net.atos.daf.ct2.role.csproj", "corecomponents/net.atos.daf.ct2.role/"]
+COPY ["commoncomponent/net.atos.daf.ct2.utilities/net.atos.daf.ct2.utilities.csproj", "commoncomponent/net.atos.daf.ct2.utilities/"]
+COPY ["corecomponents/net.atos.daf.ct2.features/net.atos.daf.ct2.features.csproj", "corecomponents/net.atos.daf.ct2.features/"]
+RUN dotnet restore "businessservices/net.atos.daf.ct2.roleservicerest/net.atos.daf.ct2.roleservicerest.csproj"
+COPY . .
+WORKDIR "/src/businessservices/net.atos.daf.ct2.roleservicerest"
+RUN dotnet build "net.atos.daf.ct2.roleservicerest.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "net.atos.daf.ct2.roleservicerest.csproj" -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+RUN mkdir log
+RUN mkdir log/Error
+RUN mkdir log/Info
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "net.atos.daf.ct2.roleservicerest.dll"]

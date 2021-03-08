@@ -1,0 +1,59 @@
+trigger:
+- none
+
+pool: dafct-dta-privateagent
+
+parameters:
+- name: ENV
+  displayName: ENV
+  type: string
+  default: DEV0
+  values:
+  - DEV0
+  - DEV01
+  - DEV02
+  - TEST01
+
+variables:
+- ${{ if eq(parameters.ENV, 'DEV0') }}:
+  - group: DEV0-Build-Variables
+- ${{ if eq(parameters.ENV, 'DEV01') }}:
+  - group: DEV01-Build-Variables
+- ${{ if eq(parameters.ENV, 'DEV02') }}:
+  - group: DEV02-Build-Variables
+- ${{ if eq(parameters.ENV, 'TEST01') }}:
+  - group: TEST01-Build-Variables
+
+steps:
+- task: replacetokens@3
+  inputs:
+    targetFiles: 'ui/src/assets/config/default.json'
+    encoding: 'auto'
+    writeBOM: true
+    actionOnMissing: 'warn'
+    keepToken: false
+    tokenPrefix: '#{'
+    tokenSuffix: '}#'
+    useLegacyPattern: false
+    enableTelemetry: true
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      cat ui/src/assets/config/default.json
+
+- task: Docker@0
+  displayName: 'Build an image'
+  inputs:
+    azureSubscription:  $(Subscription)
+    azureContainerRegistry: $(ContainerRegistry)
+    dockerFile: ui/dockerfilefront
+    imageName: uiservice
+
+- task: Docker@0
+  displayName: 'Push an image'
+  inputs:
+    azureSubscription: $(Subscription)
+    azureContainerRegistry: $(ContainerRegistry)
+    action: 'Push an image'
+    imageName: uiservice

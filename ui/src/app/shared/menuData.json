@@ -1,0 +1,48 @@
+[
+    {
+      "mainMenu": "Dashboard",
+      "mainRoute": "dashboard",
+      "icon": "speed",
+      "subMenuFlag": false
+    },
+    {
+      "mainMenu": "Admin",
+      "mainRoute": "admin",
+      "icon": "person",
+      "subMenuFlag": true,
+      "subMenu": [
+        {
+          "name": "Organisation Details",
+          "subRoute": "orgnisationdetails"
+        },
+        {
+          "name": "User Group Management",
+          "subRoute": "usergroupmanagement"
+        },
+        {
+          "name": "User Management",
+          "subRoute": "usermanagement"
+        },
+        {
+          "name": "User Role Management",
+          "subRoute": "userrolemanagement"
+        },
+        {
+          "name": "Vehicle Management",
+          "subRoute": "vehiclemanagement"
+        }
+      ]
+    },
+    {
+      "mainMenu": "Information",
+      "mainRoute": "https://www.daf.com/en/sites-landing",
+      "icon": "info",
+      "subMenuFlag": false
+    },
+    {
+      "mainMenu": "Legal Notices",
+      "mainRoute": "https://styleguide.daf.com/en/legal/legal-notice",
+      "icon": "gavel",
+      "subMenuFlag": false
+    }
+]

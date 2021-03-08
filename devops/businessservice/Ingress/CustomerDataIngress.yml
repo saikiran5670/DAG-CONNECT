@@ -1,0 +1,73 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+    kubernetes.io/ingress.class: traefik-internal
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+  name: customerdataservice-ingress
+spec:
+  rules:
+  - host: #{IngressURL}#
+    http:
+      paths:
+      - backend:
+          serviceName: customerdataservice
+          servicePort: 80
+        path: /swagger
+      - backend:
+          serviceName: customerdataservice
+          servicePort: 80
+        path: /customer-data
+      - backend:
+          serviceName: authenticationservice
+          servicePort: 80
+        path: /auth
+      - backend:
+          serviceName: authenticationservice
+          servicePort: 80
+        path: /login
+      - backend:
+          serviceName: authenticationservice
+          servicePort: 80
+        path: /validate
+      - backend:
+          serviceName: accountservice
+          servicePort: 80
+        path: /account
+      - backend:
+          serviceName: organizationservice
+          servicePort: 80
+        path: /organization   
+      - backend:
+          serviceName: vehicleservice
+          servicePort: 80
+        path: /vehicle   
+      - backend:
+          serviceName: roleservice 
+          servicePort: 80
+        path: /role   
+      - backend:
+          serviceName: translationservice 
+          servicePort: 80
+        path: /translation
+      - backend:
+          serviceName: auditservice 
+          servicePort: 80
+        path: /audit
+      - backend:
+          serviceName: auditservicegrpc
+          servicePort: 80
+        path: /auditgrpc
+      - backend:
+          serviceName: featureservice 
+          servicePort: 80
+        path: /feature
+      - backend:
+          serviceName: uimanagement-service
+          servicePort: 80
+        path: /  
+  tls:
+  - hosts:
+    - #{IngressURL}#

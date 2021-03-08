@@ -1,0 +1,81 @@
+<div fxLayout="row" fxLayoutAlign="end end" class="full-width margin-bottom-sm">
+  <button class='no-margin' mat-raised-button color="primary"
+      (click)='onCancel()'>{{ translationData.lblBack || 'Back' }}
+  </button>
+</div>
+<form [formGroup]="vinSettingFormGroup">
+    <mat-card class='mat-elevation-z margin-bottom-xlg'>
+        <mat-card-content>
+            <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{vehicleData.vehicleName}} - {{ translationData.lblVehicleDetails || 'Vehicle Details' }}</span>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label>{{ translationData.lblVehicleName || 'Vehicle Name' }}</mat-label>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <input [(ngModel)]='vehicleData.vehicleName' placeholder="{{ translationData.lblVehicleName || 'Vehicle Name' }}" matInput formControlName="vehicleName" >
+                  </mat-form-field>
+                  <mat-error *ngIf="vinSettingFormGroup.get('vehicleName').hasError('required')">
+                    {{ translationData.lblVehicleNameisrequired || 'Vehicle Name is required' }}.
+                  </mat-error>
+                </div>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblRegistrationNumber || 'Registration Number' }}</mat-label>
+                    <mat-form-field appearance="outline" class="full-width">
+                      <input [(ngModel)]='vehicleData.registrationNo' placeholder="{{ translationData.lblRegistrationNumber || 'Registration Number' }}" matInput formControlName="registrationNumber" >
+                    </mat-form-field>
+                    <mat-error *ngIf="vinSettingFormGroup.get('registrationNumber').hasError('required')">
+                      {{ translationData.lblRegistrationNumberisrequired || 'Registration Number is required' }}.
+                    </mat-error>
+                  </div>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblVehicleIdentificationNumber || 'Vehicle Identification Number' }} ({{ translationData.lblVIN || 'VIN' }})</mat-label>
+                    <mat-form-field appearance="outline" class="full-width">
+                      <input [(ngModel)]='vehicleData.vin' placeholder="{{ translationData.lblVIN || 'VIN' }}" matInput formControlName="vin" >
+                    </mat-form-field>
+                </div> 
+              </div>
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label>{{ translationData.lblVehicleModel || 'Vehicle Model' }}</mat-label>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <input [(ngModel)]='vehicleData.vehicleModel' placeholder="{{ translationData.lblVehicleModel || 'Vehicle Model' }}" matInput formControlName="vehicleModel" >
+                  </mat-form-field>
+                </div>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="center">
+                    <mat-label>{{ translationData.lblConsent || 'Status' }}</mat-label>
+                     <div *ngIf="vehicleData.status==73 ">
+                        <img src='assets/images/Opt_in.svg' style="width: 20px;height: 20px;" />
+                      </div>
+                      <div *ngIf="vehicleData.status==79 ">
+                        <img src='assets/images/Ota.svg' style="width: 20px;height: 20px;" />
+                      </div>
+                      <div *ngIf="vehicleData.status==84 ">
+                        <img src='assets/images/terminated.svg' style="width: 20px;height: 20px;" />
+                      </div>
+                      <div *ngIf="vehicleData.status==85 ">
+                        <img src='assets/images/Opt_out.svg' style="width: 20px;height: 20px;" />
+                      </div>
+                    <!-- <mat-form-field appearance="outline" class="full-width" style="display: none;">
+                      <input [(ngModel)]='vehicleData.status' placeholder="{{ translationData.lblConsent || 'Status' }}" matInput formControlName="consent" >
+                      
+                      
+                    </mat-form-field> -->
+                  </div>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblAssociateGroup || 'Associate Group' }}</mat-label>
+                    <mat-form-field appearance="outline" class="full-width">
+                      <input [(ngModel)]='vehicleData.associateGroup' placeholder="{{ translationData.lblAssociateGroup || 'Associate Group' }}" matInput formControlName="associateGroup" >
+                    </mat-form-field>
+                </div> 
+              </div>
+        </mat-card-content>
+    </mat-card>
+    <div fxLayout="row" fxLayoutAlign="end end" class="full-width"  [ngClass]="{'hidden': viewMode}">
+        <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()' [ngClass]="{'hidden': viewMode}">{{ translationData.lblCancel || 'Cancel' }}</button>
+        <button class='margin-right-10' mat-raised-button color="primary" (click)='onReset()' [ngClass]="{'hidden': viewMode}">{{ translationData.lblReset || 'Reset' }}</button>
+        <button [disabled]="!vinSettingFormGroup.valid" mat-raised-button color="primary" (click)='onSave()' [ngClass]="{'hidden': viewMode}">{{ translationData.lblConfirm || 'Confirm' }}</button>
+    </div>
+</form>

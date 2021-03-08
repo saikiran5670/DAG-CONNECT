@@ -1,0 +1,151 @@
+
+<form [formGroup]="UserGroupForm">
+    <mat-card *ngIf="createStatus || editUserContent" class='mat-elevation-z margin-bottom-xlg'>
+        <mat-card-content>
+
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGroupName || 'User Group Name' }} <span class='mandatoryColor'>*</span>
+                    </mat-label>
+                    <mat-form-field appearance="outline" class="full-width">
+                        <input (keyup)="onInputChange($event)" placeholder="{{ translationData.lblEnterNewUserGroupName || 'Enter New User Group Name' }}"
+                            matInput formControlName="userGroupName" required maxlength="60">
+                    </mat-form-field>
+                    <mat-error *ngIf="UserGroupForm.get('userGroupName').hasError('required')">
+                        {{translationData.lblErrorUserGroupName || 'Please enter any User Group name' }}
+                    </mat-error>
+                    <mat-error *ngIf="duplicateEmailMsg">{{translationData.lblDuplicateUserGroupName || 'Duplicate User Group Name' }}</mat-error>
+                </div>
+
+                <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label style='display: flex; place-content: space-between;'>
+                        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{translationData.lblUserGroupDescriptionOptional || 'User Group Description (Optional)' }}</span>
+                        <span>{{ translationData.lbl120CharMax || '120 characters max' }}</span>
+                    </mat-label>
+                    <mat-form-field appearance="outline" class="full-width">
+                        <input (keyup)="onInputGD($event)" maxlength="120" placeholder="{{translationData.lblEnterAboutGroupPlaceholder || 'Enter About Group' }}" matInput
+                            formControlName="userGroupDescription">
+                    </mat-form-field>
+                </div>
+
+                </div>
+                </mat-card-content>
+                <mat-card-actions class='no-margin no-padding'>
+                    <div fxLayout="row" fxLayoutAlign="space-between center">
+                        <div fxLayout="column" fxLayoutAlign="left">
+                            <div fxLayout="row" fxLayoutAlign='center center'>
+                                <mat-icon class='margin-right-10'>info</mat-icon>
+                                <span>{{translationData.lblUserGroupManagementInfo || 'You can select User from below list to map with this User Group' }}</span>
+                            </div>
+                        </div>
+                        <div fxLayout="column" fxLayoutAlign="end">
+                            <div fxLayout="row">
+                                <button class='margin-right-10' mat-raised-button color="primary"
+                                    (click)='onCancel()'>Cancel</button>
+                                <button *ngIf="editUserContent" class='margin-right-10' mat-raised-button color="primary"
+                                    (click)='onReset()'>{{translationData.lblReset  || 'Reset' }}</button>
+                                    <!-- <button class='margin-right-10' mat-raised-button color="primary"
+                                    (click)='onReset()'>{{ translationData.lblCancel || 'Reset' }}</button> -->
+                                <button class='no-margin' [disabled]="!UserGroupForm.valid" mat-raised-button color="primary"
+                                    (click)='onCreate($event)' id="createUpdateButton">{{ createStatus ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm || 'Confirm') }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </mat-card-actions>
+            </mat-card>
+
+            <div *ngIf="editFlag || viewDisplayFlag">
+            <button  class='margin-right-10' mat-raised-button color="primary"
+            (click)='onCancel()'>{{translationData.lblBack || 'Back' }}</button>
+             </div>
+            <mat-card *ngIf="editFlag || viewDisplayFlag" style='background-color: #ECF7FE;' class='mat-elevation-z margin-bottom-xlg'>
+                <mat-card-content>
+                    <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                        <div  class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                            <div>{{translationData.lblUserGroupName || 'User Group Name' }}</div>
+                                <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedRowData.name }}</div>
+                        </div>
+                        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                            <div>{{translationData.lblUserGroupDescription || 'User Group Description' }}</div>
+                                <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedRowData.description }}</div>
+                        </div>
+                        <div *ngIf="editFlag" fxLayout="column" fxLayoutAlign="right">
+                            <button style='background:none' class='actionBtn' mat-flat-button (click)="editFunc()" matTooltip="Edit">
+                                <mat-icon>create</mat-icon>
+                              </button>
+                        </div>
+
+                            </div>
+                            </mat-card-content>
+            </mat-card>
+
+            <mat-card class='mat-elevation-z' >
+                <div>
+                  <!-- <app-common-filter *ngIf="filterFlag" (filterValues)="getFilteredValues($event)" [initDataUserGroup]='initData'></app-common-filter> -->
+                </div>  
+                <div>
+                  <div>
+                    <!-- <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserDetails }}</span> -->
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectUser || 'Select User' }}</span>
+                    <span>{{translationData.lblOptional || '(Optional)' }}</span>
+                  </div>
+
+                </div>
+                <div class="example-header">
+                  <mat-form-field>
+                    <!-- <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblFilter }}"> -->
+                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblFilter || 'Filter' }}">
+                  </mat-form-field>
+                </div>
+            
+                <div class="example-container">
+                  
+                  <mat-table [dataSource]="dataSourceUsers" class="table-items" matSort>
+                    <ng-container matColumnDef="select">
+                    <div>
+                        <mat-header-cell *matHeaderCellDef>
+                            <mat-checkbox *ngIf="!viewDisplayFlag" (change)='$event ? masterToggleForVehGrp() : null'
+                                [checked]='selectionForVehGrp.hasValue() && isAllSelectedForVehGrp()'
+                                [indeterminate]='selectionForVehGrp.hasValue() && !isAllSelectedForVehGrp()'
+                                [aria-label]='checkboxLabelForVehGrp()'>
+                            </mat-checkbox>
+                            <span *ngIf="!viewDisplayFlag" style="margin: 5px 0px 0px 5px;"> All </span>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <mat-checkbox (click)='$event.stopPropagation()'
+                                (change)='$event ? selectionForVehGrp.toggle(row) : null'
+                                [checked]='selectionForVehGrp.isSelected(row)'
+                                [aria-label]='checkboxLabelForVehGrp(row)'>
+                            </mat-checkbox>
+                        </mat-cell>
+                      </div>
+                    </ng-container>
+                    <ng-container matColumnDef="firstName">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
+                      <mat-cell *matCellDef="let row">
+                        {{ row.firstName }}
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="emailId">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEmailID || 'Email ID' }}</mat-header-cell>
+                      <mat-cell *matCellDef="let row">{{ row.emailId }}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="roles">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRole || 'Role' }}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}">{{ row.roles.length > 0 ? row.roles[0].name : '-' }}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="accountGroups">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserGroup || 'User Group' }}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}">{{ row.accountGroups.length > 0 ? row.accountGroups[0].name : '-' }}</mat-cell>
+                    </ng-container>
+
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;">
+                    </mat-row>
+                  </mat-table>
+                  
+                  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+                </div>
+              </mat-card>
+
+        </form>

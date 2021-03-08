@@ -1,0 +1,163 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using net.atos.daf.ct2.identitysession.entity;
+using net.atos.daf.ct2.data;
+using Dapper;
+using net.atos.daf.ct2.utilities;
+
+namespace net.atos.daf.ct2.identitysession.repository
+{
+    public class AccountSessionRepository : IAccountSessionRepository
+    {
+         private readonly IDataAccess dataAccess;
+        public AccountSessionRepository(IDataAccess _dataAccess)
+        {
+            dataAccess = _dataAccess;
+        }
+         public async Task<string> InsertSession(AccountSession accountSession)
+        {
+            try
+            {
+                var QueryStatement = @"INSERT INTO  master.accountsession 
+                                        (
+                                        id,
+                                        ip_address
+                                        ,last_session_refresh
+                                        ,session_started_at
+                                        ,sessoin_expired_at
+                                        ,account_id
+                                        ,created_at
+                                        ) 
+                                    VALUES(
+                                        @id,
+                                        @ip_address
+                                        ,@last_session_refresh
+                                        ,@session_started_at
+                                        ,@sessoin_expired_at
+                                        ,@account_id
+                                        ,@created_at) RETURNING id";
+
+
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", accountSession.Id);
+                parameter.Add("@ip_address", accountSession.IpAddress);
+                parameter.Add("@last_session_refresh", accountSession.LastSessionRefresh);
+                parameter.Add("@session_started_at", accountSession.SessionStartedAt);
+                parameter.Add("@sessoin_expired_at", accountSession.SessionExpiredAt);
+                parameter.Add("@account_id", accountSession.AccountId); 
+                parameter.Add("@created_at", accountSession.CreatedAt);
+                
+                Guid sessionID = await dataAccess.ExecuteScalarAsync<Guid>(QueryStatement, parameter);
+                accountSession.Id = sessionID;
+                return sessionID.ToString();
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            
+        }
+         public async Task<string> UpdateSession(AccountSession accountSession)
+        {
+            try
+            {
+                var QueryStatement = @" UPDATE master.accountsession
+                                        SET 
+                                       ip_address=@ip_address
+                                      ,last_session_refresh= @last_session_refresh
+                                      ,session_started_at= @session_started_at
+                                      ,sessoin_expired_at = @sessoin_expired_at
+                                      ,account_id = @account_id
+                                      ,created_at = @created_at                                       
+                                      WHERE id = @Id
+                                      RETURNING Id;";
+
+                var parameter = new DynamicParameters();
+                parameter.Add("@Id", accountSession.Id);
+                parameter.Add("@ip_address", accountSession.IpAddress);
+                parameter.Add("@last_session_refresh", accountSession.LastSessionRefresh);
+                parameter.Add("@session_started_at", accountSession.SessionStartedAt);
+                parameter.Add("@sessoin_expired_at", accountSession.SessionExpiredAt);
+                parameter.Add("@account_id", accountSession.AccountId); 
+                parameter.Add("@created_at", accountSession.CreatedAt);
+                Guid  sessionID= await dataAccess.ExecuteScalarAsync<Guid>(QueryStatement, parameter);
+          
+                return sessionID.ToString();
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<string> DeleteSession(string SessionId)
+        {
+            try
+            {
+                long currentUTCFormate=UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                var QueryStatement = @"DELETE FROM
+                                        master.accountsession 
+                                        where id=@id
+                                        AND sessoin_expired_at < @sessoin_expired_at
+                                        RETURNING Id;";//DONE (testing pending) expired at check for delete sesion
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", new Guid(SessionId));
+                parameter.Add("@sessoin_expired_at", currentUTCFormate);
+                Guid Id= await dataAccess.ExecuteScalarAsync<Guid>(QueryStatement, parameter);
+                return Id.ToString();
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<IEnumerable<AccountSession>> GetAccountSession(int AccountId)
+        {
+            try
+            {
+                var QueryStatement = @"select id
+                                        ,ip_address
+                                        ,last_session_refresh
+                                        ,session_started_at
+                                        ,sessoin_expired_at
+                                        ,account_id
+                                        ,created_at
+                                        from master.accountsession 
+                                        where account_id=@AccountId";
+                var parameter = new DynamicParameters();
+            
+                parameter.Add("@AccountId", AccountId);
+                dynamic accountsessions = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+
+                List<AccountSession> accountsessionsList = new List<AccountSession>();
+                foreach (dynamic record in accountsessions)
+                {                    
+                    accountsessionsList.Add(Map(record));
+                }
+                return accountsessionsList.AsEnumerable();
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }          
+           
+        }
+
+        private AccountSession Map(dynamic record)
+        {
+            AccountSession entity = new AccountSession();
+            entity.Id = record.id;
+            entity.IpAddress = record.ip_address;
+            entity.LastSessionRefresh = record.last_session_refresh;
+            entity.SessionStartedAt = record.session_started_at;
+            entity.SessionExpiredAt = record.sessoin_expired_at;
+            entity.AccountId=record.account_id;
+            entity.CreatedAt = record.created_at;           
+            return entity;
+        }
+        
+    }
+}
