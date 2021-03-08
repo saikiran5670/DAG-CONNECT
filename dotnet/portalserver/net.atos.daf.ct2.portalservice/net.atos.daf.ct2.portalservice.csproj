@@ -33,6 +33,7 @@
     <Protobuf Include="Protos\package.proto" GrpcServices="Client" />
 	<Protobuf Include="Protos\vehicle.proto" GrpcServices="Client" />
 	  <Protobuf Include="Protos\feature.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\organization.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>

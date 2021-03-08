@@ -14,13 +14,14 @@ namespace net.atos.daf.ct2.organization.entity
         public string AddressStreetNumber { get; set; }  
          public string PostalCode { get; set; }   
         public string City { get; set; }  
-        public string CountryCode { get; set; }  
-        public bool OptOutStatus  { get; set; } 
+        public string CountryCode { get; set; }         
          public long OptOutStatusChangedDate  { get; set; } 
          public bool IsActive  { get; set; }  
-         public   DateTime ? reference_date  { get; set; }   
-         public   DateTime ? optout_status_changed_date  { get; set; }    
-         public string Referenced { get; set; }    
+         public   DateTime ? reference_date  { get; set; }        
+         public string Referenced { get; set; }   
+        public int preference_id { get; set; }
+        public string vehicle_default_opt_in { get; set; }
+        public string driver_default_opt_in { get; set; } 
 
     }
 }
