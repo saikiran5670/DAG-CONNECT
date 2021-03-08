@@ -348,6 +348,72 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+        [HttpPost]
+        [Route("resetpasswordinitiate")]
+        public async Task<IActionResult> ResetPasswordInitiate([FromBody] ResetPasswordInitiateRequest request)
+        {
+            try
+            {
+                var resetPasswordInitiateRequest = new AccountBusinessService.ResetPasswordInitiateRequest();
+                resetPasswordInitiateRequest.EmailId = request.EmailId;
+
+                var response = await _accountClient.ResetPasswordInitiateAsync(resetPasswordInitiateRequest);
+                if (response.Code == AccountBusinessService.Responcecode.Success)
+                    return Ok(response.Message);
+                else
+                    return StatusCode(500, "Password reset process failed to initiate or Error while sending email");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:ResetPasswordInitiate with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        [HttpPost]
+        [Route("resetpassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            try
+            {
+                var resetPasswordRequest = new AccountBusinessService.ResetPasswordRequest();
+                resetPasswordRequest.ResetToken = request.ResetToken;
+                resetPasswordRequest.Password = request.Password;
+
+                var response = await _accountClient.ResetPasswordAsync(resetPasswordRequest);
+                if (response.Code == AccountBusinessService.Responcecode.Success)
+                    return Ok("Reset password process is successfully completed.");
+                else if (response.Code == AccountBusinessService.Responcecode.NotFound)
+                    return NotFound("Failed to reset password or Activation link is expired or invalidated.");
+                else
+                    return StatusCode(500, "Reset password process failed.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:ResetPassword with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpPost]
+        [Route("resetpasswordinvalidate")]
+        public async Task<IActionResult> ResetPasswordInvalidate([FromBody] ResetPasswordInvalidateRequest request)
+        {
+            try
+            {
+                var resetPasswordInvalidateRequest = new AccountBusinessService.ResetPasswordInvalidateRequest();
+                resetPasswordInvalidateRequest.ResetToken = request.ResetToken;
+
+                var response = await _accountClient.ResetPasswordInvalidateAsync(resetPasswordInvalidateRequest);
+
+                return Ok(response.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:ResetPasswordInvalidate with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
 
         #region Account Picture

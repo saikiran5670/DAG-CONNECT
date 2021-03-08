@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace net.atos.daf.ct2.portalservice.Account
 {
@@ -75,5 +76,27 @@ namespace net.atos.daf.ct2.portalservice.Account
         public AccountResponse Account { get; set; }
         public AccountPreferenceResponse Preference { get; set; }
         
+    }
+    public class ResetPasswordInitiateRequest
+    {
+        [Required]
+        [RegularExpression(@"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", ErrorMessage = "The field EmailId must be in proper format.")]
+        public string EmailId { get; set; }
+    }
+
+    public class ResetPasswordRequest
+    {
+        [Required]
+        [StringLength(36, MinimumLength = 36, ErrorMessage = "The field ResetToken must be a string with a length of 36 characters.")]
+        public string ResetToken { get; set; }
+        [Required]
+        public string Password { get; set; }
+    }
+
+    public class ResetPasswordInvalidateRequest
+    {
+        [Required]
+        [StringLength(36, MinimumLength = 36, ErrorMessage = "The field ResetToken must be a string with a length of 36 characters.")]
+        public string ResetToken { get; set; }
     }
 }

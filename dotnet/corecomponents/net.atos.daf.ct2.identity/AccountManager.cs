@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Options;
 using net.atos.daf.ct2.identity.entity;
+using System.Net;
 
 namespace net.atos.daf.ct2.identity
 {
@@ -80,6 +81,14 @@ namespace net.atos.daf.ct2.identity
         public async Task<Response> ChangeUserPassword(Identity user)
         {
             return await UpdateOrDeleteUser(user,"CHANGEPASSWORD");
+        }
+        public async Task<Response> ResetUserPasswordInitiate()
+        {
+            return await Task.FromResult(new Response()
+            {
+                Result = Guid.NewGuid(),
+                StatusCode = HttpStatusCode.OK
+            });
         }
         public async Task<Response> LogOut(Identity user)
         {
