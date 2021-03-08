@@ -10,7 +10,7 @@ package audittrail;
 
 service AuditService {
     rpc Addlogs(AuditRecord) returns (AuditResponce);
-    rpc GetAllLangaugecodes (AuditLogRequest) returns (AuditLogResponse);
+    rpc GetAuditLogs (AuditLogRequest) returns (AuditLogResponse);
 }
 
 

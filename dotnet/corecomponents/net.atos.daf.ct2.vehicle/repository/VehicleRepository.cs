@@ -98,7 +98,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@tcu_version", string.IsNullOrEmpty(vehicle.Tcu_Version)? null:vehicle.Tcu_Version);
             parameter.Add("@is_tcu_register", vehicle.Is_Tcu_Register);
             parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : (long ?)null);
-            parameter.Add("@vehicle_property_id", vehicle.VehiclePropertiesId);            
+            parameter.Add("@vehicle_property_id", vehicle.VehiclePropertiesId != 0 ? vehicle.VehiclePropertiesId : null);          
             parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
             parameter.Add("@model_id", string.IsNullOrEmpty(vehicle.ModelId)?null:vehicle.ModelId);
             parameter.Add("@oem_id", vehicle.Oem_id);
