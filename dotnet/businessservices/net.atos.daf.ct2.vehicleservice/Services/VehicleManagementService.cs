@@ -267,22 +267,23 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
         }
 
-        public override async Task<VehicleGroupResponce> DeleteGroup(VehicleGroupIdRequest request, ServerCallContext context)
+        public override async Task<VehicleGroupDeleteResponce> DeleteGroup(VehicleGroupIdRequest request, ServerCallContext context)
         {
             try
             {
                 bool result = await _groupManager.Delete(request.GroupId, Group.ObjectType.VehicleGroup);
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Create Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Delete Vehicle Group ", 1, 2, Convert.ToString(request.GroupId)).Result;
-                return await Task.FromResult(new VehicleGroupResponce
+                return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
                     Message = "Vehicle Group deleted.",
-                    Code = Responcecode.Success
+                    Code = Responcecode.Success,
+                    Result= result
                 });
             }
             catch (Exception ex)
             {
                 _logger.LogError("Error in delete vehicle group :DeleteGroup with exception - " + ex.StackTrace + ex.Message);
-                return await Task.FromResult(new VehicleGroupResponce
+                return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
                     Message = "Exception :-" + ex.Message,
                     Code = Responcecode.Failed
@@ -353,7 +354,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         ObjGroupRef.LicensePlateNumber = item.License_Plate_Number == null ? "" : item.License_Plate_Number;
                         ObjGroupRef.VIN = item.VIN == null ? "" : item.VIN;
                         //ObjGroupRef.Status = SetEnumVehicleStatusType(item.Status);
-                        ObjGroupRef.Status = (VehicleStatusType)Enum.Parse(typeof(VehicleStatusType), item.Status.ToString());
+                        ObjGroupRef.Status = item.Status.ToString();
                         ObjGroupRef.IsVehicleGroup = false;
                         ObjGroupRef.ModelId = item.ModelId == null ? "" : item.ModelId;
                         ObjGroupRef.OrganizationId = item.Organization_Id;
