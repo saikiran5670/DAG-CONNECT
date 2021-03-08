@@ -8,36 +8,19 @@ package net.atos.daf.ct2.organizationservice;
 // The greeting service definition.
 service OrganizationService {
   // Sends a greeting
-  rpc Create (OrgRequest) returns (OrganizationData);
-  rpc Update (OrgRequest) returns (OrganizationData);
-  rpc Delete (IdRequest) returns (OrganizationResponse);
-  rpc Get (IdRequest) returns (OrganizationResponse); 
+  rpc Create (OrgCreateRequest) returns (OrganizationCreateData);
+  rpc Update (OrgUpdateRequest) returns (OrganizationUpdateData);
+ // rpc Delete (IdRequest) returns (OrganizationResponse);
+  rpc Get (IdRequest) returns (OrganizationGetData); 
 
   // Account Preference Mthod
-   rpc CreatePreference (AccountPreference) returns (AccountPreferenceResponse);
+  rpc CreatePreference (AccountPreference) returns (AccountPreferenceResponse);
   rpc UpdatePreference (AccountPreference) returns (AccountPreferenceResponse);
   rpc DeletePreference (IdRequest) returns (AccountPreferenceResponse);
-  rpc GetPreference (IdRequest) returns (AccountPreferenceResponse);
+  rpc GetPreference (IdRequest) returns (OrganizationPreferenceResponse);
 }
 
-// The request 
-message OrganizationRequest {
-    int32 id = 1;
-    string org_id=2;
-    string type =3;
-    string name=4;
-    string address_Type=5;
-    string street=6;
-    string street_number =7; 
-    string postal_code =8;    
-    string city=9;
-    string country_code =10;
-    int64 reference_date =11;
-    bool optout_status =12;
-    int64 optout_status_changed_date =13;
-  }
-
-  message OrgRequest {
+  message OrgCreateRequest {
     int32 id = 1;
     string org_id=2;
     string type =3;
@@ -50,9 +33,23 @@ message OrganizationRequest {
     string country_code =10;
     string reference_date =11;   
   }
-
+  message OrgUpdateRequest {
+    int32 id = 1;
+    string org_id=2;
+    string type =3;
+    string name=4;
+    string address_Type=5;
+    string street=6;
+    string street_number =7; 
+    string postal_code =8;    
+    string city=9;
+    string country_code =10;
+    string reference_date =11;
+    string vehicle_default_opt_in=12;
+    string driver_default_opt_in=13;   
+  }
 // The response message containing the greetings.
-message OrganizationResponse {  
+message OrgGetResponse {  
     int32 Id=1;
     string OrganizationId= 2;
     google.protobuf.StringValue Type=3;
@@ -63,27 +60,28 @@ message OrganizationResponse {
     google.protobuf.StringValue PostalCode=8;    
     google.protobuf.StringValue City=9;
     google.protobuf.StringValue CountryCode=10;   
-    google.protobuf.StringValue Referenced=11;
-    bool OptOutStatus=12;  
-    google.protobuf.StringValue OptOutStatusChanged=13;  
-    bool IsActive=14;  
+    google.protobuf.StringValue Referenced=11;  
+    bool IsActive=12;  
+    google.protobuf.StringValue VehicleOptIn=13;
+    google.protobuf.StringValue DriverOptIn=14;
 }
 
-// The response message containing the greetings.
-message OrgResponse {  
-    int32 Id=1;
-    string OrganizationId= 2;
-    google.protobuf.StringValue Type=3;
-    google.protobuf.StringValue Name=4;
-    google.protobuf.StringValue AddressType=5;
-    google.protobuf.StringValue AddressStreet=6;
-    google.protobuf.StringValue AddressStreetNumber=7; 
-    google.protobuf.StringValue PostalCode=8;    
-    google.protobuf.StringValue City=9;
-    google.protobuf.StringValue CountryCode=10;   
-    int64 Referenced=11;
-    bool OptOutStatus=12;  
-    google.protobuf.StringValue OptOutStatusChanged=13;    
+message OrganizationCreateData {
+  Responcecode Code=1;
+  string Message = 2;
+  OrgUpdateRequest Organization = 3;
+}
+
+message OrganizationUpdateData {
+  Responcecode Code=1;
+  string Message = 2;
+  OrgUpdateRequest Organization = 3;
+}
+
+message OrganizationGetData {
+  Responcecode Code=1;
+  string Message = 2;
+  OrgGetResponse Organization = 3;
 }
 
  message AccountPreference
@@ -112,11 +110,7 @@ message OrgResponse {
   int32 Id = 1;
 }
 
-message OrganizationData {
-  Responcecode Code=1;
-  string Message = 2;
-  OrgRequest Organization = 3;
-}
+
 
   enum Responcecode{
       Success = 0;
@@ -129,5 +123,22 @@ message OrganizationData {
         int32 Id =1;
     }
     
-    
-    
+ message OrganizationPreference
+    {
+        int32 Id =1;
+        int32 OrgId =2;
+        string Language =3;
+        string Timezone =4;
+        string Currency =5;
+        string Unit = 6;
+        string VehicleDisplay =7;
+        string DateFormat =8;
+        string TimeFormat=9;
+        string LandingPageDisplay=10;
+    }
+   message OrganizationPreferenceResponse
+    {
+     Responcecode Code=1;
+     string Message = 2;
+     OrganizationPreference OrganizationPreference= 3;      
+    }

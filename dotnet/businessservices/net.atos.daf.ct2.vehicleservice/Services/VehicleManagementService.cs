@@ -198,7 +198,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 _logger.LogInformation("Group Created:" + Convert.ToString(group.Name));
                 return await Task.FromResult(new VehicleGroupResponce
                 {
-                    Message = "Vehicle group created with id:- ",
+                    Message = "Vehicle group created with id:- " + group.Id,
                     Code = Responcecode.Success,
                     VehicleGroup = request
                 });
@@ -218,43 +218,6 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         {
             try
             {
-                //    Group ObjVehicleGroup = new Group();
-                //    ObjVehicleGroup.Id = request.Id;
-                //    ObjVehicleGroup.Name = request.Name;
-                //    ObjVehicleGroup.Description = request.Description;
-                //    ObjVehicleGroup.Argument = request.Argument;
-                //    ObjVehicleGroup.FunctionEnum = (group.FunctionEnum)Enum.Parse(typeof(group.FunctionEnum), request.FunctionEnum.ToString());
-                //    ObjVehicleGroup.GroupType = (group.GroupType)Enum.Parse(typeof(group.GroupType), request.GroupType.ToString());
-                //    ObjVehicleGroup.ObjectType = (group.ObjectType)Enum.Parse(typeof(group.ObjectType), request.ObjectType.ToString());
-                //    ObjVehicleGroup.OrganizationId = request.OrganizationId;
-                //    Group VehicleGroupResponce = _groupManager.Update(ObjVehicleGroup).Result;
-
-                //    ObjVehicleGroup.GroupRef = new List<GroupRef>();
-                //    foreach (var item in request.GroupRef)
-                //    {
-                //        ObjVehicleGroup.GroupRef.Add(new GroupRef() { Ref_Id = item.RefId });
-                //    }
-
-                //    if (VehicleGroupResponce.Id > 0)
-                //    {
-                //        bool AddvehicleGroupRef = _groupManager.UpdateRef(ObjVehicleGroup).Result;
-                //    }
-                //    _logger.LogInformation("Update group method in vehicle service called.");
-                //    return Task.FromResult(new VehicleGroupResponce
-                //    {
-                //        Message = "Vehicle group updated with id:- " + VehicleGroupResponce.Id,
-                //        Code = Responcecode.Success
-                //    });
-                //}
-                //catch (Exception ex)
-                //{
-                //    _logger.LogError("Error in vehicle service update group method.");
-                //    return Task.FromResult(new VehicleGroupResponce
-                //    {
-                //        Message = "Exception :-" + ex.Message,
-                //        Code = Responcecode.Failed
-                //    });
-                //}
                 Group.Group entity = new Group.Group();
                 entity = _mapper.ToGroup(request);
                 entity = await _groupManager.Update(entity);
@@ -398,8 +361,17 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     }
                 }
 
-                ObjVehicleGroupRes.Message = "Vehicle and vehicle group list generated";
-                ObjVehicleGroupRes.Code = Responcecode.Success;
+                if (ObjVehicleGroupRes.GroupRefDetails.Count() > 0)
+                {
+                    ObjVehicleGroupRes.Message = "Vehicle and vehicle group list generated";
+                    ObjVehicleGroupRes.Code = Responcecode.Success;
+                    
+                }
+                else
+                {
+                    ObjVehicleGroupRes.Message = "Vehicle and vehicle group data not exist for passed parameter";
+                    ObjVehicleGroupRes.Code = Responcecode.Success;
+                }
 
                 _logger.LogInformation("GetGroupDetails method in vehicle service called.");
 
@@ -484,6 +456,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroupRequest> ObjOrgVehicleGroupList = await _vehicelManager.GetOrganizationVehicleGroupdetails(request.OrganizationId);
                 foreach (var item in ObjOrgVehicleGroupList)
                 {
+                    if (string.IsNullOrEmpty(item.VehicleGroupName))
+                    {
+                        item.VehicleGroupName = "";
+                    }
                     response.OrgVehicleGroupList.Add(_mapper.ToOrgVehicleGroup(item));
                 }
 
@@ -514,6 +490,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
 
                 foreach (var item in vehicleGroupList)
                 {
+                    if (string.IsNullOrEmpty(item.Name))
+                    {
+                        item.Name = "";
+                    }
                     response.VehicleGroups.Add(_mapper.ToVehicleGroupDetails(item));
                 }
 
@@ -597,8 +577,19 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         response.GroupRefDetails.Add(ObjGroupRef);
                     }
                 }
-                response.Code = Responcecode.Success;
-                response.Message = "Organization vehicle Group details fetched.";
+
+                if (response.GroupRefDetails.Count == 0)
+                {
+                    response.Code = Responcecode.Success;
+                    response.Message = "Organization vehicle Group details fetched.";
+                    
+                }
+                else
+                {
+                    response.Code = Responcecode.Success;
+                    response.Message = "Vehicle data not exist for passed parameter.";
+
+                }
                 return await Task.FromResult(response);
 
             }
@@ -612,33 +603,6 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     Code = Responcecode.Failed
                 });
             }
-        }
-
-
-
-
-        private group.GroupType GetEnum(char value)
-        {
-            group.GroupType groupType;
-            switch (value)
-            {
-                case 'N':
-                    groupType = group.GroupType.None;
-                    break;
-                case 'S':
-                    groupType = group.GroupType.Single;
-                    break;
-                case 'G':
-                    groupType = group.GroupType.Group;
-                    break;
-                case 'D':
-                    groupType = group.GroupType.Dynamic;
-                    break;
-                default:
-                    groupType = group.GroupType.None;
-                    break;
-            }
-            return groupType;
         }
 
     }

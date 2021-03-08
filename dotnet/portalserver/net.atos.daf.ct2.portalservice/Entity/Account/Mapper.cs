@@ -162,14 +162,18 @@ namespace net.atos.daf.ct2.portalservice.Account
             group.Name = request.Name;
             group.Description = request.Description;            
             group.OrganizationId = request.OrganizationId;
-            group.RefId = request.RefId;
+            group.RefId = request.RefId;            
             if (!string.IsNullOrEmpty(request.GroupType))
             {
-                group.GroupType = request.GroupType;
+                group.GroupType = request.GroupType.ToUpper();
             }
-            if (request.Accounts != null)
+            group.FunctionEnum = string.Empty;
+            if (group.GroupType.ToUpper() == "D")
             {
-                //group.GroupRef = new List<AccountBusinessService.AccountGroupRef>();
+                group.FunctionEnum = "A";
+            }
+            if (group.GroupType.ToUpper() == "G" &&  request.Accounts != null)
+            {
                 foreach (var groupref in request.Accounts)
                 {
                     if(groupref.AccountId>0)
@@ -193,13 +197,18 @@ namespace net.atos.daf.ct2.portalservice.Account
             {
                 group.GroupType = request.AccountGroup.GroupType;
             }
-            
+            // function enum
+            if (!string.IsNullOrEmpty(request.AccountGroup.GroupType))
+            {
+                group.GroupType = request.AccountGroup.GroupType;
+            }
+
             if (request.AccountGroup.GroupRef != null)
             {
                 group.GroupRef = new List<GroupRef>();
                 foreach (var groupref in request.AccountGroup.GroupRef)
                 {
-                    group.GroupRef.Add(new GroupRef() { AccountGroupId = groupref.GroupId ,  AccountId = groupref.RefId });
+                    group.GroupRef.Add(new GroupRef() { AccountGroupId = request.AccountGroup.Id,  AccountId = groupref.RefId });
                 }
             }
             return group;

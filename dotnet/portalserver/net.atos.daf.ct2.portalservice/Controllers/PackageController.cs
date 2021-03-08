@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.packageservice;
 using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.featureservice;
+using Google.Protobuf.Collections;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -17,11 +19,36 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     {
         private readonly ILogger<PackageController> _logger;
         private readonly PackageService.PackageServiceClient _packageClient;
+        private readonly FeatureService.FeatureServiceClient _featureclient;
 
-        public PackageController(PackageService.PackageServiceClient packageClient, ILogger<PackageController> logger)
+        public PackageController(PackageService.PackageServiceClient packageClient,
+            FeatureService.FeatureServiceClient featureclient,
+            ILogger<PackageController> logger)
         {
             _packageClient = packageClient;
+            _featureclient = featureclient;
             _logger = logger;
+
+        }
+
+
+
+        private async void RetrieveFeatureSetId(List<string> features)
+        {
+
+            try
+            {
+                var featureFilterRequest = new FeaturesFilterRequest();
+                //featureFilterRequest.FeatureSetID = 103;
+                var featureList = await _featureclient.GetFeaturesAsync(featureFilterRequest);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
 
         }
 
@@ -31,12 +58,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+
+                //var features = new List<string>();
+                //features.AddRange(request.Features.Select(x => x.ToString()).ToList());
+                //RetrieveFeatureSetId(features);
+
                 // Validation 
                 if ((string.IsNullOrEmpty(request.Code)) || (string.IsNullOrEmpty(request.Name))
-                || (request.Features.Count == 0) || !EnumValidator.ValidateAccountType((char)request.Type))
+                /*|| (request.Features.Count == 0) ||*/ )
                 {
                     return StatusCode(400, "The Package code,name,type and features are required.");
                 }
+
+
+
                 var packageResponse = await _packageClient.CreateAsync(request);
                 if (packageResponse != null
                    && packageResponse.Message == "There is an error creating package.")
@@ -81,7 +116,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (packageResponse != null && packageResponse.Code == Responsecode.Failed
                      && packageResponse.Message == "There is an error updating package.")
                 {
-                    return StatusCode(500, "There is an error creating account.");
+                    return StatusCode(500, "There is an error updating account.");
                 }
                 else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
                 {
@@ -95,7 +130,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Package Service:Create : " + ex.Message + " " + ex.StackTrace);
+                _logger.LogError("Package Service:Update : " + ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
             }
         }
@@ -103,13 +138,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         //Get/Export Packages
         [HttpPost]
-        [Route("getpackages")]
+        [Route("get")]
         public async Task<IActionResult> Get(GetPackageRequest request)
         {
             try
             {
 
                 var response = await _packageClient.GetAsync(request);
+                response.PacakageList.Where(S => S.FeatureSetID > 0)
+                                                .Select(S => { S.Features.AddRange(GetFeatures(S.FeatureSetID).Result); return S; }).ToList();
                 if (response != null && response.Code == Responsecode.Success)
                 {
                     if (response.PacakageList != null && response.PacakageList.Count > 0)
@@ -118,7 +155,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(404, "Accounts details are found.");
+                        return StatusCode(404, "Package details are found.");
                     }
                 }
                 else
@@ -131,6 +168,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.LogError("Error in package service:get package with exception - " + ex.Message + ex.StackTrace);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
+        }       
+
+        private async Task<IEnumerable<string>> GetFeatures(int featureSSetId)
+        {
+            var features = new List<string>();
+            var featureFilterRequest = new FeaturesFilterRequest();
+            featureFilterRequest.FeatureSetID = featureSSetId;
+            var featureList = await _featureclient.GetFeaturesAsync(featureFilterRequest);
+            features.AddRange(featureList.Features.Select(x => x.Name).ToList());
+            return features;
         }
 
         //Delete package
@@ -182,11 +229,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "There is an error importing package.");
                 }
-                else if (packageResponse != null && packageResponse.Code == Responsecode.Success && 
+                else if (packageResponse != null && packageResponse.Code == Responsecode.Success &&
                          packageResponse.PackageList != null && packageResponse.PackageList.Count > 0)
                 {
-                     
-                        return Ok(packageResponse);
+
+                    return Ok(packageResponse);
                 }
                 else
                 {

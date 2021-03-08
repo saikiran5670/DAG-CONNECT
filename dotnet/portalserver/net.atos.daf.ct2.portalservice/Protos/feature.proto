@@ -19,18 +19,49 @@ service FeatureService {
   rpc Update (FeatureRequest) returns (FeatureResponce);  
   rpc Delete (FeatureRequest) returns (FeatureResponce);
   rpc GetFeatures (FeaturesFilterRequest) returns (FeaturesListResponce);
+  rpc GetDataAttributes(DataAtributeRequest)returns(DataAttributeResponceList);
 
 }
-
+message DataAtributeRequest
+{
+}
  message FeatureRequest
   {
     int32 Id = 1;
     string Name= 2;
     string Key =3;
     string type= 4;
-    bool Active=5;
-    int32 data_attribute_set_id= 6;
+    bool status=5;
+    DataAttributeSetRequest DataAttribute = 6;  
+    string Description =7;
+    int32 Level=8;
+  }
 
+  message DataAttributeSetRequest
+  {
+    string Name= 1;
+    string Description =2;
+    DataAttributeType AttributeType=6;
+    int32 data_attribute_set_id= 7;
+    repeated int32 DataAttributeIDs = 8;
+    int32 Created_by= 9;
+  }
+  message DataAttributeResponce
+  {
+    string Name= 1;
+    string Description =2;
+    int32 Id= 7;
+    string Key= 9;
+  }
+  message DataAttributeResponceList{
+    Responcecode Code=1;
+  string Message = 2;  
+  repeated DataAttributeResponce responce=3;
+  }
+  enum DataAttributeType
+  {
+    Excluded =0;
+    Inactive = 1;
   }
 
   message FeatureResponce

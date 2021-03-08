@@ -9,6 +9,7 @@ namespace net.atos.daf.ct2.identity
         Task<Response> DeleteUser(Identity user); 
         Task<Response> ChangeUserPassword(Identity user);
         Task<Response> LogOut(Identity user);
+        Task<Response> ResetUserPasswordInitiate();
 
     }
 }

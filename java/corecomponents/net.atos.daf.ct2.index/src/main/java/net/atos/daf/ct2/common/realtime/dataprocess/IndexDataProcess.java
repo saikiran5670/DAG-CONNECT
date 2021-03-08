@@ -13,18 +13,19 @@ import net.atos.daf.common.AuditETLJobClient;
 import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.common.realtime.hbase.IndexDataHbaseSink;
 import net.atos.daf.ct2.common.realtime.postgresql.LiveFleetDriverActivityPostgreSink;
+
 import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.ct2.common.util.FlinkKafkaIndexDataConsumer;
 import net.atos.daf.ct2.common.util.FlinkUtil;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Index;
 
-
 public class IndexDataProcess {
 	public static void main(String[] args) throws Exception {
-		
+
 		/*
-		 * This Job will read the index message data from Kafka topic and store it in HBase and Postgres
+		 * This Job will read the index message data from Kafka topic and store it in
+		 * HBase and Postgres
 		 */
 
 		Logger log = LoggerFactory.getLogger(IndexDataProcess.class);
@@ -35,7 +36,7 @@ public class IndexDataProcess {
 		ParameterTool envParams = null;
 
 		try {
-			
+
 			log.info("============== Start of IndexDataProcess =============");
 
 			ParameterTool params = ParameterTool.fromArgs(args);
@@ -43,19 +44,18 @@ public class IndexDataProcess {
 			if (params.get("input") != null)
 				envParams = ParameterTool.fromPropertiesFile(params.get("input"));
 
-			
 			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams,
 					envParams.get(DafConstants.INDEX_JOB));
 
 			log.info("env :: " + env);
-			
+
 			FlinkKafkaIndexDataConsumer flinkKafkaConsumer = new FlinkKafkaIndexDataConsumer();
 
 			env.getConfig().setGlobalJobParameters(envParams);
 
 			DataStream<KafkaRecord<Index>> consumerStream = flinkKafkaConsumer.connectToKafkaTopic(envParams, env);
 			consumerStream.print();
-			
+
 			consumerStream.addSink(new IndexDataHbaseSink()); // Writing into HBase Table
 
 			consumerStream.addSink(new LiveFleetDriverActivityPostgreSink()); // Writing into PostgreSQL Table
@@ -80,7 +80,7 @@ public class IndexDataProcess {
 		} catch (Exception e) {
 
 			log.error("Error in Index Data Process" + e.getMessage());
-			//e.printStackTrace();
+			// e.printStackTrace();
 
 			try {
 				auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL,

@@ -4,6 +4,7 @@ using AccountComponent = net.atos.daf.ct2.account;
 using Preference = net.atos.daf.ct2.accountpreference;
 using Group = net.atos.daf.ct2.group;
 using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.group;
 
 namespace net.atos.daf.ct2.accountservice
 {
@@ -149,31 +150,12 @@ namespace net.atos.daf.ct2.accountservice
             entity.Id = request.Id;
             entity.Name = request.Name;            
             entity.Description = request.Description;
-            entity.Argument = "";//request.Argument;                
-            entity.FunctionEnum = group.FunctionEnum.None;
+            entity.Argument = "";//request.Argument;
+            entity.FunctionEnum = ToFunctionMethod(request.FunctionEnum);            
             entity.RefId = null;
             if (request.RefId >0) entity.RefId = request.RefId;
-
-            if (!string.IsNullOrEmpty(request.GroupType))
-            {
-                char type = Convert.ToChar(request.GroupType);
-                if (type == 'd' || type == 'D')
-                {
-                    entity.GroupType = Group.GroupType.Dynamic;
-                }
-                else if (type == 's' || type == 'S')
-                {
-                    entity.GroupType = Group.GroupType.Single;
-                }
-                else
-                {
-                    entity.GroupType = Group.GroupType.Group;
-                }
-            }
-            else
-            {
-                entity.GroupType = Group.GroupType.Group;
-            }            
+            entity.GroupType = ToGroupType(request.GroupType);
+                      
             entity.ObjectType = group.ObjectType.AccountGroup;
             entity.OrganizationId = request.OrganizationId;
             if (request.CreatedAt > 0)
@@ -205,8 +187,7 @@ namespace net.atos.daf.ct2.accountservice
             //request.Argument = entity.Argument;
             //request.FunctionEnum = (FunctionEnum)Enum.Parse(typeof(FunctionEnum), entity.FunctionEnum.ToString());
             //request.FunctionEnum = entity.FunctionEnum.ToString();
-            //request.GroupType = (GroupType)Enum.Parse(typeof(GroupType), entity.GroupType.ToString());
-            //request.GroupType = entity.GroupType.ToString();
+            request.GroupType = entity.GroupType.ToString();            
             //request.ObjectType = (ObjectType)Enum.Parse(typeof(ObjectType), entity.ObjectType.ToString());
             //request.ObjectType = entity.ObjectType.ToString();
             request.OrganizationId = entity.OrganizationId;
@@ -221,25 +202,40 @@ namespace net.atos.daf.ct2.accountservice
             }
             return request;
         }
+        private FunctionEnum ToFunctionMethod(string methodName)
+        {
+            FunctionEnum functionMethod = FunctionEnum.None;
+            if (string.IsNullOrEmpty(methodName)) return functionMethod;
+            if(methodName.Length > 1) return functionMethod;
+            functionMethod = (FunctionEnum)Convert.ToChar(methodName);
+            return functionMethod;
+        }
+        private GroupType ToGroupType(string groupType)
+        {
+            GroupType groupTypeEnum = GroupType.None;
+            if (string.IsNullOrEmpty(groupType)) return groupTypeEnum;            
+            groupTypeEnum = (GroupType)Convert.ToChar(groupType);            
+            return groupTypeEnum;
+        }
 
-        // private AccountType SetEnumAccountType(AccountComponent.ENUM.AccountType type)
-        // {
-        //     AccountType accountType = AccountType.None;
+        //private AccountType SetEnumAccountType(AccountComponent.ENUM.AccountType type)
+        //{
+        //    AccountType accountType = AccountType.None;
 
-        //     if (type == AccountComponent.ENUM.AccountType.None)
-        //     {
-        //         accountType = AccountType.None;
-        //     }
-        //     else if (type == AccountComponent.ENUM.AccountType.SystemAccount)
-        //     {
-        //         accountType = AccountType.SystemAccount;
-        //     }
-        //     else if (type == AccountComponent.ENUM.AccountType.PortalAccount)
-        //     {
-        //         accountType = AccountType.PortalAccount;
-        //     }
-        //     return accountType;
-        // }
+        //    if (type == AccountComponent.ENUM.AccountType.None)
+        //    {
+        //        accountType = AccountType.None;
+        //    }
+        //    else if (type == AccountComponent.ENUM.AccountType.SystemAccount)
+        //    {
+        //        accountType = AccountType.SystemAccount;
+        //    }
+        //    else if (type == AccountComponent.ENUM.AccountType.PortalAccount)
+        //    {
+        //        accountType = AccountType.PortalAccount;
+        //    }
+        //    return accountType;
+        //}
         // private AccountComponent.ENUM.AccountType GetEnum(int value)
         // {
         //     AccountComponent.ENUM.AccountType accountType;

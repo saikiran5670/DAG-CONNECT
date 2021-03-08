@@ -104,21 +104,72 @@ export class PackageManagementComponent implements OnInit {
         name: "Package Name 1",
         type: "org pkg",
         features: 20,
-        status: "Active"
+        status: "Active",
+        startDate: "02/03/2021",
+        endDate: "02/05/2021",
+        featureName: [
+          {
+            id: 3,
+            featureName: "Feature Name " 
+          },
+          {
+            id: 4,
+            featureName: "Feature Name " 
+          },
+          {
+            id: 5,
+            featureName: "Feature Name " 
+          },
+          {
+            id: 6,
+            featureName: "Feature Name " 
+          }
+        ],
+        description : "This is Package 1"
       },
       {
         packageCode: "Package code 2",
         name: "Package Name 2",
         type: "org VIN",
         features: 30,
-        status: "Inactive"
+        status: "Inactive",
+        startDate: "02/03/2021",
+        endDate: "02/05/2021",
+        featureName: [
+          {
+            id: 3,
+            featureName: "Feature Name " 
+          },
+          {
+            id: 4,
+            featureName: "Feature Name " 
+          }
+        ],
+        description : "This is Package 2"
       },
       {
         packageCode: "Package code 3",
         name: "Package Name 3",
         type: "org VIN",
         features: 40,
-        status: "Inactive"
+        status: "Inactive",
+        startDate: "02/03/2021",
+        endDate: "02/05/2021",
+        featureName: [
+          {
+            id: 3,
+            featureName: "Feature Name " 
+          },
+          {
+            id: 4,
+            featureName: "Feature Name " 
+          },
+          {
+            id: 5,
+            featureName: "Feature Name " 
+          }
+        ],
+        description : "This is Package 3"
       }
     ];
     this.featureList = [
