@@ -46,7 +46,7 @@ export class DriverManagementComponent implements OnInit {
   driverData: any = [];
   file: any;
   arrayBuffer: any;
-  filelist: any;
+  filelist: any = [];
   translationData: any;
   localStLanguage: any;
   actionType: any = '';
@@ -66,6 +66,7 @@ export class DriverManagementComponent implements OnInit {
   importedDriverlist: any = [];
   rejectedDriverList: any = [];
   driverDialogRef: MatDialogRef<CommonTableComponent>;
+  excelEmptyMsg: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService, private translationService: TranslationService) { 
       this.defaultTranslation();
@@ -256,9 +257,11 @@ export class DriverManagementComponent implements OnInit {
     this.userGrpName = 'Test User Group' ; //this.importDriverFormGroup.controls.userGroup.value;
     if(this.filelist.length > 0){
       this.validateExcelFileField();
+      this.excelEmptyMsg = false;
       this.importDriverPopup = true;
     }else{
-      console.log("Empty File...");
+      console.log("Empty Excel File...");
+      this.excelEmptyMsg = true;
     }
   }
 
@@ -333,8 +336,6 @@ export class DriverManagementComponent implements OnInit {
         invalidData.push(item);
       }
     });
-    // console.log("validData:: ", validData)
-    // console.log("invalidData:: ", invalidData)
     return { validDriverList: validData, invalidDriverList: invalidData };
   }
 
@@ -460,23 +461,24 @@ export class DriverManagementComponent implements OnInit {
     this.importDriverPopup = false;
   }
 
-  addfile(event: any){    
+  addfile(event: any){ 
+    this.excelEmptyMsg = false;   
     this.file = event.target.files[0];     
     let fileReader = new FileReader();    
     fileReader.readAsArrayBuffer(this.file);     
     fileReader.onload = (e) => {    
         this.arrayBuffer = fileReader.result;    
-        var data = new Uint8Array(this.arrayBuffer);    
+        var data = new Uint8Array(this.arrayBuffer);   
         var arr = new Array();    
-        for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);    
+        for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
         var bstr = arr.join("");    
         var workbook = XLSX.read(bstr, {type:"binary"});    
         var first_sheet_name = workbook.SheetNames[0];    
         var worksheet = workbook.Sheets[first_sheet_name];    
         //console.log(XLSX.utils.sheet_to_json(worksheet,{raw:true}));    
-          var arraylist = XLSX.utils.sheet_to_json(worksheet,{raw:true});     
-              this.filelist = [];
-              this.filelist = arraylist;    
+        var arraylist = XLSX.utils.sheet_to_json(worksheet,{raw:true});     
+        this.filelist = [];
+        this.filelist = arraylist;    
     }    
   }
 

@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.packageservice
                 package.FeatureSetID = request.FeatureSetID;
                 package.Status = (package.ENUM.PackageStatus)(int)request.Status;
                 package.Name = request.Name;
-                package.Type = (package.ENUM.PackageType)(int)request.Type;
+                package.Type = (package.ENUM.PackageType)(char)request.Type;
                 package.Description = request.Description;
                 package = _packageManager.Create(package).Result;
                 return Task.FromResult(new PackageResponse
@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.packageservice
 
 
         //Update
-        public override Task<PackageResponse> Update(PackageUpdateRequest request, ServerCallContext context)
+        public override Task<PackageResponse> Update(PackageCreateRequest request, ServerCallContext context)
         {
             try
             {
@@ -62,9 +62,9 @@ namespace net.atos.daf.ct2.packageservice
                 package.Id = request.Id;
                 package.Code = request.Code;
                 package.FeatureSetID = request.FeatureSetID;
-                package.Status = (package.ENUM.PackageStatus)(int)request.Status;
+                package.Status = (package.ENUM.PackageStatus)request.Status;
                 package.Name = request.Name;
-                package.Type = (package.ENUM.PackageType)(int)request.Type;
+                package.Type = (package.ENUM.PackageType)request.Type;
                 package.Description = request.Description;
                 package = _packageManager.Update(package).Result;
                 return Task.FromResult(new PackageResponse

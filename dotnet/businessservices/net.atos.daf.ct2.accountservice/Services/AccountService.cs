@@ -536,6 +536,115 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
+
+        public override async Task<ResetPasswordResponse> ResetPasswordInitiate(ResetPasswordInitiateRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var result = await accountmanager.ResetPasswordInitiate(request.EmailId);
+
+                ResetPasswordResponse response = new ResetPasswordResponse();
+                if (!result.HasValue)
+                {
+                    response.Code = Responcecode.Failed;
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Initiate", 1, 2, request.EmailId);
+                    response.Message = "Password reset process failed to initiate or Error while sending email";
+                }
+                else
+                {
+                    if (result.HasValue && result.Value == Guid.Empty)
+                    {
+                        response.Code = Responcecode.Success;
+                        await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Password Reset - Account not configured Or Email sending failed", 1, 2, request.EmailId);
+                        response.Message = "Password Reset - Account not found";
+                    }
+                    else
+                    {
+                        response.Code = Responcecode.Success;
+                        await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Password Reset Initiate", 1, 2, request.EmailId);
+                        response.Message = "Reset password process is initiated.";
+                    }
+                }
+
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:ResetPasswordInitiate with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new ResetPasswordResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Account Password Reset failed due to the reason : " + ex.Message
+                });
+            }
+        }
+        public override async Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request, ServerCallContext context)
+        {
+            try
+            {
+                AccountComponent.entity.Account account = new AccountComponent.entity.Account();
+                account.ResetToken = new Guid(request.ResetToken);
+                account.Password = request.Password;
+                account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
+                var result = await accountmanager.ResetPassword(account);
+
+                ResetPasswordResponse response = new ResetPasswordResponse();
+                if (result)
+                {
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Password Reset with Token", 1, 2, request.ResetToken);
+                    response.Code = Responcecode.Success;
+                    response.Message = "Password has been reset successfully.";
+                }
+                else
+                {
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset with Token", 1, 2, request.ResetToken);
+                    response.Code = Responcecode.NotFound;
+                    response.Message = "Failed to reset password or Activation link is expired or invalidated.";
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:ResetPassword with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new ResetPasswordResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Account Password Reset failed due to the reason : " + ex.Message
+                });
+            }
+        }
+        public override async Task<ResetPasswordResponse> ResetPasswordInvalidate(ResetPasswordInvalidateRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var result = await accountmanager.ResetPasswordInvalidate(new Guid(request.ResetToken));
+
+                ResetPasswordResponse response = new ResetPasswordResponse();
+                if (result)
+                {
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Password Reset Invalidate with Token", 1, 2, request.ResetToken);
+                    response.Code = Responcecode.Success;
+                    response.Message = "Reset token has been invalidated.";
+                }
+                else
+                {
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Invalidate with Token", 1, 2, request.ResetToken);
+                    response.Code = Responcecode.Failed;
+                    response.Message = "Failed to invalidate the token. Either token is not issued or already invalidated.";
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:ResetPasswordInvalidate with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new ResetPasswordResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Account Reset Password Invalidate failed due to the reason : " + ex.Message
+                });
+            }
+        }
+
         // End Account
         #endregion
 
@@ -945,7 +1054,7 @@ namespace net.atos.daf.ct2.accountservice
                 _logger.LogInformation("Group Created:" + Convert.ToString(group.Name));
                 return await Task.FromResult(new AccountGroupResponce
                 {
-                    Message = "Account group created with id:- ",
+                    Message = "Account group created.",
                     Code = Responcecode.Success,
                     AccountGroup = request
                 });
@@ -1160,7 +1269,7 @@ namespace net.atos.daf.ct2.accountservice
 
                 groupFilter.OrganizationId = request.OrganizationId;
                 groupFilter.Id = request.AccountGroupId;
-                groupFilter.GroupType = Group.GroupType.Group;
+                groupFilter.GroupType = Group.GroupType.None;
                 groupFilter.FunctionEnum = Group.FunctionEnum.None;
                 groupFilter.ObjectType = Group.ObjectType.AccountGroup;
                 groupFilter.GroupRefCount = true;

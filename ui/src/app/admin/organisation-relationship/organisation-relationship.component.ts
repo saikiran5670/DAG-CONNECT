@@ -67,6 +67,10 @@ export class OrganisationRelationshipComponent implements OnInit {
       lblSearch: "Search",
       lblNewRelationship: "New Relationship",
       lblNoRecordFound: "No Record Found",
+      lblOrganisationName: "Organisation Name",
+      lblVehicleGroup: "Vehicle Group Name",
+      lblSelectVehicleGroup: "Select Vehicle Group",
+      lblSelectOrganisation: "Select Organisation"
 
     }
   }
@@ -135,9 +139,9 @@ export class OrganisationRelationshipComponent implements OnInit {
   changeStatus(data) {
 
   }
-  editViewFeature(data, viewEdit){
+  // editViewFeature(data, viewEdit){
 
-  }
+  // }
   deleteRow(row){
 
   }

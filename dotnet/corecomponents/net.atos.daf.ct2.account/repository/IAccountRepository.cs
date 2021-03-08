@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.account.entity;
+using net.atos.daf.ct2.account.ENUM;
 
 namespace net.atos.daf.ct2.account
 {
@@ -25,6 +26,10 @@ namespace net.atos.daf.ct2.account
         Task<List<int>> GetRoleAccounts(int roleId);
         Task<List<KeyValue>> GetAccountOrg(int accountId);
         Task<List<AccountOrgRole>> GetAccountRole(int accountId);
+        Task<ResetPasswordToken> Create(ResetPasswordToken resetPasswordToken);
+        Task<int> Update(int id, ResetTokenStatus status);
+        Task<ResetPasswordToken> GetIssuedResetToken(Guid tokenSecret);
+        Task<ResetPasswordToken> GetIssuedResetTokenByAccountId(int accountId);
 
     }
 }
