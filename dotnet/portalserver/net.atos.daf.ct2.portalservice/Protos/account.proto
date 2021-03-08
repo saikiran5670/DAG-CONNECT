@@ -363,9 +363,10 @@ message IdentityRequest {
 message AccountIdentityResponse {
     Responcecode code=1;
     string Message=2;
-    repeated AccountIdentityOrg AccOrganization = 3;
-    repeated AccountIdentityRole AccountRole=4;
-    AccountRequest accountInfo=5;
+    bool Authenticated = 3;
+    repeated AccountIdentityOrg AccOrganization = 4;
+    repeated AccountIdentityRole AccountRole=5;
+    AccountRequest accountInfo=6;
 }
 message AccountIdentityOrg
 {
