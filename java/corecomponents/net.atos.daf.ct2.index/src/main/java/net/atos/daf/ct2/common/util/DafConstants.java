@@ -73,19 +73,18 @@ public class DafConstants {
 
 	public static final String TRIP_JOB_NAME = "RealtimeIndexMSGProcess";
 	public static final String DEFAULT_OBJECT_ID = "00";
-	
-	//job constants 
+
+	// job constants
 	public static final String INDEX_JOB = "IndexJob";
 	public static final String MONITOR_JOB = "MonitorJob";
 	public static final String STATUS_JOB = "StatusJob";
-	
-	//queries
+
+	// queries
 	public static final String QUERY_DRIVER_ACTIVITY = "driver.activity.query";
 	public static final String QUERY_DRIVER_ACTIVITY_READ = "driver.activity.read.query";
 	public static final String QUERY_LIVEFLEET_POSITION = "livefleet.position.query";
-	public static final String QUERY_LIVEFLEET_TRIP_STATISTICS="livefleet.trip.statistics.query";
-	public static final String QUERY_LIVEFLEET_TRIP_READ="livefleet.trip.read.query";
-	
-	
+	public static final String QUERY_LIVEFLEET_TRIP_STATISTICS = "livefleet.trip.statistics.query";
+	public static final String QUERY_LIVEFLEET_TRIP_READ = "livefleet.trip.read.query";
+	public static final String QUERY_LIVEFLEET_POSITION_READ = "livefleet.position.read.query";
 
 }

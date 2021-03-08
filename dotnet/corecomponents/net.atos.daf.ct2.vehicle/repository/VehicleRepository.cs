@@ -44,7 +44,11 @@ namespace net.atos.daf.ct2.vehicle.repository
                                        ,reference_date 
                                        ,vehicle_property_id                                       
                                        ,created_at 
-                                       ,model_id) 
+                                       ,model_id
+                                       ,oem_id
+                                       ,oem_organisation_id
+                                       ,opt_in
+                                       ,is_ota) 
                             	VALUES(
                                        @organization_id 
                                       ,@name
@@ -64,6 +68,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                                       ,@vehicle_property_id                                      
                                       ,@created_at
                                       ,@model_id
+                                      ,@oem_id
+                                      ,@oem_organisation_id
+                                      ,@opt_in
+                                      ,@is_ota
                                       ) RETURNING id";
 
 
@@ -79,7 +87,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@name", string.IsNullOrEmpty(vehicle.Name)?null:vehicle.Name);
             parameter.Add("@vin", string.IsNullOrEmpty(vehicle.VIN)? null:vehicle.VIN);
             parameter.Add("@license_plate_number", string.IsNullOrEmpty(vehicle.License_Plate_Number)?null:vehicle.License_Plate_Number);           
-            parameter.Add("@status", (char)VehicleStatusType.OptOut);            
+            parameter.Add("@status", (char)vehicle.Status);            
             parameter.Add("@status_changed_date", (vehicle.Status_Changed_Date != null && DateTime.Compare(DateTime.MinValue, vehicle.Status_Changed_Date) > 0) ? UTCHandling.GetUTCFromDateTime(vehicle.Status_Changed_Date.ToString()) : 0);
             parameter.Add("@termination_date", vehicle.Termination_Date != null  ? UTCHandling.GetUTCFromDateTime(vehicle.Termination_Date.ToString()) : (long ?)null);
             parameter.Add("@vid", string.IsNullOrEmpty(vehicle.Vid)? null:vehicle.Vid);
@@ -93,7 +101,12 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@vehicle_property_id", vehicle.VehiclePropertiesId);            
             parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
             parameter.Add("@model_id", string.IsNullOrEmpty(vehicle.ModelId)?null:vehicle.ModelId);
+            parameter.Add("@oem_id", vehicle.Oem_id);
+            parameter.Add("@oem_organisation_id", vehicle.Oem_Organisation_id);            
+            parameter.Add("@opt_in", (char)vehicle.Opt_In);
+            parameter.Add("@is_ota", vehicle.Is_Ota);
             parameter.Add("@id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
+
             int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
             vehicle.ID = vehicleID;
             return vehicle;
@@ -186,7 +199,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             vehicle.VIN = record.vin;
             vehicle.License_Plate_Number = record.license_plate_number;
             if (record.status != null)
-            vehicle.Status =record.status;
+            vehicle.Status = (VehicleCalculatedStatus)(Convert.ToChar(record.status));
             if (record.status_changed_date != null)
                 vehicle.Status_Changed_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.status_changed_date,"America/New_York", "yyyy-MM-ddTHH:mm:ss"));
             if (record.termination_date != null)
@@ -286,7 +299,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
             parameter.Add("@status", (char)vehicleOptInOptOut.Status);
             parameter.Add("@status_changed_date", vehicleOptInOptOut.Date != null ? UTCHandling.GetUTCFromDateTime(vehicleOptInOptOut.Date.ToString()) : 0);
-            if(vehicleOptInOptOut.Status.ToString()==VehicleStatusType.Terminate.ToString())
+            if(vehicleOptInOptOut.Status.ToString()==VehicleCalculatedStatus.Terminate.ToString())
             {
             parameter.Add("@termination_date", vehicleOptInOptOut.Date != null ? UTCHandling.GetUTCFromDateTime(vehicleOptInOptOut.Date.ToString()) : 0);
             }
@@ -367,14 +380,24 @@ namespace net.atos.daf.ct2.vehicle.repository
             var UpdateQueryStatement = string.Empty;
             int VehiclePropertiesId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT vehicle_property_id FROM master.vehicle where vin=@vin), 0)", new { vin = vehicleproperty.VIN });
             //int OrgId= await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.organization where org_id=@org_id), null)", new { org_id = vehicleproperty.Org_Id });
+            int OrgId= await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.organization where lower(name)=@name), null)", new { name = "daf-paccar" });
             
             vehicleproperty.ID = VehiclePropertiesId;
-            //objVeh.Organization_Id = OrgId;
+            objVeh.Organization_Id = OrgId;
             objVeh.VIN = vehicleproperty.VIN;
             objVeh.ModelId = vehicleproperty.Classification_Model_Id;
             objVeh.License_Plate_Number = vehicleproperty.License_Plate_Number;           
-            objVeh.VehiclePropertiesId=VehiclePropertiesId;            
-            
+            objVeh.VehiclePropertiesId=VehiclePropertiesId;
+            dynamic oiedetail=await GetOEM_Id(vehicleproperty.VIN);
+            if(oiedetail!=null)
+            {
+                objVeh.Oem_id= oiedetail[0].id;
+                objVeh.Oem_Organisation_id= oiedetail[0].oem_organisation_id;                
+            }
+            char org_status= await GetOrganisationStatusofVehicle(OrgId);
+            objVeh.Opt_In=VehicleStatusType.Inherit;
+            objVeh.Is_Ota=false;           
+            objVeh.Status= (VehicleCalculatedStatus) await GetCalculatedVehicleStatus(org_status,objVeh.Is_Ota);
             if (VehiclePropertiesId > 0)
             {
                 UpdateQueryStatement = @"UPDATE master.vehicleproperties
@@ -522,7 +545,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@chasis_side_collar", vehicleproperty.Chassis_SideCollars);
             parameter.Add("@width", vehicleproperty.Dimensions_Size_Width);
             parameter.Add("@type_id", vehicleproperty.Classification_Type_Id);
-            parameter.Add("@id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
+            //parameter.Add("@id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
 
             
             if (VehiclePropertiesId > 0)
@@ -555,7 +578,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         public async Task<bool> CreateVehicleAxelInformation(List<VehicleAxelInformation> vehicleaxelinfo,int vehicleId)
         {
             bool is_result=false;
-            int VehicleId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT vehicle_id FROM master.vehicleaxleproperties where vehicle_id=@vehicle_id), 0)", new { vehicle_id = vehicleId });
+            int VehicleId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT count(vehicle_id) FROM master.vehicleaxleproperties where vehicle_id=@vehicle_id), 0)", new { vehicle_id = vehicleId });
             
             if(VehicleId>0)
             {
@@ -613,7 +636,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         public async Task<bool> CreateVehicleFuelTank(List<VehicleFuelTankProperties> vehiclefuelTank,int vehicleId)
         {
             bool is_result=false;
-            int VehicleId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT vehicle_id FROM master.vehiclefueltankproperties where vehicle_id=@vehicle_id), 0)", new { vehicle_id = vehicleId });
+            int VehicleId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT count(vehicle_id) FROM master.vehiclefueltankproperties where vehicle_id=@vehicle_id), 0)", new { vehicle_id = vehicleId });
             
             if(VehicleId>0)
             {
@@ -656,6 +679,60 @@ namespace net.atos.daf.ct2.vehicle.repository
             
             return vehicleID;
         }
+
+        private async Task<dynamic> GetOEM_Id(string vin)
+        {
+            string vin_prefix = vin.Substring(0,3);            
+            var QueryStatement = @"SELECT id, oem_organisation_id
+	                             FROM master.oem
+                                 where vin_prefix=@vin_prefix";
+
+            var parameter = new DynamicParameters();
+            parameter.Add("@vin_prefix", vin_prefix);
+
+            dynamic result=await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+           
+            return result;
+        }
+        public async Task<char> GetOrganisationStatusofVehicle(int org_id)
+        {
+            
+            char optin=await dataAccess.QuerySingleAsync<char>("SELECT vehicle_default_opt_in FROM master.organization where id=@id", new { id = org_id });
+            
+            return optin;    
+        }
+
+        public async Task<char> GetCalculatedVehicleStatus(char opt_in, bool is_ota)
+        {
+            char calVehicleStatus='I';
+            //Connected
+             if(opt_in==(char)VehicleStatusType.OptIn && !is_ota)  
+             {
+                 calVehicleStatus=(char)VehicleCalculatedStatus.Connected;
+             }
+             //Off 
+             if(opt_in==(char)VehicleStatusType.OptOut && !is_ota)  
+             {
+                 calVehicleStatus=(char)VehicleCalculatedStatus.Off;
+             }
+             //Connected + OTA
+             if(opt_in==(char)VehicleStatusType.OptIn && is_ota)  
+             {
+                 calVehicleStatus=(char)VehicleCalculatedStatus.Connected_OTA;
+             }
+             //OTA only
+             if(opt_in==(char)VehicleStatusType.OptOut && is_ota)  
+             {
+                 calVehicleStatus=(char)VehicleCalculatedStatus.OTA;
+             }
+             //Terminated
+             if(opt_in==(char)VehicleStatusType.Terminate)  
+             {
+                 calVehicleStatus=(char)VehicleCalculatedStatus.Terminate;
+             }
+             return calVehicleStatus;
+        }
+               
         public async Task<IEnumerable<VehicleGroup>> GetVehicleGroup(int organizationId,int vehicleId)
         {
 

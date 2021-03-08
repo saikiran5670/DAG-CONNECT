@@ -34,16 +34,17 @@ namespace net.atos.daf.ct2.translation.test
         [TestMethod]
         public void GetTranslationsByMenu()
         {
-                var result = _ITranslationRepository.GetTranslationsByMenu(3,((char)translationenum.MenuType.Menu).ToString()).Result;
-                Assert.IsTrue(result.Count() > 0);
+                var result = _ITranslationRepository.GetTranslationsByMenu(24,"L","EN-GB");
+              
+            Assert.IsTrue(result != null);
         }
         
-        [TestMethod]
-        public void GetLangagugeTranslationByKey()
-        {
-                var result = _ITranslationRepository.GetLangagugeTranslationByKey("dlanguage_Lithuanian","D").Result;
-                Assert.IsTrue(result.Count() > 0);
-        }
+        //[TestMethod]
+        //public void GetLangagugeTranslationByKey()
+        //{
+        //        var result = _ITranslationRepository.GetLangagugeTranslationByKey("dlanguage_Lithuanian","D").Result;
+        //        Assert.IsTrue(result.Count() > 0);
+        //}
 
         
         

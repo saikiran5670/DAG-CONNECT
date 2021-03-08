@@ -23,9 +23,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Private Variable
         private readonly ILogger<AccountController> _logger;
         private readonly AccountBusinessService.AccountService.AccountServiceClient _accountClient;
-        private readonly Mapper _mapper;
-        private string FK_Constraint = "violates foreign key constraint";
-        private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
+        private readonly Mapper _mapper;        
 
         #endregion
 
@@ -49,40 +47,58 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if ((string.IsNullOrEmpty(request.EmailId)) || (string.IsNullOrEmpty(request.FirstName))
                 || (string.IsNullOrEmpty(request.LastName)) || (request.OrganizationId  <= 0) || (string.IsNullOrEmpty(request.Type)))
                 {
-                    return StatusCode(400, "The EmailId address, first name, last name, organization id and type is required.");
+                    return StatusCode(400, PortalConstants.AccountValidation.CreateRequired);
                 }
                 // Length validation
                 Int32 validOrgId = 0;
                 if ((request.EmailId.Length > 50) || (request.FirstName.Length > 30)
                 || (request.LastName.Length > 20) || !Int32.TryParse(request.OrganizationId.ToString(), out validOrgId))
                 {
-                    return StatusCode(400, "The EmailId address, first name, last name and organization id should be valid.");
+                    return StatusCode(400, PortalConstants.AccountValidation.InvalidData);
                 }
                 // The account type should be single character
                 if (request.Type.Length > 1)
                 {
-                    return StatusCode(400, "The account type is not valid.");
+                    return StatusCode(400, PortalConstants.AccountValidation.InvalidAccountType);
                 }
                 // validate account type
                 char accountType = Convert.ToChar(request.Type);
                 if (!EnumValidator.ValidateAccountType(accountType))
                 {
-                    return StatusCode(400, "The Account type is not valid.");
+                    return StatusCode(400, PortalConstants.AccountValidation.InvalidAccountType);
                 } 
-                var accountRequest = _mapper.ToAccount(request);
-                
+                var accountRequest = _mapper.ToAccount(request);                
                 AccountBusinessService.AccountData accountResponse = await _accountClient.CreateAsync(accountRequest);
                 AccountResponse response = new AccountResponse();
-
                 response = _mapper.ToAccount(accountResponse.Account);
                 if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed)
                 {
-                    return StatusCode(409, response);
+                   if (response.PreferenceId > 0)
+                   {
+                        var accountPreference = new AccountPreference();
+                        accountPreference.Account = response;
+                        AccountBusinessService.AccountPreferenceFilter preferenceRequest = new AccountBusinessService.AccountPreferenceFilter();
+                        preferenceRequest.Id = response.PreferenceId;
+                        AccountBusinessService.AccountPreferenceResponse accountPreferenceResponse = await _accountClient.GetPreferenceAsync(preferenceRequest);
+
+                        if (accountPreferenceResponse != null && accountPreferenceResponse.Code == AccountBusinessService.Responcecode.Success)
+                        {
+                            if (accountPreferenceResponse.AccountPreference != null)
+                            {
+                                accountPreference.Preference = _mapper.ToAccountPreference(accountPreferenceResponse.AccountPreference);
+                            }
+                        }
+                        return StatusCode(409, accountPreference);
+                    }
+                    else
+                    {
+                        return StatusCode(409, response);
+                    }
                 }
                 else if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed
-                    && accountResponse.Message == "There is an error creating account.")
+                    && accountResponse.Message == PortalConstants.AccountValidation.ErrorMessage)
                 {
-                    return StatusCode(500, "There is an error creating account.");
+                    return StatusCode(500, PortalConstants.AccountValidation.ErrorMessage);
                 }
                 else if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -90,19 +106,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "Internal Server Error.(00)");
+                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "01"));
                 }
             }            
             catch (Exception ex)
             {
                 _logger.LogError("Account Service:Create : " + ex.Message + " " + ex.StackTrace);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(500, "Internal Server Error.(01)");
                 }
                 // check for fk violation
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.SocketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
@@ -153,7 +169,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.LogError("Account Service:Update : " + ex.Message + " " + ex.StackTrace);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -320,12 +336,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.LogError("Account Service:AddAccountToOrg : " + ex.Message + " " + ex.StackTrace);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(500, "Internal Server Error.(01)");
                 }
                 // check for fk violation
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.SocketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
@@ -369,7 +385,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.LogError("Error in account service:create profile picture with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -412,7 +428,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.LogError("Error in account service:create profile picture with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -440,7 +456,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.LogError("Error in account service:create profile picture with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -482,7 +498,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -518,7 +534,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -556,7 +572,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -640,7 +656,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -780,7 +796,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (!EnumValidator.ValidateGroupType(groupType))
                 {
                     return StatusCode(400, "The group type is not valid.");
-                }
+                }                
+
                 AccountBusinessService.AccountGroupRequest accountGroupRequest = new AccountBusinessService.AccountGroupRequest();
                 accountGroupRequest = _mapper.ToAccountGroup(request);
                 AccountBusinessService.AccountGroupResponce response = await _accountClient.CreateGroupAsync(accountGroupRequest);
@@ -800,7 +817,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:create account group with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500);
             }
         }
         [HttpPost]
@@ -899,7 +916,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.LogError("Error in delete account group :DeleteGroup with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -933,7 +950,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.LogError("Error in delete account group reference :DeleteAccountsGroupReference with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -1044,7 +1061,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.LogError("Error in account service:get account group details with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -1076,7 +1093,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.LogError("Error in account service:get account group details with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }

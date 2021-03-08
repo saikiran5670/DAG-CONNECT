@@ -69,4 +69,11 @@ namespace net.atos.daf.ct2.portalservice.Account
         public int AccountId { get; set; }
         public int OrganizationId { get; set; }
     }
+
+    public class AccountPreference
+    {
+        public AccountResponse Account { get; set; }
+        public AccountPreferenceResponse Preference { get; set; }
+        
+    }
 }

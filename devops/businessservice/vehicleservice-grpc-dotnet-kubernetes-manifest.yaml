@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vehicleservice
+  name: vehicleservice-grpc-deployment
 spec:
   selector:
     matchLabels:
-      run: vehicleservice
-  replicas: 1
+      run: vehicleservice-grpc
+  replicas: 2
   template:
     metadata:
       labels:
-        run: vehicleservice
+        run: vehicleservice-grpc
     spec:
       containers:
-      - name: vehicleservice
-        image: dafdev017756.azurecr.io/vehicleservice
+      - name: vehicleservice-grpc
+        image: dafdev017756.azurecr.io/vehicleservice-grpc
         imagePullPolicy: Always
         resources:
           limits:
@@ -30,10 +30,10 @@ kind: Service
 metadata:
   name: vehicleservice
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - protocol: TCP
     port: 80
     targetPort: 80
   selector:
-    run: vehicleservice
+    run: vehicleservice-grpc

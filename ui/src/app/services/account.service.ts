@@ -250,6 +250,29 @@ export class AccountService {
       .pipe(catchError(this.handleError));
   }
 
+  saveAccountPicture(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `http://20.76.57.235/account/savepprofilepicture`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  
+  getAccountPicture(id: number): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`http://20.76.57.235/account/getprofilepicture?BlobId=${id}`,headers)
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);
       return throwError(

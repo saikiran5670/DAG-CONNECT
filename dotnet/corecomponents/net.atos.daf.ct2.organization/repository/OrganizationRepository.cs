@@ -66,12 +66,10 @@ namespace net.atos.daf.ct2.organization.repository
                 parameter.Add("@City", organization.City);
                 parameter.Add("@CountryCode", organization.CountryCode);    
                 parameter.Add("@ReferencedDate",organization.reference_date != null ? UTCHandling.GetUTCFromDateTime(organization.reference_date.ToString()) : (long ?)null);               
-                parameter.Add("@OptOutStatus", organization.OptOutStatus);
-                parameter.Add("@OptOutStatusChangedDate",organization.optout_status_changed_date != null ? UTCHandling.GetUTCFromDateTime(organization.optout_status_changed_date.ToString()) : (long ?)null); 
-               // parameter.Add("@IsActive", organization.IsActive);               
-
-                string queryInsert= "insert into master.organization(org_id, type, name, address_type, street, street_number, postal_code, city,country_code,reference_date,optout_status,optout_status_changed_date,preference_id) " +
-                              "values(@OrganizationId, @OrganizationType, @Name, @AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@ReferencedDate, @OptOutStatus,@OptOutStatusChangedDate,NULL) RETURNING id";
+                parameter.Add("@vehicle_default_opt_in","I");
+                parameter.Add("@driver_default_opt_in","I");    
+                string queryInsert= "insert into master.organization(org_id, type, name, address_type, street, street_number, postal_code, city,country_code,reference_date,preference_id,vehicle_default_opt_in,driver_default_opt_in) " +
+                              "values(@OrganizationId, @OrganizationType, @Name, @AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@ReferencedDate,null,@vehicle_default_opt_in,@driver_default_opt_in) RETURNING id";
 
                 var orgid =   await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);                
                 organization.Id = orgid;
@@ -85,7 +83,8 @@ namespace net.atos.daf.ct2.organization.repository
                 groupAccount.OrganizationId=orgid;
                 groupAccount.RefId=0;
                 groupAccount.Name="DefaultAccountGroup";
-                groupAccount.Description="DefaultAccountGroup";              
+                groupAccount.Description="DefaultAccountGroup"; 
+                groupAccount.CreatedAt=UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
                 groupAccount =  await groupManager.Create(groupAccount);
 
                 // Create dynamic vehicle group
@@ -98,6 +97,7 @@ namespace net.atos.daf.ct2.organization.repository
                 groupVehicle.RefId=0;
                 groupVehicle.Name="DefaultVehicleGroup";
                 groupVehicle.Description="DefaultVehicleGroup";
+                groupVehicle.CreatedAt=UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
                 groupVehicle =await groupManager.Create(groupVehicle);
 
                 // Create access relationship
@@ -111,7 +111,7 @@ namespace net.atos.daf.ct2.organization.repository
             }
             catch (Exception ex)
             {
-                log.Info("Create Organization method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(organization));
+               // log.Info("Create Organization method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(organization));
                 log.Error(ex.ToString());
                 throw ex;
             }
@@ -164,14 +164,13 @@ namespace net.atos.daf.ct2.organization.repository
                 parameter.Add("@City", organization.City);
                 parameter.Add("@CountryCode", organization.CountryCode);    
                 parameter.Add("@ReferencedDate",organization.reference_date != null ? UTCHandling.GetUTCFromDateTime(organization.reference_date.ToString()) : (long ?)null);               
-                parameter.Add("@OptOutStatus", organization.OptOutStatus);
-                parameter.Add("@OptOutStatusChangedDate",organization.optout_status_changed_date != null ? UTCHandling.GetUTCFromDateTime(organization.optout_status_changed_date.ToString()) : (long ?)null); 
-                //parameter.Add("@IsActive", organization.IsActive);  
+                parameter.Add("@vehicleoptin", organization.vehicle_default_opt_in);
+                parameter.Add("@driveroptin", organization.driver_default_opt_in);             
+                //parameter.Add("@IsActive", organization.IsActive); 
 
                 var queryUpdate = @"update master.organization set org_id=@OrganizationId, type=@OrganizationType, name=@Name,
                  address_type=@AddressType, street=@AddressStreet, street_number=@AddressStreetNumber,
-                  postal_code=@PostalCode, city=@City,country_code=@CountryCode,reference_date=@ReferencedDate,
-                  optout_status=@OptOutStatus,optout_status_changed_date=@OptOutStatusChangedDate
+                  postal_code=@PostalCode, city=@City,country_code=@CountryCode,reference_date=@ReferencedDate,vehicle_default_opt_in=@vehicleoptin,driver_default_opt_in=@driveroptin              
 	                                 WHERE id = @Id RETURNING id;";
                 var orgid = await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameter);     
                 if (orgid<1)
@@ -195,7 +194,7 @@ namespace net.atos.daf.ct2.organization.repository
             try
             {                
                 var parameter = new DynamicParameters();
-                var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date , optout_status, optout_status_changed_date, is_active
+                var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date, is_active,vehicle_default_opt_in,driver_default_opt_in
 	                        FROM master.organization where id=@Id and is_active=true";               
                 parameter.Add("@Id", organizationId);
                 IEnumerable<OrganizationResponse> OrganizationDetails = await dataAccess.QueryAsync<OrganizationResponse>(query, parameter);
@@ -214,7 +213,8 @@ namespace net.atos.daf.ct2.organization.repository
                          objOrganization.country_code=item.country_code;         
                          objOrganization.is_active=item.is_active;                                
                          objOrganization.reference_date=UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(item.reference_date),"America/New_York", "yyyy-MM-ddTHH:mm:ss");
-                         objOrganization.optout_status_changed_date=UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(item.optout_status_changed_date),"America/New_York", "yyyy-MM-ddTHH:mm:ss");
+                         objOrganization.vehicle_default_opt_in=item.vehicle_default_opt_in;
+                         objOrganization.driver_default_opt_in=item.driver_default_opt_in;
                     } 
                     if (objOrganization.Id<1)             
                     {
@@ -240,7 +240,7 @@ namespace net.atos.daf.ct2.organization.repository
                 var query = @"SELECT o.id OrganizatioId,a.id PreferenceId, c.name currency,t.name timezone ,tf.name timeformat,vd.name vehicledisplay,
                             df.name DateFormatType,lp.name landingpagedisplay,l.name LanguageName, u.name unit
                             FROM master.organization o
-                            left join  master.accountpreference a on o.id=a.ref_id
+                            left join  master.accountpreference a on o.id=a.id
                             left join  master.currency c on c.id=a.currency_id
                             left join  master.timezone t on t.id=a.timezone_id
                             left join  master.timeformat tf on tf.id=a.time_format_id

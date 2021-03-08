@@ -1,0 +1,93 @@
+<form [formGroup]="OrganisationRelationshipFormGroup">
+    <mat-card *ngIf="createStatus" class='mat-elevation-z margin-bottom-xlg'>
+      <mat-card-content>
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+              translationData.lblAddNewRelationsip || 'Add New Relationship' }} 
+            </mat-label>
+            <div class='areaWidth'>
+                <mat-form-field appearance="outline" class='margin-right-xxlg'>
+                    <mat-select formControlName="relationship" (selectionChange)="onRelationshipSelection()" placeholder="{{ translationData.lblSelectCRelationship || 'Select Relationship' }}">
+                    <mat-option *ngFor="let options of relationshipList" [value]="options.name">
+                        {{ options.name }}
+                    </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+          </div>
+          <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label style='display: flex; place-content: space-between;'>
+              <span
+                style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{translationData.lblChainRelationship
+                || 'Chain Relationship' }}</span>
+              
+            </mat-label>
+            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
+                <!-- <span>{{ translationData.lblViewby || 'View by' }}:</span> -->
+                <mat-radio-group (change)='onChange($event)'>
+                  <mat-radio-button style='margin-right: 20px;' value="active"
+                    [checked]="selectedType ===  'active' ? true : false">{{ translationData.lblActive || 'Active' }}
+                  </mat-radio-button>
+                  <mat-radio-button style='margin-right: 20px;' value="inactive"
+                    [checked]="selectedType ===  'inactive' ? true : false">{{ translationData.lblInActive || 'InActive' }}
+                  </mat-radio-button>
+                </mat-radio-group>
+              </div>
+          </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions class='no-margin no-padding'>
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+          <div fxLayout="column" fxLayoutAlign="left">
+            <div fxLayout="row" fxLayoutAlign='center center'>
+              <mat-icon class='margin-right-10'>info</mat-icon>
+              <span>{{translationData.lblRelationshipInfo || "Select multiple ''vehicle Group and Organisation'' from below list to map with this Relationship." }}</span>
+            </div>
+          </div>
+          <div fxLayout="column" fxLayoutAlign="end">
+            <div fxLayout="row">
+              <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>Cancel</button>
+              <!-- <button *ngIf="editUserContent" class='margin-right-10' mat-raised-button color="primary"
+                (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button> -->
+              <button class='no-margin' [disabled]="!OrganisationRelationshipFormGroup.valid" mat-raised-button color="primary"
+                (click)='onCreate()' id="createUpdateButton">{{ createStatus ? (translationData.lblCreate || 'Create') :
+                (translationData.lblConfirm || 'Confirm') }}</button>
+            </div>
+          </div>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+    </form>
+    <!-- <div *ngIf="editFlag || viewDisplayFlag" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <span>{{ breadcumMsg }}</span>
+      </div>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+        <span class='custom-font' (click)="onCancel()">
+          <span>
+            <&nbsp;</span>
+              <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
+          </span>
+      </div>
+    </div>
+    <mat-card *ngIf="editFlag || viewDisplayFlag" style='background-color: #ECF7FE;'
+      class='mat-elevation-z margin-bottom-xlg'>
+      <mat-card-content>
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <div>{{translationData.lblUserGroupName || 'User Group Name' }}</div>
+            <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedRowData.name }}</div>
+          </div>
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <div>{{translationData.lblUserGroupDescription || 'User Group Description' }}</div>
+            <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedRowData.description }}</div>
+          </div>
+          <div *ngIf="editFlag" fxLayout="column" fxLayoutAlign="right">
+            <button style='background:none' class='actionBtn' mat-flat-button (click)="onEdit()" matTooltip="Edit">
+              <mat-icon>create</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card> -->
