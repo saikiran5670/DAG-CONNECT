@@ -12,6 +12,7 @@ parameters:
   - DEV02
   - TEST01
   - TEST02
+  - ACC03
 
 variables:
 - ${{ if eq(parameters.ENV, 'DEV0') }}:
@@ -24,6 +25,8 @@ variables:
   - group: TEST01-Release-Variables
 - ${{ if eq(parameters.ENV, 'TEST02') }}:
   - group: TEST02-Release-Variables
+- ${{ if eq(parameters.ENV, 'ACC03') }}:
+  - group: ACC03-Release-Variables
 
 jobs:
 - job: Job_1
@@ -35,6 +38,10 @@ jobs:
   - checkout: self
   - task: UseYuniqlCLI@1
     displayName: Use Yuniql
+  
+  - task: CmdLine@2
+    inputs:
+     script: 'echo $(ENVIRONMENT)'
     
   - task: RunYuniqlCLI@1
     displayName: Run Yuniql

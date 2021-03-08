@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AccountBusinessService = net.atos.daf.ct2.accountservice;
 using net.atos.daf.ct2.portalservice.Identity;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -43,7 +46,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     AccountBusinessService.IdentityRequest identityRequest = new AccountBusinessService.IdentityRequest();
                     identityRequest.UserName=arrUsernamePassword[0];
                     identityRequest.Password=arrUsernamePassword[1];
-                    var response = await _accountClient.AuthAsync(identityRequest);
+                    AccountBusinessService.AccountIdentityResponse response = await _accountClient.AuthAsync(identityRequest).ResponseAsync;
                     if(response !=null && response.Code == AccountBusinessService.Responcecode.Success)
                     {
                         Identity.Identity accIdentity = new Identity.Identity();
@@ -81,6 +84,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                 accIdentity.AccountRole.Add(accRole);
                             }
                         }
+                        if (response.Authenticated)
+                        {
+                            var claims = new List<Claim>
+                            {
+                                new Claim(ClaimTypes.Email,accIdentity.AccountInfo.EmailId)
+                            };
+                            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                            var authProperties = new AuthenticationProperties();
+                            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,new ClaimsPrincipal(claimsIdentity),authProperties);
+                         }
                         return Ok(accIdentity); 
                     }
                     else 
@@ -100,37 +113,45 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500,"Please contact system administrator. "+ ex.Message );
             }            
         }
+        
+        
+        [HttpPost]
+        [Route("signout")]
+        public async Task SignOut()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        }
 
         //[HttpPost]        
-        //[Route("validate")]
-        //public async Task<IActionResult> Validate([FromBody] string token)
-        //{
-        //    try 
-        //    {
-        //        if(string.IsNullOrEmpty(token))
-        //        {
-        //            return StatusCode(401,"invalid_grant: The token is Empty.");
-        //        }
-        //        else
-        //        {
-        //            ValidateRequest request = new ValidateRequest();
-        //            request.Token=token;
-        //            ValidateResponse response = await _authClient.ValidateAsync(request);
-        //            if(response !=null && response.Code == Responsecode.Success)
-        //            {
-        //               return Ok(response.Valid); 
-        //            }
-        //            else 
-        //            {
-        //                return StatusCode(500,"Please contact system administrator");
-        //            }                    
-        //        }
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        logger.LogError(ex.Message +" " +ex.StackTrace);
-        //        return StatusCode(500,"Please contact system administrator.");
-        //    }           
-        //}
-    }
+            //[Route("validate")]
+            //public async Task<IActionResult> Validate([FromBody] string token)
+            //{
+            //    try 
+            //    {
+            //        if(string.IsNullOrEmpty(token))
+            //        {
+            //            return StatusCode(401,"invalid_grant: The token is Empty.");
+            //        }
+            //        else
+            //        {
+            //            ValidateRequest request = new ValidateRequest();
+            //            request.Token=token;
+            //            ValidateResponse response = await _authClient.ValidateAsync(request);
+            //            if(response !=null && response.Code == Responsecode.Success)
+            //            {
+            //               return Ok(response.Valid); 
+            //            }
+            //            else 
+            //            {
+            //                return StatusCode(500,"Please contact system administrator");
+            //            }                    
+            //        }
+            //    }
+            //    catch(Exception ex)
+            //    {
+            //        logger.LogError(ex.Message +" " +ex.StackTrace);
+            //        return StatusCode(500,"Please contact system administrator.");
+            //    }           
+            //}
+        }
 }

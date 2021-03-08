@@ -155,9 +155,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet]        
         [Route("getfeatures")]
-        public async Task<IActionResult> GetFeatures(FeaturesFilterRequest request)
+
+        public async Task<IActionResult> GetFeatures([FromBody] FeaturesFilterRequest request)
         {
             try
             {

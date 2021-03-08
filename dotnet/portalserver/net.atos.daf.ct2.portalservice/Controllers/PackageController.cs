@@ -9,6 +9,8 @@ using net.atos.daf.ct2.packageservice;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.featureservice;
 using Google.Protobuf.Collections;
+using net.atos.daf.ct2.portalservice.Entity.Package;
+using net.atos.daf.ct2.portalservice.Entity.Feature;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -20,7 +22,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly ILogger<PackageController> _logger;
         private readonly PackageService.PackageServiceClient _packageClient;
         private readonly FeatureService.FeatureServiceClient _featureclient;
-
+        private readonly PackageMapper _packageMapper;
+        private string FK_Constraint = "violates foreign key constraint";
         public PackageController(PackageService.PackageServiceClient packageClient,
             FeatureService.FeatureServiceClient featureclient,
             ILogger<PackageController> logger)
@@ -28,68 +31,53 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _packageClient = packageClient;
             _featureclient = featureclient;
             _logger = logger;
+            _packageMapper = new PackageMapper(_featureclient);
 
         }
 
 
 
-        private async void RetrieveFeatureSetId(List<string> features)
-        {
 
-            try
-            {
-                var featureFilterRequest = new FeaturesFilterRequest();
-                //featureFilterRequest.FeatureSetID = 103;
-                var featureList = await _featureclient.GetFeaturesAsync(featureFilterRequest);
-
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-
-
-        }
 
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> Create(PackageCreateRequest request)
+        public async Task<IActionResult> Create(PackagePortalRequest request)
         {
             try
             {
-
-                //var features = new List<string>();
-                //features.AddRange(request.Features.Select(x => x.ToString()).ToList());
-                //RetrieveFeatureSetId(features);
-
-                // Validation 
-                if ((string.IsNullOrEmpty(request.Code)) || (string.IsNullOrEmpty(request.Name))
-                /*|| (request.Features.Count == 0) ||*/ )
+                var featureSetId = await _packageMapper.RetrieveFeatureSetId(request.Features);
+                if (featureSetId > 0)
                 {
-                    return StatusCode(400, "The Package code,name,type and features are required.");
-                }
-
-
-
-                var packageResponse = await _packageClient.CreateAsync(request);
-                if (packageResponse != null
-                   && packageResponse.Message == "There is an error creating package.")
-                {
-                    return StatusCode(500, "There is an error creating package.");
-                }
-                else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
-                {
-                    return Ok(packageResponse);
+                    var createPackageRequest = _packageMapper.ToCreatePackage(request);
+                    createPackageRequest.FeatureSetID = featureSetId;
+                    var packageResponse = await _packageClient.CreateAsync(createPackageRequest);
+                    if (packageResponse != null
+                       && packageResponse.Message == "There is an error creating package.")
+                    {
+                        return StatusCode(500, "There is an error creating package.");
+                    }
+                    else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
+                    {
+                        return Ok(packageResponse);
+                    }
+                    else
+                    {
+                        return StatusCode(500, "packageResponse is null");
+                    }
                 }
                 else
                 {
-                    return StatusCode(500, "packageResponse is null");
+
+                    return StatusCode(500, "Please provide valid feature"); //need to confirm
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError("Package Service:Create : " + ex.Message + " " + ex.StackTrace);
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
                 return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
             }
         }
@@ -98,7 +86,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPut]
         [Route("update")]
-        public async Task<IActionResult> Update(PackageUpdateRequest request)
+        public async Task<IActionResult> Update(PackagePortalRequest request)
         {
             try
             {
@@ -110,36 +98,52 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "The packageId and package code are required.");
                 }
 
-                var packageResponse = await _packageClient.UpdateAsync(request);
+                var featureSetId = request.FeatureSetID > 0 ? request.FeatureSetID : await _packageMapper.RetrieveFeatureSetId(request.Features);
+                if (featureSetId > 0)
+                {
+                    var createPackageRequest = _packageMapper.ToCreatePackage(request);
+                    createPackageRequest.FeatureSetID = featureSetId;
+                    var packageResponse = await _packageClient.UpdateAsync(createPackageRequest);
 
 
-                if (packageResponse != null && packageResponse.Code == Responsecode.Failed
-                     && packageResponse.Message == "There is an error updating package.")
-                {
-                    return StatusCode(500, "There is an error updating account.");
-                }
-                else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
-                {
-                    return Ok(packageResponse);
+                    if (packageResponse != null && packageResponse.Code == Responsecode.Failed
+                         && packageResponse.Message == "There is an error updating package.")
+                    {
+                        return StatusCode(500, "There is an error updating account.");
+                    }
+                    else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
+                    {
+                        return Ok(packageResponse);
+                    }
+                    else
+                    {
+                        return StatusCode(500, "accountResponse is null");
+                    }
                 }
                 else
                 {
-                    return StatusCode(500, "accountResponse is null");
+
+                    return StatusCode(500, "Please provide valid feature"); //need to confirm
+
                 }
 
             }
             catch (Exception ex)
             {
                 _logger.LogError("Package Service:Update : " + ex.Message + " " + ex.StackTrace);
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
                 return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
             }
         }
 
 
         //Get/Export Packages
-        [HttpPost]
+        [HttpGet]
         [Route("get")]
-        public async Task<IActionResult> Get(GetPackageRequest request)
+        public async Task<IActionResult> Get([FromQuery] GetPackageRequest request)
         {
             try
             {
@@ -168,7 +172,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.LogError("Error in package service:get package with exception - " + ex.Message + ex.StackTrace);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
-        }       
+        }
 
         private async Task<IEnumerable<string>> GetFeatures(int featureSSetId)
         {
@@ -212,17 +216,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         //Delete package
         [HttpPost]
         [Route("Import")]
-        public async Task<IActionResult> Import(ImportPackageRequest request)
+        public async Task<IActionResult> Import(PackageImportRequest request)
         {
             try
             {
-                // Validation                 
-                if (request.Packages.Count <= 0)
+                //Validation
+                if (request.packages.Count <= 0)
                 {
                     return StatusCode(400, "Package data is required.");
                 }
-                var packageRequest = new ImportPackageRequest();
-                var packageResponse = await _packageClient.ImportAsync(request);
+                var packageRequest = _packageMapper.ToImportPackage(request);
+                var packageResponse = await _packageClient.ImportAsync(packageRequest);
 
                 if (packageResponse != null
                    && packageResponse.Message == "There is an error importing package.")
@@ -243,6 +247,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Package Service:Import : " + ex.Message + " " + ex.StackTrace);
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
                 return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
             }
         }

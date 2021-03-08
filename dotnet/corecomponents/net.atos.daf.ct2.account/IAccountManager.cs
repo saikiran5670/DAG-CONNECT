@@ -27,5 +27,8 @@ namespace net.atos.daf.ct2.account
         Task<List<int>> GetRoleAccounts(int roleId);
         Task<List<KeyValue>> GetAccountOrg(int accountId);
         Task<List<AccountOrgRole>> GetAccountRole(int accountId);
+        Task<Guid?> ResetPasswordInitiate(string emailId);
+        Task<bool> ResetPassword(Account account);
+        Task<bool> ResetPasswordInvalidate(Guid ResetToken);
     }
 }
