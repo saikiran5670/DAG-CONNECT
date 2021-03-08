@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.vehicle.entity
         public string License_Plate_Number { get; set; }
         //public DateTime ManufactureDate { get; set; }
         public string Description { get; set; } 
-        public VehicleStatusType Status { get; set; }
+        public VehicleCalculatedStatus Status { get; set; }
         public DateTime Status_Changed_Date { get; set; }
         public DateTime ? Termination_Date { get; set; } 
         //public bool  IsActive { get; set; }
@@ -33,7 +33,11 @@ namespace net.atos.daf.ct2.vehicle.entity
         public bool Is_Tcu_Register { get; set; }
         public DateTime ? Reference_Date { get; set; }
         public int VehiclePropertiesId { get; set; }        
-        public DateTime? CreatedAt { get; set; }        
+        public DateTime? CreatedAt { get; set; }
+        public int Oem_id { get; set; }
+        public int Oem_Organisation_id { get; set; } 
+        public VehicleStatusType Opt_In { get; set; }
+        public bool Is_Ota { get; set; }        
         
         // public DateTime CreatedDate { get; set; }
         // public int CreatedBy { get; set; }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using AccountComponent = net.atos.daf.ct2.account;
 using Preference = net.atos.daf.ct2.accountpreference;
+using IdentityEntity = net.atos.daf.ct2.identity.entity;
 using Group = net.atos.daf.ct2.group;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
@@ -21,17 +22,97 @@ namespace net.atos.daf.ct2.accountservice
         private readonly Group.IGroupManager groupmanager;
         private readonly IAuditTraillib auditlog;
         private readonly Mapper _mapper;
+        private readonly AccountComponent.IAccountIdentityManager accountIdentityManager;
 
         #region Constructor
-        public AccountManagementService(ILogger<GreeterService> logger, AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, IAuditTraillib _auditlog)
+        public AccountManagementService(ILogger<GreeterService> logger, AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, AccountComponent.IAccountIdentityManager _accountIdentityManager,IAuditTraillib _auditlog)
         {
             _logger = logger;
             accountmanager = _accountmanager;
             preferencemanager = _preferencemanager;
             groupmanager = _groupmanager;
+            accountIdentityManager = _accountIdentityManager;
             auditlog = _auditlog;
             _mapper = new Mapper();
         }
+        #endregion
+
+        #region Identity
+
+        public override Task<AccountIdentityResponse> Auth(IdentityRequest request, ServerCallContext context)
+        {
+            AccountIdentityResponse response = new AccountIdentityResponse();
+            try
+            {
+                IdentityEntity.Identity account = new IdentityEntity.Identity();
+                account.UserName = request.UserName.Trim();
+                account.Password = request.Password;
+                AccountComponent.entity.AccountIdentity accIdentity = accountIdentityManager.Login(account).Result;
+                if (accIdentity != null && accIdentity.Authenticated)
+                {
+                    accIdentity.Authenticated = accIdentity.Authenticated;
+                    if (accIdentity.accountInfo != null)
+                    {
+                        response.AccountInfo =_mapper.ToAccount(accIdentity.accountInfo);
+                    }                    
+                    if (accIdentity.AccountOrganization != null && accIdentity.AccountOrganization.Count > 0)
+                    {
+                        AccountIdentityOrg acctOrganization = new AccountIdentityOrg();
+                        foreach (var accOrg in accIdentity.AccountOrganization)
+                        {
+                            acctOrganization = new AccountIdentityOrg();
+                            acctOrganization.Id = accOrg.Id;
+                            acctOrganization.Name = accOrg.Name;
+                            response.AccOrganization.Add(acctOrganization);
+                        }
+                    }
+                    if (accIdentity.AccountRole != null && accIdentity.AccountRole.Count > 0)
+                    {
+                        AccountIdentityRole accRole = new AccountIdentityRole();
+                        foreach (var accr in accIdentity.AccountRole)
+                        {
+                            accRole = new AccountIdentityRole();
+                            accRole.Id = accr.Id;
+                            accRole.Name = accr.Name;
+                            accRole.OrganizationId = accr.Organization_Id;
+                            response.AccountRole.Add(accRole);
+                        }
+                    }
+                    return Task.FromResult(response);
+                }
+                if (accIdentity != null && !accIdentity.Authenticated)
+                {
+                    return Task.FromResult(new AccountIdentityResponse
+                    {
+                        //Account not present  in IDP or IDP related error
+                        Code = Responcecode.Failed,
+                        Message = "Account is not configured.",
+                    });
+                }
+                else
+                {
+                    return Task.FromResult(new AccountIdentityResponse
+                    {
+                        //Account not present  in IDP or IDP related error
+                        Code = Responcecode.Failed,
+                        Message = "Account is not configured.",
+                        Authenticated=false,
+
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(new AccountIdentityResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = " Authentication is failed due to - " + ex.Message,
+                    Authenticated = false,
+                });
+            }
+        }
+
+
         #endregion
 
         #region Account

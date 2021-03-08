@@ -1,0 +1,106 @@
+<div class='bgtrans'>
+    <div *ngIf='titleVisible' fxLayout="row" fxLayoutAlign="center center"
+        style='padding:10px; color:#fff; background: #5dc24e;'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+        {{ subscriptionCreatedMsg }}
+        </div>
+  </div>
+  <mat-card class='mat-elevation-z' *ngIf='!createEditViewSubscriptionFlag'>
+    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSubscriptionDetails || 'Subscription Details' }}</span>
+        </div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+        <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <mat-form-field appearance="outline">
+                <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                <span matPrefix><mat-icon>search</mat-icon></span>
+            </mat-form-field>
+        </div>
+  
+<div>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>{{ translationData.lblSelectStatus || 'Select Status' }}</mat-label>
+    <mat-select (selectionChange)="filterStatus($event.value)">
+      <mat-option *ngFor='let status of options' [value]="status">
+{{status}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+    </div>
+    <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+    <div *ngIf='initData.length > 0'>
+        <mat-table [dataSource]="dataSource" class="table-items" matSort>
+            <!-- <ng-container matColumnDef="select">
+                <div>
+                  <mat-header-cell *matHeaderCellDef>
+                    <mat-checkbox (change)='$event ? masterToggleForSubscription() : null'
+                      [checked]='selectionForSubscription.hasValue() && isAllSelectedForSubscription()'
+                      [indeterminate]='selectionForSubscription.hasValue() && !isAllSelectedForSubscription()'
+                      [aria-label]='checkboxLabelForSubscription()' [disabled]="actionType == 'view'">
+                    </mat-checkbox>
+                    <span style="margin: 5px 0px 0px 5px;" [ngClass]="{'opacity-0-5': actionType == 'view'}">{{ translationData.lblAll || 'All' }}</span>
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">
+                    <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectionForSubscription.toggle(row) : null'
+                      [checked]='selectionForSubscription.isSelected(row)' [aria-label]='checkboxLabelForSubscription(row)' >
+                    </mat-checkbox>
+                  </mat-cell>
+                </div>
+              </ng-container> -->
+            <ng-container matColumnDef="orderId">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOrderId || 'Order ID' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <!-- <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
+                  <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span> -->
+                  <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.orderId }}</span>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="packageCode">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPackageCode || 'Package Code' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">{{ row.packageCode }}</mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="packageName">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPackageName || 'Package Name' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">{{ row.packageName }}</mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="type">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblType || 'Type' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">{{ row.type }}</mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="vehicle">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicle || 'Vehicle' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">{{ row.vehicle }}</mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="startDate">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartDate || 'Start Date' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">{{ row.startDate }}</mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="endDate">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndDate || 'End Date' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">{{ row.endDate }}</mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="status">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">{{ row.status }}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="action">
+                <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <!-- <button mat-stroked-button color="primary" class='actionBtn' *ngIf="row.status == 'Expired' ? true : false ">
+                     shop
+                  </button>  -->
+                  <button type="button" class="btn btn-outline-primary btn-sm" *ngIf="row.status == 'Expired' ? true : false ">Shop</button>           
+               </mat-cell>
+              </ng-container>
+              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;">
+            </mat-row>
+        </mat-table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+    </div>
+  </mat-card>
+</div>

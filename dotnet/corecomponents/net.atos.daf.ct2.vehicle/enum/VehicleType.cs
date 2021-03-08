@@ -17,4 +17,5 @@ namespace net.atos.daf.ct2.vehicle
         FrontAxle='F',
         RearAxle='R'
     }
+    
 }

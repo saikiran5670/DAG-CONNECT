@@ -27,10 +27,13 @@ namespace net.atos.daf.ct2.account
         public async Task<AccountIdentity> Login(IdentityEntity.Identity user)
         {
             AccountIdentity accIdentity = new AccountIdentity();
-            int accountId= GetAccountByEmail(user.UserName);
-            if(accountId>0)
+            accIdentity.Authenticated = false;
+            Account account = GetAccountByEmail(user.UserName);
+            if(account !=null && account.Id > 0)
             {
-                accIdentity.AccountId =accountId;
+                //int accountId = account.Id;
+                //accIdentity.AccountId= account.Id;
+                accIdentity.accountInfo = account;
                 IdentityEntity.Response idpResponse = await autheticator.AccessToken(user);
                 if(idpResponse.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -40,22 +43,23 @@ namespace net.atos.daf.ct2.account
                     accIDPclaims.TokenExpiresIn=token.expires_in;
 
                     IdentityEntity.AccountToken accToken = tokenManager.CreateToken(accIDPclaims);
-                    accIdentity.AccountToken=accToken;
+                    accIdentity.Authenticated = true;
+                    //accIdentity.AccountToken=accToken;
                     // int accountId= GetAccountByEmail(user.UserName);
                     // if(accountId>0)
                     // {
-                        AccountPreferenceFilter filter=new AccountPreferenceFilter();
-                        filter.Ref_Id=accountId;
-                        //filter.Ref_Id =PreferenceType.Ref_id;
-                        filter.PreferenceType=PreferenceType.Account;
-                        IEnumerable<AccountPreference> preferences = preferenceManager.Get(filter).Result;
-                        foreach(var pref in preferences) 
-                        {
-                            accIdentity.AccountPreference=pref;
-                            break; //get only first preference
-                        }
-                        accIdentity.AccountOrganization = accountManager.GetAccountOrg(accountId).Result;
-                        accIdentity.AccountRole = accountManager.GetAccountRole(accountId).Result;
+                    //AccountPreferenceFilter filter=new AccountPreferenceFilter();
+                    //filter.Ref_Id=account.Id;
+                    ////filter.Ref_Id =PreferenceType.Ref_id;
+                    //filter.PreferenceType=PreferenceType.Account;
+                    //IEnumerable<AccountPreference> preferences = preferenceManager.Get(filter).Result;
+                    //foreach(var pref in preferences) 
+                    //{
+                    //    accIdentity.AccountPreference=pref;
+                    //    break; //get only first preference
+                    //}
+                    accIdentity.AccountOrganization = accountManager.GetAccountOrg(account.Id).Result;
+                    accIdentity.AccountRole = accountManager.GetAccountRole(account.Id).Result;
                     // }
                 }
             }
@@ -81,20 +85,21 @@ namespace net.atos.daf.ct2.account
             result= tokenManager.ValidateToken(token);
             return Task.FromResult(result);
         }
-        private int GetAccountByEmail(string email)
+        private Account GetAccountByEmail(string email)
         {
-            int accountid=0;
+            Account account = new Account();
+
             AccountFilter filter = new AccountFilter();     
             filter.Email =email;
             // filter.AccountType = AccountType.PortalAccount;            
             filter.AccountType = AccountType.None;            
             IEnumerable<Account> result = accountManager.Get(filter).Result;
-            foreach(var account in result) 
+            foreach(var acc in result) 
             {
-                accountid=account.Id;
+                account = acc;
                 break;//get only first account id
             }
-            return accountid;
+            return account;
         }
     }
 }

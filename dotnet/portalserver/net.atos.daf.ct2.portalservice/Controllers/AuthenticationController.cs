@@ -1,28 +1,26 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using net.atos.daf.ct2.authenticationservice;
+using AccountBusinessService = net.atos.daf.ct2.accountservice;
+using net.atos.daf.ct2.portalservice.Identity;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
-    [Route("authenticationpoc")]
     public class AuthenticationController: ControllerBase
     {
-        private readonly ILogger logger;
-        private readonly AuthService.AuthServiceClient _authClient;
+        private readonly ILogger<AuthenticationController> _logger;
 
-        public AuthenticationController(AuthService.AuthServiceClient authClient,ILogger<AuthenticationController> _logger)
+        private readonly AccountBusinessService.AccountService.AccountServiceClient _accountClient;
+        public AuthenticationController(AccountBusinessService.AccountService.AccountServiceClient accountClient, ILogger<AuthenticationController> logger)
         {
-            _authClient=authClient;
-            logger=_logger;
+            _accountClient = accountClient;
+            _logger = logger;
         }        
         [HttpPost]        
-        [Route("login")]
+        [Route("auth")]
         public async Task<IActionResult> Login()
         {
             try 
@@ -42,13 +40,48 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    IdentityRequest identityRequest = new IdentityRequest();
+                    AccountBusinessService.IdentityRequest identityRequest = new AccountBusinessService.IdentityRequest();
                     identityRequest.UserName=arrUsernamePassword[0];
                     identityRequest.Password=arrUsernamePassword[1];
-                    var response = await _authClient.AuthAsync(identityRequest);
-                    if(response !=null && response.Code == Responsecode.Success)
+                    var response = await _accountClient.AuthAsync(identityRequest);
+                    if(response !=null && response.Code == AccountBusinessService.Responcecode.Success)
                     {
-                       return Ok(response); 
+                        Identity.Identity accIdentity = new Identity.Identity();
+                        accIdentity.AccountInfo = new Identity.Account(); ;
+                        accIdentity.AccountInfo.Id = response.AccountInfo.Id;
+                        accIdentity.AccountInfo.EmailId = response.AccountInfo.EmailId;
+                        accIdentity.AccountInfo.Salutation = response.AccountInfo.Salutation;
+                        accIdentity.AccountInfo.FirstName = response.AccountInfo.FirstName;
+                        accIdentity.AccountInfo.LastName = response.AccountInfo.LastName;
+                        accIdentity.AccountInfo.Organization_Id = response.AccountInfo.OrganizationId;
+                        accIdentity.AccountInfo.PreferenceId = response.AccountInfo.PreferenceId;
+                        accIdentity.AccountInfo.BlobId = response.AccountInfo.BlobId;
+                        if (response.AccOrganization != null && response.AccOrganization.Count > 0)
+                        {
+                            accIdentity.AccountOrganization = new List<Identity.KeyValue>();
+                            Identity.KeyValue keyValue = new Identity.KeyValue();
+                            foreach (var accOrg in response.AccOrganization)
+                            {
+                                keyValue = new Identity.KeyValue();
+                                keyValue.Id = accOrg.Id;
+                                keyValue.Name = accOrg.Name;
+                                accIdentity.AccountOrganization.Add(keyValue);
+                            }
+                        }
+                        if (response.AccountRole != null && response.AccountRole.Count > 0)
+                        {
+                             accIdentity.AccountRole = new List<AccountOrgRole>();
+                            Identity.AccountOrgRole accRole = new Identity.AccountOrgRole();
+                            foreach (var accrole in response.AccountRole)
+                            {
+                                accRole = new Identity.AccountOrgRole();
+                                accRole.Id = accrole.Id;
+                                accRole.Name = accrole.Name;
+                                accRole.Organization_Id= accrole.OrganizationId;
+                                accIdentity.AccountRole.Add(accRole);
+                            }
+                        }
+                        return Ok(accIdentity); 
                     }
                     else 
                     {
@@ -63,41 +96,41 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch(Exception ex)
             {
-                logger.LogError(ex.Message +" " +ex.StackTrace);
+                _logger.LogError(ex.Message +" " +ex.StackTrace);
                 return StatusCode(500,"Please contact system administrator. "+ ex.Message );
             }            
         }
 
-        [HttpPost]        
-        [Route("validate")]
-        public async Task<IActionResult> Validate([FromBody] string token)
-        {
-            try 
-            {
-                if(string.IsNullOrEmpty(token))
-                {
-                    return StatusCode(401,"invalid_grant: The token is Empty.");
-                }
-                else
-                {
-                    ValidateRequest request = new ValidateRequest();
-                    request.Token=token;
-                    ValidateResponse response = await _authClient.ValidateAsync(request);
-                    if(response !=null && response.Code == Responsecode.Success)
-                    {
-                       return Ok(response.Valid); 
-                    }
-                    else 
-                    {
-                        return StatusCode(500,"Please contact system administrator");
-                    }                    
-                }
-            }
-            catch(Exception ex)
-            {
-                logger.LogError(ex.Message +" " +ex.StackTrace);
-                return StatusCode(500,"Please contact system administrator.");
-            }           
-        }
+        //[HttpPost]        
+        //[Route("validate")]
+        //public async Task<IActionResult> Validate([FromBody] string token)
+        //{
+        //    try 
+        //    {
+        //        if(string.IsNullOrEmpty(token))
+        //        {
+        //            return StatusCode(401,"invalid_grant: The token is Empty.");
+        //        }
+        //        else
+        //        {
+        //            ValidateRequest request = new ValidateRequest();
+        //            request.Token=token;
+        //            ValidateResponse response = await _authClient.ValidateAsync(request);
+        //            if(response !=null && response.Code == Responsecode.Success)
+        //            {
+        //               return Ok(response.Valid); 
+        //            }
+        //            else 
+        //            {
+        //                return StatusCode(500,"Please contact system administrator");
+        //            }                    
+        //        }
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        logger.LogError(ex.Message +" " +ex.StackTrace);
+        //        return StatusCode(500,"Please contact system administrator.");
+        //    }           
+        //}
     }
 }

@@ -52,6 +52,10 @@
           "subRoute": "packagemanagement"
         },
         {
+          "name": "Subscription Management",
+          "subRoute": "subscriptionmanagement"
+        },
+        {
           "name": "Relationship Management",
           "subRoute": "relationshipmanagement"
         },

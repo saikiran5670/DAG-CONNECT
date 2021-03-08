@@ -28,16 +28,13 @@ service RoleService {
 }
 
 message RoleRequest {
-    int32 Id=1;
+    int32 RoleID = 1;
     int32 Organization_Id=2;
-    string Name = 3;
+    string RoleName = 3;
     string Description=4;
     int32 CreatedBy=5;
-    bool Active = 6;
-    int32 UpdatedBy=7;  
-    RoleTypes Roletype=8;
-    int32 FeaturesCount =10;
-    repeated FeaturesRequest Features = 9;
+    repeated int32 FeatureIds = 6;
+    int32 UpdatedBy=7;
   }
 
   message RoleListResponce {

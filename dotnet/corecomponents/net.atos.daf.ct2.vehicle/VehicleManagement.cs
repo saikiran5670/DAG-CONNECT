@@ -215,6 +215,28 @@ namespace net.atos.daf.ct2.vehiclerepository
                 throw ex;
             }
         }
+        public async Task<char> GetCalculatedVehicleStatus(char opt_in, bool is_ota)
+        {
+            try
+            {
+                return await vehicleRepository.GetCalculatedVehicleStatus(opt_in,is_ota);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async  Task<char> GetOrganisationStatusofVehicle(int org_id)
+        {
+            try
+            {
+                return await vehicleRepository.GetOrganisationStatusofVehicle(org_id);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         // public async Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime)
         // {
         //     try

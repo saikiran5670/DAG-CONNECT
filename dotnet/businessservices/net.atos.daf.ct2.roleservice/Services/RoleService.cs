@@ -36,15 +36,15 @@ namespace net.atos.daf.ct2.roleservice
                
                 RoleMaster ObjRole = new RoleMaster();
                 ObjRole.Organization_Id =request.OrganizationId;
-                ObjRole.Name = request.Name;
+                ObjRole.Name = request.RoleName;
                 ObjRole.Createdby = request.CreatedBy;
                 ObjRole.Description = request.Description;
                 ObjRole.Feature_set_id=0;
                 ObjRole.FeatureSet = new FeatureSet();
                 ObjRole.FeatureSet.Features = new List<Feature>();
-                foreach(var item in request.Features)
+                foreach(var item in request.FeatureIds)
                 {
-                     ObjRole.FeatureSet.Features.Add(new Feature() { Id = item.Id });
+                     ObjRole.FeatureSet.Features.Add(new Feature() { Id = item });
                 }
                 var role = _RoleManagement.CreateRole(ObjRole).Result;
                 
@@ -72,8 +72,8 @@ namespace net.atos.daf.ct2.roleservice
             {
                
                 RoleMaster roleMaster = new RoleMaster();
-                roleMaster.Name = request.Name;
-                roleMaster.Id = request.Id;
+                roleMaster.Name = request.RoleName;
+                roleMaster.Id = request.RoleID;
                 roleMaster.Updatedby = request.UpdatedBy;
                 var role = _RoleManagement.UpdateRole(roleMaster).Result;
           
@@ -100,7 +100,7 @@ namespace net.atos.daf.ct2.roleservice
             try
             {
                
-                var role = _RoleManagement.DeleteRole(request.Id,request.OrganizationId).Result;                          
+                var role = _RoleManagement.DeleteRole(request.RoleID,request.OrganizationId).Result;                          
                 
                 return Task.FromResult(new RoleResponce
                 {
@@ -136,14 +136,14 @@ namespace net.atos.daf.ct2.roleservice
                  foreach (var item in role)
                 {
                     RoleRequest ObjResponce = new RoleRequest();
-                    ObjResponce.Id=item.Id;
+                    ObjResponce.RoleID=item.Id;
                     ObjResponce.OrganizationId =item.Organization_Id == null ? 0 : item.Organization_Id.Value;
-                    ObjResponce.Name = item.Name;
+                    ObjResponce.RoleName = item.Name;
                     ObjResponce.CreatedBy = item.Createdby;
-                    ObjResponce.Active= item.Is_Active;
+                    //ObjResponce.= item.Is_Active;
                     ObjResponce.Description = item.Description == null ? "" : item.Description;
-                    ObjResponce.Roletype= item.Organization_Id == null ? RoleTypes.Global : RoleTypes.Regular;
-                    ObjResponce.FeaturesCount = item.Featurescount == null ?0 : Convert.ToInt32(item.Featurescount);
+                    //ObjResponce.Roletype= item.Organization_Id == null ? RoleTypes.Global : RoleTypes.Regular;
+                    //ObjResponce.FeaturesCount = item.Featurescount == null ?0 : Convert.ToInt32(item.Featurescount);
                     ObjroleList.Roles.Add(ObjResponce);
                 }
 
@@ -161,33 +161,33 @@ namespace net.atos.daf.ct2.roleservice
             }
         }
 
-        public async override Task<FeaturesListResponce> GetFeatures(FeaturesFilterRequest request,ServerCallContext context)
-        {
-            try
-            {
-            FeaturesListResponce ObFeaturesList = new FeaturesListResponce();
-            var result= await _FeaturesManager.GetFeatures(Convert.ToChar(request.Type),true);
-                 foreach (var item in result)
-                {
-                    FeaturesRequest ObjResponce = new FeaturesRequest();
-                    ObjResponce.Id=item.Id;
-                    ObjResponce.Name = item.Name;
-                    ObjResponce.Active= item.Is_Active;
-                    ObjResponce.Description = item.Description == null ? "" : item.Description;
-                    ObjResponce.Type= item.Type.ToString();
-                    ObFeaturesList.Features.Add(ObjResponce);
-                }
-             return await Task.FromResult(ObFeaturesList);
-            }
-            catch(Exception ex)
-            {
-                return await Task.FromResult(new FeaturesListResponce
-                {
-                    Message = "Exception " + ex.Message,
-                    Code = Responcecode.Failed
-                });
-            }
-        }
+        //public async override Task<FeaturesListResponce> GetFeatures(FeaturesFilterRequest request,ServerCallContext context)
+        //{
+        //    try
+        //    {
+        //    FeaturesListResponce ObFeaturesList = new FeaturesListResponce();
+        //    var result= await _FeaturesManager.GetFeatures(Convert.ToChar(request.Type),true);
+        //         foreach (var item in result)
+        //        {
+        //            FeaturesRequest ObjResponce = new FeaturesRequest();
+        //            ObjResponce.Id=item.Id;
+        //            ObjResponce.Name = item.Name;
+        //            ObjResponce.Active= item.Is_Active;
+        //            ObjResponce.Description = item.Description == null ? "" : item.Description;
+        //            ObjResponce.Type= item.Type.ToString();
+        //            ObFeaturesList.Features.Add(ObjResponce);
+        //        }
+        //     return await Task.FromResult(ObFeaturesList);
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        return await Task.FromResult(new FeaturesListResponce
+        //        {
+        //            Message = "Exception " + ex.Message,
+        //            Code = Responcecode.Failed
+        //        });
+        //    }
+        //}
 
 
     }
