@@ -109,7 +109,11 @@ namespace net.atos.daf.ct2.portalservice
                 options.SlidingExpiration = true;
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(Convert.ToDouble(authcookiesexpireat));
             });
-            services.AddMvc(options => options.Filters.Add(new AuthorizeFilter()));
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new RequireHttpsAttribute { Permanent = true });
+                options.Filters.Add(new AuthorizeFilter());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

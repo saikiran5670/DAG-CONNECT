@@ -20,9 +20,13 @@ namespace net.atos.daf.ct2.portalservice
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>()
+                    webBuilder.UseStartup<Startup>();
                     //remover server header from repsonse object
-                     .UseKestrel(options => options.AddServerHeader = false);
+                    webBuilder.UseKestrel((options) =>
+                    {
+                          // Do not add the Server HTTP header.
+                          options.AddServerHeader = false;
+                    });
                 });
     }
 }
