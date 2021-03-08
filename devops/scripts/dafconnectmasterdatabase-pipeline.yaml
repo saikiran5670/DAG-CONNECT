@@ -26,7 +26,7 @@ variables:
 - ${{ if eq(parameters.ENV, 'TEST02') }}:
   - group: TEST02-Release-Variables
 - ${{ if eq(parameters.ENV, 'ACC03') }}:
-  - group: ACC3-Release-Variables
+  - group: ACC03-Release-Variables
   
 jobs:
 - job: Job_1
