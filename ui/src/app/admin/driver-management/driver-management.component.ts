@@ -36,7 +36,6 @@ export class DriverManagementComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   importDriverFormGroup: FormGroup;
   consentFormGroup: FormGroup;
-  userGrpName: string = '';
   templateFileUrl: string = 'assets/docs/driverTemplate.xlsx';
   templateFileName: string = 'driver-Template.xlsx';
   dialogRef: MatDialogRef<ConsentOptComponent>;
@@ -102,6 +101,7 @@ export class DriverManagementComponent implements OnInit {
       lblOptOutAll: "Opt-Out All",
       lblOptIn: "Opt-In",
       lblOptOut: "Opt-Out",
+      lblInherit: "Inherit",
       lblImportedFileDetails: "Imported File Details",
       lblImportedUpdateddriverrecords: "Imported/Updated '$' driver records",
       lblRejecteddriverrecordsduetofollowingerrors: "Rejected '$' driver records due to following errors",
@@ -148,7 +148,6 @@ export class DriverManagementComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.importDriverFormGroup = this._formBuilder.group({
-      //userGroup: [],
       uploadFile: [
         undefined,
         [Validators.required, FileValidator.maxContentSize(this.maxSize)]
@@ -188,21 +187,24 @@ export class DriverManagementComponent implements OnInit {
         firstName: "Alan",
         lastName: "Berry",
         emailId: "alanb@daf.com",
-        consentStatus: 'Opt-In'
+        consentStatus: 'Opt-In',
+        inheritStatus: true
       },
       {
         driverId: "I 0000000000000002",
         firstName: "Ritika",
         lastName: "Joshi",
         emailId: "ritikaj@daf.com",
-        consentStatus: 'Opt-Out'
+        consentStatus: 'Opt-Out',
+        inheritStatus: false
       },
       {
         driverId: "IN 0000000000000003",
         firstName: "Shanu",
         lastName: "Pol",
         emailId: "shanup@daf.com",
-        consentStatus: 'Opt-In'
+        consentStatus: 'Opt-Out',
+        inheritStatus: false
       }
     ];
   }
@@ -254,7 +256,6 @@ export class DriverManagementComponent implements OnInit {
 
 
   importDrivers(){ 
-    this.userGrpName = 'Test User Group' ; //this.importDriverFormGroup.controls.userGroup.value;
     if(this.filelist.length > 0){
       this.validateExcelFileField();
       this.excelEmptyMsg = false;

@@ -45,7 +45,7 @@ export class EditDriverDetailsComponent implements OnInit {
     this.driverFormGroup.get('emailId').setValue(this.driverData.emailId);
     this.driverFormGroup.get('firstName').setValue(this.driverData.firstName);
     this.driverFormGroup.get('lastName').setValue(this.driverData.lastName);
-    this.selectedConsentType = this.driverData.consentStatus;
+    this.selectedConsentType = this.driverData.inheritStatus ? 'Inherit' : this.driverData.consentStatus;
   }
 
   getBreadcum(actionType: any){

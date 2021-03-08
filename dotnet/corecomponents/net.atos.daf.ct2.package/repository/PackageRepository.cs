@@ -103,8 +103,7 @@ namespace net.atos.daf.ct2.package.repository
                 {
                     foreach (Package package in newPackages)
                     {
-                        package.FeatureSetID = 9;//this line is just for testing purpose
-                       // package.FeatureSetID = CreateFeatureSet(package.Features).Result;
+                       
                         if (package.Code != null && package.FeatureSetID > 0)
                         {
                             parameter = new DynamicParameters();

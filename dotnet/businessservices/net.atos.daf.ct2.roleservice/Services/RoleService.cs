@@ -40,11 +40,22 @@ namespace net.atos.daf.ct2.roleservice
                 ObjRole.Createdby = request.CreatedBy;
                 ObjRole.Description = request.Description;
                 ObjRole.Feature_set_id=0;
+                ObjRole.Level = request.Level;
                 ObjRole.FeatureSet = new FeatureSet();
                 ObjRole.FeatureSet.Features = new List<Feature>();
                 foreach(var item in request.FeatureIds)
                 {
                      ObjRole.FeatureSet.Features.Add(new Feature() { Id = item });
+                }
+                int Rid = _RoleManagement.CheckRoleNameExist(request.RoleName.Trim(), request.OrganizationId, 0);
+                if (Rid > 0)
+                {
+                    return Task.FromResult(new RoleResponce
+                    {
+                        Message = "Role name allready exist",
+                        Code = Responcecode.Failed
+
+                    });
                 }
                 var role = _RoleManagement.CreateRole(ObjRole).Result;
                 
@@ -75,6 +86,7 @@ namespace net.atos.daf.ct2.roleservice
                 roleMaster.Name = request.RoleName;
                 roleMaster.Id = request.RoleID;
                 roleMaster.Updatedby = request.UpdatedBy;
+                roleMaster.FeatureSet = new FeatureSet();
                 var role = _RoleManagement.UpdateRole(roleMaster).Result;
           
                 return Task.FromResult(new RoleResponce
