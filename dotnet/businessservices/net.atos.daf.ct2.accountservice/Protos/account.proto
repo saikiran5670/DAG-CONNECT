@@ -179,10 +179,11 @@ message AccountGroupRequest{
   int32 RefId = 4;
   string Description= 5;
   string GroupType= 6;   
-  int32 GroupRefCount=7;
-  repeated AccountGroupRef GroupRef = 8;
-  bool Exists=9;
-  int64 CreatedAt=10;
+  string FunctionEnum = 7;   
+  int32 GroupRefCount=8;
+  repeated AccountGroupRef GroupRef = 9;
+  bool Exists=10;
+  int64 CreatedAt=11;
 }
 message AccountGroupResponce{
   Responcecode code=1;  

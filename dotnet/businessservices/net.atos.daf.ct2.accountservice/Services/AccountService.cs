@@ -864,7 +864,7 @@ namespace net.atos.daf.ct2.accountservice
                 _logger.LogInformation("Group Created:" + Convert.ToString(group.Name));
                 return await Task.FromResult(new AccountGroupResponce
                 {
-                    Message = "Account group created with id:- ",
+                    Message = "Account group created.",
                     Code = Responcecode.Success,
                     AccountGroup = request
                 });
@@ -1079,7 +1079,7 @@ namespace net.atos.daf.ct2.accountservice
 
                 groupFilter.OrganizationId = request.OrganizationId;
                 groupFilter.Id = request.AccountGroupId;
-                groupFilter.GroupType = Group.GroupType.Group;
+                groupFilter.GroupType = Group.GroupType.None;
                 groupFilter.FunctionEnum = Group.FunctionEnum.None;
                 groupFilter.ObjectType = Group.ObjectType.AccountGroup;
                 groupFilter.GroupRefCount = true;
