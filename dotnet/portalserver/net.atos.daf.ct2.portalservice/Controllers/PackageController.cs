@@ -174,9 +174,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
 
         //Get/Export Packages
-        [HttpPost]
+        [HttpGet]
         [Route("get")]
-        public async Task<IActionResult> Get(GetPackageRequest request)
+        public async Task<IActionResult> Get([FromQuery]GetPackageRequest request)
         {
             try
             {
