@@ -137,7 +137,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("GetDataAttribute")]
         public async Task<IActionResult> GetDataAttributes()
         {
