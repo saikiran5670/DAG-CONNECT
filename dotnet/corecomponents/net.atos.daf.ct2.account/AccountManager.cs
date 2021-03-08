@@ -13,6 +13,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.email;
 using net.atos.daf.ct2.email.Entity;
+using net.atos.daf.ct2.email.Enum;
 
 namespace net.atos.daf.ct2.account
 {
@@ -50,6 +51,9 @@ namespace net.atos.daf.ct2.account
             {
                 // if this fails
                 account = await repository.Create(account);
+
+                //Send account confirmation email
+                await TriggerSendEmailRequest(account, EmailTemplateType.CreateAccount);
             }
             else // there is issues and need delete user from IDP. 
             {
@@ -68,7 +72,10 @@ namespace net.atos.daf.ct2.account
                     if (accountGet == null)
                     {
                         account = await repository.Create(account);
-                        await identity.UpdateUser(identityEntity);                        
+                        await identity.UpdateUser(identityEntity);
+
+                        //Send account confirmation email
+                        await TriggerSendEmailRequest(account, EmailTemplateType.CreateAccount);
                     }
                     else
                     {
@@ -166,7 +173,6 @@ namespace net.atos.daf.ct2.account
         {
             return await repository.GetBlob(blobId);
         }        
-
         public async Task<AccessRelationship> CreateAccessRelationship(AccessRelationship entity)
         {
             return await repository.CreateAccessRelationship(entity);
@@ -250,19 +256,9 @@ namespace net.atos.daf.ct2.account
                         await repository.Create(objToken);
 
                         //Send email
-                        var messageRequest = new MessageRequest();
-                        messageRequest.Configuration = emailConfiguration;
-                        messageRequest.ToAddressList = new Dictionary<string, string>()
-                        {
-                            { account.EmailId, account.LastName + ", " + account.FirstName }
-                        };
-                        messageRequest.Subject = "Reset Password";
-                        messageRequest.Content = GetEmailTemplate();
-                        messageRequest.ContentMimeType = MimeType.Text;
+                        var isSent = TriggerSendEmailRequest(account, EmailTemplateType.ResetPassword);
 
-                        var isSent = await EmailHelper.SendEmail(messageRequest);
-
-                        if (isSent)
+                        if (isSent.Result)
                         {
                             //Update status to Issued
                             await repository.Update(objToken.Id, ResetTokenStatus.Issued);
@@ -331,16 +327,52 @@ namespace net.atos.daf.ct2.account
             return false;
         }
 
-        private string GetEmailTemplate()
+        #region Private Helper Methods
+        private async Task<bool> TriggerSendEmailRequest(Account account, EmailTemplateType templateType)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("A request has been received to reset the password fro your account.\n\n"); ;
-            sb.Append(emailConfiguration.PortalServiceBaseUrl + "/resetpassword\n\n\n");
-            sb.Append("Ïf you did not initiate this request, please click on the below link.\n\n");
-            sb.Append(emailConfiguration.PortalServiceBaseUrl + "/resetpasswordinvalidate");
+            //Send email
+            var messageRequest = new MessageRequest();
+            messageRequest.Configuration = emailConfiguration;
+            messageRequest.ToAddressList = new Dictionary<string, string>()
+            {
+                { account.EmailId, account.LastName + ", " + account.FirstName }
+            };
 
-            return sb.ToString();
+            FillEmailTemplate(messageRequest, templateType);           
+
+            return await EmailHelper.SendEmail(messageRequest);
         }
 
+        private void FillEmailTemplate(MessageRequest messageRequest, EmailTemplateType templateType)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            switch (templateType)
+            {
+                case EmailTemplateType.CreateAccount:
+                    sb.Append("Your account has been successfully created on DAF portal.\n\n");
+
+                    messageRequest.Subject = "DAF Account Confirmation";
+                    messageRequest.ContentMimeType = MimeType.Text;
+                    break;
+                case EmailTemplateType.ResetPassword:
+                    sb.Append("A request has been received to reset the password fro your account.\n\n"); ;
+                    sb.Append(emailConfiguration.PortalServiceBaseUrl + "/resetpassword\n\n\n");
+                    sb.Append("Ïf you did not initiate this request, please click on the below link.\n\n");
+                    sb.Append(emailConfiguration.PortalServiceBaseUrl + "/resetpasswordinvalidate");
+
+                    messageRequest.Subject = "Reset Password Confirmation";
+                    messageRequest.ContentMimeType = MimeType.Text;
+                    break;
+                default:
+                    messageRequest.Subject = string.Empty;
+                    messageRequest.ContentMimeType = MimeType.Text;
+                    break;
+            }
+
+            messageRequest.Content = sb.ToString();
+        }
+
+        #endregion
     }
 }
