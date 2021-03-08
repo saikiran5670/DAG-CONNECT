@@ -38,6 +38,10 @@ jobs:
   - checkout: self
   - task: UseYuniqlCLI@1
     displayName: Use Yuniql
+  
+  - task: CmdLine@2
+    inputs:
+     script: 'echo $(ENVIRONMENT)'
     
   - task: RunYuniqlCLI@1
     displayName: Run Yuniql
