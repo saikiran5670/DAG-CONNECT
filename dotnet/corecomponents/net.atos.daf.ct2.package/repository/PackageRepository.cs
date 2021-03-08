@@ -276,7 +276,7 @@ namespace net.atos.daf.ct2.package.repository
             package.Code = record.packagecode;
 
             package.Status = record.is_active ? PackageStatus.Active : PackageStatus.Inactive;
-            package.Type = (PackageType)(record.type);
+           // package.Type = (PackageType)(record.type);
             package.Name = record.name;
             package.Description = record.description;
             package.FeatureSetID = record.feature_set_id;
