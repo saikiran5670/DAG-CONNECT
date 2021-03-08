@@ -67,7 +67,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     featureset.Features.Add(item.Id);
                 }
 
-                var responce = _featureclient.CreateFeatureSet(featureset);
+                var responce = await _featureclient.CreateFeatureSetAsync(featureset);
                 featureset.FeatureSetID = ObjResponse.FeatureSetID;
                 _logger.LogInformation("Feature Set created with id." + ObjResponse.FeatureSetID);
 
@@ -151,6 +151,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
 
                 //throw;
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+
+        [HttpGet]
+        [Route("getfeatures")]
+        public async Task<IActionResult> GetFeatures(FeaturesFilterRequest request)
+        {
+            try
+            {
+                
+                var feature = await _featureclient.GetFeaturesAsync(request);
+
+                //List<FeatureResponce> featureList = new List<FeatureResponce>();
+                //foreach (var featureitem in feature.Features)
+                //{
+                //    FeatureResponce obj = new FeatureResponce();
+                //    obj.I = featureitem.Id;
+                //    obj.CreatedBy = featureitem.Createdby;
+                //    obj.FeatureName = featureitem.Name;
+                //    obj.Description = featureitem.Description;
+                //    obj.RoleId = featureitem.RoleId;
+                //    obj.OrganizationId = featureitem.Organization_Id;
+                //    obj.FeatureType = featureitem.Type;
+                //    featureList.Add(obj);
+                //}
+
+                return Ok(feature);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, "Internal Server Error.");
             }
         }
