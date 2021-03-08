@@ -43,7 +43,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     AccountBusinessService.IdentityRequest identityRequest = new AccountBusinessService.IdentityRequest();
                     identityRequest.UserName=arrUsernamePassword[0];
                     identityRequest.Password=arrUsernamePassword[1];
-                    var response = await _accountClient.AuthAsync(identityRequest);
+                    AccountBusinessService.AccountIdentityResponse response = await _accountClient.AuthAsync(identityRequest).ResponseAsync;
                     if(response !=null && response.Code == AccountBusinessService.Responcecode.Success)
                     {
                         Identity.Identity accIdentity = new Identity.Identity();

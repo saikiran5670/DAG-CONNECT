@@ -689,6 +689,95 @@ namespace net.atos.daf.ct2.account
         // End - Account Rendering
         #endregion
 
+        #region ResetPasswordToken
+
+        public async Task<ResetPasswordToken> Create(ResetPasswordToken resetPasswordToken)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@account_id", resetPasswordToken.AccountId);
+                parameter.Add("@token_secret", resetPasswordToken.TokenSecret);
+                parameter.Add("@status", resetPasswordToken.Status.ToString());
+                parameter.Add("@expiry_at", resetPasswordToken.ExpiryAt.Value);
+                parameter.Add("@created_at", resetPasswordToken.CreatedAt.Value);
+
+                string query = @"insert into master.resetpasswordtoken(account_id,token_secret,status,expiry_at,created_at) " +
+                              "values(@account_id,@token_secret,@status,@expiry_at,@created_at) RETURNING id";
+
+                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                resetPasswordToken.Id = id;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return resetPasswordToken;
+        }
+
+        public async Task<int> Update(int id, ResetTokenStatus status)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@id", id);
+                parameter.Add("@status", status.ToString());
+
+                string query = @"update master.resetpasswordtoken set status=@status
+                                where id=@id RETURNING id";
+
+                return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<ResetPasswordToken> GetIssuedResetToken(Guid tokenSecret)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@token_secret", tokenSecret);
+
+                string query = @"select * from master.resetpasswordtoken
+                                where token_secret=@token_secret and status='Issued'";
+
+                var record = await dataAccess.QueryFirstOrDefaultAsync(query, parameter);
+                return (record != null ? MapToken(record) : null);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<ResetPasswordToken> GetIssuedResetTokenByAccountId(int accountId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@account_id", accountId);
+
+                string query = @"select * from master.ResetPasswordToken 
+                                where account_id=@account_id and status='Issued'";
+
+                var record = await dataAccess.QueryFirstOrDefaultAsync(query, parameter);
+                return (record != null ? MapToken(record) : null);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
+
         #region Private Methods
         private AccountBlob ToBlob(dynamic record)
         {
@@ -729,6 +818,18 @@ namespace net.atos.daf.ct2.account
             entity.AccountGroupId = record.account_group_id;
             entity.VehicleGroupId = record.vehicle_group_id;
             return entity;
+        }
+
+        private ResetPasswordToken MapToken(dynamic record)
+        {
+            ResetPasswordToken objToken = new ResetPasswordToken();
+            objToken.Id = record.id;
+            objToken.AccountId = record.account_id;
+            objToken.TokenSecret = record.token_secret;
+            objToken.Status = Enum.Parse<ResetTokenStatus>(record.status, false);
+            objToken.ExpiryAt = record.expiry_at;
+            objToken.CreatedAt = record.created_at;
+            return objToken;
         }
         #endregion
     }

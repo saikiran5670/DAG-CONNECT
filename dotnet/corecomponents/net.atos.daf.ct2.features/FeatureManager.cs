@@ -44,6 +44,18 @@ namespace net.atos.daf.ct2.features
         {
             return await FeatureRepository.CreateFeatureSet(featureSet);
         }
+
+        public async Task<int> CreateDataattributeFeature(Feature feature)
+        {
+            var DataAttributeSet = await CreateDataattributeSet(feature.DataAttributeSets);
+            int FeatureID = 0;
+            if (DataAttributeSet.ID > 0)
+            { 
+                 FeatureID = await FeatureRepository.CreateDataattributeSetFeature(feature, DataAttributeSet.ID);
+            }
+            return FeatureID;
+
+        }
         public async Task<DataAttributeSet> CreateDataattributeSet(DataAttributeSet dataAttributeSet)
         {
             return await FeatureRepository.CreateDataattributeSet(dataAttributeSet);
@@ -67,6 +79,11 @@ namespace net.atos.daf.ct2.features
         public async Task<FeatureSet> UpdateFeatureSet(FeatureSet featureSet)
         {
             return await FeatureRepository.UpdateFeatureSet(featureSet);
+        }
+
+        public async Task<IEnumerable<DataAttribute>> GetDataAttributes()
+        {
+            return await FeatureRepository.GetDataAttributes();
         }
     }
 }

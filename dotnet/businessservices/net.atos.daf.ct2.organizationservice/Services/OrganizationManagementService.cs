@@ -21,11 +21,9 @@ namespace net.atos.daf.ct2.organizationservice
         private readonly IAuditTraillib auditlog;
         private readonly IOrganizationManager organizationtmanager;
         private readonly IPreferenceManager preferencemanager;
-        private readonly IVehicleManager vehicleManager;
-        AccountComponent.IAccountIdentityManager accountIdentityManager;
+        private readonly IVehicleManager vehicleManager;             
+        private readonly EntityMapper _mapper;
       
-       private readonly EntityMapper _mapper;
-        private string FK_Constraint = "violates foreign key constraint";
         
         public OrganizationManagementService(ILogger<OrganizationManagementService> logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager,IAuditTraillib _auditlog)
         {
@@ -38,12 +36,12 @@ namespace net.atos.daf.ct2.organizationservice
             _mapper = new EntityMapper();
         }
 
-       public override async Task<OrganizationData> Create(OrgRequest request, ServerCallContext context)
+       public override async Task<OrganizationCreateData> Create(OrgCreateRequest request, ServerCallContext context)
         {             
             try
             {                 
                 Organization organization = new Organization();      
-                OrganizationData response = new OrganizationData();     
+                OrganizationCreateData response = new OrganizationCreateData();     
                 organization.OrganizationId=request.OrgId;
                 organization.Type=request.Type;
                 organization.Name=request.Name;
@@ -55,16 +53,16 @@ namespace net.atos.daf.ct2.organizationservice
                 organization.reference_date=Convert.ToDateTime(request.ReferenceDate);
                 organization = await organizationtmanager.Create(organization);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Component", "Organization Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Organization Create", 1, 2, organization.Id.ToString());
-                response.Code = Responcecode.Success;
+                response.Code = Responcecode.Success;              
                 response.Message = "Created";
                 request.Id= organization.Id;
-                response.Organization = request;
+                response.Organization = _mapper.TOOrgUpdateResponse(request);
                 return await Task.FromResult(response);
              }
             catch (Exception ex)
             {              
                 _logger.LogError("Orgganization Service: Create : " + ex.Message + " " + ex.StackTrace);
-                return await Task.FromResult(new OrganizationData
+                return await Task.FromResult(new OrganizationCreateData
                 {
                     Code = Responcecode.Failed,
                     Message = "Organization Creation failed due to - " + ex.Message,
@@ -73,12 +71,12 @@ namespace net.atos.daf.ct2.organizationservice
             }
         }   
 
-        public override async Task<OrganizationData> Update(OrgRequest request, ServerCallContext context)
+        public override async Task<OrganizationUpdateData> Update(OrgUpdateRequest request, ServerCallContext context)
         {             
             try
             {                 
                 Organization organization = new Organization();      
-                OrganizationData response = new OrganizationData();     
+                OrganizationUpdateData response = new OrganizationUpdateData();                    
                 organization.Id=request.Id;
                 organization.OrganizationId=request.OrgId;
                 organization.Type=request.Type;
@@ -88,7 +86,9 @@ namespace net.atos.daf.ct2.organizationservice
                 organization.AddressStreetNumber=request.StreetNumber;
                 organization.City=request.City;
                 organization.CountryCode=request.CountryCode;
-                organization.reference_date=Convert.ToDateTime(request.ReferenceDate);                                            
+                organization.reference_date=Convert.ToDateTime(request.ReferenceDate); 
+                organization.vehicle_default_opt_in=request.VehicleDefaultOptIn;
+                organization.driver_default_opt_in=request.DriverDefaultOptIn;
                 var OrgId= await organizationtmanager.Update(organization);                  
                
                 if(OrgId.Id==0)
@@ -105,15 +105,14 @@ namespace net.atos.daf.ct2.organizationservice
                     response.Code = Responcecode.Success;
                     response.Message = "Organization updated";
                     request.Id= organization.Id;
-                    response.Organization = request;                     
-                }       
-
+                    response.Organization = _mapper.TOOrgUpdateResponse(request);                  
+                }     
                 return await Task.FromResult(response);             
             }
             catch (Exception ex)
             {              
                 _logger.LogError("Orgganization Service: Updated : " + ex.Message + " " + ex.StackTrace);
-                return await Task.FromResult(new OrganizationData
+                return await Task.FromResult(new OrganizationUpdateData
                 {
                     Code = Responcecode.Failed,
                     Message = "Organization update failed due to - " + ex.Message,
@@ -122,26 +121,19 @@ namespace net.atos.daf.ct2.organizationservice
             }
         } 
 
-        public override async Task<OrganizationResponse> Get(IdRequest request, ServerCallContext context)
+        public override async Task<OrganizationGetData> Get(IdRequest request, ServerCallContext context)
         {
            
                 net.atos.daf.ct2.organization.entity.OrganizationResponse  organization=new net.atos.daf.ct2.organization.entity.OrganizationResponse();
-                OrganizationResponse response=new OrganizationResponse();                
+                 OrganizationGetData response = new OrganizationGetData();          
                 _logger.LogInformation("Get Organization .");    
-                organization = await organizationtmanager.Get(request.Id);
-                response.Id=organization.Id;
-                response.OrganizationId=organization.org_id;
-                response.Type=organization.type;
-                response.Name=organization.name;
-                response.AddressType=organization.address_type;
-                response.AddressStreetNumber=organization.street_number;
-                response.PostalCode=organization.postal_code;
-                response.City=organization.city;
-                response.CountryCode=organization.country_code;
-                response.IsActive=organization.is_active;                           
-                response.Referenced=organization.reference_date;  
+                organization= await organizationtmanager.Get(request.Id);              
+                response.Organization=_mapper.ToOrganizationResponse(organization);
+                response.Message = "Get";
+                response.Code = Responcecode.Success;                              
                 return await Task.FromResult(response);           
         }
+
        public override async Task<AccountPreferenceResponse> CreatePreference(AccountPreference request, ServerCallContext context)
         {
             try
@@ -230,25 +222,26 @@ namespace net.atos.daf.ct2.organizationservice
             }
         }
     
-        public override async Task<AccountPreferenceResponse> GetPreference(IdRequest request, ServerCallContext context)
+        public override async Task<OrganizationPreferenceResponse> GetPreference(IdRequest request, ServerCallContext context)
         {
              try
             {
                 Preference.AccountPreferenceFilter preferenceFilter = new Preference.AccountPreferenceFilter();
                 preferenceFilter.Id = request.Id;
-                preferenceFilter.PreferenceType = Preference.PreferenceType.Organization; // (Preference.PreferenceType)Enum.Parse(typeof(Preference.PreferenceType), request.Preference.ToString());
+                preferenceFilter.PreferenceType = Preference.PreferenceType.Organization; 
                 _logger.LogInformation("Get account preference.");
-                var result = await preferencemanager.Get(preferenceFilter);
+                var result = await organizationtmanager.GetPreference(preferenceFilter.Id);
                 // response 
-                AccountPreferenceResponse response = new AccountPreferenceResponse();
-                response.Code = Responcecode.Success;
+                OrganizationPreferenceResponse response = new OrganizationPreferenceResponse();
+                response.Code = Responcecode.Success;                
                 response.Message = "Get";
+                response.OrganizationPreference= _mapper.ToPreferenceResponse(result);
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
                 _logger.LogError("Error in organization service:get organization preference with exception - " + ex.Message + ex.StackTrace);
-                return await Task.FromResult(new AccountPreferenceResponse
+                return await Task.FromResult(new OrganizationPreferenceResponse
                 {
                     Code = Responcecode.Failed,
                     Message = "Organization Preference Get Faile due to - " + ex.Message

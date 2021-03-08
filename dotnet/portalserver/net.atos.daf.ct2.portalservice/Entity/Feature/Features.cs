@@ -15,10 +15,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.Feature
 
         [JsonPropertyName("IsFeatureActive")]
         public bool Is_Active { get; set; }
-        public int Data_attribute_Set_id { get; set; }
-        public int RoleId { get; set; }
-        public int Organization_Id { get; set; }
+        public DataAttributeSet DataattributeSet { get; set; }
         public string Key { get; set; }
-        public List<DataAttributeSet> DataAttributeSets { get; set; }
+        public int[] DataAttributeIds { get; set; }
+        public int Level { get; set; }
     }
 }

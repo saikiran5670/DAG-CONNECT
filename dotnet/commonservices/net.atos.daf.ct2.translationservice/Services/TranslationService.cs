@@ -213,7 +213,7 @@ namespace net.atos.daf.ct2.translationservice
                 foreach (var item in request.Dropdownname)
                 {
                     _logger.LogInformation("Drop down method get" + item + request.Langaugecode);
-                    Dropdowns.AddRange(await translationmanager.GetTranslationsForDropDowns(item, request.Langaugecode));
+                    Dropdowns.AddRange(await translationmanager.GetTranslationsForDropDowns(item.Dropdownname, request.Langaugecode));
 
                     foreach (var Ditem in Dropdowns)
                     {

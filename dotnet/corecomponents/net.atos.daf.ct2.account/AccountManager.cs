@@ -7,6 +7,12 @@ using Identity = net.atos.daf.ct2.identity;
 using IdentityEntity = net.atos.daf.ct2.identity.entity;
 using net.atos.daf.ct2.account.ENUM;
 using net.atos.daf.ct2.account.entity;
+using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.audit.Enum;
+using System.Text;
+using Microsoft.Extensions.Configuration;
+using net.atos.daf.ct2.email;
+using net.atos.daf.ct2.email.Entity;
 
 namespace net.atos.daf.ct2.account
 {
@@ -15,11 +21,17 @@ namespace net.atos.daf.ct2.account
         IAccountRepository repository;
         Identity.IAccountManager identity;
         IAuditTraillib auditlog;
-        public AccountManager(IAccountRepository _repository, IAuditTraillib _auditlog, Identity.IAccountManager _identity)
+        private readonly EmailConfiguration emailConfiguration;
+        private readonly IConfiguration configuration;
+
+        public AccountManager(IAccountRepository _repository, IAuditTraillib _auditlog, Identity.IAccountManager _identity, IConfiguration _configuration)
         {
             repository = _repository;
             auditlog = _auditlog;
             identity = _identity;
+            configuration = _configuration;
+            emailConfiguration = new EmailConfiguration();
+            configuration.GetSection("EmailConfiguration").Bind(emailConfiguration);
         }
         public async Task<Account> Create(Account account)
         {
@@ -195,6 +207,139 @@ namespace net.atos.daf.ct2.account
         public async Task<List<AccountOrgRole>> GetAccountRole(int accountId)
         {
             return await repository.GetAccountRole(accountId);
+        }
+
+        public async Task<Guid?> ResetPasswordInitiate(string emailId)
+        {
+            try
+            {
+                var accountResult = await repository.Get(new AccountFilter() { Email = emailId.ToLower() });
+                var account = accountResult.SingleOrDefault();
+
+                if (account != null)
+                {
+                    //Check if record already exists in ResetPasswordToken table with Issued status
+                    var resetPasswordToken = await repository.GetIssuedResetTokenByAccountId(account.Id);
+                    if (resetPasswordToken != null)
+                    {
+                        //Check for Expiry of Reset Token
+                        if (UTCHandling.GetUTCFromDateTime(DateTime.Now) > resetPasswordToken.ExpiryAt.Value)
+                        {
+                            //Update status to Expired
+                            await repository.Update(resetPasswordToken.Id, ResetTokenStatus.Expired);
+                        }
+
+                        //Update status to Invalidated
+                        await repository.Update(resetPasswordToken.Id, ResetTokenStatus.Invalidated);
+                    }
+
+                    var identityresult = await identity.ResetUserPasswordInitiate();
+                    var tokenSecret = (Guid)identityresult.Result;
+                    if (identityresult.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        //Save Reset Password Token to the database
+                        var objToken = new ResetPasswordToken();
+                        objToken.AccountId = account.Id;
+                        objToken.TokenSecret = tokenSecret;
+                        objToken.Status = ResetTokenStatus.New;
+                        var now = DateTime.Now;
+                        objToken.ExpiryAt = UTCHandling.GetUTCFromDateTime(now.AddMinutes(configuration.GetValue<double>("ResetPasswordTokenExpiryInMinutes")));
+                        objToken.CreatedAt = UTCHandling.GetUTCFromDateTime(now);
+
+                        //Create with status as New
+                        await repository.Create(objToken);
+
+                        //Send email
+                        var messageRequest = new MessageRequest();
+                        messageRequest.Configuration = emailConfiguration;
+                        messageRequest.ToAddressList = new Dictionary<string, string>()
+                        {
+                            { account.EmailId, account.LastName + ", " + account.FirstName }
+                        };
+                        messageRequest.Subject = "Reset Password";
+                        messageRequest.Content = GetEmailTemplate();
+                        messageRequest.ContentMimeType = MimeType.Text;
+
+                        var isSent = await EmailHelper.SendEmail(messageRequest);
+
+                        if (isSent)
+                        {
+                            //Update status to Issued
+                            await repository.Update(objToken.Id, ResetTokenStatus.Issued);
+
+                            return tokenSecret;
+                        }
+                        else
+                            return null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Initiate" + ex.Message, 1, 2, emailId);
+                return null;
+            }
+
+            return Guid.Empty;
+        }
+
+        public async Task<bool> ResetPassword(Account accountInfo)
+        {
+            //Check if token record exists, Fetch it and validate the status
+            var resetPasswordToken = await repository.GetIssuedResetToken(accountInfo.ResetToken.Value);
+            if (resetPasswordToken != null)
+            {
+                //Check for Expiry of Reset Token
+                if (UTCHandling.GetUTCFromDateTime(DateTime.Now) > resetPasswordToken.ExpiryAt.Value)
+                {
+                    //Update status to Expired
+                    await repository.Update(resetPasswordToken.Id, ResetTokenStatus.Expired);
+
+                    return false;
+                }
+                //Fetch Account corrosponding to it
+                var accounts = await repository.Get(new AccountFilter() { Id = resetPasswordToken.AccountId });
+                var account = accounts.SingleOrDefault();
+
+                // create user in identity
+                IdentityEntity.Identity identityEntity = new IdentityEntity.Identity();
+                identityEntity.UserName = account.EmailId;
+                identityEntity.Password = accountInfo.Password;
+                var identityresult = await identity.ChangeUserPassword(identityEntity);
+                if (identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    //Update status to Used
+                    await repository.Update(resetPasswordToken.Id, ResetTokenStatus.Used);
+
+                    return true;
+                }
+            }
+            return false;
+        }
+        public async Task<bool> ResetPasswordInvalidate(Guid ResetToken)
+        {
+            //Check if token record exists
+            var resetPasswordToken = await repository.GetIssuedResetToken(ResetToken);
+
+            if (resetPasswordToken != null)
+            {
+                //Update status to Invalidated
+                await repository.Update(resetPasswordToken.Id, ResetTokenStatus.Invalidated);
+
+                return true;
+            }
+            return false;
+        }
+
+        private string GetEmailTemplate()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("A request has been received to reset the password fro your account.\n\n"); ;
+            sb.Append(emailConfiguration.PortalServiceBaseUrl + "/resetpassword\n\n\n");
+            sb.Append("Ïf you did not initiate this request, please click on the below link.\n\n");
+            sb.Append(emailConfiguration.PortalServiceBaseUrl + "/resetpasswordinvalidate");
+
+            return sb.ToString();
         }
 
     }
