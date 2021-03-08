@@ -24,18 +24,19 @@ namespace net.atos.daf.ct2.role.repository
         {
 
             var RoleQueryStatement = @" INSERT INTO master.role
-                                    (organization_id,name,is_active,created_date,created_by,description,feature_set_id) 
-	                                VALUES (@organization_id,@name,@is_active,@created_date,@created_by,@description,@feature_set_id)
+                                    (organization_id,name,is_active,created_at,created_by,description,feature_set_id,level) 
+	                                VALUES (@organization_id,@name,@is_active,@created_at,@created_by,@description,@feature_set_id,@level)
 	                                RETURNING id";
 
             var Roleparameter = new DynamicParameters();
             Roleparameter.Add("@organization_id", roleMaster.Organization_Id == 0 ?null : roleMaster.Organization_Id);
             Roleparameter.Add("@name", roleMaster.Name);
             Roleparameter.Add("@is_active", true);
-            Roleparameter.Add("@created_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+            Roleparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
             Roleparameter.Add("@created_by", roleMaster.Createdby);
             Roleparameter.Add("@description", roleMaster.Description);
             Roleparameter.Add("@feature_set_id", roleMaster.Feature_set_id);
+            Roleparameter.Add("@level", roleMaster.Level);
 
             int InsertedRoleId = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, Roleparameter);
             // if (roleMaster.FeatureSetID > 0)
@@ -62,8 +63,8 @@ namespace net.atos.daf.ct2.role.repository
         {
              var RoleQueryStatement = @"UPDATE master.role
                                     SET feature_set_id = @feature_set_id
-                                    ,updated_date = @updated_date
-                                    ,updated_by = @updated_by
+                                    ,updated_date = @modified_date
+                                    ,updated_by = @modified_by
                                     WHERE id = @role_id
                                     RETURNING id;";
 
@@ -88,8 +89,8 @@ namespace net.atos.daf.ct2.role.repository
 
             var RoleQueryStatement = @"UPDATE master.role
                                     SET is_active = @is_active
-                                    ,updated_date = @updated_date
-                                    ,updated_by = @updated_by
+                                    ,modified_at = @modified_date
+                                    ,modified_by = @modified_by
                                     WHERE id = @roleid
                                     RETURNING id;";
 
@@ -194,8 +195,8 @@ namespace net.atos.daf.ct2.role.repository
                                             SET name=@name,
                                             description= @Description,
                                              feature_set_id = @feature_set_id,
-                                            updated_by=@updatedby,
-                                            updated_date=@updateddate  
+                                            modified_by=@updatedby,
+                                           modified_at=@updateddate  
                                         WHERE id = @id
                                         RETURNING id;";
             int resultUpdatedRole = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, parameter);
