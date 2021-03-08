@@ -18,8 +18,6 @@ parameters:
   - TEST01
   - TEST02
 
-pool: $(PRIVATEAGENT)
-
 variables:
 - ${{ if eq(parameters.ENV, 'DEV0') }}:
   - group: DEV0-Build-Variables
@@ -31,11 +29,13 @@ variables:
   - group: TEST01-Build-Variables
 - ${{ if eq(parameters.ENV, 'TEST02') }}:
   - group: TEST02-Build-Variables
-  
+
+pool: $(PRIVATEAGENT)
+
 steps:
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.vehicleservice/appsettings.json'
+    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.organizationservicerest/appsettings.json'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -48,32 +48,15 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/businessservices/net.atos.daf.ct2.vehicleservice/appsettings.json
-
-- task: replacetokens@3
-  inputs:
-    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.vehicleservice/log4net.config'
-    encoding: 'auto'
-    writeBOM: true
-    actionOnMissing: 'warn'
-    keepToken: false
-    tokenPrefix: '#{'
-    tokenSuffix: '}#'
-    useLegacyPattern: false
-    enableTelemetry: true
-
-- task: CmdLine@2
-  inputs:
-    script: |
-      cat dotnet/businessservices/net.atos.daf.ct2.vehicleservice/log4net.config
+      cat dotnet/businessservices/net.atos.daf.ct2.organizationservicerest/appsettings.json
 
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
-    dockerFile: dotnet/VehicleService_Dockerfile
-    imageName: vehicleservice-grpc
+    dockerFile: dotnet/OrganizationServiceRest_Dockerfile
+    imageName: organizationservice
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -81,4 +64,5 @@ steps:
     azureSubscription: $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
-    imageName: vehicleservice-grpc
+    imageName: organizationservice
+

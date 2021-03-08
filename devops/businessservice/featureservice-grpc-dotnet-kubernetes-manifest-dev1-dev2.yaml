@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: organizationservice-grpc-deployment
+  name: featureservice-grpc-deployment
   labels:
-    app.kubernetes.io/name: organizationservice-grpc
+    app.kubernetes.io/name: featureservice-grpc
     app.kubernetes.io/type: businessservice
 spec:
   template:
@@ -11,7 +11,7 @@ spec:
       annotations:
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
       labels:
-        app.kubernetes.io/name: organizationservice-grpc
+        app.kubernetes.io/name: featureservice-grpc
         app.kubernetes.io/type: businessservice
     spec:
       automountServiceAccountToken: false
@@ -27,15 +27,15 @@ spec:
               - key: app.kubernetes.io/name
                 operator: In
                 values:
-                - organizationservice-grpc
+                - featureservice-grpc
               - key: app.kubernetes.io/type
                 operator: In
                 values:
                 - businessservice
             topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: organizationservice-grpc-container
-        image: #{acrurl}#/organizationservice-grpc
+      - name: featureservice-grpc-container
+        image: #{acrurl}#/featureservice-grpc
         imagePullPolicy: "Always"
         securityContext:
           allowPrivilegeEscalation: false
@@ -61,15 +61,15 @@ spec:
         agentpool: npuser01         
   selector:
     matchLabels:
-        app.kubernetes.io/name: organizationservice-grpc
+        app.kubernetes.io/name: featureservice-grpc
         app.kubernetes.io/type: businessservice
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: organizationservice
+  name: featureservice
   labels:
-    svc.kubernetes.io/name: organizationservice-grpc
+    svc.kubernetes.io/name: featureservice-grpc
     svc.kubernetes.io/type: businessservice
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
@@ -80,16 +80,16 @@ spec:
     port: 80
     targetPort: 8080
   selector:
-    app.kubernetes.io/name: organizationservice-grpc
+    app.kubernetes.io/name: featureservice-grpc
     app.kubernetes.io/type: businessservice
 
 ---
 kind: HorizontalPodAutoscaler 
 apiVersion: autoscaling/v2beta1 
 metadata: 
-  name: organizationservice-grpc-hpa
+  name: featureservice-grpc-hpa
   labels:
-    hpa.kubernetes.io/name: organizationservice-grpc
+    hpa.kubernetes.io/name: featureservice-grpc
     hpa.kubernetes.io/type: businessservice 
 spec: 
   maxReplicas: 5 
@@ -97,7 +97,7 @@ spec:
   scaleTargetRef: 
     apiVersion: apps/v1 
     kind: Deployment 
-    name: organizationservice-grpc-deployment 
+    name: featureservice-grpc-deployment 
   metrics: 
   - type: Resource 
     resource: 
