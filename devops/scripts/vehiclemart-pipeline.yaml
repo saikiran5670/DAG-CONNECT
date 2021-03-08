@@ -45,6 +45,7 @@ jobs:
       targetPlatform: 'postgresql'
       connectionString: $(VEHICLEDATAMARTMARTCONNECTIONSTRING_PIPELINE)
       workspacePath: $(VEHICLEMARTSCRIPTS)
+      additionalArguments: --force --debug --environment $(ENVIRONMENT)
     
   - task: RunYuniqlCLI@1
     displayName: Run Yuniql
