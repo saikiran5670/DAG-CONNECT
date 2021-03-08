@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.featureservice
                         FeatureRequest ObjResponce = new FeatureRequest();
                         ObjResponce.Id = item.Id;
                         ObjResponce.Name = item.Name;
-                        ObjResponce.Active = item.Is_Active;
+                        ObjResponce.Status = item.Is_Active;
                         ObjResponce.Key = item.Key == null ? "" : item.Key;
                         ObjResponce.Type = item.Type.ToString();
                         features.Features.Add(ObjResponce);
@@ -91,7 +91,7 @@ namespace net.atos.daf.ct2.featureservice
                         FeatureRequest ObjResponce = new FeatureRequest();
                         ObjResponce.Id = item.Id;
                         ObjResponce.Name = item.Name;
-                        ObjResponce.Active = item.Is_Active;
+                        ObjResponce.Status = item.Is_Active;
                         ObjResponce.Key = item.Key == null ? "" : item.Key;
                         ObjResponce.Type = item.Type.ToString();
                         features.Features.Add(ObjResponce);
@@ -112,10 +112,71 @@ namespace net.atos.daf.ct2.featureservice
             }
         }
 
+        //public async override
+        public async override Task<DataAttributeResponceList> GetDataAttributes(DataAtributeRequest Request, ServerCallContext context)
+        {
+            try
+            {
+                var listfeatures = await _FeaturesManager.GetDataAttributes();
+                DataAttributeResponceList Dataresponce = new DataAttributeResponceList();
+                foreach (var item in listfeatures)
+                {
+                    DataAttributeResponce responce = new DataAttributeResponce();
+                    responce.Id = item.ID;
+                    responce.Name = item.Name;
+                    responce.Description = item.Description;
+                    responce.Key = item.Key == null ? "" : item.Key;
+                    Dataresponce.Responce.Add(responce);
+                }
+                Dataresponce.Code = Responcecode.Success;
+                return Dataresponce;
+            }
+            catch (Exception)
+            {
 
-        //public async override Task<FeatureSetResponce> CreateDataattributeSet(FetureSetRequest featureSetRequest, ServerCallContext context)
-        //{
+                throw;
+            }
+        }
+        public async override Task<FeatureResponce> Create(FeatureRequest featureRequest, ServerCallContext context)
+        {
+            try
+            {
+                Feature FeatureObj = new Feature();
+                FeatureObj.Name = featureRequest.Name;
+                FeatureObj.Level = featureRequest.Level;
+                FeatureObj.Is_Active = featureRequest.Status;
+                FeatureObj.Description = featureRequest.Description;
+                FeatureObj.DataAttributeSets = new DataAttributeSet();
+                FeatureObj.DataAttributeSets.Name = featureRequest.DataAttribute.Name;
+                FeatureObj.DataAttributeSets.Description = featureRequest.DataAttribute.Description;
+                //FeatureObj.DataAttributeSets.Is_exlusive = featureRequest.DataAttribute.AttributeType.ToString();
+                FeatureObj.DataAttributeSets.Is_exlusive = (DataAttributeSetType)Enum.Parse(typeof(DataAttributeSetType), featureRequest.DataAttribute.AttributeType.ToString().ToUpper());
+                FeatureObj.DataAttributeSets.DataAttributes = new List<DataAttribute>();
+                foreach (var item in featureRequest.DataAttribute.DataAttributeIDs)
+                {
+                    DataAttribute objDataAttribute = new DataAttribute();
+                    objDataAttribute.ID = item;
+                    FeatureObj.DataAttributeSets.DataAttributes.Add(objDataAttribute);
+                }
+                var result = await _FeaturesManager.CreateDataattributeFeature(FeatureObj);
+                return await Task.FromResult(new FeatureResponce
+                    {
+                    Message = "Feature Created Successfully",
+                    Code = Responcecode.Success
+                });
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(new FeatureResponce
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+            //public async override Task<FeatureSetResponce> CreateDataattributeSet(FetureSetRequest featureSetRequest, ServerCallContext context)
+            //{
 
-        //}
-     }
+            //}
+    }
 }

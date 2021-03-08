@@ -8,5 +8,7 @@ namespace net.atos.daf.ct2.features.entity
         public string  Name { get; set; }
         public bool isActive { get; set; }
         public char Type { get; set; }
+        public string Description { get; set; }
+        public string Key { get; set; }
     }
 }

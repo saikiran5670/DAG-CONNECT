@@ -8,6 +8,7 @@ using Google.Protobuf;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.portalservice.Account;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Feature;
@@ -57,15 +58,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(401, "invalid FeatureSet Description : Feature Description is Empty.");
                 }
                 FeatureSet ObjResponse = new FeatureSet();
-                FeatureSet featureset = new FeatureSet();
+                FetureSetRequest featureset = new FetureSetRequest();
                 featureset.Name = featureSetRequest.Name; // "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds()
-                featureset.description = featureSetRequest.description;
-                featureset.status = featureSetRequest.status;
-                featureset.created_by = featureSetRequest.created_by;
-                featureset.modified_by = featureSetRequest.modified_by;
-                featureset.Features = new List<Features>(featureSetRequest.Features);
+                //featureset. = featureSetRequest.description;
+                featureset.CreatedBy = featureSetRequest.created_by;
+                foreach (var item in featureSetRequest.Features)
+                {
+                    featureset.Features.Add(item.Id);
+                }
 
-                //ObjResponse = await _featureclient.CreateFeatureSet(featureset);
+                var responce = _featureclient.CreateFeatureSet(featureset);
                 featureset.FeatureSetID = ObjResponse.FeatureSetID;
                 _logger.LogInformation("Feature Set created with id." + ObjResponse.FeatureSetID);
 
@@ -80,6 +82,75 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+
+        [HttpPost]
+        [Route("createfeature")]
+        public async Task<IActionResult> CreateFeatureSet(Features featureRequest)
+        {
+            try
+            {
+                _logger.LogInformation("Create method in FeatureSet API called.");
+
+
+                if (string.IsNullOrEmpty(featureRequest.Name))
+                {
+                    return StatusCode(401, "invalid featureSet Name: The featureSet Name is Empty.");
+                }
+                if (string.IsNullOrEmpty(featureRequest.Key))
+                {
+                    return StatusCode(401, "invalid FeatureSet Description : Feature Key is Empty.");
+                }
+                FeatureRequest FeatureObj = new FeatureRequest();
+                FeatureObj.Name = featureRequest.Name;
+                FeatureObj.Level = featureRequest.Level;
+                FeatureObj.Status = featureRequest.Is_Active;
+                FeatureObj.Description = featureRequest.Description;
+                FeatureObj.DataAttribute = new DataAttributeSetRequest();
+                FeatureObj.DataAttribute.Name = featureRequest.DataattributeSet.Name;
+                FeatureObj.DataAttribute.Description = featureRequest.DataattributeSet.Description;
+                //FeatureObj.DataAttributeSets.Is_exlusive = featureRequest.DataAttribute.AttributeType.ToString();
+                //FeatureObj.DataAttribute. = (DataAttributeSetType)Enum.Parse(typeof(DataAttributeSetType), featureRequest.DataAttribute.AttributeType.ToString().ToUpper());
+
+                foreach (var item in featureRequest.DataAttributeIds)
+                {
+                    FeatureObj.DataAttribute.DataAttributeIDs.Add(item);
+                }
+
+                var responce = await _featureclient.CreateAsync(FeatureObj);
+                if (responce.Code == Responcecode.Success)
+                {
+                    return Ok(responce);
+                }
+                else
+                {
+                    return StatusCode(500, "Internal Server Error.");
+                }
+            }
+            catch (Exception)
+            {
+                //throw;
+                return StatusCode(500, "Internal Server Error.");
+            }
+
+        }
+
+        [HttpPost]
+        [Route("GetDataAttribute")]
+        public async Task<IActionResult> GetDataAttributes()
+        {
+            try
+            {
+                DataAtributeRequest request = new DataAtributeRequest();
+                var responce = await _featureclient.GetDataAttributesAsync(request);
+                return Ok(responce);
+            }
+            catch (Exception)
+            {
+
+                //throw;
                 return StatusCode(500, "Internal Server Error.");
             }
         }

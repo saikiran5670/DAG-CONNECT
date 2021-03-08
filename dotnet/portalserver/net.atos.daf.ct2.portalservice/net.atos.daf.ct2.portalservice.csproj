@@ -31,8 +31,8 @@
     <Protobuf Include="Protos\Authentication.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\account.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\package.proto" GrpcServices="Client" />
-	  <Protobuf Include="Protos\feature.proto" GrpcServices="Client" />
 	<Protobuf Include="Protos\vehicle.proto" GrpcServices="Client" />
+	  <Protobuf Include="Protos\feature.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>
