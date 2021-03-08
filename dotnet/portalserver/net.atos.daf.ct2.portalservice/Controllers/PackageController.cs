@@ -31,46 +31,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _packageClient = packageClient;
             _featureclient = featureclient;
             _logger = logger;
-            _packageMapper = new PackageMapper();
+            _packageMapper = new PackageMapper(_featureclient);
 
         }
 
 
 
-        private async Task<int> RetrieveFeatureSetId(List<string> features)
-        {
-            var featureSetId = new List<int>();
-            var featureSetRequest = new FetureSetRequest();
-            var featureFilterRequest = new FeaturesFilterRequest();
-            var featureList = await _featureclient.GetFeaturesAsync(featureFilterRequest);
-            foreach (var item in features)
-            {
-                bool hasFeature = featureList.Features.Any(feature => feature.Name == item);
-                if (hasFeature)
-                {
-                    foreach (var feature in featureList.Features)
-                    {
-                        if (feature.Name == item)
-                        {
-                            featureSetId.Add(feature.Id);
-                        }
-                    }
-                }
-                else
-                {
-                    return 0;
-
-                }
-            }
-
-            featureSetRequest.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds();
-            featureSetId = featureSetId.Select(x => x).Distinct().ToList();
-            featureSetRequest.Features.AddRange(featureSetId);
-
-            var ObjResponse = await _featureclient.CreateFeatureSetAsync(featureSetRequest);
-            return Convert.ToInt32(ObjResponse.Message);
-
-        }
+       
 
         [HttpPost]
         [Route("create")]
@@ -78,7 +45,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                var featureSetId = await RetrieveFeatureSetId(request.Features);
+                var featureSetId = await _packageMapper.RetrieveFeatureSetId(request.Features);
                 if (featureSetId > 0)
                 {
                     var createPackageRequest = _packageMapper.ToCreatePackage(request);
@@ -131,7 +98,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "The packageId and package code are required.");
                 }
 
-                var featureSetId = await RetrieveFeatureSetId(request.Features);
+                var featureSetId = await _packageMapper.RetrieveFeatureSetId(request.Features);
                 if (featureSetId > 0)
                 {
                     var createPackageRequest = _packageMapper.ToCreatePackage(request);
@@ -253,27 +220,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                // Validation                 
-                //if (request.Packages.Count <= 0)
-                //{
-                //    return StatusCode(400, "Package data is required.");
-                //}
-                var packageRequest = new ImportPackageRequest();
-
-
-                packageRequest.Packages.AddRange(request.packages
-                                    .Select(x => new PackageCreateRequest()
-                                    {
-                                        Code = x.Code,
-                                        Description = x.Description,
-                                        Name = x.Name,
-                                        FeatureSetID = x.FeatureSetID,
-                                        Status = x.Status == "A" ? packageservice.PackageStatus.Active : packageservice.PackageStatus.Inactive,
-                                        //Type = (PackageType)x.Type
-                                    }).ToList());
-
-
-
+                //Validation
+                if (request.packages.Count <= 0)
+                {
+                    return StatusCode(400, "Package data is required.");
+                }
+                var packageRequest =_packageMapper.ToImportPackage(request);
                 var packageResponse = await _packageClient.ImportAsync(packageRequest);
 
                 if (packageResponse != null
