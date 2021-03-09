@@ -12,4 +12,4 @@ jobs:
       - group: DEV01-Build-Variables
     pool: $(PRIVATEAGENT)
     steps:
-      - bash: echo $(PRIVATEAGENT)
+      - bash: echo $(SUBSCRIPTION)
