@@ -24,7 +24,7 @@ stages:
        - task: Docker@0
          displayName: 'Build an image'
          inputs:
-            azureSubscription:  $(Subscription)
+            azureSubscription:  'DAF CT AZURE DTA LANDING ZONE DEV1'
             azureContainerRegistry: $(ContainerRegistry)
             dockerFile: dotnet/AccountService_Dockerfile
             imageName: accountservice-grpc-automatic-pipeline
