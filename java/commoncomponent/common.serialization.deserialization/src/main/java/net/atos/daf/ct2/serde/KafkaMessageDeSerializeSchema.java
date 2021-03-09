@@ -13,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 public class KafkaMessageDeSerializeSchema<T>
     implements KafkaDeserializationSchema<KafkaRecord<T>> {
@@ -28,7 +29,11 @@ public class KafkaMessageDeSerializeSchema<T>
   public KafkaRecord deserialize(ConsumerRecord<byte[], byte[]> consumerRecord) throws Exception {
 
     KafkaRecord kafkaRecord = new KafkaRecord();
-    kafkaRecord.setKey(new String(consumerRecord.key()));
+    if(consumerRecord.key() != null)
+    	kafkaRecord.setKey(new String(consumerRecord.key()));
+    else
+    	kafkaRecord.setKey(UUID.randomUUID().toString());
+    
     kafkaRecord.setValue(getObject(consumerRecord.value()));
     kafkaRecord.setTimeStamp(consumerRecord.timestamp());
 
