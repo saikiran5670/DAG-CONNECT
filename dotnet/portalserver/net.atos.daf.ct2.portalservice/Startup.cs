@@ -58,7 +58,26 @@ namespace net.atos.daf.ct2.portalservice
             AppContext.SetSwitch(
                     "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
+            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            //{
+            //    options.SlidingExpiration = true;
+            //    options.ExpireTimeSpan = new TimeSpan(0, 1, 0);
+            //});
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+                {
+                    options.Cookie.Name = "DAFAccount";
+                    options.Cookie.HttpOnly = true;
+                    //options.Cookie.Expiration = TimeSpan.FromMinutes(Convert.ToDouble(cookiesexpireat));
+                    options.Cookie.SecurePolicy = Convert.ToBoolean(isdevelopmentenv) ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
+                    options.Cookie.SameSite = SameSiteMode.Strict;
+                    options.SlidingExpiration = true;
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(Convert.ToDouble(authcookiesexpireat));
+                });
+
             services.AddControllers();
+
             services.AddGrpcClient<AccountService.AccountServiceClient>(o =>
             {
                 o.Address = new Uri(accountservice);
@@ -105,20 +124,11 @@ namespace net.atos.daf.ct2.portalservice
                 //This need to be change to orgin specific on UAT and prod
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
             });
-            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            //.AddCookie(options =>
-            //{
-            //    options.Cookie.HttpOnly = true;
-            //    //options.Cookie.ExpireTimeSpan = TimeSpan.FromMinutes(Convert.ToDouble(cookiesexpireat));
-            //    options.Cookie.SecurePolicy = Convert.ToBoolean(isdevelopmentenv) ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
-            //    options.Cookie.SameSite = SameSiteMode.Lax;
-            //    options.SlidingExpiration = true;
-            //    options.ExpireTimeSpan = TimeSpan.FromMinutes(Convert.ToDouble(authcookiesexpireat));
-            //});
+           
             //services.Configure<MvcOptions>(options =>
             //{
-                //options.Filters.Add(new RequireHttpsAttribute { Permanent = true });
-                //options.Filters.Add(new AuthorizeFilter());
+            //    options.Filters.Add(new RequireHttpsAttribute { Permanent = true });
+            //    options.Filters.Add(new AuthorizeFilter());
             //});
         }
 
@@ -129,6 +139,26 @@ namespace net.atos.daf.ct2.portalservice
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.Use(async (context, next) =>
+            {
+                //context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+                //context.Response.Headers["Expires"] = "-1";
+                //context.Response.Headers["Pragma"] = "no-cache";
+
+                context.Response.Headers.Remove("X-Powered-By");
+                context.Response.Headers.Remove("Server");
+                context.Response.Headers.Remove("X-AspNet-Version");
+                context.Response.Headers.Remove("X-AspNetMvc-Version");
+                //context.Response.Headers.Add("X-Frame-Options", "DENY"); 
+                //context.Response.Headers.Add("X-Xss-Protection", "1");
+                //context.Response.Headers.Add("Content-Security-Policy", "script-src 'self' 'unsafe-eval' 'unsafe-inline'; navigate-to https://www.daf.com; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'");
+                //context.Response.Headers.Add("Strict-Transport-Security", "31536000");
+                //context.Response.Headers.Add("Access-Control-Allow-Origin", "value");
+                context.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+                //context.Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+                await next();
+            });
 
             app.UseHttpsRedirection();
 

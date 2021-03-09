@@ -50,7 +50,7 @@ namespace net.atos.daf.ct2.accountservice
                 AccountComponent.entity.AccountIdentity accIdentity = accountIdentityManager.Login(account).Result;
                 if (accIdentity != null && accIdentity.Authenticated)
                 {
-                    accIdentity.Authenticated = accIdentity.Authenticated;
+                    response.Authenticated = accIdentity.Authenticated;
                     if (accIdentity.accountInfo != null)
                     {
                         response.AccountInfo =_mapper.ToAccount(accIdentity.accountInfo);
