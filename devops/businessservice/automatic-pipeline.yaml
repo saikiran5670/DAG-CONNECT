@@ -44,7 +44,7 @@ jobs:
       - task: CmdLine@2
         inputs:
           script: |
-            echo ${{ variables.a }}
+            echo $(a)
       - task: Docker@0
         displayName: 'Build an image'
         inputs:
