@@ -27,6 +27,36 @@ jobs:
         inputs:
           script: |
             cat dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json
+      - task: replacetokens@3
+        inputs:
+          targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config'
+          encoding: 'auto'
+          writeBOM: true
+          actionOnMissing: 'warn'
+          keepToken: false
+          tokenPrefix: '#{'
+          tokenSuffix: '}#'
+          useLegacyPattern: false
+          enableTelemetry: true
+      - task: CmdLine@2
+        inputs:
+          script: |
+            cat dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config
+      - task: Docker@0
+        displayName: 'Build an image'
+        inputs:
+          azureSubscription:  $(Subscription)
+          azureContainerRegistry: $(ContainerRegistry)
+          dockerFile: dotnet/AccountService_Dockerfile
+          imageName: accountservice-grpc-automatic
+      - task: Docker@0
+        displayName: 'Push an image'
+        inputs:
+          azureSubscription: $(Subscription)
+          azureContainerRegistry: $(ContainerRegistry)
+          action: 'Push an image'
+          imageName: accountservice-grpc-automatic
+
     
   - job:
     variables:
@@ -48,3 +78,33 @@ jobs:
         inputs:
           script: |
             cat dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json
+      
+      - task: replacetokens@3
+        inputs:
+          targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config'
+          encoding: 'auto'
+          writeBOM: true
+          actionOnMissing: 'warn'
+          keepToken: false
+          tokenPrefix: '#{'
+          tokenSuffix: '}#'
+          useLegacyPattern: false
+          enableTelemetry: true
+      - task: CmdLine@2
+        inputs:
+          script: |
+            cat dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config
+      - task: Docker@0
+        displayName: 'Build an image'
+        inputs:
+          azureSubscription:  $(Subscription)
+          azureContainerRegistry: $(ContainerRegistry)
+          dockerFile: dotnet/AccountService_Dockerfile
+          imageName: accountservice-grpc-automatic
+      - task: Docker@0
+        displayName: 'Push an image'
+        inputs:
+          azureSubscription: $(Subscription)
+          azureContainerRegistry: $(ContainerRegistry)
+          action: 'Push an image'
+          imageName: accountservice-grpc-automatic
