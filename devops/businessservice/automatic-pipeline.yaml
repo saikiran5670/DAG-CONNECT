@@ -9,7 +9,7 @@ trigger:
 jobs:
   - job:
     variables:
-      - group: DEV0-Build-Variables
+      - group: DEV01-Build-Variables
       - name: a
         value: ${{ variables.ContainerRegistry }}
     pool: $(PRIVATEAGENT)
@@ -57,7 +57,7 @@ jobs:
         displayName: 'Push an image'
         inputs:
           azureSubscription: ${{ variables.Subscription }}
-          azureContainerRegistry: '{"loginServer":"dafdev017756.azurecr.io", "id" : "/subscriptions/f0b7c74e-ef18-46e8-ae31-7abbd0e5fd8f/resourceGroups/DAFCT_DEV0_DTA_K8S/providers/Microsoft.ContainerRegistry/registries/dafdev017756"}'
+          azureContainerRegistry: ${{ variables.ContainerRegistry }}
           action: 'Push an image'
           imageName: accountservice-grpc-automatic
 
