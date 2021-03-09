@@ -11,7 +11,7 @@ jobs:
     variables:
       - group: DEV0-Build-Variables
       - name: a
-        value: $(Subscription)
+        value: ${{ variables.Subscription }}
     pool: $(PRIVATEAGENT)
     steps:
       - task: replacetokens@3
