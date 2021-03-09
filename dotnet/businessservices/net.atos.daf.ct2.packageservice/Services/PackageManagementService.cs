@@ -159,7 +159,7 @@ namespace net.atos.daf.ct2.packageservice
                     Type = (package.ENUM.PackageType)x.Type
                 }).ToList());
                 
-                var packageImported = _packageManager.Import(packages).Result;
+                var packageImported =await _packageManager.Import(packages);
                 response.PackageList.AddRange(packageImported
                                      .Select(x=>new GetPackageRequest() {
                                          Id = x.Id,

@@ -8,9 +8,10 @@ namespace net.atos.daf.ct2.package.ENUM
         //Vehicle = 'V',
         //Organization = 'O',
         //ReadWrite = 'W'
-         Vehicle = 0,
-        Organization = 1,
-        ReadWrite = 2
+        None = 0,
+        Vehicle = 1,
+        Organization = 2,
+        ReadWrite = 3
 
     }
 }
