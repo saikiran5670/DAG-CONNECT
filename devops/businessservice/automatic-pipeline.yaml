@@ -45,4 +45,19 @@ jobs:
         inputs:
           script: |
             echo $(a)
-      
+      - task: Docker@0
+        displayName: 'Build an image'
+        inputs:
+          azureSubscription:  $(a)
+          azureContainerRegistry: $(ContainerRegistry)
+          dockerFile: dotnet/AccountService_Dockerfile
+          imageName: accountservice-grpc-automatic
+
+      - task: Docker@0
+        displayName: 'Push an image'
+        inputs:
+          azureSubscription: $(a)
+          azureContainerRegistry: $(ContainerRegistry)
+          action: 'Push an image'
+          imageName: accountservice-grpc-automatic
+
