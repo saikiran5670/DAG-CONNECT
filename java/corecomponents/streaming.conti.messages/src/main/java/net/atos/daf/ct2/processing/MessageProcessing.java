@@ -1,12 +1,8 @@
 package net.atos.daf.ct2.processing;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import net.atos.daf.ct2.constant.DAFCT2Constant;
-import net.atos.daf.ct2.pojo.KafkaRecord;
-import net.atos.daf.ct2.pojo.Message;
-import net.atos.daf.ct2.serde.KafkaMessageSerializeSchema;
-import net.atos.daf.ct2.utils.JsonMapper;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.state.MapStateDescriptor;
@@ -16,8 +12,14 @@ import org.apache.flink.streaming.api.functions.co.BroadcastProcessFunction;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.flink.util.Collector;
 
-import java.util.Map;
-import java.util.Properties;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import net.atos.daf.ct2.constant.DAFCT2Constant;
+import net.atos.daf.ct2.pojo.KafkaRecord;
+import net.atos.daf.ct2.pojo.Message;
+import net.atos.daf.ct2.serde.KafkaMessageSerializeSchema;
+import net.atos.daf.ct2.utils.JsonMapper;
 
 public class MessageProcessing<U, T> {
 
@@ -68,7 +70,7 @@ public class MessageProcessing<U, T> {
                         .get("VID")
                         .asText();
                 System.out.println("Record VID: " + valueRecord);
-
+				 
                 for (Map.Entry<Message<U>, KafkaRecord<U>> map :
                     ctx.getBroadcastState(broadcastStateDescriptor).immutableEntries()) {
                   String key = map.getKey().get().toString();
@@ -79,10 +81,10 @@ public class MessageProcessing<U, T> {
 
                     String values = map.getValue().getValue().toString();
                     System.out.println("Broadcats Values: " + values);
-                    JsonNode jsonNode =
-                        JsonMapper.configuring().readTree(value.getValue().toString());
+                    JsonNode jsonNode = 
+					    JsonMapper.configuring().readTree(value.getValue().toString());
                     ((ObjectNode) jsonNode).put("VIN", values);
-
+                   
                     KafkaRecord<U> kafkaRecord = new KafkaRecord<U>();
                     kafkaRecord.setKey(key);
                     kafkaRecord.setValue((U) JsonMapper.configuring().writeValueAsString(jsonNode));
@@ -93,7 +95,7 @@ public class MessageProcessing<U, T> {
                   }
                 }
                 if (!flag) out.collect(value);
-              }
+             }
 
               @Override
               public void processBroadcastElement(
@@ -110,6 +112,7 @@ public class MessageProcessing<U, T> {
               public KafkaRecord<T> map(KafkaRecord<U> value) throws Exception {
 
                 System.out.println("Class:" + tClass);
+                System.out.println("value.getValue() :: "+value.getValue());
                 T record = JsonMapper.configuring().readValue((String) value.getValue(), tClass);
 
                 KafkaRecord<T> kafkaRecord = new KafkaRecord<T>();
@@ -129,4 +132,5 @@ public class MessageProcessing<U, T> {
     // singleOutputStreamOperator.print();
 
   }
+  	  
 }
