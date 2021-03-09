@@ -89,7 +89,7 @@ namespace net.atos.daf.ct2.role.repository
 
             var RoleQueryStatement = @"UPDATE master.role
                                     SET is_active = @is_active
-                                    ,modified_at = @modified_date
+                                    ,modified_at = @modified_at
                                     ,modified_by = @modified_by
                                     WHERE id = @roleid
                                     RETURNING id;";
