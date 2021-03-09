@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.roleservice
                 RoleMaster ObjRole = new RoleMaster();
                 ObjRole.Organization_Id =request.OrganizationId;
                 ObjRole.Name = request.RoleName;
-                ObjRole.Createdby = request.CreatedBy;
+                ObjRole.Created_by = request.CreatedBy;
                 ObjRole.Description = request.Description;
                 ObjRole.Feature_set_id=0;
                 ObjRole.Level = request.Level;
@@ -157,7 +157,8 @@ namespace net.atos.daf.ct2.roleservice
                     ObjResponce.RoleID=item.Id;
                     ObjResponce.OrganizationId =item.Organization_Id == null ? 0 : item.Organization_Id.Value;
                     ObjResponce.RoleName = item.Name;
-                    ObjResponce.CreatedBy = item.Createdby;
+                    ObjResponce.CreatedBy = item.Created_by;
+                    ObjResponce.CreatedAt = item.Created_at;
                     //ObjResponce.= item.Is_Active;
                     ObjResponce.Description = item.Description == null ? "" : item.Description;
                     //ObjResponce.Roletype= item.Organization_Id == null ? RoleTypes.Global : RoleTypes.Regular;

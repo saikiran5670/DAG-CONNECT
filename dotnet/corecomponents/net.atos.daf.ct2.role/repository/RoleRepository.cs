@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.role.repository
             Roleparameter.Add("@name", roleMaster.Name);
             Roleparameter.Add("@is_active", true);
             Roleparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-            Roleparameter.Add("@created_by", roleMaster.Createdby);
+            Roleparameter.Add("@created_by", roleMaster.Created_by);
             Roleparameter.Add("@description", roleMaster.Description);
             Roleparameter.Add("@feature_set_id", roleMaster.Feature_set_id);
             Roleparameter.Add("@level", roleMaster.Level);
