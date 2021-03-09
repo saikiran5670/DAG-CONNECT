@@ -11,7 +11,7 @@ jobs:
     variables:
       - group: DEV01-Build-Variables
       - name: a
-        value: ${{ variables.ContainerRegistry }}
+        value: '{"loginServer":"acrakspzfu3h3wyefhu.azurecr.io", "id" : "/subscriptions/6bd8b39f-86c3-4026-985a-34db67361301/resourceGroups/daf-lan1-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acrakspzfu3h3wyefhu"}'
     pool: $(PRIVATEAGENT)
     steps:
       - task: replacetokens@3
