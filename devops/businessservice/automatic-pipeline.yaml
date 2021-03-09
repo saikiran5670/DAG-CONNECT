@@ -29,8 +29,6 @@ jobs:
         inputs:
           script: |
             cat dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json
-            echo $(a)
-            echo $(Subscription)
       
       - task: replacetokens@3
         inputs:
@@ -47,3 +45,17 @@ jobs:
         inputs:
           script: |
             cat dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config
+      - task: Docker@0
+        displayName: 'Build an image'
+        inputs:
+          azureSubscription:  $[variables.Subscription]
+          azureContainerRegistry: $(ContainerRegistry)
+          dockerFile: dotnet/AccountService_Dockerfile
+          imageName: accountservice-grpc-automatic
+      - task: Docker@0
+        displayName: 'Push an image'
+        inputs:
+          azureSubscription: $[variables.Subscription]
+          azureContainerRegistry: $(ContainerRegistry)
+          action: 'Push an image'
+          imageName: accountservice-grpc-automatic
