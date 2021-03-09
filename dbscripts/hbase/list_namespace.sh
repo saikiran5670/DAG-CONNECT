@@ -1,3 +1,3 @@
 #!/bin/bash
 
-echo "list_namespaceewew" | hbase shell -n
+echo "list_namespace" | hbase shell -n
