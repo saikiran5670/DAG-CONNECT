@@ -248,6 +248,7 @@ export class UserGroupManagementComponent implements OnInit {
   }
 
   onUpdateDataSource(updatedData: any) {
+    this.getNewTagData(updatedData);
     this.dataSource = new MatTableDataSource(updatedData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
@@ -358,6 +359,25 @@ export class UserGroupManagementComponent implements OnInit {
   hideloader() {
     // Setting display of spinner
     this.showLoadingIndicator = false;
+  }
+
+  getNewTagData(data: any){
+    let currentDate = new Date().getTime();
+    data.forEach(row => {
+      let createdDate = new Date(row.createdAt).getTime(); 
+      let nextDate = createdDate + 86400000;
+
+      if(currentDate > createdDate && currentDate < nextDate){
+        row.newTag = true;
+      }
+      else{
+        row.newTag = false;
+      }
+    });
+    let newTrueData = data.filter(item => item.newTag == true);
+    let newFalseData = data.filter(item => item.newTag == false);
+    Array.prototype.push.apply(newTrueData,newFalseData); 
+    return newTrueData;
   }
 
 }

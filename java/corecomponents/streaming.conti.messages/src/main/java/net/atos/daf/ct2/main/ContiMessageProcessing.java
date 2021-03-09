@@ -146,7 +146,7 @@ public class ContiMessageProcessing {
     DataStream<Tuple2<Integer, KafkaRecord<String>>> contiStreamValiditySts = validateSourceStream
 			.isValidJSON(contiInputStream);
 	DataStream<KafkaRecord<String>> contiValidInputStream = validateSourceStream
-			.getValidContiMessages(contiStreamValiditySts);
+			.getValidSourceMessages(contiStreamValiditySts);
 
 	new EgressCorruptMessages().egressCorruptMessages(contiStreamValiditySts, properties,
 			properties.getProperty(DAFCT2Constant.CONTI_CORRUPT_MESSAGE_TOPIC_NAME));

@@ -50,6 +50,13 @@ jobs:
         goals: clean install
 
     - task: Maven@3
+      displayName: 'Maven java/commoncomponent/kafka.common/pom.xml'
+      inputs:
+        mavenPomFile: java/commoncomponent/kafka.common/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Maven@3
       displayName: 'Maven java/corecomponents/streaming.masterdata.messages/pom.xml'
       inputs:
         mavenPomFile: java/corecomponents/streaming.masterdata.messages/pom.xml
@@ -63,6 +70,13 @@ jobs:
         publishJUnitResults: false
         goals: clean install
 
+    - task: Maven@3
+      displayName: 'Maven java/corecomponents/streaming.bosch.messages/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/streaming.bosch.messages/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+  
     - task: Maven@3
       displayName: 'Maven java/corecomponents/sinking.externally.messages/pom.xml'
       inputs:

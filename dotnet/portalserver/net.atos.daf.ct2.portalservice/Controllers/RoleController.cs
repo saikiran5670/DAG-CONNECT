@@ -190,6 +190,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     Robj.Description = roleitem.Description;
                     Robj.OrganizationId = roleitem.OrganizationId;
                     Robj.Level = roleitem.Level;
+                    Robj.Createdat = roleitem.CreatedAt;
                     Robj.FeatureIds = roleitem.FeatureIds.ToArray();
                     roleList.Add(Robj);
                 }

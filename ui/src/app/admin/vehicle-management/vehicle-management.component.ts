@@ -445,6 +445,7 @@ export class VehicleManagementComponent implements OnInit {
 
   updateDataSource(data: any) {
     setTimeout(() => {
+      this.getNewTagData(data); 
       this.dataSource = new MatTableDataSource(data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -587,6 +588,25 @@ export class VehicleManagementComponent implements OnInit {
       });
 
     //}
+  }
+
+  getNewTagData(data: any){
+    let currentDate = new Date().getTime();
+    data.forEach(row => {
+      let createdDate = new Date(row.createdAt).getTime(); //  need to check API response.
+      let nextDate = createdDate + 86400000;
+
+      if(currentDate > createdDate && currentDate < nextDate){
+        row.newTag = true;
+      }
+      else{
+        row.newTag = false;
+      }
+    });
+    let newTrueData = data.filter(item => item.newTag == true);
+    let newFalseData = data.filter(item => item.newTag == false);
+    Array.prototype.push.apply(newTrueData,newFalseData); 
+    return newTrueData;
   }
 
 }
