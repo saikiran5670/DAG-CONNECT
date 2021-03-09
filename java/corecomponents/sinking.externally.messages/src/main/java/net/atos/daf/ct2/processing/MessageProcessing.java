@@ -75,42 +75,31 @@ public class MessageProcessing<T> {
   }
   
   public void consumeStsMessages(
-	      DataStream<KafkaRecord<Status>> messageDataStream, String key, Properties properties) {
+			DataStream<KafkaRecord<Status>> messageDataStream, String key, Properties properties) {
 
-	    messageDataStream
-	        .map(
-	            new MapFunction<KafkaRecord<Status>, KafkaRecord<String>>() {
-	              /**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
+		messageDataStream.map(new MapFunction<KafkaRecord<Status>, KafkaRecord<String>>() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
-				@Override
-	              public KafkaRecord<String> map(KafkaRecord<Status> value) throws Exception {
+			@Override
+			public KafkaRecord<String> map(KafkaRecord<Status> value) throws Exception {
 
-	                String jsonMessage = null;
-	                KafkaRecord<String> kafkaRecord = new KafkaRecord<String>();
-	                
-	                
-	                  Status statusMsg =  value.getValue();
+				String jsonMessage = null;
+				KafkaRecord<String> kafkaRecord = new KafkaRecord<String>();
+				Status statusMsg = value.getValue();
+				jsonMessage = statusMsg.toString();
+				kafkaRecord.setKey(UUID.randomUUID().toString());
+				kafkaRecord.setValue(jsonMessage);
 
-	                  jsonMessage = statusMsg.toString();
-	                  
-
-	                kafkaRecord.setKey(UUID.randomUUID().toString());
-	                kafkaRecord.setValue(jsonMessage);
-	                System.out.println("Sunitha jsonMessage: " + jsonMessage);
-	                
-	                System.out.println("Message: " + kafkaRecord);
-	                return kafkaRecord;
-	              }
-	            })
-	        .addSink(
-	            new FlinkKafkaProducer<KafkaRecord<String>>(
-	                properties.getProperty(DAFCT2Constant.SINK_JSON_STRING_TOPIC_NAME),
-	                new KafkaMessageSerializeSchema<String>(
-	                    properties.getProperty(DAFCT2Constant.SINK_JSON_STRING_TOPIC_NAME)),
-	                properties,
-	                FlinkKafkaProducer.Semantic.EXACTLY_ONCE));
-  }
+				System.out.println("Message: " + kafkaRecord);
+				return kafkaRecord;
+			}
+		}).addSink(new FlinkKafkaProducer<KafkaRecord<String>>(
+				properties.getProperty(DAFCT2Constant.SINK_JSON_STRING_TOPIC_NAME),
+				new KafkaMessageSerializeSchema<String>(
+						properties.getProperty(DAFCT2Constant.SINK_JSON_STRING_TOPIC_NAME)),
+				properties, FlinkKafkaProducer.Semantic.EXACTLY_ONCE));
+	}
 }
