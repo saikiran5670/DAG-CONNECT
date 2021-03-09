@@ -10,6 +10,8 @@ jobs:
   - job:
     variables:
       - group: DEV0-Build-Variables
+      - name: a
+        value: $[variables.Subscription]
     pool: $(PRIVATEAGENT)
     steps:
       - task: replacetokens@3
@@ -46,14 +48,14 @@ jobs:
       - task: Docker@0
         displayName: 'Build an image'
         inputs:
-          azureSubscription:  $(Subscription)
+          azureSubscription:  $(a)
           azureContainerRegistry: $(ContainerRegistry)
           dockerFile: dotnet/AccountService_Dockerfile
           imageName: accountservice-grpc-automatic
       - task: Docker@0
         displayName: 'Push an image'
         inputs:
-          azureSubscription: $(Subscription)
+          azureSubscription: $(a)
           azureContainerRegistry: $(ContainerRegistry)
           action: 'Push an image'
           imageName: accountservice-grpc-automatic
