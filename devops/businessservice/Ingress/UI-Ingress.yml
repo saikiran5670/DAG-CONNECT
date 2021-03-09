@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+    kubernetes.io/ingress.class: traefik-internal
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+  name: ui-ingress
+spec:
+  rules:
+  - host: #{PortalIngressURL}#
+    http:
+      paths:
+      - backend:
+          serviceName: uimanagement-service
+          servicePort: 80
+        path: /  
+  tls:
+  - hosts:
+    - #{PortalIngressURL}#
