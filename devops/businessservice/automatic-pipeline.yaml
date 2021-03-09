@@ -44,7 +44,7 @@ jobs:
       - task: CmdLine@2
         inputs:
           script: |
-            echo $(ContainerRegistry)
+            echo $(a)
       - task: Docker@0
         displayName: 'Build an image'
         inputs:
@@ -57,7 +57,7 @@ jobs:
         displayName: 'Push an image'
         inputs:
           azureSubscription: ${{ variables.Subscription }}
-          azureContainerRegistry: ${{ variables.a }}
+          azureContainerRegistry: $(a)
           action: 'Push an image'
           imageName: accountservice-grpc-automatic
 
