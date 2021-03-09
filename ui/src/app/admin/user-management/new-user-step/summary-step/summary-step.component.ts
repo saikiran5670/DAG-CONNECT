@@ -11,15 +11,15 @@ import { MatSort } from '@angular/material/sort';
 export class SummaryStepComponent implements OnInit {
   @Input() translationData: any;
   @Input() defaultSetting: any;
-  @Input() set selectedRoleData(value) {
+  @Input() set selectedRoleData(value: any) {
     this.confirmRoleData = value;
     this.loadRoleData();
   }
-  @Input() set selectedUserGrpData(value) {
+  @Input() set selectedUserGrpData(value: any) {
     this.confirmUserGrpData = value;
     this.loadUserGrpData();
   }
-  @Input() set accountInfoData(value){
+  @Input() set accountInfoData(value: any){
     this.confirmAccountInfoData = this.getDefaultSetting(value);
   }
   @Input() isCreateFlag: boolean = true;
