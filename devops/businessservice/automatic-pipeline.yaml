@@ -8,6 +8,8 @@ trigger:
 
 jobs:
   - job:
+    variables:
+      - group: DEV01-Build-Variables
     pool: $(PRIVATEAGENT)
     steps:
       - bash: echo $(PRIVATEAGENT)
