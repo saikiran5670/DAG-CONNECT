@@ -1,3 +1,3 @@
 #!/bin/bash
 
-echo "list_namespace" | hbase shell -n
+echo "list_namespace544" | hbase shell -n
