@@ -125,38 +125,15 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                     user.UserName=arrUsernamePassword[0];
                     user.Password=arrUsernamePassword[1];
                     AuthToken authToken= new AuthToken();
-                    AccountEntity.AccountIdentity response = await accountIdentityManager.Login(user);
+                    IdentityEntity.AccountToken response = await accountIdentityManager.GenerateToken(user);
                     if(response!=null)
                     {
-                        //if(response.AccountToken!=null)
-                        //{
-                        //    authToken.access_token=response.AccountToken.AccessToken;
-                        //    authToken.expires_in=response.AccountToken.ExpiresIn;
-                        //    authToken.token_type=response.AccountToken.TokenType;
-                        //    authToken.session_state=response.AccountToken.SessionState;
-                        //    authToken.scope=response.AccountToken.Scope;
-                        //    authToken.user_name=user.UserName;
-                        //}
-                        //else 
-                        //{
-                        //    return StatusCode(401,"Account is not configured.");
-                        //}
-                        //if(response.AccountPreference!=null)
-                        //{
-                        //    authToken.locale=response.AccountPreference.LanguageId.ToString();
-                        //    authToken.timezone=response.AccountPreference.TimezoneId.ToString();
-                        //    authToken.unit=response.AccountPreference.UnitId.ToString();
-                        //    authToken.currency=response.AccountPreference.CurrencyId.ToString();
-                        //    authToken.date_format=response.AccountPreference.DateFormatTypeId.ToString();
-                        //}
-                        //else 
-                        //{
-                        //    authToken.locale=string.Empty;
-                        //    authToken.timezone=string.Empty;
-                        //    authToken.unit=string.Empty;
-                        //    authToken.currency=string.Empty;
-                        //    authToken.date_format=string.Empty;
-                        //}
+                        authToken.access_token = response.AccessToken;
+                        authToken.expires_in = response.ExpiresIn;
+                        authToken.token_type = response.TokenType;
+                        authToken.session_state = response.SessionState;
+                        authToken.scope = response.Scope;
+                        authToken.user_name = user.UserName;
                         return Ok(authToken);
                     }
                     else 

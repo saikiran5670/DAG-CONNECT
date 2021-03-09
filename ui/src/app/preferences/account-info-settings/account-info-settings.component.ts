@@ -55,6 +55,8 @@ export class AccountInfoSettingsComponent implements OnInit {
   accountId: any;
   blobId: number= 0;
   organizationId: any;
+  imageError= '';
+  profilePicture: any= '';
   salutationList: any = [
     {
       name: 'Mr'
@@ -131,7 +133,8 @@ export class AccountInfoSettingsComponent implements OnInit {
       if(this.blobId != 0){
         this.accountService.getAccountPicture(this.blobId).subscribe(data => {
           if(data){
-            this.croppedImage = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
+            this.profilePicture = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
+            this.croppedImage = this.profilePicture;
           }
         })
       }
@@ -140,9 +143,9 @@ export class AccountInfoSettingsComponent implements OnInit {
 
   loadGeneralSettingData(){
     let languageCode= this.localStLanguage.code;
-    let preferenceId= this.accountInfo[0]["preferenceId"];
+    let preferenceId= this.accountInfo[0]["preferenceId"]; //tempoarrily commented
     this.accountService.getAccountPreference(preferenceId).subscribe(resp => {
-      this.accountPreferenceData = resp[0];
+      this.accountPreferenceData = resp;
       this.translationService.getPreferences(languageCode).subscribe((data) => {
         let dropDownData = data;
         this.languageDropdownData = dropDownData.language;
@@ -241,6 +244,11 @@ export class AccountInfoSettingsComponent implements OnInit {
   onEditAccountSettingsCancel(){
     this.editAccountSettingsFlag = false;
     this.isSelectPictureConfirm = true;
+    if(this.blobId!= 0){
+      this.isSelectPictureConfirm = true
+      this.changePictureFlag = true;
+      this.croppedImage= this.profilePicture;
+    }
   }
 
   onResetAccountSettings(){
@@ -306,7 +314,6 @@ export class AccountInfoSettingsComponent implements OnInit {
     this.changePictureFlag = false;
     this.isAccountPictureSelected = false;
     this.imageChangedEvent = '';
-    this.croppedImage = '';
   }
 
   onSelectPictureConfirm(){
@@ -322,7 +329,6 @@ export class AccountInfoSettingsComponent implements OnInit {
 
     this.accountService.saveAccountPicture(objData).subscribe(data => {
       if(data){
-        //alert("Profile pic saved successfully")
         let msg = '';
         if(this.translationData.lblAccountPictureSuccessfullyUpdated)
           msg= this.translationData.lblAccountPictureSuccessfullyUpdated;
@@ -334,9 +340,12 @@ export class AccountInfoSettingsComponent implements OnInit {
     })
   }
   
-  fileChangeEvent(event: any): void {
-      this.isAccountPictureSelected = true;
-      this.imageChangedEvent = event;
+  fileChangeEvent(event: any): boolean {
+    this.imageError= '';
+    if(!this.validateImageFile(event.target.files[0]))
+      return false;
+    this.isAccountPictureSelected = true;
+    this.imageChangedEvent = event;
   }
 
   imageCropped(event: ImageCroppedEvent) {
@@ -355,7 +364,10 @@ export class AccountInfoSettingsComponent implements OnInit {
       // show message
   }
 
-  filesDroppedMethod(event : any): void {
+  filesDroppedMethod(event : any): boolean {
+    this.imageError= '';
+    if(!this.validateImageFile(event))
+      return false;
     this.isAccountPictureSelected = true;
     this.readImageFile(event);
   }
@@ -366,6 +378,22 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.droppedImage = e.target.result;
     };
     reader.readAsDataURL(file);
+  }
+
+  validateImageFile(inputFile): boolean{
+    const max_size = 1024*1024;
+    if (inputFile.size > max_size) {
+      this.imageError =
+          'Maximum size allowed is ' + max_size / (1024*1024) + 'Mb';
+
+      return false;
+    }
+
+    if (!(inputFile.type).includes("image")) {
+        this.imageError = 'Only Images are allowed';
+        return false;
+    }
+    return true;
   }
 
   getEditMsg(editText){
