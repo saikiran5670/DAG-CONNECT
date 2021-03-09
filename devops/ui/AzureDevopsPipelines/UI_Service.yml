@@ -1,7 +1,6 @@
 trigger:
 - none
 
-pool: dafct-dta-privateagent
 
 parameters:
 - name: ENV
@@ -15,6 +14,8 @@ parameters:
   - TEST01
   - TEST02
   - ACC03
+
+pool: $(PRIVATEAGENT)
 
 variables:
 - ${{ if eq(parameters.ENV, 'DEV0') }}:
