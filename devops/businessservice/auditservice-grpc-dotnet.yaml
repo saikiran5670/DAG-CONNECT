@@ -82,7 +82,7 @@ steps:
     azureContainerRegistry: $(ContainerRegistry)
     dockerFile: dotnet/AuditServiceRest_Dockerfile
     imageName: auditservice
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01')
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01','TEST02','ACC03')
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -91,7 +91,7 @@ steps:
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
     imageName: auditservice
-  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01')
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01','TEST02','ACC03')
 
 - task: CmdLine@2
   inputs:
