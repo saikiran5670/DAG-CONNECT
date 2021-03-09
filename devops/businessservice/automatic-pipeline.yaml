@@ -44,7 +44,7 @@ jobs:
       - task: CmdLine@2
         inputs:
           script: |
-            cat dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config
+            echo $[variables.Subscription]
       - task: Docker@0
         displayName: 'Build an image'
         inputs:
