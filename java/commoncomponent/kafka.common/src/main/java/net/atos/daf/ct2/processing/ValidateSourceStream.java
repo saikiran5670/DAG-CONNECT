@@ -54,7 +54,7 @@ public class ValidateSourceStream implements Serializable {
 		}.getTypeInfo());
 	}
 
-	public DataStream<KafkaRecord<String>> getValidContiMessages(
+	public DataStream<KafkaRecord<String>> getValidSourceMessages(
 			DataStream<Tuple2<Integer, KafkaRecord<String>>> streamWithValidSts) {
 
 		return streamWithValidSts.filter(new FilterFunction<Tuple2<Integer, KafkaRecord<String>>>() {
