@@ -57,7 +57,7 @@ jobs:
         displayName: 'Push an image'
         inputs:
           azureSubscription: ${{ variables.Subscription }}
-          azureContainerRegistry: ${{ variables.ContainerRegistry }}
+          azureContainerRegistry: ${{ variables.a }}
           action: 'Push an image'
           imageName: accountservice-grpc-automatic
 
