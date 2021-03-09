@@ -30,7 +30,7 @@ jobs:
     
   - job:
     variables:
-      - group: DEV02-Build-Variables
+      - group: DEV0-Build-Variables
     pool: $(PRIVATEAGENT)
     steps:
       - task: replacetokens@3
