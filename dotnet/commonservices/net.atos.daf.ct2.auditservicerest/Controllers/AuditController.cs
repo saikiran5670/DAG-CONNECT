@@ -61,7 +61,7 @@ namespace net.atos.daf.ct2.auditservicerest.Controllers
 
         [HttpGet]
         [Route("getlogs")]
-         public async  Task<IActionResult> GetAllLangaugecodes(int PerformedBy, string component_name)
+         public async  Task<IActionResult> GetAuditLogs(int PerformedBy, string component_name)
          {
              try
              {

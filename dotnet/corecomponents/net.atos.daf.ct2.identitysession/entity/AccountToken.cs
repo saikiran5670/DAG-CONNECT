@@ -20,6 +20,7 @@ namespace net.atos.daf.ct2.identitysession.entity
         public string Scope { get; set; }
         public string Error { get; set; }
         public string TokenId{get; set;}
+        public int Session_Id { get; set; }
 	
     }
 }

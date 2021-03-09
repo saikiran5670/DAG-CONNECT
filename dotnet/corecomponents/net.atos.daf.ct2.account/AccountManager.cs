@@ -356,10 +356,14 @@ namespace net.atos.daf.ct2.account
                     messageRequest.ContentMimeType = MimeType.Text;
                     break;
                 case EmailTemplateType.ResetPassword:
-                    sb.Append("A request has been received to reset the password fro your account.\n\n"); ;
-                    sb.Append(emailConfiguration.PortalServiceBaseUrl + "/resetpassword\n\n\n");
+                    Uri baseUrl = new Uri(emailConfiguration.PortalServiceBaseUrl);
+                    Uri resetUrl = new Uri(baseUrl, "account/resetpassword");
+                    Uri resetInvalidateUrl = new Uri(baseUrl, "account/resetpasswordinvalidate");
+
+                    sb.Append("A request has been received to reset the password fro your account.\n\n");                                       
+                    sb.Append(resetUrl.AbsoluteUri + "\n\n\n");
                     sb.Append("Ïf you did not initiate this request, please click on the below link.\n\n");
-                    sb.Append(emailConfiguration.PortalServiceBaseUrl + "/resetpasswordinvalidate");
+                    sb.Append(resetInvalidateUrl.AbsoluteUri);
 
                     messageRequest.Subject = "Reset Password Confirmation";
                     messageRequest.ContentMimeType = MimeType.Text;

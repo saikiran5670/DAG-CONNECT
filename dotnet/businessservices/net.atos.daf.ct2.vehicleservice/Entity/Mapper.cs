@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Google.Protobuf;
 using Group = net.atos.daf.ct2.group;
 using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.vehicle;
 
 namespace net.atos.daf.ct2.vehicleservice.Entity
 {
@@ -27,7 +28,7 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             vehicle.Is_Tcu_Register = false;
             vehicle.Reference_Date = null;
             vehicle.Organization_Id = request.OrganizationId;
-            vehicle.VehiclePropertiesId = null;
+           // vehicle.VehiclePropertiesId = null;
             return vehicle;
         }
 
@@ -101,7 +102,43 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
                 vehicledetails.ModelId = vehicle.ModelId;
             if (!string.IsNullOrEmpty(vehicle.Name))
                 vehicledetails.Name = vehicle.Name;
-            vehicledetails.Status = vehicle.Status;
+
+            if (vehicle.Status == VehicleCalculatedStatus.Connected)
+            {
+                vehicledetails.Status = "C";
+            }
+            else if (vehicle.Status == VehicleCalculatedStatus.Connected_OTA)
+            {
+                vehicledetails.Status = "N";
+            }
+            else if (vehicle.Status == VehicleCalculatedStatus.Off)
+            {
+                vehicledetails.Status = "O";
+            }
+            else if (vehicle.Status == VehicleCalculatedStatus.OTA)
+            {
+                vehicledetails.Status = "A";
+            }
+            else if (vehicle.Status == VehicleCalculatedStatus.Terminate)
+            {
+                vehicledetails.Status = "T";
+            }
+            
+            vehicledetails.OemId = vehicle.Oem_id;
+            vehicledetails.OemOrganisationId = vehicle.Oem_Organisation_id;
+            vehicledetails.IsOta = vehicle.Is_Ota;
+            if (vehicle.Opt_In.ToString() == VehicleStatusType.OptIn.ToString())
+            {
+                vehicledetails.OptIn = "I";
+            }
+            else if (vehicle.Opt_In.ToString() == VehicleStatusType.OptOut.ToString())
+            {
+                vehicledetails.OptIn = "U";
+            }
+            else if (vehicle.Opt_In.ToString() == VehicleStatusType.Inherit.ToString())
+            {
+                vehicledetails.OptIn = "H";
+            }
             return vehicledetails;
         }
 

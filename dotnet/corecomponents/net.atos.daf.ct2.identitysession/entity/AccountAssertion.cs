@@ -11,5 +11,6 @@ namespace net.atos.daf.ct2.identitysession.entity
         public string SessionState { get; set; }
         public string AccountId { get; set; }
         public string CreatedAt { get; set; }
+        public int Session_Id { get; set; }
     }
 }

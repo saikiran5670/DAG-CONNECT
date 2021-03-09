@@ -98,7 +98,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@tcu_version", string.IsNullOrEmpty(vehicle.Tcu_Version)? null:vehicle.Tcu_Version);
             parameter.Add("@is_tcu_register", vehicle.Is_Tcu_Register);
             parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : (long ?)null);
-            parameter.Add("@vehicle_property_id", vehicle.VehiclePropertiesId);            
+            parameter.Add("@vehicle_property_id", vehicle.VehiclePropertiesId != 0 ? vehicle.VehiclePropertiesId : null);          
             parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
             parameter.Add("@model_id", string.IsNullOrEmpty(vehicle.ModelId)?null:vehicle.ModelId);
             parameter.Add("@oem_id", vehicle.Oem_id);
@@ -139,6 +139,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                                    ,vehicle_property_id                                   
                                    ,created_at 
                                    ,model_id
+                                   ,opt_in
+                                   ,is_ota
+                                   ,oem_id
+                                   ,oem_organisation_id
                                    from master.vehicle 
                                    where 1=1";
             var parameter = new DynamicParameters();
@@ -214,6 +218,12 @@ namespace net.atos.daf.ct2.vehicle.repository
             vehicle.Is_Tcu_Register = record.is_tcu_register == null ? false : record.is_tcu_register;
             if (record.reference_date != null)
                 vehicle.Reference_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.reference_date, "Asia/Dubai", "yyyy-MM-ddTHH:mm:ss"));
+            vehicle.Oem_id = record.oem_id;
+            vehicle.Oem_Organisation_id = record.oem_organisation_id;
+            if(record.is_ota != null)
+            vehicle.Is_Ota = record.is_ota;
+            if (record.opt_in != null)
+                vehicle.Opt_In = (VehicleStatusType)(Convert.ToChar(record.opt_in));
             return vehicle;
         }
 
