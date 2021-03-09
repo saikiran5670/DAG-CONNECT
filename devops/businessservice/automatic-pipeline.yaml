@@ -21,9 +21,12 @@ stages:
      runOnce:
       deploy:
        steps:
-       - task: CmdLine@2
+       - task: Docker@0
+         displayName: 'Build an image'
          inputs:
-            script: |
-              ls -a
-              echo $(Subscription)
+            azureSubscription:  $(Subscription)
+            azureContainerRegistry: $(ContainerRegistry)
+            dockerFile: dotnet/AccountService_Dockerfile
+            imageName: accountservice-grpc-automatic-pipeline
+
             
