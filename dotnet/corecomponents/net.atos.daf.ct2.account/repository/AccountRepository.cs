@@ -776,6 +776,59 @@ namespace net.atos.daf.ct2.account
             }
         }
 
+        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeaturesList(int accountId, int roleId, int organizationId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@account_id", accountId);
+                parameter.Add("@role_id", roleId);
+                parameter.Add("@organization_id", organizationId);
+
+                string query =
+                    @"SELECT * FROM
+                    (
+	                    --Account Route
+	                    SELECT f.id as FeatureId, f.name as FeatureName, f.type as FeatureType, mn.id as MenuId, mn.name as MenuName, COALESCE(mn2.name, '') as ParentMenuName, mn.key as MenuKey, mn.url as MenuUrl, mn.seq_no as MenuSeqNo
+	                    FROM master.Account acc
+	                    INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.id = @account_id AND ar.role_id = @role_id AND acc.is_active = True
+	                    INNER JOIN master.Role r ON ar.role_id = r.id AND r.is_active = True
+	                    INNER JOIN master.FeatureSet fset ON fset.id = r.feature_set_id AND fset.is_active = True
+	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True
+	                    LEFT JOIN master.Menu mn ON mn.feature_id = f.id AND mn.is_active = True
+	                    LEFT JOIN master.Menu mn2 ON mn.parent_id = mn2.id AND mn2.is_active = True
+	                    UNION
+	                    --Subscription Route
+	                    SELECT f.id as FeatureId, f.name as FeatureName, f.type as FeatureType, mn.id as MenuId, mn.name as MenuName, COALESCE(mn2.name, '') as ParentMenuName, mn.key as MenuKey, mn.url as MenuUrl, mn.seq_no as MenuSeqNo
+	                    FROM master.Subscription s
+	                    INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @organization_id AND s.is_active = True AND pkg.is_active = True
+	                    INNER JOIN master.FeatureSet fset ON fset.id = pkg.feature_set_id AND fset.is_active = True
+	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True
+	                    LEFT JOIN master.Menu mn ON mn.feature_id = f.id AND mn.is_active = True
+	                    LEFT JOIN master.Menu mn2 ON mn.parent_id = mn2.id AND mn2.is_active = True
+	                    UNION
+	                    --Org Relationship Route
+	                    SELECT f.id as FeatureId, f.name as FeatureName, f.type as FeatureType, mn.id as MenuId, mn.name as MenuName, COALESCE(mn2.name, '') as ParentMenuName, mn.key as MenuKey, mn.url as MenuUrl, mn.seq_no as MenuSeqNo
+	                    FROM master.OrgRelationship orel
+	                    INNER JOIN master.FeatureSet fset ON fset.id = orel.feature_set_id AND orel.organization_id = @organization_id AND fset.is_active = True
+	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True
+	                    LEFT JOIN master.Menu mn ON mn.feature_id = f.id AND mn.is_active = True
+	                    LEFT JOIN master.Menu mn2 ON mn.parent_id = mn2.id AND mn2.is_active = True
+                    ) finalTbl
+                    ORDER BY MenuSeqNo, MenuName";
+
+                var record = await dataAccess.QueryAsync<MenuFeatureDto>(query, parameter);
+                return record;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         #endregion
 
         #region Private Methods

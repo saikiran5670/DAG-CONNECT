@@ -11,6 +11,8 @@ using Group = net.atos.daf.ct2.group;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
 using Google.Protobuf;
+using AutoMapper;
+using net.atos.daf.ct2.account.entity;
 
 namespace net.atos.daf.ct2.accountservice
 {
@@ -23,9 +25,10 @@ namespace net.atos.daf.ct2.accountservice
         private readonly IAuditTraillib auditlog;
         private readonly Mapper _mapper;
         private readonly AccountComponent.IAccountIdentityManager accountIdentityManager;
+        private readonly IMapper autoMapper;
 
         #region Constructor
-        public AccountManagementService(ILogger<GreeterService> logger, AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, AccountComponent.IAccountIdentityManager _accountIdentityManager,IAuditTraillib _auditlog)
+        public AccountManagementService(ILogger<GreeterService> logger, AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, AccountComponent.IAccountIdentityManager _accountIdentityManager,IAuditTraillib _auditlog, IMapper _autoMapper)
         {
             _logger = logger;
             accountmanager = _accountmanager;
@@ -34,6 +37,7 @@ namespace net.atos.daf.ct2.accountservice
             accountIdentityManager = _accountIdentityManager;
             auditlog = _auditlog;
             _mapper = new Mapper();
+            autoMapper = _autoMapper;
         }
         #endregion
 
@@ -645,6 +649,44 @@ namespace net.atos.daf.ct2.accountservice
             }
         }
 
+        public override async Task<MenuFeatureResponse> GetMenuFeatures(MenuFeatureRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var result = await accountmanager.GetMenuFeatures(request.AccountId, request.RoleId, request.OrganizationId);
+
+                MenuFeatureResponse response = new MenuFeatureResponse();
+                if (result.Count() > 0)
+                {
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.SUCCESS, "Get Menu Features", 1, 2, request.AccountId.ToString());
+                    response.Code = Responcecode.Success;
+                    response.Message = "Menu items and features fetched successfully.";
+                }
+                else
+                {
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Get Menu Features", 1, 2, request.AccountId.ToString());
+                    response.Code = Responcecode.NotFound;
+                    response.Message = "No menu items and features found for the provided account details.";
+                }
+
+                var menuFeatureList = autoMapper.Map<IEnumerable<MenuFeatureDto>, IEnumerable<MenuFeatureList>>(result);
+                foreach (var item in menuFeatureList)
+                {
+                    response.MenuFeatures.Add(item);
+                }
+
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:GetMenuFeatures with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new MenuFeatureResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Get Menu Features failed due to the reason : " + ex.Message
+                });
+            }
+        }
         // End Account
         #endregion
 

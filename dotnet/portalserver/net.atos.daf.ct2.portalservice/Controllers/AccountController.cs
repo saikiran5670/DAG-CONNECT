@@ -414,6 +414,33 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+        [HttpPost]
+        [Route("getmenufeatures")]
+        public async Task<IActionResult> GetMenuFeatures([FromBody] MenuFeatureRequest request)
+        {
+            try
+            {
+                var menuFeatureRequest = new AccountBusinessService.MenuFeatureRequest();
+                menuFeatureRequest.AccountId = request.AccountId;
+                menuFeatureRequest.RoleId = request.RoleId;
+                menuFeatureRequest.OrganizationId = request.OrganizationId;
+
+                var response = await _accountClient.GetMenuFeaturesAsync(menuFeatureRequest);
+
+                if (response.Code == AccountBusinessService.Responcecode.Success)
+                    return Ok(response.MenuFeatures);
+                else if (response.Code == AccountBusinessService.Responcecode.NotFound)
+                    return NotFound(response.Message);
+                else
+                    return StatusCode(500, "Error occurred while fetching Menu and Features.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:GetMenuFeatures with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
 
         #region Account Picture
