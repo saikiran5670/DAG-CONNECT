@@ -18,15 +18,18 @@
                 <span matPrefix><mat-icon>search</mat-icon></span>
             </mat-form-field>
         </div>
-        <!-- <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-          <mat-form-field appearance="outline">
-              <select matInput onChange ="applyFilter($event.target.value)"  class="form-control form-control-sm" placeholder="{{ translationData.lblSelect|| 'Select' }}">
-                <option value = "Active">Active</option>
-                <option value = "Expired">Expired</option>
-              </select>
-          </mat-form-field>
-      </div> -->
-      
+  
+<div>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>{{ translationData.lblSelectStatus || 'Select Status' }}</mat-label>
+    <mat-select (selectionChange)="filterStatus($event.value)">
+      <mat-option *ngFor='let status of options' [value]="status">
+{{status}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
     </div>
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
     <div *ngIf='initData.length > 0'>

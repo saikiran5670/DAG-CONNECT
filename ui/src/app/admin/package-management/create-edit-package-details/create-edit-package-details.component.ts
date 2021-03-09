@@ -27,6 +27,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   selectionForFeatures = new SelectionModel(true, []);
   selectedType: any = 'org VIN';
   selectedStatus: any = 'active';
+  types= ['Org Pkg', 'Org VIN'];
   
  
   constructor(private _formBuilder: FormBuilder) { }
@@ -39,6 +40,8 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     this.packageFormGroup = this._formBuilder.group({
       packageCode: ['', [ CustomValidators.noWhitespaceValidator]],
       description: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
+      startDate: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
+      endDate: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
       type: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
       name: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
     });
@@ -46,27 +49,27 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     if(this.actionType == 'view' || this.actionType == 'edit' ){
       this.setDefaultValue();
     }
-    // this.loadGridData(this.featureList);
+    this.loadGridData(this.featureList);
   }
 
-  // loadGridData(tableData: any){
-  //   let selectedfeaturesList: any = [];
-  //   if(this.actionType == 'view'){
-  //     tableData.forEach((row: any) => {
-  //       let search = this.selectedElementData.featureName.filter((item: any) => item.id == row.id);
-  //       if (search.length > 0) {
-  //         selectedfeaturesList.push(row);
-  //       }
-  //     });
-  //     tableData = selectedfeaturesList;
-  //     this.displayedColumns = ['featureName'];
-  //   }
-  //   this.initData = tableData;
-  //   this.updateDataSource(tableData);
-  //   if(this.actionType == 'edit' ){
-  //     this.selectTableRows();
-  //   }
-  // }
+  loadGridData(tableData: any){
+    let selectedfeaturesList: any = [];
+    if(this.actionType == 'view'){
+      tableData.forEach((row: any) => {
+        let search = this.selectedElementData.featureName.filter((item: any) => item.id == row.id);
+        if (search.length > 0) {
+          selectedfeaturesList.push(row);
+        }
+      });
+      tableData = selectedfeaturesList;
+      this.displayedColumns = ['featureName'];
+    }
+    this.initData = tableData;
+    this.updateDataSource(tableData);
+    if(this.actionType == 'edit' ){
+      this.selectTableRows();
+    }
+  }
 
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
@@ -94,8 +97,10 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   setDefaultValue(){
     this.packageFormGroup.get("packageCode").setValue(this.selectedElementData.packageCode);
     this.packageFormGroup.get("name").setValue(this.selectedElementData.name);
-    // this.packageFormGroup.get("type").setValue(this.selectedElementData.type);
-    // this.packageFormGroup.get("feature").setValue(this.selectedElementData.setName);
+    this.packageFormGroup.get("type").setValue(this.selectedElementData.type);
+    // this.packageFormGroup.get("featureName").setValue(this.selectedElementData.featureName);
+    this.packageFormGroup.get("startDate").setValue(this.selectedElementData.startDate);
+    this.packageFormGroup.get("endDate").setValue(this.selectedElementData.endDate);
     this.selectedType = this.selectedElementData.type.toLowerCase();
     this.selectedStatus = this.selectedElementData.status.toLowerCase();
     this.packageFormGroup.get("description").setValue(this.selectedElementData.description);
@@ -110,6 +115,10 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   }
 
   onStatusChange(event: any){
+    this.selectedStatus = event.value;
+  }
+
+  onDateChange(event: any){
     this.selectedStatus = event.value;
   }
 

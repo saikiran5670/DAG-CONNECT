@@ -19,7 +19,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   viewFlag: boolean = false;
   initData: any = [];
   rowsData: any;
-  createStatus: boolean;
+  createStatus: boolean = false;
   titleText: string;
   translationData: any;
   grpTitleVisible : boolean = false;
@@ -67,6 +67,10 @@ export class OrganisationRelationshipComponent implements OnInit {
       lblSearch: "Search",
       lblNewRelationship: "New Relationship",
       lblNoRecordFound: "No Record Found",
+      lblOrganisationName: "Organisation Name",
+      lblVehicleGroup: "Vehicle Group Name",
+      lblSelectVehicleGroup: "Select Vehicle Group",
+      lblSelectOrganisation: "Select Organisation"
 
     }
   }
@@ -80,6 +84,7 @@ export class OrganisationRelationshipComponent implements OnInit {
     // this.rowsData = this.initData; 
     this.editFlag = false;
     this.createStatus = true;
+    // console.log("---newRelationship called createStatus--",this.createStatus)
   }
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
@@ -131,6 +136,15 @@ export class OrganisationRelationshipComponent implements OnInit {
     this.grpTitleVisible = false;
   }
 
+  changeStatus(data) {
+
+  }
+  // editViewFeature(data, viewEdit){
+
+  // }
+  deleteRow(row){
+
+  }
   hideloader() {
     // Setting display of spinner
       this.showLoadingIndicator=false;

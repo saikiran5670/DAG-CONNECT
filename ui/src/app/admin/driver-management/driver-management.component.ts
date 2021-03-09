@@ -10,6 +10,10 @@ import { FileValidator } from 'ngx-material-file-input';
 import * as XLSX from 'xlsx';
 import { TranslationService } from '../../services/translation.service';
 import { CommonTableComponent } from '../.././shared/common-table/common-table.component';
+import * as FileSaver from 'file-saver';
+import { Workbook } from 'exceljs';
+
+const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 
 @Component({
   selector: 'app-driver-management',
@@ -32,7 +36,6 @@ export class DriverManagementComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   importDriverFormGroup: FormGroup;
   consentFormGroup: FormGroup;
-  userGrpName: string = '';
   templateFileUrl: string = 'assets/docs/driverTemplate.xlsx';
   templateFileName: string = 'driver-Template.xlsx';
   dialogRef: MatDialogRef<ConsentOptComponent>;
@@ -42,7 +45,7 @@ export class DriverManagementComponent implements OnInit {
   driverData: any = [];
   file: any;
   arrayBuffer: any;
-  filelist: any;
+  filelist: any = [];
   translationData: any;
   localStLanguage: any;
   actionType: any = '';
@@ -62,6 +65,7 @@ export class DriverManagementComponent implements OnInit {
   importedDriverlist: any = [];
   rejectedDriverList: any = [];
   driverDialogRef: MatDialogRef<CommonTableComponent>;
+  excelEmptyMsg: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService, private translationService: TranslationService) { 
       this.defaultTranslation();
@@ -97,6 +101,7 @@ export class DriverManagementComponent implements OnInit {
       lblOptOutAll: "Opt-Out All",
       lblOptIn: "Opt-In",
       lblOptOut: "Opt-Out",
+      lblInherit: "Inherit",
       lblImportedFileDetails: "Imported File Details",
       lblImportedUpdateddriverrecords: "Imported/Updated '$' driver records",
       lblRejecteddriverrecordsduetofollowingerrors: "Rejected '$' driver records due to following errors",
@@ -131,7 +136,11 @@ export class DriverManagementComponent implements OnInit {
       lblThedriverwasoptedinsuccessfully: "The driver '$' was opted-in successfully",
       lblThedrivercouldnobeoptedin: "The driver could not be opted-in '$'",
       lblThedriverwasoptedoutsuccessfully: "The driver '$' was opted-out successfully",
-      lblThedrivercouldnobeoptedout: "The driver could not be opted-out '$'"
+      lblThedrivercouldnobeoptedout: "The driver could not be opted-out '$'",
+      lblExcelDriverID: 'DriverID',
+      lblExcelFirstName: 'FirstName',
+      lblExcelLastName: 'LastName',
+      lblExcelEmail: 'Email',
     }
   }
 
@@ -139,7 +148,6 @@ export class DriverManagementComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.importDriverFormGroup = this._formBuilder.group({
-      //userGroup: [],
       uploadFile: [
         undefined,
         [Validators.required, FileValidator.maxContentSize(this.maxSize)]
@@ -179,21 +187,24 @@ export class DriverManagementComponent implements OnInit {
         firstName: "Alan",
         lastName: "Berry",
         emailId: "alanb@daf.com",
-        consentStatus: 'Opt-In'
+        consentStatus: 'Opt-In',
+        inheritStatus: true
       },
       {
         driverId: "I 0000000000000002",
         firstName: "Ritika",
         lastName: "Joshi",
         emailId: "ritikaj@daf.com",
-        consentStatus: 'Opt-Out'
+        consentStatus: 'Opt-Out',
+        inheritStatus: false
       },
       {
         driverId: "IN 0000000000000003",
         firstName: "Shanu",
         lastName: "Pol",
         emailId: "shanup@daf.com",
-        consentStatus: 'Opt-In'
+        consentStatus: 'Opt-Out',
+        inheritStatus: false
       }
     ];
   }
@@ -245,12 +256,13 @@ export class DriverManagementComponent implements OnInit {
 
 
   importDrivers(){ 
-    this.userGrpName = 'Test User Group' ; //this.importDriverFormGroup.controls.userGroup.value;
     if(this.filelist.length > 0){
       this.validateExcelFileField();
+      this.excelEmptyMsg = false;
       this.importDriverPopup = true;
     }else{
-      console.log("Empty File...");
+      console.log("Empty Excel File...");
+      this.excelEmptyMsg = true;
     }
   }
 
@@ -267,6 +279,7 @@ export class DriverManagementComponent implements OnInit {
     });
     console.log("Parse excel driver:: ", driverAPIData)
     let finalList: any = this.validateFields(driverAPIData);
+    console.log("Validated driver:: ", finalList)
     this.importedDriverlist = finalList.validDriverList;
     this.rejectedDriverList = finalList.invalidDriverList;
   }
@@ -324,8 +337,6 @@ export class DriverManagementComponent implements OnInit {
         invalidData.push(item);
       }
     });
-    console.log("validData:: ", validData)
-    console.log("invalidData:: ", invalidData)
     return { validDriverList: validData, invalidDriverList: invalidData };
   }
 
@@ -334,17 +345,17 @@ export class DriverManagementComponent implements OnInit {
     const regx = /[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}/;
     if(!value || value == '' || value.length == 0){
       obj.status = false;
-      obj.reason = 'Required emailId field';
+      obj.reason = 'Required Email field';
       return obj;  
     }
     if(value.length > 50){
       obj.status = false;
-      obj.reason = 'EmailId length can not be (>50)';  
+      obj.reason = 'Email length can not be (>50)';  
       return obj;
     }
     if(!regx.test(value)){
       obj.status = false;
-      obj.reason = 'Email id pattern invalid';  
+      obj.reason = 'Invalid Email pattern';  
       return obj;
     }
     return obj;
@@ -355,17 +366,17 @@ export class DriverManagementComponent implements OnInit {
     const regx = /[A-Z]{1,1}[A-Z\s]{1,1}[\s]{1,1}[A-Z0-9]{16,16}/;
     if(!value || value == '' || value.length == 0){
       obj.status = false;
-      obj.reason = 'Required driverId field';
+      obj.reason = 'Required driverID field';
       return obj;  
     }
     if(value.length > 19){
       obj.status = false;
-      obj.reason = 'DriverId length can not be (>19)';  
+      obj.reason = 'DriverID length can not be (>19)';  
       return obj;
     }
     if(!regx.test(value)){
       obj.status = false;
-      obj.reason = 'Mismatch Regx pattern e.g.(F  1234567890123456) or (FF 1234567890123456) in driverId';  
+      obj.reason = 'Mismatch Regx pattern in driverID (F[space][space]1234567890123456) or (FF[space]1234567890123456)';  
       return obj;
     }
     return obj;
@@ -451,23 +462,24 @@ export class DriverManagementComponent implements OnInit {
     this.importDriverPopup = false;
   }
 
-  addfile(event: any){    
+  addfile(event: any){ 
+    this.excelEmptyMsg = false;   
     this.file = event.target.files[0];     
     let fileReader = new FileReader();    
     fileReader.readAsArrayBuffer(this.file);     
     fileReader.onload = (e) => {    
         this.arrayBuffer = fileReader.result;    
-        var data = new Uint8Array(this.arrayBuffer);    
+        var data = new Uint8Array(this.arrayBuffer);   
         var arr = new Array();    
-        for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);    
+        for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
         var bstr = arr.join("");    
         var workbook = XLSX.read(bstr, {type:"binary"});    
         var first_sheet_name = workbook.SheetNames[0];    
         var worksheet = workbook.Sheets[first_sheet_name];    
         //console.log(XLSX.utils.sheet_to_json(worksheet,{raw:true}));    
-          var arraylist = XLSX.utils.sheet_to_json(worksheet,{raw:true});     
-              this.filelist = [];
-              this.filelist = arraylist;    
+        var arraylist = XLSX.utils.sheet_to_json(worksheet,{raw:true});     
+        this.filelist = [];
+        this.filelist = arraylist;    
     }    
   }
 
@@ -517,10 +529,61 @@ export class DriverManagementComponent implements OnInit {
     dialogConfig.data = {
       tableData: driverList,
       colsList: ['driverId','firstName','lastName','emailId','failReason'],
-      colsName: [this.translationData.lblDriverId || 'Driver Id', this.translationData.lblFirstName || 'First Name', this.translationData.lblLastName || 'Last Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblFailedReason || 'Failed Reason'],
+      colsName: [this.translationData.lblDriverID || 'Driver ID', this.translationData.lblFirstName || 'First Name', this.translationData.lblLastName || 'Last Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblFailReason || 'Fail Reason'],
       tableTitle: this.translationData.lblRejectedDriverDetails || 'Rejected Driver Details'
     }
     this.driverDialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
+  }
+
+  downloadDriverTemplate(){
+    let excelHintMsg = `DriverID: 
+    If DriverID contains a country code of 1 character (e.g. F)  then country code is followed by 2 space characters e.g.  F[space][space]1000000123456001
+    If DriverID contains a country code of  2 characters (e.g. NL) then country code is followed by 1 space character e.g. NL[space]B000012345000002
+    DriverID contains 19 characters and ends with the sequence number of the driver card
+    EMail: must be filled`;
+    const header = [this.translationData.lblExcelDriverID || 'DriverID', this.translationData.lblExcelEmail || 'Email', this.translationData.lblExcelFirstName || 'FirstName', this.translationData.lblExcelLastName || 'LastName', excelHintMsg];
+    const data = [
+      ['B  B110000123456001', 'johan.peeters@test.com', "Johan", "Peeters", ""],
+      ['F  1000000123456001', 'jeanne.dubois@test.com', "Jeanne", "Dubois", ""],
+      ['PL 1234567890120002', 'alex.nowak@test.com', "Alex", "Nowak", ""],
+      ['D  DF00001234567001', 'p.muller@test.com', "Paul H.F.", "Müller", ""],
+      ['NL B000012345000002', 'jan.de.jong@test.com', "Jan", "de Jong", ""],
+      ['SK A000000001234000', 'eric.m.horvath@test.com', "Eric M.", "Horváth", ""],
+      ['I  I000000123456001', 'f.rossi@test.com', "Francesco", "Rossi", ""],
+      ['UK 0000000123456001', 'j.wilson@test.com', "John", "Wilson", ""]
+    ];
+    let workbook = new Workbook();
+    let worksheet = workbook.addWorksheet('Driver Template');
+    //Add Header Row
+    let headerRow = worksheet.addRow(header);
+    // Cell Style : Fill and Border
+    headerRow.eachCell((cell, number) => {
+      //console.log(cell)
+      if(number != 5){
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FF0A3175' },
+          bgColor: { argb: 'FF0000FF' }
+        }
+        cell.font = {
+          color: { argb: 'FFFFFFFF'},
+          bold: true
+        }
+      }else{
+        //cell.alignment = { wrapText: true, vertical: 'justify', horizontal: 'justify' }
+      }
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    });
+    // Add Data and Conditional Formatting
+    data.forEach(d => {
+      let row = worksheet.addRow(d);
+    });
+
+    workbook.xlsx.writeBuffer().then((data) => {
+      let blob = new Blob([data], { type: EXCEL_TYPE });
+      FileSaver.saveAs(blob, this.templateFileName);
+    });
   }
 
 }

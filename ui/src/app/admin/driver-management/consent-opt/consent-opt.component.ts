@@ -21,12 +21,15 @@ export class ConsentOptComponent implements OnInit {
     consentType: any
   }, private mdDialogRef: MatDialogRef<ConsentOptComponent>) {
     this.organizationName = localStorage.getItem('organizationName');
-    this.showOptOutMsg = data.consentType === 'Opt-In' ? false : true;
+    this.totalDrivers = data.driverData.length;
+    if(data.actionType){ //---  True -> All & False -> single 
+      //this.getDriverCount();
+    }else{
+      data.consentType = (data.driverData.inheritStatus) ? 'Inherit' : data.consentType;
+    }
+    this.showOptOutMsg = data.consentType === 'Opt-Out' ? true : false;
     this.getConsentMsg(data.consentType); 
     this.getConsentExtraMsg(data.consentType);
-    if(data.actionType){ //--- (actionType) --> True -> All & False -> single 
-      this.getDriverCount();
-    }
   }
 
   ngOnInit() { }
@@ -72,18 +75,20 @@ export class ConsentOptComponent implements OnInit {
   }
 
   onChange(event: any){
+    this.data.consentType = event.value;
     if(event.value === 'Opt-Out'){
       this.showOptOutMsg = true;
       this.getConsentMsg(event.value);
       this.getConsentExtraMsg(event.value);
     }
+    //else if(event.value === 'Opt-In'){
     else{
       this.showOptOutMsg = false;
       this.getConsentMsg(event.value);
       this.getConsentExtraMsg(event.value);
     }
     if(this.data.actionType){
-      this.getDriverCount();
+      //this.getDriverCount();
     }
   }
 

@@ -11,7 +11,8 @@ namespace net.atos.daf.ct2.portalservice.Account
         public int RefId { get; set; }
         public string Description { get; set; }
         public string GroupType { get; set; }
-        public int AccountCount { get; set; }
+        //public string FunctionEnum { get; set; }
+        //public int AccountCount { get; set; }
         public List<GroupRef> Accounts { get; set; }
     }
     public class AccountGroupResponse

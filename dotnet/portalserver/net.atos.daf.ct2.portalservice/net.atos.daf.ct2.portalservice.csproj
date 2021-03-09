@@ -27,12 +27,13 @@
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.utilities\net.atos.daf.ct2.utilities.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Protobuf Include="Protos\greet.proto" GrpcServices="Client" />
-    <Protobuf Include="Protos\Authentication.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\account.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\package.proto" GrpcServices="Client" />
 	  <Protobuf Include="Protos\feature.proto" GrpcServices="Client" />
 	<Protobuf Include="Protos\vehicle.proto" GrpcServices="Client" />
+	  <Protobuf Include="Protos\translation.proto" GrpcServices="Client" />
+	  <Protobuf Include="Protos\audittrail.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\organization.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>

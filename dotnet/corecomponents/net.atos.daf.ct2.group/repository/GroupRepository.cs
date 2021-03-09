@@ -32,10 +32,13 @@ namespace net.atos.daf.ct2.group
                 var parameter = new DynamicParameters();
                 parameter.Add("@object_type", (char)group.ObjectType);
                 parameter.Add("@group_type", (char)group.GroupType);
-                parameter.Add("@argument", group.Argument);
-                parameter.Add("@function_enum", (char)group.FunctionEnum);
+                parameter.Add("@argument", string.IsNullOrEmpty(group.Argument) ? null : group.Argument) ;
+                if (group.FunctionEnum == FunctionEnum.None) parameter.Add("@function_enum", null);
+                else parameter.Add("@function_enum", (char) group.FunctionEnum);
                 parameter.Add("@organization_id", group.OrganizationId);
-                parameter.Add("@ref_id", group.RefId);
+                // if the group type is single
+                if(group.GroupType == GroupType.Single && group.RefId> 0) parameter.Add("@ref_id", group.RefId);
+                else parameter.Add("@ref_id", null);
                 parameter.Add("@name", group.Name);
                 parameter.Add("@description", group.Description);
                 parameter.Add("@created_at", group.CreatedAt.Value);
@@ -68,15 +71,15 @@ namespace net.atos.daf.ct2.group
                 parameter.Add("@object_type", (char)group.ObjectType);
                 parameter.Add("@group_type", (char)group.GroupType);
                 parameter.Add("@argument", group.Argument);
-                parameter.Add("@function_enum", (char)group.FunctionEnum);
+                if (group.FunctionEnum == FunctionEnum.None) parameter.Add("@function_enum", null);
+                else parameter.Add("@function_enum", (char)group.FunctionEnum);
                 parameter.Add("@organization_id", group.OrganizationId);
-                parameter.Add("@ref_id", group.RefId);
+                //parameter.Add("@ref_id", group.RefId);ref_id = @ref_id,
                 parameter.Add("@name", group.Name);
                 parameter.Add("@description", group.Description);
 
                 var query = @"update master.group set object_type = @object_type,group_type = @group_type,
                                      argument = @argument,function_enum = @function_enum,                                     
-                                     ref_id = @ref_id,
                                      name = @name,description = @description
 	                                 WHERE id = @id
                                      RETURNING id;";
@@ -105,9 +108,11 @@ namespace net.atos.daf.ct2.group
                     else query = @"delete from master.accessrelationship where vehicle_group_id = @id";
                     await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
+                    
                     // delete group ref
                     query = @"delete from master.groupref where group_id = @id";
                     await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+
                     // delete group 
                     query = @"delete from master.group where id = @id";
                     await dataAccess.ExecuteScalarAsync<int>(query, parameter);
@@ -160,15 +165,14 @@ namespace net.atos.daf.ct2.group
                         parameter.Add("@group_type_group", (char)GroupType.Group, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         parameter.Add("@group_type_dynamic", (char)GroupType.Dynamic, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and (group_type=@group_type_group or group_type=@group_type_dynamic) ";
-                    }
-                    
+                    }                    
 
-                    // function functional enum filter
-                    if (((char)groupFilter.FunctionEnum) != ((char)FunctionEnum.None))
-                    {
-                        parameter.Add("@function_enum", (char)groupFilter.FunctionEnum, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
-                        query = query + " and function_enum=@function_enum";
-                    }
+                    //// function functional enum filter
+                    //if (((char)groupFilter.FunctionEnum) != ((char)FunctionEnum.None))
+                    //{
+                    //    parameter.Add("@function_enum", (char)groupFilter.FunctionEnum, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                    //    query = query + " and function_enum=@function_enum";
+                    //}
                     // object type filter
                     if (((char)groupFilter.ObjectType) != ((char)ObjectType.None))
                     {
@@ -190,6 +194,11 @@ namespace net.atos.daf.ct2.group
                 foreach (dynamic record in groups)
                 {
                     group = Map(record);
+                    // single group type.
+                    if(group.GroupType == GroupType.Single)
+                    {
+
+                    }
                     if (groupFilter.GroupRef || groupFilter.GroupRefCount)
                     {
                         // group ref filter 
@@ -336,7 +345,7 @@ namespace net.atos.daf.ct2.group
             entity.ObjectType = (ObjectType)Convert.ToChar(record.object_type);
             entity.GroupType = (GroupType)Convert.ToChar(record.group_type);
             entity.Argument = record.argument;
-            entity.FunctionEnum = (FunctionEnum)Convert.ToChar(record.function_enum);
+            entity.FunctionEnum = (FunctionEnum) Convert.ToChar(record.function_enum);
             entity.OrganizationId = record.organization_id;
             entity.RefId = record.ref_id;
             if ((object)record.created_at != null)
@@ -373,12 +382,12 @@ namespace net.atos.daf.ct2.group
                     parameter.Add("@group_type", (char)filter.GroupType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                     query = query + " and g.group_type=@group_type";
                 }
-                // function functional enum filter
-                if (((char)filter.FunctionEnum) != ((char)FunctionEnum.None))
-                {
-                    parameter.Add("@function_enum", (char)filter.FunctionEnum, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
-                    query = query + " and g.function_enum=@function_enum";
-                }
+                //// function functional enum filter
+                //if (((char)filter.FunctionEnum) != ((char)FunctionEnum.None))
+                //{
+                //    parameter.Add("@function_enum", (char)filter.FunctionEnum, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                //    query = query + " and g.function_enum=@function_enum";
+                //}
                 // object type filter
                 if (((char)filter.ObjectType) != ((char)ObjectType.None))
                 {
@@ -445,6 +454,7 @@ namespace net.atos.daf.ct2.group
                 throw ex;
             }
         }
+        
         public async Task<bool> RemoveRef(int groupid)
         {
             try

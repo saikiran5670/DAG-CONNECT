@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Group = net.atos.daf.ct2.group;
+using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.vehicle;
 
 namespace net.atos.daf.ct2.vehicleservice.Entity
 {
@@ -25,6 +27,8 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             vehicle.Tcu_Version = null;
             vehicle.Is_Tcu_Register = false;
             vehicle.Reference_Date = null;
+            vehicle.Organization_Id = request.OrganizationId;
+           // vehicle.VehiclePropertiesId = null;
             return vehicle;
         }
 
@@ -53,7 +57,35 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             vehicleFilter.OrganizationId = request.OrganizationId;
             vehicleFilter.VehicleIdList = request.VehicleIdList;
             vehicleFilter.VIN = request.VIN;
-            vehicleFilter.Status = (vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), request.Status.ToString());
+            //if (!string.IsNullOrEmpty(request.Status))
+            //{
+            //    char type = Convert.ToChar(request.Status);
+            //    if (type == 'I' || type == 'i')
+            //    {
+            //        vehicleFilter.Status = vehicle.VehicleStatusType.OptIn;
+            //    }
+            //    else if (type == 'U' || type == 'u')
+            //    {
+            //        vehicleFilter.Status = vehicle.VehicleStatusType.OptOut;
+            //    }
+            //    else if (type == 'T' || type == 't')
+            //    {
+            //        vehicleFilter.Status = vehicle.VehicleStatusType.Terminate;
+            //    }
+            //    else if (type == 'o' || type == 'O')
+            //    {
+            //        vehicleFilter.Status = vehicle.VehicleStatusType.Ota;
+            //    }
+            //    else
+            //    {
+            //        vehicleFilter.Status = vehicle.VehicleStatusType.OptIn;
+            //    }
+            //}
+            //else
+            //{
+            //    vehicleFilter.Status = vehicle.VehicleStatusType.None;
+            //}
+            vehicleFilter.Status = vehicle.VehicleStatusType.None;
             return vehicleFilter;
         }
 
@@ -61,10 +93,52 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
         {
             VehicleDetails vehicledetails = new VehicleDetails();
             vehicledetails.Id = vehicle.ID;
+            if(Convert.ToInt32(vehicle.Organization_Id)>0)
             vehicledetails.Organizationid = vehicle.Organization_Id;
             vehicledetails.Vin = vehicle.VIN;
-            vehicledetails.LicensePlateNumber = vehicle.License_Plate_Number;
-            vehicledetails.ModelId = vehicle.ModelId;
+            if (!string.IsNullOrEmpty(vehicle.License_Plate_Number))
+                vehicledetails.LicensePlateNumber = vehicle.License_Plate_Number;
+            if (!string.IsNullOrEmpty(vehicle.ModelId))
+                vehicledetails.ModelId = vehicle.ModelId;
+            if (!string.IsNullOrEmpty(vehicle.Name))
+                vehicledetails.Name = vehicle.Name;
+
+            if (vehicle.Status == VehicleCalculatedStatus.Connected)
+            {
+                vehicledetails.Status = "C";
+            }
+            else if (vehicle.Status == VehicleCalculatedStatus.Connected_OTA)
+            {
+                vehicledetails.Status = "N";
+            }
+            else if (vehicle.Status == VehicleCalculatedStatus.Off)
+            {
+                vehicledetails.Status = "O";
+            }
+            else if (vehicle.Status == VehicleCalculatedStatus.OTA)
+            {
+                vehicledetails.Status = "A";
+            }
+            else if (vehicle.Status == VehicleCalculatedStatus.Terminate)
+            {
+                vehicledetails.Status = "T";
+            }
+            
+            vehicledetails.OemId = vehicle.Oem_id;
+            vehicledetails.OemOrganisationId = vehicle.Oem_Organisation_id;
+            vehicledetails.IsOta = vehicle.Is_Ota;
+            if (vehicle.Opt_In.ToString() == VehicleStatusType.OptIn.ToString())
+            {
+                vehicledetails.OptIn = "I";
+            }
+            else if (vehicle.Opt_In.ToString() == VehicleStatusType.OptOut.ToString())
+            {
+                vehicledetails.OptIn = "U";
+            }
+            else if (vehicle.Opt_In.ToString() == VehicleStatusType.Inherit.ToString())
+            {
+                vehicledetails.OptIn = "H";
+            }
             return vehicledetails;
         }
 
@@ -101,6 +175,14 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             }
             entity.ObjectType = group.ObjectType.VehicleGroup;
             entity.OrganizationId = request.OrganizationId;
+            if (request.CreatedAt > 0)
+            {
+                entity.CreatedAt = (long)request.CreatedAt;
+            }
+            else
+            {
+                entity.CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            }
             entity.GroupRef = new List<Group.GroupRef>();
             return entity;
         }
@@ -115,7 +197,8 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             GroupFilter.GroupType = Group.GroupType.Group;
             GroupFilter.GroupRef = request.Vehicles;
             GroupFilter.GroupRefCount =true;
-            foreach (var item in request.GroupIds)
+            GroupFilter.GroupIds = new List<int>();
+            foreach (int item in request.GroupIds)
             {
                 if (item > 0)
                     GroupFilter.GroupIds.Add(item);
@@ -142,5 +225,8 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             vehicleGroupResonse.Name = request.Name;
             return vehicleGroupResonse;
         }
+    
+    
+    
     }
 }

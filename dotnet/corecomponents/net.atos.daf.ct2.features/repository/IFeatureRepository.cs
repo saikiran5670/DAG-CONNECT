@@ -22,10 +22,13 @@ namespace net.atos.daf.ct2.features.repository
         Task<bool> DeleteFeatureSet(int FeatureSetId);
         Task<FeatureSet> CreateFeatureSet(FeatureSet featureSet);
         Task<DataAttributeSet> CreateDataattributeSet(DataAttributeSet dataAttributeSet);
+        Task<int> CreateDataattributeSetFeature(Feature feature, int InserteddataAttributeSetID);
         Task<DataAttributeSet> UpdatedataattributeSet(DataAttributeSet dataAttributeSet);
         Task<bool> DeleteDataAttribute(int dataAttributeSetID);
         Task<List<DataAttributeSet>> GetDataAttributeSetDetails(int dataAttributeSetID);
         Task<int> UpdateFeatureSetMapping(int UpdateFeatureSetID, int ID);
+
+        Task<IEnumerable<DataAttribute>> GetDataAttributes();
 
         #endregion
     }

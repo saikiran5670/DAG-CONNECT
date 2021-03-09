@@ -59,7 +59,7 @@
                     </mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
-                            <input maxlength="100" placeholder="{{ translationData.lblEnterDescription || 'Enter Description' }}" matInput
+                            <input maxlength="120" placeholder="{{ translationData.lblEnterDescription || 'Enter Description' }}" matInput
                                 formControlName="description">
                         </mat-form-field>
                         <mat-error *ngIf=" packageFormGroup.get('description').hasError('whitespace')">
@@ -72,23 +72,25 @@
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
-                <!-- <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label style='display: flex; place-content: space-between;'>
-                        {{ translationData.lblSelectType || 'Select Type' }}
+                <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>
+                        {{ translationData.lblType || 'Type' }}
                     </mat-label>
+                    <div *ngIf="actionType != 'view'">
                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-select placeholder="{{ translationData.lblSelectType || 'Select Type' }}">
-                            <mat-option > Org VIN</mat-option>
-                             <mat-option *ngFor="let role of roles | removeDuplicates" [value]="role"> -->
-                            <!-- <mat-option>
-                                Org VIN
+                        <mat-select matInput formControlName="type" placeholder = "{{ translationData.lblSelectType || 'Select Type' }}">
+                            <mat-option *ngFor="let type of types" [value]="type">
+                                {{type}}
                             </mat-option>
-                            <mat-option >Org pkg</mat-option>
                         </mat-select>
-                    </mat-form-field> -->
-                <!-- </div> --> 
-                <div class='areaWidth min-width-30-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
-                    <span>{{ translationData.lblSelectStatus || 'Select Status' }}</span>
+                    </mat-form-field>
+                </div>
+                <div *ngIf="actionType == 'view'">
+                    <span style='font-weight: 500!important;'>{{ selectedElementData.type }}</span>
+                </div>
+                </div> 
+                <div class='areaWidth min-width-10-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
+                    <span>{{ translationData.lblStatus || 'Status' }}</span>
                     <div *ngIf="actionType != 'view'" class='margin-top-5'>
                         <mat-radio-group (change)='onStatusChange($event)'>
                             <mat-radio-button [checked]="selectedStatus ===  'active' ? true : false" style='margin-right: 20px;' value="active">{{ translationData.lblActive || 'Active' }}
@@ -100,7 +102,39 @@
                     <div *ngIf="actionType == 'view'">
                         <span style='font-weight: 500!important;'>{{ selectedElementData.status }}</span>
                     </div>
+                </div>
+                <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label style='display: flex; place-content: space-between;'>
+                        <span>{{ translationData.lblStartDate || 'Start Date' }}</span>
+                    </mat-label>
+                    <div *ngIf="actionType != 'view'">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <input matInput [matDatepicker]="picker1" placeholder="{{ translationData.lblEnterDescription || 'mm/dd/yyyy' }}" 
+                             >
+                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                <mat-datepicker #picker1 disabled="false"></mat-datepicker>
+                        </mat-form-field>
                     </div>
+                    <div *ngIf="actionType == 'view'">
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.startDate }}</span>
+                    </div>
+                </div>
+                <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label style='display: flex; place-content: space-between;'>
+                        <span>{{ translationData.lblEndDate || 'End Date' }}</span>
+                    </mat-label>
+                    <div *ngIf="actionType != 'view'">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <input matInput [matDatepicker]="picker2" placeholder="{{ translationData.lblEnterDescription || 'mm/dd/yyyy' }}" 
+                                  >
+                                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                                <mat-datepicker #picker2 disabled="false"></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div *ngIf="actionType == 'view'">
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.endDate }}</span>
+                    </div>
+                </div>
             </div>
             <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="space-between center">
                 <div fxLayout="column" fxLayoutAlign="left">
@@ -123,7 +157,7 @@
              <div style='padding: 20px; position: relative;'>
                 <mat-divider></mat-divider>
             </div>
-            <!-- <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+            <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectFeatures || 'Select Features' }}</span>
                 </div>
@@ -135,8 +169,8 @@
                       <span matPrefix><mat-icon>search</mat-icon></span>
                   </mat-form-field>
                 </div>
-            </div>  -->
-            <!-- <div class='margin-bottom-xlg' >
+            </div>  
+             <div class='margin-bottom-xlg' >
                 <mat-table [dataSource]="dataSource" class="table-items" matSort>
                   <ng-container matColumnDef="select">
                     <div>
@@ -166,7 +200,7 @@
                   </mat-row>
                 </mat-table>
                 <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
-              </div>  -->
+              </div> 
         </mat-card-content>
     </mat-card>
 </form>

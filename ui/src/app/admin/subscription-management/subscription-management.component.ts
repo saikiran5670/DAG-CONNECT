@@ -15,10 +15,10 @@ import { SelectionModel } from '@angular/cdk/collections';
 })
 export class SubscriptionManagementComponent implements OnInit {
 
+  options=['Select Status','All','Active','Expired'];
   subscriptionRestData: any = [];
   displayedColumns = ['orderId','packageCode', 'packageName', 'type', 'vehicle', 'startDate', 'endDate', 'status', 'action'];
   selectedElementData: any;
-
   subscriptionCreatedMsg : any = '';
   titleVisible : boolean = false;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -151,7 +151,7 @@ export class SubscriptionManagementComponent implements OnInit {
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    this.dataSource.filter = filterValue;
+    this.dataSource.filter= filterValue;
   }
 
   masterToggleForSubscription() {
@@ -174,6 +174,12 @@ export class SubscriptionManagementComponent implements OnInit {
     else
       return `${this.selectionForSubscription.isSelected(row) ? 'deselect' : 'select'
         } row`;
+  }
+
+  filterStatus(selectedValue) {
+    selectedValue = selectedValue.trim(); 
+    selectedValue = selectedValue.toLowerCase(); 
+    this.dataSource.filter= selectedValue != 'all' ? selectedValue : ''
   }
 
 }

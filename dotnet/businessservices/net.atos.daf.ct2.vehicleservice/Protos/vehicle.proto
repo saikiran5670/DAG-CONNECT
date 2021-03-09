@@ -16,7 +16,7 @@ service VehicleService {
   rpc UpdateStatus (VehicleOptInOptOutRequest) returns (VehicleOptInOptOutResponce);
   rpc CreateGroup (VehicleGroupRequest) returns (VehicleGroupResponce);
   rpc UpdateGroup (VehicleGroupRequest) returns (VehicleGroupResponce);
-  rpc DeleteGroup (VehicleGroupIdRequest) returns (VehicleGroupResponce);
+  rpc DeleteGroup (VehicleGroupIdRequest) returns (VehicleGroupDeleteResponce);
   rpc GetGroupDetails (GroupFilterRequest) returns (VehicleGroupRefResponce);
   rpc GetVehiclesByVehicleGroup (VehicleGroupIdRequest) returns (VehicleGroupRefResponce);
   rpc GetOrganizationVehicleGroupdetails (OrganizationIdRequest) returns (OrgVehicleGroupListResponse);
@@ -30,6 +30,7 @@ enum VehicleStatusType{
     OptOut = 2;
     Terminate = 3;
     Ota = 4;
+    Inherit=5;
 }
 
 enum Type{
@@ -93,7 +94,7 @@ message VehicleFilterRequest {
   int32 OrganizationId = 2;
   string VehicleIdList = 3;
   string VIN = 4;
-  VehicleStatusType Status=5;
+ // string Status=5;
 }
 
 message VehicleDetails {
@@ -102,7 +103,7 @@ message VehicleDetails {
   string Name = 3;
   string Vin=4;
   string LicensePlateNumber=5;
-VehicleStatusType Status=6;
+string Status=6;
 google.protobuf.StringValue StatusDate=7;
 google.protobuf.StringValue TerminationDate=8;
 google.protobuf.StringValue Vid=9;
@@ -114,6 +115,12 @@ google.protobuf.StringValue Tcu_Brand=14;
 google.protobuf.StringValue Tcu_Version=15;
 bool Is_Tcu_Register=16;
 google.protobuf.StringValue reference_date=17;
+int32 Oem_Id=18;
+int32 Oem_Organisation_id=19;
+string Opt_In=20;
+bool Is_Ota=21;
+
+
 }
 
 message VehicleListResponce {
@@ -138,18 +145,17 @@ message VehicleOptInOptOutResponce{
 message VehicleGroupRequest{
   int32 Id=1;
   string Name= 2; 
-  ObjectType ObjectType = 3;
-  string GroupType = 4;
-  string Argument = 5;
-  FunctionEnum FunctionEnum = 6;
-  int32 OrganizationId = 7;
-  int32 RefId = 8;
-  string Description= 9;
-  repeated VehicleListResquest GroupRef = 10;
-  bool Exists=11;
+  string GroupType = 3;
+  string Argument = 4;
+  int32 OrganizationId = 5;
+  int32 RefId = 6;
+  string Description= 7;
+  repeated VehicleGroupRef GroupRef = 8;
+  bool Exists=9;
+  int64 CreatedAt=10;
 }
 
-message VehicleListResquest{
+message VehicleGroupRef{
   
   int32 Group_Id = 1;
   int32 Ref_Id = 2;
@@ -181,7 +187,7 @@ message VehicleGroupRefDetails{
   string License_Plate_Number= 4;
   google.protobuf.StringValue ModelId= 5;
   int32 VehicleCount= 6;
-  VehicleStatusType Status=7;
+  string Status=7;
   bool IsVehicleGroup=8;
   google.protobuf.Int32Value OrganizationId=9;
   string Description=10;
@@ -199,10 +205,10 @@ message OrganizationIdRequest {
 }
 
 message OrgVehicleGroupDetails{
- int32 VehicleGroupId =1;
+ google.protobuf.Int32Value VehicleGroupId =1;
  string VehicleGroupName =2;
- int32 VehicleCount =3;
- int32 UserCount =4;
+ google.protobuf.Int32Value VehicleCount =3;
+ google.protobuf.Int32Value UserCount =4;
  bool IsGroup =5;
 }
 
@@ -236,4 +242,8 @@ message OrgAccountIdRequest {
   int32 AccountGroupId = 2;
 }
 
-
+message VehicleGroupDeleteResponce{
+  Responcecode code=1;
+  string message = 2;
+  bool result=3; 
+}

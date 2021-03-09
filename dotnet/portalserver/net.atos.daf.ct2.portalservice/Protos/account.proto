@@ -21,6 +21,9 @@ service AccountService
   rpc GetAccountDetail (AccountGroupDetailsRequest) returns (AccountDetailsResponse); 
   rpc SaveProfilePicture (AccountBlobRequest) returns (AccountBlobResponse); 
   rpc GetProfilePicture (IdRequest) returns (AccountBlobResponse); 
+  rpc ResetPasswordInitiate (ResetPasswordInitiateRequest) returns (ResetPasswordResponse);
+  rpc ResetPassword (ResetPasswordRequest) returns (ResetPasswordResponse);
+  rpc ResetPasswordInvalidate (ResetPasswordInvalidateRequest) returns (ResetPasswordResponse);
 
   // Account Preference Mthod
   rpc CreatePreference (AccountPreference) returns (AccountPreferenceResponse);
@@ -115,6 +118,25 @@ message AccountRequest {
     int64 EndDate=14;    
   }
 
+//Account Reset Password
+message ResetPasswordInitiateRequest {
+    string EmailId=1;
+}
+
+message ResetPasswordRequest {
+    string ResetToken=1;
+    string Password=2;
+}
+
+message ResetPasswordInvalidateRequest {
+    string ResetToken=1;
+}
+
+message ResetPasswordResponse {
+  Responcecode Code=1;
+  string Message=2;
+}
+
 message AccountId
 {
   int32 Id=1;
@@ -182,10 +204,11 @@ message AccountGroupRequest{
   int32 RefId = 4;
   string Description= 5;
   string GroupType= 6;   
-  int32 GroupRefCount=7;
-  repeated AccountGroupRef GroupRef = 8;
-  bool Exists=9;
-  int64 CreatedAt=10;
+  string FunctionEnum = 7;   
+  int32 GroupRefCount=8;
+  repeated AccountGroupRef GroupRef = 9;
+  bool Exists=10;
+  int64 CreatedAt=11;
 }
 message AccountGroupResponce{
   Responcecode code=1;  
@@ -340,9 +363,10 @@ message IdentityRequest {
 message AccountIdentityResponse {
     Responcecode code=1;
     string Message=2;
-    repeated AccountIdentityOrg AccOrganization = 3;
-    repeated AccountIdentityRole AccountRole=4;
-    AccountRequest accountInfo=5;
+    bool Authenticated = 3;
+    repeated AccountIdentityOrg AccOrganization = 4;
+    repeated AccountIdentityRole AccountRole=5;
+    AccountRequest accountInfo=6;
 }
 message AccountIdentityOrg
 {

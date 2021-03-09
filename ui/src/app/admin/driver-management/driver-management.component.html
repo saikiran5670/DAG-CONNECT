@@ -20,7 +20,7 @@
                     <div style='width: 60%' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                         <span style='display: flex; align-items: center;'>
                             <img matTooltip='Download Excel' src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 30px; height: 30px;" />&nbsp;
-                            <a [download]="templateFileName" [href]="templateFileUrl"
+                            <a (click)='downloadDriverTemplate()' class='cursor-pointer'
                                 style='font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>{{ translationData.lblDownloadaTemplate || 'Download a Template' }}</a>
                         </span>
                         <span>{{ translationData.lblDownloadaTemplateMessage || 'You can enter multiple driver records. New Driver IDs records will be added and existing Driver ID records will be updated. Few fields are mandatory; the rest optional – please see the template for details. All the fields (with the exception of the Driver ID) can be edited later from the Driver Management screen shown below.'}}</span>
@@ -42,9 +42,12 @@
                                             The total size must not exceed {{importDriverFormGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{importDriverFormGroup.get('uploadFile')?.getError('maxContentSize').actualSize
                                             | byteFormat}}).
                                         </mat-error>
+                                        <mat-error *ngIf="excelEmptyMsg">
+                                            {{ translationData.lblEmptyFile || 'Empty File' }}
+                                        </mat-error>
                                     </div>
                                     <div fxLayout="column" fxLayoutAlign="space-around" class='margin-bottom-sm'>
-                                        <button style='color: #fff;' [disabled]="!importDriverFormGroup.valid" [ngStyle]="{'margin-top': importDriverFormGroup.get('uploadFile').hasError('required') ? '9px' : '29px' }" mat-flat-button color="primary"
+                                        <button style='color: #fff;' [disabled]="!importDriverFormGroup.valid || importDriverPopup || excelEmptyMsg" [ngStyle]="{'margin-top': importDriverFormGroup.get('uploadFile').hasError('required') || excelEmptyMsg ? '9px' : '29px' }" mat-flat-button color="primary"
                                             (click)="importDrivers()">
                                             <mat-icon>arrow_circle_up</mat-icon> {{ translationData.lblImportDrivers || 'Import Driver(s)' }}
                                         </button>
@@ -59,7 +62,7 @@
         <mat-card *ngIf='importDriverPopup' style='border: 1px solid #d0d0d0;' class='mat-elevation-z margin-bottom-xlg'>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
                 <div style='width:95%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblImportedFileDetails || 'Imported File Details' }}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblImportedfiledetails || 'Imported file details' }} ({{ filelist ? filelist.length : 0 }})</span>
                 </div>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
                     <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
@@ -69,16 +72,10 @@
                 <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <span>{{ translationData.lblImported || 'Imported' }} <span style='color: green'>{{ importedDriverlist.length }} {{ translationData.lblnewdrivers || 'new drivers' }}</span></span>
                 </div>
-                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ translationData.lblRole || 'Role' }}: <span class='custom-font'>{{ translationData.lblDriver || 'Driver' }}</span></span>
-                </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="start space-between">
                 <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ translationData.lblRejected || 'Rejected' }} <span [ngClass]="{'cursor-pointer': rejectedDriverList.length > 0}" (click)="(rejectedDriverList.length > 0) ? showDriverListPopup(rejectedDriverList) : ''" style='color: red'>{{ rejectedDriverList.length }} {{ translationData.lbldrivers || 'drivers' }}</span></span>
-                </div>
-                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ translationData.lblUserGroup || 'User Group' }}: <span class='custom-font'>{{ userGrpName }}</span></span>
+                    <span>{{ translationData.lblRejected || 'Rejected' }} <span [ngClass]="{'cursor-pointer': rejectedDriverList.length > 0}" (click)="(rejectedDriverList.length > 0) ? showDriverListPopup(rejectedDriverList) : ''" style='color: red; text-decoration-line: underline;'>{{ rejectedDriverList.length }} {{ translationData.lbldrivers || 'drivers' }}</span></span>
                 </div>
             </div>
         </mat-card>
@@ -105,6 +102,10 @@
                             </mat-select>
                         </mat-form-field>
                         <button mat-flat-button color="primary"
+                            (click)="onConsentClick('Inherit')" style='margin-right: 10px;'>
+                            <mat-icon style="font-size: 18px; padding-top: 2px;">refresh</mat-icon> {{ translationData.lblResetAll || 'Reset All'}}
+                        </button>
+                        <button mat-flat-button color="primary"
                             (click)="onConsentClick('Opt-In')" style='margin-right: 10px;'>
                             <mat-icon style="font-size: 18px; padding-top: 2px;">done</mat-icon> {{ translationData.lblOptInAll || 'Opt-In All'}}
                         </button>
@@ -126,17 +127,17 @@
                             <mat-cell *matCellDef="let row">{{ row.firstName }} {{ row.lastName }}</mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="emailId">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEmailId || 'Email Id' }}</mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEmailID || 'Email ID' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">{{ row.emailId }}</mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="consentStatus">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblConsent || 'Consent' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <div class='margin-left-10-per' *ngIf="row.consentStatus == 'Opt-In'">
-                                    <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ translationData.lblOptIn || 'Opt-In' }}" src='assets/images/icons/driverOpt/opt-in.svg' style="width: 20px; height: 20px;" />
+                                    <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ row.inheritStatus ? (translationData.lblInheritOptIn || 'Inherit Opt-In') : (translationData.lblOptIn || 'Opt-In') }}" src='assets/images/icons/driverOpt/opt-in.svg' style="width: 20px; height: 20px;" />
                                 </div>
                                 <div class='margin-left-10-per' *ngIf="row.consentStatus == 'Opt-Out'">
-                                    <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ translationData.lblOptOut || 'Opt-Out' }}" src='assets/images/icons/driverOpt/opt-out.svg' style="width: 20px; height: 20px;" />
+                                    <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ row.inheritStatus ? (translationData.lblInheritOptOut || 'Inherit Opt-Out') : (translationData.lblOptOut || 'Opt-Out') }}" src='assets/images/icons/driverOpt/opt-out.svg' style="width: 20px; height: 20px;" />
                                 </div>
                             </mat-cell>
                         </ng-container>
