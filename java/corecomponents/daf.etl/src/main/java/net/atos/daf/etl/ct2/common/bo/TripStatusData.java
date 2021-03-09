@@ -62,6 +62,7 @@ public class TripStatusData implements Serializable {
 	private Long tripCalGpsVehTimeDiff;
 	private Long hbaseInsertionTS;
 	private Long etlProcessingTS;
+	private Long kafkaProcessingTS;
 	private Double tripCalVehTimeDiffInHr;
 	private String vin;
 	
