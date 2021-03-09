@@ -36,6 +36,10 @@
 	  <Protobuf Include="Protos\translation.proto" GrpcServices="Client" />
 	  <Protobuf Include="Protos\audittrail.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\organization.proto" GrpcServices="Client" />
+	  <Protobuf Include="Protos\role.proto" GrpcServices="Client" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Entity\Role\" />
   </ItemGroup>
 
 </Project>

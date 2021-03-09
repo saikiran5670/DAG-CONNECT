@@ -20,6 +20,7 @@ using net.atos.daf.ct2.vehicleservice;
 using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.translationservice;
 using net.atos.daf.ct2.auditservice;
+using net.atos.daf.ct2.roleservice;
 
 using net.atos.daf.ct2.organizationservice;
 namespace net.atos.daf.ct2.portalservice
@@ -44,6 +45,7 @@ namespace net.atos.daf.ct2.portalservice
             var translationservice = Configuration["ServiceConfiguration:translationservice"];
             var auditservice = Configuration["ServiceConfiguration:auditservice"];
             var featureservice= Configuration["ServiceConfiguration:featureservice"];
+            var roleservice = Configuration["ServiceConfiguration:roleservice"];
             var organizationservice = Configuration["ServiceConfiguration:organizationservice"];
             // We are enforcing to call Insercure service             
             AppContext.SetSwitch(
@@ -78,6 +80,10 @@ namespace net.atos.daf.ct2.portalservice
              services.AddGrpcClient<FeatureService.FeatureServiceClient>(o =>
             {
                 o.Address = new Uri(featureservice);
+            });
+            services.AddGrpcClient<RoleService.RoleServiceClient>(o =>
+            {
+                o.Address = new Uri(roleservice);
             });
             services.AddGrpcClient<OrganizationService.OrganizationServiceClient>(o =>
             {

@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "net.atos.daf.ct2.roleservice";
+
+package role;
+
+
+enum Responcecode{
+  Success = 0;
+  Failed = 1;
+}
+
+
+enum RoleTypes{
+  Regular = 0;
+  Global = 1;
+}
+// The greeting service definition.
+service RoleService {
+  
+  rpc Create (RoleRequest) returns (RoleResponce);
+  rpc Update (RoleRequest) returns (RoleResponce);  
+  rpc Delete (RoleRequest) returns (RoleResponce);
+  rpc Get (RoleFilterRequest) returns (RoleListResponce);  
+  rpc GetFeatures (FeaturesFilterRequest) returns (FeaturesListResponce);
+}
+
+message RoleRequest {
+    int32 RoleID = 1;
+    int32 Organization_Id=2;
+    string RoleName = 3;
+    string Description=4;
+    int32 CreatedBy=5;
+    repeated int32 FeatureIds = 6;
+    int32 UpdatedBy=7;
+    int32 Level = 8;
+    bool IsGlobal = 9;
+  }
+
+  message RoleListResponce {
+    Responcecode code=1;
+    string message = 2;
+    repeated RoleRequest roles = 3;
+  }
+
+  message RoleResponce {
+    Responcecode code=1;
+    string message = 2;
+  }
+
+  message RoleFilterRequest {
+    int32 RoleId = 1;
+    int32 OrganizationId = 2;
+    int32 AccountId = 3;
+    bool Active =4;
+    bool IsGlobal = 9;
+  
+  }
+
+  message FeaturesRequest
+  {
+    int32 Id = 1;
+    string Name= 2;
+    string Description =3;
+    string type= 4;
+    bool Active=5;
+    int32 data_attribute_set_id= 6;
+
+  }
+
+  message FeaturesFilterRequest
+  {
+    string type=1;
+  }
+
+  message FeaturesListResponce
+  {
+    Responcecode code=1;
+    string message = 2;
+    repeated FeaturesRequest Features = 3;
+  }
