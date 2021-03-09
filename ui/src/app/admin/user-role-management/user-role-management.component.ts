@@ -115,7 +115,7 @@ export class UserRoleManagementComponent implements OnInit {
      };
   
     this.roleService.getUserRoles(objData).subscribe((data) => {
-      //this.initData = this.getNewTagData(data); //no createdDate present in API response
+      this.initData = this.getNewTagData(data); 
       if(data)
         this.hideloader();
       this.initData = data; //temporary 
@@ -130,7 +130,7 @@ export class UserRoleManagementComponent implements OnInit {
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     data.forEach(row => {
-      let createdDate = new Date(row.createddate).getTime();
+      let createdDate = new Date(row.createdAt).getTime();
       let nextDate = createdDate + 86400000;
       if(currentDate > createdDate && currentDate < nextDate){
         row.newTag = true;

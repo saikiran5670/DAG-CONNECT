@@ -323,7 +323,7 @@ export class UserManagementComponent implements OnInit {
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     data.forEach(row => {
-      let createdDate = new Date(row.createdOn).getTime(); //  need to check API response.
+      let createdDate = new Date(row.createdAt).getTime(); //  need to check API response.
       let nextDate = createdDate + 86400000;
       if(currentDate > createdDate && currentDate < nextDate){
         row.newTag = true;
