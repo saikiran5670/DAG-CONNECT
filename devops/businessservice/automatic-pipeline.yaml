@@ -11,7 +11,7 @@ jobs:
     variables:
       - group: DEV0-Build-Variables
       - name: a
-        value: $[variables.Subscription]
+        value: $(Subscription)
     pool: $(PRIVATEAGENT)
     steps:
       - task: replacetokens@3
@@ -44,5 +44,5 @@ jobs:
       - task: CmdLine@2
         inputs:
           script: |
-            echo $[variables.Subscription]
+            echo $(a)
       
