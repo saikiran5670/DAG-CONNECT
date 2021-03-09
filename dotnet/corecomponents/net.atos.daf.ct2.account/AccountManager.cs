@@ -53,7 +53,7 @@ namespace net.atos.daf.ct2.account
                 account = await repository.Create(account);
 
                 //Send account confirmation email
-                await TriggerSendEmailRequest(account, EmailTemplateType.CreateAccount);
+                await TriggerSendEmailRequest(account.EmailId, EmailTemplateType.CreateAccount);
             }
             else // there is issues and need delete user from IDP. 
             {
@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.account
                         await identity.UpdateUser(identityEntity);
 
                         //Send account confirmation email
-                        await TriggerSendEmailRequest(account, EmailTemplateType.CreateAccount);
+                        await TriggerSendEmailRequest(account.EmailId, EmailTemplateType.CreateAccount);
                     }
                     else
                     {
@@ -154,6 +154,9 @@ namespace net.atos.daf.ct2.account
             if (identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
                 result = true;
+
+                //Send confirmation email
+                await TriggerSendEmailRequest(account.EmailId, EmailTemplateType.ChangeResetPasswordSuccess);
             }
             return result;
         }
@@ -256,7 +259,7 @@ namespace net.atos.daf.ct2.account
                         await repository.Create(objToken);
 
                         //Send email
-                        var isSent = TriggerSendEmailRequest(account, EmailTemplateType.ResetPassword);
+                        var isSent = TriggerSendEmailRequest(account.EmailId, EmailTemplateType.ResetPassword);
 
                         if (isSent.Result)
                         {
@@ -307,6 +310,9 @@ namespace net.atos.daf.ct2.account
                     //Update status to Used
                     await repository.Update(resetPasswordToken.Id, ResetTokenStatus.Used);
 
+                    //Send confirmation email
+                    await TriggerSendEmailRequest(account.EmailId, EmailTemplateType.ChangeResetPasswordSuccess);
+
                     return true;
                 }
             }
@@ -328,14 +334,13 @@ namespace net.atos.daf.ct2.account
         }
 
         #region Private Helper Methods
-        private async Task<bool> TriggerSendEmailRequest(Account account, EmailTemplateType templateType)
+        private async Task<bool> TriggerSendEmailRequest(string toEmailAddress, EmailTemplateType templateType)
         {
-            //Send email
             var messageRequest = new MessageRequest();
             messageRequest.Configuration = emailConfiguration;
             messageRequest.ToAddressList = new Dictionary<string, string>()
             {
-                { account.EmailId, account.LastName + ", " + account.FirstName }
+                { toEmailAddress, null }
             };
 
             FillEmailTemplate(messageRequest, templateType);           
@@ -350,7 +355,7 @@ namespace net.atos.daf.ct2.account
             switch (templateType)
             {
                 case EmailTemplateType.CreateAccount:
-                    sb.Append("Your account has been successfully created on DAF portal.\n\n");
+                    sb.Append("Your account has been created successfully on DAF portal.\n\n");
 
                     messageRequest.Subject = "DAF Account Confirmation";
                     messageRequest.ContentMimeType = MimeType.Text;
@@ -360,12 +365,18 @@ namespace net.atos.daf.ct2.account
                     Uri resetUrl = new Uri(baseUrl, "account/resetpassword");
                     Uri resetInvalidateUrl = new Uri(baseUrl, "account/resetpasswordinvalidate");
 
-                    sb.Append("A request has been received to reset the password fro your account.\n\n");                                       
+                    sb.Append("A request has been received to reset the password from your account.\n\n");                                       
                     sb.Append(resetUrl.AbsoluteUri + "\n\n\n");
-                    sb.Append("Ïf you did not initiate this request, please click on the below link.\n\n");
+                    sb.Append("If you did not initiate this request, please click on the below link.\n\n");
                     sb.Append(resetInvalidateUrl.AbsoluteUri);
 
                     messageRequest.Subject = "Reset Password Confirmation";
+                    messageRequest.ContentMimeType = MimeType.Text;
+                    break;
+                case EmailTemplateType.ChangeResetPasswordSuccess:
+                    sb.Append("Your account password has been changed successfully.\n\n");
+
+                    messageRequest.Subject = "Change Password Confirmation";
                     messageRequest.ContentMimeType = MimeType.Text;
                     break;
                 default:

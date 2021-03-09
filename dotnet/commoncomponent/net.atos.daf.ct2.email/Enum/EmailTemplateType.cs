@@ -3,6 +3,7 @@
     public enum EmailTemplateType
     {
         CreateAccount = 1,
-        ResetPassword = 2
+        ResetPassword = 2,
+        ChangeResetPasswordSuccess = 3
     }
 }

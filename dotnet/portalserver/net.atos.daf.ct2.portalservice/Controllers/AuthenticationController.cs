@@ -84,16 +84,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                 accIdentity.AccountRole.Add(accRole);
                             }
                         }
-                        if (response.Authenticated)
-                        {
-                            var claims = new List<Claim>
-                            {
-                                new Claim(ClaimTypes.Email,accIdentity.AccountInfo.EmailId)
-                            };
-                            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                            var authProperties = new AuthenticationProperties();
-                            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,new ClaimsPrincipal(claimsIdentity),authProperties);
-                         }
+                        //if (response.Authenticated)
+                        //{
+                        //    var claims = new List<Claim>
+                        //    {
+                        //        new Claim(ClaimTypes.Email,accIdentity.AccountInfo.EmailId)
+                        //    };
+                        //    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        //    var authProperties = new AuthenticationProperties();
+                        //    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,new ClaimsPrincipal(claimsIdentity),authProperties);
+                        // }
                         return Ok(accIdentity); 
                     }
                     else 
@@ -119,7 +119,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("signout")]
         public async Task SignOut()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            //await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
         //[HttpPost]        
