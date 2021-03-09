@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.identitysession
             }
         }
 
-        public async Task<string> DeleteTokenbySessionId(string sessionID)
+        public async Task<int> DeleteTokenbySessionId(int sessionID)
         {
             try
             {

@@ -1,15 +1,15 @@
 package net.atos.daf.ct2.pojo.standard;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.*;
-import java.sql.Timestamp;
 
 @Data
 @NoArgsConstructor
@@ -23,7 +23,7 @@ public class Index implements Serializable {
 
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
   @JsonProperty(value = "EvtDateTime")
-  private Timestamp evtDateTime;
+  private String evtDateTime;
   @JsonProperty(value = "Increment")
   private Integer increment;
   @JsonProperty(value = "ROProfil")
@@ -36,6 +36,8 @@ public class Index implements Serializable {
   private String vid;
   @JsonProperty(value = "VIN")
   private String vin;
+  @JsonProperty(value = "kafkaProcessingTS")
+  private String kafkaProcessingTS;
 
   @JsonProperty(value = "Jobname")
   private String jobName;
@@ -53,7 +55,7 @@ public class Index implements Serializable {
 
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
   @JsonProperty(value = "GPSDateTime")
-  private Timestamp gpsDateTime;
+  private String gpsDateTime;
   @JsonProperty(value = "GPSLatitude")
   private Double gpsLatitude;
   @JsonProperty(value = "GPSLongitude")

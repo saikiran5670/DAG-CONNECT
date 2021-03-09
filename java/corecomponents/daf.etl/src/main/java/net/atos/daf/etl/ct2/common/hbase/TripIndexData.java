@@ -1,12 +1,15 @@
 package net.atos.daf.etl.ct2.common.hbase;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
-import org.apache.flink.api.java.tuple.Tuple7;
+import org.apache.flink.api.java.tuple.Tuple9;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.util.Collector;
 import org.apache.hadoop.hbase.Cell;
@@ -22,6 +25,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.etl.ct2.common.bo.TripStatusData;
 import net.atos.daf.etl.ct2.common.util.ETLConstants;
 import net.atos.daf.hbase.connection.HbaseAdapter;
@@ -29,7 +33,7 @@ import net.atos.daf.hbase.connection.HbaseConnection;
 import net.atos.daf.hbase.connection.HbaseConnectionPool;
 
 public class TripIndexData
-		extends RichFlatMapFunction<TripStatusData, Tuple7<String, String, String, Integer, Integer, String, Long>> {
+		extends RichFlatMapFunction<TripStatusData, Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>> {
 	private static final Logger logger = LoggerFactory.getLogger(TripIndexData.class);
 
 	private static final long serialVersionUID = 1L;
@@ -74,11 +78,11 @@ public class TripIndexData
 
 		} catch (IOException e) {
 			// TODO: handle exception both logger and throw is not required
-			logger.error("create connection failed from the configuration" + e.getMessage());
+			logger.error("Failed to get HBase connection in trip streaming job :: " + e);
 			throw e;
 		} catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required
-			logger.error("there is an exception" + e.getMessage());
+			logger.error("Issue while establishing HBase connection in Trip streaming Job :: " + e);
 		throw e;
 		}
 
@@ -107,17 +111,19 @@ public class TripIndexData
 
 	@Override
 	public void flatMap(TripStatusData stsData,
-			Collector<Tuple7<String, String, String, Integer, Integer, String, Long>> out) throws Exception {
+			Collector<Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>> out) throws Exception {
 
 		PrefixFilter rowPrefixFilter = new PrefixFilter(
 				Bytes.toBytes(ETLConstants.INDEX_MSG_TRANSID + "_" + stsData.getTripId()));
 		scan.setFilter(rowPrefixFilter);
 
 		logger.info("Index filter :: " + (ETLConstants.INDEX_MSG_TRANSID + "_" + stsData.getTripId()));
+		System.out.println("Index filter :: " + (ETLConstants.INDEX_MSG_TRANSID + "_" + stsData.getTripId()));
 
 		ResultScanner rs = table.getScanner(scan);
 		Iterator<Result> iterator = rs.iterator();
 
+		List<Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>> indexDataList = new ArrayList<>();
 		while (iterator.hasNext()) {
 
 			Result result = iterator.next();
@@ -127,8 +133,10 @@ public class TripIndexData
 			String vid = null;
 			Integer vTachographSpeed = 0;
 			Integer vGrossWeightCombination = 0;
-			String jobNm = null;
-			Long increment = null;
+			String jobNm = "";
+			Long increment = 0L;
+			Long evtDateTime = 0L;
+			Long vDist = 0L;
 
 			for (Cell cell : result.listCells()) {
 				try {
@@ -136,8 +144,8 @@ public class TripIndexData
 					String column = Bytes.toString(CellUtil.cloneQualifier(cell));
 					byte[] value = CellUtil.cloneValue(cell);
 
-					logger.info(" Index family  :: " + family);
-					logger.info(" Index column  :: " + column);
+					//System.out.println(" Index family  :: " + family);
+					//System.out.println(" Index column  :: " + column);
 
 					if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
 							&& ETLConstants.INDEX_MSG_TRIP_ID.equals(column) && null != Bytes.toString(value)
@@ -167,19 +175,44 @@ public class TripIndexData
 							&& ETLConstants.INDEX_MSG_INCREMENT.equals(column) && null != Bytes.toString(value)
 							&& !"null".equals(Bytes.toString(value)))
 						increment = Long.valueOf(Bytes.toString(value));
+					else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
+							&& ETLConstants.INDEX_MSG_VDIST.equals(column) && null != Bytes.toString(value)
+							&& !"null".equals(Bytes.toString(value)))
+						vDist = Long.valueOf(Bytes.toString(value));
+					else if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
+							&& ETLConstants.INDEX_MSG_EVT_DATETIME.equals(column) && null != Bytes.toString(value)
+							&& !"null".equals(Bytes.toString(value))){
+						evtDateTime = TimeFormatter.getInstance().convertUTCToEpochMilli(Bytes.toString(value), ETLConstants.DATE_FORMAT);
+					}
+					
 				} catch (Exception e) {
-					logger.error("Issue while reading Index message data :: " + e.getMessage());
+					logger.error("Issue while reading Index message data for prefix filter :: " +rowPrefixFilter + " exception is :: "+ e);
 				}
 			}
 
 			logger.info(" Index tripId  :: " + tripId);
+			
+			Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long> tuple9 = new Tuple9<>();
+			tuple9.setFields(tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination, jobNm, evtDateTime, vDist, increment);
 
-			Tuple7<String, String, String, Integer, Integer, String, Long> tuple7 = new Tuple7<>();
-			tuple7.setFields(tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination, jobNm, increment);
-
-			out.collect(tuple7);
-
+			indexDataList.add(tuple9);
+		
 		}
+		
+		Collections.sort(indexDataList,
+				new Comparator<Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>>() {
+					@Override
+					public int compare(
+							Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long> tuple1,
+							Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long> tuple2) {
+						return Long.compare(tuple1.f8, tuple2.f8);
+					}
+				});
+		
+		for(Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long> tuple9 : indexDataList){
+			out.collect(tuple9);
+		}
+
 	}
 
 	@Override
@@ -192,7 +225,7 @@ public class TripIndexData
 				conn.releaseConnection();
 			}
 		} catch (IOException e) {
-			logger.error("Issue while Closing HBase table :: ", e.getMessage());
+			logger.error("Issue while Closing HBase table :: ", e);
 			// TODO Need to throw an error
 		}
 	}

@@ -283,10 +283,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 VehicleBusinessService.VehicleGroupIdRequest request = new VehicleBusinessService.VehicleGroupIdRequest();
                 request.GroupId = Convert.ToInt32(GroupId);
-                VehicleBusinessService.VehicleGroupResponce response = await _vehicleClient.DeleteGroupAsync(request);
+                VehicleBusinessService.VehicleGroupDeleteResponce response = await _vehicleClient.DeleteGroupAsync(request);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
                 {
-                    return Ok(response.VehicleGroup);
+                    return Ok(response.Result);
                 }
                 else
                 {
@@ -341,7 +341,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("group/getvehiclelist")]
-        public async Task<IActionResult> GetVehiclesByVehicleGroup(int GroupId)
+        public async Task<IActionResult> GetVehiclesByVehicleGroup([FromQuery] int GroupId)
         {
             try
             {
@@ -385,7 +385,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("organization/get")]
-        public async Task<IActionResult> GetOrganizationVehicleGroupdetails(long OrganizationId)
+        public async Task<IActionResult> GetOrganizationVehicleGroupdetails([FromQuery] long OrganizationId)
         {
             try
             {
@@ -428,7 +428,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("getGroup")]
-        public async Task<IActionResult> GetVehicleGroup(int OrganizationId, int VehicleId)
+        public async Task<IActionResult> GetVehicleGroup([FromQuery] int OrganizationId, int VehicleId)
         {
             try
             {
@@ -475,7 +475,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("group/getvehicles")]
-        public async Task<IActionResult> GetVehiclesByAccountGroup(int AccountGroupId, int Organization_Id)
+        public async Task<IActionResult> GetVehiclesByAccountGroup([FromQuery] int AccountGroupId, int Organization_Id)
         {
             try
             {

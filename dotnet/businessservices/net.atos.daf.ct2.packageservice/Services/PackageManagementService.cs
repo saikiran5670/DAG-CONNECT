@@ -166,6 +166,7 @@ namespace net.atos.daf.ct2.packageservice
                                          Code = x.Code,
                                          Description = x.Description,
                                          Name = x.Name,
+                                         FeatureSetID=x.FeatureSetID,
                                          Status = (PackageStatus)x.Status,
                                          Type = (PackageType)x.Type
                                      }).ToList());

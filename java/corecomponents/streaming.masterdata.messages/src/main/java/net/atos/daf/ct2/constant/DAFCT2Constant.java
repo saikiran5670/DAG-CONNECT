@@ -17,7 +17,7 @@ public class DAFCT2Constant {
 	  public static final String AUDIT_CREATE_EVENT_TYPE = "1";
 	  public static final String AUDIT_EVENT_STATUS_START = "2";
 	  public static final String AUDIT_EVENT_STATUS_FAIL = "1";
-	  public static final String TRIP_JOB_NAME = "tripEtlJob";
+	  public static final String JOB_NAME = "streamingMasterDataJob";
 	  public static final String DEFAULT_OBJECT_ID = "00";
 
 	  public static final String GRPC_SERVER = "grpc.server";
@@ -53,4 +53,5 @@ public class DAFCT2Constant {
 	  public static final String POSTGRE_TABLE_WHITELIST = "postgre.table.name";
 	  public static final String POSTGRE_PLUGIN_NAME = "postgre.plugin.name";
 	  public static final String POSTGRE_CDC_VID_VIN = "postgre.cdc.vid.vin";
+	  public static final String POSTGRE_CDC_NAME = "postgre.cdc.name";
 	}

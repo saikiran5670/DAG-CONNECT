@@ -1,6 +1,21 @@
 package net.atos.daf.ct2.main;
 
-import net.atos.daf.common.AuditETLJobClient;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.state.MapStateDescriptor;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.streaming.api.datastream.BroadcastStream;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
 import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.constant.DAFCT2Constant;
 import net.atos.daf.ct2.exception.DAFCT2Exception;
@@ -10,29 +25,18 @@ import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.pojo.standard.Monitor;
 import net.atos.daf.ct2.pojo.standard.Status;
 import net.atos.daf.ct2.processing.BroadcastState;
+import net.atos.daf.ct2.processing.ConsumeSourceStream;
+import net.atos.daf.ct2.processing.EgressCorruptMessages;
+import net.atos.daf.ct2.processing.KafkaAuditService;
 import net.atos.daf.ct2.processing.MessageProcessing;
-import net.atos.daf.ct2.serde.KafkaMessageDeSerializeSchema;
-import org.apache.flink.api.common.state.MapStateDescriptor;
-import org.apache.flink.streaming.api.TimeCharacteristic;
-import org.apache.flink.streaming.api.datastream.BroadcastStream;
-import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import net.atos.daf.ct2.processing.StoreHistoricalData;
+import net.atos.daf.ct2.processing.ValidateSourceStream;
+import net.atos.daf.ct2.utils.JsonMapper;
 
 public class ContiMessageProcessing {
 
   private static final Logger log = LogManager.getLogger(ContiMessageProcessing.class);
-  public static String FILE_PATH; //= "src/main/resources/configuration.properties";
-  private static AuditETLJobClient auditETLJobClient;
+  public static String FILE_PATH;
   private StreamExecutionEnvironment streamExecutionEnvironment;
 
   public static Properties configuration() throws DAFCT2Exception {
@@ -52,21 +56,22 @@ public class ContiMessageProcessing {
   }
 
   public static void main(String[] args) {
-
+	ContiMessageProcessing contiMessageProcessing = new ContiMessageProcessing();
+	Properties properties = null; 
     try {
       FILE_PATH = args[0];
 
-      ContiMessageProcessing contiMessageProcessing = new ContiMessageProcessing();
-      Properties properties = configuration();
-      auditTrail(properties);
+     properties = configuration();
+     contiMessageProcessing.auditContiJobDetails(properties, "Conti streaming job started");
 
       contiMessageProcessing.flinkConnection();
-
       contiMessageProcessing.processing(properties);
       contiMessageProcessing.startExecution();
 
     } catch (DAFCT2Exception e) {
       log.error("Exception: ", e);
+      contiMessageProcessing.auditContiJobDetails(properties, "Conti streaming job failed :: "+e.getMessage());
+
       e.printStackTrace();
 
     } finally {
@@ -74,40 +79,10 @@ public class ContiMessageProcessing {
     }
   }
 
-  public static void auditTrail(Properties properties) {
-
-    try {
-      auditETLJobClient =
-          new AuditETLJobClient(
-              properties.getProperty(DAFCT2Constant.GRPC_SERVER),
-              Integer.valueOf(properties.getProperty(DAFCT2Constant.GRPC_PORT)));
-      Map<String, String> auditMap = new HashMap<String, String>();
-
-      auditMap.put(DAFCT2Constant.JOB_EXEC_TIME, String.valueOf(TimeFormatter.getCurrentUTCTimeInSec()));
-      auditMap.put(DAFCT2Constant.AUDIT_PERFORMED_BY, DAFCT2Constant.TRIP_JOB_NAME);
-      auditMap.put(DAFCT2Constant.AUDIT_COMPONENT_NAME, DAFCT2Constant.TRIP_JOB_NAME);
-      auditMap.put(DAFCT2Constant.AUDIT_SERVICE_NAME, DAFCT2Constant.AUDIT_SERVICE);
-      auditMap.put(DAFCT2Constant.AUDIT_EVENT_TYPE, DAFCT2Constant.AUDIT_CREATE_EVENT_TYPE);
-      auditMap.put(
-          DAFCT2Constant.AUDIT_EVENT_TIME, String.valueOf(TimeFormatter.getCurrentUTCTime()));
-      auditMap.put(DAFCT2Constant.AUDIT_EVENT_STATUS, DAFCT2Constant.AUDIT_EVENT_STATUS_START);
-      auditMap.put(DAFCT2Constant.AUDIT_MESSAGE, "Conti Message Streaming");
-      auditMap.put(DAFCT2Constant.AUDIT_SOURCE_OBJECT_ID, DAFCT2Constant.DEFAULT_OBJECT_ID);
-      auditMap.put(DAFCT2Constant.AUDIT_TARGET_OBJECT_ID, DAFCT2Constant.DEFAULT_OBJECT_ID);
-
-      auditETLJobClient.auditTrialGrpcCall(auditMap);
-
-      log.info("Audit Trial Started");
-
-    } catch (Exception e) {
-      log.error("Unable to initialize Audit Trials", e);
-    }
-  }
-
   public void flinkConnection() {
 
     this.streamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment();
-    this.streamExecutionEnvironment.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+    //this.streamExecutionEnvironment.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
     /*this.streamExecutionEnvironment.enableCheckpointing(5000);
     this.streamExecutionEnvironment.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
     this.streamExecutionEnvironment
@@ -121,34 +96,66 @@ public class ContiMessageProcessing {
 
   public void processing(Properties properties) {
 
-    MapStateDescriptor<Message<String>, KafkaRecord<String>> mapStateDescriptor =
-        new BroadcastState<String>()
-            .stateInitialization(properties.getProperty(DAFCT2Constant.BROADCAST_NAME));
-
-    DataStream<KafkaRecord<String>> masterDataInputStream =
-        streamExecutionEnvironment.addSource(
-            new FlinkKafkaConsumer<KafkaRecord<String>>(
-                properties.getProperty(DAFCT2Constant.MASTER_DATA_TOPIC_NAME),
-                new KafkaMessageDeSerializeSchema<String>(),
-                properties));
-
+    ConsumeSourceStream consumeSrcStream = new ConsumeSourceStream();
+	ValidateSourceStream validateSourceStream = new ValidateSourceStream();
+	
+	 MapStateDescriptor<Message<String>, KafkaRecord<String>> mapStateDescriptor =
+		        new BroadcastState<String>()
+		            .stateInitialization(properties.getProperty(DAFCT2Constant.BROADCAST_NAME));
+		    
+    DataStream<KafkaRecord<String>> masterDataInputStream = consumeSrcStream.consumeSourceInputStream(
+			streamExecutionEnvironment, DAFCT2Constant.MASTER_DATA_TOPIC_NAME, properties);
+    
     masterDataInputStream.print();
 
     BroadcastStream<KafkaRecord<String>> broadcastStream =
         masterDataInputStream.broadcast(mapStateDescriptor);
+	 
+    DataStream<KafkaRecord<String>> contiInputStream = consumeSrcStream.consumeSourceInputStream(
+			streamExecutionEnvironment, DAFCT2Constant.SOURCE_TOPIC_NAME, properties);
 
-    DataStream<KafkaRecord<String>> sourceInputStream =
-        streamExecutionEnvironment.addSource(
-            new FlinkKafkaConsumer<KafkaRecord<String>>(
-                properties.getProperty(DAFCT2Constant.SOURCE_TOPIC_NAME),
-                new KafkaMessageDeSerializeSchema<String>(),
-                properties));
+    contiInputStream.map(new MapFunction<KafkaRecord<String>,KafkaRecord<String>>(){
 
-    sourceInputStream.print();
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+        String rowKey = null;
+		@Override
+		public KafkaRecord<String> map(KafkaRecord<String> value) throws Exception {
+			try{
+				JsonNode jsonNodeRec = JsonMapper.configuring().readTree(value.getValue());
+				System.out.println("for history :: "+jsonNodeRec);
+				rowKey = jsonNodeRec.get("TransID").asText() + "_" + jsonNodeRec.get("VID").asText() + "_" + TimeFormatter.getInstance().getCurrentUTCTime();
+				
+			}catch(Exception e){
+				rowKey = "CorruptMessage" + "_" + TimeFormatter.getInstance().getCurrentUTCTime();
+			}
+			
+			value.setKey(rowKey);
+			return value;
+		}
+    	}).addSink(new StoreHistoricalData(properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_QUORUM),
+  			properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT),
+			properties.getProperty(DAFCT2Constant.ZOOKEEPER_ZNODE_PARENT),
+			properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER),
+			properties.getProperty(DAFCT2Constant.HBASE_MASTER),
+			properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER_PORT),
+			properties.getProperty(DAFCT2Constant.HBASE_CONTI_HISTORICAL_TABLE_NAME)));
+	
+    DataStream<Tuple2<Integer, KafkaRecord<String>>> contiStreamValiditySts = validateSourceStream
+			.isValidJSON(contiInputStream);
+	DataStream<KafkaRecord<String>> contiValidInputStream = validateSourceStream
+			.getValidContiMessages(contiStreamValiditySts);
+
+	new EgressCorruptMessages().egressCorruptMessages(contiStreamValiditySts, properties,
+			properties.getProperty(DAFCT2Constant.CONTI_CORRUPT_MESSAGE_TOPIC_NAME));
+
+	contiValidInputStream.print();
 
     new MessageProcessing<String, Index>()
         .consumeContiMessage(
-            sourceInputStream,
+        	contiValidInputStream,
             properties.getProperty(DAFCT2Constant.INDEX_TRANSID),
             "Index",
             properties.getProperty(DAFCT2Constant.SINK_INDEX_TOPIC_NAME),
@@ -158,7 +165,7 @@ public class ContiMessageProcessing {
 
     new MessageProcessing<String, Status>()
         .consumeContiMessage(
-            sourceInputStream,
+        	contiValidInputStream,
             properties.getProperty(DAFCT2Constant.STATUS_TRANSID),
             "Status",
             properties.getProperty(DAFCT2Constant.SINK_STATUS_TOPIC_NAME),
@@ -168,7 +175,7 @@ public class ContiMessageProcessing {
 
     new MessageProcessing<String, Monitor>()
         .consumeContiMessage(
-            sourceInputStream,
+        	contiValidInputStream,
             properties.getProperty(DAFCT2Constant.MONITOR_TRANSID),
             "Monitor",
             properties.getProperty(DAFCT2Constant.SINK_MONITOR_TOPIC_NAME),
@@ -188,7 +195,20 @@ public class ContiMessageProcessing {
 
     } catch (Exception e) {
       log.error("Unable to process Message using Flink ", e);
+      e.printStackTrace();
       throw new DAFCT2Exception("Unable to process Message using Flink ", e);
     }
+  }
+  
+  public void auditContiJobDetails(Properties properties, String message){
+	  try{
+		  new KafkaAuditService().auditTrail(
+					properties.getProperty(DAFCT2Constant.GRPC_SERVER),
+					properties.getProperty(DAFCT2Constant.GRPC_PORT),
+					DAFCT2Constant.JOB_NAME, 
+					message);
+	  }catch(Exception e){
+		  System.out.println("Issue while auditing streaming conti job ");
+	  } 
   }
 }

@@ -236,8 +236,8 @@ namespace net.atos.daf.ct2.features.repository
          {
              var QueryStatement = @"Select f.id,f.name,f.type,f.is_active,f.data_attribute_set_id,f.key,f.level,fs.feature_set_id from master.feature f
 	                                Left join master.featuresetfeature fS
-	                                on f.id=fs.feature_set_id
-                                    Where feature_set_id = @feature_set_id
+	                                on f.id=fs.feature_id
+                                    Where fs.feature_set_id = @feature_set_id
                                     ";
 
             var parameter = new DynamicParameters();

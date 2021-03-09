@@ -89,7 +89,7 @@ namespace net.atos.daf.ct2.role.repository
 
             var RoleQueryStatement = @"UPDATE master.role
                                     SET is_active = @is_active
-                                    ,modified_at = @modified_date
+                                    ,modified_at = @modified_at
                                     ,modified_by = @modified_by
                                     WHERE id = @roleid
                                     RETURNING id;";
@@ -132,11 +132,12 @@ namespace net.atos.daf.ct2.role.repository
                                 role.name, 
                                 role.is_active, 
                                 role.description,
-                                role.created_date, 
+                                role.created_at, 
                                 role.created_by, 
-                                role.updated_date,
-                                role.updated_by,
-                                role.feature_set_id
+                                role.modified_at,
+                                role.modified_by,
+                                role.feature_set_id,
+                                role.level
 	                            FROM master.role role
 								WHERE  is_active = true";
 

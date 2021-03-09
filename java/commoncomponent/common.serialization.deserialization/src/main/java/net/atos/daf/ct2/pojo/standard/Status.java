@@ -1,15 +1,15 @@
 package net.atos.daf.ct2.pojo.standard;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -23,7 +23,7 @@ public class Status implements Serializable {
 
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
   @JsonProperty(value = "EvtDateTime")
-  private Date evtDateTime;
+  private String evtDateTime;
   @JsonProperty(value = "Increment")
   private Integer increment;
   @JsonProperty(value = "ROProfil")
@@ -36,10 +36,12 @@ public class Status implements Serializable {
   private String vid;
   @JsonProperty(value = "VIN")
   private String vin;
+  @JsonProperty(value = "kafkaProcessingTS")
+  private String kafkaProcessingTS;
 
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
   @JsonProperty(value = "EventDateTimeFirstIndex")
-  private Date eventDateTimeFirstIndex;
+  private String eventDateTimeFirstIndex;
 
   @JsonProperty(value = "Jobname")
   private String jobName;
@@ -62,11 +64,11 @@ public class Status implements Serializable {
 
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
   @JsonProperty(value = "GPSStartDateTime")
-  private Date gpsStartDateTime;
+  private String gpsStartDateTime;
 
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
   @JsonProperty(value = "GPSEndDateTime")
-  private Date gpsEndDateTime;
+  private String gpsEndDateTime;
   @JsonProperty(value = "GPSStartLatitude")
   private Double gpsStartLatitude;
   @JsonProperty(value = "GPSEndLatitude")

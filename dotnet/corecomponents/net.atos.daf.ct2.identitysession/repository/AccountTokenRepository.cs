@@ -60,7 +60,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 parameter.Add("@refresh_expire_in", accountToken.RefreshExpireIn); 
                 parameter.Add("@account_id", accountToken.AccountId);
                 parameter.Add("@type", accountToken.TokenType);
-                parameter.Add("@session_id", new Guid(accountToken.SessionState));
+                parameter.Add("@session_id", accountToken.Session_Id);
                 parameter.Add("@scope", accountToken.Scope);
                 parameter.Add("@idp_type", accountToken.IdpType);
                 parameter.Add("@created_at", accountToken.CreatedAt);
@@ -105,7 +105,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 return Id;
         }
 
-        public async Task<string> DeleteTokenbySessionId(string sessionId)
+        public async Task<int> DeleteTokenbySessionId(int sessionId)
         {
             try
             {
@@ -114,9 +114,9 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         where session_id=@session_id
                                         RETURNING session_id";
                 var parameter = new DynamicParameters();
-                parameter.Add("@session_id",new Guid(sessionId));
-                Guid session_Id= await dataAccess.ExecuteScalarAsync<Guid>(QueryStatement, parameter);
-                return session_Id.ToString();
+                parameter.Add("@session_id",sessionId);
+                int session_Id= await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                return session_Id;
             }
             catch(Exception ex)
             {
@@ -232,7 +232,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             entity.RefreshExpireIn=record.refresh_expire_in;
             entity.AccountId=record.account_id;
             entity.TokenType=record.type;
-            entity.SessionState=Convert.ToString(record.session_id);
+            entity.Session_Id=record.session_id;
             entity.Scope=record.scope;
             entity.IdpType=record.idp_type;
             entity.CreatedAt=record.created_at; 

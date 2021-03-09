@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.roleservice
 
         }
 
-        public override Task<RoleResponce> Create(RoleRequest request, ServerCallContext context)
+        public async override Task<RoleResponce> Create(RoleRequest request, ServerCallContext context)
         {
             try
             {
@@ -50,16 +50,16 @@ namespace net.atos.daf.ct2.roleservice
                 int Rid = _RoleManagement.CheckRoleNameExist(request.RoleName.Trim(), request.OrganizationId, 0);
                 if (Rid > 0)
                 {
-                    return Task.FromResult(new RoleResponce
+                    return await Task.FromResult(new RoleResponce
                     {
                         Message = "Role name allready exist",
                         Code = Responcecode.Failed
 
                     });
                 }
-                var role = _RoleManagement.CreateRole(ObjRole).Result;
+                var role = await _RoleManagement.CreateRole(ObjRole);
                 
-                return Task.FromResult(new RoleResponce
+                return await Task.FromResult(new RoleResponce
                 {
                     Message = "Role created with id:- " + role,
                     Code = Responcecode.Success
@@ -68,7 +68,7 @@ namespace net.atos.daf.ct2.roleservice
             }
             catch(Exception ex)
             {
-                return Task.FromResult(new RoleResponce
+                return await Task.FromResult(new RoleResponce
                                 {
                                     Message = "Exception :-" + ex.Message,
                                     Code = Responcecode.Failed
@@ -77,7 +77,7 @@ namespace net.atos.daf.ct2.roleservice
 
         }
 
-        public override Task<RoleResponce> Update(RoleRequest request, ServerCallContext context)
+        public async override Task<RoleResponce> Update(RoleRequest request, ServerCallContext context)
         {
             try
             {
@@ -87,9 +87,15 @@ namespace net.atos.daf.ct2.roleservice
                 roleMaster.Id = request.RoleID;
                 roleMaster.Updatedby = request.UpdatedBy;
                 roleMaster.FeatureSet = new FeatureSet();
-                var role = _RoleManagement.UpdateRole(roleMaster).Result;
+                //ObjRole.FeatureSet = new FeatureSet();
+                roleMaster.FeatureSet.Features = new List<Feature>();
+                foreach (var item in request.FeatureIds)
+                {
+                    roleMaster.FeatureSet.Features.Add(new Feature() { Id = item });
+                }
+                var role = await _RoleManagement.UpdateRole(roleMaster);
           
-                return Task.FromResult(new RoleResponce
+                return await Task.FromResult(new RoleResponce
                 {
                     Message = "Role Updated id:- " + role,
                     Code = Responcecode.Success
@@ -98,7 +104,7 @@ namespace net.atos.daf.ct2.roleservice
             }
             catch(Exception ex)
             {
-                return Task.FromResult(new RoleResponce
+                return await Task.FromResult(new RoleResponce
                                 {
                                     Message = "Exception :-" + ex.Message,
                                     Code = Responcecode.Failed
@@ -155,7 +161,8 @@ namespace net.atos.daf.ct2.roleservice
                     //ObjResponce.= item.Is_Active;
                     ObjResponce.Description = item.Description == null ? "" : item.Description;
                     //ObjResponce.Roletype= item.Organization_Id == null ? RoleTypes.Global : RoleTypes.Regular;
-                    //ObjResponce.FeaturesCount = item.Featurescount == null ?0 : Convert.ToInt32(item.Featurescount);
+                    ObjResponce.FeatureIds.Add(item.FeatureSet.Features.Select(I=> I.Id).ToArray());
+                    ObjResponce.Level = item.Level;
                     ObjroleList.Roles.Add(ObjResponce);
                 }
 

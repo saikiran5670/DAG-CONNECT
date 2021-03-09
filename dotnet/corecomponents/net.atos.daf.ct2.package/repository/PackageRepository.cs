@@ -36,11 +36,8 @@ namespace net.atos.daf.ct2.package.repository
                 parameter.Add("@packagecode", package.Code);
                 parameter.Add("@feature_set_id", package.FeatureSetID);
                 parameter.Add("@name", package.Name);
-                parameter.Add("@type", package.Type);
-                parameter.Add("@description", package.Description);
-                // parameter.Add("@is_default", Convert.ToBoolean(package.Default));
-                //parameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(package.StartDate));
-                //parameter.Add("@end_date", UTCHandling.GetUTCFromDateTime(package.EndDate));
+                parameter.Add("@type", MapPackageType(package.Type));
+                parameter.Add("@description", package.Description);               
                 parameter.Add("@is_active", Convert.ToBoolean(package.Status));
 
                 string query = @"insert into master.package(packagecode,feature_set_id,name,type,description,is_active) " +
@@ -65,7 +62,7 @@ namespace net.atos.daf.ct2.package.repository
                 parameter.Add("@packagecode", package.Code);
                 parameter.Add("@feature_set_id", package.FeatureSetID);
                 parameter.Add("@name", package.Name);
-                parameter.Add("@type", package.Type);
+                parameter.Add("@type", MapPackageType(package.Type));
                 parameter.Add("@description", package.Description);
                 // parameter.Add("@is_default", Convert.ToBoolean(package.Default));
                 //   parameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(package.StartDate));
@@ -103,17 +100,15 @@ namespace net.atos.daf.ct2.package.repository
                 {
                     foreach (Package package in newPackages)
                     {
-                        package.FeatureSetID = 9;//this line is just for testing purpose
-                       // package.FeatureSetID = CreateFeatureSet(package.Features).Result;
+
                         if (package.Code != null && package.FeatureSetID > 0)
                         {
                             parameter = new DynamicParameters();
                             parameter.Add("@packagecode", package.Code);
                             parameter.Add("@feature_set_id", package.FeatureSetID);
                             parameter.Add("@name", package.Name);
-                            parameter.Add("@type", package.Type);
+                            parameter.Add("@type", MapPackageType(package.Type));
                             parameter.Add("@description", package.Description);
-                            //parameter.Add("@is_default", Convert.ToBoolean(package.Default));                         
                             parameter.Add("@is_active", Convert.ToBoolean(package.Status));
                             query = @"insert into master.package(packagecode,feature_set_id,name,type,description,is_active) " +
                                     "values(@packagecode,@feature_set_id,@name,@type,@description,@is_active) RETURNING id";
@@ -218,9 +213,9 @@ namespace net.atos.daf.ct2.package.repository
                         query = query + " and pkg.feature_set_id = @feature_set_id ";
                     }
                     // package type filter
-                    if (filter.Type != 0)// (((char)filter.Type) != ((char)PackageType.Organization))
+                    if (filter.Type != 0) 
                     {
-                        parameter.Add("@type", (char)filter.Type);//, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                        parameter.Add("@type", (char)filter.Type); 
 
                         query = query + " and pkg.type=@type";
                     }
@@ -276,13 +271,27 @@ namespace net.atos.daf.ct2.package.repository
             package.Code = record.packagecode;
 
             package.Status = record.is_active ? PackageStatus.Active : PackageStatus.Inactive;
-           // package.Type = (PackageType)(record.type);
+            package.Type = (PackageType)(record.type);
             package.Name = record.name;
             package.Description = record.description;
             package.FeatureSetID = record.feature_set_id;
             return package;
         }
 
+        private char MapPackageType(PackageType packageType)
+        {
+            var type = default(char);
+            switch (packageType)
+            {
+                case PackageType.Organization:
+                     type= 'O';
+                    break;
+                case PackageType.Vehicle:
+                    type= 'V';
+                    break;
+            }
+            return type; ;
+        }
         public Task<FeatureSet> Update(FeatureSet featureSet)
         {
             throw new NotImplementedException();
