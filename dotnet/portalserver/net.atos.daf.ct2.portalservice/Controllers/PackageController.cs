@@ -93,14 +93,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.LogInformation("Update method in package API called.");
 
                 // Validation 
-                if (request.Id <= 0 || (string.IsNullOrEmpty(request.Code)))
+                if (request.Id <= 0 || (string.IsNullOrEmpty(request.Code)) || request.FeatureSetID <=0)
                 {
-                    return StatusCode(400, "The packageId and package code are required.");
+                    return StatusCode(400, "The packageId , package code and featureset id  are required.");
                 }
 
-                var featureSetId = request.FeatureSetID > 0 ? request.FeatureSetID : await _packageMapper.RetrieveFeatureSetId(request.Features);
-                if (featureSetId > 0)
+                if (request.FeatureSetID > 0)
                 {
+                    var featureSetId =  await _packageMapper.UpdateFeatureSetId(request.Features, request.FeatureSetID);
+
                     var createPackageRequest = _packageMapper.ToCreatePackage(request);
                     createPackageRequest.FeatureSetID = featureSetId;
                     var packageResponse = await _packageClient.UpdateAsync(createPackageRequest);

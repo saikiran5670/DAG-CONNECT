@@ -215,7 +215,7 @@ namespace net.atos.daf.ct2.package.repository
                     // package type filter
                     if (filter.Type != 0) 
                     {
-                        parameter.Add("@type", (char)filter.Type); 
+                        parameter.Add("@type", MapPackageType(filter.Type)); 
 
                         query = query + " and pkg.type=@type";
                     }
@@ -271,7 +271,7 @@ namespace net.atos.daf.ct2.package.repository
             package.Code = record.packagecode;
 
             package.Status = record.is_active ? PackageStatus.Active : PackageStatus.Inactive;
-            package.Type = (PackageType)(record.type);
+            package.Type = MapCharToPackageType(record.type);
             package.Name = record.name;
             package.Description = record.description;
             package.FeatureSetID = record.feature_set_id;
@@ -292,6 +292,23 @@ namespace net.atos.daf.ct2.package.repository
             }
             return type; ;
         }
+
+
+        private PackageType MapCharToPackageType(string type)
+        {
+            var ptype = PackageType.Organization;
+            switch (type)
+            {
+                case "O":
+                    ptype = PackageType.Organization;
+                    break;
+                case "V":
+                    ptype = PackageType.Organization;
+                    break;
+            }
+            return ptype; ;
+        }
+
         public Task<FeatureSet> Update(FeatureSet featureSet)
         {
             throw new NotImplementedException();

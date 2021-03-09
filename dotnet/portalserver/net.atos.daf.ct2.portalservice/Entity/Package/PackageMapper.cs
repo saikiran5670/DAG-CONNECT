@@ -117,5 +117,45 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
 
         }
 
+
+        public async Task<int> UpdateFeatureSetId(List<string> features,int featureSetId)
+        {
+            var featureSetIds = new List<int>();
+            var featureSetRequest = new FetureSetRequest();
+            var featureFilterRequest = new FeaturesFilterRequest();
+            var featureList = await _featureclient.GetFeaturesAsync(featureFilterRequest);
+            foreach (var item in features)
+            {
+                bool hasFeature = featureList.Features.Any(feature => feature.Name == item);
+                if (hasFeature)
+                {
+                    foreach (var feature in featureList.Features)
+                    {
+                        if (feature.Name == item)
+                        {
+                            featureSetIds.Add(feature.Id);
+                        }
+                    }
+                }
+                else
+                {
+                    return 0;
+
+                }
+            }
+
+            featureSetRequest.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds(); 
+            featureSetIds = featureSetIds.Select(x => x).Distinct().ToList();
+            featureSetRequest.Features.AddRange(featureSetIds);
+
+            var ObjResponse = await _featureclient.CreateFeatureSetAsync(featureSetRequest);
+            return Convert.ToInt32(ObjResponse.Message);
+
+        }
+
+
+
+
+
     }
 }
