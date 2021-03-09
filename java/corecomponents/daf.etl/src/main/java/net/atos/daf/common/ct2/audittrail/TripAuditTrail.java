@@ -38,12 +38,12 @@ public class TripAuditTrail implements Serializable {
 			String evtType) {
 		Map<String, String> auditMap = new HashMap<>();
 
-		auditMap.put(ETLConstants.JOB_EXEC_TIME, String.valueOf(TimeFormatter.getCurrentUTCTimeInSec()));
+		auditMap.put(ETLConstants.JOB_EXEC_TIME, String.valueOf(TimeFormatter.getInstance().getCurrentUTCTimeInSec()));
 		auditMap.put(ETLConstants.AUDIT_PERFORMED_BY, jobName);
 		auditMap.put(ETLConstants.AUDIT_COMPONENT_NAME, jobName);
 		auditMap.put(ETLConstants.AUDIT_SERVICE_NAME, ETLConstants.AUDIT_SERVICE);
 		auditMap.put(ETLConstants.AUDIT_EVENT_TYPE, evtType);// check
-		auditMap.put(ETLConstants.AUDIT_EVENT_TIME, String.valueOf(TimeFormatter.getCurrentUTCTimeInSec()));
+		auditMap.put(ETLConstants.AUDIT_EVENT_TIME, String.valueOf(TimeFormatter.getInstance().getCurrentUTCTimeInSec()));
 		auditMap.put(ETLConstants.AUDIT_EVENT_STATUS, jobStatus);
 		auditMap.put(ETLConstants.AUDIT_MESSAGE, message);
 		auditMap.put(ETLConstants.AUDIT_SOURCE_OBJECT_ID, ETLConstants.DEFAULT_OBJECT_ID);

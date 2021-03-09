@@ -32,6 +32,29 @@
 		<artifactId>daf.common</artifactId>
 		<version>0.0.1</version>
 	</dependency>
+	
+	<!-- <dependency>
+		<groupId>net.atos</groupId>
+		<artifactId>daf.postgre.connection</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</dependency>
+	
+	 <dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-entitymanager</artifactId>
+		<version>4.3.0.CR2</version>
+	</dependency>
+	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-core</artifactId>
+		<version>4.3.0.CR2</version>
+	</dependency>  
+	
+	<dependency>
+<groupId>org.javassist</groupId>
+<artifactId>javassist</artifactId>
+<version>3.22.0-GA</version>
+</dependency> -->
 
 	<dependency>
 		<groupId>net.atos.daf.ct2</groupId>

@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.flink.api.java.tuple.Tuple7;
+import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.tuple.Tuple9;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -42,21 +43,23 @@ public class TripETLJob {
 			env.getConfig().setGlobalJobParameters(envParams);
 
 			final StreamTableEnvironment tableEnv = FlinkUtil.createStreamTableEnvironment(env);
+			TripETLJob tripEtlJob = new TripETLJob();
+			TripAggregations tripAggregation = new TripAggregations();
 
 			logger.info(" Trip Job frequency :: " + Integer.parseInt(envParams.get(ETLConstants.TRIP_ETL_FREQUENCY)));
 			logger.info("  Trip Job time range to read from HBase table, startTime :: "
-					+ TimeFormatter.subMilliSecFromUTCTime(
+					+ TimeFormatter.getInstance().subMilliSecFromUTCTime(
 							Long.parseLong(envParams.get(ETLConstants.TRIP_JOB_START_TIME)),
 							Integer.parseInt(envParams.get(ETLConstants.TRIP_ETL_FREQUENCY)))
 					+ " endTime :: " + Long.parseLong(envParams.get(ETLConstants.TRIP_JOB_START_TIME)));
 
 			List<Long> timeRangeLst = new ArrayList<>();
-			timeRangeLst.add(TimeFormatter.subMilliSecFromUTCTime(
+			timeRangeLst.add(TimeFormatter.getInstance().subMilliSecFromUTCTime(
 					Long.parseLong(envParams.get(ETLConstants.TRIP_JOB_START_TIME)),
 					Integer.parseInt(envParams.get(ETLConstants.TRIP_ETL_FREQUENCY))));
 			timeRangeLst.add(Long.parseLong(envParams.get(ETLConstants.TRIP_JOB_START_TIME)));
 
-			Map<String, List<String>> tripStsColumns = getTripStatusColumns();
+			Map<String, List<String>> tripStsColumns = tripEtlJob.getTripStatusColumns();
 			SingleOutputStreamOperator<TripStatusData> hbaseStsData = env.addSource(new TripStatusCompletion(
 					envParams.get(ETLConstants.STATUS_TABLE_NM), tripStsColumns, null, timeRangeLst));
 
@@ -65,13 +68,16 @@ public class TripETLJob {
 				hbaseStsData.writeAsText(envParams.get(ETLConstants.WRITE_OUTPUT) + "statusData.txt",
 						FileSystem.WriteMode.OVERWRITE).name("writeStatusDataToFile");
 
-			SingleOutputStreamOperator<Tuple7<String, String, String, Integer, Integer, String, Long>> indxData = TripAggregations
+			SingleOutputStreamOperator<Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>> indxData = tripAggregation
 					.getTripIndexData(hbaseStsData, tableEnv, envParams);
 			/*DataStream<Tuple5<String, String, String, Integer, Double>> secondLevelAggrData = TripAggregations
 					.getTripIndexAggregatedData(hbaseStsData, tableEnv, indxData);
 			DataStream<Trip> finalTripData = TripAggregations.getConsolidatedTripData(hbaseStsData, secondLevelAggrData,
 					tableEnv);*/
-			DataStream<Trip> finalTripData = TripAggregations.getConsolidatedTripData(hbaseStsData, indxData, tableEnv);
+			
+			DataStream<Tuple3<Double, Double, Double>> vehDieselEmissionFactors = tripAggregation.getVehDieselEmissionFactors(envParams, env);
+
+			DataStream<Trip> finalTripData = tripAggregation.getConsolidatedTripData(hbaseStsData, indxData, vehDieselEmissionFactors, Long.valueOf(envParams.get(ETLConstants.TRIP_TIME_WINDOW_MILLISEC)), tableEnv);
 
 			// TODO read master data
 			finalTripData.addSink(new TripSink());
@@ -102,7 +108,7 @@ public class TripETLJob {
 		}
 	}
 
-	private static Map<String, List<String>> getTripStatusColumns() {
+	private Map<String, List<String>> getTripStatusColumns() {
 		Map<String, List<String>> tripStsClmns = new HashMap<>();
 		List<String> stsClmns = new ArrayList<>();
 

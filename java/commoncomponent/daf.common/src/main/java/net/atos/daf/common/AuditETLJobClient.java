@@ -64,7 +64,7 @@ public class AuditETLJobClient {
 		if (jobDetail.get("jobExecTime") != null)
 			jobExecTime = Long.valueOf(jobDetail.get("jobExecTime"));
 		else
-			jobExecTime = TimeFormatter.getCurrentUTCTime();
+			jobExecTime = TimeFormatter.getInstance().getCurrentUTCTime();
 
 		AuditResponce auditResponce = stub.addlogs(AuditRecord.newBuilder()
 				.setPerformedAt(com.google.protobuf.Timestamp.newBuilder().setSeconds(jobExecTime).build())

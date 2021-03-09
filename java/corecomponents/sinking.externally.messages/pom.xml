@@ -4,12 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-<!--    <parent>
-        <artifactId>DAF_CT2</artifactId>
-        <groupId>net.atos.daf.ct2</groupId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>-->
-
     <groupId>net.atos.daf.ct2</groupId>
     <artifactId>sinking.externally.messages</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -23,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <flink.version>1.11.1</flink.version>
+        <flink.version>1.12.0</flink.version>
         <kafka.version>2.6.0</kafka.version>
         <lombok.version>1.18.14</lombok.version>
         <log4j.version>2.7</log4j.version>

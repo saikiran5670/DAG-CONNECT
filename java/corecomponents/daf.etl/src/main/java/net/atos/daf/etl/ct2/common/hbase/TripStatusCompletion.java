@@ -139,9 +139,9 @@ public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusD
 			{
 				//Mini Streaming Batch Processing
 				processTripData(ctx);
-				long currentUtcTm = TimeFormatter.getCurrentUTCTime();
-				//long timeDiff = TimeFormatter.subMilliSecFromUTCTime(currentUtcTm, lastTripUtcTm);
-				long timeDiff = TimeFormatter.subPastUtcTmFrmCurrentUtcTm(lastTripUtcTm, currentUtcTm);
+				long currentUtcTm = TimeFormatter.getInstance().getCurrentUTCTime();
+				//long timeDiff = TimeFormatter.getInstance().subMilliSecFromUTCTime(currentUtcTm, lastTripUtcTm);
+				long timeDiff = TimeFormatter.getInstance().subPastUtcTmFrmCurrentUtcTm(lastTripUtcTm, currentUtcTm);
 												
 				logger.info("currentUtcTm :: " + currentUtcTm);
 				logger.info("timeDiff :: " + timeDiff);
@@ -152,19 +152,19 @@ public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusD
 					
 					//TODO remove ---> case when source system is down and no data available - rare case enabled for testing 
 					if(timeDiff < etlMinDuration){
-						logger.info(" time bfr sleep : "+TimeFormatter.getUTCStringFromEpochMilli(TimeFormatter.getCurrentUTCTime()));
+						logger.info(" time bfr sleep : "+TimeFormatter.getInstance().getUTCStringFromEpochMilli(TimeFormatter.getInstance().getCurrentUTCTime()));
 						Thread.sleep(etlMinDuration);
-						logger.info(" time aftr sleep : "+TimeFormatter.getUTCStringFromEpochMilli(TimeFormatter.getCurrentUTCTime()));
-						currentUtcTm  = TimeFormatter.getCurrentUTCTime();
-						logger.info("sleep :: currentUtcTm : "+TimeFormatter.getUTCStringFromEpochMilli(currentUtcTm) +" lastTripUtcTm :"+ TimeFormatter.getUTCStringFromEpochMilli(lastTripUtcTm) + " timeDiff : "+timeDiff + "  etlMaxDuration : "+ etlMaxDuration +" etlMinDuration :"+etlMinDuration);
+						logger.info(" time aftr sleep : "+TimeFormatter.getInstance().getUTCStringFromEpochMilli(TimeFormatter.getInstance().getCurrentUTCTime()));
+						currentUtcTm  = TimeFormatter.getInstance().getCurrentUTCTime();
+						logger.info("sleep :: currentUtcTm : "+TimeFormatter.getInstance().getUTCStringFromEpochMilli(currentUtcTm) +" lastTripUtcTm :"+ TimeFormatter.getInstance().getUTCStringFromEpochMilli(lastTripUtcTm) + " timeDiff : "+timeDiff + "  etlMaxDuration : "+ etlMaxDuration +" etlMinDuration :"+etlMinDuration);
 						scan.setTimeRange(lastTripUtcTm, currentUtcTm);
 					}else{
-						logger.info("currentUtcTm : "+TimeFormatter.getUTCStringFromEpochMilli(currentUtcTm) +" lastTripUtcTm :"+ TimeFormatter.getUTCStringFromEpochMilli(lastTripUtcTm) + " timeDiff : "+timeDiff + "  etlMaxDuration : "+ etlMaxDuration +" etlMinDuration :"+etlMinDuration);
+						logger.info("currentUtcTm : "+TimeFormatter.getInstance().getUTCStringFromEpochMilli(currentUtcTm) +" lastTripUtcTm :"+ TimeFormatter.getInstance().getUTCStringFromEpochMilli(lastTripUtcTm) + " timeDiff : "+timeDiff + "  etlMaxDuration : "+ etlMaxDuration +" etlMinDuration :"+etlMinDuration);
 						scan.setTimeRange(lastTripUtcTm, currentUtcTm);
 					}
 				}else {
-					currentUtcTm  = TimeFormatter.addMilliSecToUTCTime(lastTripUtcTm, etlMaxDuration);
-					logger.info("else currentUtcTm : "+TimeFormatter.getUTCStringFromEpochMilli(currentUtcTm) +" lastTripUtcTm :"+ TimeFormatter.getUTCStringFromEpochMilli(lastTripUtcTm) + " timeDiff : "+timeDiff + "  etlMaxDuration : "+ etlMaxDuration);
+					currentUtcTm  = TimeFormatter.getInstance().addMilliSecToUTCTime(lastTripUtcTm, etlMaxDuration);
+					logger.info("else currentUtcTm : "+TimeFormatter.getInstance().getUTCStringFromEpochMilli(currentUtcTm) +" lastTripUtcTm :"+ TimeFormatter.getInstance().getUTCStringFromEpochMilli(lastTripUtcTm) + " timeDiff : "+timeDiff + "  etlMaxDuration : "+ etlMaxDuration);
 					scan.setTimeRange(lastTripUtcTm, currentUtcTm);
 				}
 				lastTripUtcTm = currentUtcTm;
@@ -365,18 +365,18 @@ public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusD
 		try {
 			
 			if(tripStsData.getEvtDateTimeFirstIndex() != null)
-				tripStsData.setStartDateTime(TimeFormatter.convertUTCToEpochMilli(tripStsData.getEvtDateTimeFirstIndex(), ETLConstants.DATE_FORMAT_UTC));
+				tripStsData.setStartDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(tripStsData.getEvtDateTimeFirstIndex(), ETLConstants.DATE_FORMAT));
 			else if(tripStsData.getGpsStartDateTime() != null)
-				tripStsData.setStartDateTime(TimeFormatter.convertUTCToEpochMilli(tripStsData.getGpsStartDateTime(), ETLConstants.DATE_FORMAT_UTC));
+				tripStsData.setStartDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(tripStsData.getGpsStartDateTime(), ETLConstants.DATE_FORMAT));
 			
 			if(tripStsData.getEvtDateTime() != null)
-				tripStsData.setEndDateTime(TimeFormatter.convertUTCToEpochMilli(tripStsData.getEvtDateTime(), ETLConstants.DATE_FORMAT_UTC));
+				tripStsData.setEndDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(tripStsData.getEvtDateTime(), ETLConstants.DATE_FORMAT));
 			else if(tripStsData.getGpsEndDateTime() != null)
-				tripStsData.setEndDateTime(TimeFormatter.convertUTCToEpochMilli(tripStsData.getGpsEndDateTime(), ETLConstants.DATE_FORMAT_UTC));
+				tripStsData.setEndDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(tripStsData.getGpsEndDateTime(), ETLConstants.DATE_FORMAT));
 			
 			
 			if (tripStsData.getStartDateTime() != null && tripStsData.getEndDateTime() != null)
-				tripStsData.setTripCalGpsVehTimeDiff(TimeFormatter
+				tripStsData.setTripCalGpsVehTimeDiff(TimeFormatter.getInstance()
 						.subPastUtcTmFrmCurrentUtcTm(tripStsData.getStartDateTime(), tripStsData.getEndDateTime()));
 			
 			if(tripStsData.getTripCalGpsVehTimeDiff() != null){
@@ -389,7 +389,8 @@ public class TripStatusCompletion extends RichParallelSourceFunction<TripStatusD
 						.setTripCalGpsVehDistDiff(tripStsData.getGpsStopVehDist() - tripStsData.getGpsStartVehDist());
 
 			tripStsData.setHbaseInsertionTS(hbaseInsertionTS);
-			tripStsData.setEtlProcessingTS(TimeFormatter.getCurrentUTCTime());
+			tripStsData.setEtlProcessingTS(TimeFormatter.getInstance().getCurrentUTCTime());
+			tripStsData.setKafkaProcessingTS(TimeFormatter.getInstance().getCurrentUTCTime());
 									
 		}catch (ParseException e) {
 			logger.error("Issue while populating trip data :: " + e.getMessage());

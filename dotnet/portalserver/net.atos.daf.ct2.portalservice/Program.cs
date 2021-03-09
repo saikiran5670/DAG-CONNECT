@@ -22,11 +22,12 @@ namespace net.atos.daf.ct2.portalservice
                 {
                     webBuilder.UseStartup<Startup>();
                     //remover server header from repsonse object
-                    webBuilder.UseKestrel((options) =>
-                    {
-                          // Do not add the Server HTTP header.
-                          options.AddServerHeader = false;
-                    });
+                    //webBuilder.UseKestrel((options) =>
+                    //{
+                    //    // Do not add the Server HTTP header.
+                        
+                    //    options.AddServerHeader = false;
+                    //});
                 });
     }
 }

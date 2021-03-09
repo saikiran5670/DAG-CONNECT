@@ -26,6 +26,11 @@ namespace net.atos.daf.ct2.portalservice.Filters
                 message = "A server error occurred.";
                 status = HttpStatusCode.NotImplemented;
             }
+            else if (exceptionType == typeof(Exception))
+            {
+                message = "Internal server error occurred.";
+                status = HttpStatusCode.InternalServerError;
+            }
             //else if (exceptionType == typeof(MyAppException))
             //{
             //    message = context.Exception.ToString();

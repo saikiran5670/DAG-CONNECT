@@ -63,7 +63,7 @@ export class LoginComponent implements OnInit {
             //this.cookiesFlag = true;
 
             let loginObj = {
-              "id": data.body.accountId,
+              "id": data.body.accountInfo.id,
               "organizationId": 0,
               "email": "",
               "accountIds": "",
@@ -112,8 +112,8 @@ export class LoginComponent implements OnInit {
   }
 
   public showOrganizationRolePopup(data: any, accountDetails: any) {
-    if(data.accountId){
-      data.accountId = data.accountId;
+    if(data.accountInfo.id){
+      data.accountId = data.accountInfo.id;
     }
     else{
       data.accountId = 0;

@@ -109,7 +109,7 @@ namespace net.atos.daf.ct2.portalservice
             .AddCookie(options =>
             {
                 options.Cookie.HttpOnly = true;
-                options.Cookie.Expiration = TimeSpan.FromMinutes(Convert.ToDouble(cookiesexpireat));
+                //options.Cookie.ExpireTimeSpan = TimeSpan.FromMinutes(Convert.ToDouble(cookiesexpireat));
                 options.Cookie.SecurePolicy = Convert.ToBoolean(isdevelopmentenv) ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
                 options.Cookie.SameSite = SameSiteMode.Lax;
                 options.SlidingExpiration = true;
