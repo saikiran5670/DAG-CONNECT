@@ -283,6 +283,7 @@ export class UserManagementComponent implements OnInit {
     this.accountService.getAccountDetails(obj).subscribe((usrlist)=>{
       this.filterFlag = true;
       this.hideloader();
+      // this.initData = this.getNewTagData(usrlist);
       this.initData = this.makeRoleAccountGrpList(usrlist);
       this.dataSource = new MatTableDataSource(this.initData);
       setTimeout(()=>{
@@ -322,7 +323,7 @@ export class UserManagementComponent implements OnInit {
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     data.forEach(row => {
-      let createdDate = new Date(row.createdOn).getTime();
+      let createdDate = new Date(row.createdAt).getTime(); //  need to check API response.
       let nextDate = createdDate + 86400000;
       if(currentDate > createdDate && currentDate < nextDate){
         row.newTag = true;
@@ -371,7 +372,7 @@ export class UserManagementComponent implements OnInit {
       this.successMsgBlink(item.msg);
     }
     if(item.tableData){
-      this.initData = this.getNewTagData(item.tableData);
+      // this.initData = this.getNewTagData(item.tableData);
       this.initData = this.makeRoleAccountGrpList(this.initData);
     }
     setTimeout(()=>{

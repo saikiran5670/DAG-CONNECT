@@ -10,19 +10,20 @@ import { AccountService } from '../../../services/account.service';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { UserDetailTableComponent } from './user-detail-table/user-detail-table.component';
+import { LinkOrgPopupComponent } from './link-org-popup/link-org-popup.component';
 
 @Component({
   selector: 'app-new-user-step',
   templateUrl: './new-user-step.component.html',
   styleUrls: ['./new-user-step.component.less']
 })
+
 export class NewUserStepComponent implements OnInit {
   @Input() roleData: any;
   @Input() defaultSetting: any;
   @Input() userGrpData: any;
   @Input() translationData: any;
   @Input() userDataForEdit: any;
-  @Input() isCreateFlag: boolean;
   @Output() userCreate = new EventEmitter<object>();
   @ViewChild('stepper') stepper;
   roleDataSource: any = [];
@@ -61,9 +62,11 @@ export class NewUserStepComponent implements OnInit {
   croppedImage: any = '';
   summaryStepFlag: boolean = false;
   dialogRef: MatDialogRef<UserDetailTableComponent>;
+  linkDialogRef: MatDialogRef<LinkOrgPopupComponent>;
   userData: any;
   accountOrganizationId: any = 0;
   servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
+  linkFlag: boolean = false;
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -150,6 +153,7 @@ export class NewUserStepComponent implements OnInit {
 
   onCreate(createStatus: any){
     this.duplicateEmailMsg = false;
+    this.linkFlag = false;
       let objData = {
         id: 0,
         emailId: this.firstFormGroup.controls.loginEmail.value,
@@ -193,8 +197,34 @@ export class NewUserStepComponent implements OnInit {
         console.log(error);
         if(error.status == 409){
           this.duplicateEmailMsg = true;
+        }else if(error.status == 400){
+          this.callToLinkPopup(); //--- show link popup
         }
        });
+  }
+
+  callToLinkPopup(){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      cancelText: this.translationData.lblNo || "No",
+      confirmText: this.translationData.lblYes || "Yes",
+      existMessage: this.translationData.lblUseraccountalreadyexists || "User account '$' already exists.",
+      alertMessage: this.translationData.lblDoyouwanttolinkthisaccounttoyourorganisation || "Do you want to link this account to your organisation?",
+      title: this.translationData.lblAlert || "Alert",
+      email: this.firstFormGroup.controls.loginEmail.value
+    }
+    this.linkDialogRef = this.dialog.open(LinkOrgPopupComponent, dialogConfig);
+    this.linkDialogRef.afterClosed().subscribe(res =>{
+      if(res){
+        this.linkFlag = true;
+        this.firstFormGroup.controls['loginEmail'].disable();
+      }
+      else{
+        this.linkFlag = false;
+      }
+    });
   }
 
   onUpdateUserData(){
@@ -467,6 +497,10 @@ export class NewUserStepComponent implements OnInit {
       tableTitle: `${rowData.name} - ${this.translationData.lblUsers || 'Users'}`
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
+  }
+
+  onLink(status: any){
+
   }
   
 }

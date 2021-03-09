@@ -55,7 +55,11 @@ style='padding:10px; color:#fff; background: #5dc24e;'>
               </div>
               <div *ngIf="columnNames[colIndex]=='Vehicle Group' ">
                 <mat-header-cell *matHeaderCellDef mat-sort-header matSortDirection="asc">{{columnNames[colIndex]}}</mat-header-cell>
-                <mat-cell *matCellDef="let element " matTooltip={{element[disCol]}}> {{element[disCol]}}
+                <mat-cell *matCellDef="let element " matTooltip={{element[disCol]}}> 
+                  <span *ngIf="element.newTag" class='newTagIcon marginLeft-24'></span>
+            <span *ngIf="element.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+            <span [ngClass]="{ 'marginLeft-14': element.newTag }">
+                  {{element[disCol]}}</span>
                   <div *ngIf="element.isVehicleGroup==true">
                     <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
                     <span class='iconTxt'>{{ (element.vehicleCount < 10) ? '0' : '' }}{{ element.vehicleCount }}</span>

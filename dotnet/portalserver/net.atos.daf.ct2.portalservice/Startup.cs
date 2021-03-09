@@ -105,21 +105,21 @@ namespace net.atos.daf.ct2.portalservice
                 //This need to be change to orgin specific on UAT and prod
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
             });
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie(options =>
-            {
-                options.Cookie.HttpOnly = true;
-                //options.Cookie.ExpireTimeSpan = TimeSpan.FromMinutes(Convert.ToDouble(cookiesexpireat));
-                options.Cookie.SecurePolicy = Convert.ToBoolean(isdevelopmentenv) ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.Lax;
-                options.SlidingExpiration = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(Convert.ToDouble(authcookiesexpireat));
-            });
-            services.Configure<MvcOptions>(options =>
-            {
-                options.Filters.Add(new RequireHttpsAttribute { Permanent = true });
-                options.Filters.Add(new AuthorizeFilter());
-            });
+            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            //.AddCookie(options =>
+            //{
+            //    options.Cookie.HttpOnly = true;
+            //    //options.Cookie.ExpireTimeSpan = TimeSpan.FromMinutes(Convert.ToDouble(cookiesexpireat));
+            //    options.Cookie.SecurePolicy = Convert.ToBoolean(isdevelopmentenv) ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
+            //    options.Cookie.SameSite = SameSiteMode.Lax;
+            //    options.SlidingExpiration = true;
+            //    options.ExpireTimeSpan = TimeSpan.FromMinutes(Convert.ToDouble(authcookiesexpireat));
+            //});
+            //services.Configure<MvcOptions>(options =>
+            //{
+                //options.Filters.Add(new RequireHttpsAttribute { Permanent = true });
+                //options.Filters.Add(new AuthorizeFilter());
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -141,7 +141,7 @@ namespace net.atos.daf.ct2.portalservice
                 builder.AllowAnyHeader();
             });
 
-            app.UseCookiePolicy();
+            //app.UseCookiePolicy();
             
             app.UseAuthentication();
 
