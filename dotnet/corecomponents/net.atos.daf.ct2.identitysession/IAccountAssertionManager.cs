@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.identitysession
         Task<int> InsertAssertion(AccountAssertion accountAssertion);
         Task<int> UpdateAssertion(AccountAssertion accountAssertion);
         Task<int> DeleteAssertion(int accountId);
-        Task<string> DeleteAssertion(string sessionId);
+        Task<int> DeleteAssertionbySessionId(int sessionId);
         Task<IEnumerable<AccountAssertion>> GetAssertion(int accountId);
     }
 }

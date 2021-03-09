@@ -43,7 +43,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             parameter.Add("@key", accountAssertion.Key);
             parameter.Add("@value", accountAssertion.Value);
             parameter.Add("@account_id", Convert.ToInt32(accountAssertion.AccountId));
-            parameter.Add("@session_id", new Guid(accountAssertion.SessionState));           
+            parameter.Add("@session_id", accountAssertion.Session_Id);           
             parameter.Add("@created_at", Convert.ToInt64(accountAssertion.CreatedAt)); 
 
             int result_CheckDuplicate =await CheckDuplicateKeyValue(accountAssertion.Key,accountAssertion.Value,Convert.ToInt32(accountAssertion.AccountId));
@@ -107,7 +107,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 parameter.Add("@key", accountAssertion.Key);
                 parameter.Add("@value", accountAssertion.Value);
                 parameter.Add("@account_id", Convert.ToInt32(accountAssertion.AccountId));
-                parameter.Add("@session_id", new Guid(accountAssertion.SessionState));           
+                parameter.Add("@session_id", accountAssertion.Session_Id);           
                 parameter.Add("@created_at", Convert.ToInt64(accountAssertion.CreatedAt));                    
 
                 int accountassertionId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
@@ -141,7 +141,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
         }
 
-        public async Task<string> DeleteAssertion(string sessionId)
+        public async Task<int> DeleteAssertionbySessionId(int sessionId)
         {
             try
             {
@@ -151,11 +151,11 @@ namespace net.atos.daf.ct2.identitysession.repository
                                     
 
                 var parameter = new DynamicParameters();
-                parameter.Add("@session_id", new Guid(sessionId));    
+                parameter.Add("@session_id", sessionId);    
                 
-                Guid session_Id = await dataAccess.ExecuteScalarAsync<Guid>(QueryStatement, parameter);
+                int session_Id = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
 
-                return session_Id.ToString();
+                return session_Id;
             }
             catch(Exception ex)
             {
@@ -202,7 +202,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             entity.Key = record.key;
             entity.Value = record.value;
             entity.AccountId =Convert.ToString(record.account_id);
-            entity.SessionState = Convert.ToString(record.session_id);
+            entity.Session_Id = record.session_id;
             entity.CreatedAt =Convert.ToString(record.created_at);           
             return entity;
         }
