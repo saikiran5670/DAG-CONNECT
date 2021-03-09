@@ -24,7 +24,6 @@ export class NewUserStepComponent implements OnInit {
   @Input() userGrpData: any;
   @Input() translationData: any;
   @Input() userDataForEdit: any;
-  @Input() isCreateFlag: boolean;
   @Output() userCreate = new EventEmitter<object>();
   @ViewChild('stepper') stepper;
   roleDataSource: any = [];
@@ -67,6 +66,7 @@ export class NewUserStepComponent implements OnInit {
   userData: any;
   accountOrganizationId: any = 0;
   servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
+  linkFlag: boolean = false;
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -153,6 +153,7 @@ export class NewUserStepComponent implements OnInit {
 
   onCreate(createStatus: any){
     this.duplicateEmailMsg = false;
+    this.linkFlag = false;
       let objData = {
         id: 0,
         emailId: this.firstFormGroup.controls.loginEmail.value,
@@ -196,6 +197,8 @@ export class NewUserStepComponent implements OnInit {
         console.log(error);
         if(error.status == 409){
           this.duplicateEmailMsg = true;
+        }else if(error.status == 400){
+          this.callToLinkPopup(); //--- show link popup
         }
        });
   }
@@ -215,7 +218,11 @@ export class NewUserStepComponent implements OnInit {
     this.linkDialogRef = this.dialog.open(LinkOrgPopupComponent, dialogConfig);
     this.linkDialogRef.afterClosed().subscribe(res =>{
       if(res){
-        
+        this.linkFlag = true;
+        this.firstFormGroup.controls['loginEmail'].disable();
+      }
+      else{
+        this.linkFlag = false;
       }
     });
   }
@@ -490,6 +497,10 @@ export class NewUserStepComponent implements OnInit {
       tableTitle: `${rowData.name} - ${this.translationData.lblUsers || 'Users'}`
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
+  }
+
+  onLink(status: any){
+
   }
   
 }
