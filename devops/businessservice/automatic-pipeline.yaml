@@ -10,7 +10,7 @@ jobs:
   - job:
     variables:
       - group: DEV01-Build-Variables
-      - name: subscription
+      - name: subscription1
         value: $(SUBSCRIPTION)
     pool: $(PRIVATEAGENT)
     steps:
@@ -44,17 +44,18 @@ jobs:
         inputs:
           script: |
             cat dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config
+            echo $(subscription1)
       - task: Docker@0
         displayName: 'Build an image'
         inputs:
-          azureSubscription:  $(subscription)
+          azureSubscription:  $(subscription1)
           azureContainerRegistry: $(ContainerRegistry)
           dockerFile: dotnet/AccountService_Dockerfile
           imageName: accountservice-grpc-automatic
       - task: Docker@0
         displayName: 'Push an image'
         inputs:
-          azureSubscription: $(subscription)
+          azureSubscription: $(subscription1)
           azureContainerRegistry: $(ContainerRegistry)
           action: 'Push an image'
           imageName: accountservice-grpc-automatic
