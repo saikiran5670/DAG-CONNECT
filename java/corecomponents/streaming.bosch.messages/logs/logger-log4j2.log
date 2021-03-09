@@ -1,0 +1,4 @@
+2021-03-07 16:02:47,602 INFO n.a.d.c.m.BoschMessageProcessing [main] Configuration Loaded for Connecting Kafka inorder to Perform Mapping.
+2021-03-07 16:02:47,602 INFO n.a.d.c.m.BoschMessageProcessing [main] Configuration Loaded for Connecting Kafka inorder to Perform Mapping.
+2021-03-07 16:02:47,742 INFO n.a.d.c.m.BoschMessageProcessing [main] Flink Processing Started.
+2021-03-07 16:02:47,742 INFO n.a.d.c.m.BoschMessageProcessing [main] Flink Processing Started.
