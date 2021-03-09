@@ -10,12 +10,14 @@ import { AccountService } from '../../../services/account.service';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { UserDetailTableComponent } from './user-detail-table/user-detail-table.component';
+import { LinkOrgPopupComponent } from './link-org-popup/link-org-popup.component';
 
 @Component({
   selector: 'app-new-user-step',
   templateUrl: './new-user-step.component.html',
   styleUrls: ['./new-user-step.component.less']
 })
+
 export class NewUserStepComponent implements OnInit {
   @Input() roleData: any;
   @Input() defaultSetting: any;
@@ -61,6 +63,7 @@ export class NewUserStepComponent implements OnInit {
   croppedImage: any = '';
   summaryStepFlag: boolean = false;
   dialogRef: MatDialogRef<UserDetailTableComponent>;
+  linkDialogRef: MatDialogRef<LinkOrgPopupComponent>;
   userData: any;
   accountOrganizationId: any = 0;
   servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
@@ -195,6 +198,26 @@ export class NewUserStepComponent implements OnInit {
           this.duplicateEmailMsg = true;
         }
        });
+  }
+
+  callToLinkPopup(){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      cancelText: this.translationData.lblNo || "No",
+      confirmText: this.translationData.lblYes || "Yes",
+      existMessage: this.translationData.lblUseraccountalreadyexists || "User account '$' already exists.",
+      alertMessage: this.translationData.lblDoyouwanttolinkthisaccounttoyourorganisation || "Do you want to link this account to your organisation?",
+      title: this.translationData.lblAlert || "Alert",
+      email: this.firstFormGroup.controls.loginEmail.value
+    }
+    this.linkDialogRef = this.dialog.open(LinkOrgPopupComponent, dialogConfig);
+    this.linkDialogRef.afterClosed().subscribe(res =>{
+      if(res){
+        
+      }
+    });
   }
 
   onUpdateUserData(){
