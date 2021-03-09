@@ -11,32 +11,13 @@ import org.postgresql.jdbc3.Jdbc3PoolingDataSource;
 import net.atos.daf.common.ct2.exception.TechnicalException;
 import net.atos.daf.common.ct2.util.DAFConstants;
 
-public class PostgreDataSourceConnection {
+public class PostgreDataSourceConnectionBackup {
 
-	private static PostgreDataSourceConnection instance;
-	private  Jdbc3PoolingDataSource dSource;
-	
-	
-	private PostgreDataSourceConnection() {
-		
-	}
+	private static Jdbc3PoolingDataSource dSource;
+	private static Connection conn;
 
-	public static PostgreDataSourceConnection getInstance() {
-			if(instance==null) {
-				 synchronized (PostgreDataSourceConnection.class) 
-			      { 
-			        if(instance==null) 
-			        { 
-			          // if instance is null, initialize 
-			          instance = new PostgreDataSourceConnection(); 
-			        } 
-			}
-			}
-			return instance;
-	}
-	public  Connection getDataSourceConnection(String serverNm, int port, String databaseNm, String userNm,
+	public static Jdbc3PoolingDataSource getDataSource(String serverNm, int port, String databaseNm, String userNm,
 			String password) {
-		Connection conn=null;
 		try {
 			String url = createValidUrlToConnectPostgreSql(serverNm, port, databaseNm, userNm, password);
 			dSource = new Jdbc3PoolingDataSource();
@@ -47,9 +28,15 @@ public class PostgreDataSourceConnection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return dSource;
+
+	}
+
+	public static Connection getDataSourceConnection(Jdbc3PoolingDataSource dataSource) {
+
 		try {
 			if (null == conn)
-				conn = dSource.getConnection();
+				conn = dataSource.getConnection();
 			
 			System.out.println("Connection is created" + conn);
 		} catch (SQLException e) {
@@ -57,11 +44,9 @@ public class PostgreDataSourceConnection {
 			e.printStackTrace();
 		}
 		return conn;
-
 	}
 
-	
-	private  String createValidUrlToConnectPostgreSql(String serverNm, int port, String databaseNm, String userNm,
+	private static String createValidUrlToConnectPostgreSql(String serverNm, int port, String databaseNm, String userNm,
 			String password) throws TechnicalException {
 
 		String encodedPassword = encodeValue(password);
@@ -73,7 +58,7 @@ public class PostgreDataSourceConnection {
 		return url;
 	}
 
-	private  String encodeValue(String value) {
+	private static String encodeValue(String value) {
 		try {
 			return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
 		} catch (UnsupportedEncodingException ex) {
