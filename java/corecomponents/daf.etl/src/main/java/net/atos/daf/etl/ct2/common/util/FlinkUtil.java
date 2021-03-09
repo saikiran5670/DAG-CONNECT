@@ -25,10 +25,7 @@ public class FlinkUtil {
 		StreamExecutionEnvironment env;
 
 		env = StreamExecutionEnvironment.getExecutionEnvironment();
-		// Deprecated in Flink 1.12.0
 		// env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
-
-		// TODO change to dynamic parameter
 		env.setParallelism(Integer.parseInt(envParams.get(ETLConstants.PARALLELISM)));
 		
 		// start a checkpoint every 1000 ms and mode set to EXACTLY_ONCE
@@ -51,14 +48,15 @@ public class FlinkUtil {
 				(StateBackend) new FsStateBackend(envParams.get(ETLConstants.CHECKPOINT_DIRECTORY), true));
 
 		// TODO  enable only in QA and Prod
+		System.out.println("RESTART_FLAG :: "+envParams.get(ETLConstants.RESTART_FLAG));
 		if("true".equals(envParams.get(ETLConstants.RESTART_FLAG))){
 			env.setRestartStrategy(
 					RestartStrategies.fixedDelayRestart(Integer.parseInt(envParams.get(ETLConstants.RESTART_ATTEMPS)), //no of restart attempts
 							Long.parseLong(envParams.get(ETLConstants.RESTART_INTERVAL))) //time in milliseconds between restarts
 						);			
+		}else{
+			env.setRestartStrategy(RestartStrategies.noRestart());
 		}
-		
-		
 		return env;
 	}
 

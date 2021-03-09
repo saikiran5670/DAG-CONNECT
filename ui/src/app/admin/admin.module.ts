@@ -40,7 +40,9 @@ import { CreateEditPackageDetailsComponent } from './package-management/create-e
 import { RelationshipManagementComponent } from './relationship-management/relationship-management.component';
 import { CreateViewEditRelationshipComponent } from './relationship-management/create-view-edit-relationship/create-view-edit/create-view-edit-relationship.component';
 import { SubscriptionManagementComponent } from './subscription-management/subscription-management.component';
-import { OrganisationRelationshipComponent } from './organisation-relationship/organisation-relationship.component'
+import { OrganisationRelationshipComponent } from './organisation-relationship/organisation-relationship.component';
+import { CreateEditViewOrganisationRelationshipComponent } from './organisation-relationship/create-edit-view-organisation-relationship/create-edit-view-organisation-relationship.component';
+import { LinkOrgPopupComponent } from './user-management/new-user-step/link-org-popup/link-org-popup.component'
 
 @NgModule({
   declarations: [
@@ -75,7 +77,9 @@ import { OrganisationRelationshipComponent } from './organisation-relationship/o
     PackageManagementComponent,
     CreateEditPackageDetailsComponent,
     SubscriptionManagementComponent,
-    OrganisationRelationshipComponent
+    OrganisationRelationshipComponent,
+    CreateEditViewOrganisationRelationshipComponent,
+    LinkOrgPopupComponent
   ],
   imports: [
       CommonModule,

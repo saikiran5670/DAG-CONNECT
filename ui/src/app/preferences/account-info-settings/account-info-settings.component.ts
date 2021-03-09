@@ -7,6 +7,7 @@ import { CustomValidators } from 'src/app/shared/custom.validators';
 import { AccountService } from '../../services/account.service';
 import { TranslationService } from '../../services/translation.service';
 import { DataInterchangeService } from 'src/app/services/data-interchange.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-account-info-settings',
@@ -52,6 +53,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   landingPageDisplayData: any;
   orgName: any;
   accountId: any;
+  blobId: number= 0;
   organizationId: any;
   salutationList: any = [
     {
@@ -72,7 +74,8 @@ export class AccountInfoSettingsComponent implements OnInit {
     return date > now;
   }
 
-  constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService) { }
+  constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService,
+              private domSanitizer: DomSanitizer) { }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -102,7 +105,6 @@ export class AccountInfoSettingsComponent implements OnInit {
     });
     this.changePictureFlag = true;
     this.isSelectPictureConfirm = true;
-    this.croppedImage='../../assets/images/Account_pic.png';
     this.orgName = localStorage.getItem("organizationName");
     this.accountId = parseInt(localStorage.getItem('accountId'));
     this.organizationId = parseInt(localStorage.getItem('accountOrganizationId'));
@@ -111,24 +113,35 @@ export class AccountInfoSettingsComponent implements OnInit {
 
   loadAccountData(){
     let userObjData = {
-      id: this.accountId,
-      organizationId: this.organizationId,
-      email: "",
-      accountType: 0,
-      name: ""
+      "id": this.accountId,
+      "organizationId": this.organizationId,
+      "email": "",
+      "accountIds": "",
+      "name": "",
+      "accountGroupId": 0
     }
     this.accountService.getAccount(userObjData).subscribe((_data)=>{
       this.accountInfo = _data;
       this.editAccountSettingsFlag = false;
       this.isSelectPictureConfirm = true;
       this.setDefaultAccountInfo();
-      this.loadGeneralSettingData();
+      this.loadGeneralSettingData(); 
+      if(this.accountInfo.length != 0)
+      this.blobId = this.accountInfo[0]["blobId"];
+      if(this.blobId != 0){
+        this.accountService.getAccountPicture(this.blobId).subscribe(data => {
+          if(data){
+            this.croppedImage = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
+          }
+        })
+      }
     });
   }
 
   loadGeneralSettingData(){
     let languageCode= this.localStLanguage.code;
-    this.accountService.getAccountPreference(this.accountId).subscribe(resp => {
+    let preferenceId= this.accountInfo[0]["preferenceId"];
+    this.accountService.getAccountPreference(preferenceId).subscribe(resp => {
       this.accountPreferenceData = resp[0];
       this.translationService.getPreferences(languageCode).subscribe((data) => {
         let dropDownData = data;
@@ -299,7 +312,26 @@ export class AccountInfoSettingsComponent implements OnInit {
   onSelectPictureConfirm(){
     this.isSelectPictureConfirm = true;
     this.isAccountPictureSelected = false;
-    //TODO : send cropped image to backend 
+
+    let objData = {
+      "blobId": this.blobId,
+      "accountId": this.accountId,
+      "imageType": "P",
+      "image": this.croppedImage.split(",")[1]
+    }
+
+    this.accountService.saveAccountPicture(objData).subscribe(data => {
+      if(data){
+        //alert("Profile pic saved successfully")
+        let msg = '';
+        if(this.translationData.lblAccountPictureSuccessfullyUpdated)
+          msg= this.translationData.lblAccountPictureSuccessfullyUpdated;
+        else
+          msg= "Account picture successfully updated";
+
+        this.successMsgBlink(msg);  
+      }
+    })
   }
   
   fileChangeEvent(event: any): void {

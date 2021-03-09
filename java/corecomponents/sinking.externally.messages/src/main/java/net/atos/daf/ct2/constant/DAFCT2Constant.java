@@ -17,7 +17,7 @@ public class DAFCT2Constant {
     public static final String AUDIT_CREATE_EVENT_TYPE = "1";
     public static final String AUDIT_EVENT_STATUS_START = "2";
     public static final String AUDIT_EVENT_STATUS_FAIL = "1";
-    public static final String TRIP_JOB_NAME = "tripEtlJob";
+    public static final String TRIP_JOB_NAME = "sinkingExternalMessages";
     public static final String DEFAULT_OBJECT_ID = "00";
 
     public static final String GRPC_SERVER = "grpc.server";
@@ -52,4 +52,18 @@ public class DAFCT2Constant {
     public static final String POSTGRE_DATABASE_NAME = "postgre.database.name";
     public static final String POSTGRE_TABLE_WHITELIST = "postgre.table.name";
     public static final String POSTGRE_PLUGIN_NAME = "postgre.plugin.name";
+    
+    //CTS-016 - Egress Source Raw Data
+    public static final String EGRESS_CONTI_DATA = "egress.conti.data";
+    public static final String EGRESS_BOSCH_DATA = "egress.bosch.data";
+    public static final String EGRESS_ALL_SOURCE_DATA = "egress.all.source.data";
+    public static final String EGRESS_DAF_STANDAR_DATA = "egress.daf.standard.data";
+    public static final String EGRESS_DATA_FOR_SOURCE_SYSTEM = "egress.data.for.source.system";
+    public static final String CONTI_SOURCE_SYSTEM="conti.source.system";
+    public static final String BOSCH_SOURCE_SYSTEM="bosch.source.system";
+    public static final String ALL_SOURCE_SYSTEM="all.source.system";
+    public static final String DAF_STANDARD_SYSTEM="daf.standard.system";
+    
+    //Bosch
+    public static final String SOURCE_BOSCH_TOPIC_NAME = "source.bosch.topic.name";
 }

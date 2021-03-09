@@ -48,11 +48,11 @@ namespace net.atos.daf.ct2.identitysession
                 throw ex;
             }
         }
-        public async Task<string> DeleteAssertion(string sessionId)
+        public async Task<int> DeleteAssertionbySessionId(int sessionId)
         {
              try
             {
-                return await accountassertionRepository.DeleteAssertion(sessionId);
+                return await accountassertionRepository.DeleteAssertionbySessionId(sessionId);
             }
             catch (Exception ex)
             {

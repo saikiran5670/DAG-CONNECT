@@ -12,12 +12,19 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
-
-using net.atos.daf.ct2.authenticationservice;
 using net.atos.daf.ct2.accountservice;
 using net.atos.daf.ct2.packageservice;
 using net.atos.daf.ct2.vehicleservice;
 using net.atos.daf.ct2.featureservice;
+using net.atos.daf.ct2.translationservice;
+using net.atos.daf.ct2.auditservice;
+using net.atos.daf.ct2.roleservice;
+
+using net.atos.daf.ct2.organizationservice;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -34,24 +41,24 @@ namespace net.atos.daf.ct2.portalservice
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var authservice = Configuration["ServiceConfiguration:authservice"];
             var accountservice = Configuration["ServiceConfiguration:accountservice"];
             var packageservice = Configuration["ServiceConfiguration:packageservice"];
             var vehicleservice = Configuration["ServiceConfiguration:vehicleservice"];
+            var translationservice = Configuration["ServiceConfiguration:translationservice"];
+            var auditservice = Configuration["ServiceConfiguration:auditservice"];
             var featureservice= Configuration["ServiceConfiguration:featureservice"];
+            var roleservice = Configuration["ServiceConfiguration:roleservice"];
+            var organizationservice = Configuration["ServiceConfiguration:organizationservice"];
+
+            var isdevelopmentenv = Configuration["ServerConfiguration:isdevelopmentenv"];
+            var cookiesexpireat = Configuration["ServerConfiguration:cookiesexpireat"];
+            var authcookiesexpireat = Configuration["ServerConfiguration:authcookiesexpireat"];
+
             // We are enforcing to call Insercure service             
             AppContext.SetSwitch(
                     "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
             services.AddControllers();
-            services.AddGrpcClient<Greeter.GreeterClient>(o =>
-            {
-                o.Address = new Uri(authservice);
-            }); 
-            services.AddGrpcClient<AuthService.AuthServiceClient>(o =>
-            {
-                o.Address = new Uri(authservice);
-            });   
             services.AddGrpcClient<AccountService.AccountServiceClient>(o =>
             {
                 o.Address = new Uri(accountservice);
@@ -69,14 +76,49 @@ namespace net.atos.daf.ct2.portalservice
             {
                 o.Address = new Uri(featureservice);
             });
+             services.AddGrpcClient<FeatureService.FeatureServiceClient>(o =>
+            {
+                o.Address = new Uri(featureservice);
+            });
+            services.AddGrpcClient<RoleService.RoleServiceClient>(o =>
+            {
+                o.Address = new Uri(roleservice);
+            });
+            services.AddGrpcClient<OrganizationService.OrganizationServiceClient>(o =>
+            {
+                o.Address = new Uri(featureservice);
+            });
+            services.AddGrpcClient<TranslationService.TranslationServiceClient>(o =>
+            {
+                o.Address = new Uri(translationservice);
+            });
+            services.AddGrpcClient<AuditService.AuditServiceClient>(o =>
+            {
+                o.Address = new Uri(auditservice);
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portal Service", Version = "v1" });
-            });
+             });
             services.AddCors(c =>
             {
                 //This need to be change to orgin specific on UAT and prod
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+            });
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                //options.Cookie.ExpireTimeSpan = TimeSpan.FromMinutes(Convert.ToDouble(cookiesexpireat));
+                options.Cookie.SecurePolicy = Convert.ToBoolean(isdevelopmentenv) ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.SlidingExpiration = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(Convert.ToDouble(authcookiesexpireat));
+            });
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new RequireHttpsAttribute { Permanent = true });
+                options.Filters.Add(new AuthorizeFilter());
             });
         }
 
@@ -98,6 +140,10 @@ namespace net.atos.daf.ct2.portalservice
                 builder.AllowAnyMethod();
                 builder.AllowAnyHeader();
             });
+
+            app.UseCookiePolicy();
+            
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

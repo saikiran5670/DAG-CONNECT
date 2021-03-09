@@ -59,7 +59,7 @@ export class AccountService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.accountServiceUrl}/preference/get?accountId=${id}`,headers)
+      .get<any[]>(`${this.accountServiceUrl}/preference/get?preferenceId=${id}`,headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -247,6 +247,29 @@ export class AccountService {
     };
    return this.httpClient
       .put<any>(`${this.accountServiceUrl}/accountgroup/deleteaccounts?id=${id}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  saveAccountPicture(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.accountServiceUrl}/savepprofilepicture`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  
+  getAccountPicture(id: number): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.accountServiceUrl}/getprofilepicture?BlobId=${id}`,headers)
       .pipe(catchError(this.handleError));
   }
 

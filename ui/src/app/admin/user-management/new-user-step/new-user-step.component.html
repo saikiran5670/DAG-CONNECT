@@ -10,7 +10,7 @@
 <mat-horizontal-stepper [linear]="isLinear" labelPosition="bottom" #stepper>
   <mat-step [stepControl]="firstFormGroup">
     <form [formGroup]="firstFormGroup">
-      <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 1: {{ isCreateFlag ? ( translationData.lblAddNewUser || 'Add New User') : ( translationData.lblUpdateUser || 'Update User') }}</ng-template>
+      <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 1: {{ ( translationData.lblAddNewUser || 'Add New User') }}</ng-template>
       <mat-card class='mat-elevation-z margin-bottom-xlg'>
         <mat-card-content>
           <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
@@ -238,8 +238,10 @@
       </mat-card>
       <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
         <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel(false)'>{{ translationData.lblCancel || 'Cancel' }}</button>
-        <button [disabled]="!firstFormGroup.valid" class='margin-right-10' mat-raised-button color="primary" (click)='onCreate(true)'>{{ isCreateFlag ? ( translationData.lblCreate || 'Create' ) : ( translationData.lblUpdate || 'Update')}}</button>
-        <button *ngIf="isCreateFlag" [disabled]="!firstFormGroup.valid" mat-raised-button color="primary" (click)='onCreate(false)'>{{ translationData.lblCreateContinue || 'Create & Continue' }}</button>
+        <button *ngIf='!linkFlag' [disabled]="!firstFormGroup.valid" class='margin-right-10' mat-raised-button color="primary" (click)='onCreate(true)'>{{ ( translationData.lblCreate || 'Create' ) }}</button>
+        <button *ngIf='!linkFlag' [disabled]="!firstFormGroup.valid" mat-raised-button color="primary" (click)='onCreate(false)'>{{ translationData.lblCreateContinue || 'Create & Continue' }}</button>
+        <button *ngIf='linkFlag' [disabled]="!firstFormGroup.valid" class='margin-right-10' mat-raised-button color="primary" (click)='onLink(true)'>{{ ( translationData.lblLink || 'Link' ) }}</button>
+        <button *ngIf='linkFlag' [disabled]="!firstFormGroup.valid" mat-raised-button color="primary" (click)='onLink(false)'>{{ translationData.lblLinkContinue || 'Link & Continue' }}</button>
       </div>
     </form>
   </mat-step>

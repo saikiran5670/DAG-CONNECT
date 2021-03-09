@@ -6,7 +6,7 @@ package pacakge;
 
 service PackageService{
     rpc Create (PackageCreateRequest) returns (PackageResponse);
-    rpc Update (PackageUpdateRequest) returns (PackageResponse);
+    rpc Update (PackageCreateRequest) returns (PackageResponse);
     rpc Delete (PackageDeleteRequest) returns (PackageResponse);
     rpc Get (GetPackageRequest) returns (GetPackageResponce);   
     rpc Import (ImportPackageRequest) returns (ImportPackageResponce);    
@@ -30,14 +30,16 @@ message ImportPackageResponce
    Responsecode Code=4;
 }
 message PackageCreateRequest {   
-    string Code=1;
-    int32 FeatureSetID=2;
-    repeated string Features =3;
-    string Name=4;
-    PackageType Type =5;
-    string Description=6;   
-    PackageStatus Status =7;
+    int32 Id=1;
+    string Code=2;
+    int32 FeatureSetID=3;
+    repeated string Features =4;
+    string Name=5;
+    PackageType Type =6;
+    string Description=7;    
+    PackageStatus Status =8;
   }
+
   message PackageUpdateRequest { 
     int32 Id=1;
     string Code=2;

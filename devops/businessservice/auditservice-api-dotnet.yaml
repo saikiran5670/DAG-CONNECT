@@ -12,6 +12,7 @@ parameters:
   type: string
   default: DEV0
   values:
+  - All
   - DEV0
   - DEV01
   - DEV02
@@ -29,13 +30,15 @@ variables:
   - group: DEV02-Build-Variables
 - ${{ if eq(parameters.ENV, 'TEST01') }}:
   - group: TEST01-Build-Variables
+- ${{ if eq(parameters.ENV, 'All') }}:
+  - group: DEV02-Build-Variables
 - ${{ if eq(parameters.ENV, 'TEST02') }}:
   - group: TEST02-Build-Variables
-  
+
 steps:
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/commonservices/net.atos.daf.ct2.auditservice/appsettings.json'
+    targetFiles: 'dotnet/commonservices/net.atos.daf.ct2.auditservicerest/appsettings.json'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -44,15 +47,17 @@ steps:
     tokenSuffix: '}#'
     useLegacyPattern: false
     enableTelemetry: true
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01','TEST02')
 
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/commonservices/net.atos.daf.ct2.auditservice/appsettings.json
+      cat dotnet/commonservices/net.atos.daf.ct2.auditservicerest/appsettings.json
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01','TEST02')
 
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/commonservices/net.atos.daf.ct2.auditservice/log4net.config'
+    targetFiles: 'dotnet/commonservices/net.atos.daf.ct2.auditservicerest/log4net.config'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -65,15 +70,16 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/commonservices/net.atos.daf.ct2.auditservice/log4net.config
+      cat dotnet/commonservices/net.atos.daf.ct2.auditservicerest/log4net.config
 
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
-    dockerFile: dotnet/AuditService_Dockerfile
-    imageName: auditservicegrpc
+    dockerFile: dotnet/AuditServiceRest_Dockerfile
+    imageName: auditservice
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01','TEST02')
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -81,5 +87,14 @@ steps:
     azureSubscription: $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
-    imageName: auditservicegrpc
+    imageName: auditservice
+  condition: in('${{ parameters.ENV }}', 'DEV0', 'DEV01', 'DEV02', 'TEST01','TEST02')
 
+- task: CmdLine@2
+  inputs:
+    script: |
+      echo $(ContainerRegistry)
+  condition: eq('${{ parameters.ENV }}', 'All')
+  
+      
+     

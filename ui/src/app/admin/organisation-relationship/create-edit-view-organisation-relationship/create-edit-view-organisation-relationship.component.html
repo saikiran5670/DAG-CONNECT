@@ -1,0 +1,131 @@
+<form [formGroup]="OrganisationRelationshipFormGroup">
+    <mat-card *ngIf="createStatus" class='mat-elevation-z margin-bottom-xlg'>
+      <mat-card-content>
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+              translationData.lblAddNewRelationsip || 'Add New Relationship' }} 
+            </mat-label>
+            <div class='areaWidth'>
+                <mat-form-field appearance="outline" class='margin-right-xxlg'>
+                    <mat-select formControlName="relationship" (selectionChange)="onRelationshipSelection()" placeholder="{{ translationData.lblSelectCRelationship || 'Select Relationship' }}">
+                    <mat-option *ngFor="let options of relationshipList" [value]="options.name">
+                        {{ options.name }}
+                    </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+          </div>
+          <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label style='display: flex; place-content: space-between;'>
+              <span
+                style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{translationData.lblChainRelationship
+                || 'Chain Relationship' }}</span>
+              
+            </mat-label>
+            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
+                <!-- <span>{{ translationData.lblViewby || 'View by' }}:</span> -->
+                <mat-radio-group (change)='onChange($event)'>
+                  <mat-radio-button style='margin-right: 20px;' value="active"
+                    [checked]="selectedType ===  'active' ? true : false">{{ translationData.lblActive || 'Active' }}
+                  </mat-radio-button>
+                  <mat-radio-button style='margin-right: 20px;' value="inactive"
+                    [checked]="selectedType ===  'inactive' ? true : false">{{ translationData.lblInActive || 'InActive' }}
+                  </mat-radio-button>
+                </mat-radio-group>
+              </div>
+          </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions class='no-margin no-padding'>
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+          <div fxLayout="column" fxLayoutAlign="left">
+            <div fxLayout="row" fxLayoutAlign='center center'>
+              <mat-icon class='margin-right-10'>info</mat-icon>
+              <span>{{translationData.lblRelationshipInfo || "Select multiple ''vehicle Group and Organisation'' from below list to map with this Relationship." }}</span>
+            </div>
+          </div>
+          <div fxLayout="column" fxLayoutAlign="end">
+            <div fxLayout="row">
+              <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>Cancel</button>
+              <!-- <button *ngIf="editUserContent" class='margin-right-10' mat-raised-button color="primary"
+                (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button> -->
+              <button class='no-margin' [disabled]="!OrganisationRelationshipFormGroup.valid" mat-raised-button color="primary"
+                (click)='onCreate()' id="createUpdateButton">{{ createStatus ? (translationData.lblCreate || 'Create') :
+                (translationData.lblConfirm || 'Confirm') }}</button>
+            </div>
+          </div>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+    </form>
+    <mat-card *ngIf="createStatus" class='mat-elevation-z margin-bottom-xlg'>
+      <mat-card-content>
+    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+
+      <div fxLayout="column" style="width: 50%" fxLayoutGap="3px" fxLayoutAlign="left">
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}</span>
+     
+        <div fxLayout="row"  class='margin-bottom-sm'>
+          <div class='areaWidth' fxLayoutAlign="left">
+            <mat-form-field appearance="outline">
+                <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                <span matPrefix><mat-icon>search</mat-icon></span>
+            </mat-form-field>
+          </div>
+          </div>
+          <div fxLayout="row" >
+            <div fxLayout="column" class='full-width'>
+              <mat-table [dataSource]="dataSource" matSort>
+                <ng-container matColumnDef="all">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAll || 'All' }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" style="word-break: 'break-word'">{{row.all}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="vehicleGroupName">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group Name'}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row">{{row.vehicleGroupName}} </mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="vehicleGroupDisplayColumn"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: vehicleGroupDisplayColumn;">
+                </mat-row>
+            </mat-table>
+              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+          </div>
+                    </div>
+      </div>
+
+    <div fxLayout="column" style="width: 50%" fxLayoutGap="3px" fxLayoutAlign="left">
+      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectOrganisation || 'Select Organisation' }}</span>
+  
+      <div fxLayout="row"  class='margin-bottom-sm'>
+        <div class='areaWidth' fxLayoutAlign="left">
+          <mat-form-field appearance="outline">
+              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+              <span matPrefix><mat-icon>search</mat-icon></span>
+          </mat-form-field>
+        </div>
+        </div>
+        
+        <div fxLayout="row" >
+          <div fxLayout="column" class='full-width'>
+            <mat-table [dataSource]="dataSource" matSort>
+              <ng-container matColumnDef="all">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAll || 'All' }}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" style="word-break: 'break-word'">{{row.all}}</mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="organisationName">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOrganisationName || 'Organisation Name'}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{row.organisationName}} </mat-cell>
+              </ng-container>
+              <mat-header-row *matHeaderRowDef="organisationNameDisplayColumn"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: organisationNameDisplayColumn;">
+              </mat-row>
+          </mat-table>
+            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+        </div>
+        </div>
+    </div>
+    </div>
+
+    </mat-card-content>
+    </mat-card>

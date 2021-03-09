@@ -36,7 +36,6 @@ export class DriverManagementComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   importDriverFormGroup: FormGroup;
   consentFormGroup: FormGroup;
-  userGrpName: string = '';
   templateFileUrl: string = 'assets/docs/driverTemplate.xlsx';
   templateFileName: string = 'driver-Template.xlsx';
   dialogRef: MatDialogRef<ConsentOptComponent>;
@@ -46,7 +45,7 @@ export class DriverManagementComponent implements OnInit {
   driverData: any = [];
   file: any;
   arrayBuffer: any;
-  filelist: any;
+  filelist: any = [];
   translationData: any;
   localStLanguage: any;
   actionType: any = '';
@@ -66,6 +65,7 @@ export class DriverManagementComponent implements OnInit {
   importedDriverlist: any = [];
   rejectedDriverList: any = [];
   driverDialogRef: MatDialogRef<CommonTableComponent>;
+  excelEmptyMsg: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService, private translationService: TranslationService) { 
       this.defaultTranslation();
@@ -101,6 +101,7 @@ export class DriverManagementComponent implements OnInit {
       lblOptOutAll: "Opt-Out All",
       lblOptIn: "Opt-In",
       lblOptOut: "Opt-Out",
+      lblInherit: "Inherit",
       lblImportedFileDetails: "Imported File Details",
       lblImportedUpdateddriverrecords: "Imported/Updated '$' driver records",
       lblRejecteddriverrecordsduetofollowingerrors: "Rejected '$' driver records due to following errors",
@@ -147,7 +148,6 @@ export class DriverManagementComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.importDriverFormGroup = this._formBuilder.group({
-      //userGroup: [],
       uploadFile: [
         undefined,
         [Validators.required, FileValidator.maxContentSize(this.maxSize)]
@@ -187,21 +187,24 @@ export class DriverManagementComponent implements OnInit {
         firstName: "Alan",
         lastName: "Berry",
         emailId: "alanb@daf.com",
-        consentStatus: 'Opt-In'
+        consentStatus: 'Opt-In',
+        inheritStatus: true
       },
       {
         driverId: "I 0000000000000002",
         firstName: "Ritika",
         lastName: "Joshi",
         emailId: "ritikaj@daf.com",
-        consentStatus: 'Opt-Out'
+        consentStatus: 'Opt-Out',
+        inheritStatus: false
       },
       {
         driverId: "IN 0000000000000003",
         firstName: "Shanu",
         lastName: "Pol",
         emailId: "shanup@daf.com",
-        consentStatus: 'Opt-In'
+        consentStatus: 'Opt-Out',
+        inheritStatus: false
       }
     ];
   }
@@ -253,12 +256,13 @@ export class DriverManagementComponent implements OnInit {
 
 
   importDrivers(){ 
-    this.userGrpName = 'Test User Group' ; //this.importDriverFormGroup.controls.userGroup.value;
     if(this.filelist.length > 0){
       this.validateExcelFileField();
+      this.excelEmptyMsg = false;
       this.importDriverPopup = true;
     }else{
-      console.log("Empty File...");
+      console.log("Empty Excel File...");
+      this.excelEmptyMsg = true;
     }
   }
 
@@ -333,8 +337,6 @@ export class DriverManagementComponent implements OnInit {
         invalidData.push(item);
       }
     });
-    // console.log("validData:: ", validData)
-    // console.log("invalidData:: ", invalidData)
     return { validDriverList: validData, invalidDriverList: invalidData };
   }
 
@@ -460,23 +462,24 @@ export class DriverManagementComponent implements OnInit {
     this.importDriverPopup = false;
   }
 
-  addfile(event: any){    
+  addfile(event: any){ 
+    this.excelEmptyMsg = false;   
     this.file = event.target.files[0];     
     let fileReader = new FileReader();    
     fileReader.readAsArrayBuffer(this.file);     
     fileReader.onload = (e) => {    
         this.arrayBuffer = fileReader.result;    
-        var data = new Uint8Array(this.arrayBuffer);    
+        var data = new Uint8Array(this.arrayBuffer);   
         var arr = new Array();    
-        for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);    
+        for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
         var bstr = arr.join("");    
         var workbook = XLSX.read(bstr, {type:"binary"});    
         var first_sheet_name = workbook.SheetNames[0];    
         var worksheet = workbook.Sheets[first_sheet_name];    
         //console.log(XLSX.utils.sheet_to_json(worksheet,{raw:true}));    
-          var arraylist = XLSX.utils.sheet_to_json(worksheet,{raw:true});     
-              this.filelist = [];
-              this.filelist = arraylist;    
+        var arraylist = XLSX.utils.sheet_to_json(worksheet,{raw:true});     
+        this.filelist = [];
+        this.filelist = arraylist;    
     }    
   }
 

@@ -5,8 +5,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple5;
-import org.apache.flink.api.java.tuple.Tuple7;
+import org.apache.flink.api.java.tuple.Tuple9;
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -21,8 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import junit.framework.Assert;
+import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.etl.ct2.common.bo.Trip;
 import net.atos.daf.etl.ct2.common.bo.TripStatusData;
+import net.atos.daf.etl.ct2.common.util.ETLConstants;
 import net.atos.daf.etl.ct2.common.util.FlinkUtil;
 
 public class TestTripETLJob {
@@ -84,26 +88,32 @@ public class TestTripETLJob {
 		final SingleOutputStreamOperator<TripStatusData> tripStsData= env.fromElements(
 				tripData);
 
-		SingleOutputStreamOperator<Tuple7<String, String, String, Integer, Integer, String, Long>> indxData = tripStsData.flatMap(		
-		new FlatMapFunction<TripStatusData, Tuple7<String, String, String, Integer, Integer, String, Long>>() {
+		SingleOutputStreamOperator<Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>> indxData = tripStsData.flatMap(		
+		new FlatMapFunction<TripStatusData, Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>>() {
 			/**
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void flatMap(TripStatusData value, Collector<Tuple7<String, String, String, Integer, Integer, String, Long>> out) throws Exception {
-				out.collect(new Tuple7<String, String, String, Integer, Integer, String, Long>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "", 0, 655350, "index", 111111L) );
-				out.collect(new Tuple7<String, String, String, Integer, Integer, String, Long>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "", 20, 600000, "index", 111112L) );
-				out.collect(new Tuple7<String, String, String, Integer, Integer, String, Long>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "", 10, 100000, "index", 111113L) );
-				out.collect(new Tuple7<String, String, String, Integer, Integer, String, Long>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "", 10, 100000, "index", 111113L) );
+			public void flatMap(TripStatusData value, Collector<Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>> out) throws Exception {
+				//2020-11-02T16:55:37.000Z
+				out.collect(new Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 0, 655350, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:35.000Z", ETLConstants.DATE_FORMAT ), 11111991L, 111111L) );
+				long ts =TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:37.000Z", ETLConstants.DATE_FORMAT );
+				out.collect(new Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 10, 100000, "index", ts, 11111996L, 111113L) );
+				out.collect(new Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 10, 100000, "index", ts, 11111996L, 111113L) );
+				out.collect(new Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 20, 600000, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:36.000Z", ETLConstants.DATE_FORMAT ), 11111993L, 111112L) );
+				out.collect(new Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>("fa63bf81-dbfb-4acc-a20a-23e2f7e0cdb0", "M4A1114", "*", 20, 600000, "index", TimeFormatter.getInstance().convertUTCToEpochMilli("2020-11-02T16:55:38.000Z", ETLConstants.DATE_FORMAT) , 11111993L, 111114L) );
 								
 			}
 		});
 		
 		
-		DataStream<Tuple5<String, String, String, Integer, Double>> secondLevelAggrData = TripAggregations.getTripIndexAggregatedData(tripStsData, tableEnv, indxData);
-		DataStream<Trip> finalTripData = TripAggregations.getConsolidatedTripData(tripStsData, secondLevelAggrData, tableEnv );
+		//DataStream<Tuple5<String, String, String, Integer, Double>> secondLevelAggrData = TripAggregations.getTripIndexAggregatedData(tripStsData, tableEnv, indxData);
+		TripAggregations tripAggregations = new TripAggregations();
+		DataStream<Trip> finalTripData = tripAggregations.getConsolidatedTripData(tripStsData, indxData, env.fromElements(Tuple3.of(0.00082, 42.7, 74.3)), 5000L, tableEnv );
+		
+		finalTripData.print();
 		
 		//finalTripData.map(rec ->{System.out.println("TripCalDist :: "+rec.getTripCalDist()); return rec;});
 		finalTripData.addSink(new CollectSink());
