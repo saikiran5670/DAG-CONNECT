@@ -23,7 +23,7 @@ stages:
        steps:
        - task: replacetokens@3
          inputs:
-            targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json'
+            targetFiles: '/dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json'
             encoding: 'auto'
             writeBOM: true
             actionOnMissing: 'warn'
@@ -36,6 +36,6 @@ stages:
        - task: CmdLine@2
          inputs:
             script: |
-              cat dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json
+              cat /dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json
               echo $(Subscription)
             
