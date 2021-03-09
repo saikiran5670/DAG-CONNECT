@@ -11,7 +11,7 @@ jobs:
     variables:
       - group: DEV0-Build-Variables
       - name: a
-        value: ${{ variables.Subscription }}
+        value: ${{ variables.ContainerRegistry }}
     pool: $(PRIVATEAGENT)
     steps:
       - task: replacetokens@3
@@ -44,13 +44,12 @@ jobs:
       - task: CmdLine@2
         inputs:
           script: |
-            cat dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config
-            echo ${{ variables.ContainerRegistry }}
+            echo ${{ variables.a }}
       - task: Docker@0
         displayName: 'Build an image'
         inputs:
           azureSubscription:  ${{ variables.Subscription }}
-          azureContainerRegistry: ${{ variables.ContainerRegistry }}
+          azureContainerRegistry: ${{ variables.a }}
           dockerFile: dotnet/AccountService_Dockerfile
           imageName: accountservice-grpc-automatic
 
@@ -58,7 +57,7 @@ jobs:
         displayName: 'Push an image'
         inputs:
           azureSubscription: ${{ variables.Subscription }}
-          azureContainerRegistry: ${{ variables.ContainerRegistry }}
+          azureContainerRegistry: ${{ variables.a }}
           action: 'Push an image'
           imageName: accountservice-grpc-automatic
 
