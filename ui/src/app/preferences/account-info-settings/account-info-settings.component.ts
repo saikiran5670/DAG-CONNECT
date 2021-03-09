@@ -53,6 +53,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   landingPageDisplayData: any;
   orgName: any;
   accountId: any;
+  blobId: number= 0;
   organizationId: any;
   salutationList: any = [
     {
@@ -104,7 +105,6 @@ export class AccountInfoSettingsComponent implements OnInit {
     });
     this.changePictureFlag = true;
     this.isSelectPictureConfirm = true;
-    this.croppedImage='../../assets/images/Account_pic.png';
     this.orgName = localStorage.getItem("organizationName");
     this.accountId = parseInt(localStorage.getItem('accountId'));
     this.organizationId = parseInt(localStorage.getItem('accountOrganizationId'));
@@ -113,31 +113,35 @@ export class AccountInfoSettingsComponent implements OnInit {
 
   loadAccountData(){
     let userObjData = {
-      id: this.accountId,
-      organizationId: this.organizationId,
-      email: "",
-      accountType: 0,
-      name: ""
+      "id": this.accountId,
+      "organizationId": this.organizationId,
+      "email": "",
+      "accountIds": "",
+      "name": "",
+      "accountGroupId": 0
     }
     this.accountService.getAccount(userObjData).subscribe((_data)=>{
       this.accountInfo = _data;
       this.editAccountSettingsFlag = false;
       this.isSelectPictureConfirm = true;
       this.setDefaultAccountInfo();
-      this.loadGeneralSettingData();
-    });
-
-    this.accountService.getAccountPicture(12).subscribe(data => {
-      if(data){
-        this.croppedImage = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
+      this.loadGeneralSettingData(); 
+      if(this.accountInfo.length != 0)
+      this.blobId = this.accountInfo[0]["blobId"];
+      if(this.blobId != 0){
+        this.accountService.getAccountPicture(this.blobId).subscribe(data => {
+          if(data){
+            this.croppedImage = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
+          }
+        })
       }
-    })
-
+    });
   }
 
   loadGeneralSettingData(){
     let languageCode= this.localStLanguage.code;
-    this.accountService.getAccountPreference(this.accountId).subscribe(resp => {
+    let preferenceId= this.accountInfo[0]["preferenceId"];
+    this.accountService.getAccountPreference(preferenceId).subscribe(resp => {
       this.accountPreferenceData = resp[0];
       this.translationService.getPreferences(languageCode).subscribe((data) => {
         let dropDownData = data;
@@ -308,24 +312,22 @@ export class AccountInfoSettingsComponent implements OnInit {
   onSelectPictureConfirm(){
     this.isSelectPictureConfirm = true;
     this.isAccountPictureSelected = false;
-    console.log(this.croppedImage.split(",")[1]);
-    //TODO : send cropped image to backend 
+
     let objData = {
-      "blobId": 0,
-      "accountId": 18,
+      "blobId": this.blobId,
+      "accountId": this.accountId,
       "imageType": "P",
       "image": this.croppedImage.split(",")[1]
-
     }
 
     this.accountService.saveAccountPicture(objData).subscribe(data => {
       if(data){
         //alert("Profile pic saved successfully")
         let msg = '';
-        if(this.translationData.lblAccountSettingsSuccessfullyUpdated)
-          msg= this.translationData.lblAccountSettingsSuccessfullyUpdated;
+        if(this.translationData.lblAccountPictureSuccessfullyUpdated)
+          msg= this.translationData.lblAccountPictureSuccessfullyUpdated;
         else
-          msg= "Account settings successfully updated";
+          msg= "Account picture successfully updated";
 
         this.successMsgBlink(msg);  
       }

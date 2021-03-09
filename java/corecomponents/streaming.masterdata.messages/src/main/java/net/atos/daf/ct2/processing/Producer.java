@@ -31,7 +31,7 @@ public class Producer {
     return this.kafkaProducer;
   }
 
-  public void publishMessage(String key, String value, Properties properties) {
+  public void publishMessage(String key, String value, Properties properties) throws InterruptedException {
 
     ProducerRecord<String, String> producerRecord =
         new ProducerRecord<String, String>(properties.getProperty(DAFCT2Constant.MASTER_DATA_TOPIC_NAME), key, value);
@@ -49,6 +49,8 @@ public class Producer {
         });
 
     this.kafkaProducer.flush();
+    System.out.println(" Egress vehicle trip data :::  "+value);
+    
   }
 
   public void closePublisher() {

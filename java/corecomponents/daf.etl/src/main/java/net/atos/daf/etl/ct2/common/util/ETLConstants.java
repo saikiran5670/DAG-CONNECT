@@ -142,6 +142,8 @@ public class ETLConstants {
 	public static final String INDEX_MSG_DRIVER2_ID = "Driver2ID";
 	public static final String INDEX_MSG_JOBNAME = "Jobname";
 	public static final String INDEX_MSG_INCREMENT = "Increment";
+	public static final String INDEX_MSG_VDIST = "VDist";
+	public static final String INDEX_MSG_EVT_DATETIME = "EvtDateTime";
 	
 	
 	//HBase table details
@@ -186,6 +188,9 @@ public class ETLConstants {
 	public static final String TRIP_JOB_NAME ="tripEtlJob";
 	public static final String TRIP_STREAMING_JOB_NAME ="tripStreamingJob";
 	public static final String DEFAULT_OBJECT_ID ="00";
+	
+	//Trip related parameters
+	public static final String TRIP_TIME_WINDOW_MILLISEC ="trip.time.window.millisec";
 
 	//Kafka parameter
 	
@@ -210,5 +215,11 @@ public class ETLConstants {
 	public static final String WRITE_PATH = "write_path";
 	public static final String VEHICLE_DATA_PATH = "vehicleDataPath";
 	public static final String UNKNOWN = "UNKNOWN";
+	
+	//Diesel parameters
+	public static final String DIESEL_HEATING_VALUE = "diesel.heating.value";
+	public static final String DIESEL_CO2_EMISSION_FACTOR = "diesel.co2.emission.factor";
+	public static final String DIESEL_WEIGHT_KG = "diesel.weight.kg";
+
 	
 }

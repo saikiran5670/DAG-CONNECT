@@ -1,9 +1,8 @@
 package net.atos.daf.etl.ct2.trip;
 
-import java.text.SimpleDateFormat;
-
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.java.tuple.Tuple7;
+import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.tuple.Tuple9;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -38,6 +37,8 @@ public class TripStreamingJob {
 			final StreamExecutionEnvironment env = FlinkUtil.createStreamExecutionEnvironment(envParams);
 			env.getConfig().setGlobalJobParameters(envParams);
 			final StreamTableEnvironment tableEnv = FlinkUtil.createStreamTableEnvironment(env);
+			//TripStreamingJob tripStreamingJob = new TripStreamingJob();
+			TripAggregations tripAggregation = new TripAggregations();
 
 			// Map to status data
 			SingleOutputStreamOperator<TripStatusData> statusDataStream = FlinkKafkaStatusMsgConsumer
@@ -47,125 +48,25 @@ public class TripStreamingJob {
 						 * 
 						 */
 						private static final long serialVersionUID = 1L;
-
 						@Override
 						public TripStatusData map(KafkaRecord<Status> kafkaRec) {
-
-							try {
-								TripStatusData tripStsData = new TripStatusData();
-								Status stsMsg = kafkaRec.getValue();
-
-								tripStsData.setDriverId(stsMsg.getDriverID());
-								tripStsData.setTripId(stsMsg.getDocument().getTripID());
-								tripStsData.setVid(stsMsg.getVid());
-								tripStsData.setVin(stsMsg.getVin());
-								// tripStsData.setIncrement(stsMsg.getIncrement());
-
-								//Temporary fix due to source data type mismatch
-								SimpleDateFormat newDateStrFmt = new SimpleDateFormat(ETLConstants.DATE_FORMAT);
-
-								if (stsMsg.getEventDateTimeFirstIndex() != null) {
-									tripStsData.setStartDateTime(TimeFormatter.convertUTCToEpochMilli(
-											newDateStrFmt.format(stsMsg.getEventDateTimeFirstIndex()),
-											ETLConstants.DATE_FORMAT));
-								} else {
-									if (stsMsg.getGpsStartDateTime() != null)
-										tripStsData.setStartDateTime(TimeFormatter.convertUTCToEpochMilli(
-												newDateStrFmt.format(stsMsg.getGpsStartDateTime()),
-												ETLConstants.DATE_FORMAT));
-								}
-
-								if (stsMsg.getEvtDateTime() != null) {
-									tripStsData.setEndDateTime(TimeFormatter.convertUTCToEpochMilli(
-											newDateStrFmt.format(stsMsg.getEvtDateTime()), ETLConstants.DATE_FORMAT));
-								} else {
-									if (stsMsg.getGpsEndDateTime() != null)
-										tripStsData.setEndDateTime(TimeFormatter.convertUTCToEpochMilli(
-												newDateStrFmt.format(stsMsg.getGpsEndDateTime()),
-												ETLConstants.DATE_FORMAT));
-								}
-
-								tripStsData.setGpsTripDist(stsMsg.getDocument().getGpsTripDist());
-								if (stsMsg.getGpsStopVehDist() != null)
-									tripStsData.setGpsStopVehDist(Long.valueOf(stsMsg.getGpsStopVehDist()));
-
-								if (stsMsg.getGpsStartVehDist() != null)
-									tripStsData.setGpsStartVehDist(Long.valueOf(stsMsg.getGpsStartVehDist()));
-
-								tripStsData.setGpsStartLatitude(stsMsg.getGpsStartLatitude());
-								tripStsData.setGpsStartLongitude(stsMsg.getGpsStartLongitude());
-								tripStsData.setGpsEndLatitude(stsMsg.getGpsEndLatitude());
-								tripStsData.setGpsEndLongitude(stsMsg.getGpsEndLongitude());
-								tripStsData.setVUsedFuel(stsMsg.getVUsedFuel());
-
-								if (stsMsg.getVStopFuel() != null)
-									tripStsData.setVStopFuel(Long.valueOf(stsMsg.getVStopFuel()));
-
-								if (stsMsg.getVStartFuel() != null)
-									tripStsData.setVStartFuel(Long.valueOf(stsMsg.getVStartFuel()));
-
-								tripStsData.setVTripMotionDuration(stsMsg.getDocument().getVTripMotionDuration());
-								tripStsData.setReceivedTimestamp(stsMsg.getReceivedTimestamp());
-								tripStsData.setVIdleDuration(stsMsg.getVIdleDuration());
-								tripStsData.setVPTODuration(stsMsg.getVptoDuration());
-								tripStsData.setVHarshBrakeDuration(stsMsg.getVHarshBrakeDuration());
-								tripStsData.setVBrakeDuration(stsMsg.getVBrakeDuration());
-								tripStsData.setVMaxThrottlePaddleDuration(
-										stsMsg.getDocument().getVMaxThrottlePaddleDuration());
-								tripStsData.setVTripAccelerationTime(stsMsg.getDocument().getVTripAccelerationTime());
-								tripStsData.setVCruiseControlDist(stsMsg.getVCruiseControlDist());
-								tripStsData.setVTripDPABrakingCount(stsMsg.getDocument().getVTripDPABrakingCount());
-								tripStsData.setVTripDPAAnticipationCount(
-										stsMsg.getDocument().getVTripDPAAnticipationCount());
-								tripStsData.setVCruiseControlFuelConsumed(
-										stsMsg.getDocument().getVCruiseControlFuelConsumed());
-								tripStsData.setVIdleFuelConsumed(stsMsg.getDocument().getVIdleFuelConsumed());
-								tripStsData
-										.setVSumTripDPABrakingScore(stsMsg.getDocument().getVSumTripDPABrakingScore());
-
-								tripStsData.setVSumTripDPAAnticipationScore(
-										stsMsg.getDocument().getVSumTripDPAAnticipationScore());
-
-								if (tripStsData.getStartDateTime() != null && tripStsData.getEndDateTime() != null)
-									tripStsData.setTripCalGpsVehTimeDiff(TimeFormatter.subPastUtcTmFrmCurrentUtcTm(
-											tripStsData.getStartDateTime(), tripStsData.getEndDateTime()));
-
-								if (tripStsData.getGpsStopVehDist() != null && tripStsData.getGpsStartVehDist() != null)
-									tripStsData.setTripCalGpsVehDistDiff(
-											tripStsData.getGpsStopVehDist() - tripStsData.getGpsStartVehDist());
-								
-								if(tripStsData.getTripCalGpsVehTimeDiff() != null){
-									double timeDiffInHr = (tripStsData.getTripCalGpsVehTimeDiff()).doubleValue() /3600000;
-									//double timeDiffInsec = (tripStsData.getTripCalGpsVehTimeDiff()).doubleValue() /1000;
-									tripStsData.setTripCalVehTimeDiffInHr(timeDiffInHr);
-								}
-
-								// TODO Insert Kafka processing record time
-								// tripStsData.set(hbaseInsertionTS);
-								tripStsData.setEtlProcessingTS(TimeFormatter.getCurrentUTCTime());
-								
-								logger.info("tripStsData.getTripCalVehTimeDiffInHr : "+tripStsData.getTripCalVehTimeDiffInHr());
-								logger.info("driving Time : "+tripStsData.getTripCalGpsVehTimeDiff() +" idle: "+tripStsData.getVIdleDuration());
-								
-								return tripStsData;
-							} catch (Exception e) {
-								logger.error(
-										"Issue while mapping deserialized status object to trip status object :: " + e);
-								return null;
-							}
-
+							return fetchStatusData(kafkaRec.getValue());
 						}
-					}).filter(rec -> null != rec);
+					});//.filter(rec -> null != rec);
+			
+			logger.info(" completed reading the streaming data !!!!!!!!!!!!!! ");
 
-			SingleOutputStreamOperator<Tuple7<String, String, String, Integer, Integer, String, Long>> indxData = TripAggregations
+			SingleOutputStreamOperator<Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>> indxData = tripAggregation
 					.getTripIndexData(statusDataStream, tableEnv, envParams);
-
-			DataStream<Trip> finalTripData = TripAggregations.getConsolidatedTripData(statusDataStream, indxData,
-					tableEnv);
-
+			
+			DataStream<Tuple3<Double, Double, Double>> vehDieselEmissionFactors = tripAggregation.getVehDieselEmissionFactors(envParams, env);
+			
+			DataStream<Trip> finalTripData = tripAggregation.getConsolidatedTripData(statusDataStream, indxData,
+					vehDieselEmissionFactors, Long.valueOf(envParams.get(ETLConstants.TRIP_TIME_WINDOW_MILLISEC)), tableEnv);
+			
 			// Call Audit Trail
 			TripAuditTrail.auditTrail(envParams, ETLConstants.AUDIT_EVENT_STATUS_START, ETLConstants.TRIP_STREAMING_JOB_NAME,
-					"Trip ETL Job Started", ETLConstants.AUDIT_CREATE_EVENT_TYPE);
+					"Trip Streaming Job Started", ETLConstants.AUDIT_CREATE_EVENT_TYPE);
 
 			// TODO read master data
 			finalTripData.addSink(new TripSink());
@@ -175,12 +76,120 @@ public class TripStreamingJob {
 		} catch (Exception e) {
 
 			// Call Audit Trail
-			TripAuditTrail.auditTrail(envParams, ETLConstants.AUDIT_EVENT_STATUS_START, ETLConstants.TRIP_STREAMING_JOB_NAME,
-					"Trip ETL Job Started", ETLConstants.AUDIT_CREATE_EVENT_TYPE);
+			TripAuditTrail.auditTrail(envParams, ETLConstants.AUDIT_EVENT_STATUS_FAIL, ETLConstants.TRIP_STREAMING_JOB_NAME,
+					"Trip Streaming Job Failed" + e.getMessage(), ETLConstants.AUDIT_CREATE_EVENT_TYPE);
 
 			logger.error(" TripStreamingJob failed, reason :: " + e);
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
 
+	}
+	
+	public static TripStatusData fetchStatusData(Status stsMsg)
+	{
+		TripStatusData tripStsData = null;
+		try {
+			tripStsData = new TripStatusData();
+			tripStsData.setDriverId(stsMsg.getDriverID());
+			tripStsData.setVid(stsMsg.getVid());
+			tripStsData.setVin(stsMsg.getVin());
+			// tripStsData.setIncrement(stsMsg.getIncrement());
+
+			if (stsMsg.getEventDateTimeFirstIndex() != null) {
+				tripStsData.setStartDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(
+						stsMsg.getEventDateTimeFirstIndex().toString(),
+						ETLConstants.DATE_FORMAT));
+			} else {
+				if (stsMsg.getGpsStartDateTime() != null)
+					tripStsData.setStartDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(
+							stsMsg.getGpsStartDateTime().toString(),
+							ETLConstants.DATE_FORMAT));
+			}
+
+			if (stsMsg.getEvtDateTime() != null) {
+				tripStsData.setEndDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(
+						stsMsg.getEvtDateTime().toString(),
+						ETLConstants.DATE_FORMAT));
+			} else {
+				if (stsMsg.getGpsEndDateTime() != null)
+					tripStsData.setEndDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(
+							stsMsg.getGpsEndDateTime().toString(),
+							ETLConstants.DATE_FORMAT));
+			}
+			
+			if (stsMsg.getGpsStopVehDist() != null)
+				tripStsData.setGpsStopVehDist(Long.valueOf(stsMsg.getGpsStopVehDist()));
+
+			if (stsMsg.getGpsStartVehDist() != null)
+				tripStsData.setGpsStartVehDist(Long.valueOf(stsMsg.getGpsStartVehDist()));
+
+			tripStsData.setGpsStartLatitude(stsMsg.getGpsStartLatitude());
+			tripStsData.setGpsStartLongitude(stsMsg.getGpsStartLongitude());
+			tripStsData.setGpsEndLatitude(stsMsg.getGpsEndLatitude());
+			tripStsData.setGpsEndLongitude(stsMsg.getGpsEndLongitude());
+			tripStsData.setVUsedFuel(stsMsg.getVUsedFuel());
+
+			if (stsMsg.getVStopFuel() != null)
+				tripStsData.setVStopFuel(Long.valueOf(stsMsg.getVStopFuel()));
+
+			if (stsMsg.getVStartFuel() != null)
+				tripStsData.setVStartFuel(Long.valueOf(stsMsg.getVStartFuel()));
+
+			tripStsData.setReceivedTimestamp(stsMsg.getReceivedTimestamp());
+			tripStsData.setVIdleDuration(stsMsg.getVIdleDuration());
+			tripStsData.setVPTODuration(stsMsg.getVptoDuration());
+			tripStsData.setVHarshBrakeDuration(stsMsg.getVHarshBrakeDuration());
+			tripStsData.setVBrakeDuration(stsMsg.getVBrakeDuration());
+			tripStsData.setVCruiseControlDist(stsMsg.getVCruiseControlDist());
+			
+
+			if (tripStsData.getStartDateTime() != null && tripStsData.getEndDateTime() != null)
+				tripStsData.setTripCalGpsVehTimeDiff(TimeFormatter.getInstance().subPastUtcTmFrmCurrentUtcTm(
+						tripStsData.getStartDateTime(), tripStsData.getEndDateTime()));
+
+			if (tripStsData.getGpsStopVehDist() != null && tripStsData.getGpsStartVehDist() != null)
+				tripStsData.setTripCalGpsVehDistDiff(
+						tripStsData.getGpsStopVehDist() - tripStsData.getGpsStartVehDist());
+			
+			if(tripStsData.getTripCalGpsVehTimeDiff() != null){
+				double timeDiffInHr = (tripStsData.getTripCalGpsVehTimeDiff()).doubleValue() /3600000;
+				//double timeDiffInsec = (tripStsData.getTripCalGpsVehTimeDiff()).doubleValue() /1000;
+				tripStsData.setTripCalVehTimeDiffInHr(timeDiffInHr);
+			}
+
+			// tripStsData.set(hbaseInsertionTS);
+			tripStsData.setEtlProcessingTS(TimeFormatter.getInstance().getCurrentUTCTime());
+			if(stsMsg.getKafkaProcessingTS() != null)
+				tripStsData.setKafkaProcessingTS(Long.valueOf(stsMsg.getKafkaProcessingTS()));
+			
+			if(stsMsg.getDocument() != null){
+				tripStsData.setTripId(stsMsg.getDocument().getTripID());
+				tripStsData.setGpsTripDist(stsMsg.getDocument().getGpsTripDist());
+				tripStsData.setVTripMotionDuration(stsMsg.getDocument().getVTripMotionDuration());
+				tripStsData.setVMaxThrottlePaddleDuration(
+						stsMsg.getDocument().getVMaxThrottlePaddleDuration());
+				tripStsData.setVTripAccelerationTime(stsMsg.getDocument().getVTripAccelerationTime());
+				tripStsData.setVTripDPABrakingCount(stsMsg.getDocument().getVTripDPABrakingCount());
+				tripStsData.setVTripDPAAnticipationCount(
+						stsMsg.getDocument().getVTripDPAAnticipationCount());
+				tripStsData.setVCruiseControlFuelConsumed(
+						stsMsg.getDocument().getVCruiseControlFuelConsumed());
+				tripStsData.setVIdleFuelConsumed(stsMsg.getDocument().getVIdleFuelConsumed());
+				tripStsData
+						.setVSumTripDPABrakingScore(stsMsg.getDocument().getVSumTripDPABrakingScore());
+
+				tripStsData.setVSumTripDPAAnticipationScore(
+						stsMsg.getDocument().getVSumTripDPAAnticipationScore());
+			}
+			
+			logger.info("tripStsData.getTripCalVehTimeDiffInHr : "+tripStsData.getTripCalVehTimeDiffInHr());
+			logger.info("driving Time : "+tripStsData.getTripCalGpsVehTimeDiff() +" idle: "+tripStsData.getVIdleDuration());
+			
+		} catch (Exception e) {
+			logger.error(
+					"Issue while mapping deserialized status object to trip status object :: " + e);
+			logger.error("Issue while processing record :: "+stsMsg);
+		}
+		return tripStsData;
 	}
 }

@@ -59,7 +59,7 @@ export class AccountService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.accountServiceUrl}/preference/get?accountId=${id}`,headers)
+      .get<any[]>(`${this.accountServiceUrl}/preference/get?preferenceId=${id}`,headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -257,7 +257,7 @@ export class AccountService {
     };
     return this.httpClient
       .post<any[]>(
-        `http://20.76.57.235/account/savepprofilepicture`, data, headers
+        `${this.accountServiceUrl}/savepprofilepicture`, data, headers
       )
       .pipe(catchError(this.handleError));
   }
@@ -269,7 +269,7 @@ export class AccountService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`http://20.76.57.235/account/getprofilepicture?BlobId=${id}`,headers)
+      .get<any[]>(`${this.accountServiceUrl}/getprofilepicture?BlobId=${id}`,headers)
       .pipe(catchError(this.handleError));
   }
 

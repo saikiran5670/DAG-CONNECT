@@ -17,7 +17,7 @@ public class DAFCT2Constant {
     public static final String AUDIT_CREATE_EVENT_TYPE = "1";
     public static final String AUDIT_EVENT_STATUS_START = "2";
     public static final String AUDIT_EVENT_STATUS_FAIL = "1";
-    public static final String TRIP_JOB_NAME = "tripEtlJob";
+    public static final String JOB_NAME = "ContiStreamingJob";
     public static final String DEFAULT_OBJECT_ID = "00";
 
     public static final String GRPC_SERVER = "grpc.server";
@@ -28,6 +28,8 @@ public class DAFCT2Constant {
     public static final String SINK_STATUS_TOPIC_NAME = "sink.status.topic.name";
     public static final String SINK_MONITOR_TOPIC_NAME = "sink.monitor.topic.name";
     public static final String MASTER_DATA_TOPIC_NAME = "master.data.topic.name";
+    public static final String CONTI_CORRUPT_MESSAGE_TOPIC_NAME = "conti.corrupt.message.topic.name";
+    
 
     public static final String INDEX_TRANSID = "index.transid";
     public static final String STATUS_TRANSID = "status.transid";
@@ -52,4 +54,27 @@ public class DAFCT2Constant {
     public static final String POSTGRE_DATABASE_NAME = "postgre.database.name";
     public static final String POSTGRE_TABLE_WHITELIST = "postgre.table.name";
     public static final String POSTGRE_PLUGIN_NAME = "postgre.plugin.name";
+    
+    public static final String HBASE_CONTI_HISTORICAL_TABLE_NAME = "conti.historical.table.name";
+    public static final String HBASE_CONTI_HISTORICAL_TABLE_CF = "rawcf";
+    
+	//HBase
+	public static final String HBASE_ZOOKEEPER_QUORUM = "hbase.zookeeper.quorum";
+	public static final String HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT = "hbase.zookeeper.property.clientPort";
+	public static final String HADOOP_SECURITY_AUTHENTICATION = "hadoop.security.authentication";
+	public static final String HBASE_SECURITY_AUTHENTICATION ="hbase.security.authentication";
+	public static final String HBASE_MASTER_KERBEROS_PRINCIPAL = "hbase.master.kerberos.principal";
+	public static final String HBASE_REGIONSERVER_KERBEROS_PRINCIPAL = "hbase.regionserver.kerberos.principal";
+	public static final String HBASE_KERBEROS_USER = "hbaseKerberosUser";
+	public static final String HBASE_KEYTAB_PATH = "hbaseKeytabPath";
+	public static final String STATUS_SUCCESS = "SUCCESS";
+	public static final String STATUS_FAILURE = "FAILURE";
+	public static final String HBASE_CLIENT_RETRIES = "hbaseClientRetriesNumber";
+	public static final String HBASE_CLIENT_PAUSE = "hbaseClientPause";
+	public static final String HBASE_ZOOKEEPER_RETRIES = "zookeeperRecoveryRetry";
+	public static final String ZOOKEEPER_ZNODE_PARENT = "zookeeper.znode.parent";
+	public static final String HBASE_REGIONSERVER = "hbase.regionserver";
+	public static final String HBASE_MASTER = "hbase.master";
+	public static final String HBASE_REGIONSERVER_PORT = "hbase.regionserver.port";
+	public static final String HBASE_ROOTDIR = "hbase.rootdir";
 }
