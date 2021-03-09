@@ -44,12 +44,12 @@ jobs:
       - task: CmdLine@2
         inputs:
           script: |
-            echo $(ContainerRegistry)
+            cat dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config
       - task: Docker@0
         displayName: 'Build an image'
         inputs:
           azureSubscription:  ${{ variables.Subscription }}
-          azureContainerRegistry: $(ContainerRegistry)
+          azureContainerRegistry: ${{ variables.ContainerRegistry }}
           dockerFile: dotnet/AccountService_Dockerfile
           imageName: accountservice-grpc-automatic
 
@@ -57,7 +57,7 @@ jobs:
         displayName: 'Push an image'
         inputs:
           azureSubscription: ${{ variables.Subscription }}
-          azureContainerRegistry: $(ContainerRegistry)
+          azureContainerRegistry: ${{ variables.ContainerRegistry }}
           action: 'Push an image'
           imageName: accountservice-grpc-automatic
 
