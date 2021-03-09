@@ -11,7 +11,7 @@ jobs:
     variables:
       - group: DEV01-Build-Variables
       - name: subscription1
-        value: $(SUBSCRIPTION)
+        value: DAF CT AZURE DTA LANDING ZONE DEV1
     pool: $(PRIVATEAGENT)
     steps:
       - task: replacetokens@3
@@ -48,14 +48,14 @@ jobs:
       - task: Docker@0
         displayName: 'Build an image'
         inputs:
-          azureSubscription:  $(subscription1)
+          azureSubscription:  $[variables.Subscription]
           azureContainerRegistry: $(ContainerRegistry)
           dockerFile: dotnet/AccountService_Dockerfile
           imageName: accountservice-grpc-automatic
       - task: Docker@0
         displayName: 'Push an image'
         inputs:
-          azureSubscription: $(subscription1)
+          azureSubscription: $[variables.Subscription]
           azureContainerRegistry: $(ContainerRegistry)
           action: 'Push an image'
           imageName: accountservice-grpc-automatic
