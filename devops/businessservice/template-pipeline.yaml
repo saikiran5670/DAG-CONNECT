@@ -2,7 +2,7 @@ trigger:
 - none
 
 stages:
-  - stage:
+  - stage: stage1
     jobs:
     - template: simple-param.yaml  # Template reference
       parameters:
