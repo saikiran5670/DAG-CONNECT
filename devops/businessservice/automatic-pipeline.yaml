@@ -10,7 +10,6 @@ jobs:
   - job:
     pool: $(PRIVATEAGENT)
     variables:
-      - group: DEV01-Build-Variables
       - name: a
         value: 'DAF CT AZURE DTA LANDING ZONE DEV1'
       - name: b
@@ -48,7 +47,6 @@ jobs:
           script: |
             echo $(ContainerRegistry)
             echo $(Subscription)
-            echo $(group)
       
       - task: Docker@0
         displayName: 'Build an image'
