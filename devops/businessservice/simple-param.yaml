@@ -5,14 +5,8 @@ parameters:
 - name: containerRegistry
   type: string
   default: 'containerRegistry'
-- name: group
-  type: string
-  default: 'group'
 
 steps:
-  - variables:
-    group: {{ parameters.group }}
-    
   - task: replacetokens@3
     inputs:
       targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json'
