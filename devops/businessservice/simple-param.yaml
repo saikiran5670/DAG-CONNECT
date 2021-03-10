@@ -11,9 +11,10 @@ parameters:
 
 jobs:
   - job
+    pool: $(PRIVATEAGENT)
     variables:
       - group: {{ parameters.variableGroup }}
-    pool: $(PRIVATEAGENT)
+    
     steps:
       - task: replacetokens@3
         inputs:
