@@ -8,13 +8,10 @@ parameters:
 - name: variableGroup
   type: string
   default: 'variableGroup'
-- name: privateAgent
-  type: string
-  default: 'privateAgent'
 
 
 jobs:
-- job: a1
+- job:
   pool: $(PRIVATEAGENT)
   variables:
   - group: ${{ parameters.variableGroup }}
