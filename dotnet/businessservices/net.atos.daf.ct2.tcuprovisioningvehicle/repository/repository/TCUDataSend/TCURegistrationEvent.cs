@@ -23,7 +23,8 @@ namespace TCUSend
 
         public TCU TCU { get => tcu; set => tcu = value; }
 
-        public DateTime ReferenceDate { get => referenceDate; set => referenceDate = value; }
         public string TCURegistration { get => tCURegistration; set => tCURegistration = value; }
+
+        public DateTime ReferenceDate { get => referenceDate; set => referenceDate = value; }
     }
 }
