@@ -9,9 +9,9 @@ jobs:
     variables:
     - group: ${{ parameters.group }}
     - name: a
-      value: $(Subscription)
+      value: $[variables.Subscription]
     - name: b
-      value: $(ContainerRegistry)
+      value: $[variables.ContainerRegistry]
     steps:
       - task: replacetokens@3
         inputs:
