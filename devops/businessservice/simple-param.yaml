@@ -1,0 +1,7 @@
+parameters:
+- name: subscription
+  type: string
+  default: 'Docker'
+
+steps:
+- script: echo ${{ parameters.subscription }}

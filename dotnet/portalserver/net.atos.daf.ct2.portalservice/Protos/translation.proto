@@ -16,6 +16,8 @@ rpc GetTranslationsForDropDowns(dropdownnameRequest) returns (dropdownnameRespon
 rpc GetTranslationsFormultipleDropDowns(dropdownarrayRequest) returns (dropdownarrayResponce);
 rpc GetTranslationsPreferencDropDowns(PreferenceRequest) returns (PreferenceResponse);
 rpc GetAllLangaugecodes(Request) returns (TranslationListResponce);
+rpc InsertTranslationFileDetails (TranslationUploadRequest) returns (TranslationUploadResponse);
+rpc GetFileUploadDetails (FileUploadDetailsRequest) returns (FileUploadDetailsResponse);
 }
 
 enum TranslationType{
@@ -165,4 +167,55 @@ message Language{
     message DropdownName {  
   string Dropdownname = 1;  
 }
+message TranslationUploadRequest
+{
+
+      int32 id =1;
+      string file_name =2;
+      string description =3;
+      int32 file_size =4;
+      int32 failure_count =5;
+      int32 created_by =6;
+     // byte file =7;
+      int32 added_count =7;
+      string updated_count =8;
+      repeated Translation translations =9;
+
+}
+
+message TranslationUploadResponse
+{
+    Responcecode code=1;
+    string message = 2;
+    TranslationUploadRequest translationupload=3;
+}
+
+message FileUploadDetailsRequest
+{
+   int32 FileID =1;
+}
+
+message FileUploadDetailsResponse
+{
+    Responcecode code=1;
+    string message = 2;
+   repeated TranslationUpload translationupload=3;
+}
+
+message TranslationUpload
+{
+
+      int32 id =1;
+      string file_name =2;
+      string description =3;
+      int32 file_size =4;
+      int32 failure_count =5;
+      int32 created_by =6;
+     // byte file =7;
+      int32 added_count =7;
+      string updated_count =8;
+     // repeated Translation translations =9;
+
+}
+
   

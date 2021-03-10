@@ -13,7 +13,8 @@ using net.atos.daf.ct2.translation.Enum;
 //using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.translation.entity;
-
+using net.atos.daf.ct2.translationservice.Entity;
+using static net.atos.daf.ct2.translationservice.Entity.Mapper;
 
 namespace net.atos.daf.ct2.translationservice
 {
@@ -22,12 +23,14 @@ namespace net.atos.daf.ct2.translationservice
         private readonly ILogger _logger;
         //private readonly IAuditTraillib auditlog;
         private readonly ITranslationManager translationmanager;
-        
+        private readonly Mapper _mapper;
+
         public TranslationManagementService(ILogger<TranslationManagementService> logger,ITranslationManager _TranslationManager)
         {
             _logger = logger;
             translationmanager=_TranslationManager;
-           // auditlog = _auditlog;
+            // auditlog = _auditlog;
+            _mapper = new Mapper();
         }
 
         // Translation
@@ -255,9 +258,10 @@ namespace net.atos.daf.ct2.translationservice
             {
 
 
-                PreferenceResponse Dropdowns = new PreferenceResponse();
+                 PreferenceResponse Dropdowns = new PreferenceResponse();
+                Preferences obj = new Preferences();
 
-                foreach (var item in Dropdowns.GetType().GetProperties())
+                foreach (var item in obj.GetType().GetProperties())
                 {
                     _logger.LogInformation("Drop down method get" + item.Name + request.Langaugecode);
                     var Translations = await translationmanager.GetTranslationsForDropDowns(item.Name, request.Langaugecode);
@@ -446,6 +450,67 @@ namespace net.atos.daf.ct2.translationservice
                     Message = "GetAllLangaugecodes Faile due to - " + ex.Message
                 });
 
+            }
+        }
+
+        public override async Task<TranslationUploadResponse> InsertTranslationFileDetails(TranslationUploadRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("InsertTranslationFileDetails method ");
+                Translationupload Objtranslationupload = new Translationupload();
+                Objtranslationupload = _mapper.ToTranslationUploadEntity(request);
+
+                var result = await translationmanager.InsertTranslationFileDetails(Objtranslationupload);
+                _logger.LogInformation("InsertTranslationFileDetails service called.");
+
+                return await Task.FromResult(new TranslationUploadResponse
+                {
+                    Message = "FileDetails uploaded with id:- " + result.id,
+                    Code = Responcecode.Success,
+                    Translationupload = request
+
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Translation Service:InsertTranslationFileDetails : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new TranslationUploadResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "InsertTranslationFileDetails Faile due to - " + ex.Message
+                });
+            }
+        }
+
+        public override async Task<FileUploadDetailsResponse> GetFileUploadDetails(FileUploadDetailsRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("GetFileUploadDetails Method");
+               // Translationupload Objtranslationupload = new Translationupload();
+                var fileID = _mapper.ToTranslationEntity(request);
+                IEnumerable<Translationupload> ObjRetrieveFileUploadList = await translationmanager.GetFileUploadDetails(fileID);
+                FileUploadDetailsResponse response = new FileUploadDetailsResponse();
+                foreach (var item in ObjRetrieveFileUploadList)
+                {
+                    response.Translationupload.Add(_mapper.ToTranslationUploadDetailEntity(item));
+                }
+
+                response.Message = "Vehicles data retrieved";
+                response.Code = Responcecode.Success;
+                _logger.LogInformation("Get method in vehicle service called.");
+                return await Task.FromResult(response);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Translation Service:GetFileUploadDetails : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new FileUploadDetailsResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "GetFileUploadDetails Faile due to - " + ex.Message
+                });
             }
         }
 

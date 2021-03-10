@@ -129,12 +129,24 @@
                   </mat-error>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label>{{ translationData.lblUserType || 'User Type' }}<span class='mandatoryColor'>*</span></mat-label>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-select placeholder="{{ translationData.lblUserType || 'User Type' }}" formControlName="userType" required>
+                      <mat-option *ngFor="let rer of UserTypeList" [value]="rer.value">
+                        {{ rer.name }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-error *ngIf="firstFormGroup.get('userType').hasError('required')">
+                    {{ translationData.lblPleasechooseusertype || 'Please choose user type' }}
+                  </mat-error>
+                </div>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
                   <mat-form-field appearance="outline" class="full-width">
                     <input placeholder="{{ translationData.lblOrganisation || 'Organisation' }}" matInput formControlName="organization">
                   </mat-form-field>
                 </div>
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
               </div>
             </div>
           </div>

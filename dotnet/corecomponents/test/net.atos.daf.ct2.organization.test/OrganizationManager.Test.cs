@@ -7,6 +7,10 @@ using net.atos.daf.ct2.organization.repository;
 using System.Collections.Generic;
 using net.atos.daf.ct2.organization.entity;
 using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.account;
+using net.atos.daf.ct2.group;
+using net.atos.daf.ct2.vehicle.repository;
+
 namespace net.atos.daf.ct2.organization.test
 {
     [TestClass]
@@ -16,8 +20,10 @@ namespace net.atos.daf.ct2.organization.test
         readonly IOrganizationRepository _organizationRepository;        
         private readonly IOrganizationManager _organizationManager;
         private readonly IAuditTraillib _auditlog;
-           private readonly IVehicleManager _vehicelManager;
-         private readonly IAuditLogRepository _auditLogRepository;
+        private readonly IVehicleManager _vehicleManager;
+        private readonly IGroupManager _groupManager;
+        private readonly IAccountManager _accountManager;
+        private readonly IAuditLogRepository _auditLogRepository;
         public OrganizationManagerTest()
         {
              _config = new ConfigurationBuilder()
@@ -25,11 +31,15 @@ namespace net.atos.daf.ct2.organization.test
             .Build();
             //Get connection string
            // var connectionString = _config.GetConnectionString("Dev");
-            string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y\\97;Ssl Mode=Require;";
+            string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             _dataAccess = new PgSQLDataAccess(connectionString);
             _auditLogRepository=new AuditLogRepository(_dataAccess);
             _auditlog= new AuditTraillib(_auditLogRepository);
-            _organizationRepository = new OrganizationRepository(_dataAccess,_vehicelManager);
+            _vehicleManager =new VehicleManager(new VehicleRepository(_dataAccess),_auditlog);
+            _organizationRepository = new OrganizationRepository(_dataAccess,
+                                                                  _vehicleManager,
+                                                                  _groupManager,
+                                                                  _accountManager); 
             _organizationManager = new OrganizationManager(_organizationRepository,_auditlog);
         }
 
@@ -100,5 +110,22 @@ namespace net.atos.daf.ct2.organization.test
             var result = _organizationManager.KeyHandOverEvent(keyHandOver).Result;
             Assert.IsTrue(result != null);
         }
+        [TestMethod]
+        public void CreateOrgRelationship_Manager()
+        {
+            var orgRelationship = new OrgRelationship();
+            orgRelationship.OrganizationId =1;
+            orgRelationship.Code = "C1";
+            orgRelationship.Level =1;
+            orgRelationship.Name = "Test Data";
+            orgRelationship.Description ="Unit testing";
+            orgRelationship.FeaturesetId = 1;
+
+
+            orgRelationship.IsActive = true;
+            var result = _organizationManager.CreateOrgRelationship(orgRelationship).Result;
+            Assert.IsTrue(result != null && result.Id > 0);
+        }
+
     }
 }

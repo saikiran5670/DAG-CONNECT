@@ -52,5 +52,10 @@ namespace net.atos.daf.ct2.organization
         {
             return await organizationRepository.CreateVehicleParty(customers);
         }
+
+        public async Task<OrgRelationship> CreateOrgRelationship(OrgRelationship orgRelationship)
+        {
+            return await organizationRepository.CreateOrgRelationship(orgRelationship);
+        }
     }
 }

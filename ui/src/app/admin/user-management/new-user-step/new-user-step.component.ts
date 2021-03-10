@@ -54,6 +54,16 @@ export class NewUserStepComponent implements OnInit {
       name: 'Ms'
     }
   ];
+  UserTypeList: any = [
+    {
+      name: 'System User',
+      value: 'S'
+    },
+    {
+      name: 'Portal User',
+      value: 'P'
+    }
+  ];
   changePictureFlag: boolean = false;
   isAccountPictureSelected: boolean = false;
   droppedImage:any = '';
@@ -92,6 +102,7 @@ export class NewUserStepComponent implements OnInit {
       firstName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       lastName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       loginEmail: ['', [Validators.required, Validators.email]],
+      userType: ['', [Validators.required]],
       organization: new FormControl({value: null, disabled: true}),
       birthDate: ['', []],
       language: ['', []],
@@ -170,7 +181,7 @@ export class NewUserStepComponent implements OnInit {
       let objData = {
         id: 0,
         emailId: this.firstFormGroup.controls.loginEmail.value,
-        type: 'P',
+        type: this.firstFormGroup.controls.userType.value,
         salutation: this.firstFormGroup.controls.salutation.value,
         firstName: this.firstFormGroup.controls.firstName.value,
         lastName: this.firstFormGroup.controls.lastName.value,
@@ -214,10 +225,8 @@ export class NewUserStepComponent implements OnInit {
           if(error.error.account && error.error.account.organizationId != this.accountOrganizationId){
             this.callToLinkPopup(error.error); //--- show link popup
           }
-          else{
-            if(error.error.organizationId == this.accountOrganizationId){
-              this.duplicateEmailMsg = true;
-            }
+          else if(error.error.account && error.error.account.organizationId == this.accountOrganizationId){
+            this.duplicateEmailMsg = true;
           }
         }
        });
@@ -242,8 +251,8 @@ export class NewUserStepComponent implements OnInit {
         this.firstFormGroup.controls['loginEmail'].disable();
         this.setDefaultAccountInfo(linkAccountInfo.account);
         this.linkAccountId = linkAccountInfo.account.id; //--- link account id
-        if(linkAccountInfo.preferences){
-          this.setDefaultSetting(linkAccountInfo.preferences);
+        if(linkAccountInfo.preference){
+          this.setDefaultSetting(linkAccountInfo.preference);
         }
         else{
           this.setDefaultSetting();
@@ -545,7 +554,7 @@ export class NewUserStepComponent implements OnInit {
         salutation: this.firstFormGroup.controls.salutation.value,
         firstName: this.firstFormGroup.controls.firstName.value,
         lastName: this.firstFormGroup.controls.lastName.value,
-        type: "P",
+        type: this.firstFormGroup.controls.userType.value,
         organizationId: this.accountOrganizationId,
         driverId: "",
         password: "",
