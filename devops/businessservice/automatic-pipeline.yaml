@@ -46,19 +46,6 @@ jobs:
           script: |
             echo $(a)
       
-      - task: Docker@2
-        inputs:
-          containerRegistry: 'acrRegistryServiceConnection1'
-          repository: '{"loginServer":"acrakspzfu3h3wyefhu.azurecr.io", "id" : "/subscriptions/6bd8b39f-86c3-4026-985a-34db67361301/resourceGroups/daf-lan1-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acrakspzfu3h3wyefhu"}'
-          command: 'build'
-          Dockerfile: 'dotnet/AccountService_Dockerfile'
-
-      - task: Docker@2
-        inputs:
-          containerRegistry: 'acrRegistryServiceConnection1'
-          repository: '{"loginServer":"acrakspzfu3h3wyefhu.azurecr.io", "id" : "/subscriptions/6bd8b39f-86c3-4026-985a-34db67361301/resourceGroups/daf-lan1-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acrakspzfu3h3wyefhu"}'
-          command: 'push'
-      
       - task: Docker@0
         displayName: 'Build an image'
         inputs:
