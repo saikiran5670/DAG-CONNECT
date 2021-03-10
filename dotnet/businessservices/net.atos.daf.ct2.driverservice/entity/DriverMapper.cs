@@ -14,9 +14,9 @@ namespace net.atos.daf.ct2.driverservice.entity
             net.atos.daf.ct2.driverservice.DriverResponse driver = new  net.atos.daf.ct2.driverservice.DriverResponse();
             driver.Id = request.Id;    
             driver.OrganizationId=request.Organization_id;
-            if (!(string.IsNullOrEmpty(request.Salutation)))
+            if (!(string.IsNullOrEmpty(request.Email)))
             {
-                 driver.Salutation= request.Salutation;
+                 driver.Email= request.Email;
             }
             if (!(string.IsNullOrEmpty(request.FirstName)))
             {

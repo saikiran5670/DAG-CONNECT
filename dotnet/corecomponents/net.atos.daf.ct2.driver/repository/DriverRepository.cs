@@ -214,33 +214,51 @@ namespace net.atos.daf.ct2.driver
         // }
         public async Task<IEnumerable<Driver>> GetDriver(int OrganizatioId,int driverId)
         {
+         try
+        {
             var parameter = new DynamicParameters();
             parameter.Add("@organization_id", OrganizatioId);
             parameter.Add("@id", driverId);
 
-             var QueryStatement = @" SELECT id, organization_id,driver_id_ext, salutation, first_name, last_name, dob, status, is_active,opt_in,modified_at,modified_by,created_at
+             var QueryStatement = @" SELECT id, organization_id,driver_id_ext, first_name, last_name, email, status, is_active,opt_in,modified_at,modified_by,created_at
                                     from master.driver where organization_id=@organization_id and (id=@id OR @id=0) and is_active=true";      
            
-            return await dataAccess.QueryAsync<Driver>(QueryStatement, parameter);            
+            return await dataAccess.QueryAsync<Driver>(QueryStatement, parameter);  
+        }
+         catch (Exception ex)
+            {
+                log.Info("Delete get method in repository failed :" );
+                log.Error(ex.ToString());
+                throw ex;
+            }                  
         }
         public async Task<Driver> UpdateDriver(Driver driver)
         {
+            try{
              var parameter = new DynamicParameters();
                          parameter.Add("@id",driver.Id);
                          parameter.Add("@organization_id",driver.Organization_id);
                          parameter.Add("@driver_id_ext",driver.Driver_id_ext);
-                         parameter.Add("@salutation",driver.Salutation);
+                         parameter.Add("@email",driver.Email);
                          parameter.Add("@first_name",driver.FirstName);
                          parameter.Add("@last_name",driver.LastName);
                          parameter.Add("@dob",driver.DateOfBith);
                          parameter.Add("@status",driver.Status);
                          parameter.Add("@is_active",driver.IsActive);
-            var queryUpdate = @"update master.driver set salutation=@salutation, first_name=@first_name, last_name=@last_name, dob=@dob, status=@status, is_active=@is_active
+            var queryUpdate = @"update master.driver set first_name=@first_name, last_name=@last_name, email=@email, status=@status, is_active=@is_active
 	                                 WHERE id = @id and is_active=true RETURNING id;";
                                               
             parameter.Add("@organization_id", driver.Organization_id);           
-            return await dataAccess.ExecuteScalarAsync<Driver>(queryUpdate, parameter);                       
-        }
+            return await dataAccess.ExecuteScalarAsync<Driver>(queryUpdate, parameter);   
+            }     
+            catch (Exception ex)
+            {
+                log.Info("Driver update method in repository failed :" );
+                log.Error(ex.ToString());
+                throw ex;
+            }                  
+        }               
+        
         public async Task<bool> DeleteDriver(int organizationId,int driverid)
         {
             log.Info("Delete driver method called in repository");            

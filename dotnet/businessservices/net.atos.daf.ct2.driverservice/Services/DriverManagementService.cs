@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.driverservice
 
         public override async Task<DriverDataList> Get(IdRequest request, ServerCallContext context)
         {
-             
+             try{
                 _logger.LogInformation("Get Drivers ."); 
                 var result = await driverManager.GetDriver(request.OrgID,request.DriverID);  
                 DriverDataList response = new DriverDataList();
@@ -41,7 +41,18 @@ namespace net.atos.daf.ct2.driverservice
                 }
                 response.Code = Responcecode.Success;
                 response.Message = "Get";
-                return await Task.FromResult(response);    
+                return await Task.FromResult(response);   
+             }
+             catch (Exception ex)
+              {
+                _logger.LogError("Driver Service:Get : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new DriverDataList
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Driver get faile due to - " + ex.Message
+                    //Driver = null
+                });
+            } 
         }
 
         public override async Task<net.atos.daf.ct2.driverservice.DriverUpdateResponse> Update(net.atos.daf.ct2.driverservice.DriverUpdateRequest request, ServerCallContext context)

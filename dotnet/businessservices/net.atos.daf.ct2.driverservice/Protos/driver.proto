@@ -39,7 +39,7 @@ message DriverResponse {
     int32 id = 1;
     int32 Organization_id=2;
     string Driver_id_ext =3;
-    string Salutation=4;
+    string Email=4;
     string FirstName=5;
     string LastName=6;
     string DateOfBith =7; 
