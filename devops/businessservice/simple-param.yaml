@@ -11,7 +11,8 @@ parameters:
 
 jobs:
   - job
-    pool: 'ats-sub1-d-app-automation'
+    pool: 
+      name: 'ats-sub1-d-app-automation'
     variables:
       - group: {{ parameters.variableGroup }}
     
