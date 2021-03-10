@@ -148,7 +148,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
             featureSetIds = featureSetIds.Select(x => x).Distinct().ToList();
             featureSetRequest.Features.AddRange(featureSetIds);
 
-            var ObjResponse = await _featureclient.CreateFeatureSetAsync(featureSetRequest);
+            var ObjResponse = await _featureclient.UpdateFeatureSetAsync(featureSetRequest);
             return Convert.ToInt32(ObjResponse.Message);
 
         }
