@@ -9,8 +9,7 @@ parameters:
   type: string
   default: 'privateAgent'
 
-jobs:
-  - job:
+
     pool: ${{ parameters.privateAgent }}
     
     steps:
