@@ -9,57 +9,56 @@ parameters:
   type: string
   default: 'privateAgent'
 
-jobs:
-- job:
-  pool: $(parameters.privateAgent)
-  steps:
-    - task: replacetokens@3
-      inputs:
-        targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json'
-        encoding: 'auto'
-        writeBOM: true
-        actionOnMissing: 'warn'
-        keepToken: false
-        tokenPrefix: '#{'
-        tokenSuffix: '}#'
-        useLegacyPattern: false
-        enableTelemetry: true
+pool: $(parameters.privateAgent)
 
-    - task: CmdLine@2
-      inputs:
-        script: |
-          cat dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json
+steps:
+  - task: replacetokens@3
+    inputs:
+      targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json'
+      encoding: 'auto'
+      writeBOM: true
+      actionOnMissing: 'warn'
+      keepToken: false
+      tokenPrefix: '#{'
+      tokenSuffix: '}#'
+      useLegacyPattern: false
+      enableTelemetry: true
 
-    - task: replacetokens@3
-      inputs:
-        targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config'
-        encoding: 'auto'
-        writeBOM: true
-        actionOnMissing: 'warn'
-        keepToken: false
-        tokenPrefix: '#{'
-        tokenSuffix: '}#'
-        useLegacyPattern: false
-        enableTelemetry: true
-        
-    - task: CmdLine@2
-      inputs:
-        script: |
-          echo $(Subscription)
-          echo $(ContainerRegistry)
+  - task: CmdLine@2
+    inputs:
+      script: |
+        cat dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json
 
-    - task: Docker@0
-      displayName: 'Build an image'
-      inputs:
-        azureSubscription: ${{ parameters.Subscription }}
-        azureContainerRegistry:  ${{ parameters.containerRegistry }}
-        dockerFile: dotnet/AccountService_Dockerfile
-        imageName: accountservice-grpc-automatic
+  - task: replacetokens@3
+    inputs:
+      targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config'
+      encoding: 'auto'
+      writeBOM: true
+      actionOnMissing: 'warn'
+      keepToken: false
+      tokenPrefix: '#{'
+      tokenSuffix: '}#'
+      useLegacyPattern: false
+      enableTelemetry: true
+      
+  - task: CmdLine@2
+    inputs:
+      script: |
+        echo $(Subscription)
+        echo $(ContainerRegistry)
 
-    - task: Docker@0
-      displayName: 'Push an image'
-      inputs:
-        azureSubscription:  ${{ parameters.Subscription }}
-        azureContainerRegistry:  ${{ parameters.containerRegistry }}
-        action: 'Push an image'
-        imageName: accountservice-grpc-automatic
+  - task: Docker@0
+    displayName: 'Build an image'
+    inputs:
+      azureSubscription: ${{ parameters.Subscription }}
+      azureContainerRegistry:  ${{ parameters.containerRegistry }}
+      dockerFile: dotnet/AccountService_Dockerfile
+      imageName: accountservice-grpc-automatic
+
+  - task: Docker@0
+    displayName: 'Push an image'
+    inputs:
+      azureSubscription:  ${{ parameters.Subscription }}
+      azureContainerRegistry:  ${{ parameters.containerRegistry }}
+      action: 'Push an image'
+      imageName: accountservice-grpc-automatic
