@@ -12,9 +12,9 @@ jobs:
     variables:
     - group: DEV01-Build-Variables
     - name: a
-      value: $[variables.Subscription]
+      value: $(Subscription)
     - name: b
-      value: $[variables.ContainerRegistry]
+      value: $(ContainerRegistry)
     steps:
       - task: replacetokens@3
         inputs:
