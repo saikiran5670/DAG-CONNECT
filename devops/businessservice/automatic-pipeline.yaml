@@ -10,11 +10,11 @@ jobs:
   - job:
     pool: $(PRIVATEAGENT)
     variables:
-      - group: DEV01-Build-Variables
-      - name: a
-        value: $[variables.Subscription]
-      - name: b
-        value: $[variables.ContainerRegistry]
+    - group: DEV01-Build-Variables
+    - name: a
+      value: 'DAF CT AZURE DTA LANDING ZONE DEV1'
+    - name: b
+      value: '{"loginServer":"acrakspzfu3h3wyefhu.azurecr.io", "id" : "/subscriptions/6bd8b39f-86c3-4026-985a-34db67361301/resourceGroups/daf-lan1-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acrakspzfu3h3wyefhu"}'
     steps:
       - task: replacetokens@3
         inputs:
