@@ -50,7 +50,7 @@ jobs:
       - task: Docker@0
         displayName: 'Build an image'
         inputs:
-          azureSubscription:  'DAF CT AZURE DTA LANDING ZONE DEV1'
+          azureSubscription: $(Subscription)
           azureContainerRegistry: $(ContainerRegistry)
           dockerFile: dotnet/AccountService_Dockerfile
           imageName: accountservice-grpc-automatic
@@ -58,7 +58,7 @@ jobs:
       - task: Docker@0
         displayName: 'Push an image'
         inputs:
-          azureSubscription: 'DAF CT AZURE DTA LANDING ZONE DEV1'
+          azureSubscription: $(Subscription)
           azureContainerRegistry: $(ContainerRegistry)
           action: 'Push an image'
           imageName: 'accountservice-grpc-automatic'
