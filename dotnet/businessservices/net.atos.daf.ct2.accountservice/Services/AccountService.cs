@@ -13,6 +13,8 @@ using net.atos.daf.ct2.audit.Enum;
 using Google.Protobuf;
 using AutoMapper;
 using net.atos.daf.ct2.account.entity;
+using Google.Protobuf.Collections;
+using net.atos.daf.ct2.accountservice.Entity;
 
 namespace net.atos.daf.ct2.accountservice
 {
@@ -25,10 +27,9 @@ namespace net.atos.daf.ct2.accountservice
         private readonly IAuditTraillib auditlog;
         private readonly Mapper _mapper;
         private readonly AccountComponent.IAccountIdentityManager accountIdentityManager;
-        private readonly IMapper autoMapper;
 
         #region Constructor
-        public AccountManagementService(ILogger<GreeterService> logger, AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, AccountComponent.IAccountIdentityManager _accountIdentityManager,IAuditTraillib _auditlog, IMapper _autoMapper)
+        public AccountManagementService(ILogger<GreeterService> logger, AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, AccountComponent.IAccountIdentityManager _accountIdentityManager,IAuditTraillib _auditlog)
         {
             _logger = logger;
             accountmanager = _accountmanager;
@@ -37,7 +38,6 @@ namespace net.atos.daf.ct2.accountservice
             accountIdentityManager = _accountIdentityManager;
             auditlog = _auditlog;
             _mapper = new Mapper();
-            autoMapper = _autoMapper;
         }
         #endregion
 
@@ -648,7 +648,7 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
-
+        
         public override async Task<MenuFeatureResponse> GetMenuFeatures(MenuFeatureRequest request, ServerCallContext context)
         {
             try
@@ -669,12 +669,9 @@ namespace net.atos.daf.ct2.accountservice
                     response.Message = "No menu items and features found for the provided account details.";
                 }
 
-                var menuFeatureList = autoMapper.Map<IEnumerable<MenuFeatureDto>, IEnumerable<MenuFeatureList>>(result);
-                foreach (var item in menuFeatureList)
-                {
-                    response.MenuFeatures.Add(item);
-                }
-
+                //var menuFeatureList = autoMapper.Map<IEnumerable<MenuFeatureDto>, IEnumerable<MenuFeatureList>>(result);
+                response.MenuFeatures = MapMenuFeatureDtoToList(result.ToList());
+                
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -1481,6 +1478,85 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
+        #endregion
+
+        #region Private Helper Methods
+
+        private MenuFeatureList MapMenuFeatureDtoToList(List<MenuFeatureDto> dtos)
+        {
+            var menuFeatures = new AccountMenuModel();
+            var menuFeatureList = new MenuFeatureList();
+
+            foreach (var dto in dtos)
+            {
+                if (dto.MenuId.HasValue)
+                {
+                    if (string.IsNullOrEmpty(dto.ParentMenuName))
+                    {
+                        menuFeatures.Menus.Add(new MainMenu()
+                        {
+                            FeatureId = dto.FeatureId,
+                            MenuId = dto.MenuId.Value,
+                            Name = dto.MenuName,
+                            Key = dto.MenuKey,
+                            Url = dto.MenuUrl
+                        });
+                    }
+                    else
+                    {
+                        var menuItem = menuFeatures.Menus.Where(m => m.Name.Equals(dto.ParentMenuName)).FirstOrDefault();
+
+                        if (menuItem.SubMenus == null)
+                            menuItem.SubMenus = new RepeatedField<SubMenu>();
+
+                        menuItem.SubMenus.Add(new SubMenu()
+                        {
+                            FeatureId = dto.FeatureId,
+                            MenuId = dto.MenuId.Value,
+                            Name = dto.MenuName,
+                            Key = dto.MenuKey,
+                            Url = dto.MenuUrl
+                        });
+                    }
+                }
+
+                menuFeatureList.Features.Add(new FeatureList()
+                {
+                    FeatureId = dto.FeatureId,
+                    Name = dto.FeatureName,
+                    Type = dto.FeatureType ?? string.Empty,
+                    Key = dto.FeatureKey ?? string.Empty,
+                    Level = dto.FeatureLevel
+                });
+            }
+            
+            foreach(var menu in menuFeatures.Menus)
+            {
+                var subMenus = new RepeatedField<SubMenuList>();
+                foreach(var subMenu in menu.SubMenus)
+                {
+                    subMenus.Add(new SubMenuList()
+                    {
+                        MenuId = subMenu.MenuId,
+                        FeatureId = subMenu.FeatureId,
+                        Name = subMenu.Name,
+                        Key = subMenu.Key ?? string.Empty,
+                        Url = subMenu.Url ?? string.Empty
+                    });
+                }
+                var mainMenu = new MainMenuList();
+                mainMenu.FeatureId = menu.FeatureId;
+                mainMenu.MenuId = menu.MenuId;
+                mainMenu.Name = menu.Name;
+                mainMenu.Key = menu.Key ?? string.Empty;
+                mainMenu.Url = menu.Url ?? string.Empty;
+                mainMenu.SubMenus.AddRange(subMenus);
+                
+                menuFeatureList.Menus.Add(mainMenu);
+            }
+            return menuFeatureList;
+        }
+
         #endregion
 
     }

@@ -147,19 +147,37 @@ message MenuFeatureRequest {
 message MenuFeatureResponse {
   Responcecode Code=1;
   string Message=2;
-  repeated MenuFeatureList MenuFeatures=3;
+  MenuFeatureList MenuFeatures=3;
 }
 
 message MenuFeatureList {
+  repeated MainMenuList Menus=1;
+  repeated FeatureList Features=2;
+}
+
+message MainMenuList {
+  int32 MenuId=1;
+  string Name=2;
+  string Url=3;
+  string Key=4;
+  int32 FeatureId=5;
+  repeated SubMenuList SubMenus=6;
+}
+
+message SubMenuList {
+  int32 MenuId=1;
+  string Name=2;
+  string Url=3;
+  string Key=4;
+  int32 FeatureId=5;
+}
+
+message FeatureList {
   int32 FeatureId=1;
-  string FeatureName=2;
-  string FeatureType=3;
-  int32 MenuId=4;
-  string MenuName=5;
-  string ParentMenuName=6;
-  string UnitId=7;
-  string MenuKey=8;
-  string MenuSeqNo=9;
+  string Name=2;
+  string Type=3;
+  string Key=4;
+  int32 Level=5;
 }
 
 message AccountId
