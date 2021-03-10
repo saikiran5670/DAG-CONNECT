@@ -48,7 +48,6 @@ jobs:
           script: |
             echo $[variables.Subscription]
             echo $[variables.ContainerRegistry]
-            echo $(group)
       
       - task: Docker@0
         displayName: 'Build an image'
@@ -107,7 +106,6 @@ jobs:
           script: |
             echo $[variables.Subscription]
             echo $[variables.ContainerRegistry]
-            echo $(group)
       
       - task: Docker@0
         displayName: 'Build an image'
