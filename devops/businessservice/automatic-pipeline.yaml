@@ -10,6 +10,7 @@ jobs:
   - job:
     pool: $(PRIVATEAGENT)
     variables:
+      - group: 'DEV01-Build-Variables'
       - name: a
         value: 'DAF CT AZURE DTA LANDING ZONE DEV1'
       - name: b
@@ -51,15 +52,15 @@ jobs:
       - task: Docker@0
         displayName: 'Build an image'
         inputs:
-          azureSubscription: ${{ variables.a }}
-          azureContainerRegistry: ${{ variables.b }}
+          azureSubscription: $(Subscription)
+          azureContainerRegistry: $(ContainerRegistry)
           dockerFile: dotnet/AccountService_Dockerfile
           imageName: accountservice-grpc-automatic
 
       - task: Docker@0
         displayName: 'Push an image'
         inputs:
-          azureSubscription: ${{ variables.a }}
-          azureContainerRegistry: ${{ variables.b }}
+          azureSubscription: $(Subscription)
+          azureContainerRegistry: $(ContainerRegistry)
           action: 'Push an image'
           imageName: accountservice-grpc-automatic
