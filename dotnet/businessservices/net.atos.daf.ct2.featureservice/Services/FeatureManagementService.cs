@@ -48,7 +48,8 @@ namespace net.atos.daf.ct2.featureservice
                 return await Task.FromResult(new FeatureSetResponce
                 {
                     Message = featureset.FeatureSetID.ToString(),
-                    Code = Responcecode.Success
+                    Code = Responcecode.Success,
+                    FeatureSetID = featureset.FeatureSetID
                 });
             }
             catch (Exception ex)
@@ -66,8 +67,8 @@ namespace net.atos.daf.ct2.featureservice
         {
             try
             {
-                FeaturesListResponce features= new FeaturesListResponce();
-                if (featurefilterRequest.FeatureSetID != 0 )
+                FeaturesListResponce features = new FeaturesListResponce();
+                if (featurefilterRequest.FeatureSetID != 0)
                 {
                     var listfeatures = await _FeaturesManager.GetFeatureIdsForFeatureSet(featurefilterRequest.FeatureSetID);
                     foreach (var item in listfeatures)
@@ -85,7 +86,7 @@ namespace net.atos.daf.ct2.featureservice
                 }
                 else
                 {
-                    var feature = await _FeaturesManager.GetFeatures(featurefilterRequest.RoleID, featurefilterRequest.OrganizationID, '0');
+                    var feature = await _FeaturesManager.GetFeatures(featurefilterRequest.RoleID, featurefilterRequest.OrganizationID, featurefilterRequest.FeatureID, featurefilterRequest.Level, '0');
                     foreach (var item in feature)
                     {
                         FeatureRequest ObjResponce = new FeatureRequest();
@@ -101,7 +102,7 @@ namespace net.atos.daf.ct2.featureservice
                 }
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return await Task.FromResult(new FeaturesListResponce
                 {
@@ -160,7 +161,7 @@ namespace net.atos.daf.ct2.featureservice
                 }
                 var result = await _FeaturesManager.CreateDataattributeFeature(FeatureObj);
                 return await Task.FromResult(new FeatureResponce
-                    {
+                {
                     Message = "Feature Created Successfully",
                     Code = Responcecode.Success
                 });
@@ -174,9 +175,59 @@ namespace net.atos.daf.ct2.featureservice
                 });
             }
         }
-            //public async override Task<FeatureSetResponce> CreateDataattributeSet(FetureSetRequest featureSetRequest, ServerCallContext context)
-            //{
+        //public async override Task<FeatureSetResponce> CreateDataattributeSet(FetureSetRequest featureSetRequest, ServerCallContext context)
+        //{
 
-            //}
+        //}
+
+
+        public async override Task<FeatureSetResponce> UpdateFeatureSet(FetureSetRequest featureSetRequest, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("UpdateFeatureSet method in Feature API called.");
+
+                
+                FeatureSet ObjResponse = new FeatureSet();
+                FeatureSet featureset = new FeatureSet();
+                featureset.FeatureSetID = featureSetRequest.FeatureSetID;
+                featureset.Name = featureSetRequest.Name; // "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds()
+                featureset.description = featureSetRequest.Description;
+                featureset.status = featureSetRequest.Active == true ? StatusType.Active : StatusType.InActive;
+                
+                featureset.modified_by = featureSetRequest.ModifiedBy;
+                featureset.Features = new List<Feature>();
+                foreach (var item in featureSetRequest.Features)
+                {
+                    Feature f = new Feature();
+                    f.Id = item;
+                    featureset.Features.Add(f);
+                }
+              
+
+                ObjResponse = await _FeaturesManager.UpdateFeatureSet(featureset);
+                featureset.FeatureSetID = ObjResponse.FeatureSetID;
+                _logger.LogInformation("Feature Set created with id." + ObjResponse.FeatureSetID);
+
+                //await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Feature Component", "Feature Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Update method in Feature manager", ObjResponse.FeatureSetID, ObjResponse.FeatureSetID, JsonConvert.SerializeObject(ObjResponse.FeatureSetID));
+                return await Task.FromResult(new FeatureSetResponce
+                {
+                    Message = featureset.FeatureSetID.ToString() + " Updated successfully",
+                    Code = Responcecode.Success,
+                    FeatureSetID = featureset.FeatureSetID
+
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("FeatureSet Service:Update : " + ex.Message + " " + ex.StackTrace);
+
+                return await Task.FromResult(new FeatureSetResponce
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
     }
 }

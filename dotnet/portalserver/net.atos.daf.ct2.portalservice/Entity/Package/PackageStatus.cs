@@ -2,7 +2,8 @@
 {
     public enum PackageStatus
     {
+        None = 0,
         Active = 1,
-        Inactive = 0
+        Inactive = 2
     }
 }

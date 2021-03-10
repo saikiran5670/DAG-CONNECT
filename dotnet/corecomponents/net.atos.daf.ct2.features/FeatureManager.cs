@@ -27,9 +27,9 @@ namespace net.atos.daf.ct2.features
             return await FeatureRepository.GetFeatureSet(FeatureSetId, Active);
         }
 
-        public async Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, char? Featuretype)
+        public async Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, int FeatureId, int level, char? Featuretype)
         {
-            return await FeatureRepository.GetFeatures(RoleId,Organizationid, Featuretype);
+            return await FeatureRepository.GetFeatures(RoleId,Organizationid, FeatureId,level,Featuretype);
         }
 
         public async Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int GetFeatureIdsForFeatureSet)

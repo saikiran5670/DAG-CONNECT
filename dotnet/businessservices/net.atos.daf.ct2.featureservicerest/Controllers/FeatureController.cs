@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.featureservicerest.Controllers
         {    
                try
                { 
-                    var feature = await _FeatureManager.GetFeatures(RoleId,OrganizationId,featuretype);
+                    var feature = await _FeatureManager.GetFeatures(RoleId,OrganizationId,0,0,featuretype);
 
                     List<FeatureResponce> featureList =new List<FeatureResponce>();
                     foreach(var featureitem in feature)

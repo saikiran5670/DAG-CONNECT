@@ -16,6 +16,7 @@ enum Responcecode{
 service FeatureService {  
   rpc Create (FeatureRequest) returns (FeatureResponce);
   rpc CreateFeatureSet (FetureSetRequest) returns (FeatureSetResponce);
+  rpc UpdateFeatureSet (FetureSetRequest) returns (FeatureSetResponce);
   rpc Update (FeatureRequest) returns (FeatureResponce);  
   rpc Delete (FeatureRequest) returns (FeatureResponce);
   rpc GetFeatures (FeaturesFilterRequest) returns (FeaturesListResponce);
@@ -74,6 +75,7 @@ message DataAtributeRequest
   {
   Responcecode Code=1;
   string Message = 2;  
+  int32 FeatureSetID = 3;
 }
   
   message FeaturesFilterRequest
@@ -82,6 +84,7 @@ message DataAtributeRequest
   int32 FeatureSetID=2;
   int32 RoleID=3;
   int32 OrganizationID=4;
+  int32 FeatureID = 5;
   }
 
   message FeaturesResponce
@@ -100,9 +103,11 @@ message DataAtributeRequest
     int32 FeatureSetID = 1;
     string Name= 2;
     string Key =3;
+    string Description = 10;
     string type= 4;
     bool Active=5;
     int32 data_attribute_set_id= 6;
+    int32 ModifiedBy =9;
     repeated int32 Features = 7;
     int32 Created_by= 8;
   }

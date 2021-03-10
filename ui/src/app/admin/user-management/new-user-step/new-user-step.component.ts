@@ -67,6 +67,7 @@ export class NewUserStepComponent implements OnInit {
   accountOrganizationId: any = 0;
   servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
   linkFlag: boolean = false;
+  linkAccountId: any = 0;
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -123,15 +124,27 @@ export class NewUserStepComponent implements OnInit {
     this.setDefaultSetting();
   }
 
-   setDefaultSetting(){
-    this.firstFormGroup.get('language').setValue(2);
-    this.firstFormGroup.get('timeZone').setValue(2);
-    this.firstFormGroup.get('unit').setValue(2);
-    this.firstFormGroup.get('currency').setValue(2);
-    this.firstFormGroup.get('dateFormat').setValue(2);
-    this.firstFormGroup.get('vehDisplay').setValue(2);
-    this.firstFormGroup.get('timeFormat').setValue(2);
-    this.firstFormGroup.get('landingPage').setValue(2);
+   setDefaultSetting(prefObj?: any){
+    if(prefObj){
+      this.firstFormGroup.get('language').setValue(prefObj.languageId);
+      this.firstFormGroup.get('timeZone').setValue(prefObj.timezoneId);
+      this.firstFormGroup.get('unit').setValue(prefObj.unitId);
+      this.firstFormGroup.get('currency').setValue(prefObj.currencyId);
+      this.firstFormGroup.get('dateFormat').setValue(prefObj.dateFormatTypeId);
+      this.firstFormGroup.get('vehDisplay').setValue(prefObj.vehicleDisplayId);
+      this.firstFormGroup.get('timeFormat').setValue(prefObj.timeFormatId);
+      this.firstFormGroup.get('landingPage').setValue(prefObj.landingPageDisplayId);
+    }
+    else{
+      this.firstFormGroup.get('language').setValue(2);
+      this.firstFormGroup.get('timeZone').setValue(2);
+      this.firstFormGroup.get('unit').setValue(2);
+      this.firstFormGroup.get('currency').setValue(2);
+      this.firstFormGroup.get('dateFormat').setValue(2);
+      this.firstFormGroup.get('vehDisplay').setValue(2);
+      this.firstFormGroup.get('timeFormat').setValue(2);
+      this.firstFormGroup.get('landingPage').setValue(2); 
+    }
    }
 
   onClose(){
@@ -157,11 +170,13 @@ export class NewUserStepComponent implements OnInit {
       let objData = {
         id: 0,
         emailId: this.firstFormGroup.controls.loginEmail.value,
+        type: 'P',
         salutation: this.firstFormGroup.controls.salutation.value,
         firstName: this.firstFormGroup.controls.firstName.value,
         lastName: this.firstFormGroup.controls.lastName.value,
         password: "",
-        organization_Id: this.accountOrganizationId
+        organizationId: this.accountOrganizationId,
+        driverId: ""
       }
 
       this.accountService.createAccount(objData).subscribe((res)=>{
@@ -196,14 +211,19 @@ export class NewUserStepComponent implements OnInit {
       }, (error) => { 
         console.log(error);
         if(error.status == 409){
-          this.duplicateEmailMsg = true;
-        }else if(error.status == 400){
-          this.callToLinkPopup(); //--- show link popup
+          if(error.error.account && error.error.account.organizationId != this.accountOrganizationId){
+            this.callToLinkPopup(error.error); //--- show link popup
+          }
+          else{
+            if(error.error.organizationId == this.accountOrganizationId){
+              this.duplicateEmailMsg = true;
+            }
+          }
         }
        });
   }
 
-  callToLinkPopup(){
+  callToLinkPopup(linkAccountInfo: any){
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
@@ -220,11 +240,25 @@ export class NewUserStepComponent implements OnInit {
       if(res){
         this.linkFlag = true;
         this.firstFormGroup.controls['loginEmail'].disable();
+        this.setDefaultAccountInfo(linkAccountInfo.account);
+        this.linkAccountId = linkAccountInfo.account.id; //--- link account id
+        if(linkAccountInfo.preferences){
+          this.setDefaultSetting(linkAccountInfo.preferences);
+        }
+        else{
+          this.setDefaultSetting();
+        }
       }
       else{
         this.linkFlag = false;
       }
     });
+  }
+
+  setDefaultAccountInfo(accountInfo: any){
+    this.firstFormGroup.get('salutation').setValue(accountInfo.salutation);
+    this.firstFormGroup.get('firstName').setValue(accountInfo.firstName);
+    this.firstFormGroup.get('lastName').setValue(accountInfo.lastName);
   }
 
   onUpdateUserData(){
@@ -240,8 +274,8 @@ export class NewUserStepComponent implements OnInit {
     }
 
     let roleObj = {
-      accountId: this.userData.id,
-      organizationId: this.userData.organization_Id,
+      accountId: this.linkFlag ? this.linkAccountId :  this.userData.id,
+      organizationId: this.linkFlag ? this.accountOrganizationId : this.userData.organization_Id,
       roles: mapRoleData
     }
 
@@ -253,14 +287,14 @@ export class NewUserStepComponent implements OnInit {
       mapGrpIds.forEach(element => {
         mapGrpData.push({
           accountGroupId: element,
-          accountId: this.userData.id
+          accountId: this.linkFlag ? this.linkAccountId : this.userData.id
         }); 
       });
     }
     else{
       mapGrpData = [{
         accountGroupId: 0,
-        accountId: this.userData.id
+        accountId: this.linkFlag ? this.linkAccountId : this.userData.id
       }];  
     }
 
@@ -499,8 +533,52 @@ export class NewUserStepComponent implements OnInit {
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
 
-  onLink(status: any){
-
+  onLink(linkStatus: any){
+    let linkObj = {
+      accountId: this.linkAccountId, //-- link account id
+      organizationId: this.accountOrganizationId
+    }
+    this.accountService.linkAccountToOrganisation(linkObj).subscribe((res) => {
+      let infoObj = {
+        id: this.linkAccountId,
+        emailId: this.firstFormGroup.controls.loginEmail.value,
+        salutation: this.firstFormGroup.controls.salutation.value,
+        firstName: this.firstFormGroup.controls.firstName.value,
+        lastName: this.firstFormGroup.controls.lastName.value,
+        type: "P",
+        organizationId: this.accountOrganizationId,
+        driverId: "",
+        password: "",
+      }
+      this.accountService.updateAccount(infoObj).subscribe((data)=>{
+        let prefObj: any = {
+          id: 0,
+          refId: this.linkAccountId, //-- link account id
+          languageId: this.firstFormGroup.controls.language.value ? this.firstFormGroup.controls.language.value : 2,
+          timezoneId: this.firstFormGroup.controls.timeZone.value ? this.firstFormGroup.controls.timeZone.value : 2,
+          unitId: this.firstFormGroup.controls.unit.value ? this.firstFormGroup.controls.unit.value : 2,
+          currencyId: this.firstFormGroup.controls.currency.value ? this.firstFormGroup.controls.currency.value : 2,
+          dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value ? this.firstFormGroup.controls.dateFormat.value : 2,
+          timeFormatId: this.firstFormGroup.controls.timeFormat.value ? this.firstFormGroup.controls.timeFormat.value : 2,
+          vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value ? this.firstFormGroup.controls.vehDisplay.value : 2,
+          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value ? this.firstFormGroup.controls.landingPage.value : 2,
+          driverId: ""
+        }
+        this.accountService.updateAccountPreference(prefObj).subscribe((data) => {
+          if(linkStatus){
+            this.updateTableData(linkStatus);
+          }
+          else{
+            this.userCreatedMsg = this.getUserCreatedMessage(true);
+            this.grpTitleVisible = true;
+            setTimeout(() => {  
+              this.grpTitleVisible = false;
+            }, 5000);
+            this.stepper.next();
+          }
+        });
+      });
+    });
   }
   
 }

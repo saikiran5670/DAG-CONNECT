@@ -168,7 +168,7 @@ namespace net.atos.daf.ct2.features.repository
 
         }
 
-        public async Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, char? Featuretype)
+        public async Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid,int FeatureId,int level, char? Featuretype)
         {
 
             var QueryStatement = @"SELECT f.id, f.name, 
@@ -202,14 +202,23 @@ namespace net.atos.daf.ct2.features.repository
             }
             if(RoleId == 0  && Organizationid ==0)
             {
-                 QueryStatement = @"SELECT f.id, f.name, 
-                                f.key, f.type, f.is_active                       
-                                FROM master.feature f where 1=1";
+                 QueryStatement = @"SELECT id, name, type, is_active, data_attribute_set_id, key, level
+	                                FROM master.feature f where 1=1";
                if (Featuretype != '0')
                 {
                     parameter.Add("@type", Featuretype);
                     QueryStatement = QueryStatement + " and f.type  = @type";
 
+                }
+                if (FeatureId > 0)
+                {
+                    parameter.Add("@id", FeatureId);
+                    QueryStatement = QueryStatement + " and f.id  = @id";
+                }
+                if (level > 0)
+                {
+                    parameter.Add("@level", level);
+                    QueryStatement = QueryStatement + " and f.level  = @level";
                 }
 
             }
@@ -790,9 +799,7 @@ namespace net.atos.daf.ct2.features.repository
                                  SET 
                                     name= @name,
                                     description= @description, 
-                                    is_active= @is_active,
-                                    created_at= @created_at, 
-                                    created_by= @created_by,
+                                    is_active= @is_active,                                   
                                     modified_at=@modified_at,
                                     modified_by=@modified_by
                                 WHERE id = @id
@@ -801,9 +808,7 @@ namespace net.atos.daf.ct2.features.repository
                     parameter.Add("@id", featureSet.FeatureSetID);
                     parameter.Add("@name", featureSet.Name);
                     parameter.Add("@description", featureSet.description);
-                    parameter.Add("@is_active", featureSet.Is_Active);
-                    parameter.Add("@created_at", featureSet.created_at);
-                    parameter.Add("@created_by", featureSet.created_by);
+                    parameter.Add("@is_active", featureSet.Is_Active);                    
                     parameter.Add("@modified_at", featureSet.modified_at);
                     parameter.Add("@modified_by", featureSet.modified_by);
                     int UpdateFeatureSetID = await dataAccess.ExecuteScalarAsync<int>(FSQueryStatement, parameter);
