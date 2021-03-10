@@ -19,13 +19,13 @@ jobs:
       useLegacyPattern: false
       enableTelemetry: true
 
-  - task: CmdLine@2
-    inputs:
-      script: |
-        cat dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json
+   - task: CmdLine@2
+     inputs:
+        script: |
+          cat dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json
 
-  - task: replacetokens@3
-    inputs:
+   - task: replacetokens@3
+     inputs:
       targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config'
       encoding: 'auto'
       writeBOM: true
@@ -36,14 +36,14 @@ jobs:
       useLegacyPattern: false
       enableTelemetry: true
       
-  - task: CmdLine@2
-    inputs:
+   - task: CmdLine@2
+     inputs:
       script: |
         echo $(Subscription)
         echo $(ContainerRegistry)
 
-  - template: simple-param.yaml  # Template reference
-    parameters:
+   - template: simple-param.yaml  # Template reference
+     parameters:
       subscription: 'ats-sub1-d-app-automation' # set to a non-boolean value to have the build fail
       containerRegistry: '{"loginServer":"dafdev017756.azurecr.io", "id" : "/subscriptions/f0b7c74e-ef18-46e8-ae31-7abbd0e5fd8f/resourceGroups/DAFCT_DEV0_DTA_K8S/providers/Microsoft.ContainerRegistry/registries/dafdev017756"}'
      
@@ -54,7 +54,7 @@ jobs:
     group: DEV01-Build-Variables
   steps:
    - task: replacetokens@3
-    inputs:
+     inputs:
       targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json'
       encoding: 'auto'
       writeBOM: true
@@ -65,13 +65,13 @@ jobs:
       useLegacyPattern: false
       enableTelemetry: true
 
-  - task: CmdLine@2
-    inputs:
+   - task: CmdLine@2
+     inputs:
       script: |
         cat dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json
 
-  - task: replacetokens@3
-    inputs:
+   - task: replacetokens@3
+     inputs:
       targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config'
       encoding: 'auto'
       writeBOM: true
@@ -82,14 +82,14 @@ jobs:
       useLegacyPattern: false
       enableTelemetry: true
       
-  - task: CmdLine@2
-    inputs:
+   - task: CmdLine@2
+     inputs:
       script: |
         echo $(Subscription)
         echo $(ContainerRegistry)
 
-  - template: simple-param.yaml  # Template reference
-    parameters:
+   - template: simple-param.yaml  # Template reference
+     parameters:
       subscription: $(Subscription)
       containerRegistry: $(ContainerRegistry)
       
