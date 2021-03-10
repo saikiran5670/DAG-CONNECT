@@ -15,7 +15,7 @@ parameters:
 
 jobs:
 - job: a1
-  pool: ${{ parameters.privateAgent}}
+  pool: $(PRIVATEAGENT)
   variables:
   - group: ${{ parameters.variableGroup }}
     
