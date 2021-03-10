@@ -1,7 +1,4 @@
 parameters:
-- name: group
-  type: string
-  default: 'Docker'
 - name: subscription
   type: string
   default: 'subscription'
