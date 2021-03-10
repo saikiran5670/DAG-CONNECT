@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TCUSend
 {
-    class TCU
+     public class TCU
     {
         private String id;
         private String brand;

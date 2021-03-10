@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TCUSend
 {
-    class TCUDataSend
+    public class TCUDataSend
     {
 
         private TCURegistrationEvents tcuRegistrationEvents;
