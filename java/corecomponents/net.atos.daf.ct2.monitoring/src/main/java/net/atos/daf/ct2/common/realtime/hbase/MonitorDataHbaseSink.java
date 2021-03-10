@@ -70,6 +70,12 @@ public class MonitorDataHbaseSink extends RichSinkFunction<KafkaRecord<Monitor>>
 	}
 
 	public void invoke(KafkaRecord<Monitor> value, Context context) throws Exception {
+		
+		int messageType = 0;
+		
+		if (value.getValue().getMessageType() != null) {
+		messageType = value.getValue().getMessageType() ;
+		}
 
 		Put put = new Put(Bytes.toBytes(value.getValue().getTransID() + "_" + value.getValue().getDocument().getTripID()
 				+ "_" + value.getValue().getVid() + "_" + value.getValue().getReceivedTimestamp()));
@@ -82,7 +88,7 @@ public class MonitorDataHbaseSink extends RichSinkFunction<KafkaRecord<Monitor>>
 		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("TransID"),
 				Bytes.toBytes(String.valueOf(value.getValue().getTransID())));
 		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("MessageType"),
-				Bytes.toBytes(String.valueOf(value.getValue().getMessageType())));
+				Bytes.toBytes(String.valueOf(messageType)));
 		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VEvtID"),
 				Bytes.toBytes(String.valueOf(value.getValue().getVEvtID())));
 		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("GPSSpeed"),
@@ -139,7 +145,7 @@ public class MonitorDataHbaseSink extends RichSinkFunction<KafkaRecord<Monitor>>
 		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("receivedTimestamp"),
 				Bytes.toBytes(String.valueOf(value.getValue().getReceivedTimestamp())));
 
-		if (value.getValue().getMessageType() == 3) {
+		if (messageType == 3) {
 			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VEvtCause"),
 					Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVEvtCause())));
 			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VEngineSpeed"),
@@ -152,7 +158,7 @@ public class MonitorDataHbaseSink extends RichSinkFunction<KafkaRecord<Monitor>>
 					Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVPowerBatteryVoltage())));
 		}
 
-		if (value.getValue().getMessageType() == 6) {
+		if (messageType == 6) {
 			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DriverID"),
 					Bytes.toBytes(String.valueOf(value.getValue().getDocument().getDriverID())));
 			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Driver1CardInserted"),
@@ -189,7 +195,7 @@ public class MonitorDataHbaseSink extends RichSinkFunction<KafkaRecord<Monitor>>
 					Bytes.toBytes(String.valueOf(value.getValue().getDocument().getDm1OC())));
 		}
 
-		if (value.getValue().getMessageType() == 7) {
+		if (messageType == 7) {
 			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("Driver1WorkingState"),
 					Bytes.toBytes(String.valueOf(value.getValue().getDocument().getDriver1WorkingState())));
 			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DriverID"),
@@ -210,7 +216,7 @@ public class MonitorDataHbaseSink extends RichSinkFunction<KafkaRecord<Monitor>>
 
 		}
 
-		if (value.getValue().getMessageType() == 8) {
+		if (messageType == 8) {
 			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("TT_Id"),
 					Bytes.toBytes(String.valueOf(value.getValue().getDocument().getTtId())));
 			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("TT_Value"),
@@ -240,7 +246,7 @@ public class MonitorDataHbaseSink extends RichSinkFunction<KafkaRecord<Monitor>>
 
 		}
 
-		if (value.getValue().getMessageType() == 10) {
+		if (messageType == 10) {
 			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VRetarderTorqueActual"),
 					Bytes.toBytes(String.valueOf(value.getValue().getDocument().getVRetarderTorqueActual())));
 			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("VRetarderTorqueMode"),

@@ -7,17 +7,13 @@ namespace TCUSend
     public class TCUDataSend
     {
 
-        private TCURegistrationEvents tcuRegistrationEvents;
+        private TCURegistrationEvents tCURegistrationEvents;
 
-        public TCUDataSend(TCURegistrationEvents tcuRegistrationEvents)
+        public TCUDataSend(TCURegistrationEvents tCURegistrationEvents)
         {
-            this.tcuRegistrationEvents = tcuRegistrationEvents;
+            this.tCURegistrationEvents = tCURegistrationEvents;
         }
 
-        public TCURegistrationEvents TcuRegistrationEvents { get => tcuRegistrationEvents; set => tcuRegistrationEvents = value; }
-
-
-
-
+        public TCURegistrationEvents TCURegistrationEvents { get => tCURegistrationEvents; set => tCURegistrationEvents = value; }
     }
 }

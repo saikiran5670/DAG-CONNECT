@@ -6,13 +6,13 @@ namespace TCUSend
 {
     public class TCURegistrationEvents
     {
-        private List<TCURegistrationEvent> tcuRegistrationEvent;
+        private List<TCURegistrationEvent> tCURegistrationEvent;
 
         public TCURegistrationEvents(List<TCURegistrationEvent> tcuRegistrationEvent)
         {
-            this.tcuRegistrationEvent = tcuRegistrationEvent;
+            this.tCURegistrationEvent = tcuRegistrationEvent;
         }
 
-        public List<TCURegistrationEvent> TcuRegistrationEvent { get => tcuRegistrationEvent; set => tcuRegistrationEvent = value; }
+        public List<TCURegistrationEvent> TCURegistrationEvent { get => tCURegistrationEvent; set => tCURegistrationEvent = value; }
     }
 }

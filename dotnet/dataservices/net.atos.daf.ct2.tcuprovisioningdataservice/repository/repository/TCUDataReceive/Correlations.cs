@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TCUReceive
 {
-    class Correlations
+    public class Correlations
     {
         private String deviceId;
         private String vehicleId;

@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30611.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.tcuprovisioningdataservice", "TCUProvisioning\net.atos.daf.ct2.tcuprovisioningdataservice.csproj", "{FDC70F5C-BBDA-4A9E-BC72-B75CB6B536C2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FDC70F5C-BBDA-4A9E-BC72-B75CB6B536C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDC70F5C-BBDA-4A9E-BC72-B75CB6B536C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDC70F5C-BBDA-4A9E-BC72-B75CB6B536C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDC70F5C-BBDA-4A9E-BC72-B75CB6B536C2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B7ED8D60-4769-473D-8BFA-3645B12847D0}
+	EndGlobalSection
+EndGlobal
