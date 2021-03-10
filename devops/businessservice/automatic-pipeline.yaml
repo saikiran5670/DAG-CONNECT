@@ -48,6 +48,7 @@ jobs:
           script: |
             echo $(ContainerRegistry)
             echo $(Subscription)
+            echo $(group)
       
       - task: Docker@0
         displayName: 'Build an image'
