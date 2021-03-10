@@ -3,6 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>net.atos.daf.ct2.tcuprovisioningvehicle</AssemblyName>
+    <RootNamespace>net.atos.daf.ct2.tcuprovisioningvehicle</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
