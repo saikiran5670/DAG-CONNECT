@@ -7,7 +7,7 @@ parameters:
   default: 'subscription'
 - name: containerRegistry
   type: string
-  value: 'containerRegistry'
+  default: 'containerRegistry'
 
 jobs:
   - job:
