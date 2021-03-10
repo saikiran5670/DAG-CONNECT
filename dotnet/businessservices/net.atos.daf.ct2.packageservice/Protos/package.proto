@@ -89,6 +89,8 @@ message GetPackageResponce {
         ReadWrite = 3;//'W'=2;
     }
     enum Responsecode {
-     Success = 0;
-     Failed = 1;
+      Success = 0;
+      Failed = 1;
+      Conflict = 2;
+      NotFound = 3;
     }
