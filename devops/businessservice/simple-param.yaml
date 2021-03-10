@@ -1,7 +1,7 @@
 parameters:
-- name: yesNo # name of the parameter; required
-  type: boolean # data type of the parameter; required
-  default: false
+- name: subscription
+  type: string
+  default: 'Docker'
 
 steps:
-- script: echo ${{ parameters.yesNo }}
+- script: echo ${{ parameters.subscription }}
