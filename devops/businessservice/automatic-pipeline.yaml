@@ -48,7 +48,7 @@ jobs:
       - task: Docker@0
         displayName: 'Build an image'
         inputs:
-          azureSubscription: $[variables.Subscription]
+          azureSubscription: ${{ variables.Subscription }}
           azureContainerRegistry: $[variables.ContainerRegistry]
           dockerFile: dotnet/AccountService_Dockerfile
           imageName: accountservice-grpc-automatic
@@ -56,7 +56,7 @@ jobs:
       - task: Docker@0
         displayName: 'Push an image'
         inputs:
-          azureSubscription: $[variables.Subscription]
+          azureSubscription: ${{ variables.Subscription }}
           azureContainerRegistry: $[variables.ContainerRegistry]
           action: 'Push an image'
           imageName: 'accountservice-grpc-automatic'
