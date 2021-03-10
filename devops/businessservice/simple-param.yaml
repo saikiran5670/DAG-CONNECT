@@ -5,15 +5,14 @@ parameters:
 - name: containerRegistry
   type: string
   default: 'containerRegistry'
+- name: privateAgent
+  type: string
+  default: 'privateAgent'
 
 jobs:
   - job:
-    pool: $(PRIVATEAGENT)
-    variables:
-    - name: a
-      value: ${{ variables.Subscription }}
-    - name: b
-      value: ${{ variables.ContainerRegistry }}
+    pool: ${{ parameters.privateAgent }}
+    
     steps:
       - task: replacetokens@3
         inputs:
