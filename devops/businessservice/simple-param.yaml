@@ -16,7 +16,7 @@ parameters:
 jobs:
 - job: a1
   variables:
-  - group: {{ parameters.variableGroup }}
+  - group: ${{ parameters.variableGroup }}
     
   steps:
   - task: replacetokens@3
