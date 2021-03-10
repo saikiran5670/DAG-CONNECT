@@ -10,11 +10,11 @@ jobs:
   - job:
     pool: $(PRIVATEAGENT)
     variables:
-      - group: DEV01-Build-Variables
-      - name: a
-        value: $[variables.Subscription]
-      - name: b
-        value: $[variables.ContainerRegistry]
+    - group: DEV01-Build-Variables
+    - name: a
+      value: $[variables.Subscription]
+    - name: b
+      value: $[variables.ContainerRegistry]
     steps:
       - task: replacetokens@3
         inputs:
