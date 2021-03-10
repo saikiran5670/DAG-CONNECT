@@ -13,7 +13,10 @@ namespace net.atos.daf.ct2.translation.entity
         public string  Value { get; set; }
         public string Filter { get; set; }
         public int MenuId { get; set; }
+        public long created_at { get; set; }
+        public long modified_at { get; set; }
 
-        
+
+
     }
 }
