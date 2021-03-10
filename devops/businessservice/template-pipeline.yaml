@@ -2,6 +2,7 @@ trigger:
 - none
 
 jobs:
+- job: Linux
 - template: simple-param.yaml  # Template reference
   parameters:
     subscription: 'ats-sub1-d-app-automation' # set to a non-boolean value to have the build fail
