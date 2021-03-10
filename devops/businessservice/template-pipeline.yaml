@@ -6,3 +6,4 @@ extends:
   parameters:
       subscription: 'ats-sub1-d-app-automation' # set to a non-boolean value to have the build fail
       containerRegistry: '{"loginServer":"dafdev017756.azurecr.io", "id" : "/subscriptions/f0b7c74e-ef18-46e8-ae31-7abbd0e5fd8f/resourceGroups/DAFCT_DEV0_DTA_K8S/providers/Microsoft.ContainerRegistry/registries/dafdev017756"}'
+      privateAgent: 'dafct-dta-privateagent'
