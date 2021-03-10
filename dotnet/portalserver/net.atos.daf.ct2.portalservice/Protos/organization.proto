@@ -34,13 +34,13 @@ message OrgRelationshipCreateRequest{
     string level=4;
     string code=5;
     repeated string features=6;
-    int featuresetid =7; 
+    int32 featuresetid =7; 
 }
 
 message OrgRelationshipCreateResponse{
   Responcecode Code=1;
   string Message = 2;
-  OrgRelationshipRequest OrgRelation = 3;
+  OrgRelationshipCreateRequest OrgRelation = 3;
  
 }
     message OrgRelationshipDeleteRequest{
@@ -50,7 +50,7 @@ message OrgRelationshipCreateResponse{
     {
      Responcecode Code=1;
      string Message = 2;
-     OrgRelationshipRequest OrgRelationshipRequest= 3;      
+     OrgRelationshipCreateRequest OrgRelationshipRequest= 3;      
     }
 
 
