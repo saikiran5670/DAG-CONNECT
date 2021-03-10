@@ -7,7 +7,7 @@ jobs:
   - job:
     pool: $(PRIVATEAGENT)
     variables:
-    - group: $(group)
+    - group: ${{ parameters.group }}
     - name: a
       value: $(Subscription)
     - name: b
