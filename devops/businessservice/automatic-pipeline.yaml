@@ -10,7 +10,7 @@ jobs:
   - job:
     pool: $(PRIVATEAGENT)
     variables:
-      - group: 'DEV01-Build-Variables'
+      - group: DEV01-Build-Variables
       - name: a
         value: $(Subscription)
       - name: b
