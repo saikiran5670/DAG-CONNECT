@@ -46,8 +46,8 @@ jobs:
       - task: CmdLine@2
         inputs:
           script: |
-            echo $[variables.Subscription]
-            echo $[variables.ContainerRegistry]
+            echo $(Subscription)
+            echo $(ContainerRegistry)
       
       - task: Docker@0
         displayName: 'Build an image'
@@ -104,8 +104,8 @@ jobs:
       - task: CmdLine@2
         inputs:
           script: |
-            echo $[variables.Subscription]
-            echo $[variables.ContainerRegistry]
+            echo $(Subscription)
+            echo $(ContainerRegistry)
       
       - task: Docker@0
         displayName: 'Build an image'
