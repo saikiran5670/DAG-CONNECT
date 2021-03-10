@@ -19,5 +19,8 @@ namespace net.atos.daf.ct2.organization.repository
 
         //Org Relationship
         Task<OrgRelationship> CreateOrgRelationship(OrgRelationship orgRelationship);
+        Task<OrgRelationship> UpdateOrgRelationship(OrgRelationship orgRelationship);
+        Task<bool> DeleteOrgRelationship(int orgRelationshipId);
+        Task<List<OrgRelationship>> GetOrgRelationship(OrgRelationship filter);
     }
 }

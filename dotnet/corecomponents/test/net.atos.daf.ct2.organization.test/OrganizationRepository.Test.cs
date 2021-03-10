@@ -56,8 +56,8 @@ namespace net.atos.daf.ct2.organization.test
             organization.PostalCode = null;
             organization.City =null;
             organization.CountryCode = null;
-            organization.ReferencedDate = 1610372484;
-            organization.OptOutStatus = true;
+           // organization.ReferencedDate = 1610372484;
+           // organization.OptOutStatus = true;
             organization.OptOutStatusChangedDate =1610372484;
             organization.IsActive = true;
             var result = _organizationRepository.Create(organization).Result;
@@ -78,8 +78,8 @@ namespace net.atos.daf.ct2.organization.test
             organization.PostalCode = null;
             organization.City =null;
             organization.CountryCode = null;
-            organization.ReferencedDate = 1610372484;
-            organization.OptOutStatus = true;
+           // organization.ReferencedDate = 1610372484;
+          //  organization.OptOutStatus = true;
             organization.OptOutStatusChangedDate =1610372484;
             organization.IsActive = true;
             var result = _organizationRepository.Update(organization).Result;

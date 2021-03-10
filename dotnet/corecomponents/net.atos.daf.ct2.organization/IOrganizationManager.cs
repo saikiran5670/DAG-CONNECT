@@ -16,5 +16,8 @@ namespace net.atos.daf.ct2.organization
         Task<int> CreateVehicleParty(List<Customer> customers);
 
         Task<OrgRelationship> CreateOrgRelationship(OrgRelationship orgRelationship);
+        Task<OrgRelationship> UpdateOrgRelationship(OrgRelationship orgRelationship);
+        Task<bool> DeleteOrgRelationship(int orgRelationshipId);
+        Task<List<OrgRelationship>> GetOrgRelationship(OrgRelationship filter);
     }
 }
