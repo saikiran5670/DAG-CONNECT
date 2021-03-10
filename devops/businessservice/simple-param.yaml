@@ -14,7 +14,7 @@ parameters:
 
 
 jobs:
-- job
+- job:
   variables:
   - group: {{ parameters.variableGroup }}
     
