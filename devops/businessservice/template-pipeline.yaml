@@ -5,7 +5,7 @@ jobs:
 - job:
   pool: 'dafct-dta-privateagent'
   variables:
-    group: DEV0-Build-Variables
+    group: 'DEV0-Build-Variables'
   steps:
    - task: replacetokens@3
      inputs:
@@ -51,7 +51,7 @@ jobs:
 - job:
   pool: 'dafct-dev1-privateagent'
   variables:
-    group: DEV01-Build-Variables
+    group: 'DEV01-Build-Variables'
   steps:
    - task: replacetokens@3
      inputs:
