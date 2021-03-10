@@ -90,7 +90,7 @@ jobs:
 
    - template: simple-param.yaml  # Template reference
      parameters:
-      subscription: $(Subscription)
-      containerRegistry: $(ContainerRegistry)
+      subscription: 'DAF CT AZURE DTA LANDING ZONE DEV1'
+      containerRegistry: '{"loginServer":"acrakspzfu3h3wyefhu.azurecr.io", "id" : "/subscriptions/6bd8b39f-86c3-4026-985a-34db67361301/resourceGroups/daf-lan1-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acrakspzfu3h3wyefhu"}'
       
   
