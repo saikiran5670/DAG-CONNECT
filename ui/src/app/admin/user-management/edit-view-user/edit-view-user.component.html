@@ -43,10 +43,13 @@
                   <mat-label class='custom-font'>{{ accountInfoData.emailId ? accountInfoData.emailId : '--' }}</mat-label>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label>{{ translationData.lblUserType || 'User Type' }}</mat-label>
+                  <mat-label class='custom-font'>{{ accountInfoData.type ? accountInfoData.type : '--' }}</mat-label>
+                </div>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
                   <mat-label class='custom-font'>{{ accountInfoData.organization ? accountInfoData.organization : '--' }}</mat-label>
                 </div>
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
             </div>
           </div>  
         </div>
@@ -153,12 +156,24 @@
                     </mat-error>
                   </div>
                   <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblUserType || 'User Type' }}<span class='mandatoryColor'>*</span></mat-label>
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-select placeholder="{{ translationData.lblUserType || 'User Type' }}" formControlName="userType" required>
+                        <mat-option *ngFor="let rer of UserTypeList" [value]="rer.value">
+                          {{ rer.name }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <mat-error *ngIf="firstFormGroup.get('userType').hasError('required')">
+                      {{ translationData.lblPleasechooseusertype || 'Please choose user type' }}
+                    </mat-error>
+                  </div>
+                  <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                       <input placeholder="{{ translationData.lblOrganisation || 'Organisation' }}" matInput value="DAF Connect" formControlName="organization">
                     </mat-form-field>
                   </div>
-                  <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
                   <button class='margin-right-10' mat-raised-button color="primary"
