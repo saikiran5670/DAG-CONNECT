@@ -14,7 +14,6 @@
     <Protobuf Include="Protos\account.proto" GrpcServices="Server" />
   </ItemGroup>  
   <ItemGroup>   
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />   
     <PackageReference Include="Grpc.AspNetCore" Version="2.34.0" />   
     <PackageReference Include="Grpc.AspNetCore.Web" Version="2.34.0" />   
     <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="5.0.0" />

@@ -11,7 +11,6 @@ using Group = net.atos.daf.ct2.group;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
 using Google.Protobuf;
-using AutoMapper;
 using net.atos.daf.ct2.account.entity;
 using Google.Protobuf.Collections;
 using net.atos.daf.ct2.accountservice.Entity;
