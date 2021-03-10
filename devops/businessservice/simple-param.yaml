@@ -5,20 +5,27 @@ parameters:
 - name: containerRegistry
   type: string
   default: 'containerRegistry'
+- name: variableGroup
+  type: string
+  default: 'variableGroup'
 
-steps:
-  - task: Docker@0
-    displayName: 'Build an image'
-    inputs:
-      azureSubscription: ${{ parameters.Subscription }}
-      azureContainerRegistry:  ${{ parameters.containerRegistry }}
-      dockerFile: dotnet/AccountService_Dockerfile
-      imageName: accountservice-grpc-automatic
+jobs:
+  - job
+    variables:
+      - group: {{ parameters.variableGroup }}
+    steps:
+      - task: Docker@0
+        displayName: 'Build an image'
+        inputs:
+          azureSubscription: ${{ parameters.Subscription }}
+          azureContainerRegistry:  ${{ parameters.containerRegistry }}
+          dockerFile: dotnet/AccountService_Dockerfile
+          imageName: accountservice-grpc-automatic
 
-  - task: Docker@0
-    displayName: 'Push an image'
-    inputs:
-      azureSubscription:  ${{ parameters.Subscription }}
-      azureContainerRegistry:  ${{ parameters.containerRegistry }}
-      action: 'Push an image'
-      imageName: accountservice-grpc-automatic
+      - task: Docker@0
+        displayName: 'Push an image'
+        inputs:
+          azureSubscription:  ${{ parameters.Subscription }}
+          azureContainerRegistry:  ${{ parameters.containerRegistry }}
+          action: 'Push an image'
+          imageName: accountservice-grpc-automatic
