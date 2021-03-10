@@ -36,7 +36,49 @@ namespace net.atos.daf.ct2.organizationservice
             _mapper = new EntityMapper();
         }
 
-       public override async Task<OrganizationCreateData> Create(OrgCreateRequest request, ServerCallContext context)
+
+        //Org Relationship
+
+        public override async Task<OrgRelationshipCreateResponse> CreateOrgRelationship(OrgRelationshipCreateRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var orgRelationship = new OrgRelationship();
+                var response = new OrgRelationshipCreateResponse();
+                orgRelationship.Code = request.Code;
+                orgRelationship.Name = request.Name;
+                orgRelationship.Level = request.Level;
+                orgRelationship.FeaturesetId = request.Featuresetid;
+                orgRelationship.Description = request.Description;
+                orgRelationship.IsActive = request.IsActive;
+
+
+                orgRelationship = await organizationtmanager.CreateOrgRelationship(orgRelationship);
+                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Relationship Component", "Organization Relationship Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Create", 1, 2, orgRelationship.Id.ToString());
+                response.Code = Responcecode.Success;
+                response.Message = "Created";
+                request.Id = orgRelationship.Id;
+                //response.OrgRelation = _mapper.TOOrgUpdateResponse(request);
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Orgganization Relationship Service: Create : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new OrgRelationshipCreateResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Organization Relationship Creation failed due to - " + ex.Message,
+                    OrgRelation = null
+                });
+            }
+        }
+
+
+
+
+        //Organization
+
+        public override async Task<OrganizationCreateData> Create(OrgCreateRequest request, ServerCallContext context)
         {             
             try
             {                 

@@ -91,4 +91,6 @@ message GetPackageResponce {
     enum Responsecode {
      Success = 0;
      Failed = 1;
+     Conflict = 2;
+     NotFound = 3;
     }

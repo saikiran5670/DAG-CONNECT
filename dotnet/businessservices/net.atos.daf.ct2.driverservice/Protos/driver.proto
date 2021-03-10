@@ -17,17 +17,16 @@ service DriverService {
 }
 
 message DriverUpdateRequest {
-    int32 id = 1;
+    int32 id =1;
     int32 Organization_id=2;
     string Driver_id_ext =3;
-    string Salutation=4;
+    string Email=4;
     string FirstName=5;
     string LastName=6;
-    string DateOfBith =7; 
-    string Status =8;    
-    bool IsActive=9;
-    string opt_in =10; 
-    string modified_by=11;    
+    string Status=7;    
+    bool IsActive=8;
+    string opt_in=9; 
+    int32 modified_by=10;    
   }
 message DriverUpdateResponse {
   Responcecode Code=1;
@@ -39,16 +38,15 @@ message DriverResponse {
     int32 id = 1;
     int32 Organization_id=2;
     string Driver_id_ext =3;
-    string Salutation=4;
+    string Email=4;
     string FirstName=5;
     string LastName=6;
-    string DateOfBith =7; 
-    string Status =8;    
-    bool IsActive=9;
-    string opt_in =10;
-    string modified_at =11;
-    string modified_by=12;
-    string created_at=13; 
+    string Status =7;    
+    bool IsActive=8;
+    string opt_in =9;
+    string modified_at =10;
+    string modified_by=11;
+    string created_at=12; 
   }
 
 message DriverDataList {

@@ -14,9 +14,9 @@ namespace net.atos.daf.ct2.driverservice.entity
             net.atos.daf.ct2.driverservice.DriverResponse driver = new  net.atos.daf.ct2.driverservice.DriverResponse();
             driver.Id = request.Id;    
             driver.OrganizationId=request.Organization_id;
-            if (!(string.IsNullOrEmpty(request.Salutation)))
+            if (!(string.IsNullOrEmpty(request.Email)))
             {
-                 driver.Salutation= request.Salutation;
+                 driver.Email= request.Email;
             }
             if (!(string.IsNullOrEmpty(request.FirstName)))
             {
@@ -46,14 +46,13 @@ namespace net.atos.daf.ct2.driverservice.entity
             driver.entity.Driver driver=new driver.entity.Driver();
             driver.Id=request.Id;
             driver.Organization_id=request.OrganizationId;
-            driver.Salutation=request.Salutation;
+            driver.Email=request.Email;
             driver.FirstName=request.FirstName;
             driver.LastName=request.LastName;
             driver.Status=request.Status;
             driver.opt_in=request.OptIn;
-            driver.Driver_id_ext=request.DriverIdExt;
-            //driver.DateOfBith=request.DateOfBith;
-            driver.modified_by=Convert.ToInt32(request.ModifiedBy);           
+            //driver.Driver_id_ext=request.DriverIdExt;
+            driver.modified_by=request.ModifiedBy;           
             driver.Status= request.Status;
             driver.IsActive= request.IsActive;          
             return driver;
@@ -64,13 +63,12 @@ namespace net.atos.daf.ct2.driverservice.entity
             net.atos.daf.ct2.driverservice.DriverUpdateRequest driver= new DriverUpdateRequest();           
             driver.Id=request.Id;
             driver.OrganizationId=request.Organization_id;
-            driver.Salutation=request.Salutation;
+            driver.Email=request.Email;
             driver.FirstName=request.FirstName;
             driver.LastName=request.LastName;
             driver.Status=request.Status;
             driver.OptIn=request.opt_in;
-            //driver.DateOfBith=request.DateOfBith;
-            driver.ModifiedBy=request.modified_by.ToString();           
+            driver.ModifiedBy=request.modified_by;           
             driver.Status= request.Status;
             driver.IsActive= request.IsActive;          
             return driver;

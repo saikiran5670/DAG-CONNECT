@@ -16,8 +16,10 @@ namespace TCUProvisioning
 
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
+
             ProvisionVehicle provisionVehicle = new ProvisionVehicle(log);
             await provisionVehicle.readTCUProvisioningData();
+
             Console.ReadKey();
 
 
