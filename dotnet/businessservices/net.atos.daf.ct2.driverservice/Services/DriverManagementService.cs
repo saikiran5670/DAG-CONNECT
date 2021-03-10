@@ -63,9 +63,10 @@ namespace net.atos.daf.ct2.driverservice
                _logger.LogInformation("Update Drivers ."); 
                driver= _mapper.ToDriverUpdateResponse(request);
                var result = await driverManager.UpdateDriver(driver);   
+               
                objDriver= _mapper.DriverToDriverResponse(driver);  
                response.Code = Responcecode.Success;
-               response.Message = "Get";
+               response.Message = "Updated";
                response.Driver= objDriver;
                return await Task.FromResult(response);    
         }
