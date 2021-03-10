@@ -10,8 +10,8 @@ parameters:
   default: 'privateAgent'
 
   jobs:
-    - job
-      pool: ${{ parameters.privateAgent }}
+  - job:
+    pool: $(PRIVATEAGENT)
       steps:
         - task: replacetokens@3
           inputs:
