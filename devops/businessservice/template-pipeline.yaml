@@ -2,6 +2,6 @@ trigger:
 - master
 
 extends:
-  template: simple-param.yml
+  template: simple-param.yaml
   parameters:
       yesNo: false # set to a non-boolean value to have the build fail
