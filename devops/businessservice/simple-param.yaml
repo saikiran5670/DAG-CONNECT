@@ -14,7 +14,7 @@ parameters:
 
 
 jobs:
-- job:
+- job: a1
   variables:
   - group: {{ parameters.variableGroup }}
     
