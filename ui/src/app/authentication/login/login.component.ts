@@ -137,6 +137,9 @@ export class LoginComponent implements OnInit {
   //----------------------
 
     let organization: Organization[] = data.accountOrganization;
+    if(data.accountRole == null){
+      data.accountRole = [];
+    }
     let role: Role[] = data.accountRole;
     let accountPreference: any = data.accountPreference ? data.accountPreference : '';
 

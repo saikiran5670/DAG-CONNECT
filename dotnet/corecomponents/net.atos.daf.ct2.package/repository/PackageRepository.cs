@@ -37,8 +37,8 @@ namespace net.atos.daf.ct2.package.repository
                 parameter.Add("@feature_set_id", package.FeatureSetID);
                 parameter.Add("@name", package.Name);
                 parameter.Add("@type", MapPackageType(package.Type));
-                parameter.Add("@description", package.Description);               
-                parameter.Add("@is_active", Convert.ToBoolean(package.Status));
+                parameter.Add("@description", package.Description);
+                parameter.Add("@is_active", package.Status == PackageStatus.Active ? true : false);
 
                 string query = @"insert into master.package(packagecode,feature_set_id,name,type,description,is_active) " +
                               "values(@packagecode,@feature_set_id,@name,@type,@description,@is_active) RETURNING id";
@@ -67,7 +67,7 @@ namespace net.atos.daf.ct2.package.repository
                 // parameter.Add("@is_default", Convert.ToBoolean(package.Default));
                 //   parameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(package.StartDate));
                 //  parameter.Add("@end_date", UTCHandling.GetUTCFromDateTime(package.EndDate));
-                parameter.Add("@is_active", Convert.ToBoolean(package.Status));
+                parameter.Add("@is_active", package.Status == PackageStatus.Active ? true : false); //Convert.ToBoolean(package.Status));
                 string query = @"update master.package set packagecode=@packagecode, 
                                                            feature_set_id=@feature_set_id,
                                                            name=@name,
@@ -109,7 +109,7 @@ namespace net.atos.daf.ct2.package.repository
                             parameter.Add("@name", package.Name);
                             parameter.Add("@type", MapPackageType(package.Type));
                             parameter.Add("@description", package.Description);
-                            parameter.Add("@is_active", Convert.ToBoolean(package.Status));
+                            parameter.Add("@is_active", package.Status == PackageStatus.Active ? true : false); //Convert.ToBoolean(package.Status));
                             query = @"insert into master.package(packagecode,feature_set_id,name,type,description,is_active) " +
                                     "values(@packagecode,@feature_set_id,@name,@type,@description,@is_active) RETURNING id";
                             var pkgId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
@@ -213,9 +213,9 @@ namespace net.atos.daf.ct2.package.repository
                         query = query + " and pkg.feature_set_id = @feature_set_id ";
                     }
                     // package type filter
-                    if (filter.Type != 0) 
+                    if (filter.Type != 0)
                     {
-                        parameter.Add("@type", (char)filter.Type); 
+                        parameter.Add("@type", MapPackageType(filter.Type));
 
                         query = query + " and pkg.type=@type";
                     }
@@ -224,7 +224,7 @@ namespace net.atos.daf.ct2.package.repository
                     // package status filter 
                     if (filter.Status != 0)
                     {
-                        parameter.Add("@is_active", Convert.ToBoolean(filter.Status));
+                        parameter.Add("@is_active", filter.Status == PackageStatus.Active ? true : false);
 
                         query = query + " and pkg.is_active=@is_active";
                     }
@@ -271,7 +271,7 @@ namespace net.atos.daf.ct2.package.repository
             package.Code = record.packagecode;
 
             package.Status = record.is_active ? PackageStatus.Active : PackageStatus.Inactive;
-            package.Type = (PackageType)(record.type);
+            package.Type = MapCharToPackageType(record.type);
             package.Name = record.name;
             package.Description = record.description;
             package.FeatureSetID = record.feature_set_id;
@@ -284,14 +284,31 @@ namespace net.atos.daf.ct2.package.repository
             switch (packageType)
             {
                 case PackageType.Organization:
-                     type= 'O';
+                    type = 'O';
                     break;
                 case PackageType.Vehicle:
-                    type= 'V';
+                    type = 'V';
                     break;
             }
             return type; ;
         }
+
+
+        private PackageType MapCharToPackageType(string type)
+        {
+            var ptype = PackageType.Organization;
+            switch (type)
+            {
+                case "O":
+                    ptype = PackageType.Organization;
+                    break;
+                case "V":
+                    ptype = PackageType.Vehicle;
+                    break;
+            }
+            return ptype; ;
+        }
+
         public Task<FeatureSet> Update(FeatureSet featureSet)
         {
             throw new NotImplementedException();

@@ -39,10 +39,10 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
         {
             try
             {
-
-                //string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                //await accountIdentityManager.ValidateToken(token);
-                bool valid = true;
+                bool valid = false;
+                string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                valid=await accountIdentityManager.ValidateToken(token);
+                //bool valid = true;
                 if (valid)
                 {
                     logger.LogInformation("UpdateVehicle function called -" + vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN);
@@ -63,6 +63,11 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     //Vehicle Classification
                     vehicleProperties.Classification_Make = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Make;
                     vehicleProperties.Classification_Series_Id = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.ID;
+                    if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange != "LF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange != "XF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange != "CF")
+                    {
+                        return StatusCode(400, "Vehicle Range value should only be LF, CF or XF.");
+                    }
+
                     vehicleProperties.Classification_Series_VehicleRange = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange;
                     vehicleProperties.Classification_Model_Id = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Model.ID;                    
                     vehicleProperties.Classification_ModelYear=vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.ModelYear;
@@ -126,7 +131,14 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
 
                     //DriveLine
                     vehicleProperties.DriverLine_AxleConfiguration = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.AxleConfiguration;
-                    vehicleProperties.DriverLine_Tire_Size = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.Wheels.Tire.Size;
+                    if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.Wheels.Tire.Size == null && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.RearAxle != null)
+                    {
+                        vehicleProperties.DriverLine_Tire_Size = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.FrontAxle[0].AxleSpecificWheels.Tire.Size;
+                    }
+                    else
+                    {
+                        vehicleProperties.DriverLine_Tire_Size = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.Wheels.Tire.Size;
+                    }
                     vehicleProperties.DriverLine_Wheelbase = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.WheelBase;
 
                     //Front Axel

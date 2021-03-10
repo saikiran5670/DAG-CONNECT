@@ -1,5 +1,6 @@
 ﻿using Confluent.Kafka;
 using Dapper;
+using log4net;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
@@ -18,14 +19,62 @@ namespace TCUProvisioning
 {
     class ProvisionVehicle
     {
-        
-        public static async Task readTCUProvisioningData(string brokerList, string connStr, string consumergroup, string topic, string cacertlocation,string psqlconnstring)
+        private ILog log;
+        private string brokerList = ConfigurationManager.AppSetting["EH_FQDN"];
+        private string connStr = ConfigurationManager.AppSetting["EH_CONNECTION_STRING"];
+        private string consumergroup = ConfigurationManager.AppSetting["CONSUMER_GROUP"];
+        private string topic = ConfigurationManager.AppSetting["EH_NAME"];
+        private string psqlconnstring = ConfigurationManager.AppSetting["psqlconnstring"];
+        private string cacertlocation = ConfigurationManager.AppSetting["CA_CERT_LOCATION"];
+
+        public ProvisionVehicle(ILog log)
+        {
+            this.log = log;
+        }
+
+        public async Task readTCUProvisioningData()
+        {
+            ConsumerConfig config = getConsumer();
+
+            using (var consumer = new ConsumerBuilder<Null, string>(config).Build())
+            {
+                CancellationTokenSource cts = new CancellationTokenSource();
+                Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
+                log.Info("Subscribing Topic");
+                consumer.Subscribe(topic);
+
+                while (true)
+                {
+                    try
+                    {
+                        log.Info("Consuming Messages");
+                        var msg = consumer.Consume(cts.Token);
+                        String TCUDataFromTopic = msg.Message.Value;
+                        TCUDataReceive TCUDataReceive = JsonConvert.DeserializeObject<TCUDataReceive>(TCUDataFromTopic);
+                        await updateVehicleDetails(TCUDataReceive, psqlconnstring);
+
+                    }
+                    catch (ConsumeException e)
+                    {
+                        log.Error($"Consume error: {e.Error.Reason}");
+
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error($"Error: {e.Message}");
+
+                    }
+                }
+            }
+        }
+
+        private ConsumerConfig getConsumer()
         {
             var config = new ConsumerConfig
             {
                 BootstrapServers = brokerList,
                 SecurityProtocol = SecurityProtocol.SaslSsl,
-                SocketTimeoutMs = 60000,                //this corresponds to the Consumer config `request.timeout.ms`
+                SocketTimeoutMs = 60000,
                 SessionTimeoutMs = 30000,
                 SaslMechanism = SaslMechanism.Plain,
                 SaslUsername = "$ConnectionString",
@@ -33,89 +82,49 @@ namespace TCUProvisioning
                 SslCaLocation = cacertlocation,
                 GroupId = consumergroup,
                 AutoOffsetReset = AutoOffsetReset.Earliest,
-                BrokerVersionFallback = "1.0.0",        //Event Hubs for Kafka Ecosystems supports Kafka v1.0+, a fallback to an older API will fail
+                BrokerVersionFallback = "1.0.0",
                 //Debug = "security,broker,protocol"    //Uncomment for librdkafka debugging information
             };
-
-            using (var consumer = new ConsumerBuilder<Null, string>(config).Build())
-            {
-                CancellationTokenSource cts = new CancellationTokenSource();
-                Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
-
-                consumer.Subscribe(topic);
-
-                //Console.WriteLine("Consuming messages from topic: " + topic + ", broker(s): " + brokerList);
-
-                while (true)
-                {
-                    try
-                    {
-                        var msg = consumer.Consume(cts.Token);
-                        //Console.WriteLine($"Received: '{msg.Value}'");
-                        String TCUDataFromTopic = msg.Message.Value;
-                        //Console.WriteLine(TCUDataFromTopic);
-                        var TCUDataSend = JsonConvert.DeserializeObject<TCUDataSend>(TCUDataFromTopic);
-                        var TCURegistrationEvents = TCUDataSend.TcuRegistrationEvents.TcuRegistrationEvent;
-                        foreach (TCURegistrationEvent item in TCURegistrationEvents)
-                        {
-                            await updateVehicleDetails(item, psqlconnstring);
-                        }
-
-                    }
-                    catch (ConsumeException e)
-                    {
-                        Console.WriteLine($"Consume error: {e.Error.Reason}");
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"Error: {e.Message}");
-                    }
-                }
-            }
+            return config;
         }
 
 
-
-        static async Task updateVehicleDetails(TCURegistrationEvent TCUDataSend, string psqlConnString)
+        async Task updateVehicleDetails(TCUDataReceive TCUDataReceive, string psqlConnString)
         {
-            
 
+            log.Info("Fetching Vehicle object from database");
             IVehicleManager vehicleManager = getVehicleManager(psqlConnString);
-            VehicleFilter vehicleFilter = getFilteredVehicle(TCUDataSend);
+            //VehicleFilter vehicleFilter = getFilteredVehicle(TCUDataReceive);
             IDataAccess dataacess = new PgSQLDataAccess(psqlConnString);
+            Vehicle receivedVehicle = null;
+            
 
             try
 
             {
 
-                IEnumerable<Vehicle> vehicles = await vehicleManager.Get(vehicleFilter);
-                Vehicle receivedVehicle = null;
-
-                foreach (Vehicle vehicle in vehicles)
-                {
-                    receivedVehicle = vehicle;
-                    Console.WriteLine("VIN is" + receivedVehicle.VIN);
-                    break;
-                }
+                receivedVehicle = await getVehicle(TCUDataReceive, psqlConnString, vehicleManager);
 
                 if (receivedVehicle == null)
                 {
-                    
-                    Console.WriteLine("Vehicle is null proceeding to create vehicle");
+
+                    log.Info("Vehicle is not present in database proceeding to create vehicle");
 
                     receivedVehicle = new Vehicle();
 
-                    receivedVehicle.VIN = TCUDataSend.VIN;
-                    receivedVehicle.Vid = "ALMQ84521AA";
-                    receivedVehicle.Tcu_Id = TCUDataSend.TCU.ID;
-                    receivedVehicle.Tcu_Serial_Number = "BAYGHD74506";
+                    receivedVehicle.VIN = TCUDataReceive.Vin;
+                    receivedVehicle.Vid = TCUDataReceive.Correlations.VehicleId;
+                    receivedVehicle.Tcu_Id = TCUDataReceive.DeviceIdentifier;
+                    receivedVehicle.Tcu_Serial_Number = TCUDataReceive.DeviceSerialNumber;
                     receivedVehicle.Is_Tcu_Register = true;
-                    receivedVehicle.Reference_Date = TCUDataSend.ReferenceDate;
+                    receivedVehicle.Tcu_Brand = "Bosch";
+                    receivedVehicle.Tcu_Version = "1.0";
+                    receivedVehicle.Reference_Date = TCUDataReceive.ReferenceDate;
                     receivedVehicle.VehiclePropertiesId = 0;
                     receivedVehicle.Opt_In = VehicleStatusType.Inherit;
                     receivedVehicle.Is_Ota = false;
                   
-                    dynamic oiedetail = await GetOEM_Id(TCUDataSend.VIN,dataacess);
+                    dynamic oiedetail = await GetOEM_Id(TCUDataReceive.Vin, dataacess);
                     if (oiedetail != null)
                     {
                         receivedVehicle.Oem_id = oiedetail[0].id;
@@ -127,18 +136,20 @@ namespace TCUProvisioning
                     char org_status = await GetOrganisationStatusofVehicle(OrgId, dataacess);
                     receivedVehicle.Status = (VehicleCalculatedStatus)GetCalculatedVehicleStatus(org_status, receivedVehicle.Is_Ota);
 
+                    log.Info("Creating Vehicle Object in database");
                     await vehicleManager.Create(receivedVehicle);
                 }
                 else
                 {
 
-                    Console.WriteLine("Vehicle is present proceeding to update vehicle");
-                    receivedVehicle.VIN = TCUDataSend.VIN;
-                    // receivedVehicle.Vid = TCUDataReceive.Correlations.VehicleId;
-                    receivedVehicle.Tcu_Id = TCUDataSend.TCU.ID;
-                    receivedVehicle.Tcu_Serial_Number = "MAYGHD74506";
+                    receivedVehicle.Tcu_Id = TCUDataReceive.DeviceIdentifier;
+                    receivedVehicle.Tcu_Serial_Number = TCUDataReceive.DeviceSerialNumber;
                     receivedVehicle.Is_Tcu_Register = true;
-                    receivedVehicle.Reference_Date = TCUDataSend.ReferenceDate;
+                    receivedVehicle.Reference_Date = TCUDataReceive.ReferenceDate;
+                    receivedVehicle.Tcu_Brand = "Bosch";
+                    receivedVehicle.Tcu_Version = "1.0";
+
+                    log.Info("Updating Vehicle details in database");
                     await vehicleManager.Update(receivedVehicle);
 
                 }
@@ -146,14 +157,12 @@ namespace TCUProvisioning
             }
             catch (Exception ex)
             {
-               // Console.WriteLine($"Error: {ex.Message}");
                 throw ex;
-
             }
         }
 
 
-        private static async Task<dynamic> GetOEM_Id(string vin, IDataAccess dataacess)
+        private  async Task<dynamic> GetOEM_Id(string vin, IDataAccess dataacess)
         {
             string vin_prefix = vin.Substring(0, 3);
             var QueryStatement = @"SELECT id, oem_organisation_id
@@ -169,7 +178,7 @@ namespace TCUProvisioning
         }
 
 
-        public static async Task<char> GetOrganisationStatusofVehicle(int org_id, IDataAccess dataacess)
+        public  async Task<char> GetOrganisationStatusofVehicle(int org_id, IDataAccess dataacess)
         {
 
             char optin = await dataacess.QuerySingleAsync<char>("SELECT vehicle_default_opt_in FROM master.organization where id=@id", new { id = org_id });
@@ -177,7 +186,7 @@ namespace TCUProvisioning
             return optin;
         }
 
-        public static char GetCalculatedVehicleStatus(char opt_in, bool is_ota)
+        public  char GetCalculatedVehicleStatus(char opt_in, bool is_ota)
         {
             char calVehicleStatus = 'I';
             //Connected
@@ -208,12 +217,12 @@ namespace TCUProvisioning
             return calVehicleStatus;
         }
 
-        private static VehicleFilter getFilteredVehicle(TCURegistrationEvent TCUDataSend)
+        private  VehicleFilter getFilteredVehicle(TCUDataReceive TCUDataReceive)
         {
             VehicleFilter vehicleFilter = new VehicleFilter();
 
             vehicleFilter.OrganizationId = 0;
-            vehicleFilter.VIN = TCUDataSend.VIN;
+            vehicleFilter.VIN = TCUDataReceive.Vin;
             vehicleFilter.VehicleId = 0;
             vehicleFilter.VehicleGroupId = 0;
             vehicleFilter.AccountId = 0;
@@ -224,7 +233,7 @@ namespace TCUProvisioning
             return vehicleFilter;
         }
 
-        private static VehicleManager getVehicleManager(string psqlConnString)
+        private VehicleManager getVehicleManager(string psqlConnString)
         {
             IDataAccess dataacess = new PgSQLDataAccess(psqlConnString);
             IVehicleRepository vehiclerepo = new VehicleRepository(dataacess);
@@ -233,5 +242,32 @@ namespace TCUProvisioning
             VehicleManager vehicleManager = new VehicleManager(vehiclerepo, audit);
             return vehicleManager;
         }
+
+        private async Task<Vehicle> getVehicle(TCUDataReceive TCUDataReceive, string psqlConnString, IVehicleManager vehicleManager)
+        {
+            try
+            {
+                VehicleFilter vehicleFilter = getFilteredVehicle(TCUDataReceive);
+                IDataAccess dataacess = new PgSQLDataAccess(psqlConnString);
+                Vehicle receivedVehicle = null;
+                IEnumerable<Vehicle> vehicles = await vehicleManager.Get(vehicleFilter);
+
+
+                foreach (Vehicle vehicle in vehicles)
+                {
+                    receivedVehicle = vehicle;
+                    break;
+                }
+
+                return receivedVehicle;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
+        }
+
+
     }
 }
