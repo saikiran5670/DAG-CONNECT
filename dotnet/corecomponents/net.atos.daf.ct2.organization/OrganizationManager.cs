@@ -57,5 +57,20 @@ namespace net.atos.daf.ct2.organization
         {
             return await organizationRepository.CreateOrgRelationship(orgRelationship);
         }
+
+        public async Task<OrgRelationship> UpdateOrgRelationship(OrgRelationship orgRelationship)
+        {
+            return await organizationRepository.UpdateOrgRelationship(orgRelationship);
+        }
+
+        public async Task<bool> DeleteOrgRelationship(int orgRelationshipId)
+        {
+            return await organizationRepository.DeleteOrgRelationship(orgRelationshipId);
+        }
+
+        public async Task<List<OrgRelationship>> GetOrgRelationship(OrgRelationship orgRelationship)
+        {
+            return await organizationRepository.GetOrgRelationship(orgRelationship);
+        }
     }
 }
