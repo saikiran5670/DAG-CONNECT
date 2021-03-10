@@ -1,9 +1,17 @@
 trigger:
 - none
 
-extends:
-  template: simple-param.yaml
+jobs:
+- template: simple-param.yaml  # Template reference
   parameters:
-      subscription: 'ats-sub1-d-app-automation' # set to a non-boolean value to have the build fail
-      containerRegistry: '{"loginServer":"dafdev017756.azurecr.io", "id" : "/subscriptions/f0b7c74e-ef18-46e8-ae31-7abbd0e5fd8f/resourceGroups/DAFCT_DEV0_DTA_K8S/providers/Microsoft.ContainerRegistry/registries/dafdev017756"}'
-      privateAgent: 'dafct-dta-privateagent'
+    subscription: 'ats-sub1-d-app-automation' # set to a non-boolean value to have the build fail
+    containerRegistry: '{"loginServer":"dafdev017756.azurecr.io", "id" : "/subscriptions/f0b7c74e-ef18-46e8-ae31-7abbd0e5fd8f/resourceGroups/DAFCT_DEV0_DTA_K8S/providers/Microsoft.ContainerRegistry/registries/dafdev017756"}'
+    privateAgent: 'dafct-dta-privateagent'
+  
+- job: Windows
+- template: simple-param.yaml  # Template reference
+  parameters:
+    subscription: 'DAF CT AZURE DTA LANDING ZONE DEV1' # set to a non-boolean value to have the build fail
+    containerRegistry: '{"loginServer":"acrakspzfu3h3wyefhu.azurecr.io", "id" : "/subscriptions/6bd8b39f-86c3-4026-985a-34db67361301/resourceGroups/daf-lan1-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acrakspzfu3h3wyefhu"}'
+    privateAgent: 'dafct-dev1-privateagent'
+  

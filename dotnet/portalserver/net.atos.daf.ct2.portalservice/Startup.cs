@@ -21,6 +21,7 @@ using net.atos.daf.ct2.auditservice;
 using net.atos.daf.ct2.roleservice;
 
 using net.atos.daf.ct2.organizationservice;
+using net.atos.daf.ct2.driverservice;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -49,10 +50,12 @@ namespace net.atos.daf.ct2.portalservice
             var featureservice= Configuration["ServiceConfiguration:featureservice"];
             var roleservice = Configuration["ServiceConfiguration:roleservice"];
             var organizationservice = Configuration["ServiceConfiguration:organizationservice"];
-
             var isdevelopmentenv = Configuration["ServerConfiguration:isdevelopmentenv"];
             var cookiesexpireat = Configuration["ServerConfiguration:cookiesexpireat"];
             var authcookiesexpireat = Configuration["ServerConfiguration:authcookiesexpireat"];
+            var driverservice = Configuration["ServerConfiguration:driverservice"];
+
+ 
 
             // We are enforcing to call Insercure service             
             AppContext.SetSwitch(
@@ -114,6 +117,10 @@ namespace net.atos.daf.ct2.portalservice
             services.AddGrpcClient<AuditService.AuditServiceClient>(o =>
             {
                 o.Address = new Uri(auditservice);
+            });
+             services.AddGrpcClient<DriverService.DriverServiceClient>(o =>
+            {
+                o.Address = new Uri(driverservice);
             });
             services.AddSwaggerGen(c =>
             {
