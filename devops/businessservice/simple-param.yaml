@@ -10,7 +10,7 @@ parameters:
   default: 'privateAgent'
 
 jobs:
-- job: Job1
+- job:
   pool: $(parameters.privateAgent)
   steps:
   - task: replacetokens@3
