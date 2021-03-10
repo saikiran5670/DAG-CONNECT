@@ -26,9 +26,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
             logger=_logger;
         }
         
-        [HttpPost]        
-        [Route("Auth")]
-        public async Task<IActionResult> Login()
+        private async Task<IActionResult> Login()
         {
             try 
             {
@@ -54,34 +52,34 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                     AccountEntity.AccountIdentity response = await accountIdentityManager.Login(user);
                     if(response!=null)
                     {
-                        if(response.AccountToken!=null)
-                        {
-                            authToken.access_token=response.AccountToken.AccessToken;
-                            authToken.expires_in=response.AccountToken.ExpiresIn;
-                            authToken.token_type=response.AccountToken.TokenType;
-                            authToken.session_state=response.AccountToken.SessionState;
-                            authToken.scope=response.AccountToken.Scope;
-                        }
-                        else 
-                        {
-                            return StatusCode(404,"Account is not configured.");
-                        }
-                        if(response.AccountPreference!=null)
-                        {
-                            authToken.locale=response.AccountPreference.LanguageId.ToString();
-                            authToken.timezone=response.AccountPreference.TimezoneId.ToString();
-                            authToken.unit=response.AccountPreference.UnitId.ToString();
-                            authToken.currency=response.AccountPreference.CurrencyId.ToString();
-                            authToken.date_format=response.AccountPreference.DateFormatTypeId.ToString();
-                        }
-                        else 
-                        {
-                            authToken.locale=string.Empty;
-                            authToken.timezone=string.Empty;
-                            authToken.unit=string.Empty;
-                            authToken.currency=string.Empty;
-                            authToken.date_format=string.Empty;
-                        }
+                        //if(response.AccountToken!=null)
+                        //{
+                        //    authToken.access_token=response.AccountToken.AccessToken;
+                        //    authToken.expires_in=response.AccountToken.ExpiresIn;
+                        //    authToken.token_type=response.AccountToken.TokenType;
+                        //    authToken.session_state=response.AccountToken.SessionState;
+                        //    authToken.scope=response.AccountToken.Scope;
+                        //}
+                        //else 
+                        //{
+                        //    return StatusCode(404,"Account is not configured.");
+                        //}
+                        //if(response.AccountPreference!=null)
+                        //{
+                        //    authToken.locale=response.AccountPreference.LanguageId.ToString();
+                        //    authToken.timezone=response.AccountPreference.TimezoneId.ToString();
+                        //    authToken.unit=response.AccountPreference.UnitId.ToString();
+                        //    authToken.currency=response.AccountPreference.CurrencyId.ToString();
+                        //    authToken.date_format=response.AccountPreference.DateFormatTypeId.ToString();
+                        //}
+                        //else 
+                        //{
+                        //    authToken.locale=string.Empty;
+                        //    authToken.timezone=string.Empty;
+                        //    authToken.unit=string.Empty;
+                        //    authToken.currency=string.Empty;
+                        //    authToken.date_format=string.Empty;
+                        //}
                         return Ok(authToken);
                     }
                     else 
@@ -102,8 +100,56 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
             }            
         }
 
+        [HttpPost]
+        [Route("auth")]
+        //In case, to generate only account token 
+        public async Task<IActionResult> GenerateToken()
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(Request.Headers["Authorization"]))
+                {
+                    var authHeader = Request.Headers["Authorization"].ToString().Replace("Basic ", "");
+                    var identity = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(authHeader));
+                    var arrUsernamePassword = identity.Split(':');
+                    if (string.IsNullOrEmpty(arrUsernamePassword[0].Trim()))
+                    {
+                        return StatusCode(401, "invalid_grant: The username is Empty.");
+                    }
+                    else if (string.IsNullOrEmpty(arrUsernamePassword[1]))
+                    {
+                        return StatusCode(401, "invalid_grant: The password is Empty.");
+                    }
+                    else
+                    {
+                        IdentityEntity.Identity user = new IdentityEntity.Identity();
+                        user.UserName = arrUsernamePassword[0].Trim();
+                        user.Password = arrUsernamePassword[1];
+                        IdentityEntity.AccountToken response = await accountIdentityManager.GenerateToken(user);
+                        if (response != null && ! string.IsNullOrEmpty(response.AccessToken))
+                        {
+                            return Ok(response);
+                        }
+                        else
+                        {
+                            return StatusCode(401);
+                        }
+                    }
+                }
+                else
+                {
+                    return StatusCode(401);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message + " " + ex.StackTrace);
+                return StatusCode(500);
+            }
+        }
+
         [HttpPost]        
-        [Route("Validate")]
+        [Route("validate")]
         public async Task<IActionResult> Validate([FromBody] string token)
         {
             bool valid=false;
@@ -122,41 +168,10 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
             {
                 valid = false;
                 logger.LogError(ex.Message +" " +ex.StackTrace);
-                return StatusCode(500,"Internal Server Error.");
+                return StatusCode(500);
             }           
             return Ok(valid); 
         }
-        //In case, to generate only account token 
-        private async Task<IActionResult> GenerateToken([FromBody] IdentityEntity.Identity user)
-        {
-            try 
-            {
-                if(string.IsNullOrEmpty(user.UserName))
-                {
-                    return StatusCode(401,"invalid_grant: The username is Empty.");
-                }
-                else if(string.IsNullOrEmpty(user.Password))
-                {
-                    return StatusCode(401,"invalid_grant: The password is Empty.");
-                }
-                else
-                {
-                    IdentityEntity.AccountToken response = await accountIdentityManager.GenerateToken(user);
-                    if(response!=null)
-                    {
-                        return Ok(response);
-                    }
-                    else 
-                    {
-                        return StatusCode(404,"Account is not configured.");
-                    }
-                }
-            }
-            catch(Exception ex)
-            {
-                logger.LogError(ex.Message +" " +ex.StackTrace);
-                return StatusCode(500,"Internal Server Error.");
-            }            
-        }
+        
     }
 }

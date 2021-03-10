@@ -11,6 +11,9 @@ using Group = net.atos.daf.ct2.group;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
 using Google.Protobuf;
+using net.atos.daf.ct2.account.entity;
+using Google.Protobuf.Collections;
+using net.atos.daf.ct2.accountservice.Entity;
 
 namespace net.atos.daf.ct2.accountservice
 {
@@ -644,7 +647,42 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
+        
+        public override async Task<MenuFeatureResponse> GetMenuFeatures(MenuFeatureRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var result = await accountmanager.GetMenuFeatures(request.AccountId, request.RoleId, request.OrganizationId);
 
+                MenuFeatureResponse response = new MenuFeatureResponse();
+                if (result.Count() > 0)
+                {
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.SUCCESS, "Get Menu Features", 1, 2, request.AccountId.ToString());
+                    response.Code = Responcecode.Success;
+                    response.Message = "Menu items and features fetched successfully.";
+                }
+                else
+                {
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Get Menu Features", 1, 2, request.AccountId.ToString());
+                    response.Code = Responcecode.NotFound;
+                    response.Message = "No menu items and features found for the provided account details.";
+                }
+
+                //var menuFeatureList = autoMapper.Map<IEnumerable<MenuFeatureDto>, IEnumerable<MenuFeatureList>>(result);
+                response.MenuFeatures = MapMenuFeatureDtoToList(result.ToList());
+                
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:GetMenuFeatures with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new MenuFeatureResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Get Menu Features failed due to the reason : " + ex.Message
+                });
+            }
+        }
         // End Account
         #endregion
 
@@ -1439,6 +1477,85 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
+        #endregion
+
+        #region Private Helper Methods
+
+        private MenuFeatureList MapMenuFeatureDtoToList(List<MenuFeatureDto> dtos)
+        {
+            var menuFeatures = new AccountMenuModel();
+            var menuFeatureList = new MenuFeatureList();
+
+            foreach (var dto in dtos)
+            {
+                if (dto.MenuId.HasValue)
+                {
+                    if (string.IsNullOrEmpty(dto.ParentMenuName))
+                    {
+                        menuFeatures.Menus.Add(new MainMenu()
+                        {
+                            FeatureId = dto.FeatureId,
+                            MenuId = dto.MenuId.Value,
+                            Name = dto.MenuName,
+                            Key = dto.MenuKey,
+                            Url = dto.MenuUrl
+                        });
+                    }
+                    else
+                    {
+                        var menuItem = menuFeatures.Menus.Where(m => m.Name.Equals(dto.ParentMenuName)).FirstOrDefault();
+
+                        if (menuItem.SubMenus == null)
+                            menuItem.SubMenus = new RepeatedField<SubMenu>();
+
+                        menuItem.SubMenus.Add(new SubMenu()
+                        {
+                            FeatureId = dto.FeatureId,
+                            MenuId = dto.MenuId.Value,
+                            Name = dto.MenuName,
+                            Key = dto.MenuKey,
+                            Url = dto.MenuUrl
+                        });
+                    }
+                }
+
+                menuFeatureList.Features.Add(new FeatureList()
+                {
+                    FeatureId = dto.FeatureId,
+                    Name = dto.FeatureName,
+                    Type = dto.FeatureType ?? string.Empty,
+                    Key = dto.FeatureKey ?? string.Empty,
+                    Level = dto.FeatureLevel
+                });
+            }
+            
+            foreach(var menu in menuFeatures.Menus)
+            {
+                var subMenus = new RepeatedField<SubMenuList>();
+                foreach(var subMenu in menu.SubMenus)
+                {
+                    subMenus.Add(new SubMenuList()
+                    {
+                        MenuId = subMenu.MenuId,
+                        FeatureId = subMenu.FeatureId,
+                        Name = subMenu.Name,
+                        Key = subMenu.Key ?? string.Empty,
+                        Url = subMenu.Url ?? string.Empty
+                    });
+                }
+                var mainMenu = new MainMenuList();
+                mainMenu.FeatureId = menu.FeatureId;
+                mainMenu.MenuId = menu.MenuId;
+                mainMenu.Name = menu.Name;
+                mainMenu.Key = menu.Key ?? string.Empty;
+                mainMenu.Url = menu.Url ?? string.Empty;
+                mainMenu.SubMenus.AddRange(subMenus);
+                
+                menuFeatureList.Menus.Add(mainMenu);
+            }
+            return menuFeatureList;
+        }
+
         #endregion
 
     }
