@@ -359,11 +359,23 @@ namespace net.atos.daf.ct2.driver
 
             try
             {
+            string status="C";
             var parameterOpt = new DynamicParameters();    
             parameterOpt.Add("@id", orgid);             
             var queryOptIn =@"select driver_default_opt_in from master.organization where id=@id and is_active=true";
             orgOptInStatus= await dataAccess.ExecuteScalarAsync<string>(queryOptIn, parameterOpt); 
-            string status="C";
+            if (!string.IsNullOrEmpty(orgOptInStatus))
+            {
+            if (orgOptInStatus=="I")
+            {
+                status="O";
+            }
+            else if (orgOptInStatus=="O")
+            {
+                 status="O";
+            }
+            }
+            
             foreach (var item in drivers)
             {
                         var parameter = new DynamicParameters();
@@ -375,7 +387,7 @@ namespace net.atos.daf.ct2.driver
                          parameter.Add("@status",status);                        
                          parameter.Add("@opt_in",orgOptInStatus);
                          parameter.Add("@modified_at",UTCHandling.GetUTCFromDateTime(System.DateTime.Now));   
-                         parameter.Add("@modified_by",1);
+                         parameter.Add("@modified_by",item.modified_by);
                          parameter.Add("@created_at",UTCHandling.GetUTCFromDateTime(System.DateTime.Now));   
 
                          var parameterduplicate = new DynamicParameters();
