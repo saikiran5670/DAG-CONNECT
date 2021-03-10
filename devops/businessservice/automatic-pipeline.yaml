@@ -12,7 +12,7 @@ jobs:
     variables:
       - group: DEV01-Build-Variables
       - name: a
-        value: $(Subscription)
+        value: 'DAF CT AZURE DTA LANDING ZONE DEV1'
       - name: b
         value: $(ContainerRegistry)
     steps:
