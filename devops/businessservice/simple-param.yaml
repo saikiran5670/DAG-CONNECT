@@ -11,7 +11,7 @@ parameters:
 
 jobs:
   - job
-    pool: $(PRIVATEAGENT)
+    pool: 'ats-sub1-d-app-automation'
     variables:
       - group: {{ parameters.variableGroup }}
     
