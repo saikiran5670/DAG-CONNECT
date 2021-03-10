@@ -16,14 +16,15 @@ namespace net.atos.daf.ct2.driver
             driverRepository = _driverRepository;
             auditlog = _auditlog;
         }
-        public async Task<List<string>> ImportDrivers(List <Driver> driver)
+        public async Task<List<DriverImportResponse>> ImportDrivers(List <Driver> driver,int orgid)
         {
-            return await driverRepository.ImportDrivers(driver);
+            return await driverRepository.ImportDrivers(driver,orgid);
         }
-        public async Task<IEnumerable<Driver>> GetAllDrivers(int OrganizationId)
+        public async Task<IEnumerable<Driver>> GetDriver(int OrganizationId, int DriverID)
         {
-            return await driverRepository.GetAllDrivers(OrganizationId);
+            return await driverRepository.GetDriver(OrganizationId,DriverID);
         }
+
         
          public async Task<Driver> UpdateDriver(Driver driver)
           {
@@ -33,9 +34,9 @@ namespace net.atos.daf.ct2.driver
          {
               return await driverRepository.DeleteDriver(OrganizationId,DriverId);
          }
-         public async Task<bool> UpdateOptinOptout(int organizationId, bool optoutStatus)
+         public async Task<bool> UpdateOptinOptout(int organizationId, string optoutStatus)
          {
               return await driverRepository.UpdateOptinOptout(organizationId,optoutStatus);
-         }
+         }        
     }
 }

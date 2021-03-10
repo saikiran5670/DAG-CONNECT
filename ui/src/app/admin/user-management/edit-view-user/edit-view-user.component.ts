@@ -35,6 +35,16 @@ export class EditViewUserComponent implements OnInit {
       name: 'Ms'
     }
   ];
+  UserTypeList: any = [
+    {
+      name: 'System User',
+      value: 'S'
+    },
+    {
+      name: 'Portal User',
+      value: 'P'
+    }
+  ];
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   @Input() selectedRoleData: any;
@@ -88,8 +98,8 @@ export class EditViewUserComponent implements OnInit {
       firstName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       lastName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       loginEmail: ['', [Validators.required, Validators.email]],
-      organization: new FormControl({value: null, disabled: true}),
-      birthDate: ['', []]
+      userType: ['', [Validators.required]],
+      organization: new FormControl({value: null, disabled: true})
     },
     {
       validator: [
@@ -147,6 +157,7 @@ export class EditViewUserComponent implements OnInit {
       this.accountInfoForm.get('firstName').setValue(this.accountInfoData.firstName ? this.accountInfoData.firstName : '--');
       this.accountInfoForm.get('lastName').setValue(this.accountInfoData.lastName ? this.accountInfoData.lastName : '--');
       this.accountInfoForm.get('loginEmail').setValue(this.accountInfoData.emailId ? this.accountInfoData.emailId : '--');
+      this.accountInfoForm.get('userType').setValue(this.accountInfoData.type ? this.accountInfoData.type : 'P');
       this.accountInfoForm.get('organization').setValue(this.accountInfoData.organization ? this.accountInfoData.organization : localStorage.getItem("organizationName"));
     }
   }
@@ -260,6 +271,7 @@ export class EditViewUserComponent implements OnInit {
         salutation: this.accountInfoForm.controls.salutation.value,
         firstName: this.accountInfoForm.controls.firstName.value,
         lastName: this.accountInfoForm.controls.lastName.value,
+        type: this.accountInfoForm.controls.userType.value,
         organization_Id: this.accountInfoData.organizationId  // 32
     }
     this.accountService.updateAccount(objData).subscribe((data)=>{

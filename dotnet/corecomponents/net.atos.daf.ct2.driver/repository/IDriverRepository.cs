@@ -13,11 +13,11 @@ namespace net.atos.daf.ct2.driver
       //   Task<int> DeleteDriverDetails(List<DriverMaster> Drivers);
       // //  Task<string> ShowConsentForm(string languageCode,int OrganizationId);
       //   Task<List<string>> InertUpdateDriverDetails(List<DriverMaster> driverdetails);
-        Task<List<string>> ImportDrivers(List <Driver> driver);
-        Task<IEnumerable<Driver>> GetAllDrivers(int OrganizationId);
+        Task<List<DriverImportResponse>> ImportDrivers(List <Driver> driver,int orgid);
+        Task<IEnumerable<Driver>> GetDriver(int OrganizationId,int DriverID);
         Task<Driver> UpdateDriver(Driver driver);
         Task<bool> DeleteDriver(int OrganizationId, int DriverId);
-        Task<bool> UpdateOptinOptout(int organizationId, Boolean optoutStatus);
+        Task<bool> UpdateOptinOptout(int organizationId, string optoutStatus);
 
     }
 }
