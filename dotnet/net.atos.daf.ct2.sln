@@ -135,6 +135,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.email", "c
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TCUProvisioningVehicle", "businessservices\TCUProvisioningVehicle\TCUProvisioning\TCUProvisioningVehicle.csproj", "{F96F1182-D3A5-420D-A74F-4D31028992C5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.driverservice", "businessservices\net.atos.daf.ct2.driverservice\net.atos.daf.ct2.driverservice.csproj", "{9B8699BD-32E8-47BB-ADCF-F74A56B554ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -817,6 +819,18 @@ Global
 		{F96F1182-D3A5-420D-A74F-4D31028992C5}.Release|x64.Build.0 = Release|Any CPU
 		{F96F1182-D3A5-420D-A74F-4D31028992C5}.Release|x86.ActiveCfg = Release|Any CPU
 		{F96F1182-D3A5-420D-A74F-4D31028992C5}.Release|x86.Build.0 = Release|Any CPU
+		{9B8699BD-32E8-47BB-ADCF-F74A56B554ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B8699BD-32E8-47BB-ADCF-F74A56B554ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B8699BD-32E8-47BB-ADCF-F74A56B554ED}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9B8699BD-32E8-47BB-ADCF-F74A56B554ED}.Debug|x64.Build.0 = Debug|Any CPU
+		{9B8699BD-32E8-47BB-ADCF-F74A56B554ED}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9B8699BD-32E8-47BB-ADCF-F74A56B554ED}.Debug|x86.Build.0 = Debug|Any CPU
+		{9B8699BD-32E8-47BB-ADCF-F74A56B554ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B8699BD-32E8-47BB-ADCF-F74A56B554ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B8699BD-32E8-47BB-ADCF-F74A56B554ED}.Release|x64.ActiveCfg = Release|Any CPU
+		{9B8699BD-32E8-47BB-ADCF-F74A56B554ED}.Release|x64.Build.0 = Release|Any CPU
+		{9B8699BD-32E8-47BB-ADCF-F74A56B554ED}.Release|x86.ActiveCfg = Release|Any CPU
+		{9B8699BD-32E8-47BB-ADCF-F74A56B554ED}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -881,6 +895,7 @@ Global
 		{329F89B9-07A2-4263-ABBE-B3CADBE7E265} = {E42B6632-428F-4BDE-BB14-D8FA9DD42E87}
 		{2381F76E-39B8-404D-8E12-0905C7481791} = {824A4D14-F8BE-4618-AEDC-A34C9FD2261E}
 		{F96F1182-D3A5-420D-A74F-4D31028992C5} = {E42B6632-428F-4BDE-BB14-D8FA9DD42E87}
+		{9B8699BD-32E8-47BB-ADCF-F74A56B554ED} = {E42B6632-428F-4BDE-BB14-D8FA9DD42E87}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD5CC07A-2F4F-48DF-AB1C-BE925A46D5B7}

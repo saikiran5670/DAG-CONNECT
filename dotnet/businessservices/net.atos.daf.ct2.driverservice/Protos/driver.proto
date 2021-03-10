@@ -1,0 +1,119 @@
+syntax ="proto3";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+option csharp_namespace = "net.atos.daf.ct2.driverservice";
+package net.atos.daf.ct2.driverservice;
+
+
+// The greeting service definition.
+service DriverService {
+  // Sends a greeting
+ // rpc Create () returns ();
+ rpc Update (DriverUpdateRequest) returns (DriverUpdateResponse);
+ rpc Delete (IdRequest) returns (DriverDeleteResponse);
+ rpc Get (IdRequest) returns (DriverDataList); 
+ rpc UpdateOptinOptout (OptOutOptInRequest) returns (OptOutOptInResponse);
+ rpc ImportDrivers (DriverImportRequest) returns (DriverImportData);
+}
+
+message DriverUpdateRequest {
+    int32 id = 1;
+    int32 Organization_id=2;
+    string Driver_id_ext =3;
+    string Salutation=4;
+    string FirstName=5;
+    string LastName=6;
+    string DateOfBith =7; 
+    string Status =8;    
+    bool IsActive=9;
+    string opt_in =10; 
+    string modified_by=11;    
+  }
+message DriverUpdateResponse {
+  Responcecode Code=1;
+  string Message = 2;
+  DriverUpdateRequest Driver = 3;
+}
+
+message DriverResponse {
+    int32 id = 1;
+    int32 Organization_id=2;
+    string Driver_id_ext =3;
+    string Salutation=4;
+    string FirstName=5;
+    string LastName=6;
+    string DateOfBith =7; 
+    string Status =8;    
+    bool IsActive=9;
+    string opt_in =10;
+    string modified_at =11;
+    string modified_by=12;
+    string created_at=13; 
+  }
+
+message DriverDataList {
+  Responcecode Code=1;
+  string Message = 2;
+  repeated DriverResponse Driver = 3;
+}
+enum Responcecode{
+      Success = 0;
+      Failed = 1;
+      Conflict = 2;
+      NotFound = 3;
+    }
+    
+  message IdRequest {
+  int32 OrgID = 1;
+  int32 DriverID=2;
+}
+
+message DriverDeleteResponse {
+  Responcecode Code=1;
+  string Message = 2;  
+}
+ message DeleteRequest {
+  int32 orgID = 1;
+  int32 driverID = 2;
+}
+
+ message OptOutOptInRequest {
+  int32 orgID = 1;
+  string optoutoptinstatus = 2;
+}
+
+message OptOutOptInResponse {
+  Responcecode Code=1;
+  string Message = 2; 
+}
+
+message DriverImportResponse {
+  repeated Responcecode Code=1;
+  repeated string Message = 2; 
+}
+message DriverImportRequest {
+  repeated DriversImport Drivers =1;
+  int32 OrgID=2; 
+}
+message DriversImport {   
+    string Driver_id_ext =1;
+    string Email=2;
+    string FirstName=3;
+    string LastName=4;      
+  }
+
+
+ message DriverImportData{
+  Responcecode Code=1;
+ string Message = 2;
+  repeated DriverReturns Driver = 3;
+} 
+
+message DriverReturns {   
+    string DriverID=1;  
+    string FirstName=2;
+    string LastName=3;   
+    string Email=4; 
+    string ReturnMassage=5;
+  }
+
