@@ -9,9 +9,9 @@ parameters:
   type: string
   default: 'privateAgent'
 
-  pool: $(parameters.privateAgent)
+pool: $(parameters.privateAgent)
     
-  steps:
+steps:
   - task: replacetokens@3
     inputs:
       targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json'
