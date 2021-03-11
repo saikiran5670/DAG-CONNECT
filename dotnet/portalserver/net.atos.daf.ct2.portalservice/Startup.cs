@@ -55,7 +55,7 @@ namespace net.atos.daf.ct2.portalservice
             var isdevelopmentenv = Configuration["ServerConfiguration:isdevelopmentenv"];
             var cookiesexpireat = Configuration["ServerConfiguration:cookiesexpireat"];
             var authcookiesexpireat = Configuration["ServerConfiguration:authcookiesexpireat"];
-            var driverservice = Configuration["ServerConfiguration:driverservice"];
+            var driverservice = Configuration["ServiceConfiguration:driverservice"];
 
  
 
@@ -108,7 +108,7 @@ namespace net.atos.daf.ct2.portalservice
             });
             services.AddGrpcClient<OrganizationService.OrganizationServiceClient>(o =>
             {
-                o.Address = new Uri(featureservice);
+                o.Address = new Uri(organizationservice);
             });
             services.AddGrpcClient<TranslationService.TranslationServiceClient>(o =>
             {
