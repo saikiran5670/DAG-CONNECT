@@ -144,11 +144,12 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                 }
             }
 
-            featureSetRequest.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds(); 
-            featureSetIds = featureSetIds.Select(x => x).Distinct().ToList();
-            featureSetRequest.Features.AddRange(featureSetIds);
-            featureSetRequest.FeatureSetID = featureSetId;
 
+
+
+            featureSetRequest.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds(); 
+             featureSetRequest.Features.Add(featureSetIds.Select(x => x).Distinct().ToArray());
+            featureSetRequest.FeatureSetID = featureSetId;
             var ObjResponse = await _featureclient.UpdateFeatureSetAsync(featureSetRequest);
             return ObjResponse.FeatureSetID;
 
