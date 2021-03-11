@@ -29,6 +29,7 @@ namespace net.atos.daf.ct2.features.repository
         Task<int> UpdateFeatureSetMapping(int UpdateFeatureSetID, int ID);
 
         Task<IEnumerable<DataAttribute>> GetDataAttributes();
+        Task<Feature> UpdateFeature(Feature feature);
 
         #endregion
     }

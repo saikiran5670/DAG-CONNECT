@@ -51,7 +51,7 @@ export class TranslationService {
         };
         return this.httpClient
             .get<any>(
-                `${this.translationUrl}/preferences?languagecode=${langCode}`,headers
+                `${this.translationUrl}/preferences?Languagecode=${langCode}`,headers
                 )
             .pipe(catchError(this.handleError));
     }

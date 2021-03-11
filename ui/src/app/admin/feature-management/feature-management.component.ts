@@ -17,7 +17,8 @@ export class FeatureManagementComponent implements OnInit {
   //--------Rest data-----------//
   featureRestData: any = [];
   dataAttributeList: any = [];
-  displayedColumns = ['name','type', 'setName', 'setType', 'dataAttribute', 'status', 'action'];
+  //displayedColumns = ['name','type', 'setName', 'setType', 'dataAttribute', 'status', 'action'];
+  displayedColumns = ['setName', 'setType','status', 'action'];
   selectedElementData: any;
   //-------------------------//
   titleVisible : boolean = false;
@@ -84,7 +85,7 @@ export class FeatureManagementComponent implements OnInit {
         name: "Feature Name 1",
         type: "Data Attribute",
         setName: "DA Set Name A",
-        setType: "Excluded",
+        setType: "Exclusive",
         featureDescription: "Feature 1 Description",
         dataAttributeDescription: "Data Attribute 1 Description",
         dataAttribute: [
@@ -107,7 +108,7 @@ export class FeatureManagementComponent implements OnInit {
         name: "Feature Name 2",
         type: "Data Attribute",
         setName: "DA Set Name B",
-        setType: "Included",
+        setType: "Inclusive",
         featureDescription: "feature 2 Description",
         dataAttributeDescription: "Data Attribute 2 Description",
         dataAttribute: [

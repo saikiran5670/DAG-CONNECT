@@ -76,7 +76,7 @@ namespace net.atos.daf.ct2.translationservice
             {
                 List<Translations> translist = new List<Translations>();
 
-                var translations = await translationmanager.GetTranslationsByMenu(0, translationenum.MenuType.Menu, request.Langaugecode);
+                var translations = await translationmanager.GetTranslationsByMenu(0, translationenum.MenuType.Menu, request.Languagecode);
 
                 CodeResponce commontranslationList = new CodeResponce();
                 foreach (var item in translations)
@@ -143,7 +143,7 @@ namespace net.atos.daf.ct2.translationservice
             try
             {
                
-                var translation = await translationmanager.GetKeyTranslationByLanguageCode(request.Langaugecode, request.Key);
+                var translation = await translationmanager.GetKeyTranslationByLanguageCode(request.Languagecode, request.Key);
 
 
                 KeyCodeResponce keytranslationList = new KeyCodeResponce();
@@ -176,7 +176,7 @@ namespace net.atos.daf.ct2.translationservice
         {
             try
             {
-                var translation = await translationmanager.GetTranslationsForDropDowns(request.Dropdownname, request.Langaugecode);
+                var translation = await translationmanager.GetTranslationsForDropDowns(request.Dropdownname, request.Languagecode);
 
                 dropdownnameResponce translationfordropdownList = new dropdownnameResponce();
                 foreach (var item in translation)
@@ -215,8 +215,8 @@ namespace net.atos.daf.ct2.translationservice
                 dropdownarrayResponce responce = new dropdownarrayResponce();
                 foreach (var item in request.Dropdownname)
                 {
-                    _logger.LogInformation("Drop down method get" + item + request.Langaugecode);
-                    Dropdowns.AddRange(await translationmanager.GetTranslationsForDropDowns(item.Dropdownname, request.Langaugecode));
+                    _logger.LogInformation("Drop down method get" + item + request.Languagecode);
+                    Dropdowns.AddRange(await translationmanager.GetTranslationsForDropDowns(item.Dropdownname, request.Languagecode));
 
                     foreach (var Ditem in Dropdowns)
                     {
@@ -263,8 +263,8 @@ namespace net.atos.daf.ct2.translationservice
 
                 foreach (var item in obj.GetType().GetProperties())
                 {
-                    _logger.LogInformation("Drop down method get" + item.Name + request.Langaugecode);
-                    var Translations = await translationmanager.GetTranslationsForDropDowns(item.Name, request.Langaugecode);
+                    _logger.LogInformation("Drop down method get" + item.Name + request.Languagecode);
+                    var Translations = await translationmanager.GetTranslationsForDropDowns(item.Name, request.Languagecode);
 
                     switch (item.Name)
                     {
@@ -419,7 +419,7 @@ namespace net.atos.daf.ct2.translationservice
             }
 
         }
-        public override async Task<TranslationListResponce> GetAllLangaugecodes( Request request , ServerCallContext context)
+        public override async Task<TranslationListResponce> GetAllLanguagecodes( Request request , ServerCallContext context)
         {
             try
             {

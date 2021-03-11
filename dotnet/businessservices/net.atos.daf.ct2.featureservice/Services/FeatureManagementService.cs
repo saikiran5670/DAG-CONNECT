@@ -175,10 +175,45 @@ namespace net.atos.daf.ct2.featureservice
                 });
             }
         }
-        //public async override Task<FeatureSetResponce> CreateDataattributeSet(FetureSetRequest featureSetRequest, ServerCallContext context)
-        //{
+        public async override Task<FeatureResponce> Update(FeatureRequest featureRequest, ServerCallContext context)
+        {
+            try
+            {
+                Feature FeatureObj = new Feature();
+                FeatureObj.Name = featureRequest.Name;
+                FeatureObj.Level = featureRequest.Level;
+                FeatureObj.Is_Active = featureRequest.Status;
+                FeatureObj.Description = featureRequest.Description;
+                FeatureObj.DataAttributeSets = new DataAttributeSet();
+                FeatureObj.DataAttributeSets.Name = featureRequest.DataAttribute.Name;
+                FeatureObj.DataAttributeSets.ID = featureRequest.DataAttribute.DataAttributeSetId;
+                FeatureObj.DataAttributeSets.Description = featureRequest.DataAttribute.Description;
+                //FeatureObj.DataAttributeSets.Is_exlusive = featureRequest.DataAttribute.AttributeType.ToString();
+                FeatureObj.DataAttributeSets.Is_exlusive = (DataAttributeSetType)Enum.Parse(typeof(DataAttributeSetType), featureRequest.DataAttribute.AttributeType.ToString().ToUpper());
+                FeatureObj.DataAttributeSets.DataAttributes = new List<DataAttribute>();
+                foreach (var item in featureRequest.DataAttribute.DataAttributeIDs)
+                {
+                    DataAttribute objDataAttribute = new DataAttribute();
+                    objDataAttribute.ID = item;
+                    FeatureObj.DataAttributeSets.DataAttributes.Add(objDataAttribute);
+                }
+                var result = await _FeaturesManager.UpdateFeature(FeatureObj);
+                return await Task.FromResult(new FeatureResponce
+                {
+                    Message = "Feature updated Successfully",
+                    Code = Responcecode.Success
+                });
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(new FeatureResponce
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
 
-        //}
+        }
 
 
         public async override Task<FeatureSetResponce> UpdateFeatureSet(FetureSetRequest featureSetRequest, ServerCallContext context)
@@ -187,14 +222,14 @@ namespace net.atos.daf.ct2.featureservice
             {
                 _logger.LogInformation("UpdateFeatureSet method in Feature API called.");
 
-                
+
                 FeatureSet ObjResponse = new FeatureSet();
                 FeatureSet featureset = new FeatureSet();
                 featureset.FeatureSetID = featureSetRequest.FeatureSetID;
                 featureset.Name = featureSetRequest.Name; // "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds()
                 featureset.description = featureSetRequest.Description;
                 featureset.status = featureSetRequest.Active == true ? StatusType.Active : StatusType.InActive;
-                
+
                 featureset.modified_by = featureSetRequest.ModifiedBy;
                 featureset.Features = new List<Feature>();
                 foreach (var item in featureSetRequest.Features)
@@ -203,7 +238,7 @@ namespace net.atos.daf.ct2.featureservice
                     f.Id = item;
                     featureset.Features.Add(f);
                 }
-              
+
 
                 ObjResponse = await _FeaturesManager.UpdateFeatureSet(featureset);
                 featureset.FeatureSetID = ObjResponse.FeatureSetID;
@@ -229,5 +264,38 @@ namespace net.atos.daf.ct2.featureservice
                 });
             }
         }
+
+
+        public async override Task<FeatureSetResponce> DeleteFeatureSet(FetureSetRequest featureSetRequest, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("DeleteFeatureSet method in Feature API called.");
+                
+                bool IsFeatureSetIDDeleted = await _FeaturesManager.DeleteFeatureSet(featureSetRequest.FeatureSetID);
+
+                //await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Feature Component", "Feature Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "DeleteFeatureSet method in Feature manager", FeatureSetId, FeatureSetId, JsonConvert.SerializeObject(FeatureSetId));
+                return await Task.FromResult(new FeatureSetResponce
+                {
+                    Message = featureSetRequest.FeatureSetID.ToString() + " Deleted successfully",
+                    Code = Responcecode.Success,
+                    FeatureSetID = featureSetRequest.FeatureSetID
+
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Feature Service:DeleteFeatureSet : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new FeatureSetResponce
+                {
+                    Message = featureSetRequest.FeatureSetID.ToString() + " Delete failed",
+                    Code = Responcecode.Failed,
+                    FeatureSetID = featureSetRequest.FeatureSetID
+
+                });
+
+            }
+        }
+
     }
 }
