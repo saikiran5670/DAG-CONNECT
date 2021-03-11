@@ -18,12 +18,16 @@ namespace net.atos.daf.ct2.translationservice.Entity
         public Translationupload ToTranslationUploadEntity(TranslationUploadRequest request)
         {
             Translationupload obj = new Translationupload();
-           // obj.id = request.Id;
+            // obj.id = request.Id;
+
+
+            obj.translations = new List<Translations>();
             obj.file_name = request.FileName;
             obj.description = request.Description;
             obj.file_size = request.FileSize;
             obj.failure_count = request.FailureCount;
             obj.created_by = request.CreatedBy;
+
             if (request.File !=null)
             {
                 Encoding u8 = Encoding.UTF8;
@@ -34,6 +38,20 @@ namespace net.atos.daf.ct2.translationservice.Entity
 
             obj.added_count = request.AddedCount;
             obj.updated_count = request.UpdatedCount;
+             if (request.File !=null)
+            {
+                foreach (var item in request.File)
+                {
+                    var trans = new Translations();
+                    trans.Code = item.Code;
+                    trans.Type = item.Type;
+                    trans.Name = item.Name;
+                    trans.Value = item.Value;
+                    obj.translations.Add(trans);
+                }
+
+            }
+            
             return obj;
         }
         public int ToTranslationEntity(FileUploadDetailsRequest request)

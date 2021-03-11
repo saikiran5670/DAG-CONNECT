@@ -63,12 +63,12 @@ export class LoginComponent implements OnInit {
             //this.cookiesFlag = true;
 
             let loginObj = {
-              "id": data.body.accountInfo.id,
-              "organizationId": 0,
-              "email": "",
-              "accountIds": "",
-              "name": "",
-              "accountGroupId": 0
+              id: data.body.accountInfo.id,
+              organizationId: 0,
+              email: "",
+              accountIds: "",
+              name: "",
+              accountGroupId: 0
             }
             if(this.loginClicks == 0){
               this.accountService.getAccount(loginObj).subscribe(resp => {
