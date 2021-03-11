@@ -77,29 +77,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountData accountResponse = await _accountClient.CreateAsync(accountRequest);
                 AccountResponse response = new AccountResponse();
                 response = _mapper.ToAccount(accountResponse.Account);
-                if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed)
+                if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Conflict)
                 {
-                   if (response.PreferenceId > 0)
-                   {
-                        var accountPreference = new AccountPreference();
-                        accountPreference.Account = response;
-                        AccountBusinessService.AccountPreferenceFilter preferenceRequest = new AccountBusinessService.AccountPreferenceFilter();
-                        preferenceRequest.Id = response.PreferenceId;
-                        AccountBusinessService.AccountPreferenceResponse accountPreferenceResponse = await _accountClient.GetPreferenceAsync(preferenceRequest);
-
-                        if (accountPreferenceResponse != null && accountPreferenceResponse.Code == AccountBusinessService.Responcecode.Success)
-                        {
-                            if (accountPreferenceResponse.AccountPreference != null)
-                            {
-                                accountPreference.Preference = _mapper.ToAccountPreference(accountPreferenceResponse.AccountPreference);
-                            }
-                        }
-                        return StatusCode(409, accountPreference);
-                    }
-                    else
+                    var accountPreference = new AccountPreference();
+                    accountPreference.Preference = null;
+                    accountPreference.Account = response;
+                    AccountBusinessService.AccountPreferenceFilter preferenceRequest = new AccountBusinessService.AccountPreferenceFilter();
+                    preferenceRequest.Id = response.PreferenceId;
+                    // get preference
+                    AccountBusinessService.AccountPreferenceResponse accountPreferenceResponse = await _accountClient.GetPreferenceAsync(preferenceRequest);                    
+                    if (accountPreferenceResponse != null && accountPreferenceResponse.Code == AccountBusinessService.Responcecode.Success)
                     {
-                        return StatusCode(409, response);
+                        if (accountPreferenceResponse.AccountPreference != null)
+                        {
+                            accountPreference.Preference = new AccountPreferenceResponse();
+                            accountPreference.Preference = _mapper.ToAccountPreference(accountPreferenceResponse.AccountPreference);
+                        }
                     }
+                    return StatusCode(409, accountPreference);
                 }
                 else if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed
                     && accountResponse.Message == PortalConstants.AccountValidation.ErrorMessage)
@@ -121,14 +116,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
-                    return StatusCode(500, "Internal Server Error.(01)");
+                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "02"));
                 }
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.SocketException))
                 {
-                    return StatusCode(500, "Internal Server Error.(02)");
+                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "03"));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "04"));
             }
         }
         [HttpPost]
@@ -150,17 +145,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The EmailId address, first name, last name and organization id should be valid.");
                 }
+                // The account type should be single character
+                if (request.Type.Length > 1)
+                {
+                    return StatusCode(400, PortalConstants.AccountValidation.InvalidAccountType);
+                }
+                // validate account type
+                char accountType = Convert.ToChar(request.Type);
+                if (!EnumValidator.ValidateAccountType(accountType))
+                {
+                    return StatusCode(400, PortalConstants.AccountValidation.InvalidAccountType);
+                }
                 var accountRequest = _mapper.ToAccount(request);
                 AccountBusinessService.AccountData accountResponse = await _accountClient.UpdateAsync(accountRequest);
-                if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed
-                    && accountResponse.Message == "The duplicate account, please provide unique email address.")
+                if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed)
                 {
-                    return StatusCode(409, "Duplicate Account.");
-                }
-                else if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed
-                    && accountResponse.Message == "There is an error creating account.")
-                {
-                    return StatusCode(500, "There is an error creating account.");
+                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "01"));
                 }
                 else if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -168,7 +168,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "accountResponse is null");
+                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "02"));
                 }
             }
             catch (Exception ex)
@@ -177,9 +177,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
-                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "03"));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "04"));
             }
         }
         [HttpDelete]
@@ -266,7 +266,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, accountResponse.Message);
+                    return StatusCode(500, "Internal Server Error");
                 }
             }
             catch (Exception ex)
@@ -303,13 +303,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, accountResponse.Message);
+                    return StatusCode(500, PortalConstants.ResponseError.InternalServerError + "01");
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ResponseError.InternalServerError + "02");
             }
         }
 

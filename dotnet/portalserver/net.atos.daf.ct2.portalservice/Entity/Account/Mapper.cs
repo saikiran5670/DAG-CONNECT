@@ -99,6 +99,10 @@ namespace net.atos.daf.ct2.portalservice.Account
                 accountDetails.FirstName = account.FirstName;
                 accountDetails.LastName = account.LastName;                
                 accountDetails.OrganizationId = account.OrganizationId;
+                accountDetails.DriverId = account.DriverId;
+                accountDetails.PreferenceId = account.PreferenceId;
+                accountDetails.BlobId = account.BlobId;
+                accountDetails.CreatedAt = account.CreatedAt;
                 // roles
                 accountDetails.Roles = new List<KeyValue>();
                 if (accountDetail.Roles!= null )

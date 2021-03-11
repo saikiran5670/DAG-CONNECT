@@ -10,6 +10,10 @@ namespace net.atos.daf.ct2.portalservice.Account
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public int OrganizationId { get; set; }
+        public string DriverId { get; set; }
+        public int PreferenceId { get; set; }
+        public int BlobId { get; set; }
+        public long CreatedAt { get; set; }
         public List<KeyValue> Roles { get; set; }
         public List<KeyValue> AccountGroups { get; set; }      
     }

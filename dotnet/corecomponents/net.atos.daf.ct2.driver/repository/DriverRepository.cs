@@ -338,9 +338,8 @@ namespace net.atos.daf.ct2.driver
             string orgOptInStatus=string.Empty;     
            // Dictionary<string,string> dicMessage=new Dictionary<string, string> ();
 
-            List<DriverImportResponse> lstdrivers=new List<DriverImportResponse>();
-            DriverImportResponse objDriver=new DriverImportResponse();
-
+            List<DriverImportResponse> lstdrivers=new List<DriverImportResponse>();          
+             DriverImportResponse objDriver=new DriverImportResponse();  
             try
             {
             string status="C";
@@ -363,7 +362,8 @@ namespace net.atos.daf.ct2.driver
             
             foreach (var item in drivers)
             {
-                        var parameter = new DynamicParameters();
+                        objDriver=new DriverImportResponse();
+                         var parameter = new DynamicParameters();
                          parameter.Add("@organization_id",orgid);
                          parameter.Add("@driver_id_ext",item.Driver_id_ext);                     
                          parameter.Add("@first_name",item.FirstName);
@@ -402,8 +402,8 @@ namespace net.atos.daf.ct2.driver
                     objDriver.FirstName= item.FirstName;    
                     objDriver.LastName= item.LastName;    
                     objDriver.Email= item.Email; 
-                    lstdrivers.Add(objDriver);                   
-            }
+                    lstdrivers.Add(objDriver);  
+                }                
             }      
                 catch (Exception ex)
                 {    
