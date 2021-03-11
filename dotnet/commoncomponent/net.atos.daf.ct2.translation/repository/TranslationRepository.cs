@@ -358,6 +358,17 @@ namespace net.atos.daf.ct2.translation.repository
 
                 int InsertedFileUploadID = await dataAccess.ExecuteScalarAsync<int>(InsertFileDetailsQueryStatement, parameter);
 
+                // List<Translations[]> myBytes = new List<Translations[]>(translationupload.file);
+                //ConvertList(translationupload.file);
+
+                //if (translationupload.file != null)
+                //{
+                //    foreach (var item in translationupload.file)
+                //    {
+                //        var parameterfeature = ImportExcelDataIntoTranslations(translationupload);
+                //    }
+                //}
+
                 translationupload.id = InsertedFileUploadID;
                
                 return translationupload;
@@ -370,6 +381,15 @@ namespace net.atos.daf.ct2.translation.repository
             }
 
         }
+
+        //private static Translations[] ConvertList(byte [] file)
+        //{
+        //    List<Translations> tmpList = new List<Translations>();
+        //    foreach (Byte[] byteArray in file)
+        //        foreach (Byte singleByte in byteArray)
+        //            tmpList.Add(singleByte);
+        //    return tmpList.ToArray();
+        //}
 
         public async Task<IEnumerable<Translationupload>> GetFileUploadDetails(int FileID)
         {
@@ -410,16 +430,19 @@ namespace net.atos.daf.ct2.translation.repository
 
         }
 
-        private Translations MapfileDetails(dynamic record)
+        private Translationupload MapfileDetails(dynamic record)
         {
-            Translations Entity = new Translations();
-            Entity.Id = record.id;
-            Entity.Code = record.code;
-            Entity.Type = record.type;
-            Entity.Name = record.name;
-            Entity.Value = record.value;
+            Translationupload Entity = new Translationupload();
+            Entity.id = record.id;
+            Entity.file_name = record.file_name;
+            Entity.description = record.description;
+            Entity.file_size = record.file_size;
+            Entity.failure_count = record.failure_count;
             Entity.created_at = record.created_at;
-            Entity.modified_at = record.modified_at;
+            Entity.file = record.file;
+            Entity.added_count = record.added_count;
+            Entity.updated_count = record.updated_count;
+            Entity.created_by = record.created_by;
             return Entity;
         }
     }
