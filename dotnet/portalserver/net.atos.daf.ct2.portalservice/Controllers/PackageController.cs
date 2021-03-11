@@ -52,6 +52,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         return StatusCode(500, "There is an error creating package.");
                     }
+                    // The package type should be single character
+                    if (request.Type.Length > 1)
+                    {
+                        return StatusCode(400, "The pakage type is not valid. It should be of single character");
+                    }
+
                     else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
                     {
                         return Ok(packageResponse);
@@ -93,7 +99,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The packageId , package code and featureset id  are required.");
                 }
-
+                // The package type should be single character
+                if (request.Type.Length > 1)
+                {
+                    return StatusCode(400, "The pakage type is not valid. It should be of single character");
+                }
                 if (request.FeatureSetID > 0)
                 {
                     var featureSetId =  await _packageMapper.UpdateFeatureSetId(request.Features, request.FeatureSetID);
@@ -144,6 +154,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+
+                // The package type should be single character
+                if (request.Type.Length > 1)
+                {
+                    return StatusCode(400, "The pakage type is not valid. It should be of single character");
+                }
+
 
                 var response = await _packageClient.GetAsync(request);
                 response.PacakageList.Where(S => S.FeatureSetID > 0)

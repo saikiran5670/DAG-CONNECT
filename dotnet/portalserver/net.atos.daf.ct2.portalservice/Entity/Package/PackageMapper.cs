@@ -25,7 +25,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                 Name = request.Name,
                 Description = request.Description,
                 Status = ToPackageStatus(request.Status),
-                Type = ToPackageType(request.Type),
+                Type = request.Type,
 
             };
             createPackagerequest.Features.AddRange(request.Features.Select(x => x.ToString()));
@@ -73,7 +73,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                         Description = x.Description,
                         Name = x.Name,
                         Status = ToPackageStatus(x.Status),
-                        Type = ToPackageType(x.Type)
+                        Type = x.Type
                     };
                     packageRequest.Packages.Add(pkgRequest);
                 }
