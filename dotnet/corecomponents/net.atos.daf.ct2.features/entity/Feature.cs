@@ -18,7 +18,8 @@ namespace net.atos.daf.ct2.features.entity
         public int Organization_Id { get; set; }
         public string  Key { get; set; }
         public DataAttributeSet DataAttributeSets { get; set; }
-        public StatusType status { get; set; }
+        public StatusType FeatureState { get; set; }
+        public string  state { get; set; }
         public int Level { get; set; }
 
     }

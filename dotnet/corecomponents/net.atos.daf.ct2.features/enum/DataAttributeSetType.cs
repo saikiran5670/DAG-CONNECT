@@ -6,7 +6,7 @@ namespace net.atos.daf.ct2.features
 {
     public enum DataAttributeSetType
     {
-        INACTIVE = 'I',
-        EXCLUDED = 'E'
+        INCLUSIVE = 'I',
+        EXCLUSIVE = 'E'
     }
 }

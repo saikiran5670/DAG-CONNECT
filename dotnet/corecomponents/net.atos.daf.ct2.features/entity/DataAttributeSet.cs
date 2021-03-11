@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.features.entity
         public long modified_at { get; set; }
         public int modified_by { get; set; }
         public List<DataAttribute> DataAttributes { get; set; }
-        public DataAttributeSetType Is_exlusive { get; set; }
+        public bool Is_exlusive { get; set; }
         public StatusType status { get; set; }
     }
 }
