@@ -13,7 +13,8 @@ using net.atos.daf.ct2.translation.Enum;
 //using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.translation.entity;
-
+using net.atos.daf.ct2.translationservice.Entity;
+using static net.atos.daf.ct2.translationservice.Entity.Mapper;
 
 namespace net.atos.daf.ct2.translationservice
 {
@@ -22,12 +23,14 @@ namespace net.atos.daf.ct2.translationservice
         private readonly ILogger _logger;
         //private readonly IAuditTraillib auditlog;
         private readonly ITranslationManager translationmanager;
-        
+        private readonly Mapper _mapper;
+
         public TranslationManagementService(ILogger<TranslationManagementService> logger,ITranslationManager _TranslationManager)
         {
             _logger = logger;
             translationmanager=_TranslationManager;
-           // auditlog = _auditlog;
+            // auditlog = _auditlog;
+            _mapper = new Mapper();
         }
 
         // Translation
@@ -73,7 +76,7 @@ namespace net.atos.daf.ct2.translationservice
             {
                 List<Translations> translist = new List<Translations>();
 
-                var translations = await translationmanager.GetTranslationsByMenu(0, translationenum.MenuType.Menu, request.Langaugecode);
+                var translations = await translationmanager.GetTranslationsByMenu(0, translationenum.MenuType.Menu, request.Languagecode);
 
                 CodeResponce commontranslationList = new CodeResponce();
                 foreach (var item in translations)
@@ -140,7 +143,7 @@ namespace net.atos.daf.ct2.translationservice
             try
             {
                
-                var translation = await translationmanager.GetKeyTranslationByLanguageCode(request.Langaugecode, request.Key);
+                var translation = await translationmanager.GetKeyTranslationByLanguageCode(request.Languagecode, request.Key);
 
 
                 KeyCodeResponce keytranslationList = new KeyCodeResponce();
@@ -173,7 +176,7 @@ namespace net.atos.daf.ct2.translationservice
         {
             try
             {
-                var translation = await translationmanager.GetTranslationsForDropDowns(request.Dropdownname, request.Langaugecode);
+                var translation = await translationmanager.GetTranslationsForDropDowns(request.Dropdownname, request.Languagecode);
 
                 dropdownnameResponce translationfordropdownList = new dropdownnameResponce();
                 foreach (var item in translation)
@@ -212,8 +215,8 @@ namespace net.atos.daf.ct2.translationservice
                 dropdownarrayResponce responce = new dropdownarrayResponce();
                 foreach (var item in request.Dropdownname)
                 {
-                    _logger.LogInformation("Drop down method get" + item + request.Langaugecode);
-                    Dropdowns.AddRange(await translationmanager.GetTranslationsForDropDowns(item.Dropdownname, request.Langaugecode));
+                    _logger.LogInformation("Drop down method get" + item + request.Languagecode);
+                    Dropdowns.AddRange(await translationmanager.GetTranslationsForDropDowns(item.Dropdownname, request.Languagecode));
 
                     foreach (var Ditem in Dropdowns)
                     {
@@ -255,12 +258,13 @@ namespace net.atos.daf.ct2.translationservice
             {
 
 
-                PreferenceResponse Dropdowns = new PreferenceResponse();
+                 PreferenceResponse Dropdowns = new PreferenceResponse();
+                Preferences obj = new Preferences();
 
-                foreach (var item in Dropdowns.GetType().GetProperties())
+                foreach (var item in obj.GetType().GetProperties())
                 {
-                    _logger.LogInformation("Drop down method get" + item.Name + request.Langaugecode);
-                    var Translations = await translationmanager.GetTranslationsForDropDowns(item.Name, request.Langaugecode);
+                    _logger.LogInformation("Drop down method get" + item.Name + request.Languagecode);
+                    var Translations = await translationmanager.GetTranslationsForDropDowns(item.Name, request.Languagecode);
 
                     switch (item.Name)
                     {
@@ -415,7 +419,7 @@ namespace net.atos.daf.ct2.translationservice
             }
 
         }
-        public override async Task<TranslationListResponce> GetAllLangaugecodes( Request request , ServerCallContext context)
+        public override async Task<TranslationListResponce> GetAllLanguagecodes( Request request , ServerCallContext context)
         {
             try
             {
@@ -446,6 +450,67 @@ namespace net.atos.daf.ct2.translationservice
                     Message = "GetAllLangaugecodes Faile due to - " + ex.Message
                 });
 
+            }
+        }
+
+        public override async Task<TranslationUploadResponse> InsertTranslationFileDetails(TranslationUploadRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("InsertTranslationFileDetails method ");
+                Translationupload Objtranslationupload = new Translationupload();
+                Objtranslationupload = _mapper.ToTranslationUploadEntity(request);
+
+                var result = await translationmanager.InsertTranslationFileDetails(Objtranslationupload);
+                _logger.LogInformation("InsertTranslationFileDetails service called.");
+
+                return await Task.FromResult(new TranslationUploadResponse
+                {
+                    Message = "FileDetails uploaded with id:- " + result.id,
+                    Code = Responcecode.Success,
+                    Translationupload = request
+
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Translation Service:InsertTranslationFileDetails : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new TranslationUploadResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "InsertTranslationFileDetails Faile due to - " + ex.Message
+                });
+            }
+        }
+
+        public override async Task<FileUploadDetailsResponse> GetFileUploadDetails(FileUploadDetailsRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("GetFileUploadDetails Method");
+               // Translationupload Objtranslationupload = new Translationupload();
+                var fileID = _mapper.ToTranslationEntity(request);
+                IEnumerable<Translationupload> ObjRetrieveFileUploadList = await translationmanager.GetFileUploadDetails(fileID);
+                FileUploadDetailsResponse response = new FileUploadDetailsResponse();
+                foreach (var item in ObjRetrieveFileUploadList)
+                {
+                    response.Translationupload.Add(_mapper.ToTranslationUploadDetailEntity(item));
+                }
+
+                response.Message = "Vehicles data retrieved";
+                response.Code = Responcecode.Success;
+                _logger.LogInformation("Get method in vehicle service called.");
+                return await Task.FromResult(response);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Translation Service:GetFileUploadDetails : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new FileUploadDetailsResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "GetFileUploadDetails Faile due to - " + ex.Message
+                });
             }
         }
 

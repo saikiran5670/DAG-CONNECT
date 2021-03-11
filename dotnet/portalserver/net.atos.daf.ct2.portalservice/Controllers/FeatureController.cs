@@ -16,7 +16,7 @@ using FeatuseBusinessService = net.atos.daf.ct2.featureservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
-    [ApiController]
+    [ApiController] 
     [Route("feature")]
     public class FeatureController : Controller
     {
@@ -88,7 +88,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPost]
         [Route("createfeature")]
-        public async Task<IActionResult> CreateFeatureSet(Features featureRequest)
+        public async Task<IActionResult> CreateFeature(Features featureRequest)
         {
             try
             {

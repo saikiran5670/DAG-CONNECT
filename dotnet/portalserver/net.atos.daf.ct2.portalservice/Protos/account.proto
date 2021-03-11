@@ -24,6 +24,7 @@ service AccountService
   rpc ResetPasswordInitiate (ResetPasswordInitiateRequest) returns (ResetPasswordResponse);
   rpc ResetPassword (ResetPasswordRequest) returns (ResetPasswordResponse);
   rpc ResetPasswordInvalidate (ResetPasswordInvalidateRequest) returns (ResetPasswordResponse);
+  rpc GetMenuFeatures (MenuFeatureRequest) returns (MenuFeatureResponse);
 
   // Account Preference Mthod
   rpc CreatePreference (AccountPreference) returns (AccountPreferenceResponse);
@@ -136,6 +137,48 @@ message ResetPasswordInvalidateRequest {
 message ResetPasswordResponse {
   Responcecode Code=1;
   string Message=2;
+}
+
+message MenuFeatureRequest {
+  int32 AccountId=1;
+  int32 RoleId=2;
+  int32 OrganizationId=3;
+}
+
+message MenuFeatureResponse {
+  Responcecode Code=1;
+  string Message=2;
+  MenuFeatureList MenuFeatures=3;
+}
+
+message MenuFeatureList {
+  repeated MainMenuList Menus=1;
+  repeated FeatureList Features=2;
+}
+
+message MainMenuList {
+  int32 MenuId=1;
+  string Name=2;
+  string Url=3;
+  string Key=4;
+  int32 FeatureId=5;
+  repeated SubMenuList SubMenus=6;
+}
+
+message SubMenuList {
+  int32 MenuId=1;
+  string Name=2;
+  string Url=3;
+  string Key=4;
+  int32 FeatureId=5;
+}
+
+message FeatureList {
+  int32 FeatureId=1;
+  string Name=2;
+  string Type=3;
+  string Key=4;
+  int32 Level=5;
 }
 
 message AccountId

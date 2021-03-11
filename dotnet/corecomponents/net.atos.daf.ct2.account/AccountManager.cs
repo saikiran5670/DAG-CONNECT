@@ -397,6 +397,11 @@ namespace net.atos.daf.ct2.account
             return false;
         }
 
+        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeatures(int accountId, int roleId, int organizationId)
+        {
+            return await repository.GetMenuFeaturesList(accountId, roleId, organizationId);
+        }
+
         #region Private Helper Methods
         private async Task<bool> TriggerSendEmailRequest(string toEmailAddress, EmailTemplateType templateType)
         {

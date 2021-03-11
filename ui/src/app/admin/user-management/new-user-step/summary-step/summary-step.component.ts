@@ -59,13 +59,14 @@ export class SummaryStepComponent implements OnInit {
     });
   }
 
-  getDefaultSetting(accountPreferenceData){
+  getDefaultSetting(accountPreferenceData: any){
     let respData: any = {};
     respData = {
       salutationData: accountPreferenceData.salutation ? accountPreferenceData.salutation.value : '--',
       firstNameData: accountPreferenceData.firstName ? accountPreferenceData.firstName.value : '--',
       lastNameData: accountPreferenceData.lastName ? accountPreferenceData.lastName.value : '--',
       loginEmailData: accountPreferenceData.loginEmail ? accountPreferenceData.loginEmail.value : '--',
+      userTypeData: accountPreferenceData.userType ? accountPreferenceData.userType.value : '--',
       organizationData: accountPreferenceData.organization ? accountPreferenceData.organization.value : '--',
       languageData: this.defaultSetting.languageDropdownData.filter(resp => resp.id === (accountPreferenceData.language.value != '' ? accountPreferenceData.language.value : 2 )),
       timezoneData: this.defaultSetting.timezoneDropdownData.filter(resp => resp.id === (accountPreferenceData.timeZone.value != '' ? accountPreferenceData.timeZone.value : 2)),

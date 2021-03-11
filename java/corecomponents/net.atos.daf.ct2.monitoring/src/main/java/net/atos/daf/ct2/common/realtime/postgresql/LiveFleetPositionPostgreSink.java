@@ -39,10 +39,18 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 
 		int varVEvtid = 0;
 
+		long varReceievedTimeStamp = 0;
+
 		if (row.getValue().getVEvtID() != null) {
 
 			varVEvtid = row.getValue().getVEvtID();
 		}
+
+		if (row.getValue().getReceivedTimestamp() != null) {
+
+			varReceievedTimeStamp = row.getValue().getReceivedTimestamp();
+		}
+
 		double varGPSLongi = row.getValue().getGpsLongitude();
 
 		String varTripID = row.getValue().getDocument().getTripID();
@@ -65,11 +73,11 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 			statement.setString(2, "VIN NOT AVAILABLE");
 		}
 
-		if (row.getValue().getReceivedTimestamp() != 0 || row.getValue().getReceivedTimestamp() != null) {
-			statement.setLong(3, row.getValue().getReceivedTimestamp()); // message_time_stamp
-			statement.setLong(12, row.getValue().getReceivedTimestamp()); // created_at_m2m
-			statement.setLong(13, row.getValue().getReceivedTimestamp()); // created_at_kafka
-			statement.setLong(14, row.getValue().getReceivedTimestamp()); // created_at_dm
+		if (varReceievedTimeStamp != 0) {
+			statement.setLong(3, varReceievedTimeStamp); // message_time_stamp
+			statement.setLong(12, varReceievedTimeStamp); // created_at_m2m
+			statement.setLong(13, varReceievedTimeStamp); // created_at_kafka
+			statement.setLong(14, varReceievedTimeStamp); // created_at_dm
 		}
 
 		else {
