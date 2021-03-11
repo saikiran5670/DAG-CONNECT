@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.packageservice
                 package.FeatureSetID = request.FeatureSetID;
                 package.Status = (package.ENUM.PackageStatus)(int)request.Status;
                 package.Name = request.Name;
-                package.Type = (package.ENUM.PackageType)(char)request.Type;
+                package.Type = request.Type;
                 package.Description = request.Description;
                 package = _packageManager.Create(package).Result;
                 return Task.FromResult(new PackageResponse
@@ -64,7 +64,7 @@ namespace net.atos.daf.ct2.packageservice
                 package.FeatureSetID = request.FeatureSetID;
                 package.Status = (package.ENUM.PackageStatus)request.Status;
                 package.Name = request.Name;
-                package.Type = (package.ENUM.PackageType)request.Type;
+                package.Type =request.Type;
                 package.Description = request.Description;
                 package = _packageManager.Update(package).Result;
                 return Task.FromResult(new PackageResponse
@@ -126,7 +126,7 @@ namespace net.atos.daf.ct2.packageservice
                 packageFilter.FeatureSetId = request.FeatureSetID;
                 packageFilter.Status = (package.ENUM.PackageStatus)(int)request.Status;
                 packageFilter.Name = request.Name;
-                packageFilter.Type = (package.ENUM.PackageType)(int)request.Type;
+                packageFilter.Type = request.Type;
                 var packages = _packageManager.Get(packageFilter).Result;
                 response.PacakageList.AddRange(packages
                                      .Select(x => new GetPackageRequest()
@@ -136,7 +136,7 @@ namespace net.atos.daf.ct2.packageservice
                                          Name = x.Name,
                                          FeatureSetID=x.FeatureSetID,                                          
                                          Status = (PackageStatus)x.Status,
-                                         Type = (PackageType)x.Type }).ToList()); 
+                                         Type = x.Type }).ToList()); 
                 _logger.LogInformation("Get package details.");
                 return await Task.FromResult(response);
             }
@@ -167,7 +167,7 @@ namespace net.atos.daf.ct2.packageservice
                     FeatureSetID=x.FeatureSetID,
                     Name = x.Name,
                     Status = (package.ENUM.PackageStatus)x.Status,
-                    Type = (package.ENUM.PackageType)x.Type
+                    Type = x.Type
                 }).ToList());
                 
                 var packageImported =await _packageManager.Import(packages);
@@ -179,7 +179,7 @@ namespace net.atos.daf.ct2.packageservice
                                          Name = x.Name,
                                          FeatureSetID=x.FeatureSetID,
                                          Status = (PackageStatus)x.Status,
-                                         Type = (PackageType)x.Type
+                                         Type = x.Type
                                      }).ToList());
 
 

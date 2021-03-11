@@ -35,7 +35,7 @@ message PackageCreateRequest {
     int32 FeatureSetID=3;
     repeated string Features =4;
     string Name=5;
-    PackageType Type =6;
+    string Type =6;
     string Description=7;    
     PackageStatus Status =8;
   }
@@ -46,7 +46,7 @@ message PackageCreateRequest {
     int32 FeatureSetID=3;
     repeated string Features =4;
     string Name=5;
-    PackageType Type =6;
+    string Type =6;
     string Description=7;    
     PackageStatus Status =8;
   }
@@ -59,7 +59,7 @@ message PackageCreateRequest {
     int32 FeatureSetID =3;    
     repeated string Features =4;
     string Name=5;
-    PackageType Type =6;
+    string Type =6;
     string Description=7; 
     PackageStatus Status =8;
 }
