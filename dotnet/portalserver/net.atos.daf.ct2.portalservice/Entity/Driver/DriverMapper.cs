@@ -12,17 +12,17 @@ namespace net.atos.daf.ct2.portalservice.Entity.Driver
             foreach (DriverRequest item in drivers)
             { 
                int OrganizationId=item.OrganizationId;
-               net.atos.daf.ct2.driverservice.DriversImport objdriver=new driverservice.DriversImport();
+               net.atos.daf.ct2.driverservice.DriversImport objdriver;
                foreach (Driver driver in item.Drivers)
                {              
+                objdriver=new driverservice.DriversImport();
                 objdriver.DriverIdExt=driver.DriverID;
                 objdriver.FirstName=driver.FirstName;
                 objdriver.LastName=driver.LastName;
                 objdriver.Email=driver.Email;
-               }
-               
-               objReturn.OrgID=OrganizationId;            
-               objReturn.Drivers.Add(objdriver);
+                objReturn.Drivers.Add(objdriver);
+               }               
+               objReturn.OrgID=OrganizationId;     
             }        
             
             return objReturn;

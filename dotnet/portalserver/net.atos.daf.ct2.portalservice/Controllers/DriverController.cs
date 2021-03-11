@@ -177,9 +177,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (request.OrgID<=0)                   
                 {
                     return StatusCode(404, "Please provide the oganizationid import.");
-                }   
-                               
+                }                                  
                 DriverBusinessService.DriverImportData response = await driverClient.ImportDriversAsync(request); 
+                
                 return Ok("Driver Imported :" +response);                 
              }
             catch(Exception ex)
