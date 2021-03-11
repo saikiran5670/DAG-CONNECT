@@ -164,7 +164,7 @@
                         </mat-option>
                       </mat-select>
                     </mat-form-field>
-                    <mat-error *ngIf="firstFormGroup.get('userType').hasError('required')">
+                    <mat-error *ngIf="accountInfoForm.get('userType').hasError('required')">
                       {{ translationData.lblPleasechooseusertype || 'Please choose user type' }}
                     </mat-error>
                   </div>

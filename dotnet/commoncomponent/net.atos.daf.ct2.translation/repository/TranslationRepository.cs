@@ -337,7 +337,7 @@ namespace net.atos.daf.ct2.translation.repository
             {
                 var InsertFileDetailsQueryStatement = @"INSERT INTO translation.translationupload(
                                                              file_name, description, file_size, failure_count, created_at, file, added_count, updated_count, created_by)
-                                                           VALUES (@file_name, @description, @file_size, @failure_count, @created_at, @file, @added_count, @updated_count,created_by)
+                                                           VALUES (@file_name, @description, @file_size, @failure_count, @created_at, @file, @added_count, @updated_count,@created_by)
                                                              RETURNING id";
 
                 var parameter = new DynamicParameters();
@@ -352,6 +352,17 @@ namespace net.atos.daf.ct2.translation.repository
                 parameter.Add("@created_by", translationupload.created_by);
 
                 int InsertedFileUploadID = await dataAccess.ExecuteScalarAsync<int>(InsertFileDetailsQueryStatement, parameter);
+
+                // List<Translations[]> myBytes = new List<Translations[]>(translationupload.file);
+                //ConvertList(translationupload.file);
+
+                //if (translationupload.file != null)
+                //{
+                //    foreach (var item in translationupload.file)
+                //    {
+                //        var parameterfeature = ImportExcelDataIntoTranslations(translationupload);
+                //    }
+                //}
 
                 translationupload.id = InsertedFileUploadID;
 
@@ -421,9 +432,14 @@ namespace net.atos.daf.ct2.translation.repository
             }
         }
 
-       
-
-
+        //private static Translations[] ConvertList(byte [] file)
+        //{
+        //    List<Translations> tmpList = new List<Translations>();
+        //    foreach (Byte[] byteArray in file)
+        //        foreach (Byte singleByte in byteArray)
+        //            tmpList.Add(singleByte);
+        //    return tmpList.ToArray();
+        //}
 
         public async Task<IEnumerable<Translationupload>> GetFileUploadDetails(int FileID)
         {
@@ -451,7 +467,7 @@ namespace net.atos.daf.ct2.translation.repository
                 dynamic result = await dataAccess.QueryAsync<dynamic>(InsertFileDetailsQueryStatement, parameter);
                 foreach (dynamic record in result)
                 {
-                    fileuploadlist.Add(Map(record));
+                    fileuploadlist.Add(MapfileDetails(record));
                 }
                 return fileuploadlist.AsEnumerable();
 
@@ -462,6 +478,22 @@ namespace net.atos.daf.ct2.translation.repository
                 throw ex;
             }
 
+        }
+
+        private Translationupload MapfileDetails(dynamic record)
+        {
+            Translationupload Entity = new Translationupload();
+            Entity.id = record.id;
+            Entity.file_name = record.file_name;
+            Entity.description = record.description;
+            Entity.file_size = record.file_size;
+            Entity.failure_count = record.failure_count;
+            Entity.created_at = record.created_at;
+            Entity.file = record.file;
+            Entity.added_count = record.added_count;
+            Entity.updated_count = record.updated_count;
+            Entity.created_by = record.created_by;
+            return Entity;
         }
     }
 }

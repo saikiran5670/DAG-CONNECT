@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using DriverBusinessService = net.atos.daf.ct2.driverservice;
+using net.atos.daf.ct2.portalservice.Entity.Driver;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -13,6 +14,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     public class DriverController : ControllerBase
     {
        private readonly ILogger<DriverController> logger;
+         private readonly DriverMapper mapper;
             
         private readonly DriverBusinessService.DriverService.DriverServiceClient driverClient;
         private string FK_Constraint = "violates foreign key constraint";
@@ -21,8 +23,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public DriverController(ILogger<DriverController> _logger, DriverBusinessService.DriverService.DriverServiceClient _driverClient)
         {
            logger = _logger;
-           driverClient = _driverClient;         
-         
+           driverClient = _driverClient;   
+           mapper=new DriverMapper();          
         } 
 
       [HttpGet]     
@@ -158,21 +160,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }           
         } 
 
-     [HttpPost]     
+     [HttpPost]      
      [Route("importdrivers")]
-     public async Task<IActionResult> ImportDrivers(net.atos.daf.ct2.driverservice.DriverImportRequest request)
+     public async Task<IActionResult> ImportDrivers(List<DriverRequest> drivers, int OrganizationId)
         {              
             try 
             {   
-                if (request.OrgID<=0)                   
+                if (OrganizationId<=0)                   
                 {
                     return StatusCode(404, "Please provide the correct organizationId.");
                 }  
-                if (request.Drivers.Count<=0)                   
+                if (drivers.Count<=0)                   
                 {
                     return StatusCode(404, "Please provide the driver list to import.");
                 }       
-                logger.LogInformation("Driver import function called ");     
+                logger.LogInformation("Driver import function called ");   
+                net.atos.daf.ct2.driverservice.DriverImportRequest request=new DriverBusinessService.DriverImportRequest();
+                request=mapper.ToDriverImport(drivers);
+                request.OrgID=OrganizationId;
                 DriverBusinessService.DriverImportData response = await driverClient.ImportDriversAsync(request); 
                 return Ok("Driver Imported :" +response);                 
              }
