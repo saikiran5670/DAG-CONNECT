@@ -342,7 +342,7 @@ namespace net.atos.daf.ct2.translation.repository
             {
                 var InsertFileDetailsQueryStatement = @"INSERT INTO translation.translationupload(
                                                              file_name, description, file_size, failure_count, created_at, file, added_count, updated_count, created_by)
-                                                           VALUES (@file_name, @description, @file_size, @failure_count, @created_at, @file, @added_count, @updated_count,created_by)
+                                                           VALUES (@file_name, @description, @file_size, @failure_count, @created_at, @file, @added_count, @updated_count,@created_by)
                                                              RETURNING id";
 
                 var parameter = new DynamicParameters();
@@ -397,7 +397,7 @@ namespace net.atos.daf.ct2.translation.repository
                 dynamic result = await dataAccess.QueryAsync<dynamic>(InsertFileDetailsQueryStatement, parameter);
                 foreach (dynamic record in result)
                 {
-                    fileuploadlist.Add(Map(record));
+                    fileuploadlist.Add(MapfileDetails(record));
                 }
                 return fileuploadlist.AsEnumerable();
 
@@ -408,6 +408,19 @@ namespace net.atos.daf.ct2.translation.repository
                 throw ex;
             }
 
+        }
+
+        private Translations MapfileDetails(dynamic record)
+        {
+            Translations Entity = new Translations();
+            Entity.Id = record.id;
+            Entity.Code = record.code;
+            Entity.Type = record.type;
+            Entity.Name = record.name;
+            Entity.Value = record.value;
+            Entity.created_at = record.created_at;
+            Entity.modified_at = record.modified_at;
+            return Entity;
         }
     }
 }
