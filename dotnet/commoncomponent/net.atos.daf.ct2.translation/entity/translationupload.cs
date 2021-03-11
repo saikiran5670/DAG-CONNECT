@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.translation.entity
         public int failure_count { get; set; }
         public long created_at { get; set; }
         public int created_by { get; set; }
-        public byte file { get; set; }
+        public byte[] file { get; set; }
         public int added_count { get; set; }
         public string updated_count { get; set; }
         public List<Translations> translations { get; set; }
