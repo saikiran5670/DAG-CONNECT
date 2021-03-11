@@ -8,7 +8,7 @@ using static net.atos.daf.ct2.translation.Enum.translationenum;
 
 namespace net.atos.daf.ct2.translation
 {
-    public class TranslationManager:ITranslationManager
+    public class TranslationManager : ITranslationManager
     {
         private readonly ITranslationRepository Translationrepository; // = new TranslationRepository();
         // private static readonly log4net.ILog log =
@@ -18,29 +18,29 @@ namespace net.atos.daf.ct2.translation
             Translationrepository = _repository;
         }
 
-         public async Task<IEnumerable<Langauge>> GetAllLanguageCode()
+        public async Task<IEnumerable<Langauge>> GetAllLanguageCode()
         {
             try
             {
                 var result = await Translationrepository.GetAllLanguageCode();
                 return result;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                    throw ex;
+                throw ex;
             }
         }
 
-         public async Task<IEnumerable<Translations>> GetKeyTranslationByLanguageCode(string langaguecode,string key)
+        public async Task<IEnumerable<Translations>> GetKeyTranslationByLanguageCode(string langaguecode, string key)
         {
             try
             {
-                var result = await Translationrepository.GetKeyTranslationByLanguageCode(langaguecode,key);
+                var result = await Translationrepository.GetKeyTranslationByLanguageCode(langaguecode, key);
                 return result;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                    throw ex;
+                throw ex;
             }
         }
 
@@ -51,36 +51,36 @@ namespace net.atos.daf.ct2.translation
                 var result = await Translationrepository.GetLangagugeTranslationByKey(key);
                 return result;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                    throw ex;
+                throw ex;
             }
         }
 
 
-        public async Task<IEnumerable<Translations>> GetTranslationsByMenu(int  MenuId, MenuType type,string langaguecode)
+        public async Task<IEnumerable<Translations>> GetTranslationsByMenu(int MenuId, MenuType type, string langaguecode)
         {
             try
             {
-                var result = await Translationrepository.GetTranslationsByMenu(MenuId,((char)type).ToString(),langaguecode);
+                var result = await Translationrepository.GetTranslationsByMenu(MenuId, ((char)type).ToString(), langaguecode);
                 return result;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                    throw ex;
+                throw ex;
             }
         }
 
         public async Task<IEnumerable<Translations>> GetTranslationsForDropDowns(string Dropdownname, string langagugecode)
         {
-             try
+            try
             {
-                var result = await Translationrepository.GetTranslationsForDropDowns(Dropdownname,langagugecode);
+                var result = await Translationrepository.GetTranslationsForDropDowns(Dropdownname, langagugecode);
                 return result;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                    throw ex;
+                throw ex;
             }
         }
 
@@ -89,7 +89,38 @@ namespace net.atos.daf.ct2.translation
             try
             {
                 var result = await Translationrepository.InsertTranslationFileDetails(translationupload);
+                TranslationDataStatus TdataStatus = new TranslationDataStatus();
+                TdataStatus.AddCount = 0;
+                TdataStatus.UpdateCount = 0;
+                TdataStatus.FailedCount = 0;
+                foreach (var item in translationupload.translations)
+                {
+                    var TranslationtResult = await InsertTranslationFileData(item);
+                    if (TranslationtResult == translationStatus.Added)
+                        TdataStatus.AddCount = TdataStatus.AddCount + 1;
+                    else if (TranslationtResult == translationStatus.Updated)
+                        TdataStatus.UpdateCount = TdataStatus.UpdateCount + 1;
+                    else
+                        TdataStatus.FailedCount = TdataStatus.FailedCount + 1;
+                }
                 return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+        public async Task<translationStatus> InsertTranslationFileData(Translations translationupload)
+        {
+            try
+            {
+                var TranslationsList = Translationrepository.GetAllTranslations();
+                var result = await Translationrepository.InsertTranslationFileData(translationupload, TranslationsList);
+                //Translationupload v = new Translationupload();
+                return result;
+                //return result;
             }
             catch (Exception ex)
             {

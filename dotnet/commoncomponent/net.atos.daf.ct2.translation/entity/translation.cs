@@ -19,4 +19,12 @@ namespace net.atos.daf.ct2.translation.entity
 
 
     }
+
+    public enum translationStatus
+    { 
+        Failed = 0,
+        Updated = 1,
+        Added = 2
+        
+    }
 }
