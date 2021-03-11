@@ -18,7 +18,7 @@ using AccountBusinessService = net.atos.daf.ct2.accountservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
-    //[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+   // [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("account")]
     public class AccountController : ControllerBase
@@ -27,16 +27,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Private Variable
         private readonly ILogger<AccountController> _logger;
         private readonly AccountBusinessService.AccountService.AccountServiceClient _accountClient;
-        private readonly Mapper _mapper;        
+        private readonly Mapper _mapper;
+        private readonly IMemoryCacheExtensions _cache;
 
         #endregion
 
         #region Constructor
-        public AccountController(AccountBusinessService.AccountService.AccountServiceClient accountClient, ILogger<AccountController> logger)
+        public AccountController(AccountBusinessService.AccountService.AccountServiceClient accountClient, ILogger<AccountController> logger, IMemoryCacheExtensions cache)
         {
             _accountClient = accountClient;
             _logger = logger;
             _mapper = new Mapper();
+            _cache = cache;
         }
         #endregion
 
@@ -1231,6 +1233,37 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
 
+        #region TestMethods 
+        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+        [HttpPost]
+        [Route("authmethodpost")]
+        public async Task<OkObjectResult> AuthMethodPost()
+        {
+            return await Task.FromResult(Ok(new { Message = "You are authenticated user" }));
+        }
+
+        [HttpPost]
+        [Route("withoutauthmethodpost")]
+        public async Task<OkObjectResult> WithoutAuthMethod()
+        {
+            return await Task.FromResult(Ok(new { Message = "This method does not need any authentication" }));
+        }
+
+        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+        [HttpPost]
+        [Route("authmethodget")]
+        public async Task<OkObjectResult> AuthMethodGet()
+        {
+            return await Task.FromResult(Ok(new { Message = "You will need authentication" }));
+        }
+
+        [HttpPost]
+        [Route("withoutauthmethodget")]
+        public async Task<OkObjectResult> WithoutAuthMethodGet()
+        {
+            return await Task.FromResult(Ok(new { Message = "This method does not need any authentication" }));
+        }
+        #endregion
     }
 
 }

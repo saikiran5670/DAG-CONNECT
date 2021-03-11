@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _logger = logger;
         }        
         [HttpPost]        
-        [Route("auth")]
+        [Route("login")]
         public async Task<IActionResult> Login()
         {
             try 
@@ -125,7 +125,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
 
         [HttpPost]
-        [Route("Logout")]
+        [Route("logout")]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

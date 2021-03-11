@@ -218,6 +218,22 @@ namespace net.atos.daf.ct2.accountservice
             return groupTypeEnum;
         }
 
+        public Group.Group ToGroupObject(Group.GroupType groupType, Group.ObjectType objectType, string Argument, 
+            Group.FunctionEnum functionEnum, int RefId, string groupName, string description, long createAt)
+        {
+            // create vehicle group with vehicle
+            Group.Group group = new Group.Group();
+            group.GroupType = groupType;
+            group.ObjectType = objectType;
+            group.Argument = Argument;
+            group.FunctionEnum = functionEnum;
+            group.RefId = RefId;
+            group.Description = description;
+            group.CreatedAt = createAt;            
+            group.Name = groupName;
+            return group;
+        }
+
         //private AccountType SetEnumAccountType(AccountComponent.ENUM.AccountType type)
         //{
         //    AccountType accountType = AccountType.None;

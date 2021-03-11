@@ -19,6 +19,76 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label style='display: flex; place-content: space-between;'>
+                        <span>{{ translationData.lblDataAttributeSetName || 'Data Attribute Set Name' }}</span>
+                    </mat-label>
+                    <div *ngIf="actionType != 'view'">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <input maxlength="100" placeholder="{{ translationData.lblEnterDataAttributeSetName || 'Enter Data Attribute Set Name' }}" matInput
+                                formControlName="dataAttributeSetName">
+                        </mat-form-field>
+                        <mat-error *ngIf="featureFormGroup.get('dataAttributeSetName').hasError('required')">
+                            {{ translationData.lblPleasenterdatattributesetname || 'Please enter data attribute set name'}}
+                        </mat-error>
+                        <mat-error *ngIf="featureFormGroup.get('dataAttributeSetName').hasError('whitespace')">
+                            {{ translationData.lblDataAttributeSetcannotcontainonlywhitespace || 'Data Attribute Set cannot contain only whitespace' }}
+                        </mat-error>
+                    </div> 
+                    <div *ngIf="actionType == 'view'">
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.setName }}</span>
+                    </div> 
+                </div>
+                <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label style='display: flex; place-content: space-between;'>
+                        <span>{{ translationData.lblDataAttributeDescription || 'Data Attribute Description' }}</span>
+                        <span *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax || '120 characters max' }}</span>
+                    </mat-label>
+                    <div *ngIf="actionType != 'view'">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <input maxlength="100" placeholder="{{ translationData.lblEnterDataAttributeDescription || 'Enter Data Attribute Description' }}" matInput
+                                formControlName="dataAttributeDescription">
+                        </mat-form-field>
+                        <mat-error *ngIf="featureFormGroup.get('dataAttributeDescription').hasError('whitespace')">
+                        {{ translationData.lblDataAttributeDescriptioncannotcontainonlywhitespace || 'Data Attribute Description cannot contain only whitespace' }}
+                        </mat-error>
+                    </div>
+                    <div *ngIf="actionType == 'view'">
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.dataAttributeDescription }}</span>
+                    </div>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+                <div class='areaWidth min-width-20-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
+                    <span>{{ translationData.lblDataAttributeSetType || 'Data Attribute Set Type' }}:</span>
+                    <div *ngIf="actionType != 'view'" class='margin-top-5'>
+                        <mat-radio-group (change)='onSetTypeChange($event)'>
+                            <mat-radio-button [checked]="selectedSetType ===  'exclusive' ? true : false" style='margin-right: 20px;' value="exclusive">{{ translationData.lblExclusive || 'Exclusive' }}
+                            </mat-radio-button>
+                            <mat-radio-button [checked]="selectedSetType ===  'inclusive' ? true : false" style='margin-right: 20px;' value="inclusive" >{{ translationData.lblInclusive || 'Inclusive' }}
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                    <div *ngIf="actionType == 'view'">
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.setType }}</span>
+                    </div>
+                </div>
+                <div class='areaWidth min-width-60-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
+                    <span>{{ translationData.lblStatus || 'Status' }}</span>
+                    <div *ngIf="actionType != 'view'" class='margin-top-5'>
+                        <mat-radio-group (change)='onStatusChange($event)'>
+                            <mat-radio-button [checked]="selectedStatus ===  'active' ? true : false" style='margin-right: 20px;' value="active">{{ translationData.lblActive || 'Active' }}
+                            </mat-radio-button>
+                            <mat-radio-button [checked]="selectedStatus ===  'inactive' ? true : false" style='margin-right: 20px;' value="inactive" >{{ translationData.lblInactive || 'Inactive' }}
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                    <div *ngIf="actionType == 'view'">
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.status }}</span>
+                    </div>
+                </div>
+                </div>
+            <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblFeatureName || 'Feature Name' }}<span class='mandatoryColor'>*</span></mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
@@ -137,7 +207,7 @@
                     <span style='font-weight: 500!important;'>{{ selectedElementData.dataAttributeDescription }}</span>
                 </div>
             </div>
-            </div> 
+            </div>  -->
             <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="space-between center">
                 <div fxLayout="column" fxLayoutAlign="left">
                     <div fxLayout="row" fxLayoutAlign='center center'>

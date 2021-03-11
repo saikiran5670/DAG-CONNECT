@@ -301,15 +301,7 @@ namespace net.atos.daf.ct2.driver
                 parameter.Add("@id", driverid);
                 var query = @"update master.driver set is_active=false where id=@id and organization_id=@organization_id";
                 int isdelete= await dataAccess.ExecuteScalarAsync<int>(query, parameter);   
-                return true; 
-                // if(isdelete>0)
-                // {
-                //     return true;  
-                // }
-                // else
-                // {
-                //     return false;   
-                // }      
+                return true;                
             }
             catch (Exception ex)
             {
@@ -329,15 +321,7 @@ namespace net.atos.daf.ct2.driver
                 var query = @"update master.driver set opt_in=@opt_in where organization_id=@organization_id and is_active=true";
                 int isUpdated= await dataAccess.ExecuteScalarAsync<int>(query, parameter);   
                 return true;
-                // if(isUpdated>0)
-                // {
-                //     return true;  
-                // }
-                // else
-                // {
-                //     return false;   
-                // }      
-            }
+              }
             catch (Exception ex)
             {
                 log.Info("UpdateOptinOptout driver method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
@@ -359,11 +343,24 @@ namespace net.atos.daf.ct2.driver
 
             try
             {
+            string status="C";
             var parameterOpt = new DynamicParameters();    
             parameterOpt.Add("@id", orgid);             
             var queryOptIn =@"select driver_default_opt_in from master.organization where id=@id and is_active=true";
             orgOptInStatus= await dataAccess.ExecuteScalarAsync<string>(queryOptIn, parameterOpt); 
-            string status="C";
+            
+            if (!string.IsNullOrEmpty(orgOptInStatus))
+            {
+            if (orgOptInStatus=="H" || orgOptInStatus=="I")
+            {
+                status="I";
+            }
+            else if (orgOptInStatus=="U")
+            {
+                 status="U";
+            }
+            }
+            
             foreach (var item in drivers)
             {
                         var parameter = new DynamicParameters();
@@ -375,7 +372,7 @@ namespace net.atos.daf.ct2.driver
                          parameter.Add("@status",status);                        
                          parameter.Add("@opt_in",orgOptInStatus);
                          parameter.Add("@modified_at",UTCHandling.GetUTCFromDateTime(System.DateTime.Now));   
-                         parameter.Add("@modified_by",1);
+                         parameter.Add("@modified_by",item.modified_by);
                          parameter.Add("@created_at",UTCHandling.GetUTCFromDateTime(System.DateTime.Now));   
 
                          var parameterduplicate = new DynamicParameters();

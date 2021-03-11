@@ -26,6 +26,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Caching.Distributed;
+using net.atos.daf.ct2.portalservice.Common;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -53,7 +55,7 @@ namespace net.atos.daf.ct2.portalservice
             var isdevelopmentenv = Configuration["ServerConfiguration:isdevelopmentenv"];
             var cookiesexpireat = Configuration["ServerConfiguration:cookiesexpireat"];
             var authcookiesexpireat = Configuration["ServerConfiguration:authcookiesexpireat"];
-            var driverservice = Configuration["ServerConfiguration:driverservice"];
+            var driverservice = Configuration["ServiceConfiguration:driverservice"];
 
  
 
@@ -61,16 +63,10 @@ namespace net.atos.daf.ct2.portalservice
             AppContext.SetSwitch(
                     "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
-            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-            //{
-            //    options.SlidingExpiration = true;
-            //    options.ExpireTimeSpan = new TimeSpan(0, 1, 0);
-            //});
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
                 {
-                    options.Cookie.Name = "DAFAccount";
+                    options.Cookie.Name = "Account";
                     options.Cookie.HttpOnly = true;
                     //options.Cookie.Expiration = TimeSpan.FromMinutes(Convert.ToDouble(cookiesexpireat));
                     options.Cookie.SecurePolicy = Convert.ToBoolean(isdevelopmentenv) ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
@@ -81,6 +77,10 @@ namespace net.atos.daf.ct2.portalservice
 
             services.AddControllers();
 
+            services.AddDistributedMemoryCache();
+            
+            services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
+            
             services.AddGrpcClient<AccountService.AccountServiceClient>(o =>
             {
                 o.Address = new Uri(accountservice);
@@ -108,7 +108,7 @@ namespace net.atos.daf.ct2.portalservice
             });
             services.AddGrpcClient<OrganizationService.OrganizationServiceClient>(o =>
             {
-                o.Address = new Uri(featureservice);
+                o.Address = new Uri(organizationservice);
             });
             services.AddGrpcClient<TranslationService.TranslationServiceClient>(o =>
             {
@@ -131,12 +131,7 @@ namespace net.atos.daf.ct2.portalservice
                 //This need to be change to orgin specific on UAT and prod
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
             });
-           
-            //services.Configure<MvcOptions>(options =>
-            //{
-            //    options.Filters.Add(new RequireHttpsAttribute { Permanent = true });
-            //    options.Filters.Add(new AuthorizeFilter());
-            //});
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

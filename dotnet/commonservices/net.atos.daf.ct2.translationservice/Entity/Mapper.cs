@@ -4,7 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.translation.entity;
-
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+using System.Text;
+using Google.Protobuf;
 
 namespace net.atos.daf.ct2.translationservice.Entity
 {
@@ -15,12 +18,20 @@ namespace net.atos.daf.ct2.translationservice.Entity
         public Translationupload ToTranslationUploadEntity(TranslationUploadRequest request)
         {
             Translationupload obj = new Translationupload();
-            obj.id = request.Id;
+           // obj.id = request.Id;
             obj.file_name = request.FileName;
             obj.description = request.Description;
             obj.file_size = request.FileSize;
             obj.failure_count = request.FailureCount;
             obj.created_by = request.CreatedBy;
+            if (request.File !=null)
+            {
+                Encoding u8 = Encoding.UTF8;
+                obj.file = request.File.SelectMany(s =>
+ System.Text.Encoding.UTF8.GetBytes(s + Environment.NewLine)).ToArray();
+             
+            }
+
             obj.added_count = request.AddedCount;
             obj.updated_count = request.UpdatedCount;
             return obj;
@@ -43,10 +54,22 @@ namespace net.atos.daf.ct2.translationservice.Entity
             obj.FileSize = translationupload.file_size;
             obj.FailureCount = translationupload.failure_count;
             obj.CreatedBy = translationupload.created_by;
+            if(translationupload.file !=null)
+            {
+               // obj.File = translationupload.file;
+               //ByteString bytestring;
+                using (var str = new MemoryStream(translationupload.file))
+                {
+                    obj.File = ByteString.FromStream(str);
+                }
+
+            }
+
             obj.AddedCount = translationupload.added_count;
             obj.UpdatedCount = translationupload.updated_count;
             return obj;
         }
+
         public class Preferences
         {
             public List<Translations> language { get; set; }

@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
     public class DropdownRequest
     {
         public List<string> Dropdownname { get; set; }
-        public string Langaugecode { get; set; }
+        public string Languagecode { get; set; }
     }
 
     public class DropdownResponse

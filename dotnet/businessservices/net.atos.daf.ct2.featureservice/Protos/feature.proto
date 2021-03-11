@@ -17,6 +17,7 @@ service FeatureService {
   rpc Create (FeatureRequest) returns (FeatureResponce);
   rpc CreateFeatureSet (FetureSetRequest) returns (FeatureSetResponce);
   rpc UpdateFeatureSet (FetureSetRequest) returns (FeatureSetResponce);
+  rpc DeleteFeatureSet (FetureSetRequest) returns (FeatureSetResponce);
   rpc Update (FeatureRequest) returns (FeatureResponce);  
   rpc Delete (FeatureRequest) returns (FeatureResponce);
   rpc GetFeatures (FeaturesFilterRequest) returns (FeaturesListResponce);

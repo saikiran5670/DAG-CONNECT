@@ -26,7 +26,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   featureFormGroup: FormGroup;
   selectionForDataAttribute = new SelectionModel(true, []);
   initData: any = [];
-  selectedSetType: any = 'excluded';
+  selectedSetType: any = 'exclusive';
   selectedStatus: any = 'active';
   
   vehGrpName: string = '';
@@ -38,10 +38,10 @@ export class CreateEditViewFeaturesComponent implements OnInit {
 
   ngOnInit() {
     this.featureFormGroup = this._formBuilder.group({
-      featureName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
-      featureDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
-      featureType: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
-      dataAttributeSetName: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
+      //featureName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
+      //featureDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
+      //featureType: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
+      dataAttributeSetName: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
       dataAttributeDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
     });
     this.breadcumMsg = this.getBreadcum(this.actionType);
@@ -52,13 +52,13 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   setDefaultValue(){
-    this.featureFormGroup.get("featureName").setValue(this.selectedElementData.name);
-    this.featureFormGroup.get("featureDescription").setValue(this.selectedElementData.featureDescription);
-    this.featureFormGroup.get("featureType").setValue(this.selectedElementData.type);
+    //this.featureFormGroup.get("featureName").setValue(this.selectedElementData.name);
+    //this.featureFormGroup.get("featureDescription").setValue(this.selectedElementData.featureDescription);
+    //this.featureFormGroup.get("featureType").setValue(this.selectedElementData.type);
     this.featureFormGroup.get("dataAttributeSetName").setValue(this.selectedElementData.setName);
+    this.featureFormGroup.get("dataAttributeDescription").setValue(this.selectedElementData.dataAttributeDescription);
     this.selectedSetType = this.selectedElementData.setType.toLowerCase();
     this.selectedStatus = this.selectedElementData.status.toLowerCase();
-    this.featureFormGroup.get("dataAttributeDescription").setValue(this.selectedElementData.dataAttributeDescription);
   }
 
   getBreadcum(type: any){

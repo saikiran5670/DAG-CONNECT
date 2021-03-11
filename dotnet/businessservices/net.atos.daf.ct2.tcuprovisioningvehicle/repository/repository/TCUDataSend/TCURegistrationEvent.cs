@@ -8,14 +8,14 @@ namespace TCUSend
     {
         private String vin;
         private TCU tcu;
-        private String tcuRegistration;
+        private String tCURegistration;
         private DateTime referenceDate;
 
-        public TCURegistrationEvent(string VIN, TCU TCU, String TCURegistration, DateTime referenceDate)
+        public TCURegistrationEvent(string vin, TCU tcu, string tCURegistration, DateTime referenceDate)
         {
-            this.vin = VIN;
-            this.tcu = TCU;
-            this.tcuRegistration = TCURegistration;
+            this.vin = vin;
+            this.tcu = tcu;
+            this.tCURegistration = tCURegistration;
             this.referenceDate = referenceDate;
         }
 
@@ -23,11 +23,8 @@ namespace TCUSend
 
         public TCU TCU { get => tcu; set => tcu = value; }
 
-        public String TCURegistration { get => tcuRegistration; set => tcuRegistration = value; }
+        public string TCURegistration { get => tCURegistration; set => tCURegistration = value; }
 
         public DateTime ReferenceDate { get => referenceDate; set => referenceDate = value; }
-
-       
-
     }
 }

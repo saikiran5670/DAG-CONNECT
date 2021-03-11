@@ -8,5 +8,10 @@ namespace repository
 {
     public class calculate
     {
+        public static void Main(string[] args)
+        {
+            
+        }
+
     }
 }
