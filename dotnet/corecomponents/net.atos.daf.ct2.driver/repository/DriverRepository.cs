@@ -364,15 +364,16 @@ namespace net.atos.daf.ct2.driver
             parameterOpt.Add("@id", orgid);             
             var queryOptIn =@"select driver_default_opt_in from master.organization where id=@id and is_active=true";
             orgOptInStatus= await dataAccess.ExecuteScalarAsync<string>(queryOptIn, parameterOpt); 
+            
             if (!string.IsNullOrEmpty(orgOptInStatus))
             {
-            if (orgOptInStatus=="I")
+            if (orgOptInStatus=="H" || orgOptInStatus=="I")
             {
-                status="O";
+                status="I";
             }
-            else if (orgOptInStatus=="O")
+            else if (orgOptInStatus=="U")
             {
-                 status="O";
+                 status="U";
             }
             }
             
