@@ -188,7 +188,8 @@ export class DriverManagementComponent implements OnInit {
         lastName: "Berry",
         emailId: "alanb@daf.com",
         consentStatus: 'Opt-In',
-        inheritStatus: true
+        inheritStatus: true,
+        createdAt: 1615393800000
       },
       {
         driverId: "I 0000000000000002",
@@ -196,7 +197,8 @@ export class DriverManagementComponent implements OnInit {
         lastName: "Joshi",
         emailId: "ritikaj@daf.com",
         consentStatus: 'Opt-Out',
-        inheritStatus: false
+        inheritStatus: false,
+        createdAt: 1613713670569
       },
       {
         driverId: "IN 0000000000000003",
@@ -204,7 +206,8 @@ export class DriverManagementComponent implements OnInit {
         lastName: "Pol",
         emailId: "shanup@daf.com",
         consentStatus: 'Opt-Out',
-        inheritStatus: false
+        inheritStatus: false,
+        createdAt: 1615384800000
       }
     ];
   }
@@ -246,7 +249,7 @@ export class DriverManagementComponent implements OnInit {
   }
 
   updateGridData(tableData: any){
-    this.initData = tableData; 
+    this.initData = this.getNewTagData(tableData);
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
@@ -254,6 +257,23 @@ export class DriverManagementComponent implements OnInit {
     });
   }
 
+  getNewTagData(data: any){
+    let currentDate = new Date().getTime();
+    data.forEach((row: any) => {
+      let createdDate = new Date(row.createdAt).getTime(); //  need to check API response.
+      let nextDate = createdDate + 86400000;
+      if(currentDate > createdDate && currentDate < nextDate){
+        row.newTag = true;
+      }
+      else{
+        row.newTag = false;
+      }
+    });
+    let newTrueData = data.filter(item => item.newTag == true);
+    let newFalseData = data.filter(item => item.newTag == false);
+    Array.prototype.push.apply(newTrueData, newFalseData); 
+    return newTrueData;
+  }
 
   importDrivers(){ 
     if(this.filelist.length > 0){
