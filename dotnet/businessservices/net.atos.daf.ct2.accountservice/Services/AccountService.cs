@@ -652,7 +652,7 @@ namespace net.atos.daf.ct2.accountservice
         {
             try
             {
-                var result = await accountmanager.GetMenuFeatures(request.AccountId, request.RoleId, request.OrganizationId);
+                var result = await accountmanager.GetMenuFeatures(request.AccountId, request.RoleId, request.OrganizationId, request.LanguageCode);
 
                 MenuFeatureResponse response = new MenuFeatureResponse();
                 if (result.Count() > 0)
@@ -1497,6 +1497,7 @@ namespace net.atos.daf.ct2.accountservice
                             FeatureId = dto.FeatureId,
                             MenuId = dto.MenuId.Value,
                             Name = dto.MenuName,
+                            TranslatedMenuName=dto.TranslatedMenuName,
                             Key = dto.MenuKey,
                             Url = dto.MenuUrl
                         });
@@ -1513,6 +1514,7 @@ namespace net.atos.daf.ct2.accountservice
                             FeatureId = dto.FeatureId,
                             MenuId = dto.MenuId.Value,
                             Name = dto.MenuName,
+                            TranslatedMenuName = dto.TranslatedMenuName,
                             Key = dto.MenuKey,
                             Url = dto.MenuUrl
                         });
@@ -1539,6 +1541,7 @@ namespace net.atos.daf.ct2.accountservice
                         MenuId = subMenu.MenuId,
                         FeatureId = subMenu.FeatureId,
                         Name = subMenu.Name,
+                        TranslatedName = subMenu.TranslatedMenuName ?? subMenu.Name,
                         Key = subMenu.Key ?? string.Empty,
                         Url = subMenu.Url ?? string.Empty
                     });
@@ -1547,6 +1550,7 @@ namespace net.atos.daf.ct2.accountservice
                 mainMenu.FeatureId = menu.FeatureId;
                 mainMenu.MenuId = menu.MenuId;
                 mainMenu.Name = menu.Name;
+                mainMenu.TranslatedName = menu.TranslatedMenuName ?? menu.Name;
                 mainMenu.Key = menu.Key ?? string.Empty;
                 mainMenu.Url = menu.Url ?? string.Empty;
                 mainMenu.SubMenus.AddRange(subMenus);

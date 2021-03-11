@@ -333,9 +333,9 @@ namespace net.atos.daf.ct2.account
             return false;
         }
 
-        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeatures(int accountId, int roleId, int organizationId)
+        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeatures(int accountId, int roleId, int organizationId, string languageCode)
         {
-            return await repository.GetMenuFeaturesList(accountId, roleId, organizationId);
+            return await repository.GetMenuFeaturesList(accountId, roleId, organizationId, languageCode);
         }
 
         #region Private Helper Methods

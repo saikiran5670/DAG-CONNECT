@@ -108,5 +108,7 @@ namespace net.atos.daf.ct2.portalservice.Account
         public int RoleId { get; set; }
         [Required]
         public int OrganizationId { get; set; }
+        [Required]
+        public string LanguageCode { get; set; }
     }
 }
