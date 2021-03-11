@@ -4,10 +4,10 @@
     },
     "foundationServices": {
       "vehicleGroupRESTServiceUrl": "https://api.dev1.ct2.atos.net/vehicle",
-      "roleRESTServiceURL": "https://api.dev2.ct2.atos.net/role",
+      "roleRESTServiceURL": "https://api.dev1.ct2.atos.net/role",
       "featureRESTServiceURL": "https://api.dev1.ct2.atos.net/feature",
       "accountRESTServiceURL": "https://api.dev1.ct2.atos.net/account",
-      "translationRESTServiceURL": "https://api.dev2.ct2.atos.net/translation",
+      "translationRESTServiceURL": "https://api.dev1.ct2.atos.net/translation",
       "organizationRESTServiceURL": "https://api.dev1.ct2.atos.net/vehicle"
     }
 }

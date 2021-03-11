@@ -7,6 +7,7 @@ using net.atos.daf.ct2.translation.entity;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Text;
+using Google.Protobuf;
 
 namespace net.atos.daf.ct2.translationservice.Entity
 {
@@ -17,27 +18,40 @@ namespace net.atos.daf.ct2.translationservice.Entity
         public Translationupload ToTranslationUploadEntity(TranslationUploadRequest request)
         {
             Translationupload obj = new Translationupload();
-           // obj.id = request.Id;
+            // obj.id = request.Id;
+
+
+            obj.translations = new List<Translations>();
             obj.file_name = request.FileName;
             obj.description = request.Description;
             obj.file_size = request.FileSize;
             obj.failure_count = request.FailureCount;
             obj.created_by = request.CreatedBy;
+
             if (request.File !=null)
             {
-                //var binFormatter = new BinaryFormatter();
-                //var mStream = new MemoryStream();
-                //binFormatter.Serialize(mStream, request.File);
-                ////This gives you the byte array.
-                //mStream.ToArray();
                 Encoding u8 = Encoding.UTF8;
                 obj.file = request.File.SelectMany(s =>
  System.Text.Encoding.UTF8.GetBytes(s + Environment.NewLine)).ToArray();
-              //  obj.file = request.File.SelectMany(BitConverter.GetBytes).ToArray();
+             
             }
 
             obj.added_count = request.AddedCount;
             obj.updated_count = request.UpdatedCount;
+             if (request.File !=null)
+            {
+                foreach (var item in request.File)
+                {
+                    var trans = new Translations();
+                    trans.Code = item.Code;
+                    trans.Type = item.Type;
+                    trans.Name = item.Name;
+                    trans.Value = item.Value;
+                    obj.translations.Add(trans);
+                }
+
+            }
+            
             return obj;
         }
         public int ToTranslationEntity(FileUploadDetailsRequest request)
@@ -60,11 +74,11 @@ namespace net.atos.daf.ct2.translationservice.Entity
             obj.CreatedBy = translationupload.created_by;
             if(translationupload.file !=null)
             {
-                //List<Translation> translationlist = new List<Translation>();
-                BinaryFormatter bf = new BinaryFormatter();
-                using (Stream ms = new MemoryStream(translationupload.file))
+               // obj.File = translationupload.file;
+               //ByteString bytestring;
+                using (var str = new MemoryStream(translationupload.file))
                 {
-                    List<Translation> myList = (List<Translation>)bf.Deserialize(ms);
+                    obj.File = ByteString.FromStream(str);
                 }
 
             }
@@ -73,6 +87,7 @@ namespace net.atos.daf.ct2.translationservice.Entity
             obj.UpdatedCount = translationupload.updated_count;
             return obj;
         }
+
         public class Preferences
         {
             public List<Translations> language { get; set; }

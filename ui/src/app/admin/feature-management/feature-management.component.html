@@ -11,7 +11,7 @@
   <mat-card class='mat-elevation-z' *ngIf='!createEditViewFeatureFlag'>
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFeatureRelationshipDetails || 'Feature Relationship Details' }}</span>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDataAttributeFeatures || 'Data Attribute Features' }}</span>
         </div>
     </div>
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
@@ -30,7 +30,7 @@
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
     <div *ngIf='initData.length > 0'>
         <mat-table [dataSource]="dataSource" class="table-items" matSort>
-            <ng-container matColumnDef="name">
+            <!-- <ng-container matColumnDef="name">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
               <mat-cell *matCellDef="let row">
                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
@@ -41,7 +41,7 @@
             <ng-container matColumnDef="type">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblType || 'Type' }}</mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.type }}</mat-cell>
-            </ng-container>
+            </ng-container> -->
             <ng-container matColumnDef="setName">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttributeSetName || 'Data Attribute Set Name' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.setName }}</mat-cell>
@@ -50,20 +50,22 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttributeSetType || 'Data Attribute Set Type' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.setType }}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="dataAttribute">
+            <!-- <ng-container matColumnDef="dataAttribute">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttribute || 'Data Attribute' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.dataAttribute.length }}</mat-cell>
-            </ng-container>
+            </ng-container> -->
             <ng-container matColumnDef="status">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.status }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.status }}<button class='actionBtn' mat-flat-button (click)="changeFeatureStatus(row)" matTooltip="{{ row.status == 'Active' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}">
+                  <mat-icon>{{ row.status == 'Active' ? 'sync' : 'sync_disabled' }}</mat-icon>
+              </button></mat-cell>
             </ng-container>
             <ng-container matColumnDef="action">
               <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
               <mat-cell *matCellDef="let row">
-                <button class='actionBtn' mat-flat-button (click)="changeFeatureStatus(row)" matTooltip="{{ row.status == 'Active' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}">
+                <!-- <button class='actionBtn' mat-flat-button (click)="changeFeatureStatus(row)" matTooltip="{{ row.status == 'Active' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}">
                     <mat-icon>{{ row.status == 'Active' ? 'sync' : 'sync_disabled' }}</mat-icon>
-                </button>
+                </button> -->
                 <button class='actionBtn' mat-flat-button (click)="editViewFeature(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
                   <mat-icon>visibility</mat-icon>
                 </button>

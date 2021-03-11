@@ -23,19 +23,35 @@ service OrganizationService {
   rpc CreateOrgRelationship (OrgRelationshipCreateRequest) returns (OrgRelationshipCreateResponse);
   rpc UpdateOrgRelationship (OrgRelationshipCreateRequest) returns (OrgRelationshipCreateResponse);
   rpc DeleteOrgRelationship (OrgRelationshipDeleteRequest) returns (OrgRelationshipDeleteResponse);
-
+  rpc GetOrgRelationship (OrgRelationshipGetRequest) returns (OrgRelationshipGetResponse);
 }
 
-
+message OrgRelationshipGetRequest{
+    int32 id = 1;
+    int32 organizationId=2;
+    string name=3;
+    string description =4;
+    int32 level=5;
+    string code=6;
+    repeated string features=7;
+    int32 featuresetid =8; 
+    bool isActive=9;
+}
+message OrgRelationshipGetResponse{
+ Responcecode code=1;  
+  string message = 2;
+   repeated OrgRelationshipGetRequest OrgRelationshipList=3;
+}
 message OrgRelationshipCreateRequest{
     int32 id = 1;
-    string name=2;
-    string description =3;
-    int32 level=4;
-    string code=5;
-    repeated string features=6;
-    int32 featuresetid =7; 
-    bool isActive=8;
+    int32 organizationId=2;
+    string name=3;
+    string description =4;
+    int32 level=5;
+    string code=6;
+    repeated string features=7;
+    int32 featuresetid =8; 
+    bool isActive=9;
 }
 
 message OrgRelationshipCreateResponse{

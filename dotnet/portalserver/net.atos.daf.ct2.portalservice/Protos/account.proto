@@ -143,6 +143,7 @@ message MenuFeatureRequest {
   int32 AccountId=1;
   int32 RoleId=2;
   int32 OrganizationId=3;
+  string LanguageCode=4;
 }
 
 message MenuFeatureResponse {
@@ -159,18 +160,20 @@ message MenuFeatureList {
 message MainMenuList {
   int32 MenuId=1;
   string Name=2;
-  string Url=3;
-  string Key=4;
-  int32 FeatureId=5;
-  repeated SubMenuList SubMenus=6;
+  string TranslatedName=3;
+  string Url=4;
+  string Key=5;
+  int32 FeatureId=6;
+  repeated SubMenuList SubMenus=7;
 }
 
 message SubMenuList {
   int32 MenuId=1;
   string Name=2;
-  string Url=3;
-  string Key=4;
-  int32 FeatureId=5;
+  string TranslatedName=3;
+  string Url=4;
+  string Key=5;
+  int32 FeatureId=6;
 }
 
 message FeatureList {

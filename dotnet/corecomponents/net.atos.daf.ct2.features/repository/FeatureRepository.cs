@@ -345,7 +345,7 @@ namespace net.atos.daf.ct2.features.repository
 
                     if (IDs != null)
                     {
-                        test =  string.Join(" , ", IDs) ;
+                        test =  string.Join("' , '", IDs) ;
                     }
 
                     var FSFSelectQueryStatement = @"select feature_id  FROM master.featuresetfeature  
@@ -895,10 +895,10 @@ namespace net.atos.daf.ct2.features.repository
                     {
                         foreach (var item in featureSet.Features)
                         {
-                            if (featureSet.Is_Active == true)
-                            {
+                            //if (featureSet.Is_Active == true)
+                            //{
                                 var parameterfeature = UpdateFeatureSetMapping(UpdateFeatureSetID, item.Id);
-                            }
+                            //}
                         }
                     }
                     transactionScope.Complete();

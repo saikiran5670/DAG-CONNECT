@@ -91,7 +91,7 @@ namespace net.atos.daf.ct2.packageservice
                 if (result)
                 {
                     response.Code = Responsecode.Success;
-                    response.Message = "Package Delete.";
+                    response.Message = "Package Deleted." ;
                 }
                 else
                 {

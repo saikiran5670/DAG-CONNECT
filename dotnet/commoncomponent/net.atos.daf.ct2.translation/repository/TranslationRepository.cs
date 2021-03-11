@@ -13,6 +13,9 @@ using NpgsqlTypes;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.translation.entity;
 using static net.atos.daf.ct2.translation.Enum.translationenum;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+using System.Transactions;
 
 namespace net.atos.daf.ct2.translation.repository
 {
@@ -314,19 +317,14 @@ namespace net.atos.daf.ct2.translation.repository
 
 
         }
-        public int CheckImportDataExist(string Name, string Code)
+        public  List<Translations> GetAllTranslations()
         {
             try
             {
-                var QueryStatement = @" SELECT CASE WHEN id IS NULL THEN 0 ELSE id END
-                                    FROM translation.translation
-                                    WHERE name= @name
-                                     AND code = @code
-                                     ";
+                var QueryStatement = @" SELECT *
+                                    FROM translation.translation  ";
                 var parameter = new DynamicParameters();
-                parameter.Add("@name", Name);
-                parameter.Add("@code", Code);
-                int result = dataAccess.ExecuteScalar<int>(QueryStatement, parameter);
+                var result = dataAccess.ExecuteScalar<List<Translations>>(QueryStatement, parameter);
                 return result;
             }
             catch (Exception ex)
@@ -340,27 +338,50 @@ namespace net.atos.daf.ct2.translation.repository
         {
             try
             {
-                var InsertFileDetailsQueryStatement = @"INSERT INTO translation.translationupload(
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    var InsertFileDetailsQueryStatement = @"INSERT INTO translation.translationupload(
                                                              file_name, description, file_size, failure_count, created_at, file, added_count, updated_count, created_by)
                                                            VALUES (@file_name, @description, @file_size, @failure_count, @created_at, @file, @added_count, @updated_count,@created_by)
                                                              RETURNING id";
 
-                var parameter = new DynamicParameters();
-                parameter.Add("@file_name", translationupload.file_name);
-                parameter.Add("@description", translationupload.description);
-                parameter.Add("@file_size", translationupload.file_size);
-                parameter.Add("@failure_count", translationupload.failure_count);
-                parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-                parameter.Add("@file", translationupload.file);
-                parameter.Add("@added_count", translationupload.added_count);
-                parameter.Add("@updated_count", translationupload.updated_count);
-                parameter.Add("@created_by", translationupload.created_by);
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@file_name", translationupload.file_name);
+                    parameter.Add("@description", translationupload.description);
+                    parameter.Add("@file_size", translationupload.file_size);
+                    parameter.Add("@failure_count", translationupload.failure_count);
+                    parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                    parameter.Add("@file", translationupload.file);
+                    parameter.Add("@added_count", translationupload.added_count);
+                    parameter.Add("@updated_count", translationupload.updated_count);
+                    parameter.Add("@created_by", translationupload.created_by);
 
-                int InsertedFileUploadID = await dataAccess.ExecuteScalarAsync<int>(InsertFileDetailsQueryStatement, parameter);
+                    int InsertedFileUploadID = await dataAccess.ExecuteScalarAsync<int>(InsertFileDetailsQueryStatement, parameter);
 
-                translationupload.id = InsertedFileUploadID;
-               
-                return translationupload;
+                    // Convert Byte array to List Type
+                    //List<Translations> myList;
+                    //BinaryFormatter bf = new BinaryFormatter();
+                    //using (Stream ms = new MemoryStream(translationupload.file))
+                    //{
+                    //    myList = (List<Translations>)bf.Deserialize(ms);
+                    //}
+
+                    if (translationupload.translations != null)
+                    {
+                        // foreach (var item in myList)
+                        // {
+                        var parameterfeature = ImportExcelDataIntoTranslations(translationupload.translations);
+                        // }
+                    }
+                    if (InsertedFileUploadID > 0)
+                    {
+                        translationupload.id = InsertedFileUploadID;
+                    }
+
+                    transactionScope.Complete();
+
+                    return translationupload;
+                }
 
 
             }
@@ -370,6 +391,70 @@ namespace net.atos.daf.ct2.translation.repository
             }
 
         }
+
+        public async Task<translationStatus> InsertTranslationFileData(Translations translationdata,List<Translations> TranslationsList)
+        {
+            try
+            {
+                int IsUpdated = 0;
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                //TranslationsList = GetAllTranslations(translationdata.Name, translationdata.Code);
+                var translationcodeList = TranslationsList.Where(I => I.Name == translationdata.Name).ToList();
+                if (translationcodeList != null && translationcodeList.Count > 0)
+                {
+                    var translationobjdata = translationcodeList.Where(I => I.Name == translationdata.Name && I.Code == translationdata.Code).FirstOrDefault();
+                    if (translationobjdata != null)
+                    {
+                        parameter = new DynamicParameters();
+                        parameter.Add("@Code", translationdata.Code);
+                        parameter.Add("@Type", translationdata.Type);
+                        parameter.Add("@Name", translationdata.Name);
+                        parameter.Add("@Value", translationdata.Value);
+                        //parameter.Add("@Created_at", translationdata.created_at);
+                        parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                        query = @"update translation.translation set (code, type, name, value,  modified_at) " +
+                                "values(code= @Code,type= @ype,name= @Name,value = @Value,modified_at = @modified_at) RETURNING id";
+                        var translationId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                        return translationStatus.Updated;
+                    }
+                    else
+                    {
+
+                        parameter = new DynamicParameters();
+                        parameter.Add("@Code", translationdata.Code);
+                        parameter.Add("@Type", translationdata.Type);
+                        parameter.Add("@Name", translationdata.Name);
+                        parameter.Add("@Value", translationdata.Value);
+                        parameter.Add("@Created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                        //parameter.Add("@modified_at", translationdata.modified_at);
+                        query = @"INSERT INTO translation.translation(code, type, name, value, created_at) " +
+                                "values(@Code,@Type,@Name,@Value,@Created_at) RETURNING id";
+                        var translationId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                        return translationStatus.Added;
+                    }
+                }
+                else
+                {
+                    return translationStatus.Failed;
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        //private static Translations[] ConvertList(byte [] file)
+        //{
+        //    List<Translations> tmpList = new List<Translations>();
+        //    foreach (Byte[] byteArray in file)
+        //        foreach (Byte singleByte in byteArray)
+        //            tmpList.Add(singleByte);
+        //    return tmpList.ToArray();
+        //}
 
         public async Task<IEnumerable<Translationupload>> GetFileUploadDetails(int FileID)
         {
@@ -410,16 +495,19 @@ namespace net.atos.daf.ct2.translation.repository
 
         }
 
-        private Translations MapfileDetails(dynamic record)
+        private Translationupload MapfileDetails(dynamic record)
         {
-            Translations Entity = new Translations();
-            Entity.Id = record.id;
-            Entity.Code = record.code;
-            Entity.Type = record.type;
-            Entity.Name = record.name;
-            Entity.Value = record.value;
+            Translationupload Entity = new Translationupload();
+            Entity.id = record.id;
+            Entity.file_name = record.file_name;
+            Entity.description = record.description;
+            Entity.file_size = record.file_size;
+            Entity.failure_count = record.failure_count;
             Entity.created_at = record.created_at;
-            Entity.modified_at = record.modified_at;
+            Entity.file = record.file;
+            Entity.added_count = record.added_count;
+            Entity.updated_count = record.updated_count;
+            Entity.created_by = record.created_by;
             return Entity;
         }
     }

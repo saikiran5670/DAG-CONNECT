@@ -20,6 +20,7 @@ namespace net.atos.daf.ct2.accountservice.Entity
     {
         public int MenuId { get; set; }
         public string Name { get; set; }
+        public string TranslatedMenuName { get; set; }        
         public string Url { get; set; }
         public string Key { get; set; }
         public int FeatureId { get; set; }
@@ -30,6 +31,7 @@ namespace net.atos.daf.ct2.accountservice.Entity
     {
         public int MenuId { get; set; }
         public string Name { get; set; }
+        public string TranslatedMenuName { get; set; }
         public string Url { get; set; }
         public string Key { get; set; }
         public int FeatureId { get; set; }

@@ -176,19 +176,17 @@ message TranslationUploadRequest
       int32 file_size =3;
       int32 failure_count =4;
       int32 created_by =5;
-      repeated FileData file =6;
+      repeated TranslationData file =6;
       int32 added_count =7;
       string updated_count =8;
 }
 
-message FileData
+message TranslationData
 {
-
       string code =1;
       string type =2;
       string name =3;
       string value =4;
-
 }
 
 message TranslationUploadResponse
@@ -219,7 +217,7 @@ message TranslationUpload
       int32 file_size =4;
       int32 failure_count =5;
       int32 created_by =6;
-      repeated Translation file =7;
+      bytes file =7;
       int32 added_count =8;
       string updated_count =9;
      // repeated Translation translations =9;

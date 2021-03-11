@@ -35,10 +35,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         }
 
-
-
-
-
         [HttpPost]
         [Route("create")]
         public async Task<IActionResult> Create(PackagePortalRequest request)
@@ -160,7 +156,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(404, "Package details are found.");
+                        return StatusCode(404, "Package details are not found.");
                     }
                 }
                 else

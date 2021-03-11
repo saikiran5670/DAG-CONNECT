@@ -69,8 +69,8 @@ export class EditCommonTableComponent implements OnInit {
 
       let roleDeleteObj = {
         accountId: this.data.accountInfo.id,
-        organizationId: this.data.accountInfo.organizationId,
-        roles: mapRoleIds
+        organizationId: this.data.accountInfo.organizationId
+        //roles: mapRoleIds
       }
 
       let selectedRoleIds = this.selectionData.selected.map(resp => resp.roleId);

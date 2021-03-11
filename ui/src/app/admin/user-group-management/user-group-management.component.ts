@@ -28,11 +28,12 @@ export class UserGroupManagementComponent implements OnInit {
     accountCount: true
   }
   accountgrp: AccountGroup = {
-    accountGroupId: 0,
-    organizationId: this.OrgId,
     accountId: 0,
-    accounts: true,
-    accountCount: true,
+    organizationId: this.OrgId,
+    accountGroupId: 0,
+    vehicleGroupId: 0,
+    roleId: 0,
+    name: ""
   }
   usrgrp: UserGroup = {
     organizationId: this.OrgId,
