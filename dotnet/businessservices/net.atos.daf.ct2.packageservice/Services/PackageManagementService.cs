@@ -82,22 +82,33 @@ namespace net.atos.daf.ct2.packageservice
         }
 
         //Delete
-        public override Task<PackageResponse> Delete(PackageDeleteRequest request, ServerCallContext context)
+        public async override Task<PackageResponse> Delete(PackageDeleteRequest request, ServerCallContext context)
         {
             try
             {
                 var result = _packageManager.Delete(request.Id).Result;
-                return Task.FromResult(new PackageResponse
+                var response = new PackageResponse();
+                if (result)
                 {
-                    Message = "Package deleted " + request.Id,
-                    Code = Responsecode.Success
-                });
+                    response.Code = Responsecode.Success;
+                    response.Message = "Package Delete.";
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = "Package Not Found.";
+                }
+
+                return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
-                return Task.FromResult(new PackageResponse
+                _logger.LogError("Error in package service:delete package  with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new PackageResponse
                 {
-                    Message = "Exception " + ex.Message
+                    Code = Responsecode.Failed,
+                    Message = "Package Deletion Faile due to - " + ex.Message,
+                     
                 });
             }
         }

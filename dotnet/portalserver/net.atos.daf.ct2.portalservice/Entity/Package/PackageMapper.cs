@@ -113,7 +113,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
             featureSetRequest.Features.AddRange(featureSetId);
 
             var ObjResponse = await _featureclient.CreateFeatureSetAsync(featureSetRequest);
-            return Convert.ToInt32(ObjResponse.Message);
+            return ObjResponse.FeatureSetID;
 
         }
 
@@ -147,9 +147,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
             featureSetRequest.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds(); 
             featureSetIds = featureSetIds.Select(x => x).Distinct().ToList();
             featureSetRequest.Features.AddRange(featureSetIds);
+            featureSetRequest.FeatureSetID = featureSetId;
 
-            var ObjResponse = await _featureclient.CreateFeatureSetAsync(featureSetRequest);
-            return Convert.ToInt32(ObjResponse.Message);
+            var ObjResponse = await _featureclient.UpdateFeatureSetAsync(featureSetRequest);
+            return ObjResponse.FeatureSetID;
 
         }
 

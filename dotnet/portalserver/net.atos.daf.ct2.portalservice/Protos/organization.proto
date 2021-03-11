@@ -18,7 +18,42 @@ service OrganizationService {
   rpc UpdatePreference (AccountPreference) returns (AccountPreferenceResponse);
   rpc DeletePreference (IdRequest) returns (AccountPreferenceResponse);
   rpc GetPreference (IdRequest) returns (OrganizationPreferenceResponse);
+
+  //ORG Relationship manager
+   rpc CreateOrgRelationship (OrgRelationshipCreateRequest) returns (OrgRelationshipCreateResponse);
+  rpc UpdateOrgRelationship (OrgRelationshipCreateRequest) returns (OrgRelationshipCreateResponse);
+  rpc DeleteOrgRelationship (OrgRelationshipDeleteRequest) returns (OrgRelationshipDeleteResponse);
+
 }
+
+
+message OrgRelationshipCreateRequest{
+    int32 id = 1;
+    string name=2;
+    string description =3;
+    string level=4;
+    string code=5;
+    repeated string features=6;
+    int32 featuresetid =7; 
+}
+
+message OrgRelationshipCreateResponse{
+  Responcecode Code=1;
+  string Message = 2;
+  OrgRelationshipCreateRequest OrgRelation = 3;
+ 
+}
+    message OrgRelationshipDeleteRequest{
+      int32 Id = 1;
+    }
+   message OrgRelationshipDeleteResponse
+    {
+     Responcecode Code=1;
+     string Message = 2;
+     OrgRelationshipCreateRequest OrgRelationshipRequest= 3;      
+    }
+
+
 
   message OrgCreateRequest {
     int32 id = 1;

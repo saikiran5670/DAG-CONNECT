@@ -84,5 +84,30 @@ namespace net.atos.daf.ct2.translation
             }
         }
 
+        public async Task<Translationupload> InsertTranslationFileDetails(Translationupload translationupload)
+        {
+            try
+            {
+                var result = await Translationrepository.InsertTranslationFileDetails(translationupload);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<Translationupload>> GetFileUploadDetails(int FileID)
+        {
+            try
+            {
+                var result = await Translationrepository.GetFileUploadDetails(FileID);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

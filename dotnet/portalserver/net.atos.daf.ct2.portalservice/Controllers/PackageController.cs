@@ -242,7 +242,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "packageResponse is null");
+                    if (packageResponse.PackageList.Count == 0)
+                        return StatusCode(500, "package code already exists");
+                    else {
+                        return StatusCode(500, "Package response is null");
+                    }
                 }
             }
             catch (Exception ex)
