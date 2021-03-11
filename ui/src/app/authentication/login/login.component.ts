@@ -66,7 +66,7 @@ export class LoginComponent implements OnInit {
               id: data.body.accountInfo.id,
               organizationId: 0,
               email: "",
-              accountId: "",
+              accountIds: "",
               name: "",
               accountGroupId: 0
             }
