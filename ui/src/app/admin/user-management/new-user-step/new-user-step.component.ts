@@ -202,8 +202,7 @@ export class NewUserStepComponent implements OnInit {
           dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value != '' ?  this.firstFormGroup.controls.dateFormat.value : 2,
           timeFormatId: this.firstFormGroup.controls.timeFormat.value != '' ?  this.firstFormGroup.controls.timeFormat.value : 2,
           vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : 2,
-          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : 2,
-          driverId: ""
+          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : 2
         }
         
         this.accountService.createPreference(preferenceObj).subscribe(()=>{
@@ -226,7 +225,7 @@ export class NewUserStepComponent implements OnInit {
             this.callToLinkPopup(error.error); //--- show link popup
           }
           else if(error.error.account && error.error.account.organizationId == this.accountOrganizationId){
-            this.duplicateEmailMsg = true;
+            this.duplicateEmailMsg = true; //--- duplicate account
           }
         }
        });
@@ -268,6 +267,7 @@ export class NewUserStepComponent implements OnInit {
     this.firstFormGroup.get('salutation').setValue(accountInfo.salutation);
     this.firstFormGroup.get('firstName').setValue(accountInfo.firstName);
     this.firstFormGroup.get('lastName').setValue(accountInfo.lastName);
+    this.firstFormGroup.get('userType').setValue(accountInfo.type);
   }
 
   onUpdateUserData(){
@@ -570,8 +570,7 @@ export class NewUserStepComponent implements OnInit {
           dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value ? this.firstFormGroup.controls.dateFormat.value : 2,
           timeFormatId: this.firstFormGroup.controls.timeFormat.value ? this.firstFormGroup.controls.timeFormat.value : 2,
           vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value ? this.firstFormGroup.controls.vehDisplay.value : 2,
-          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value ? this.firstFormGroup.controls.landingPage.value : 2,
-          driverId: ""
+          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value ? this.firstFormGroup.controls.landingPage.value : 2
         }
         this.accountService.updateAccountPreference(prefObj).subscribe((data) => {
           if(linkStatus){
