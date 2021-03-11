@@ -11,6 +11,7 @@ using Group = net.atos.daf.ct2.group;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
 using Google.Protobuf;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.accountservice
 {
@@ -892,6 +893,74 @@ namespace net.atos.daf.ct2.accountservice
 
                 });
             }
+        }
+        #endregion
+
+        #region VehicleAccount AccessRelationship
+        
+        public override async Task<VehicleAccessRelationship> CreateVehicleAccessRelationship(VehicleAccessRelationship request, ServerCallContext context)
+        {
+            string validationMessage = string.Empty;
+            return request;
+
+            //try
+            //{
+            //    int vehicleGroupId = 0;
+            //    int accountGroupId = 0;
+            //    string groupName = string.Empty;
+            //    if (!request.IsGroup)
+            //    {
+            //        // create vehicle group with vehicle
+            //        long CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            //        groupName = ("VehicleGroup_" + request.OrganizationId.ToString() + CreatedAt.ToString()).Substring(0, 49);
+            //        var group = _mapper.ToGroupObject(Group.GroupType.Single, Group.ObjectType.VehicleGroup, groupName, Group.FunctionEnum.None,
+            //            request.Id, groupName, null, CreatedAt);
+            //        group = await groupmanager.Create(group);
+            //        vehicleGroupId = group.Id;
+            //    }
+            //    if (vehicleGroupId > 0)
+            //    {
+            //        foreach (var account in request.AccountsAccountGroup)
+            //        {
+            //            // create group type single
+            //            if (!account.IsGroup)
+            //            {
+            //                // create group for account
+            //                // create vehicle group with vehicle
+            //                group = new Group.Group();
+            //                group.GroupType = Group.GroupType.Single;
+            //                group.ObjectType = Group.ObjectType.AccountGroup;
+            //                group.Argument = null;
+            //                group.FunctionEnum = Group.FunctionEnum.None;
+            //                group.RefId = account.Id;
+            //                group.Description = null;
+            //                group.CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            //                groupName = ("AccountGroup_" + request.OrganizationId.ToString() + UTCHandling.GetUTCFromDateTime(DateTime.Now).ToString()).Substring(0, 49);
+            //                group.Name = groupName;
+            //                group = await groupmanager.Create(group);
+            //                accountGroupId = group.Id;
+            //                var accessRelationship = new account.entity.AccessRelationship();
+            //                accessRelationship.VehicleGroupId = vehicleGroupId;
+            //                accessRelationship.AccountGroupId = accountGroupId;
+            //                accessRelationship.AccessRelationType = (AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType);
+            //                var result = accountmanager.CreateAccessRelationship(accessRelationship);
+            //            }
+            //            else
+            //            {
+            //                var accessRelationship = new account.entity.AccessRelationship();
+            //                accessRelationship.VehicleGroupId = vehicleGroupId;
+            //                accessRelationship.AccountGroupId = account.Id;
+            //                accessRelationship.AccessRelationType = (AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType);
+            //                var result = accountmanager.CreateAccessRelationship(accessRelationship);
+            //            }
+            //        }
+            //    }
+            //    return null;
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw ex;
+            //}
         }
         #endregion
 

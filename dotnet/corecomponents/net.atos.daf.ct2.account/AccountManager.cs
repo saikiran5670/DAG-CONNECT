@@ -175,7 +175,70 @@ namespace net.atos.daf.ct2.account
         public async Task<AccountBlob> GetBlob(int blobId)
         {
             return await repository.GetBlob(blobId);
-        }        
+        }
+        #region AccessRelationship
+
+        //public VehicleAccessRelationship CreateVehicleAccessRelationship(VehicleAccessRelationship entity)
+        //{
+        //    // 
+        //    if (entity != null)
+        //    {
+                
+        //            if (!entity.IsGroup)
+        //            {
+        //                // create vehicle group with vehicle
+        //                int vehicleGroupId = 0;
+
+        //                // check all account or account group
+        //                foreach (var account in entity.AccountsAccountGroups)
+        //                {
+        //                    // create group type single
+        //                    if (!account.IsGroup)
+        //                    {
+        //                        // create group for account
+                                
+        //                        // 
+        //                    }
+        //                    else
+        //                    {
+
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    return entity;
+        //}
+
+        //public AccountAccessRelationship CreateAccountAccessRelationship(AccountAccessRelationship entity)
+        //{
+        //    // 
+        //    if (entity != null)
+        //    {
+
+        //        if (!entity.IsGroup)
+        //        {
+        //            // create vehicle group with vehicle
+        //            int vehicleGroupId = 0;
+
+        //            // check all account or account group
+        //            foreach (var account in entity.VehiclesVehicleGroups)
+        //            {
+        //                // create group type single
+        //                if (!account.IsGroup)
+        //                {
+        //                    // create group for account
+
+        //                    // 
+        //                }
+        //                else
+        //                {
+
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return entity;
+        //}
         public async Task<AccessRelationship> CreateAccessRelationship(AccessRelationship entity)
         {
             return await repository.CreateAccessRelationship(entity);
@@ -192,6 +255,7 @@ namespace net.atos.daf.ct2.account
         {
             return await repository.GetAccessRelationship(filter);
         }
+        #endregion 
         public async Task<bool> AddRole(AccountRole accountRoles)
         {
             return await repository.AddRole(accountRoles);

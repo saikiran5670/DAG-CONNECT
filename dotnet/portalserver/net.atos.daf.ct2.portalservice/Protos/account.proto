@@ -36,7 +36,8 @@ service AccountService
   rpc UpdateAccessRelationship (AccessRelationship) returns (AccessRelationshipResponse);
   rpc DeleteAccessRelationship (AccessRelationshipDeleteRequest) returns (AccessRelationshipResponse);
   rpc GetAccessRelationship (AccessRelationshipFilter) returns (AccessRelationshipDataList);
-
+  rpc CreateVehicleAccessRelationship (VehicleAccessRelationship) returns (VehicleAccessRelationship);
+  
   // Account Group Method
   rpc CreateGroup (AccountGroupRequest) returns (AccountGroupResponce);
   rpc UpdateGroup (AccountGroupRequest) returns (AccountGroupResponce);
@@ -380,3 +381,31 @@ message AccountIdentityRole
     int32 OrganizationId=3;
 }
 // End - Identity  
+
+// begin - vehicle-account access relatioship
+message VehicleAccessRelationship
+{
+
+    int32 Id=1;
+    string Name =2;
+    string AccessType=3;
+    bool IsGroup=4;
+    repeated RelationshipData AccountsAccountGroup = 5;
+    int32 OrganizationId=6;
+}
+message AccountAccessRelationship
+{
+    int32 Id=1;
+    string Name =2;
+    string AccessType=3;
+    bool IsGroup=4;
+    repeated RelationshipData VehiclesVehicleGroups = 5;
+    int32 OrganizationId=6;
+}
+message RelationshipData 
+{
+    int32 Id=1;
+    string Name=2;
+    bool IsGroup=3;
+}
+// end - vehicle-account access relatioship
