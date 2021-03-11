@@ -776,7 +776,7 @@ namespace net.atos.daf.ct2.account
             }
         }
 
-        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeaturesList(int accountId, int roleId, int organizationId)
+        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeaturesList(int accountId, int roleId, int organizationId, string languageCode)
         {
             try
             {
@@ -785,40 +785,35 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@account_id", accountId);
                 parameter.Add("@role_id", roleId);
                 parameter.Add("@organization_id", organizationId);
+                parameter.Add("@code", languageCode.ToLower());
 
                 string query =
-                    @"SELECT FeatureId, FeatureName, FeatureType, FeatureKey, FeatureLevel, MenuId, MenuName, ParentMenuName, MenuKey, MenuUrl, MenuSeqNo FROM
+                    @"SELECT 
+                    f.id as FeatureId, f.name as FeatureName, f.type as FeatureType, f.key as FeatureKey, f.level as FeatureLevel, mn.id as MenuId, mn.name as MenuName, tl.value as TranslatedValue, COALESCE(mn2.name, '') as ParentMenuName, mn.key as MenuKey, mn.url as MenuUrl, mn.seq_no as MenuSeqNo
+                    FROM
                     (
 	                    --Account Route
-	                    SELECT f.id as FeatureId, f.name as FeatureName, f.type as FeatureType, f.key as FeatureKey, f.level as FeatureLevel, mn.id as MenuId, mn.name as MenuName, COALESCE(mn2.name, '') as ParentMenuName, mn.key as MenuKey, mn.url as MenuUrl, mn.seq_no as MenuSeqNo
+	                    SELECT r.feature_set_id
 	                    FROM master.Account acc
 	                    INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.id = @account_id AND ar.role_id = @role_id AND acc.is_active = True
 	                    INNER JOIN master.Role r ON ar.role_id = r.id AND r.is_active = True
-	                    INNER JOIN master.FeatureSet fset ON fset.id = r.feature_set_id AND fset.is_active = True
-	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
-	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True
-	                    LEFT JOIN master.Menu mn ON mn.feature_id = f.id AND mn.is_active = True
-	                    LEFT JOIN master.Menu mn2 ON mn.parent_id = mn2.id AND mn2.is_active = True
 	                    UNION
 	                    --Subscription Route
-	                    SELECT f.id as FeatureId, f.name as FeatureName, f.type as FeatureType, f.key as FeatureKey, f.level as FeatureLevel, mn.id as MenuId, mn.name as MenuName, COALESCE(mn2.name, '') as ParentMenuName, mn.key as MenuKey, mn.url as MenuUrl, mn.seq_no as MenuSeqNo
+	                    SELECT pkg.feature_set_id
 	                    FROM master.Subscription s
 	                    INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @organization_id AND s.is_active = True AND pkg.is_active = True
-	                    INNER JOIN master.FeatureSet fset ON fset.id = pkg.feature_set_id AND fset.is_active = True
-	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
-	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True
-	                    LEFT JOIN master.Menu mn ON mn.feature_id = f.id AND mn.is_active = True
-	                    LEFT JOIN master.Menu mn2 ON mn.parent_id = mn2.id AND mn2.is_active = True
 	                    UNION
 	                    --Org Relationship Route
-	                    SELECT f.id as FeatureId, f.name as FeatureName, f.type as FeatureType, f.key as FeatureKey, f.level as FeatureLevel, mn.id as MenuId, mn.name as MenuName, COALESCE(mn2.name, '') as ParentMenuName, mn.key as MenuKey, mn.url as MenuUrl, mn.seq_no as MenuSeqNo
+	                    SELECT orel.feature_set_id
 	                    FROM master.OrgRelationship orel
-	                    INNER JOIN master.FeatureSet fset ON fset.id = orel.feature_set_id AND orel.organization_id = @organization_id AND fset.is_active = True
-	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
-	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True
-	                    LEFT JOIN master.Menu mn ON mn.feature_id = f.id AND mn.is_active = True
-	                    LEFT JOIN master.Menu mn2 ON mn.parent_id = mn2.id AND mn2.is_active = True
-                    ) finalTbl
+	                    WHERE orel.organization_id = @organization_id
+                    ) fsets
+                    INNER JOIN master.FeatureSet fset ON fsets.feature_set_id = fset.id AND fset.is_active = True
+                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True
+                    LEFT JOIN master.Menu mn ON mn.feature_id = f.id AND mn.is_active = True
+                    LEFT JOIN master.Menu mn2 ON mn.parent_id = mn2.id AND mn2.is_active = True
+                    LEFT JOIN translation.translation tl ON tl.name = mn.name AND lower(tl.code) = @code
                     ORDER BY MenuId, MenuSeqNo";
 
                 var record = await dataAccess.QueryAsync<MenuFeatureDto>(query, parameter);
