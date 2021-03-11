@@ -25,7 +25,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                 Name = request.Name,
                 Description = request.Description,
                 Status = ToPackageStatus(request.Status),
-                Type = ToPackageType(request.Type),
+                Type = request.Type,
 
             };
             createPackagerequest.Features.AddRange(request.Features.Select(x => x.ToString()));
@@ -73,7 +73,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                         Description = x.Description,
                         Name = x.Name,
                         Status = ToPackageStatus(x.Status),
-                        Type = ToPackageType(x.Type)
+                        Type = x.Type
                     };
                     packageRequest.Packages.Add(pkgRequest);
                 }
@@ -144,11 +144,12 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                 }
             }
 
-            featureSetRequest.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds(); 
-            featureSetIds = featureSetIds.Select(x => x).Distinct().ToList();
-            featureSetRequest.Features.AddRange(featureSetIds);
-            featureSetRequest.FeatureSetID = featureSetId;
 
+
+
+            featureSetRequest.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds(); 
+             featureSetRequest.Features.Add(featureSetIds.Select(x => x).Distinct().ToArray());
+            featureSetRequest.FeatureSetID = featureSetId;
             var ObjResponse = await _featureclient.UpdateFeatureSetAsync(featureSetRequest);
             return ObjResponse.FeatureSetID;
 

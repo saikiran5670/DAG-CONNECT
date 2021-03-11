@@ -139,13 +139,19 @@ namespace net.atos.daf.ct2.accountservice
                 if (account.isDuplicate)
                 {
                     response.Message = "The duplicate account.";
-                    response.Code = Responcecode.Failed;
+                    response.Code = Responcecode.Conflict;
                     response.Account = _mapper.ToAccount(account);
                 }
                 else if (account.isError)
                 {
                     response.Message = "There is an error creating account.";
                     response.Code = Responcecode.Failed;
+                }
+                else if (account.isErrorInEmail)
+                {
+                    response.Message = "There is an error while sending account confirmation email to the account user.";
+                    response.Code = Responcecode.Failed;
+                    response.Account = _mapper.ToAccount(account);
                 }
                 else
                 {
