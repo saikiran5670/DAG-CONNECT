@@ -108,7 +108,7 @@ namespace net.atos.daf.ct2.portalservice
             });
             services.AddGrpcClient<OrganizationService.OrganizationServiceClient>(o =>
             {
-                o.Address = new Uri(featureservice);
+                o.Address = new Uri(organizationservice);
             });
             services.AddGrpcClient<TranslationService.TranslationServiceClient>(o =>
             {
