@@ -13,6 +13,9 @@ using NpgsqlTypes;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.translation.entity;
 using static net.atos.daf.ct2.translation.Enum.translationenum;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+using System.Transactions;
 
 namespace net.atos.daf.ct2.translation.repository
 {
@@ -340,38 +343,50 @@ namespace net.atos.daf.ct2.translation.repository
         {
             try
             {
-                var InsertFileDetailsQueryStatement = @"INSERT INTO translation.translationupload(
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    var InsertFileDetailsQueryStatement = @"INSERT INTO translation.translationupload(
                                                              file_name, description, file_size, failure_count, created_at, file, added_count, updated_count, created_by)
                                                            VALUES (@file_name, @description, @file_size, @failure_count, @created_at, @file, @added_count, @updated_count,@created_by)
                                                              RETURNING id";
 
-                var parameter = new DynamicParameters();
-                parameter.Add("@file_name", translationupload.file_name);
-                parameter.Add("@description", translationupload.description);
-                parameter.Add("@file_size", translationupload.file_size);
-                parameter.Add("@failure_count", translationupload.failure_count);
-                parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-                parameter.Add("@file", translationupload.file);
-                parameter.Add("@added_count", translationupload.added_count);
-                parameter.Add("@updated_count", translationupload.updated_count);
-                parameter.Add("@created_by", translationupload.created_by);
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@file_name", translationupload.file_name);
+                    parameter.Add("@description", translationupload.description);
+                    parameter.Add("@file_size", translationupload.file_size);
+                    parameter.Add("@failure_count", translationupload.failure_count);
+                    parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                    parameter.Add("@file", translationupload.file);
+                    parameter.Add("@added_count", translationupload.added_count);
+                    parameter.Add("@updated_count", translationupload.updated_count);
+                    parameter.Add("@created_by", translationupload.created_by);
 
-                int InsertedFileUploadID = await dataAccess.ExecuteScalarAsync<int>(InsertFileDetailsQueryStatement, parameter);
+                    int InsertedFileUploadID = await dataAccess.ExecuteScalarAsync<int>(InsertFileDetailsQueryStatement, parameter);
 
-                // List<Translations[]> myBytes = new List<Translations[]>(translationupload.file);
-                //ConvertList(translationupload.file);
+                    // Convert Byte array to List Type
+                    //List<Translations> myList;
+                    //BinaryFormatter bf = new BinaryFormatter();
+                    //using (Stream ms = new MemoryStream(translationupload.file))
+                    //{
+                    //    myList = (List<Translations>)bf.Deserialize(ms);
+                    //}
 
-                //if (translationupload.file != null)
-                //{
-                //    foreach (var item in translationupload.file)
-                //    {
-                //        var parameterfeature = ImportExcelDataIntoTranslations(translationupload);
-                //    }
-                //}
+                    if (translationupload.translations != null)
+                    {
+                        // foreach (var item in myList)
+                        // {
+                        var parameterfeature = ImportExcelDataIntoTranslations(translationupload.translations);
+                        // }
+                    }
+                    if (InsertedFileUploadID > 0)
+                    {
+                        translationupload.id = InsertedFileUploadID;
+                    }
 
-                translationupload.id = InsertedFileUploadID;
-               
-                return translationupload;
+                    transactionScope.Complete();
+
+                    return translationupload;
+                }
 
 
             }
