@@ -345,7 +345,14 @@ namespace net.atos.daf.ct2.group
             entity.ObjectType = (ObjectType)Convert.ToChar(record.object_type);
             entity.GroupType = (GroupType)Convert.ToChar(record.group_type);
             entity.Argument = record.argument;
-            entity.FunctionEnum = (FunctionEnum) Convert.ToChar(record.function_enum);
+            if (record.function_enum == null)
+            {
+                entity.FunctionEnum = FunctionEnum.None;
+            }
+            else
+            {
+                entity.FunctionEnum = (FunctionEnum)Convert.ToChar(record.function_enum);
+            }
             entity.OrganizationId = record.organization_id;
             entity.RefId = record.ref_id;
             if ((object)record.created_at != null)
