@@ -162,14 +162,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
      [HttpPost]      
      [Route("importdrivers")]
-     public async Task<IActionResult> ImportDrivers(List<DriverRequest> drivers, int OrganizationId)
+     public async Task<IActionResult> ImportDrivers(List<DriverRequest> drivers)
         {              
             try 
             {   
-                if (OrganizationId<=0)                   
-                {
-                    return StatusCode(404, "Please provide the correct organizationId.");
-                }  
                 if (drivers.Count<=0)                   
                 {
                     return StatusCode(404, "Please provide the driver list to import.");
@@ -177,7 +173,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 logger.LogInformation("Driver import function called ");   
                 net.atos.daf.ct2.driverservice.DriverImportRequest request=new DriverBusinessService.DriverImportRequest();
                 request=mapper.ToDriverImport(drivers);
-                request.OrgID=OrganizationId;
+               
+                if (request.OrgID<=0)                   
+                {
+                    return StatusCode(404, "Please provide the oganizationid import.");
+                }   
+                               
                 DriverBusinessService.DriverImportData response = await driverClient.ImportDriversAsync(request); 
                 return Ok("Driver Imported :" +response);                 
              }
