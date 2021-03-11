@@ -23,14 +23,12 @@ export class CommonFilterComponent implements OnInit {
   localData : any;
   @Output() filterValues : EventEmitter<any> = new EventEmitter();
   accountgrp: AccountGroup = {
-    // id: 1  ,
-    // name: '',
-    // description: '',
-    accountGroupId : 0,
-    organizationId : this.OrgId,
-    accountId : 0,
-    accounts : true,
-    accountCount : true,
+    accountId: 0,
+    organizationId: this.OrgId,
+    accountGroupId: 0,
+    vehicleGroupId: 0,
+    roleId: 0,
+    name: ""
   }
 
   roleObj = { 
