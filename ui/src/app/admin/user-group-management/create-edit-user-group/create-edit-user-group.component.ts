@@ -23,11 +23,12 @@ export interface vehGrpCreation {
 export class CreateEditUserGroupComponent implements OnInit {
   OrgId: number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
   accountgrp: AccountGroup = {
-    accountGroupId: 0,
-    organizationId: this.OrgId,
     accountId: 0,
-    accounts: true,
-    accountCount: true,
+    organizationId: this.OrgId,
+    accountGroupId: 0,
+    vehicleGroupId: 0,
+    roleId: 0,
+    name: ""
   }
   createaccountgrp = {
     id: 0,

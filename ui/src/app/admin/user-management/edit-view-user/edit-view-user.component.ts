@@ -229,15 +229,14 @@ export class EditViewUserComponent implements OnInit {
     let objData: any = {
       id: 0,
       refId: this.accountInfoData.id,
-      languageId: this.generalSettingForm.controls.language.value ? this.generalSettingForm.controls.language.value : 5,
-      timezoneId: this.generalSettingForm.controls.timeZone.value ? this.generalSettingForm.controls.timeZone.value : 45,
-      unitId: this.generalSettingForm.controls.unit.value ? this.generalSettingForm.controls.unit.value : 8,
-      currencyId: this.generalSettingForm.controls.currency.value ? this.generalSettingForm.controls.currency.value : 3,
-      dateFormatTypeId: this.generalSettingForm.controls.dateFormat.value ? this.generalSettingForm.controls.dateFormat.value : 10,
-      timeFormatId: this.generalSettingForm.controls.timeFormat.value ? this.generalSettingForm.controls.timeFormat.value : 8,
-      vehicleDisplayId: this.generalSettingForm.controls.vehDisplay.value ? this.generalSettingForm.controls.vehDisplay.value : 8,
-      landingPageDisplayId: this.generalSettingForm.controls.landingPage.value ? this.generalSettingForm.controls.landingPage.value : 10,
-      driverId: ""
+      languageId: this.generalSettingForm.controls.language.value ? this.generalSettingForm.controls.language.value : 2,
+      timezoneId: this.generalSettingForm.controls.timeZone.value ? this.generalSettingForm.controls.timeZone.value : 2,
+      unitId: this.generalSettingForm.controls.unit.value ? this.generalSettingForm.controls.unit.value : 2,
+      currencyId: this.generalSettingForm.controls.currency.value ? this.generalSettingForm.controls.currency.value : 2,
+      dateFormatTypeId: this.generalSettingForm.controls.dateFormat.value ? this.generalSettingForm.controls.dateFormat.value : 2,
+      timeFormatId: this.generalSettingForm.controls.timeFormat.value ? this.generalSettingForm.controls.timeFormat.value : 2,
+      vehicleDisplayId: this.generalSettingForm.controls.vehDisplay.value ? this.generalSettingForm.controls.vehDisplay.value : 2,
+      landingPageDisplayId: this.generalSettingForm.controls.landingPage.value ? this.generalSettingForm.controls.landingPage.value : 2
     }
 
     this.accountService.updateAccountPreference(objData).subscribe((data) => {
@@ -272,7 +271,8 @@ export class EditViewUserComponent implements OnInit {
         firstName: this.accountInfoForm.controls.firstName.value,
         lastName: this.accountInfoForm.controls.lastName.value,
         type: this.accountInfoForm.controls.userType.value,
-        organization_Id: this.accountInfoData.organizationId  // 32
+        organizationId: this.accountInfoData.organizationId,
+        driverId: ""
     }
     this.accountService.updateAccount(objData).subscribe((data)=>{
       this.accountInfoData = data;
