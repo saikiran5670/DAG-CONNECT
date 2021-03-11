@@ -21,6 +21,7 @@ namespace net.atos.daf.ct2.features
         Task<FeatureSet> UpdateFeatureSet(FeatureSet featureSet);
         //Task<int> CreateDataattributeSetFeature(Feature feature, int InserteddataAttributeSetID);
         Task<int> CreateDataattributeFeature(Feature feature);
+        Task<Feature> UpdateFeature(Feature feature);
         Task<IEnumerable<DataAttribute>> GetDataAttributes();
     }
 }
