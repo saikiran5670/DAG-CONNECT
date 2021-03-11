@@ -93,6 +93,7 @@ namespace TCUProvisioning
                 GroupId = consumergroup,
                 AutoOffsetReset = AutoOffsetReset.Earliest,
                 BrokerVersionFallback = "1.0.0",
+                EnableAutoCommit = false
                 //Debug = "security,broker,protocol"    //Uncomment for librdkafka debugging information
             };
             return config;

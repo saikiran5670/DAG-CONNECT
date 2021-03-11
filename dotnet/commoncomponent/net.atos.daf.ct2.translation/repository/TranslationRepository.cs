@@ -317,19 +317,14 @@ namespace net.atos.daf.ct2.translation.repository
 
 
         }
-        public int CheckImportDataExist(string Name, string Code)
+        public  List<Translations> GetAllTranslations()
         {
             try
             {
-                var QueryStatement = @" SELECT CASE WHEN id IS NULL THEN 0 ELSE id END
-                                    FROM translation.translation
-                                    WHERE name= @name
-                                     AND code = @code
-                                     ";
+                var QueryStatement = @" SELECT *
+                                    FROM translation.translation  ";
                 var parameter = new DynamicParameters();
-                parameter.Add("@name", Name);
-                parameter.Add("@code", Code);
-                int result = dataAccess.ExecuteScalar<int>(QueryStatement, parameter);
+                var result = dataAccess.ExecuteScalar<List<Translations>>(QueryStatement, parameter);
                 return result;
             }
             catch (Exception ex)
@@ -395,6 +390,61 @@ namespace net.atos.daf.ct2.translation.repository
                 throw ex;
             }
 
+        }
+
+        public async Task<translationStatus> InsertTranslationFileData(Translations translationdata,List<Translations> TranslationsList)
+        {
+            try
+            {
+                int IsUpdated = 0;
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                //TranslationsList = GetAllTranslations(translationdata.Name, translationdata.Code);
+                var translationcodeList = TranslationsList.Where(I => I.Name == translationdata.Name).ToList();
+                if (translationcodeList != null && translationcodeList.Count > 0)
+                {
+                    var translationobjdata = translationcodeList.Where(I => I.Name == translationdata.Name && I.Code == translationdata.Code).FirstOrDefault();
+                    if (translationobjdata != null)
+                    {
+                        parameter = new DynamicParameters();
+                        parameter.Add("@Code", translationdata.Code);
+                        parameter.Add("@Type", translationdata.Type);
+                        parameter.Add("@Name", translationdata.Name);
+                        parameter.Add("@Value", translationdata.Value);
+                        //parameter.Add("@Created_at", translationdata.created_at);
+                        parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                        query = @"update translation.translation set (code, type, name, value,  modified_at) " +
+                                "values(code= @Code,type= @ype,name= @Name,value = @Value,modified_at = @modified_at) RETURNING id";
+                        var translationId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                        return translationStatus.Updated;
+                    }
+                    else
+                    {
+
+                        parameter = new DynamicParameters();
+                        parameter.Add("@Code", translationdata.Code);
+                        parameter.Add("@Type", translationdata.Type);
+                        parameter.Add("@Name", translationdata.Name);
+                        parameter.Add("@Value", translationdata.Value);
+                        parameter.Add("@Created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                        //parameter.Add("@modified_at", translationdata.modified_at);
+                        query = @"INSERT INTO translation.translation(code, type, name, value, created_at) " +
+                                "values(@Code,@Type,@Name,@Value,@Created_at) RETURNING id";
+                        var translationId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                        return translationStatus.Added;
+                    }
+                }
+                else
+                {
+                    return translationStatus.Failed;
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         //private static Translations[] ConvertList(byte [] file)

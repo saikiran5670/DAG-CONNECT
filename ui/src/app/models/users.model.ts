@@ -36,14 +36,12 @@ export class UserGroup {
 }
 
 export class AccountGroup {
-    // id: number;
-    // name: string;
-    // description: string;
     accountGroupId : number;
     organizationId : number;
     accountId : number;
-    accounts : boolean;
-    accountCount : boolean;
+    vehicleGroupId: number;
+    roleId: number;
+    name: string;
 }
 
 export class createAccountGroup {
