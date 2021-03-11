@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
                     response.Dropdownname.Add(new DropdownName() { Dropdownname = item });
                 }
             }
-            response.Languagecode = request.Langaugecode;
+            response.Languagecode = request.Languagecode;
            
             return response;
         }

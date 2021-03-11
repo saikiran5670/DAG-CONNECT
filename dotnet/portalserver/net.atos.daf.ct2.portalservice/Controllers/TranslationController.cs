@@ -40,7 +40,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (string.IsNullOrEmpty(request.Code) || string.IsNullOrEmpty(request.Type))
                 {
-                    return StatusCode(400, "Langauge code and type required..");
+                    return StatusCode(400, "Language code and type required..");
                 }
                 _logger.LogInformation("Get translation Menu  method get " + request.Code + " " + request.MenuId);
 
@@ -77,7 +77,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (string.IsNullOrEmpty(request.Languagecode))
                 {
-                    return StatusCode(400, "Langauge code  required..");
+                    return StatusCode(400, "Language code  required..");
                 }
                 _logger.LogInformation("Get translation Common  method get " + request.Languagecode);
 
@@ -187,7 +187,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (string.IsNullOrEmpty(request.Languagecode.Trim()) || string.IsNullOrEmpty(request.Dropdownname.Trim()))
                 {
-                    return StatusCode(400, "Langauge code and dropdown  required..");
+                    return StatusCode(400, "Language code and dropdown  required..");
                 }
                 _logger.LogInformation("Drop down method get" + request.Dropdownname + request.Languagecode);
 
@@ -222,9 +222,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(request.Langaugecode.Trim()))
+                if (string.IsNullOrEmpty(request.Languagecode.Trim()))
                 {
-                    return StatusCode(400, "Langauge code and dropdown  required..");
+                    return StatusCode(400, "Language code and dropdown  required..");
                 }
 
                 dropdownarrayRequest transdropdown = new dropdownarrayRequest();
@@ -264,7 +264,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (string.IsNullOrEmpty(request.Languagecode.Trim()))
                 {
-                    return StatusCode(400, "Langauge code and dropdown  required..");
+                    return StatusCode(400, "Language code and dropdown  required..");
                 }
                 PreferenceResponse ResponseList = await _translationServiceClient.GetTranslationsPreferencDropDownsAsync(request);
 
@@ -294,14 +294,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("languagecodes")]
         public async Task<IActionResult> GetAllLanguagecodes([FromQuery] Request request)
         {
-            _logger.LogInformation("All langauges method get");
+            _logger.LogInformation("All languages method get");
 
             TranslationListResponce ResponseList = await _translationServiceClient.GetAllLanguagecodesAsync(request);
 
             if (ResponseList != null
-                 && ResponseList.Message == "There is an error In GetAllLangaugecodes.")
+                 && ResponseList.Message == "There is an error In GetAllLanguagecodes.")
             {
-                return StatusCode(500, "There is an error In GetAllLangaugecodes.");
+                return StatusCode(500, "There is an error In GetAllLanguagecodes.");
             }
             else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
             {
@@ -309,7 +309,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             else
             {
-                return StatusCode(500, "GetAllLangaugecodes Response is null");
+                return StatusCode(500, "GetAllLanguagecodes Response is null");
             }
         }
     }
