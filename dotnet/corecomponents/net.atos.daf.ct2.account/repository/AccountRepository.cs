@@ -788,7 +788,7 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@code", languageCode);
 
                 string query =
-                    @"SELECT 
+                    @"SELECT DISTINCT
                     f.id as FeatureId, f.name as FeatureName, f.type as FeatureType, f.key as FeatureKey, f.level as FeatureLevel, mn.id as MenuId, mn.name as MenuName, tl.value as TranslatedValue, COALESCE(mn2.name, '') as ParentMenuName, mn.key as MenuKey, mn.url as MenuUrl, mn.seq_no as MenuSeqNo
                     FROM
                     (
@@ -811,8 +811,8 @@ namespace net.atos.daf.ct2.account
                     INNER JOIN master.FeatureSet fset ON fsets.feature_set_id = fset.id AND fset.is_active = True
                     INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
                     INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True
-                    LEFT JOIN master.Menu mn ON mn.feature_id = f.id AND mn.is_active = True
-                    LEFT JOIN master.Menu mn2 ON mn.parent_id = mn2.id AND mn2.is_active = True
+                    LEFT JOIN master.Menu mn ON mn.feature_id = f.id AND mn.is_active = True AND mn.id <> 0
+                    LEFT JOIN master.Menu mn2 ON mn.parent_id = mn2.id AND mn2.is_active = True AND mn2.id <> 0
                     LEFT JOIN translation.translation tl ON tl.name = mn.key AND tl.code = @code
                     ORDER BY MenuId, MenuSeqNo";
 

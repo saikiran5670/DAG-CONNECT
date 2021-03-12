@@ -430,8 +430,8 @@ namespace net.atos.daf.ct2.account
             Uri baseUrl = new Uri(emailConfiguration.PortalServiceBaseUrl);
             //var templateString = EmailHelper.GetTemplateHtmlString(templateType);
 
-            if (string.IsNullOrEmpty(templateString))
-                return false;
+            //if (string.IsNullOrEmpty(templateString))
+            //    return false;
 
             switch (templateType)
             {
