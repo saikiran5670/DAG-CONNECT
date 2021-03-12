@@ -402,12 +402,14 @@ namespace net.atos.daf.ct2.driver
                     objDriver.FirstName= item.FirstName;    
                     objDriver.LastName= item.LastName;    
                     objDriver.Email= item.Email; 
+                    objDriver.Status= "PASS"; 
                     lstdrivers.Add(objDriver);  
                 }                
             }      
                 catch (Exception ex)
                 {    
-                   objDriver.ReturnMessage=ex.Message;   
+                   objDriver.ReturnMessage=ex.Message; 
+                   objDriver.Status="FAIL";   
                    lstdrivers.Add(objDriver);            
                   // dicMessage.Add(ErrorMessage,ex.Message);
                 }            

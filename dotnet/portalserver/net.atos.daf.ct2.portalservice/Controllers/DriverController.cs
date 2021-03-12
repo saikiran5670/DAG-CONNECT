@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             
         private readonly DriverBusinessService.DriverService.DriverServiceClient driverClient;
         private string FK_Constraint = "violates foreign key constraint";
-        private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
+       // private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         
         public DriverController(ILogger<DriverController> _logger, DriverBusinessService.DriverService.DriverServiceClient _driverClient)
         {
@@ -85,7 +85,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 logger.LogInformation("Driver update function called ");     
                 DriverBusinessService.DriverUpdateResponse orgResponse = await driverClient.UpdateAsync(request); 
-                return Ok("Driver Updated :" +orgResponse);                 
+                return Ok(orgResponse);                 
              }
             catch(Exception ex)
             {         
@@ -118,7 +118,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 idRequest.OrgID=organizationId;          
                 logger.LogInformation("Driver update function called ");     
                 DriverBusinessService.DriverDeleteResponse response = await driverClient.DeleteAsync(idRequest); 
-                return Ok("Driver Updated :" +response);                 
+                return Ok(response);                 
              }
             catch(Exception ex)
             {         
@@ -147,7 +147,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }             
                 logger.LogInformation("Driver UpdateOptinOptout function called ");     
                 DriverBusinessService.OptOutOptInResponse response = await driverClient.UpdateOptinOptoutAsync(Optrequest); 
-                return Ok("Driver OptInOptOut Updated :" +response);                 
+                return Ok(response);                 
              }
             catch(Exception ex)
             {         
@@ -180,7 +180,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }                                  
                 DriverBusinessService.DriverImportData response = await driverClient.ImportDriversAsync(request); 
                 
-                return Ok("Driver Imported :" +response);                 
+                return Ok(response);                 
              }
             catch(Exception ex)
             {         
