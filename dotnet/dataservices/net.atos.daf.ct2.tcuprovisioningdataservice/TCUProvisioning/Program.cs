@@ -20,9 +20,6 @@ namespace TCUProvisioning
             TCUProvisioningDataProcess provisionVehicle = new TCUProvisioningDataProcess(log);
             provisionVehicle.readTCUProvisioningData();
 
-            Console.ReadKey();
-
-
         }
     }
 }

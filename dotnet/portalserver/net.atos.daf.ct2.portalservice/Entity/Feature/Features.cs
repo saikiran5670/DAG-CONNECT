@@ -19,5 +19,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Feature
         public string Key { get; set; }
         public int[] DataAttributeIds { get; set; }
         public int Level { get; set; }
+        public StatusType FeatureState { get; set; }
     }
 }

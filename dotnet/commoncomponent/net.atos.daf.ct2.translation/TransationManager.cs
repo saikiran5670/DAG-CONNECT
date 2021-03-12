@@ -116,7 +116,7 @@ namespace net.atos.daf.ct2.translation
         {
             try
             {
-                var TranslationsList = Translationrepository.GetAllTranslations();
+                var TranslationsList = await Translationrepository.GetAllTranslations();
                 var result = await Translationrepository.InsertTranslationFileData(translationupload, TranslationsList);
                 //Translationupload v = new Translationupload();
                 return result;

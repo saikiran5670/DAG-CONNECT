@@ -7,7 +7,9 @@ namespace net.atos.daf.ct2.subscription.entity
 		public string OrganizationId { get; set; }//M
 		public string packageId { get; set; }//M
 		public string[] VINs { get; set; }
+		public DateTime StartDateTime { get; set; }
 		
+
 	}
 	public class SubscriptionResponse
 	{

@@ -3,6 +3,7 @@ using log4net;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using TCUReceive;
@@ -17,7 +18,6 @@ namespace TCUProvisioning
         private string connStr = ConfigurationManager.AppSetting["EH_CONNECTION_STRING"];
         private string consumergroup = ConfigurationManager.AppSetting["CONSUMER_GROUP"];
         private string topic = ConfigurationManager.AppSetting["EH_NAME"];
-        private string psqlconnstring = ConfigurationManager.AppSetting["psqlconnstring"];
         private string cacertlocation = ConfigurationManager.AppSetting["CA_CERT_LOCATION"];
 
         public TCUProvisioningDataProcess(ILog log)
@@ -31,8 +31,7 @@ namespace TCUProvisioning
 
             using (var consumer = new ConsumerBuilder<Null, string>(config).Build())
             {
-                CancellationTokenSource cts = new CancellationTokenSource();
-                Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
+             
                 log.Info("Subscribing Topic");
                 consumer.Subscribe(topic);
 
@@ -41,24 +40,31 @@ namespace TCUProvisioning
                     try
                     {
                         log.Info("Consuming Messages");
-                        var msg = consumer.Consume(cts.Token);
+                        ConsumeResult<Null, string> msg = consumer.Consume();
                         String TCUDataFromTopic = msg.Message.Value;
                         TCUDataReceive TCUDataReceive = JsonConvert.DeserializeObject<TCUDataReceive>(TCUDataFromTopic);
                         String DAFData = createTCUDataInDAFFormat(TCUDataReceive);
 
                         Console.WriteLine(DAFData);
 
+                        log.Info("Commiting message");
+                        consumer.Commit(msg);
+
                     }
                     catch (ConsumeException e)
                     {
                         log.Error($"Consume error: {e.Error.Reason}");
-
+                        consumer.Close();
+                        Environment.Exit(1);
                     }
                     catch (Exception e)
                     {
                         log.Error($"Error: {e.Message}");
+                        consumer.Close();
+                        Environment.Exit(1);
 
                     }
+                    
                 }
             }
         }
@@ -66,7 +72,6 @@ namespace TCUProvisioning
 
         private static String createTCUDataInDAFFormat(TCUDataReceive TCUDataReceive)
         {
-
             TCU tcu = new TCU(TCUDataReceive.DeviceIdentifier, "Bosch", "1.0");
             TCURegistrationEvent TCURegistrationEvent = new TCURegistrationEvent(TCUDataReceive.Vin, tcu, "Yes", TCUDataReceive.ReferenceDate);
             List<TCURegistrationEvent> TCURegistrationEvents = new List<TCURegistrationEvent>();
@@ -98,22 +103,6 @@ namespace TCUProvisioning
             };
             return config;
         }
-
-
-      
-
-
-    
-
-
-     
-
-       
-
-
-
-  
-       
 
 
     }

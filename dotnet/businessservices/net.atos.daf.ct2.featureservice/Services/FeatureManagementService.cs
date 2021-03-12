@@ -76,7 +76,7 @@ namespace net.atos.daf.ct2.featureservice
                         FeatureRequest ObjResponce = new FeatureRequest();
                         ObjResponce.Id = item.Id;
                         ObjResponce.Name = item.Name;
-                        ObjResponce.Status = item.Is_Active;
+                        ObjResponce.State = (FeatureState)Enum.Parse(typeof(FeatureState), item.state.ToString().ToUpper());
                         ObjResponce.Key = item.Key == null ? "" : item.Key;
                         ObjResponce.Type = item.Type.ToString();
                         features.Features.Add(ObjResponce);
@@ -92,8 +92,35 @@ namespace net.atos.daf.ct2.featureservice
                         FeatureRequest ObjResponce = new FeatureRequest();
                         ObjResponce.Id = item.Id;
                         ObjResponce.Name = item.Name;
-                        ObjResponce.Status = item.Is_Active;
+                        //ObjResponce.Status = item.Is_Active;
+                        //ObjResponce.State = (FeatureState)Enum.Parse(typeof(FeatureState), item.state.ToString().ToUpper());
+                        ObjResponce.State = item.state == "I" ? FeatureState.Inactive : FeatureState.Active;
                         ObjResponce.Key = item.Key == null ? "" : item.Key;
+                        if (item.Type.ToString() == "D")
+                        {
+                            try
+                            {
+                                ObjResponce.DataAttribute = new DataAttributeSetRequest();
+                                var DataAttributeSet = await _FeaturesManager.GetDataAttributeset(item.Data_attribute_Set_id);
+                                ObjResponce.DataAttribute.Name = DataAttributeSet.Name;
+                                ObjResponce.DataAttribute.IsExclusive = DataAttributeSet.Is_exlusive;
+                                ObjResponce.DataAttribute.Description = DataAttributeSet.Description;
+                                ObjResponce.DataAttribute.DataAttributeSetId = DataAttributeSet.ID;
+                                //ObjResponce.DataAttribute.DataAttributeIDs = new 
+                                foreach (var items in DataAttributeSet.DataAttributes)
+                                {
+                                    ObjResponce.DataAttribute.DataAttributeIDs.Add(items.ID);
+                                }
+                                ObjResponce.DataAttribute.Name = DataAttributeSet.Name;
+                            }
+                            catch (Exception)
+                            {
+
+                                
+                            }
+                            
+                        }
+                        
                         ObjResponce.Type = item.Type.ToString();
                         features.Features.Add(ObjResponce);
                     }
@@ -125,7 +152,7 @@ namespace net.atos.daf.ct2.featureservice
                     DataAttributeResponce responce = new DataAttributeResponce();
                     responce.Id = item.ID;
                     responce.Name = item.Name;
-                    responce.Description = item.Description;
+                    responce.Description = item.Description == null ? "" : item.Description;
                     responce.Key = item.Key == null ? "" : item.Key;
                     Dataresponce.Responce.Add(responce);
                 }
@@ -145,13 +172,14 @@ namespace net.atos.daf.ct2.featureservice
                 Feature FeatureObj = new Feature();
                 FeatureObj.Name = featureRequest.Name;
                 FeatureObj.Level = featureRequest.Level;
-                FeatureObj.Is_Active = featureRequest.Status;
+                
                 FeatureObj.Description = featureRequest.Description;
                 FeatureObj.DataAttributeSets = new DataAttributeSet();
                 FeatureObj.DataAttributeSets.Name = featureRequest.DataAttribute.Name;
                 FeatureObj.DataAttributeSets.Description = featureRequest.DataAttribute.Description;
                 //FeatureObj.DataAttributeSets.Is_exlusive = featureRequest.DataAttribute.AttributeType.ToString();
-                FeatureObj.DataAttributeSets.Is_exlusive = (DataAttributeSetType)Enum.Parse(typeof(DataAttributeSetType), featureRequest.DataAttribute.AttributeType.ToString().ToUpper());
+                FeatureObj.FeatureState = (StatusType)Enum.Parse(typeof(StatusType), featureRequest.State.ToString().ToUpper());
+                FeatureObj.DataAttributeSets.Is_exlusive = featureRequest.DataAttribute.IsExclusive;
                 FeatureObj.DataAttributeSets.DataAttributes = new List<DataAttribute>();
                 foreach (var item in featureRequest.DataAttribute.DataAttributeIDs)
                 {
@@ -163,8 +191,10 @@ namespace net.atos.daf.ct2.featureservice
                 return await Task.FromResult(new FeatureResponce
                 {
                     Message = "Feature Created Successfully",
-                    Code = Responcecode.Success
-                });
+                    Code = Responcecode.Success,
+                    FeatureID = result
+
+                }) ;
             }
             catch (Exception ex)
             {
@@ -182,14 +212,15 @@ namespace net.atos.daf.ct2.featureservice
                 Feature FeatureObj = new Feature();
                 FeatureObj.Name = featureRequest.Name;
                 FeatureObj.Level = featureRequest.Level;
-                FeatureObj.Is_Active = featureRequest.Status;
+                FeatureObj.Key = featureRequest.Key;
+                //FeatureObj.Is_Active = featureRequest.State;
                 FeatureObj.Description = featureRequest.Description;
                 FeatureObj.DataAttributeSets = new DataAttributeSet();
                 FeatureObj.DataAttributeSets.Name = featureRequest.DataAttribute.Name;
                 FeatureObj.DataAttributeSets.ID = featureRequest.DataAttribute.DataAttributeSetId;
                 FeatureObj.DataAttributeSets.Description = featureRequest.DataAttribute.Description;
-                //FeatureObj.DataAttributeSets.Is_exlusive = featureRequest.DataAttribute.AttributeType.ToString();
-                FeatureObj.DataAttributeSets.Is_exlusive = (DataAttributeSetType)Enum.Parse(typeof(DataAttributeSetType), featureRequest.DataAttribute.AttributeType.ToString().ToUpper());
+                FeatureObj.DataAttributeSets.Is_exlusive = featureRequest.DataAttribute.IsExclusive;
+                FeatureObj.FeatureState = (StatusType)Enum.Parse(typeof(StatusType), featureRequest.State.ToString().ToUpper());
                 FeatureObj.DataAttributeSets.DataAttributes = new List<DataAttribute>();
                 foreach (var item in featureRequest.DataAttribute.DataAttributeIDs)
                 {
@@ -228,7 +259,7 @@ namespace net.atos.daf.ct2.featureservice
                 featureset.FeatureSetID = featureSetRequest.FeatureSetID;
                 featureset.Name = featureSetRequest.Name; // "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds()
                 featureset.description = featureSetRequest.Description;
-                featureset.status = featureSetRequest.Active == true ? StatusType.Active : StatusType.InActive;
+                featureset.status = featureSetRequest.Active == true ? StatusType.ACTIVE : StatusType.INACTIVE;
 
                 featureset.modified_by = featureSetRequest.ModifiedBy;
                 featureset.Features = new List<Feature>();

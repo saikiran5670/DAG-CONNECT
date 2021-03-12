@@ -6,7 +6,7 @@ namespace net.atos.daf.ct2.features
 {
     public enum StatusType
     {
-            Active = 'A',
-            InActive = 'I'
+            ACTIVE = 'A',
+            INACTIVE = 'I'
     }
 }

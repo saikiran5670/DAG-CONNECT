@@ -167,20 +167,26 @@ message Language{
     message DropdownName {  
   string Dropdownname = 1;  
 }
+
 message TranslationUploadRequest
 {
 
-      int32 id =1;
-      string file_name =2;
-      string description =3;
-      int32 file_size =4;
-      int32 failure_count =5;
-      int32 created_by =6;
-     // byte file =7;
-      int32 added_count =7;
-      string updated_count =8;
-      repeated Translation translations =9;
+      string file_name =1;
+      string description =2;
+      int32 file_size =3;
+      int32 failure_count =4;
+     // int32 created_by =5;
+      repeated TranslationData file =5;
+      int32 added_count =6;
+      string updated_count =7;
+}
 
+message TranslationData
+{
+      string code =1;
+      string type =2;
+      string name =3;
+      string value =4;
 }
 
 message TranslationUploadResponse
@@ -210,8 +216,8 @@ message TranslationUpload
       string description =3;
       int32 file_size =4;
       int32 failure_count =5;
-      int32 created_by =6;
-     // byte file =7;
+      //int32 created_by =6;
+      bytes file =6;
       int32 added_count =7;
       string updated_count =8;
      // repeated Translation translations =9;

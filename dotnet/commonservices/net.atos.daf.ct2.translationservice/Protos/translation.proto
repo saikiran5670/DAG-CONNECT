@@ -175,10 +175,10 @@ message TranslationUploadRequest
       string description =2;
       int32 file_size =3;
       int32 failure_count =4;
-      int32 created_by =5;
-      repeated TranslationData file =6;
-      int32 added_count =7;
-      string updated_count =8;
+     // int32 created_by =5;
+      repeated TranslationData file =5;
+      int32 added_count =6;
+      string updated_count =7;
 }
 
 message TranslationData
@@ -216,10 +216,10 @@ message TranslationUpload
       string description =3;
       int32 file_size =4;
       int32 failure_count =5;
-      int32 created_by =6;
-      bytes file =7;
-      int32 added_count =8;
-      string updated_count =9;
+      //int32 created_by =6;
+      bytes file =6;
+      int32 added_count =7;
+      string updated_count =8;
      // repeated Translation translations =9;
 
 }

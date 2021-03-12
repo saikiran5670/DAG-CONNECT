@@ -106,12 +106,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 FeatureRequest FeatureObj = new FeatureRequest();
                 FeatureObj.Name = featureRequest.Name;
                 FeatureObj.Level = featureRequest.Level;
-                FeatureObj.Status = featureRequest.Is_Active;
+                FeatureObj.State = (FeatureState)Enum.Parse(typeof(FeatureState), featureRequest.FeatureState.ToString());
                 FeatureObj.Description = featureRequest.Description;
                 FeatureObj.DataAttribute = new DataAttributeSetRequest();
                 FeatureObj.DataAttribute.Name = featureRequest.DataattributeSet.Name;
                 FeatureObj.DataAttribute.Description = featureRequest.DataattributeSet.Description;
-                //FeatureObj.DataAttributeSets.Is_exlusive = featureRequest.DataAttribute.AttributeType.ToString();
+                FeatureObj.DataAttribute.IsExclusive = featureRequest.DataattributeSet.is_Exclusive;
                 //FeatureObj.DataAttribute. = (DataAttributeSetType)Enum.Parse(typeof(DataAttributeSetType), featureRequest.DataAttribute.AttributeType.ToString().ToUpper());
 
                 foreach (var item in featureRequest.DataAttributeIds)
@@ -129,14 +129,69 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(500, "Internal Server Error.");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 //throw;
+                _logger.LogInformation("Create method in FeatureSet API called failed." + ex.Message);
                 return StatusCode(500, "Internal Server Error.");
             }
 
         }
 
+
+        [HttpPost]
+        [Route("update")]
+        public async Task<IActionResult> update(Features featureRequest)
+        {
+            try
+            {
+                _logger.LogInformation("Create method in FeatureSet API called.");
+
+
+                if (string.IsNullOrEmpty(featureRequest.Name))
+                {
+                    return StatusCode(401, "invalid featureSet Name: The featureSet Name is Empty.");
+                }
+                if (string.IsNullOrEmpty(featureRequest.Key))
+                {
+                    return StatusCode(401, "invalid FeatureSet Description : Feature Key is Empty.");
+                }
+                FeatureRequest FeatureObj = new FeatureRequest();
+                FeatureObj.Name = featureRequest.Name;
+                FeatureObj.Id = featureRequest.Id;
+                FeatureObj.Level = featureRequest.Level;
+                FeatureObj.State = (FeatureState)Enum.Parse(typeof(FeatureState), featureRequest.FeatureState.ToString());
+                FeatureObj.Description = featureRequest.Description;
+                FeatureObj.DataAttribute = new DataAttributeSetRequest();
+                FeatureObj.DataAttribute.Name = featureRequest.DataattributeSet.Name;
+                FeatureObj.DataAttribute.Description = featureRequest.DataattributeSet.Description;
+                FeatureObj.DataAttribute.IsExclusive = featureRequest.DataattributeSet.is_Exclusive;
+                FeatureObj.DataAttribute.DataAttributeSetId = featureRequest.DataattributeSet.ID;
+                //FeatureObj.DataAttribute. = (DataAttributeSetType)Enum.Parse(typeof(DataAttributeSetType), featureRequest.DataAttribute.AttributeType.ToString().ToUpper());
+
+                foreach (var item in featureRequest.DataAttributeIds)
+                {
+                    FeatureObj.DataAttribute.DataAttributeIDs.Add(item);
+                }
+
+                var responce = await _featureclient.UpdateAsync(FeatureObj);
+                if (responce.Code == Responcecode.Success)
+                {
+                    return Ok(responce);
+                }
+                else
+                {
+                    return StatusCode(500, "Internal Server Error.");
+                }
+            }
+            catch (Exception ex)
+            {
+                //throw;
+                _logger.LogInformation("Create method in FeatureSet API called failed." + ex.Message);
+                return StatusCode(500, "Internal Server Error.");
+            }
+
+        }
         [HttpGet]
         [Route("GetDataAttribute")]
         public async Task<IActionResult> GetDataAttributes()
@@ -158,7 +213,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [HttpGet]        
         [Route("getfeatures")]
 
-        public async Task<IActionResult> GetFeatures([FromBody] FeaturesFilterRequest request)
+        public async Task<IActionResult> GetFeatures([FromQuery] FeaturesFilterRequest request)
         {
             try
             {
