@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using log4net;
 using log4net.Config;
 
@@ -10,7 +11,7 @@ namespace TCUProvisioning
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        static async System.Threading.Tasks.Task Main(string[] args)
+        static async Task Main(string[] args)
         {
             
 
@@ -18,7 +19,7 @@ namespace TCUProvisioning
             XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
 
             TCUProvisioningDataProcess provisionVehicle = new TCUProvisioningDataProcess(log);
-            provisionVehicle.readTCUProvisioningData();
+            await provisionVehicle.readTCUProvisioningDataAsync();
 
         }
     }

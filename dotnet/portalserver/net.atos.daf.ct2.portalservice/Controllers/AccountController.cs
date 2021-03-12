@@ -383,12 +383,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         [HttpPost]
         [Route("resetpassword")]
+        [Route("createpassword")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
             try
             {
                 var resetPasswordRequest = new AccountBusinessService.ResetPasswordRequest();
-                resetPasswordRequest.ResetToken = request.ResetToken;
+                resetPasswordRequest.ProcessToken = request.ProcessToken;
                 resetPasswordRequest.Password = request.Password;
 
                 var response = await _accountClient.ResetPasswordAsync(resetPasswordRequest);
