@@ -152,7 +152,7 @@ namespace net.atos.daf.ct2.featureservice
                     DataAttributeResponce responce = new DataAttributeResponce();
                     responce.Id = item.ID;
                     responce.Name = item.Name;
-                    responce.Description = item.Description;
+                    responce.Description = item.Description == null ? "" : item.Description;
                     responce.Key = item.Key == null ? "" : item.Key;
                     Dataresponce.Responce.Add(responce);
                 }
