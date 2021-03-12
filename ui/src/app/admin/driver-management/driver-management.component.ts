@@ -32,7 +32,7 @@ export class DriverManagementComponent implements OnInit {
   dataSource: any;
   initData: any = [];
   importDriverPopup: boolean = false;
-  displayedColumns: string[] = ['driverId','firstName','emailId','consentStatus','action'];
+  displayedColumns: string[] = ['id','firstName','email','status','action'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   importDriverFormGroup: FormGroup;
@@ -171,7 +171,7 @@ export class DriverManagementComponent implements OnInit {
 
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
-      this.restMockData();
+      //this.restMockData();
       this.loadUsersData();
       this.setConsentDropdown();
     });
@@ -220,9 +220,9 @@ export class DriverManagementComponent implements OnInit {
 
   loadUsersData(){
     let drvId: any = 0;
-    this.driverService.getDrivers(this.accountOrganizationId, drvId).subscribe((driverList) => {
+    this.driverService.getDrivers(this.accountOrganizationId, drvId).subscribe((driverList: any) => {
       console.log("driverList ::", driverList);
-      this.initData = driverList;
+      this.initData = driverList.driver;
       this.onConsentChange(this.selectedConsentType);
     });
   }
@@ -243,11 +243,11 @@ export class DriverManagementComponent implements OnInit {
         break;
       }
       case "Opt-In":{
-        data = this.initData.filter((item: any) => item.consentStatus == 'Opt-In');
+        data = this.initData.filter((item: any) => item.status == 'I');
         break;
       }
       case "Opt-Out":{
-        data = this.initData.filter((item: any) => item.consentStatus == 'Opt-Out');
+        data = this.initData.filter((item: any) => item.status == 'U');
         break;
       }
     }
@@ -255,7 +255,7 @@ export class DriverManagementComponent implements OnInit {
   }
 
   updateGridData(tableData: any){
-    tableData = this.getNewTagData(tableData);
+   // tableData = this.getNewTagData(tableData);
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
@@ -528,11 +528,11 @@ export class DriverManagementComponent implements OnInit {
   }
 
   changeOptStatus(driverData: any){ //--- single opt-in/out mode
-    this.callToCommonTable(driverData, false, driverData.consentStatus);
+    this.callToCommonTable(driverData, false, driverData.status);
   }
   
   onConsentClick(consentType: string){ //--- All opt-in/out mode
-    this.callToCommonTable(this.driverRestData, true, consentType);
+    this.callToCommonTable(this.initData, true, consentType);
   }
 
   callToCommonTable(driverData: any, actionType: any, consentType: any){

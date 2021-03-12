@@ -27,11 +27,11 @@
               <input maxlength="19" placeholder="{{ translationData.lblDriverID || 'Driver ID' }}" matInput formControlName="driverId" required>
             </mat-form-field>
             <mat-error *ngIf="driverFormGroup.get('driverId').hasError('required')">
-              Driver ID is required.
+              {{ translationData.lblDriverIDirequired || 'Driver ID is required' }}
             </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ driverData.driverId }}</span>
+            <span style='font-weight: 500!important;'>{{ driverData.id }}</span>
           </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -51,20 +51,20 @@
             </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ driverData.emailId }}</span>
+            <span style='font-weight: 500!important;'>{{ driverData.email }}</span>
           </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblDriverIDConsentStatus || 'Driver ID Consent Status' }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'" style='margin-top: 8px;'>
             <mat-radio-group (change)='onConsentChange($event)' class='margin-top-10' formControlName="consentStatus">
-              <mat-radio-button style='margin-right: 20px;' [checked]="selectedConsentType === 'Inherit' ? true : false" value="Inherit">{{ translationData.lblInherit || 'Inherit' }}</mat-radio-button>
-              <mat-radio-button style='margin-right: 20px;' [checked]="selectedConsentType === 'Opt-In' ? true : false" value="Opt-In">{{ translationData.lblOptIn || 'Opt-In' }}</mat-radio-button>
-              <mat-radio-button [checked]="selectedConsentType === 'Opt-Out' ? true : false" value="Opt-Out">{{ translationData.lblOptOut || 'Opt-Out' }}</mat-radio-button>
+              <mat-radio-button style='margin-right: 20px;' [checked]="selectedConsentType === 'H' ? true : false" value="H">{{ translationData.lblInherit || 'Inherit' }}</mat-radio-button>
+              <mat-radio-button style='margin-right: 20px;' [checked]="selectedConsentType === 'I' ? true : false" value="I">{{ translationData.lblOptIn || 'Opt-In' }}</mat-radio-button>
+              <mat-radio-button [checked]="selectedConsentType === 'U' ? true : false" value="U">{{ translationData.lblOptOut || 'Opt-Out' }}</mat-radio-button>
             </mat-radio-group>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ driverData.inheritStatus ? 'Inherit' : driverData.consentStatus }}</span>
+            <span style='font-weight: 500!important;'>{{ (driverData.status == 'I') ? (translationData.lblOptIn || 'Opt-In') : (driverData.status == 'U') ? (translationData.lblOptOut || 'Opt-Out') : (translationData.lblInherit || 'Inherit') }}</span>
           </div>
         </div>
       </div>
