@@ -302,5 +302,56 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, "GetAllLanguagecodes Response is null");
             }
         }
+
+        [HttpPost]
+        [Route("Import")]
+        public async Task<IActionResult> InsertTranslationFileDetails(FileUploadRequest request)
+        {
+            _logger.LogInformation("InsertTranslationFileDetails Method post");
+
+            TranslationUploadRequest transupload = new TranslationUploadRequest();
+            transupload = _mapper.MapFileDetailRequest(request);
+
+            TranslationUploadResponse ResponseList = await _translationServiceClient.InsertTranslationFileDetailsAsync(transupload);
+
+            if (ResponseList != null
+                 && ResponseList.Message == "There is an error In InsertTranslationFileDetails.")
+            {
+                return StatusCode(500, "There is an error In InsertTranslationFileDetails.");
+            }
+            else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
+            {
+                return Ok(ResponseList);
+            }
+            else
+            {
+                return StatusCode(500, "InsertTranslationFileDetails Response is null");
+            }
+
+        }
+        [HttpGet]
+        [Route("UploadDetails")]
+        public async Task<IActionResult> GetFileUploadDetails([FromQuery] FileUploadDetailsRequest request)
+        {
+            _logger.LogInformation("GetFileUploadDetails Method get");
+
+            FileUploadDetailsResponse ResponseList = await _translationServiceClient.GetFileUploadDetailsAsync(request);
+
+            if (ResponseList != null
+                 && ResponseList.Message == "There is an error In GetFileUploadDetails.")
+            {
+                return StatusCode(500, "There is an error In GetFileUploadDetails.");
+            }
+            else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
+            {
+                return Ok(ResponseList);
+            }
+            else
+            {
+                return StatusCode(500, "GetFileUploadDetails Response is null");
+            }
+
+        }
+
     }
 }

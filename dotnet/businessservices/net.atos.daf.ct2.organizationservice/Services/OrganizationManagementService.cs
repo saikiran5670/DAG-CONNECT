@@ -16,23 +16,23 @@ namespace net.atos.daf.ct2.organizationservice
 {
     public class OrganizationManagementService : OrganizationService.OrganizationServiceBase
     {
-      
-        private readonly ILogger _logger;                
-        private readonly IAuditTraillib _AuditTrail;      
+
+        private readonly ILogger _logger;
+        private readonly IAuditTraillib _AuditTrail;
         private readonly IAuditTraillib auditlog;
         private readonly IOrganizationManager organizationtmanager;
         private readonly IPreferenceManager preferencemanager;
-        private readonly IVehicleManager vehicleManager;             
+        private readonly IVehicleManager vehicleManager;
         private readonly EntityMapper _mapper;
-      
-        
-        public OrganizationManagementService(ILogger<OrganizationManagementService> logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager,IAuditTraillib _auditlog)
+
+
+        public OrganizationManagementService(ILogger<OrganizationManagementService> logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager, IPreferenceManager _preferencemanager, IVehicleManager _vehicleManager, IAuditTraillib _auditlog)
         {
             _logger = logger;
             _AuditTrail = AuditTrail;
             organizationtmanager = _organizationmanager;
-            preferencemanager=_preferencemanager;
-            vehicleManager=_vehicleManager;
+            preferencemanager = _preferencemanager;
+            vehicleManager = _vehicleManager;
             auditlog = _auditlog;
             _mapper = new EntityMapper();
         }
@@ -57,8 +57,9 @@ namespace net.atos.daf.ct2.organizationservice
                 orgRelationship = await organizationtmanager.CreateOrgRelationship(orgRelationship);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Relationship Component", "Organization Relationship Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Create", 1, 2, orgRelationship.Id.ToString());
                 response.Code = Responcecode.Success;
-                response.Message = "Created";                
-                request.Id = orgRelationship.Id;              
+                response.Message = "Created";
+                request.Id = orgRelationship.Id;
+                response.OrgRelation = request;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -80,6 +81,7 @@ namespace net.atos.daf.ct2.organizationservice
                 var orgRelationship = new OrgRelationship();
                 var response = new OrgRelationshipCreateResponse();
                 orgRelationship.Id = request.Id;
+                orgRelationship.OrganizationId = request.OrganizationId;
                 orgRelationship.Code = request.Code;
                 orgRelationship.Name = request.Name;
                 orgRelationship.Level = request.Level;
@@ -90,8 +92,10 @@ namespace net.atos.daf.ct2.organizationservice
                 orgRelationship = await organizationtmanager.UpdateOrgRelationship(orgRelationship);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Relationship Component", "Organization Relationship Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Updated", 1, 2, orgRelationship.Id.ToString());
                 response.Code = Responcecode.Success;
-                response.Message = "Updated";
+                response.Message = "Org relatioship Updated Successfully";
                 request.Id = orgRelationship.Id;
+                response.OrgRelation = request;
+
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -106,32 +110,35 @@ namespace net.atos.daf.ct2.organizationservice
             }
         }
 
-        public async override Task<OrgRelationshipGetResponse> GetOrgRelationship(OrgRelationshipGetRequest request, ServerCallContext context)
+        public async override Task<OrgRelationshipGetResponse> GetOrgRelationship(OrgRelationshipCreateRequest request, ServerCallContext context)
         {
             try
             {
                 var response = new OrgRelationshipGetResponse();
                 var orgRelationshipFilter = new OrgRelationship();
                 orgRelationshipFilter.Id = request.Id;
+                orgRelationshipFilter.OrganizationId = request.OrganizationId;
                 orgRelationshipFilter.Code = request.Code;
                 orgRelationshipFilter.FeaturesetId = request.Featuresetid;
                 orgRelationshipFilter.Level = request.Level;
                 orgRelationshipFilter.Name = request.Name;
                 orgRelationshipFilter.Description = request.Description;
                 orgRelationshipFilter.IsActive = request.IsActive;
-                var packages = organizationtmanager.GetOrgRelationship(orgRelationshipFilter).Result;
-                response.OrgRelationshipList.AddRange(packages
+                var orgRelationships = organizationtmanager.GetOrgRelationship(orgRelationshipFilter).Result;
+                response.OrgRelationshipList.AddRange(orgRelationships
                                      .Select(x => new OrgRelationshipGetRequest()
                                      {
                                          Id = x.Id,
+                                         OrganizationId = x.OrganizationId,
                                          Code = x.Code,
                                          Description = x.Description,
                                          Name = x.Name,
                                          Featuresetid = x.FeaturesetId,
-                                         Level =x.Level,
+                                         Level = x.Level,
                                          IsActive = x.IsActive
                                      }).ToList());
-                _logger.LogInformation("Get org relationship details.");                
+                _logger.LogInformation("Get org relationship details.");
+                response.Code = Responcecode.Success;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -181,30 +188,30 @@ namespace net.atos.daf.ct2.organizationservice
         //Organization
 
         public override async Task<OrganizationCreateData> Create(OrgCreateRequest request, ServerCallContext context)
-        {             
+        {
             try
-            {                 
-                Organization organization = new Organization();      
-                OrganizationCreateData response = new OrganizationCreateData();     
-                organization.OrganizationId=request.OrgId;
-                organization.Type=request.Type;
-                organization.Name=request.Name;
-                organization.AddressType=request.AddressType;
-                organization.AddressStreet=request.Street;
-                organization.AddressStreetNumber=request.StreetNumber;
-                organization.City=request.City;
-                organization.CountryCode=request.CountryCode;
-                organization.reference_date=Convert.ToDateTime(request.ReferenceDate);
+            {
+                Organization organization = new Organization();
+                OrganizationCreateData response = new OrganizationCreateData();
+                organization.OrganizationId = request.OrgId;
+                organization.Type = request.Type;
+                organization.Name = request.Name;
+                organization.AddressType = request.AddressType;
+                organization.AddressStreet = request.Street;
+                organization.AddressStreetNumber = request.StreetNumber;
+                organization.City = request.City;
+                organization.CountryCode = request.CountryCode;
+                organization.reference_date = Convert.ToDateTime(request.ReferenceDate);
                 organization = await organizationtmanager.Create(organization);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Component", "Organization Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Organization Create", 1, 2, organization.Id.ToString());
-                response.Code = Responcecode.Success;              
+                response.Code = Responcecode.Success;
                 response.Message = "Created";
-                request.Id= organization.Id;
+                request.Id = organization.Id;
                 response.Organization = _mapper.TOOrgUpdateResponse(request);
                 return await Task.FromResult(response);
-             }
+            }
             catch (Exception ex)
-            {              
+            {
                 _logger.LogError("Orgganization Service: Create : " + ex.Message + " " + ex.StackTrace);
                 return await Task.FromResult(new OrganizationCreateData
                 {
@@ -213,48 +220,48 @@ namespace net.atos.daf.ct2.organizationservice
                     Organization = null
                 });
             }
-        }   
+        }
 
         public override async Task<OrganizationUpdateData> Update(OrgUpdateRequest request, ServerCallContext context)
-        {             
+        {
             try
-            {                 
-                Organization organization = new Organization();      
-                OrganizationUpdateData response = new OrganizationUpdateData();                    
-                organization.Id=request.Id;
-                organization.OrganizationId=request.OrgId;
-                organization.Type=request.Type;
-                organization.Name=request.Name;
-                organization.AddressType=request.AddressType;
-                organization.AddressStreet=request.Street;
-                organization.AddressStreetNumber=request.StreetNumber;
-                organization.City=request.City;
-                organization.CountryCode=request.CountryCode;
-                organization.reference_date=Convert.ToDateTime(request.ReferenceDate); 
-                organization.vehicle_default_opt_in=request.VehicleDefaultOptIn;
-                organization.driver_default_opt_in=request.DriverDefaultOptIn;
-                var OrgId= await organizationtmanager.Update(organization);                  
-               
-                if(OrgId.Id==0)
+            {
+                Organization organization = new Organization();
+                OrganizationUpdateData response = new OrganizationUpdateData();
+                organization.Id = request.Id;
+                organization.OrganizationId = request.OrgId;
+                organization.Type = request.Type;
+                organization.Name = request.Name;
+                organization.AddressType = request.AddressType;
+                organization.AddressStreet = request.Street;
+                organization.AddressStreetNumber = request.StreetNumber;
+                organization.City = request.City;
+                organization.CountryCode = request.CountryCode;
+                organization.reference_date = Convert.ToDateTime(request.ReferenceDate);
+                organization.vehicle_default_opt_in = request.VehicleDefaultOptIn;
+                organization.driver_default_opt_in = request.DriverDefaultOptIn;
+                var OrgId = await organizationtmanager.Update(organization);
+
+                if (OrgId.Id == 0)
                 {
-                     response.Message ="Organization ID not exist"; 
+                    response.Message = "Organization ID not exist";
                 }
-                else if(OrgId.Id==-1)
+                else if (OrgId.Id == -1)
                 {
-                    response.Message ="This organization is already exist"; 
+                    response.Message = "This organization is already exist";
                 }
                 else
                 {
                     await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Component", "Organization Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Organization Updated", 1, 2, organization.Id.ToString());
                     response.Code = Responcecode.Success;
                     response.Message = "Organization updated";
-                    request.Id= organization.Id;
-                    response.Organization = _mapper.TOOrgUpdateResponse(request);                  
-                }     
-                return await Task.FromResult(response);             
+                    request.Id = organization.Id;
+                    response.Organization = _mapper.TOOrgUpdateResponse(request);
+                }
+                return await Task.FromResult(response);
             }
             catch (Exception ex)
-            {              
+            {
                 _logger.LogError("Orgganization Service: Updated : " + ex.Message + " " + ex.StackTrace);
                 return await Task.FromResult(new OrganizationUpdateData
                 {
@@ -263,22 +270,22 @@ namespace net.atos.daf.ct2.organizationservice
                     Organization = null
                 });
             }
-        } 
+        }
 
         public override async Task<OrganizationGetData> Get(IdRequest request, ServerCallContext context)
         {
-           
-                net.atos.daf.ct2.organization.entity.OrganizationResponse  organization=new net.atos.daf.ct2.organization.entity.OrganizationResponse();
-                 OrganizationGetData response = new OrganizationGetData();          
-                _logger.LogInformation("Get Organization .");    
-                organization= await organizationtmanager.Get(request.Id);              
-                response.Organization=_mapper.ToOrganizationResponse(organization);
-                response.Message = "Get";
-                response.Code = Responcecode.Success;                              
-                return await Task.FromResult(response);           
+
+            net.atos.daf.ct2.organization.entity.OrganizationResponse organization = new net.atos.daf.ct2.organization.entity.OrganizationResponse();
+            OrganizationGetData response = new OrganizationGetData();
+            _logger.LogInformation("Get Organization .");
+            organization = await organizationtmanager.Get(request.Id);
+            response.Organization = _mapper.ToOrganizationResponse(organization);
+            response.Message = "Get";
+            response.Code = Responcecode.Success;
+            return await Task.FromResult(response);
         }
 
-       public override async Task<AccountPreferenceResponse> CreatePreference(AccountPreference request, ServerCallContext context)
+        public override async Task<AccountPreferenceResponse> CreatePreference(AccountPreference request, ServerCallContext context)
         {
             try
             {
@@ -338,14 +345,14 @@ namespace net.atos.daf.ct2.organizationservice
         {
             try
             {
-                var result = await preferencemanager.Delete(request.Id,Preference.PreferenceType.Account);
+                var result = await preferencemanager.Delete(request.Id, Preference.PreferenceType.Account);
                 var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Oeganization Component", "Delete Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Preference", 1, 2, Convert.ToString(request.Id)).Result;
                 // response 
                 AccountPreferenceResponse response = new AccountPreferenceResponse();
                 if (result)
                 {
                     response.Code = Responcecode.Success;
-                    response.Message = "Preference Delete.";                    
+                    response.Message = "Preference Delete.";
                 }
                 else
                 {
@@ -365,21 +372,21 @@ namespace net.atos.daf.ct2.organizationservice
                 });
             }
         }
-    
+
         public override async Task<OrganizationPreferenceResponse> GetPreference(IdRequest request, ServerCallContext context)
         {
-             try
+            try
             {
                 Preference.AccountPreferenceFilter preferenceFilter = new Preference.AccountPreferenceFilter();
                 preferenceFilter.Id = request.Id;
-                preferenceFilter.PreferenceType = Preference.PreferenceType.Organization; 
+                preferenceFilter.PreferenceType = Preference.PreferenceType.Organization;
                 _logger.LogInformation("Get account preference.");
                 var result = await organizationtmanager.GetPreference(preferenceFilter.Id);
                 // response 
                 OrganizationPreferenceResponse response = new OrganizationPreferenceResponse();
-                response.Code = Responcecode.Success;                
+                response.Code = Responcecode.Success;
                 response.Message = "Get";
-                response.OrganizationPreference= _mapper.ToPreferenceResponse(result);
+                response.OrganizationPreference = _mapper.ToPreferenceResponse(result);
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
