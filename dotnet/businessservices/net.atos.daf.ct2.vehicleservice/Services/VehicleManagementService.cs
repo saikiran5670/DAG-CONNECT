@@ -606,5 +606,103 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
         }
 
+        public override async Task<VehicleGroupDeleteResponce> SetOTAStatus(VehicleOtaRequest request, ServerCallContext context)
+        {
+            try
+            {
+                bool result = await _vehicelManager.SetOTAStatus(request.IsOta, request.ModifiedBy,request.VehicleId);
+                var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "SetOTAStatus", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set OTA status", 1, 2, Convert.ToString(request.VehicleId)).Result;
+                return await Task.FromResult(new VehicleGroupDeleteResponce
+                {
+                    Message = "Vehicle OTA Status updated.",
+                    Code = Responcecode.Success,
+                    Result = result
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in vehicle SetOTAStatus :SetOTAStatus with exception - " + ex.StackTrace + ex.Message);
+                return await Task.FromResult(new VehicleGroupDeleteResponce
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+
+        public override async Task<VehicleGroupDeleteResponce> Terminate(VehicleTerminateRequest request, ServerCallContext context)
+        {
+            try
+            {
+                bool result = await _vehicelManager.Terminate(request.IsTerminate, request.ModifiedBy, request.VehicleId);
+                var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Terminate", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set Terminate status", 1, 2, Convert.ToString(request.VehicleId)).Result;
+                return await Task.FromResult(new VehicleGroupDeleteResponce
+                {
+                    Message = "Vehicle Terminate Status updated.",
+                    Code = Responcecode.Success,
+                    Result = result
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in vehicle Terminate :Terminate with exception - " + ex.StackTrace + ex.Message);
+                return await Task.FromResult(new VehicleGroupDeleteResponce
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+
+        public override async Task<VehicleGroupDeleteResponce> SetOptInStatus(VehicleOptInRequest request, ServerCallContext context)
+        {
+            try
+            {
+                bool result = await _vehicelManager.SetOptInStatus(Convert.ToChar(request.IsOptIn), request.ModifiedBy, request.VehicleId);
+                var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "SetOptInStatus", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set Opt In status", 1, 2, Convert.ToString(request.VehicleId)).Result;
+                return await Task.FromResult(new VehicleGroupDeleteResponce
+                {
+                    Message = "Vehicle Opt In Status updated.",
+                    Code = Responcecode.Success,
+                    Result = result
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in vehicle SetOptInStatus :SetOptInStatus with exception - " + ex.StackTrace + ex.Message);
+                return await Task.FromResult(new VehicleGroupDeleteResponce
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
+
+
+        public override async Task<VehicleDetailsResponce> GetVehicle(VehicleIdRequest request, ServerCallContext context)
+        {
+            try
+            {
+              
+                Vehicle ObjRetrieveVehicle = await _vehicelManager.GetVehicle(request.VehicleId);
+                VehicleDetailsResponce responce = new VehicleDetailsResponce();
+                responce.Vehicle=_mapper.ToVehicle(ObjRetrieveVehicle);
+                responce.Message = "Vehicles data retrieved";
+                responce.Code = Responcecode.Success;
+                _logger.LogInformation("Get method in vehicle service called.");
+                return await Task.FromResult(responce);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new VehicleDetailsResponce
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Get faile due to with reason : " + ex.Message
+                });
+            }
+
+
+        }
     }
 }

@@ -22,6 +22,10 @@ service VehicleService {
   rpc GetOrganizationVehicleGroupdetails (OrganizationIdRequest) returns (OrgVehicleGroupListResponse);
   rpc GetVehicleGroup (OrgvehicleIdRequest) returns (VehicleGroupDetailsResponse);
   rpc GetVehiclesByAccountGroup (OrgAccountIdRequest) returns (VehicleGroupRefResponce);
+  rpc SetOTAStatus (VehicleOtaRequest) returns (VehicleGroupDeleteResponce);
+  rpc Terminate (VehicleTerminateRequest) returns (VehicleGroupDeleteResponce);
+  rpc SetOptInStatus (VehicleOptInRequest) returns (VehicleGroupDeleteResponce);
+  rpc GetVehicle (VehicleIdRequest) returns (VehicleDetailsResponce);
 }
 
 enum VehicleStatusType{
@@ -103,7 +107,7 @@ message VehicleDetails {
   string Name = 3;
   string Vin=4;
   string LicensePlateNumber=5;
-string Status=6;
+google.protobuf.StringValue Status=6;
 google.protobuf.StringValue StatusDate=7;
 google.protobuf.StringValue TerminationDate=8;
 google.protobuf.StringValue Vid=9;
@@ -119,7 +123,6 @@ int32 Oem_Id=18;
 int32 Oem_Organisation_id=19;
 string Opt_In=20;
 bool Is_Ota=21;
-
 
 }
 
@@ -246,4 +249,32 @@ message VehicleGroupDeleteResponce{
   Responcecode code=1;
   string message = 2;
   bool result=3; 
+}
+
+message VehicleOtaRequest{
+  bool Is_Ota=1;
+  int32 Modified_By=2;
+  int32 Vehicle_Id=3;
+}
+
+message VehicleTerminateRequest{
+  bool Is_Terminate=1;
+  int32 Modified_By=2;
+  int32 Vehicle_Id=3;
+}
+
+message VehicleOptInRequest{
+  string Is_OptIn=1;
+  int32 Modified_By=2;
+  int32 Vehicle_Id=3;
+}
+
+message VehicleIdRequest {
+  int32 VehicleId = 1;
+}
+
+message VehicleDetailsResponce {
+  Responcecode code=1;
+  string message = 2;
+  VehicleDetails vehicle=3;
 }
