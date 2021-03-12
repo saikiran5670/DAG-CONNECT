@@ -17,9 +17,11 @@ import { DataInterchangeService } from './services/data-interchange.service';
 import { AccountService } from './services/account.service';
 import { RoleService } from './services/role.service';
 import { OrganizationService } from './services/organization.service';
+import { DriverService } from './services/driver.service';
+import { FeatureService } from './services/feature.service';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
-   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
+  return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
   //return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
 }
 
@@ -45,7 +47,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     PreferencesModule
     //RouterModule.forRoot(appRoute)
   ],
-  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}, DataInterchangeService, AccountService, RoleService, OrganizationService],
+  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}, DataInterchangeService, AccountService, RoleService, OrganizationService, DriverService, FeatureService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

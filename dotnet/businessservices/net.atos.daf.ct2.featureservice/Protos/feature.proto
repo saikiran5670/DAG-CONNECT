@@ -33,7 +33,7 @@ message DataAtributeRequest
     string Name= 2;
     string Key =3;
     string type= 4;
-    bool status=5;
+    FeatureState State=5;
     DataAttributeSetRequest DataAttribute = 6;  
     string Description =7;
     int32 Level=8;
@@ -43,7 +43,7 @@ message DataAtributeRequest
   {
     string Name= 1;
     string Description =2;
-    DataAttributeType AttributeType=6;
+    bool IsExclusive=6;
     int32 data_attribute_set_id= 7;
     repeated int32 DataAttributeIDs = 8;
     int32 Created_by= 9;
@@ -60,16 +60,24 @@ message DataAtributeRequest
   string Message = 2;  
   repeated DataAttributeResponce responce=3;
   }
-  enum DataAttributeType
+
+
+   enum FeatureState
   {
-    Excluded =0;
+    Active =0;
     Inactive = 1;
   }
 
+   enum DataAttributeType
+  {
+    Exclusive =0;
+    Inclusive = 1;
+  }
   message FeatureResponce
   {
   Responcecode Code=1;
   string Message = 2;  
+  int32 FeatureID=3;
 }
 
  message FeatureSetResponce

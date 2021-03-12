@@ -120,9 +120,7 @@ enum TranslationType{
     string Languagecode = 1;
     }
     
-     message PreferenceResponse {
-    Responcecode Code=1;
-    string Message = 2; 
+     message PreferenceResponse {    
     repeated Translation language =3;
     repeated Translation unit =4;
     repeated Translation timezone =5;
@@ -131,7 +129,6 @@ enum TranslationType{
     repeated Translation dateformat =8;
     repeated Translation timeformat =9;
     repeated Translation vehicledisplay =10;
-    PreferenceRequest  TranslationsPreferencDropDowns =11;
     }
 
    message Translation{
