@@ -5,6 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { CustomValidators } from '../../../shared/custom.validators';
+import { FeatureService } from '../../../services/feature.service'
 
 @Component({
   selector: 'app-create-edit-view-features',
@@ -19,22 +20,22 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   @Input() selectedElementData: any;
   @Output() createViewEditFeatureEmit = new EventEmitter<object>();
   breadcumMsg: any = '';  
-  displayedColumns: string[] = ['select', 'dataAttribute'];
+  displayedColumns: string[] = ['name', 'select'];
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   featureFormGroup: FormGroup;
   selectionForDataAttribute = new SelectionModel(true, []);
   initData: any = [];
-  selectedSetType: any = 'exclusive';
-  selectedStatus: any = 'active';
+  selectedSetType: any ;
+  selectedStatus: any ;
   
   vehGrpName: string = '';
   showLoadingIndicator: any;
   createStatus:boolean;
   duplicateMsg:boolean;
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder, private featureService: FeatureService) { }
 
   ngOnInit() {
     this.featureFormGroup = this._formBuilder.group({
@@ -55,10 +56,10 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     //this.featureFormGroup.get("featureName").setValue(this.selectedElementData.name);
     //this.featureFormGroup.get("featureDescription").setValue(this.selectedElementData.featureDescription);
     //this.featureFormGroup.get("featureType").setValue(this.selectedElementData.type);
-    this.featureFormGroup.get("dataAttributeSetName").setValue(this.selectedElementData.setName);
-    this.featureFormGroup.get("dataAttributeDescription").setValue(this.selectedElementData.dataAttributeDescription);
-    this.selectedSetType = this.selectedElementData.setType.toLowerCase();
-    this.selectedStatus = this.selectedElementData.status.toLowerCase();
+    this.featureFormGroup.get("dataAttributeSetName").setValue(this.selectedElementData.name);
+    this.featureFormGroup.get("dataAttributeDescription").setValue(this.selectedElementData.description);
+    this.selectedSetType = this.selectedElementData.dataAttribute.isExclusive;
+    this.selectedStatus = this.selectedElementData.state;
   }
 
   getBreadcum(type: any){
@@ -69,13 +70,13 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     let selectedDataAttributeList: any = [];
     if(this.actionType == 'view'){
       tableData.forEach((row: any) => {
-        let search = this.selectedElementData.dataAttribute.filter((item: any) => item.id == row.id);
-        if (search.length > 0) {
+        let search = this.selectedElementData.dataAttribute.dataAttributeIDs.includes(row.id);
+        if (search) {
           selectedDataAttributeList.push(row);
         }
       });
       tableData = selectedDataAttributeList;
-      this.displayedColumns = ['dataAttribute'];
+      this.displayedColumns = ['name'];
     }
     this.initData = tableData;
     this.updateDataSource(tableData);
@@ -86,8 +87,8 @@ export class CreateEditViewFeaturesComponent implements OnInit {
 
   selectTableRows() {
     this.dataSource.data.forEach((row: any) => {
-      let search = this.selectedElementData.dataAttribute.filter((item: any) => item.id == row.id);
-      if (search.length > 0) {
+      let search = this.selectedElementData.dataAttribute.dataAttributeIDs.includes(row.id);
+      if (search) {
         this.selectionForDataAttribute.select(row);
       }
     });
@@ -124,6 +125,33 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   onCreate(){
+
+      let createFeatureParams = {
+        "id": 0,
+        "name": "strin2232eee",
+        "description": "stringstrineeee",
+        "type": "string",
+        "IsFeatureActive": true,
+        "dataattributeSet": {
+          "id": 0,
+          "name": "strin2232eee",
+          "isActive": true,
+          "is_Exclusive": true,
+          "description": "string",
+          "status": 65
+        },
+        "key": "string",
+        "dataAttributeIds": [
+          6,7
+        ],
+        "level": 0,
+        "featureState": 65
+      }
+      console.log("----create calling...---")
+    this.featureService.createFeature(createFeatureParams).subscribe((data) => {
+      console.log("----create called---",data)
+    })
+
     let emitObj = {
       stepFlag: false,
       msg: ""
