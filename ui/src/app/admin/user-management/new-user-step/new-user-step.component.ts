@@ -11,6 +11,7 @@ import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { UserDetailTableComponent } from './user-detail-table/user-detail-table.component';
 import { LinkOrgPopupComponent } from './link-org-popup/link-org-popup.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-new-user-step',
@@ -78,6 +79,7 @@ export class NewUserStepComponent implements OnInit {
   servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
   linkFlag: boolean = false;
   linkAccountId: any = 0;
+  imageError= '';
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -86,7 +88,7 @@ export class NewUserStepComponent implements OnInit {
     return date > now;
   }
 
-  constructor(private _formBuilder: FormBuilder, private cdref: ChangeDetectorRef, private dialog: MatDialog, private accountService: AccountService) { }
+  constructor(private _formBuilder: FormBuilder, private cdref: ChangeDetectorRef, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer) { }
 
   ngAfterViewInit() {
     this.roleDataSource.paginator = this.paginator.toArray()[0];
@@ -218,6 +220,22 @@ export class NewUserStepComponent implements OnInit {
             this.stepper.next();
           }
         });
+        if(this.croppedImage != ''){
+          let objData = {
+            "blobId": this.userData.blobId,
+            "accountId": this.userData.id,
+            "imageType": "P",
+            "image": this.croppedImage.split(",")[1]
+          }
+      
+          this.accountService.saveAccountPicture(objData).subscribe(data => {
+            if(data){
+              
+            }
+          }, (error) => {
+            this.imageError= "Something went wrong. Please try again!";
+          })
+        }
       }, (error) => { 
         console.log(error);
         if(error.status == 409){
@@ -268,6 +286,15 @@ export class NewUserStepComponent implements OnInit {
     this.firstFormGroup.get('firstName').setValue(accountInfo.firstName);
     this.firstFormGroup.get('lastName').setValue(accountInfo.lastName);
     this.firstFormGroup.get('userType').setValue(accountInfo.type);
+
+    let blobId = accountInfo.blobId;
+      if(blobId != 0){
+        this.accountService.getAccountPicture(blobId).subscribe(data => {
+          if(data){
+            this.croppedImage = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
+          }
+        })
+      }
   }
 
   onUpdateUserData(){

@@ -29,6 +29,7 @@ namespace net.atos.daf.ct2.vehicledataservice
 {
     public class Startup
     {
+        private readonly string swaggerBasePath = "vehicle-data";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -82,9 +83,7 @@ namespace net.atos.daf.ct2.vehicledataservice
 
             app.UseHttpsRedirection();
 
-            app.UseRouting();
-
-            app.UseSwagger();
+            app.UseRouting();           
 
             app.UseAuthorization();
 
@@ -93,9 +92,15 @@ namespace net.atos.daf.ct2.vehicledataservice
                 endpoints.MapControllers();
             });
 
+            app.UseSwagger(c =>
+            {
+                c.RouteTemplate = swaggerBasePath + "/swagger/{documentName}/swagger.json";
+            });
+
             app.UseSwaggerUI(c =>
             {
-               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Vehicle Data Service V1");
+                c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
+                c.RoutePrefix = $"{swaggerBasePath}/swagger";
             });
 
         }
