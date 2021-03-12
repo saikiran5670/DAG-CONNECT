@@ -88,7 +88,7 @@ namespace net.atos.daf.ct2.portalservice.Account
     {
         [Required]
         [StringLength(36, MinimumLength = 36, ErrorMessage = "The field ResetToken must be a string with a length of 36 characters.")]
-        public string ResetToken { get; set; }
+        public string ProcessToken { get; set; }
         [Required]
         public string Password { get; set; }
     }
