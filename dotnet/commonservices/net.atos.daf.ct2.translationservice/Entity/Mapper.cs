@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.translationservice.Entity
             obj.description = request.Description;
             obj.file_size = request.FileSize;
             obj.failure_count = request.FailureCount;
-            obj.created_by = request.CreatedBy;
+           // obj.created_by = request.CreatedBy;
 
             if (request.File !=null)
             {
@@ -71,7 +71,7 @@ namespace net.atos.daf.ct2.translationservice.Entity
                 obj.Description = translationupload.description;
             obj.FileSize = translationupload.file_size;
             obj.FailureCount = translationupload.failure_count;
-            obj.CreatedBy = translationupload.created_by;
+           // obj.CreatedBy = translationupload.created_by;
             if(translationupload.file !=null)
             {
                // obj.File = translationupload.file;

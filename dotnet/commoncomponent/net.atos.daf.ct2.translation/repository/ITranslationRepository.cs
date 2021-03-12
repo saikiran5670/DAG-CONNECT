@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.translation.repository
         Task<Translationupload> InsertTranslationFileDetails(Translationupload translationupload);
         Task<IEnumerable<Translationupload>> GetFileUploadDetails(int FileID);
         Task<translationStatus> InsertTranslationFileData(Translations translationdata, List<Translations> TranslationsList);
-        List<Translations> GetAllTranslations();
+       Task<List<Translations>> GetAllTranslations();
 
     }
 }
