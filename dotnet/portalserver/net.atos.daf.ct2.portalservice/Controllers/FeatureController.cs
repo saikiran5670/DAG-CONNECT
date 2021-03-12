@@ -200,7 +200,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 DataAtributeRequest request = new DataAtributeRequest();
                 var responce = await _featureclient.GetDataAttributesAsync(request);
-                return Ok(responce);
+                return Ok(responce.Responce);
             }
             catch (Exception)
             {
@@ -234,7 +234,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //    featureList.Add(obj);
                 //}
 
-                return Ok(feature);
+                return Ok(feature.Features);
             }
             catch (Exception ex)
             {
