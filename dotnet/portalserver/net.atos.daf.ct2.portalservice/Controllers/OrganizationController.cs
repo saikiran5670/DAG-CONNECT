@@ -50,7 +50,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (request.Features.Count > 1)
+                if (request.Features.Count >= 1)
                 {
                     var featureSetId = await _featureSetMapper.RetrieveFeatureSetId(request.Features);
                     request.FeaturesetId = featureSetId;
@@ -119,7 +119,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         return StatusCode(400, "Please provide organization relationship name:");
                     }
-                    if (request.Features.Count > 1)
+                    if (request.Features.Count >= 1)
                     {
                         var featureSetId = await _featureSetMapper.UpdateFeatureSetId(request.Features, request.FeaturesetId);
                         request.FeaturesetId = featureSetId;

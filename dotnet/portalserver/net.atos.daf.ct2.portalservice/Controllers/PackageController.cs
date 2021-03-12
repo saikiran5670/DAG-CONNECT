@@ -40,7 +40,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (request.Features.Count > 1)
+                if (request.Features.Count >= 1)
                 {
                     var featureSetId = await _featureSetMapper.RetrieveFeatureSetId(request.Features);
                     request.FeatureSetID = featureSetId;
@@ -113,7 +113,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 if (request.FeatureSetID > 0)
                 {
-                    if (request.Features.Count > 1)
+                    if (request.Features.Count >= 1)
                     {
                         var featureSetId = await _featureSetMapper.UpdateFeatureSetId(request.Features, request.FeatureSetID);
                         request.FeatureSetID = featureSetId;
