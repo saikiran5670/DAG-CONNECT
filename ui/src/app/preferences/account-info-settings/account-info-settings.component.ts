@@ -244,6 +244,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   onEditAccountSettingsCancel(){
     this.editAccountSettingsFlag = false;
     this.isSelectPictureConfirm = true;
+    this.imageError= '';
     if(this.blobId!= 0){
       this.isSelectPictureConfirm = true
       this.changePictureFlag = true;
@@ -337,12 +338,14 @@ export class AccountInfoSettingsComponent implements OnInit {
 
         this.successMsgBlink(msg);  
       }
+    }, (error) => {
+      this.imageError= "Something went wrong. Please try again!";
     })
   }
   
   fileChangeEvent(event: any): boolean {
-    this.imageError= '';
-    if(!this.validateImageFile(event.target.files[0]))
+    this.imageError= CustomValidators.validateImageFile(event.target.files[0]);
+    if(this.imageError != '')
       return false;
     this.isAccountPictureSelected = true;
     this.imageChangedEvent = event;
@@ -365,8 +368,8 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   filesDroppedMethod(event : any): boolean {
-    this.imageError= '';
-    if(!this.validateImageFile(event))
+    this.imageError= CustomValidators.validateImageFile(event);
+    if(this.imageError != '')
       return false;
     this.isAccountPictureSelected = true;
     this.readImageFile(event);
@@ -380,21 +383,7 @@ export class AccountInfoSettingsComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
-  validateImageFile(inputFile): boolean{
-    const max_size = 1024*1024;
-    if (inputFile.size > max_size) {
-      this.imageError =
-          'Maximum size allowed is ' + max_size / (1024*1024) + 'Mb';
-
-      return false;
-    }
-
-    if (!(inputFile.type).includes("image")) {
-        this.imageError = 'Only Images are allowed';
-        return false;
-    }
-    return true;
-  }
+  
 
   getEditMsg(editText){
     if(editText == 'AccountSettings'){

@@ -53,10 +53,14 @@
                   (click)="onSelectPictureConfirm()">{{ translationData.lblConfirm || 'Confirm' }}</a>
               </span>
             </div>
+            
           </div>
           <div class="linkBtn" style="margin-top: 10px;">
             <a style='margin-left: 20px;'
               (click)="openChangePasswordPopup()">{{ translationData.lblChangePassword || 'Change Password' }}</a>
+          </div>
+          <div fxLayout="row" *ngIf="imageError!=''">
+            <span style="color:red">{{imageError}}</span>
           </div>
         </div>
         <div class="areaWidth min-width-75-per accountInfo">

@@ -58,6 +58,9 @@
                       (click)="isAccountPictureSelected ? onSelectPictureConfirm() : ''">{{ translationData.lblConfirm || 'Confirm' }}</a>
                   </span>
                 </div>
+                <div fxLayout="row" *ngIf="imageError!=''">
+                  <span style="color:red">{{imageError}}</span>
+                </div>
               </div>
             </div>
             <div class="areaWidth min-width-75-per" fxLayout="column" fxLayoutAlign="left">
