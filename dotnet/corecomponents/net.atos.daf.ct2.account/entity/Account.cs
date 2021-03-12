@@ -26,6 +26,6 @@ namespace net.atos.daf.ct2.account.entity
         public int ? PreferenceId { get; set; } 
         public int ? BlobId { get; set; }
         public long ? CreatedAt { get; set; }
-        public Guid? ResetToken { get; set; }
+        public Guid? ProcessToken { get; set; }
     }
 }

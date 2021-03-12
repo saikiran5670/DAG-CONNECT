@@ -126,7 +126,7 @@ message ResetPasswordInitiateRequest {
 }
 
 message ResetPasswordRequest {
-    string ResetToken=1;
+    string ProcessToken=1;
     string Password=2;
 }
 

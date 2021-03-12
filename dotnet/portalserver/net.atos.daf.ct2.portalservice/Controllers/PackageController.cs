@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -8,9 +7,7 @@ using System.Threading.Tasks;
 using net.atos.daf.ct2.packageservice;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.featureservice;
-using Google.Protobuf.Collections;
 using net.atos.daf.ct2.portalservice.Entity.Package;
-using net.atos.daf.ct2.portalservice.Entity.Feature;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -23,7 +20,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly PackageService.PackageServiceClient _packageClient;
         private readonly FeatureService.FeatureServiceClient _featureclient;
         private readonly PackageMapper _packageMapper;
-        private string FK_Constraint = "violates foreign key constraint";
+        private readonly FeatureSetMapper _featureSetMapper;
+
         public PackageController(PackageService.PackageServiceClient packageClient,
             FeatureService.FeatureServiceClient featureclient,
             ILogger<PackageController> logger)
@@ -31,6 +29,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _packageClient = packageClient;
             _featureclient = featureclient;
             _logger = logger;
+            _featureSetMapper = new FeatureSetMapper(featureclient);
             _packageMapper = new PackageMapper(_featureclient);
 
         }
@@ -41,21 +40,29 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                var featureSetId = await _packageMapper.RetrieveFeatureSetId(request.Features);
-                if (featureSetId > 0)
+                if (request.Features.Count > 1)
+                {
+                    var featureSetId = await _featureSetMapper.RetrieveFeatureSetId(request.Features);
+                    request.FeatureSetID = featureSetId;
+                }
+                else
+                {
+                    return StatusCode(400, "Please provide package features");
+                }
+                if (request.FeatureSetID > 0)
                 {
                     var createPackageRequest = _packageMapper.ToCreatePackage(request);
-                    createPackageRequest.FeatureSetID = featureSetId;
+
                     var packageResponse = await _packageClient.CreateAsync(createPackageRequest);
                     if (packageResponse != null
-                       && packageResponse.Message == "There is an error creating package.")
+                       && packageResponse.Message == PortalConstants.PackageValidation.ErrorMessage)
                     {
-                        return StatusCode(500, "There is an error creating package.");
+                        return StatusCode(500, PortalConstants.PackageValidation.ErrorMessage);
                     }
                     // The package type should be single character
                     if (request.Type.Length > 1)
                     {
-                        return StatusCode(400, "The pakage type is not valid. It should be of single character");
+                        return StatusCode(400, PortalConstants.PackageValidation.InvalidPackageType);
                     }
 
                     else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
@@ -70,15 +77,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 else
                 {
 
-                    return StatusCode(500, "Please provide valid feature"); //need to confirm
+                    return StatusCode(500, "Featureset id not created");
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError("Package Service:Create : " + ex.Message + " " + ex.StackTrace);
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
-                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                    return StatusCode(400, PortalConstants.ExceptionKeyWord.FK_Constraint);
                 }
                 return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
             }
@@ -95,21 +102,28 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.LogInformation("Update method in package API called.");
 
                 // Validation 
-                if (request.Id <= 0 || (string.IsNullOrEmpty(request.Code)) || request.FeatureSetID <=0)
+                if (request.Id <= 0 || (string.IsNullOrEmpty(request.Code)) || request.FeatureSetID <= 0)
                 {
-                    return StatusCode(400, "The packageId , package code and featureset id  are required.");
+                    return StatusCode(400, PortalConstants.PackageValidation.CreateRequired);
                 }
                 // The package type should be single character
                 if (request.Type.Length > 1)
                 {
-                    return StatusCode(400, "The pakage type is not valid. It should be of single character");
+                    return StatusCode(400, PortalConstants.PackageValidation.InvalidPackageType);
                 }
                 if (request.FeatureSetID > 0)
                 {
-                    var featureSetId =  await _packageMapper.UpdateFeatureSetId(request.Features, request.FeatureSetID);
-
+                    if (request.Features.Count > 1)
+                    {
+                        var featureSetId = await _featureSetMapper.UpdateFeatureSetId(request.Features, request.FeatureSetID);
+                        request.FeatureSetID = featureSetId;
+                    }
+                    else
+                    {
+                        return StatusCode(400, "Please provide package features");
+                    }
                     var createPackageRequest = _packageMapper.ToCreatePackage(request);
-                    createPackageRequest.FeatureSetID = featureSetId;
+
                     var packageResponse = await _packageClient.UpdateAsync(createPackageRequest);
 
 
@@ -124,13 +138,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(500, "accountResponse is null");
+                        return StatusCode(500, "packageResponse is null");
                     }
                 }
                 else
                 {
 
-                    return StatusCode(500, "Please provide valid feature"); //need to confirm
+                    return StatusCode(500, "Featureset id not created");
 
                 }
 
@@ -138,7 +152,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Package Service:Update : " + ex.Message + " " + ex.StackTrace);
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -164,7 +178,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 var response = await _packageClient.GetAsync(request);
                 response.PacakageList.Where(S => S.FeatureSetID > 0)
-                                                .Select(S => { S.Features.AddRange(GetFeatures(S.FeatureSetID).Result); return S; }).ToList();
+                                                .Select(S => { S.Features.AddRange(_featureSetMapper.GetFeatures(S.FeatureSetID).Result); return S; }).ToList();
                 if (response != null && response.Code == Responsecode.Success)
                 {
                     if (response.PacakageList != null && response.PacakageList.Count > 0)
@@ -188,15 +202,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
-        private async Task<IEnumerable<string>> GetFeatures(int featureSSetId)
-        {
-            var features = new List<string>();
-            var featureFilterRequest = new FeaturesFilterRequest();
-            featureFilterRequest.FeatureSetID = featureSSetId;
-            var featureList = await _featureclient.GetFeaturesAsync(featureFilterRequest);
-            features.AddRange(featureList.Features.Select(x => x.Name).ToList());
-            return features;
-        }
+       
 
         //Delete package
         [HttpDelete]
@@ -213,8 +219,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var packageRequest = new PackageDeleteRequest();
                 packageRequest.Id = packageId;
                 var response = await _packageClient.DeleteAsync(packageRequest);
+                response.PackageDeleteRequest = packageRequest;
                 if (response != null && response.Code == Responsecode.Success)
-                    return Ok(packageRequest);
+                    return Ok(response);
                 else
                     return StatusCode(404, "Package not configured.");
             }
@@ -257,7 +264,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     if (packageResponse.PackageList.Count == 0)
                         return StatusCode(500, "package code already exists");
-                    else {
+                    else
+                    {
                         return StatusCode(500, "Package response is null");
                     }
                 }
@@ -265,7 +273,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Package Service:Import : " + ex.Message + " " + ex.StackTrace);
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }

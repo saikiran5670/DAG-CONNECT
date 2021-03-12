@@ -6,7 +6,7 @@ namespace net.atos.daf.ct2.account.entity
     {
         public int Id { get; set; }        
         public int AccountId { get; set; }
-        public Guid TokenSecret { get; set; }
+        public Guid ProcessToken { get; set; }
         public ResetTokenStatus Status { get; set; }
         public long? ExpiryAt { get; set; }
         public long? CreatedAt { get; set; }
