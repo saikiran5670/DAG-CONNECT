@@ -105,7 +105,7 @@ namespace net.atos.daf.ct2.subscription.repository
             {
               
                 var parameter = new DynamicParameters();
-                parameter.Add("@subscription_id", objUnSubscription.serviceSubscriberId);
+                parameter.Add("@subscription_id", objUnSubscription.OrderID);
 
                 await dataAccess.ExecuteScalarAsync<int>(@"update master.subscription set is_active=false where subscription_id=@subscription_id", parameter);
 

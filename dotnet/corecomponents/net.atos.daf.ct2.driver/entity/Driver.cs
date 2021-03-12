@@ -43,5 +43,6 @@ namespace net.atos.daf.ct2.driver.entity
         public string LastName { get; set; }
         public string Email { get; set; }
         public string ReturnMessage { get; set; }
+         public string Status { get; set; }
     }
 }

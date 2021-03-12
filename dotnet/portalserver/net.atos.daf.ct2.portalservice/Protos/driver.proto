@@ -102,9 +102,7 @@ message DriversImport {
 
 
  message DriverImportData{
-  Responcecode Code=1;
- string Message = 2;
-  repeated DriverReturns Driver = 3;
+   repeated DriverReturns Driver =1;
 } 
 
 message DriverReturns {   
@@ -113,5 +111,6 @@ message DriverReturns {
     string LastName=3;   
     string Email=4; 
     string ReturnMassage=5;
+    string Status=6;
   }
 

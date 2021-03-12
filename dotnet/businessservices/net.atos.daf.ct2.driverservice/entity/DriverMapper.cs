@@ -90,7 +90,8 @@ namespace net.atos.daf.ct2.driverservice.entity
             driver.Email=request.Email;
             driver.FirstName=request.FirstName;
             driver.LastName=request.LastName; 
-            driver.ReturnMassage=request.ReturnMessage;                    
+            driver.ReturnMassage=request.ReturnMessage;     
+            driver.Status=request.Status;               
             return driver;
         }  
     }

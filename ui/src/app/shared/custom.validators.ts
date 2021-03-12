@@ -144,4 +144,18 @@ export class CustomValidators {
     const isSpace = (control.value || '').match(/^(\s+\S+\s*)*(?!\s).*$/);
     return isSpace ? null : { whitespace: true };
   }
+
+  static validateImageFile(inputFile): string{
+    let imageError= '';
+    const max_size = 1024*1024;
+    if (inputFile.size > max_size) {
+      imageError = 'Maximum size allowed is ' + max_size / (1024*1024) + 'Mb';
+
+    }
+
+    if (!(inputFile.type).includes("image")) {
+        imageError = 'Only Images are allowed';
+    }
+    return imageError;
+  }
 }

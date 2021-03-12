@@ -248,9 +248,10 @@ export class UserManagementComponent implements OnInit {
     this.roleData = allRoleData;
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
       this.userGrpData = allAccountGroupData;
+     this.userGrpData = [];
       this.accountService.getAccountRoles(selectedRoleObj).subscribe(selectedRoleData => { 
         this.selectedRoleData = selectedRoleData;
-        this.accountService.getAccountPreference(element.id).subscribe(accountPrefData => {
+        this.accountService.getAccountPreference(element.preferenceId).subscribe(accountPrefData => {
           this.userDataForEdit = element;
           this.selectedPreference = accountPrefData;
           this.accountService.getAccountDesc(selectedAccountGrpObj).subscribe((resp) => {

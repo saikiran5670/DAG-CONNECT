@@ -78,6 +78,25 @@ namespace net.atos.daf.ct2.authenticationservicerest
                 app.UseDeveloperExceptionPage();
             }
 
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+                context.Response.Headers["Expires"] = "-1";
+                context.Response.Headers["Pragma"] = "no-cache";
+
+                context.Response.Headers.Remove("X-Powered-By");
+                context.Response.Headers.Remove("Server");
+                context.Response.Headers.Remove("X-AspNet-Version");
+                context.Response.Headers.Remove("X-AspNetMvc-Version");
+                context.Response.Headers.Add("X-Frame-Options", "DENY");
+                context.Response.Headers.Add("X-Xss-Protection", "1");
+                //context.Response.Headers.Add("Content-Security-Policy", "script-src 'self' 'unsafe-eval' 'unsafe-inline'; navigate-to https://www.daf.com; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'");
+                context.Response.Headers.Add("Strict-Transport-Security", "31536000");
+                context.Response.Headers.Add("Access-Control-Allow-Origin", "value");
+                context.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+                context.Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+                await next();
+            });
             app.UseHttpsRedirection();
 
             app.UseCors(builder => 
