@@ -71,12 +71,30 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   loadFeatureData(){
-    this.initData = this.featureRestData;
+    this.initData = this.getNewTagData(this.featureRestData);
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
+  }
+
+  getNewTagData(data: any){
+    let currentDate = new Date().getTime();
+    data.forEach((row: any) => {
+      let createdDate = new Date(row.createdAt).getTime(); //  need to check API response.
+      let nextDate = createdDate + 86400000;
+      if(currentDate > createdDate && currentDate < nextDate){
+        row.newTag = true;
+      }
+      else{
+        row.newTag = false;
+      }
+    });
+    let newTrueData = data.filter(item => item.newTag == true);
+    let newFalseData = data.filter(item => item.newTag == false);
+    Array.prototype.push.apply(newTrueData, newFalseData); 
+    return newTrueData;
   }
 
   loadRestData(){
@@ -102,7 +120,8 @@ export class FeatureManagementComponent implements OnInit {
             dataAttribute: "Data Attribute 1" 
           }
         ],
-        status: "Active"
+        status: "Active",
+        createdAt: 1615384800000
       },
       {
         name: "Feature Name 2",
@@ -129,7 +148,8 @@ export class FeatureManagementComponent implements OnInit {
             dataAttribute: "Data Attribute 4" 
           }
         ],
-        status: "Inactive"
+        status: "Inactive",
+        createdAt: 1615393800000
       }
     ];
     this.dataAttributeList = [

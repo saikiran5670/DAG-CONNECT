@@ -36,6 +36,11 @@ namespace net.atos.daf.ct2.features
         {
             return await FeatureRepository.GetFeatureIdsForFeatureSet(GetFeatureIdsForFeatureSet);
         }
+
+        public async Task<DataAttributeSet> GetDataAttributeset(int DataAttributeSetID)
+        {
+            return await FeatureRepository.GetDataAttributeset(DataAttributeSetID);
+        }
          public async Task<bool> DeleteFeatureSet(int FeatureSetId)
         {
             return await FeatureRepository.DeleteFeatureSet(FeatureSetId);

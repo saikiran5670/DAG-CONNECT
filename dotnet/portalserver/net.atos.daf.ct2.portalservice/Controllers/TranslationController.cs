@@ -268,19 +268,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 PreferenceResponse ResponseList = await _translationServiceClient.GetTranslationsPreferencDropDownsAsync(request);
 
-                if (ResponseList != null
-                && ResponseList.Message == "There is an error In GetTranslationsPreferencDropDowns.")
-                {
-                    return StatusCode(500, "There is an error In GetTranslationsPreferencDropDowns.");
-                }
-                else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
-                {
-                    return Ok(ResponseList.Language);
-                }
-                else
-                {
-                    return StatusCode(500, "GetTranslationsPreferencDropDowns Response is null");
-                }
+                
+                    return Ok(ResponseList);
+              
 
             }
             catch (Exception ex)

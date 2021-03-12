@@ -50,7 +50,7 @@ namespace net.atos.daf.ct2.package.test
                 FeatureSetID = 1,
                 Status = PackageStatus.Active,
                 Name = "Standard",
-                Type = PackageType.Organization,
+                Type = "O",
                 Description = "Package with default featureset",
              //   StartDate = Convert.ToDateTime("2019-02-02T12:34:56"),
               //  EndDate = Convert.ToDateTime("2019-02-02T12:34:56")
@@ -80,7 +80,7 @@ namespace net.atos.daf.ct2.package.test
                 Status = PackageStatus.Active,
                 // Is_Active = true,
                 Name = "Standard",
-                Type = PackageType.Organization,
+                Type = "Organization",
                 Description = "Package with default featureset",
               //  StartDate = Convert.ToDateTime("2019-02-02T12:34:56"),
               //  EndDate = Convert.ToDateTime("2019-02-02T12:34:56")

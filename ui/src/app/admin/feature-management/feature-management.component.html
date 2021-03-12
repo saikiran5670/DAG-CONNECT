@@ -44,7 +44,11 @@
             </ng-container> -->
             <ng-container matColumnDef="setName">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttributeSetName || 'Data Attribute Set Name' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.setName }}</mat-cell>
+                <mat-cell *matCellDef="let row">
+                  <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
+                  <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+                  <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.setName }}</span>
+              </mat-cell>
             </ng-container>
             <ng-container matColumnDef="setType">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttributeSetType || 'Data Attribute Set Type' }}</mat-header-cell>
@@ -56,9 +60,10 @@
             </ng-container> -->
             <ng-container matColumnDef="status">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.status }}<button class='actionBtn' mat-flat-button (click)="changeFeatureStatus(row)" matTooltip="{{ row.status == 'Active' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}">
-                  <mat-icon>{{ row.status == 'Active' ? 'sync' : 'sync_disabled' }}</mat-icon>
-              </button></mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.status }}
+                  <mat-slide-toggle (click)="changeFeatureStatus(row)" matTooltip="{{ row.status == 'Active' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}" [checked] = "row.status == 'Active' ? 'true' : 'false'" [disabled] = 'false'>
+                  </mat-slide-toggle>
+                </mat-cell>
             </ng-container>
             <ng-container matColumnDef="action">
               <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Action' }} </mat-header-cell>

@@ -11,6 +11,7 @@ namespace net.atos.daf.ct2.features
         Task<IEnumerable<FeatureSet>> GetFeatureSet(int FeatureSetId,bool Active);
          Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, int FeatureId, int level, char? Featuretype);
         Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int GetFeatureIdsForFeatureSet);
+        Task<DataAttributeSet> GetDataAttributeset(int DataAttributeSetID);
         Task<bool> DeleteFeatureSet(int FeatureSetId);
         Task<FeatureSet> CreateFeatureSet(FeatureSet featureSet);
         Task<DataAttributeSet> CreateDataattributeSet(DataAttributeSet dataAttributeSet);

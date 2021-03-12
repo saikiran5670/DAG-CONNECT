@@ -110,6 +110,20 @@ namespace net.atos.daf.ct2.accountservice
             response.FirstName = account.FirstName;
             response.LastName = account.LastName;
             response.OrganizationId = account.Organization_Id;
+            if (account.PreferenceId.HasValue)
+                response.PreferenceId = account.PreferenceId.Value;
+            if (account.BlobId.HasValue)
+                response.BlobId = account.BlobId.Value;
+            if (!string.IsNullOrEmpty(account.DriverId)) response.DriverId = account.DriverId;
+            if (account.AccountType == AccountComponent.ENUM.AccountType.PortalAccount)
+            {
+                response.Type = Convert.ToString((char)AccountComponent.ENUM.AccountType.PortalAccount);
+            }
+            else
+            {
+                response.Type = Convert.ToString((char)AccountComponent.ENUM.AccountType.SystemAccount);
+            }
+            response.CreatedAt = (long)account.CreatedAt.Value;
             return response;
         }
         public accountpreference.AccountPreference ToPreference(AccountPreference request)

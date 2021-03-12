@@ -52,8 +52,10 @@ namespace net.atos.daf.ct2.account
                 // if this fails
                 account = await repository.Create(account);
 
+                var tokenSecret = await ResetPasswordInitiate(account.EmailId, false);
+
                 //Send account confirmation email
-                await TriggerSendEmailRequest(account.EmailId, EmailTemplateType.CreateAccount);
+                account.isErrorInEmail = await TriggerSendEmailRequest(account.EmailId, EmailTemplateType.CreateAccount, tokenSecret);
             }
             else // there is issues and need delete user from IDP. 
             {
@@ -74,8 +76,10 @@ namespace net.atos.daf.ct2.account
                         account = await repository.Create(account);
                         await identity.UpdateUser(identityEntity);
 
+                        var tokenSecret = await ResetPasswordInitiate(account.EmailId, false);
+
                         //Send account confirmation email
-                        await TriggerSendEmailRequest(account.EmailId, EmailTemplateType.CreateAccount);
+                        account.isErrorInEmail = await TriggerSendEmailRequest(account.EmailId, EmailTemplateType.CreateAccount, tokenSecret);
                     }
                     else
                     {
@@ -282,7 +286,7 @@ namespace net.atos.daf.ct2.account
             return await repository.GetAccountRole(accountId);
         }
 
-        public async Task<Guid?> ResetPasswordInitiate(string emailId)
+        public async Task<Guid?> ResetPasswordInitiate(string emailId, bool canSendEmail = true)
         {
             try
             {
@@ -322,10 +326,12 @@ namespace net.atos.daf.ct2.account
                         //Create with status as New
                         await repository.Create(objToken);
 
-                        //Send email
-                        var isSent = TriggerSendEmailRequest(account.EmailId, EmailTemplateType.ResetPassword);
+                        bool isSent = false;
+                        //Send activation email based on flag
+                        if (canSendEmail)                      
+                            isSent = await TriggerSendEmailRequest(account.EmailId, EmailTemplateType.ResetPassword, tokenSecret);
 
-                        if (isSent.Result)
+                        if (canSendEmail && isSent)
                         {
                             //Update status to Issued
                             await repository.Update(objToken.Id, ResetTokenStatus.Issued);
@@ -403,7 +409,7 @@ namespace net.atos.daf.ct2.account
         }
 
         #region Private Helper Methods
-        private async Task<bool> TriggerSendEmailRequest(string toEmailAddress, EmailTemplateType templateType)
+        private async Task<bool> TriggerSendEmailRequest(string toEmailAddress, EmailTemplateType templateType, Guid? tokenSecret = null)
         {
             var messageRequest = new MessageRequest();
             messageRequest.Configuration = emailConfiguration;
@@ -412,27 +418,30 @@ namespace net.atos.daf.ct2.account
                 { toEmailAddress, null }
             };
 
-            FillEmailTemplate(messageRequest, templateType);           
+            FillEmailTemplate(messageRequest, templateType, tokenSecret);           
 
             return await EmailHelper.SendEmail(messageRequest);
         }
 
-        private void FillEmailTemplate(MessageRequest messageRequest, EmailTemplateType templateType)
+        private void FillEmailTemplate(MessageRequest messageRequest, EmailTemplateType templateType, Guid? tokenSecret = null)
         {
             StringBuilder sb = new StringBuilder();
+            Uri baseUrl = new Uri(emailConfiguration.PortalServiceBaseUrl);
 
             switch (templateType)
             {
                 case EmailTemplateType.CreateAccount:
-                    sb.Append("Your account has been created successfully on DAF portal.\n\n");
+                    Uri setUrl = new Uri(baseUrl, $"account/resetpassword/{ tokenSecret }");
 
+                    sb.Append("Your account has been created successfully on DAF portal.\n\n");
+                    sb.Append("Please click the below button to set your new password.\n\n");
+                    sb.Append(setUrl.AbsoluteUri + "\n\n\n");
                     messageRequest.Subject = "DAF Account Confirmation";
                     messageRequest.ContentMimeType = MimeType.Text;
                     break;
                 case EmailTemplateType.ResetPassword:
-                    Uri baseUrl = new Uri(emailConfiguration.PortalServiceBaseUrl);
-                    Uri resetUrl = new Uri(baseUrl, "account/resetpassword");
-                    Uri resetInvalidateUrl = new Uri(baseUrl, "account/resetpasswordinvalidate");
+                    Uri resetUrl = new Uri(baseUrl, $"account/resetpassword/{ tokenSecret }");
+                    Uri resetInvalidateUrl = new Uri(baseUrl, $"account/resetpasswordinvalidate/{ tokenSecret }");
 
                     sb.Append("A request has been received to reset the password from your account.\n\n");                                       
                     sb.Append(resetUrl.AbsoluteUri + "\n\n\n");
