@@ -35,7 +35,7 @@
                         </mat-error>
                     </div> 
                     <div *ngIf="actionType == 'view'">
-                        <span style='font-weight: 500!important;'>{{ selectedElementData.setName }}</span>
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.name }}</span>
                     </div> 
                 </div>
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
@@ -53,7 +53,7 @@
                         </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
-                        <span style='font-weight: 500!important;'>{{ selectedElementData.dataAttributeDescription }}</span>
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.description}}</span>
                     </div>
                 </div>
             </div>
@@ -62,28 +62,28 @@
                     <span>{{ translationData.lblDataAttributeSetType || 'Data Attribute Set Type' }}:</span>
                     <div *ngIf="actionType != 'view'" class='margin-top-5'>
                         <mat-radio-group (change)='onSetTypeChange($event)'>
-                            <mat-radio-button [checked]="selectedSetType ===  'exclusive' ? true : false" style='margin-right: 20px;' value="exclusive">{{ translationData.lblExclusive || 'Exclusive' }}
+                            <mat-radio-button [checked]="selectedSetType" style='margin-right: 20px;' value="true">{{ translationData.lblExclusive || 'Exclusive' }}
                             </mat-radio-button>
-                            <mat-radio-button [checked]="selectedSetType ===  'inclusive' ? true : false" style='margin-right: 20px;' value="inclusive" >{{ translationData.lblInclusive || 'Inclusive' }}
+                            <mat-radio-button [checked]="!selectedSetType" style='margin-right: 20px;' value="false" >{{ translationData.lblInclusive || 'Inclusive' }}
                             </mat-radio-button>
                         </mat-radio-group>
                     </div>
                     <div *ngIf="actionType == 'view'">
-                        <span style='font-weight: 500!important;'>{{ selectedElementData.setType }}</span>
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.dataAttribute.isExclusive ? (translationData.lblExclusive || 'Exclusive') : (translationData.lblInclusive || 'Inclusive') }}</span>
                     </div>
                 </div>
                 <div class='areaWidth min-width-60-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
                     <span>{{ translationData.lblStatus || 'Status' }}</span>
                     <div *ngIf="actionType != 'view'" class='margin-top-5'>
                         <mat-radio-group (change)='onStatusChange($event)'>
-                            <mat-radio-button [checked]="selectedStatus ===  'active' ? true : false" style='margin-right: 20px;' value="active">{{ translationData.lblActive || 'Active' }}
+                            <mat-radio-button [checked]="selectedStatus ===  0 ? true : false" style='margin-right: 20px;' value="0">{{ translationData.lblActive || 'Active' }}
                             </mat-radio-button>
-                            <mat-radio-button [checked]="selectedStatus ===  'inactive' ? true : false" style='margin-right: 20px;' value="inactive" >{{ translationData.lblInactive || 'Inactive' }}
+                            <mat-radio-button [checked]="selectedStatus ===  1 ? true : false" style='margin-right: 20px;' value="1" >{{ translationData.lblInactive || 'Inactive' }}
                             </mat-radio-button>
                         </mat-radio-group>
                     </div>
                     <div *ngIf="actionType == 'view'">
-                        <span style='font-weight: 500!important;'>{{ selectedElementData.status }}</span>
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.state == 0 ? (translationData.lblActive || 'Active') : (translationData.lblInactive || 'Inactive') }}</span>
                     </div>
                 </div>
                 </div>
@@ -244,29 +244,30 @@
             </div>
             <div class='margin-bottom-xlg'>
                 <mat-table [dataSource]="dataSource" class="table-items" matSort>
+                    <ng-container matColumnDef="name">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttribute || 'Data Attribute' }}</mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                          {{ row.name }}
+                        </mat-cell>
+                      </ng-container>
                   <ng-container matColumnDef="select">
                     <div>
                       <mat-header-cell *matHeaderCellDef>
-                        <mat-checkbox (change)='$event ? masterToggleForDataAttribute() : null'
+                        <mat-slide-toggle color="primary" (change)='$event ? masterToggleForDataAttribute() : null'
                           [checked]='selectionForDataAttribute.hasValue() && isAllSelectedForDataAttribute()'
                           [indeterminate]='selectionForDataAttribute.hasValue() && !isAllSelectedForDataAttribute()'
                           [aria-label]='checkboxLabelForDataAttribute()' [disabled]="actionType == 'view'">
-                        </mat-checkbox>
-                        <span style="margin: 5px 0px 0px 5px;" [ngClass]="{'opacity-0-5': actionType == 'view'}">{{ translationData.lblAll || 'All' }}</span>
+                        </mat-slide-toggle>
+                        <span style="margin: 5px 0px 0px 5px;" [ngClass]="{'opacity-0-5': actionType == 'view'}">{{ translationData.lblExclude || 'Exclude' }}</span>
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row">
-                        <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectionForDataAttribute.toggle(row) : null'
+                        <mat-slide-toggle color="primary" (click)='$event.stopPropagation()' (change)='$event ? selectionForDataAttribute.toggle(row) : null'
                           [checked]='selectionForDataAttribute.isSelected(row)' [aria-label]='checkboxLabelForDataAttribute(row)' [disabled]="actionType == 'view'">
-                        </mat-checkbox>
+                        </mat-slide-toggle>
                       </mat-cell>
                     </div>
                   </ng-container>
-                  <ng-container matColumnDef="dataAttribute">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttribute || 'Data Attribute' }}</mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      {{ row.dataAttribute }}
-                    </mat-cell>
-                  </ng-container>
+
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                   <mat-row *matRowDef="let row; columns: displayedColumns;">
                   </mat-row>
