@@ -428,10 +428,10 @@ namespace net.atos.daf.ct2.account
         {
             StringBuilder sb = new StringBuilder();
             Uri baseUrl = new Uri(emailConfiguration.PortalServiceBaseUrl);
-            var templateString = EmailHelper.GetTemplateHtmlString(templateType);
+            //var templateString = EmailHelper.GetTemplateHtmlString(templateType);
 
-            if (string.IsNullOrEmpty(templateString))
-                return false;
+            //if (string.IsNullOrEmpty(templateString))
+            //    return false;
 
             switch (templateType)
             {
@@ -447,11 +447,11 @@ namespace net.atos.daf.ct2.account
                     Uri resetUrl = new Uri(baseUrl, $"account/resetpassword/{ tokenSecret }");
                     Uri resetInvalidateUrl = new Uri(baseUrl, $"account/resetpasswordinvalidate/{ tokenSecret }");
 
-                    //sb.Append("A request has been received to reset the password from your account.\n\n");
-                    //sb.Append(resetUrl.AbsoluteUri + "\n\n\n");
-                    //sb.Append("If you did not initiate this request, please click on the below link.\n\n");
-                    //sb.Append(resetInvalidateUrl.AbsoluteUri);
-                    sb.Append(string.Format(templateString, resetUrl.AbsoluteUri, resetInvalidateUrl.AbsoluteUri));
+                    sb.Append("A request has been received to reset the password from your account.\n\n");
+                    sb.Append(resetUrl.AbsoluteUri + "\n\n\n");
+                    sb.Append("If you did not initiate this request, please click on the below link.\n\n");
+                    sb.Append(resetInvalidateUrl.AbsoluteUri);
+                    //sb.Append(string.Format(templateString, resetUrl.AbsoluteUri, resetInvalidateUrl.AbsoluteUri));
                     messageRequest.Subject = "Reset Password Confirmation";
                     break;
                 case EmailTemplateType.ChangeResetPasswordSuccess:
