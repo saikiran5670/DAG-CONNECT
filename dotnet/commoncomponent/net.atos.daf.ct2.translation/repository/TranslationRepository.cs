@@ -429,26 +429,31 @@ namespace net.atos.daf.ct2.translation.repository
                         query = @"update translation.translation set 
                                 code= @Code,type= @Type,name= @Name,value = @Value,modified_at = @modified_at Where id=@id RETURNING id";
                         var translationId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                        //return translationStatus.Updated;
+                        return translationStatus.Updated;
+                    }
+                    else
+                    {
+
+                        parameter = new DynamicParameters();
+                        parameter.Add("@Code", translationdata.Code);
+                        parameter.Add("@Type", translationdata.Type);
+                        parameter.Add("@Name", translationdata.Name);
+                        parameter.Add("@Value", translationdata.Value);
+                        parameter.Add("@Created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                        //parameter.Add("@modified_at", translationdata.modified_at);
+                        query = @"INSERT INTO translation.translation(code, type, name, value, created_at) " +
+                                "values(@Code,@Type,@Name,@Value,@Created_at) RETURNING id";
+                        var translationId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                        return translationStatus.Added;
                     }
                 }
                 else
                 {
-
-                    parameter = new DynamicParameters();
-                    parameter.Add("@Code", translationdata.Code);
-                    parameter.Add("@Type", translationdata.Type);
-                    parameter.Add("@Name", translationdata.Name);
-                    parameter.Add("@Value", translationdata.Value);
-                    parameter.Add("@Created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-                    //parameter.Add("@modified_at", translationdata.modified_at);
-                    query = @"INSERT INTO translation.translation(code, type, name, value, created_at) " +
-                            "values(@Code,@Type,@Name,@Value,@Created_at) RETURNING id";
-                    var translationId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                   // return translationStatus.Added;
+                    return translationStatus.Failed;
                 }
+                
 
-                return translationStatus.Added;
+               
 
             }
             catch (Exception ex)

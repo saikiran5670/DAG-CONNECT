@@ -84,7 +84,7 @@ namespace net.atos.daf.ct2.translation
             }
         }
 
-        public async Task<Translationupload> InsertTranslationFileDetails(Translationupload translationupload)
+        public async Task<TranslationDataStatus> InsertTranslationFileDetails(Translationupload translationupload)
         {
             try
             {
@@ -93,9 +93,10 @@ namespace net.atos.daf.ct2.translation
                 TdataStatus.AddCount = 0;
                 TdataStatus.UpdateCount = 0;
                 TdataStatus.FailedCount = 0;
+                var TranslationsList = await Translationrepository.GetAllTranslations();
                 foreach (var item in translationupload.translations)
                 {
-                    var TranslationtResult = await InsertTranslationFileData(item);
+                    var TranslationtResult = await InsertTranslationFileData(item, TranslationsList);
                     if (TranslationtResult == translationStatus.Added)
                         TdataStatus.AddCount = TdataStatus.AddCount + 1;
                     else if (TranslationtResult == translationStatus.Updated)
@@ -103,7 +104,7 @@ namespace net.atos.daf.ct2.translation
                     else
                         TdataStatus.FailedCount = TdataStatus.FailedCount + 1;
                 }
-                return result;
+                return TdataStatus;
             }
             catch (Exception ex)
             {
@@ -112,11 +113,11 @@ namespace net.atos.daf.ct2.translation
         }
 
 
-        public async Task<translationStatus> InsertTranslationFileData(Translations translationupload)
+        public async Task<translationStatus> InsertTranslationFileData(Translations translationupload,List<Translations> TranslationsList)
         {
             try
             {
-                var TranslationsList = await Translationrepository.GetAllTranslations();
+                
                 var result = await Translationrepository.InsertTranslationFileData(translationupload, TranslationsList);
                 //Translationupload v = new Translationupload();
                 return result;
