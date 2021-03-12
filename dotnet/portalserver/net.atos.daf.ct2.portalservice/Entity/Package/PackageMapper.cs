@@ -21,6 +21,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                 Id = request.Id,
                 Code = request.Code,
                 Name = request.Name,
+                FeatureSetID=request.FeatureSetID,
                 Description = request.Description,
                 Status = ToPackageStatus(request.Status),
                 Type = request.Type,

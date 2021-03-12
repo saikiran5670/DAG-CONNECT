@@ -84,5 +84,16 @@ namespace net.atos.daf.ct2.portalservice.Common
 
         }
 
+        public async Task<IEnumerable<string>> GetFeatures(int featureSSetId)
+        {
+            var features = new List<string>();
+            var featureFilterRequest = new FeaturesFilterRequest();
+            featureFilterRequest.FeatureSetID = featureSSetId;
+            var featureList = await _featureclient.GetFeaturesAsync(featureFilterRequest);
+            features.AddRange(featureList.Features.Select(x => x.Name).ToList());
+            return features;
+        }
+
+
     }
 }
