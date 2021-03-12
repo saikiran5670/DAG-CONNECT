@@ -242,5 +242,41 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, "Internal Server Error.");
             }
         }
+
+        [HttpPost]
+        [Route("Delete")]
+
+        public async Task<IActionResult> DeleteFeatures([FromQuery] int FeatureId)
+        {
+            try
+            {
+
+               
+                FeatureRequest FeatureObj = new FeatureRequest();
+               
+                FeatureObj.Id = FeatureId;
+                var feature = await _featureclient.DeleteAsync(FeatureObj);
+                //List<FeatureResponce> featureList = new List<FeatureResponce>();
+                //foreach (var featureitem in feature.Features)
+                //{
+                //    FeatureResponce obj = new FeatureResponce();
+                //    obj.I = featureitem.Id;
+                //    obj.CreatedBy = featureitem.Createdby;
+                //    obj.FeatureName = featureitem.Name;
+                //    obj.Description = featureitem.Description;
+                //    obj.RoleId = featureitem.RoleId;
+                //    obj.OrganizationId = featureitem.Organization_Id;
+                //    obj.FeatureType = featureitem.Type;
+                //    featureList.Add(obj);
+                //}
+
+                return Ok(feature);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
     }
 }

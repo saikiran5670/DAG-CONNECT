@@ -24,5 +24,6 @@ namespace net.atos.daf.ct2.features
         Task<int> CreateDataattributeFeature(Feature feature);
         Task<Feature> UpdateFeature(Feature feature);
         Task<IEnumerable<DataAttribute>> GetDataAttributes();
+        Task<int> DeleteFeature(int FeatureId);
     }
 }
