@@ -8,6 +8,7 @@
       "featureRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/feature",
       "accountRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/account",
       "translationRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/translation",
-      "organizationRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/vehicle"
+      "organizationRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/vehicle",
+      "driverRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/driver"
     }
 }

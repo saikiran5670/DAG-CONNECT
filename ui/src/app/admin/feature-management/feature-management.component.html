@@ -61,8 +61,9 @@
             <ng-container matColumnDef="status">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.status }}
-                  <mat-slide-toggle (click)="changeFeatureStatus(row)" matTooltip="{{ row.status == 'Active' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}" [checked] = "row.status == 'Active' ? 'true' : 'false'" [disabled] = 'false'>
-                  </mat-slide-toggle>
+                  <button class='actionBtn' mat-flat-button (click)="changeFeatureStatus(row)" matTooltip="{{ row.status == 'Active' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}">
+                    <mat-icon>{{ row.status == 'Active' ? 'sync' : 'sync_disabled' }}</mat-icon>
+                  </button>
                 </mat-cell>
             </ng-container>
             <ng-container matColumnDef="action">
