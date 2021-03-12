@@ -58,7 +58,8 @@ namespace net.atos.daf.ct2.organizationservice
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Relationship Component", "Organization Relationship Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Create", 1, 2, orgRelationship.Id.ToString());
                 response.Code = Responcecode.Success;
                 response.Message = "Created";                
-                request.Id = orgRelationship.Id;              
+                request.Id = orgRelationship.Id;
+                response.OrgRelation = request;                
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -80,6 +81,7 @@ namespace net.atos.daf.ct2.organizationservice
                 var orgRelationship = new OrgRelationship();
                 var response = new OrgRelationshipCreateResponse();
                 orgRelationship.Id = request.Id;
+                orgRelationship.OrganizationId = request.OrganizationId;
                 orgRelationship.Code = request.Code;
                 orgRelationship.Name = request.Name;
                 orgRelationship.Level = request.Level;
@@ -90,8 +92,10 @@ namespace net.atos.daf.ct2.organizationservice
                 orgRelationship = await organizationtmanager.UpdateOrgRelationship(orgRelationship);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Relationship Component", "Organization Relationship Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Updated", 1, 2, orgRelationship.Id.ToString());
                 response.Code = Responcecode.Success;
-                response.Message = "Updated";
+                response.Message = "Org relatioship Updated Successfully";
                 request.Id = orgRelationship.Id;
+                response.OrgRelation = request;
+
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -106,7 +110,7 @@ namespace net.atos.daf.ct2.organizationservice
             }
         }
 
-        public async override Task<OrgRelationshipGetResponse> GetOrgRelationship(OrgRelationshipGetRequest request, ServerCallContext context)
+        public async override Task<OrgRelationshipGetResponse> GetOrgRelationship(OrgRelationshipCreateRequest request, ServerCallContext context)
         {
             try
             {
@@ -119,8 +123,8 @@ namespace net.atos.daf.ct2.organizationservice
                 orgRelationshipFilter.Name = request.Name;
                 orgRelationshipFilter.Description = request.Description;
                 orgRelationshipFilter.IsActive = request.IsActive;
-                var packages = organizationtmanager.GetOrgRelationship(orgRelationshipFilter).Result;
-                response.OrgRelationshipList.AddRange(packages
+                var orgRelationships = organizationtmanager.GetOrgRelationship(orgRelationshipFilter).Result;   
+                response.OrgRelationshipList.AddRange(orgRelationships
                                      .Select(x => new OrgRelationshipGetRequest()
                                      {
                                          Id = x.Id,
@@ -131,7 +135,8 @@ namespace net.atos.daf.ct2.organizationservice
                                          Level =x.Level,
                                          IsActive = x.IsActive
                                      }).ToList());
-                _logger.LogInformation("Get org relationship details.");                
+                _logger.LogInformation("Get org relationship details.");
+                response.Code = Responcecode.Success;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)

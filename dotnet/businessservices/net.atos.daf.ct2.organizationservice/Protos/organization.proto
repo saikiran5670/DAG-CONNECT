@@ -23,7 +23,7 @@ service OrganizationService {
   rpc CreateOrgRelationship (OrgRelationshipCreateRequest) returns (OrgRelationshipCreateResponse);
   rpc UpdateOrgRelationship (OrgRelationshipCreateRequest) returns (OrgRelationshipCreateResponse);
   rpc DeleteOrgRelationship (OrgRelationshipDeleteRequest) returns (OrgRelationshipDeleteResponse);
-  rpc GetOrgRelationship (OrgRelationshipGetRequest) returns (OrgRelationshipGetResponse);
+  rpc GetOrgRelationship (OrgRelationshipCreateRequest) returns (OrgRelationshipGetResponse);
 }
 
 message OrgRelationshipGetRequest{
@@ -67,7 +67,7 @@ message OrgRelationshipCreateResponse{
     {
      Responcecode Code=1;
      string Message = 2;
-     OrgRelationshipCreateRequest OrgRelationshipRequest= 3;      
+     OrgRelationshipDeleteRequest OrgRelationshipRequest= 3;      
     }
 
   message OrgCreateRequest {
