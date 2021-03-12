@@ -123,7 +123,7 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             {
                 vehicledetails.Status = "T";
             }
-            
+
             vehicledetails.OemId = vehicle.Oem_id;
             vehicledetails.OemOrganisationId = vehicle.Oem_Organisation_id;
             vehicledetails.IsOta = vehicle.Is_Ota;

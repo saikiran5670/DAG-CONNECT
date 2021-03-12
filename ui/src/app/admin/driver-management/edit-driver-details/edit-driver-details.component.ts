@@ -41,11 +41,11 @@ export class EditDriverDetailsComponent implements OnInit {
   }
 
   setDefaultData(){
-    this.driverFormGroup.get('driverId').setValue(this.driverData.driverId);
-    this.driverFormGroup.get('emailId').setValue(this.driverData.emailId);
+    this.driverFormGroup.get('driverId').setValue(this.driverData.id);
+    this.driverFormGroup.get('emailId').setValue(this.driverData.email);
     this.driverFormGroup.get('firstName').setValue(this.driverData.firstName);
     this.driverFormGroup.get('lastName').setValue(this.driverData.lastName);
-    this.selectedConsentType = this.driverData.inheritStatus ? 'Inherit' : this.driverData.consentStatus;
+    this.selectedConsentType = this.driverData.status;
   }
 
   getBreadcum(actionType: any){
