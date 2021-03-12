@@ -110,6 +110,20 @@ namespace net.atos.daf.ct2.accountservice
             response.FirstName = account.FirstName;
             response.LastName = account.LastName;
             response.OrganizationId = account.Organization_Id;
+            if (account.PreferenceId.HasValue)
+                response.PreferenceId = account.PreferenceId.Value;
+            if (account.BlobId.HasValue)
+                response.BlobId = account.BlobId.Value;
+            if (!string.IsNullOrEmpty(account.DriverId)) response.DriverId = account.DriverId;
+            if (account.AccountType == AccountComponent.ENUM.AccountType.PortalAccount)
+            {
+                response.Type = Convert.ToString((char)AccountComponent.ENUM.AccountType.PortalAccount);
+            }
+            else
+            {
+                response.Type = Convert.ToString((char)AccountComponent.ENUM.AccountType.SystemAccount);
+            }
+            response.CreatedAt = (long)account.CreatedAt.Value;
             return response;
         }
         public accountpreference.AccountPreference ToPreference(AccountPreference request)
@@ -216,6 +230,22 @@ namespace net.atos.daf.ct2.accountservice
             if (string.IsNullOrEmpty(groupType)) return groupTypeEnum;            
             groupTypeEnum = (GroupType)Convert.ToChar(groupType);            
             return groupTypeEnum;
+        }
+
+        public Group.Group ToGroupObject(Group.GroupType groupType, Group.ObjectType objectType, string Argument, 
+            Group.FunctionEnum functionEnum, int RefId, string groupName, string description, long createAt)
+        {
+            // create vehicle group with vehicle
+            Group.Group group = new Group.Group();
+            group.GroupType = groupType;
+            group.ObjectType = objectType;
+            group.Argument = Argument;
+            group.FunctionEnum = functionEnum;
+            group.RefId = RefId;
+            group.Description = description;
+            group.CreatedAt = createAt;            
+            group.Name = groupName;
+            return group;
         }
 
         //private AccountType SetEnumAccountType(AccountComponent.ENUM.AccountType type)

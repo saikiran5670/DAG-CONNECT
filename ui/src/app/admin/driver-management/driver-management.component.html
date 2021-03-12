@@ -120,7 +120,11 @@
                     <mat-table [dataSource]="dataSource" matSort>
                         <ng-container matColumnDef="driverId">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverId || 'Driver Id' }}</mat-header-cell>
-                            <mat-cell *matCellDef="let row">{{ row.driverId }}</mat-cell>
+                            <mat-cell *matCellDef="let row">
+                                <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
+                                <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+                                <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.driverId }}</span>
+                            </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="firstName">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Driver Name' }}</mat-header-cell>

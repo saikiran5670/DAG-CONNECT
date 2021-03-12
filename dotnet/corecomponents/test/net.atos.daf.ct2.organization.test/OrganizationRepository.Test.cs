@@ -6,6 +6,8 @@ using  net.atos.daf.ct2.vehicle;
 using System.Collections.Generic;
 using net.atos.daf.ct2.organization.entity;
 using net.atos.daf.ct2.organization.repository;
+using net.atos.daf.ct2.account;
+using net.atos.daf.ct2.group;
 
 namespace net.atos.daf.ct2.organization.test
 {
@@ -16,7 +18,9 @@ namespace net.atos.daf.ct2.organization.test
         private readonly IConfiguration _config;
         readonly IOrganizationRepository _organizationRepository;        
         private readonly IAuditTraillib _auditlog;
-        private readonly IVehicleManager _vehicelManager;
+        private readonly IVehicleManager _vehicleManager;
+        private readonly IGroupManager _groupManager ;
+        private readonly IAccountManager _accountManager ;
         public OrganizationRepositoryTest()
         {
             // _config = new ConfigurationBuilder()
@@ -28,7 +32,10 @@ namespace net.atos.daf.ct2.organization.test
         
             //string connectionString = "Server = 127.0.0.1; Port = 5432; Database = DAFCT; User Id = postgres; Password = Admin@1978; CommandTimeout = 90; ";
             _dataAccess = new PgSQLDataAccess(connectionString);
-            _organizationRepository = new OrganizationRepository(_dataAccess,_vehicelManager); 
+            _organizationRepository = new OrganizationRepository( _dataAccess,
+                                                                  _vehicleManager,
+                                                                  _groupManager, 
+                                                                  _accountManager); 
       
       
       
@@ -49,8 +56,8 @@ namespace net.atos.daf.ct2.organization.test
             organization.PostalCode = null;
             organization.City =null;
             organization.CountryCode = null;
-            organization.ReferencedDate = 1610372484;
-            organization.OptOutStatus = true;
+           // organization.ReferencedDate = 1610372484;
+           // organization.OptOutStatus = true;
             organization.OptOutStatusChangedDate =1610372484;
             organization.IsActive = true;
             var result = _organizationRepository.Create(organization).Result;
@@ -71,8 +78,8 @@ namespace net.atos.daf.ct2.organization.test
             organization.PostalCode = null;
             organization.City =null;
             organization.CountryCode = null;
-            organization.ReferencedDate = 1610372484;
-            organization.OptOutStatus = true;
+           // organization.ReferencedDate = 1610372484;
+          //  organization.OptOutStatus = true;
             organization.OptOutStatusChangedDate =1610372484;
             organization.IsActive = true;
             var result = _organizationRepository.Update(organization).Result;

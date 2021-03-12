@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/portalserver/net.atos.daf.ct2.portalservice/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.portalservice.dll",
+            "program": "${workspaceFolder}/businessservices/net.atos.daf.ct2.driverservice/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.driverservice.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/portalserver/net.atos.daf.ct2.portalservice",
+            "cwd": "${workspaceFolder}/businessservices/net.atos.daf.ct2.driverservice",
             "stopAtEntry": false,
             "serverReadyAction": {
                 "action": "openExternally",

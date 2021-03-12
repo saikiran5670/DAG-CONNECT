@@ -52,8 +52,10 @@ namespace net.atos.daf.ct2.account
                 // if this fails
                 account = await repository.Create(account);
 
+                var tokenSecret = await ResetPasswordInitiate(account.EmailId, false);
+
                 //Send account confirmation email
-                await TriggerSendEmailRequest(account.EmailId, EmailTemplateType.CreateAccount);
+                account.isErrorInEmail = await TriggerSendEmailRequest(account.EmailId, EmailTemplateType.CreateAccount, tokenSecret);
             }
             else // there is issues and need delete user from IDP. 
             {
@@ -74,8 +76,10 @@ namespace net.atos.daf.ct2.account
                         account = await repository.Create(account);
                         await identity.UpdateUser(identityEntity);
 
+                        var tokenSecret = await ResetPasswordInitiate(account.EmailId, false);
+
                         //Send account confirmation email
-                        await TriggerSendEmailRequest(account.EmailId, EmailTemplateType.CreateAccount);
+                        account.isErrorInEmail = await TriggerSendEmailRequest(account.EmailId, EmailTemplateType.CreateAccount, tokenSecret);
                     }
                     else
                     {
@@ -175,7 +179,70 @@ namespace net.atos.daf.ct2.account
         public async Task<AccountBlob> GetBlob(int blobId)
         {
             return await repository.GetBlob(blobId);
-        }        
+        }
+        #region AccessRelationship
+
+        //public VehicleAccessRelationship CreateVehicleAccessRelationship(VehicleAccessRelationship entity)
+        //{
+        //    // 
+        //    if (entity != null)
+        //    {
+                
+        //            if (!entity.IsGroup)
+        //            {
+        //                // create vehicle group with vehicle
+        //                int vehicleGroupId = 0;
+
+        //                // check all account or account group
+        //                foreach (var account in entity.AccountsAccountGroups)
+        //                {
+        //                    // create group type single
+        //                    if (!account.IsGroup)
+        //                    {
+        //                        // create group for account
+                                
+        //                        // 
+        //                    }
+        //                    else
+        //                    {
+
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    return entity;
+        //}
+
+        //public AccountAccessRelationship CreateAccountAccessRelationship(AccountAccessRelationship entity)
+        //{
+        //    // 
+        //    if (entity != null)
+        //    {
+
+        //        if (!entity.IsGroup)
+        //        {
+        //            // create vehicle group with vehicle
+        //            int vehicleGroupId = 0;
+
+        //            // check all account or account group
+        //            foreach (var account in entity.VehiclesVehicleGroups)
+        //            {
+        //                // create group type single
+        //                if (!account.IsGroup)
+        //                {
+        //                    // create group for account
+
+        //                    // 
+        //                }
+        //                else
+        //                {
+
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return entity;
+        //}
         public async Task<AccessRelationship> CreateAccessRelationship(AccessRelationship entity)
         {
             return await repository.CreateAccessRelationship(entity);
@@ -192,6 +259,7 @@ namespace net.atos.daf.ct2.account
         {
             return await repository.GetAccessRelationship(filter);
         }
+        #endregion 
         public async Task<bool> AddRole(AccountRole accountRoles)
         {
             return await repository.AddRole(accountRoles);
@@ -218,7 +286,7 @@ namespace net.atos.daf.ct2.account
             return await repository.GetAccountRole(accountId);
         }
 
-        public async Task<Guid?> ResetPasswordInitiate(string emailId)
+        public async Task<Guid?> ResetPasswordInitiate(string emailId, bool canSendEmail = true)
         {
             try
             {
@@ -243,13 +311,13 @@ namespace net.atos.daf.ct2.account
                     }
 
                     var identityresult = await identity.ResetUserPasswordInitiate();
-                    var tokenSecret = (Guid)identityresult.Result;
+                    var processToken = (Guid)identityresult.Result;
                     if (identityresult.StatusCode == System.Net.HttpStatusCode.OK)
                     {
                         //Save Reset Password Token to the database
                         var objToken = new ResetPasswordToken();
                         objToken.AccountId = account.Id;
-                        objToken.TokenSecret = tokenSecret;
+                        objToken.ProcessToken = processToken;
                         objToken.Status = ResetTokenStatus.New;
                         var now = DateTime.Now;
                         objToken.ExpiryAt = UTCHandling.GetUTCFromDateTime(now.AddMinutes(configuration.GetValue<double>("ResetPasswordTokenExpiryInMinutes")));
@@ -258,15 +326,17 @@ namespace net.atos.daf.ct2.account
                         //Create with status as New
                         await repository.Create(objToken);
 
-                        //Send email
-                        var isSent = TriggerSendEmailRequest(account.EmailId, EmailTemplateType.ResetPassword);
+                        bool isSent = false;
+                        //Send activation email based on flag
+                        if (canSendEmail)                      
+                            isSent = await TriggerSendEmailRequest(account.EmailId, EmailTemplateType.ResetPassword, processToken);
 
-                        if (isSent.Result)
+                        if (canSendEmail && isSent)
                         {
                             //Update status to Issued
                             await repository.Update(objToken.Id, ResetTokenStatus.Issued);
 
-                            return tokenSecret;
+                            return processToken;
                         }
                         else
                             return null;
@@ -285,7 +355,7 @@ namespace net.atos.daf.ct2.account
         public async Task<bool> ResetPassword(Account accountInfo)
         {
             //Check if token record exists, Fetch it and validate the status
-            var resetPasswordToken = await repository.GetIssuedResetToken(accountInfo.ResetToken.Value);
+            var resetPasswordToken = await repository.GetIssuedResetToken(accountInfo.ProcessToken.Value);
             if (resetPasswordToken != null)
             {
                 //Check for Expiry of Reset Token
@@ -333,8 +403,13 @@ namespace net.atos.daf.ct2.account
             return false;
         }
 
+        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeatures(int accountId, int roleId, int organizationId, string languageCode)
+        {
+            return await repository.GetMenuFeaturesList(accountId, roleId, organizationId, languageCode);
+        }
+
         #region Private Helper Methods
-        private async Task<bool> TriggerSendEmailRequest(string toEmailAddress, EmailTemplateType templateType)
+        private async Task<bool> TriggerSendEmailRequest(string toEmailAddress, EmailTemplateType templateType, Guid? tokenSecret = null)
         {
             var messageRequest = new MessageRequest();
             messageRequest.Configuration = emailConfiguration;
@@ -343,49 +418,56 @@ namespace net.atos.daf.ct2.account
                 { toEmailAddress, null }
             };
 
-            FillEmailTemplate(messageRequest, templateType);           
+            if(FillEmailTemplate(messageRequest, templateType, tokenSecret))
+                return await EmailHelper.SendEmail(messageRequest);
 
-            return await EmailHelper.SendEmail(messageRequest);
+            return false;
         }
 
-        private void FillEmailTemplate(MessageRequest messageRequest, EmailTemplateType templateType)
+        private bool FillEmailTemplate(MessageRequest messageRequest, EmailTemplateType templateType, Guid? tokenSecret = null)
         {
             StringBuilder sb = new StringBuilder();
+            Uri baseUrl = new Uri(emailConfiguration.PortalServiceBaseUrl);
+            //var templateString = EmailHelper.GetTemplateHtmlString(templateType);
+
+            //if (string.IsNullOrEmpty(templateString))
+            //    return false;
 
             switch (templateType)
             {
                 case EmailTemplateType.CreateAccount:
-                    sb.Append("Your account has been created successfully on DAF portal.\n\n");
+                    Uri setUrl = new Uri(baseUrl, $"account/createpassword/{ tokenSecret }");
 
+                    sb.Append("Your account has been created successfully on DAF portal.\n\n");
+                    sb.Append("Please click the below button to set your new password.\n\n");
+                    sb.Append(setUrl.AbsoluteUri + "\n\n\n");
                     messageRequest.Subject = "DAF Account Confirmation";
-                    messageRequest.ContentMimeType = MimeType.Text;
                     break;
                 case EmailTemplateType.ResetPassword:
-                    Uri baseUrl = new Uri(emailConfiguration.PortalServiceBaseUrl);
-                    Uri resetUrl = new Uri(baseUrl, "account/resetpassword");
-                    Uri resetInvalidateUrl = new Uri(baseUrl, "account/resetpasswordinvalidate");
+                    Uri resetUrl = new Uri(baseUrl, $"account/resetpassword/{ tokenSecret }");
+                    Uri resetInvalidateUrl = new Uri(baseUrl, $"account/resetpasswordinvalidate/{ tokenSecret }");
 
-                    sb.Append("A request has been received to reset the password from your account.\n\n");                                       
+                    sb.Append("A request has been received to reset the password from your account.\n\n");
                     sb.Append(resetUrl.AbsoluteUri + "\n\n\n");
                     sb.Append("If you did not initiate this request, please click on the below link.\n\n");
                     sb.Append(resetInvalidateUrl.AbsoluteUri);
-
+                    //sb.Append(string.Format(templateString, resetUrl.AbsoluteUri, resetInvalidateUrl.AbsoluteUri));
                     messageRequest.Subject = "Reset Password Confirmation";
-                    messageRequest.ContentMimeType = MimeType.Text;
                     break;
                 case EmailTemplateType.ChangeResetPasswordSuccess:
                     sb.Append("Your account password has been changed successfully.\n\n");
 
                     messageRequest.Subject = "Change Password Confirmation";
-                    messageRequest.ContentMimeType = MimeType.Text;
                     break;
                 default:
                     messageRequest.Subject = string.Empty;
-                    messageRequest.ContentMimeType = MimeType.Text;
                     break;
             }
 
             messageRequest.Content = sb.ToString();
+            messageRequest.ContentMimeType = MimeType.Html;
+
+            return true;
         }
 
         #endregion

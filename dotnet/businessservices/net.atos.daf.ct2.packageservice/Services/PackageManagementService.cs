@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.packageservice
                 package.FeatureSetID = request.FeatureSetID;
                 package.Status = (package.ENUM.PackageStatus)(int)request.Status;
                 package.Name = request.Name;
-                package.Type = (package.ENUM.PackageType)(char)request.Type;
+                package.Type = request.Type;
                 package.Description = request.Description;
                 package = _packageManager.Create(package).Result;
                 return Task.FromResult(new PackageResponse
@@ -64,7 +64,7 @@ namespace net.atos.daf.ct2.packageservice
                 package.FeatureSetID = request.FeatureSetID;
                 package.Status = (package.ENUM.PackageStatus)request.Status;
                 package.Name = request.Name;
-                package.Type = (package.ENUM.PackageType)request.Type;
+                package.Type =request.Type;
                 package.Description = request.Description;
                 package = _packageManager.Update(package).Result;
                 return Task.FromResult(new PackageResponse
@@ -82,22 +82,33 @@ namespace net.atos.daf.ct2.packageservice
         }
 
         //Delete
-        public override Task<PackageResponse> Delete(PackageDeleteRequest request, ServerCallContext context)
+        public async override Task<PackageResponse> Delete(PackageDeleteRequest request, ServerCallContext context)
         {
             try
             {
                 var result = _packageManager.Delete(request.Id).Result;
-                return Task.FromResult(new PackageResponse
+                var response = new PackageResponse();
+                if (result)
                 {
-                    Message = "Package deleted " + request.Id,
-                    Code = Responsecode.Success
-                });
+                    response.Code = Responsecode.Success;
+                    response.Message = "Package Deleted." ;
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = "Package Not Found.";
+                }
+
+                return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
-                return Task.FromResult(new PackageResponse
+                _logger.LogError("Error in package service:delete package  with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new PackageResponse
                 {
-                    Message = "Exception " + ex.Message
+                    Code = Responsecode.Failed,
+                    Message = "Package Deletion Faile due to - " + ex.Message,
+                     
                 });
             }
         }
@@ -115,7 +126,7 @@ namespace net.atos.daf.ct2.packageservice
                 packageFilter.FeatureSetId = request.FeatureSetID;
                 packageFilter.Status = (package.ENUM.PackageStatus)(int)request.Status;
                 packageFilter.Name = request.Name;
-                packageFilter.Type = (package.ENUM.PackageType)(int)request.Type;
+                packageFilter.Type = request.Type;
                 var packages = _packageManager.Get(packageFilter).Result;
                 response.PacakageList.AddRange(packages
                                      .Select(x => new GetPackageRequest()
@@ -125,7 +136,7 @@ namespace net.atos.daf.ct2.packageservice
                                          Name = x.Name,
                                          FeatureSetID=x.FeatureSetID,                                          
                                          Status = (PackageStatus)x.Status,
-                                         Type = (PackageType)x.Type }).ToList()); 
+                                         Type = x.Type }).ToList()); 
                 _logger.LogInformation("Get package details.");
                 return await Task.FromResult(response);
             }
@@ -156,7 +167,7 @@ namespace net.atos.daf.ct2.packageservice
                     FeatureSetID=x.FeatureSetID,
                     Name = x.Name,
                     Status = (package.ENUM.PackageStatus)x.Status,
-                    Type = (package.ENUM.PackageType)x.Type
+                    Type = x.Type
                 }).ToList());
                 
                 var packageImported =await _packageManager.Import(packages);
@@ -168,7 +179,7 @@ namespace net.atos.daf.ct2.packageservice
                                          Name = x.Name,
                                          FeatureSetID=x.FeatureSetID,
                                          Status = (PackageStatus)x.Status,
-                                         Type = (PackageType)x.Type
+                                         Type = x.Type
                                      }).ToList());
 
 

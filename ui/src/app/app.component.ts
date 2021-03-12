@@ -303,7 +303,7 @@ export class AppComponent {
         preferenceLanguageId = this.localStLanguage.id;
       }
       else if(this.accountInfo){
-          filterLang = this.languages.filter(item => item.id == this.accountInfo.accountPreference.languageId )
+          filterLang = this.languages.filter(item => item.id == (this.accountInfo.accountPreference ? this.accountInfo.accountPreference.languageId : 8))
         if(filterLang.length > 0){
           preferencelanguageCode = filterLang[0].code;
           preferenceLanguageId = filterLang[0].id;

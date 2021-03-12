@@ -15,6 +15,7 @@ service PackageService{
 message PackageResponse {
   Responsecode Code=1;
   string Message = 2;
+  PackageDeleteRequest PackageDeleteRequest= 3;
 }
 
 message ImportPackageRequest
@@ -35,7 +36,7 @@ message PackageCreateRequest {
     int32 FeatureSetID=3;
     repeated string Features =4;
     string Name=5;
-    PackageType Type =6;
+    string Type =6;
     string Description=7;    
     PackageStatus Status =8;
   }
@@ -46,7 +47,7 @@ message PackageCreateRequest {
     int32 FeatureSetID=3;
     repeated string Features =4;
     string Name=5;
-    PackageType Type =6;
+    string Type =6;
     string Description=7;    
     PackageStatus Status =8;
   }
@@ -59,7 +60,7 @@ message PackageCreateRequest {
     int32 FeatureSetID =3;    
     repeated string Features =4;
     string Name=5;
-    PackageType Type =6;
+    string Type =6;
     string Description=7; 
     PackageStatus Status =8;
 }
@@ -74,11 +75,11 @@ message GetPackageResponce {
         True = 1;
        
     }
-    enum PackageStatus
+     enum PackageStatus
     {
         None = 0;
         Inactive = 1;
-        Active = 2;
+        Active =2;
        
     }
     enum PackageType
@@ -89,6 +90,8 @@ message GetPackageResponce {
         ReadWrite = 3;//'W'=2;
     }
     enum Responsecode {
-     Success = 0;
-     Failed = 1;
+      Success = 0;
+      Failed = 1;
+      Conflict = 2;
+      NotFound = 3;
     }

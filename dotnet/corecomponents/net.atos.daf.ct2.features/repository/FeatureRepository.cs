@@ -177,7 +177,7 @@ namespace net.atos.daf.ct2.features.repository
 								 join master.featuresetfeature fsf
 								on fsf.feature_id= f.id
 								 join master.Role r
-								on r.feature_set_id = fsf.feature_set_id";
+								on r.feature_set_id = fsf.feature_set_id where f.is_active= true";
             
             
             var parameter = new DynamicParameters();
@@ -202,8 +202,8 @@ namespace net.atos.daf.ct2.features.repository
             }
             if(RoleId == 0  && Organizationid ==0)
             {
-                 QueryStatement = @"SELECT id, name, type, is_active, data_attribute_set_id, key, level
-	                                FROM master.feature f where 1=1";
+                 QueryStatement = @"SELECT id, name, type, is_active, data_attribute_set_id, key, level, state
+	                                FROM master.feature f where f.is_active =true";
                if (Featuretype != '0')
                 {
                     parameter.Add("@type", Featuretype);
@@ -238,6 +238,39 @@ namespace net.atos.daf.ct2.features.repository
 
            IEnumerable<DataAttribute> DataAttributeDetails = await dataAccess.QueryAsync<DataAttribute>(QueryStatement);
             return DataAttributeDetails;
+
+        }
+        public async Task<DataAttributeSet> GetDataAttributeset(int DataAttributeSetID)
+        {
+            try
+            {
+                var QueryStatement = @"SELECT id, name, description, is_exlusive, created_at, created_by, modified_at, modified_by, is_active
+	                                FROM master.dataattributeset where id= @data_set_id";
+
+                var parameter = new DynamicParameters();
+                parameter.Add("@data_set_id", DataAttributeSetID);
+                var DataAttributeSetDetails = await dataAccess.QueryAsync<DataAttributeSet>(QueryStatement, parameter);
+
+                var Dataattributequery = @"SELECT dsa.data_attribute_id as Id
+	                                    FROM master.dataattributeset ds Left Join 
+	                                    master.dataattributesetattribute dsa
+	                                    on ds.id = dsa.data_attribute_set_id
+	                                    where ds.id= @data_set_id";
+                var parameters = new DynamicParameters();
+                parameters.Add("@data_set_id", DataAttributeSetID);
+                var DataAttributeS = await dataAccess.QueryAsync<DataAttribute>(Dataattributequery, parameters);
+                var dataatribute = DataAttributeSetDetails.FirstOrDefault();
+                dataatribute.DataAttributes = new List<DataAttribute>();
+                dataatribute.DataAttributes.AddRange(DataAttributeS);
+                return dataatribute;
+            }
+            catch (Exception ex )
+            {
+
+                throw;
+            }
+
+            
 
         }
 
@@ -345,7 +378,7 @@ namespace net.atos.daf.ct2.features.repository
 
                     if (IDs != null)
                     {
-                        test =  string.Join(" , ", IDs) ;
+                        test =  string.Join("' , '", IDs) ;
                     }
 
                     var FSFSelectQueryStatement = @"select feature_id  FROM master.featuresetfeature  
@@ -422,7 +455,7 @@ namespace net.atos.daf.ct2.features.repository
                            // parameter.Add("@dataattributesetID", DataAttributeSetID);
                             parameter.Add("@name", dataAttributeSet.Name);
                             parameter.Add("@description", dataAttributeSet.Description);
-                            parameter.Add("@is_exlusive", (char)dataAttributeSet.Is_exlusive);
+                            parameter.Add("@is_exlusive", dataAttributeSet.Is_exlusive);
                             parameter.Add("@created_at", dataAttributeSet.created_at);
                             parameter.Add("@created_by", dataAttributeSet.created_by);
                             parameter.Add("@modified_at", dataAttributeSet.modified_at);
@@ -469,13 +502,14 @@ namespace net.atos.daf.ct2.features.repository
                             parameter.Add("@id", MaxSetFeatureID);
                             parameter.Add("@name", feature.Name);
                             parameter.Add("@type", 'D');
-                            parameter.Add("@is_active",feature.Is_Active);
+                            parameter.Add("@is_active",true);
                             parameter.Add("@data_attribute_set_id", InserteddataAttributeSetID);
                             parameter.Add("@key", feature.Description);
                             parameter.Add("@level", feature.Level);
-                            int resultAddFeatureSet = await dataAccess.ExecuteAsync(@"INSERT INTO master.feature(
-	                                                 id, name, type, is_active, data_attribute_set_id, key,level)
-	                                           VALUES (@id, @name, @type, @is_active, @data_attribute_set_id, @key,@level) RETURNING id", parameter);
+                            parameter.Add("@State", (char)feature.FeatureState);
+            int resultAddFeatureSet = await dataAccess.ExecuteScalarAsync<int>(@"INSERT INTO master.feature(
+	                                                 id, name, type, is_active, data_attribute_set_id, key,level,state)
+	                                           VALUES (@id, @name, @type, @is_active, @data_attribute_set_id, @key,@level,@State) RETURNING id", parameter);
                                         return resultAddFeatureSet;
         }
 
@@ -570,26 +604,92 @@ namespace net.atos.daf.ct2.features.repository
                 throw ex;
             }
         }
+
+        public async Task<Feature> UpdateFeature(Feature feature)
+        {
+            try
+            {
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+
+                    var FSQueryStatement = @" UPDATE master.dataattributeset 
+                                 SET 
+                                 name =@name
+                                ,description = @description
+                                ,is_exlusive = @is_exlusive
+                                ,created_at = @created_at
+                                ,created_by = @created_by
+                                ,modified_at = @modified_at
+                                ,modified_by = @modified_by
+                                WHERE id = @id
+                                RETURNING id;";
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@id", feature.DataAttributeSets.ID);
+                    parameter.Add("@name", feature.DataAttributeSets.Name);
+                    parameter.Add("@description", feature.DataAttributeSets.Description);
+                    parameter.Add("@is_exlusive", feature.DataAttributeSets.Is_exlusive);
+                    parameter.Add("@created_at", feature.DataAttributeSets.created_at);
+                    parameter.Add("@created_by", feature.DataAttributeSets.created_by);
+                    parameter.Add("@modified_at", feature.DataAttributeSets.modified_at);
+                    parameter.Add("@modified_by", feature.DataAttributeSets.modified_by);
+                    int UpdatedDataAttributeSetId = await dataAccess.ExecuteScalarAsync<int>(FSQueryStatement, parameter);
+                    if (UpdatedDataAttributeSetId > 0)
+                    {
+                        feature.DataAttributeSets.ID = UpdatedDataAttributeSetId;
+                        // var mapdataattribute = RemoveDataAttributeSetMapping(UpdatedDataAttributeSetId);
+                    }
+
+                    List<int> temp = new List<int>();
+                    foreach (var item in feature.DataAttributeSets.DataAttributes)
+                    {
+                        temp.Add(item.ID);
+
+                    }
+
+                    var removeFeatureID = await RemoveDataAttributeSetMapping(UpdatedDataAttributeSetId, temp);
+
+                    if (feature.DataAttributeSets.DataAttributes != null)
+                    {
+                        foreach (var item in feature.DataAttributeSets.DataAttributes)
+                        {
+                            var parameterfeature = UpdateDataAttributeSetMapping(UpdatedDataAttributeSetId, item.ID);
+                        }
+                    }
+                    //Feature features = new Feature();
+                    int MapDataAttributeSetID = UpdatedataattributeSetFeature(feature, UpdatedDataAttributeSetId);
+
+                    transactionScope.Complete();
+
+                    return feature;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
         public int UpdatedataattributeSetFeature(Feature feature, int UpdatedDataAttributeSetId)
         {
             int MaxSetFeatureID = GetMaxFeatureID();  // Dataattribute set ID will start from 10000
             var parameter = new DynamicParameters();
             //parameter.Add("@id", MaxSetFeatureID);
             parameter.Add("@name", feature.Name);
-            parameter.Add("@type", 'D');
-            parameter.Add("@is_active", feature.status);
+            parameter.Add("@id", feature.Id);
+            //parameter.Add("@is_active", feature.status);
             parameter.Add("@data_attribute_set_id", UpdatedDataAttributeSetId);
-            parameter.Add("@key", feature.Description);
+            parameter.Add("@key", feature.Key);
             parameter.Add("@level", feature.Level);
+            parameter.Add("@State", (char)feature.FeatureState);
 
             int resultUpdateDataAttributeFeature = dataAccess.Execute(@"UPDATE master.feature
 	                                                SET 
-                                                        name= @name, 
-                                                        type=@type,
-                                                        is_active=@is_active,
-                                                        key=@key,
-                                                        level=@level
-	                                                WHERE data_attribute_set_id =@data_attribute_set_id)", parameter);
+                                                        name= @name,                                                       
+                                                        key= @key,
+                                                        level= @level,      
+                                                        state= @State
+	                                                WHERE data_attribute_set_id = @data_attribute_set_id", parameter);
             return resultUpdateDataAttributeFeature;
         }
         public int UpdateDataAttributeSetMapping(int DataAttributeSetId, int ID)
@@ -643,7 +743,7 @@ namespace net.atos.daf.ct2.features.repository
 
                     if (IDs != null)
                     {
-                        test = string.Join(" , ", IDs);
+                        test = string.Join("' , '", IDs);
                     }
 
                     var FSFSelectQueryStatement = @"select data_attribute_id  FROM master.dataattributesetattribute  
@@ -829,10 +929,10 @@ namespace net.atos.daf.ct2.features.repository
                     {
                         foreach (var item in featureSet.Features)
                         {
-                            if (featureSet.Is_Active == true)
-                            {
+                            //if (featureSet.Is_Active == true)
+                            //{
                                 var parameterfeature = UpdateFeatureSetMapping(UpdateFeatureSetID, item.Id);
-                            }
+                            //}
                         }
                     }
                     transactionScope.Complete();
@@ -902,25 +1002,29 @@ namespace net.atos.daf.ct2.features.repository
 
         }
 
-        public async Task<Feature> DeleteDataAttributeSetFeature(Feature feature, int DataAttributeSetId)
+        public async Task<int> DeleteFeature(int FeatureId)
         {
             try
             {
-                if (DataAttributeSetId != 0)
+                if (FeatureId != 0)
                 {
-                    var FSQueryStatement = @"update master.feature set status= @status where data_attribute_set_id=@DataAttributeSetId  RETURNING id;";
+                    var FSQueryStatement = @"update master.feature set is_active= @is_active where id=@id  and type= 'D' RETURNING id;";
                     var parameter = new DynamicParameters();
-                    parameter.Add("@DataAttributeSetId", DataAttributeSetId);
-                    parameter.Add("@status", false);
+                    parameter.Add("@id", FeatureId);
+                    parameter.Add("@is_active", false);
                     int DeleteDataAttributeSetFeatureID = await dataAccess.ExecuteScalarAsync<int>(FSQueryStatement, parameter);
 
                     //if(DeleteDataAttributeSetFeatureID >0)
                     //{
                     //    feature.Id = DeleteDataAttributeSetFeatureID;
                     //}
-                    
+                    return DeleteDataAttributeSetFeatureID;
                 }
-                return feature;
+                else
+                {
+                    return 0;
+                }
+           
 
             }
             catch (Exception ex)

@@ -18,7 +18,7 @@ using AccountBusinessService = net.atos.daf.ct2.accountservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
-    //[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    // [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("account")]
     public class AccountController : ControllerBase
@@ -27,16 +27,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Private Variable
         private readonly ILogger<AccountController> _logger;
         private readonly AccountBusinessService.AccountService.AccountServiceClient _accountClient;
-        private readonly Mapper _mapper;        
+        private readonly Mapper _mapper;
+        private readonly IMemoryCacheExtensions _cache;
 
         #endregion
 
         #region Constructor
-        public AccountController(AccountBusinessService.AccountService.AccountServiceClient accountClient, ILogger<AccountController> logger)
+        public AccountController(AccountBusinessService.AccountService.AccountServiceClient accountClient, ILogger<AccountController> logger, IMemoryCacheExtensions cache)
         {
             _accountClient = accountClient;
             _logger = logger;
             _mapper = new Mapper();
+            _cache = cache;
         }
         #endregion
 
@@ -49,7 +51,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 // Validation 
                 if ((string.IsNullOrEmpty(request.EmailId)) || (string.IsNullOrEmpty(request.FirstName))
-                || (string.IsNullOrEmpty(request.LastName)) || (request.OrganizationId  <= 0) || (string.IsNullOrEmpty(request.Type)))
+                || (string.IsNullOrEmpty(request.LastName)) || (request.OrganizationId <= 0) || (string.IsNullOrEmpty(request.Type)))
                 {
                     return StatusCode(400, PortalConstants.AccountValidation.CreateRequired);
                 }
@@ -75,34 +77,34 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountData accountResponse = await _accountClient.CreateAsync(accountRequest);
                 AccountResponse response = new AccountResponse();
                 response = _mapper.ToAccount(accountResponse.Account);
-                if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed)
+                if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Conflict)
                 {
-                   if (response.PreferenceId > 0)
-                   {
-                        var accountPreference = new AccountPreference();
-                        accountPreference.Account = response;
-                        AccountBusinessService.AccountPreferenceFilter preferenceRequest = new AccountBusinessService.AccountPreferenceFilter();
-                        preferenceRequest.Id = response.PreferenceId;
-                        AccountBusinessService.AccountPreferenceResponse accountPreferenceResponse = await _accountClient.GetPreferenceAsync(preferenceRequest);
-
-                        if (accountPreferenceResponse != null && accountPreferenceResponse.Code == AccountBusinessService.Responcecode.Success)
-                        {
-                            if (accountPreferenceResponse.AccountPreference != null)
-                            {
-                                accountPreference.Preference = _mapper.ToAccountPreference(accountPreferenceResponse.AccountPreference);
-                            }
-                        }
-                        return StatusCode(409, accountPreference);
-                    }
-                    else
+                    var accountPreference = new AccountPreference();
+                    accountPreference.Preference = null;
+                    accountPreference.Account = response;
+                    AccountBusinessService.AccountPreferenceFilter preferenceRequest = new AccountBusinessService.AccountPreferenceFilter();
+                    preferenceRequest.Id = response.PreferenceId;
+                    // get preference
+                    AccountBusinessService.AccountPreferenceResponse accountPreferenceResponse = await _accountClient.GetPreferenceAsync(preferenceRequest);                    
+                    if (accountPreferenceResponse != null && accountPreferenceResponse.Code == AccountBusinessService.Responcecode.Success)
                     {
-                        return StatusCode(409, response);
+                        if (accountPreferenceResponse.AccountPreference != null)
+                        {
+                            accountPreference.Preference = new AccountPreferenceResponse();
+                            accountPreference.Preference = _mapper.ToAccountPreference(accountPreferenceResponse.AccountPreference);
+                        }
                     }
+                    return StatusCode(409, accountPreference);
                 }
                 else if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed
                     && accountResponse.Message == PortalConstants.AccountValidation.ErrorMessage)
                 {
                     return StatusCode(500, PortalConstants.AccountValidation.ErrorMessage);
+                }
+                else if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed
+                    && accountResponse.Message == PortalConstants.AccountValidation.EmailSendingFailedMessage)
+                {
+                    return StatusCode(500, PortalConstants.AccountValidation.EmailSendingFailedMessage);
                 }
                 else if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -112,21 +114,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "01"));
                 }
-            }            
+            }
             catch (Exception ex)
             {
                 _logger.LogError("Account Service:Create : " + ex.Message + " " + ex.StackTrace);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
-                    return StatusCode(500, "Internal Server Error.(01)");
+                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "02"));
                 }
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.SocketException))
                 {
-                    return StatusCode(500, "Internal Server Error.(02)");
+                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "03"));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "04"));
             }
         }
         [HttpPost]
@@ -136,7 +138,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 // Validation 
-                if ( (request.Id <= 0) || (string.IsNullOrEmpty(request.EmailId)) 
+                if ((request.Id <= 0) || (string.IsNullOrEmpty(request.EmailId))
                     || (string.IsNullOrEmpty(request.FirstName)) || (string.IsNullOrEmpty(request.LastName)))
                 {
                     return StatusCode(400, "The AccountId, EmailId address, first name, last name is required.");
@@ -148,25 +150,30 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The EmailId address, first name, last name and organization id should be valid.");
                 }
+                // The account type should be single character
+                if (request.Type.Length > 1)
+                {
+                    return StatusCode(400, PortalConstants.AccountValidation.InvalidAccountType);
+                }
+                // validate account type
+                char accountType = Convert.ToChar(request.Type);
+                if (!EnumValidator.ValidateAccountType(accountType))
+                {
+                    return StatusCode(400, PortalConstants.AccountValidation.InvalidAccountType);
+                }
                 var accountRequest = _mapper.ToAccount(request);
                 AccountBusinessService.AccountData accountResponse = await _accountClient.UpdateAsync(accountRequest);
-                if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed
-                    && accountResponse.Message == "The duplicate account, please provide unique email address.")
+                if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed)
                 {
-                    return StatusCode(409, "Duplicate Account.");
-                }
-                else if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed
-                    && accountResponse.Message == "There is an error creating account.")
-                {
-                    return StatusCode(500, "There is an error creating account.");
+                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "01"));
                 }
                 else if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Success)
                 {
-                   return Ok(request);
+                    return Ok(request);
                 }
                 else
                 {
-                    return StatusCode(500, "accountResponse is null");
+                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "02"));
                 }
             }
             catch (Exception ex)
@@ -175,9 +182,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
-                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "03"));
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "04"));
             }
         }
         [HttpDelete]
@@ -264,7 +271,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, accountResponse.Message);
+                    return StatusCode(500, "Internal Server Error");
                 }
             }
             catch (Exception ex)
@@ -301,13 +308,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, accountResponse.Message);
+                    return StatusCode(500, PortalConstants.ResponseError.InternalServerError + "01");
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, PortalConstants.ResponseError.InternalServerError + "02");
             }
         }
 
@@ -318,7 +325,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 // Validation 
-                if ( (request.OrganizationId <= 0) || (request.AccountId <=0))
+                if ((request.OrganizationId <= 0) || (request.AccountId <= 0))
                 {
                     return StatusCode(400, "The organization id and account id is required.");
                 }
@@ -329,7 +336,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 accountRequest.StartDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                 accountRequest.EndDate = 0;
 
-                AccountBusinessService.AccountOrganizationResponse response = await _accountClient.AddAccountToOrgAsync(accountRequest);                
+                AccountBusinessService.AccountOrganizationResponse response = await _accountClient.AddAccountToOrgAsync(accountRequest);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Failed)
                 {
                     return StatusCode(500, "Internal Server Error.(0)");
@@ -376,12 +383,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         [HttpPost]
         [Route("resetpassword")]
+        [Route("createpassword")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
             try
             {
                 var resetPasswordRequest = new AccountBusinessService.ResetPasswordRequest();
-                resetPasswordRequest.ResetToken = request.ResetToken;
+                resetPasswordRequest.ProcessToken = request.ProcessToken;
                 resetPasswordRequest.Password = request.Password;
 
                 var response = await _accountClient.ResetPasswordAsync(resetPasswordRequest);
@@ -415,6 +423,33 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in account service:ResetPasswordInvalidate with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpPost]
+        [Route("getmenufeatures")]
+        public async Task<IActionResult> GetMenuFeatures([FromBody] MenuFeatureRequest request)
+        {
+            try
+            {
+                var menuFeatureRequest = new AccountBusinessService.MenuFeatureRequest();
+                menuFeatureRequest.AccountId = request.AccountId;
+                menuFeatureRequest.RoleId = request.RoleId;
+                menuFeatureRequest.OrganizationId = request.OrganizationId;
+
+                var response = await _accountClient.GetMenuFeaturesAsync(menuFeatureRequest);
+
+                if (response.Code == AccountBusinessService.Responcecode.Success)
+                    return Ok(response.MenuFeatures);
+                else if (response.Code == AccountBusinessService.Responcecode.NotFound)
+                    return NotFound(response.Message);
+                else
+                    return StatusCode(500, "Error occurred while fetching Menu and Features.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:GetMenuFeatures with exception - " + ex.Message + ex.StackTrace);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -557,7 +592,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountPreferenceResponse preference = await _accountClient.CreatePreferenceAsync(accountPreference);
                 if (preference != null && preference.Code == AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(_mapper.ToAccountPreference( preference.AccountPreference));
+                    return Ok(_mapper.ToAccountPreference(preference.AccountPreference));
                 }
                 else
                 {
@@ -849,7 +884,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region Account Group
-        
+
         [HttpPost]
         [Route("accountgroup/create")]
         public async Task<IActionResult> CreateAccountGroup(AccountGroupRequest request)
@@ -857,7 +892,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 // Validation                 
-                if ( (string.IsNullOrEmpty(request.Name)) || (request.OrganizationId <=0) || (string.IsNullOrEmpty(request.GroupType)))
+                if ((string.IsNullOrEmpty(request.Name)) || (request.OrganizationId <= 0) || (string.IsNullOrEmpty(request.GroupType)))
                 {
                     return StatusCode(400, "The Account group name, organization id and group type is required");
                 }
@@ -866,7 +901,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (!EnumValidator.ValidateGroupType(groupType))
                 {
                     return StatusCode(400, "The group type is not valid.");
-                }                
+                }
 
                 AccountBusinessService.AccountGroupRequest accountGroupRequest = new AccountBusinessService.AccountGroupRequest();
                 accountGroupRequest = _mapper.ToAccountGroup(request);
@@ -877,7 +912,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (response != null && response.Code == AccountBusinessService.Responcecode.Conflict)
                 {
-                    return StatusCode(409, "Duplicate Account Group.");                    
+                    return StatusCode(409, "Duplicate Account Group.");
                 }
                 else
                 {
@@ -970,7 +1005,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     foreach (var groupref in request.Accounts)
                     {
                         groupRequest.GroupRef.Add(new AccountBusinessService.AccountGroupRef() { GroupId = groupref.AccountGroupId, RefId = groupref.AccountId });
-                    }                   
+                    }
                 }
                 AccountBusinessService.AccountGroupRefResponce response = await _accountClient.AddAccountToGroupsAsync(groupRequest);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
@@ -1003,7 +1038,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (id <= 0)
                 {
                     return StatusCode(400, "The Account Id is required");
-                }                
+                }
                 AccountBusinessService.IdRequest request = new AccountBusinessService.IdRequest();
                 request.Id = id;
                 var response = await _accountClient.DeleteAccountFromGroupsAsync(request);
@@ -1011,7 +1046,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return Ok(true);
                 }
-                else 
+                else
                 {
                     return StatusCode(500, "AccountGroupRefResponce is null or " + response.Message);
                 }
@@ -1051,7 +1086,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         return StatusCode(404, "Account Groups are found.");
                     }
                 }
-                else 
+                else
                 {
                     return StatusCode(500, response.Message);
                 }
@@ -1102,7 +1137,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region Account Role   
-        
+
         [HttpPost]
         [Route("addroles")]
         public async Task<IActionResult> AddRoles(AccountRoleRequest request)
@@ -1110,8 +1145,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 // Validation  
-                if (request.AccountId <= 0 || request.OrganizationId <= 0 
-                   || Convert.ToInt16(request.Roles.Count) <=0 )
+                if (request.AccountId <= 0 || request.OrganizationId <= 0
+                   || Convert.ToInt16(request.Roles.Count) <= 0)
                 {
                     return StatusCode(400, "The Account Id and Organization id and role id is required");
                 }
@@ -1204,6 +1239,37 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
 
+        #region TestMethods 
+        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+        [HttpPost]
+        [Route("authmethodpost")]
+        public async Task<OkObjectResult> AuthMethodPost()
+        {
+            return await Task.FromResult(Ok(new { Message = "You are authenticated user" }));
+        }
+
+        [HttpPost]
+        [Route("withoutauthmethodpost")]
+        public async Task<OkObjectResult> WithoutAuthMethod()
+        {
+            return await Task.FromResult(Ok(new { Message = "This method does not need any authentication" }));
+        }
+
+        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+        [HttpPost]
+        [Route("authmethodget")]
+        public async Task<OkObjectResult> AuthMethodGet()
+        {
+            return await Task.FromResult(Ok(new { Message = "You will need authentication" }));
+        }
+
+        [HttpPost]
+        [Route("withoutauthmethodget")]
+        public async Task<OkObjectResult> WithoutAuthMethodGet()
+        {
+            return await Task.FromResult(Ok(new { Message = "This method does not need any authentication" }));
+        }
+        #endregion
     }
 
 }

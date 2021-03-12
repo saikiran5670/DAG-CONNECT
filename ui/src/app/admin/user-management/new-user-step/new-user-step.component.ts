@@ -11,6 +11,7 @@ import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { UserDetailTableComponent } from './user-detail-table/user-detail-table.component';
 import { LinkOrgPopupComponent } from './link-org-popup/link-org-popup.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-new-user-step',
@@ -54,6 +55,16 @@ export class NewUserStepComponent implements OnInit {
       name: 'Ms'
     }
   ];
+  UserTypeList: any = [
+    {
+      name: 'System User',
+      value: 'S'
+    },
+    {
+      name: 'Portal User',
+      value: 'P'
+    }
+  ];
   changePictureFlag: boolean = false;
   isAccountPictureSelected: boolean = false;
   droppedImage:any = '';
@@ -68,6 +79,7 @@ export class NewUserStepComponent implements OnInit {
   servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
   linkFlag: boolean = false;
   linkAccountId: any = 0;
+  imageError= '';
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -76,7 +88,7 @@ export class NewUserStepComponent implements OnInit {
     return date > now;
   }
 
-  constructor(private _formBuilder: FormBuilder, private cdref: ChangeDetectorRef, private dialog: MatDialog, private accountService: AccountService) { }
+  constructor(private _formBuilder: FormBuilder, private cdref: ChangeDetectorRef, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer) { }
 
   ngAfterViewInit() {
     this.roleDataSource.paginator = this.paginator.toArray()[0];
@@ -92,6 +104,7 @@ export class NewUserStepComponent implements OnInit {
       firstName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       lastName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       loginEmail: ['', [Validators.required, Validators.email]],
+      userType: ['', [Validators.required]],
       organization: new FormControl({value: null, disabled: true}),
       birthDate: ['', []],
       language: ['', []],
@@ -170,7 +183,7 @@ export class NewUserStepComponent implements OnInit {
       let objData = {
         id: 0,
         emailId: this.firstFormGroup.controls.loginEmail.value,
-        type: 'P',
+        type: this.firstFormGroup.controls.userType.value,
         salutation: this.firstFormGroup.controls.salutation.value,
         firstName: this.firstFormGroup.controls.firstName.value,
         lastName: this.firstFormGroup.controls.lastName.value,
@@ -191,8 +204,7 @@ export class NewUserStepComponent implements OnInit {
           dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value != '' ?  this.firstFormGroup.controls.dateFormat.value : 2,
           timeFormatId: this.firstFormGroup.controls.timeFormat.value != '' ?  this.firstFormGroup.controls.timeFormat.value : 2,
           vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : 2,
-          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : 2,
-          driverId: ""
+          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : 2
         }
         
         this.accountService.createPreference(preferenceObj).subscribe(()=>{
@@ -208,16 +220,30 @@ export class NewUserStepComponent implements OnInit {
             this.stepper.next();
           }
         });
+        if(this.croppedImage != ''){
+          let objData = {
+            "blobId": this.userData.blobId,
+            "accountId": this.userData.id,
+            "imageType": "P",
+            "image": this.croppedImage.split(",")[1]
+          }
+      
+          this.accountService.saveAccountPicture(objData).subscribe(data => {
+            if(data){
+              
+            }
+          }, (error) => {
+            this.imageError= "Something went wrong. Please try again!";
+          })
+        }
       }, (error) => { 
         console.log(error);
         if(error.status == 409){
           if(error.error.account && error.error.account.organizationId != this.accountOrganizationId){
             this.callToLinkPopup(error.error); //--- show link popup
           }
-          else{
-            if(error.error.organizationId == this.accountOrganizationId){
-              this.duplicateEmailMsg = true;
-            }
+          else if(error.error.account && error.error.account.organizationId == this.accountOrganizationId){
+            this.duplicateEmailMsg = true; //--- duplicate account
           }
         }
        });
@@ -242,8 +268,8 @@ export class NewUserStepComponent implements OnInit {
         this.firstFormGroup.controls['loginEmail'].disable();
         this.setDefaultAccountInfo(linkAccountInfo.account);
         this.linkAccountId = linkAccountInfo.account.id; //--- link account id
-        if(linkAccountInfo.preferences){
-          this.setDefaultSetting(linkAccountInfo.preferences);
+        if(linkAccountInfo.preference){
+          this.setDefaultSetting(linkAccountInfo.preference);
         }
         else{
           this.setDefaultSetting();
@@ -259,6 +285,16 @@ export class NewUserStepComponent implements OnInit {
     this.firstFormGroup.get('salutation').setValue(accountInfo.salutation);
     this.firstFormGroup.get('firstName').setValue(accountInfo.firstName);
     this.firstFormGroup.get('lastName').setValue(accountInfo.lastName);
+    this.firstFormGroup.get('userType').setValue(accountInfo.type);
+
+    let blobId = accountInfo.blobId;
+      if(blobId != 0){
+        this.accountService.getAccountPicture(blobId).subscribe(data => {
+          if(data){
+            this.croppedImage = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
+          }
+        })
+      }
   }
 
   onUpdateUserData(){
@@ -545,7 +581,7 @@ export class NewUserStepComponent implements OnInit {
         salutation: this.firstFormGroup.controls.salutation.value,
         firstName: this.firstFormGroup.controls.firstName.value,
         lastName: this.firstFormGroup.controls.lastName.value,
-        type: "P",
+        type: this.firstFormGroup.controls.userType.value,
         organizationId: this.accountOrganizationId,
         driverId: "",
         password: "",
@@ -561,8 +597,7 @@ export class NewUserStepComponent implements OnInit {
           dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value ? this.firstFormGroup.controls.dateFormat.value : 2,
           timeFormatId: this.firstFormGroup.controls.timeFormat.value ? this.firstFormGroup.controls.timeFormat.value : 2,
           vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value ? this.firstFormGroup.controls.vehDisplay.value : 2,
-          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value ? this.firstFormGroup.controls.landingPage.value : 2,
-          driverId: ""
+          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value ? this.firstFormGroup.controls.landingPage.value : 2
         }
         this.accountService.updateAccountPreference(prefObj).subscribe((data) => {
           if(linkStatus){

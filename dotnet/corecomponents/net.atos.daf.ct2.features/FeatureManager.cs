@@ -36,6 +36,11 @@ namespace net.atos.daf.ct2.features
         {
             return await FeatureRepository.GetFeatureIdsForFeatureSet(GetFeatureIdsForFeatureSet);
         }
+
+        public async Task<DataAttributeSet> GetDataAttributeset(int DataAttributeSetID)
+        {
+            return await FeatureRepository.GetDataAttributeset(DataAttributeSetID);
+        }
          public async Task<bool> DeleteFeatureSet(int FeatureSetId)
         {
             return await FeatureRepository.DeleteFeatureSet(FeatureSetId);
@@ -52,6 +57,26 @@ namespace net.atos.daf.ct2.features
             if (DataAttributeSet.ID > 0)
             { 
                  FeatureID = await FeatureRepository.CreateDataattributeSetFeature(feature, DataAttributeSet.ID);
+            }
+            return FeatureID;
+
+        }
+
+        public async Task<Feature> UpdateFeature(Feature feature)
+        {
+
+            var features = await FeatureRepository.UpdateFeature(feature);
+            return features;
+
+        }
+
+        public async Task<int> UpdateeDataattributeFeature(Feature feature)
+        {
+            var DataAttributeSet = await UpdatedataattributeSet(feature.DataAttributeSets);
+            int FeatureID = 0;
+            if (DataAttributeSet.ID > 0)
+            {
+                FeatureID = await FeatureRepository.CreateDataattributeSetFeature(feature, DataAttributeSet.ID);
             }
             return FeatureID;
 
@@ -84,6 +109,12 @@ namespace net.atos.daf.ct2.features
         public async Task<IEnumerable<DataAttribute>> GetDataAttributes()
         {
             return await FeatureRepository.GetDataAttributes();
+        }
+
+        public async Task<int> DeleteFeature(int FeatureId)
+        {
+
+            return await FeatureRepository.DeleteFeature(FeatureId);
         }
     }
 }

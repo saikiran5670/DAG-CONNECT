@@ -9,6 +9,7 @@ import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { CustomValidators } from '../../../shared/custom.validators';
 import { AccountService } from '../../../services/account.service';
 import { UserDetailTableComponent } from '.././new-user-step/user-detail-table/user-detail-table.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-edit-view-user',
@@ -33,6 +34,16 @@ export class EditViewUserComponent implements OnInit {
     },
     {
       name: 'Ms'
+    }
+  ];
+  UserTypeList: any = [
+    {
+      name: 'System User',
+      value: 'S'
+    },
+    {
+      name: 'Portal User',
+      value: 'P'
     }
   ];
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
@@ -67,9 +78,12 @@ export class EditViewUserComponent implements OnInit {
   vehicleDisplayData: any;
   landingPageDisplayData: any;
   accountOrganizationId: any;
+  blobId: number= 0;
+  imageError= '';
+  profilePicture: any= '';
   servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
 
-  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService) { }
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer) { }
 
   ngOnInit() {
     this.generalSettingForm = this._formBuilder.group({
@@ -88,8 +102,8 @@ export class EditViewUserComponent implements OnInit {
       firstName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       lastName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       loginEmail: ['', [Validators.required, Validators.email]],
-      organization: new FormControl({value: null, disabled: true}),
-      birthDate: ['', []]
+      userType: ['', [Validators.required]],
+      organization: new FormControl({value: null, disabled: true})
     },
     {
       validator: [
@@ -101,7 +115,6 @@ export class EditViewUserComponent implements OnInit {
     });
     this.accountInfoData.organization = localStorage.getItem("organizationName");
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    this.croppedImage = '../../assets/images/Account_pic.png';    
     this.setDefaultAccountInfo();
     this.setDefaultGeneralSetting(this.selectedPreference);
     this.loadRoleTable();
@@ -147,7 +160,17 @@ export class EditViewUserComponent implements OnInit {
       this.accountInfoForm.get('firstName').setValue(this.accountInfoData.firstName ? this.accountInfoData.firstName : '--');
       this.accountInfoForm.get('lastName').setValue(this.accountInfoData.lastName ? this.accountInfoData.lastName : '--');
       this.accountInfoForm.get('loginEmail').setValue(this.accountInfoData.emailId ? this.accountInfoData.emailId : '--');
+      this.accountInfoForm.get('userType').setValue(this.accountInfoData.type ? this.accountInfoData.type : 'P');
       this.accountInfoForm.get('organization').setValue(this.accountInfoData.organization ? this.accountInfoData.organization : localStorage.getItem("organizationName"));
+      this.blobId = this.accountInfoData.blobId;
+      if(this.blobId != 0){
+        this.accountService.getAccountPicture(this.blobId).subscribe(data => {
+          if(data){
+            this.profilePicture = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
+            this.croppedImage = this.profilePicture;
+          }
+        })
+      }
     }
   }
 
@@ -168,14 +191,14 @@ export class EditViewUserComponent implements OnInit {
   }
 
   filterDefaultGeneralSetting(accountPreferenceData: any){
-    this.languageData = this.defaultSetting.languageDropdownData.filter(resp => resp.id === (accountPreferenceData[0].languageId ? accountPreferenceData[0].languageId : 2));
-    this.timezoneData = this.defaultSetting.timezoneDropdownData.filter(resp => resp.id === (accountPreferenceData[0].timezoneId ? accountPreferenceData[0].timezoneId : 2));
-    this.unitData = this.defaultSetting.unitDropdownData.filter(resp => resp.id === (accountPreferenceData[0].unitId ? accountPreferenceData[0].unitId : 2));
-    this.currencyData = this.defaultSetting.currencyDropdownData.filter(resp => resp.id === (accountPreferenceData[0].currencyId ? accountPreferenceData[0].currencyId : 2));
-    this.dateFormatData = this.defaultSetting.dateFormatDropdownData.filter(resp => resp.id === (accountPreferenceData[0].dateFormatTypeId ? accountPreferenceData[0].dateFormatTypeId : 2));
-    this.timeFormatData = this.defaultSetting.timeFormatDropdownData.filter(resp => resp.id === (accountPreferenceData[0].timeFormatId ? accountPreferenceData[0].timeFormatId : 2));
-    this.vehicleDisplayData = this.defaultSetting.vehicleDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData[0].vehicleDisplayId ? accountPreferenceData[0].vehicleDisplayId : 2));
-    this.landingPageDisplayData = this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData[0].landingPageDisplayId ? accountPreferenceData[0].landingPageDisplayId : 2));
+    this.languageData = this.defaultSetting.languageDropdownData.filter(resp => resp.id === (accountPreferenceData.languageId ? accountPreferenceData.languageId : 2));
+    this.timezoneData = this.defaultSetting.timezoneDropdownData.filter(resp => resp.id === (accountPreferenceData.timezoneId ? accountPreferenceData.timezoneId : 2));
+    this.unitData = this.defaultSetting.unitDropdownData.filter(resp => resp.id === (accountPreferenceData.unitId ? accountPreferenceData.unitId : 2));
+    this.currencyData = this.defaultSetting.currencyDropdownData.filter(resp => resp.id === (accountPreferenceData.currencyId ? accountPreferenceData.currencyId : 2));
+    this.dateFormatData = this.defaultSetting.dateFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.dateFormatTypeId ? accountPreferenceData.dateFormatTypeId : 2));
+    this.timeFormatData = this.defaultSetting.timeFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.timeFormatId ? accountPreferenceData.timeFormatId : 2));
+    this.vehicleDisplayData = this.defaultSetting.vehicleDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.vehicleDisplayId ? accountPreferenceData.vehicleDisplayId : 2));
+    this.landingPageDisplayData = this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.landingPageDisplayId ? accountPreferenceData.landingPageDisplayId : 2));
   }
 
   toBack(){
@@ -218,15 +241,14 @@ export class EditViewUserComponent implements OnInit {
     let objData: any = {
       id: 0,
       refId: this.accountInfoData.id,
-      languageId: this.generalSettingForm.controls.language.value ? this.generalSettingForm.controls.language.value : 5,
-      timezoneId: this.generalSettingForm.controls.timeZone.value ? this.generalSettingForm.controls.timeZone.value : 45,
-      unitId: this.generalSettingForm.controls.unit.value ? this.generalSettingForm.controls.unit.value : 8,
-      currencyId: this.generalSettingForm.controls.currency.value ? this.generalSettingForm.controls.currency.value : 3,
-      dateFormatTypeId: this.generalSettingForm.controls.dateFormat.value ? this.generalSettingForm.controls.dateFormat.value : 10,
-      timeFormatId: this.generalSettingForm.controls.timeFormat.value ? this.generalSettingForm.controls.timeFormat.value : 8,
-      vehicleDisplayId: this.generalSettingForm.controls.vehDisplay.value ? this.generalSettingForm.controls.vehDisplay.value : 8,
-      landingPageDisplayId: this.generalSettingForm.controls.landingPage.value ? this.generalSettingForm.controls.landingPage.value : 10,
-      driverId: ""
+      languageId: this.generalSettingForm.controls.language.value ? this.generalSettingForm.controls.language.value : 2,
+      timezoneId: this.generalSettingForm.controls.timeZone.value ? this.generalSettingForm.controls.timeZone.value : 2,
+      unitId: this.generalSettingForm.controls.unit.value ? this.generalSettingForm.controls.unit.value : 2,
+      currencyId: this.generalSettingForm.controls.currency.value ? this.generalSettingForm.controls.currency.value : 2,
+      dateFormatTypeId: this.generalSettingForm.controls.dateFormat.value ? this.generalSettingForm.controls.dateFormat.value : 2,
+      timeFormatId: this.generalSettingForm.controls.timeFormat.value ? this.generalSettingForm.controls.timeFormat.value : 2,
+      vehicleDisplayId: this.generalSettingForm.controls.vehDisplay.value ? this.generalSettingForm.controls.vehDisplay.value : 2,
+      landingPageDisplayId: this.generalSettingForm.controls.landingPage.value ? this.generalSettingForm.controls.landingPage.value : 2
     }
 
     this.accountService.updateAccountPreference(objData).subscribe((data) => {
@@ -243,6 +265,13 @@ export class EditViewUserComponent implements OnInit {
 
   onEditAccountInfoCancel(){
     this.editAccountInfoFlag = false;
+    this.isSelectPictureConfirm = true;
+    this.imageError= '';
+    if(this.blobId!= 0){
+      this.isSelectPictureConfirm = true
+      this.changePictureFlag = true;
+      this.croppedImage= this.profilePicture;
+    }
   }
 
   onEditAccountInfoReset(){
@@ -260,7 +289,9 @@ export class EditViewUserComponent implements OnInit {
         salutation: this.accountInfoForm.controls.salutation.value,
         firstName: this.accountInfoForm.controls.firstName.value,
         lastName: this.accountInfoForm.controls.lastName.value,
-        organization_Id: this.accountInfoData.organizationId  // 32
+        type: this.accountInfoForm.controls.userType.value,
+        organizationId: this.accountInfoData.organizationId,
+        driverId: ""
     }
     this.accountService.updateAccount(objData).subscribe((data)=>{
       this.accountInfoData = data;
@@ -322,6 +353,9 @@ export class EditViewUserComponent implements OnInit {
   }
 
   filesDroppedMethod(event: any) {
+    this.imageError= CustomValidators.validateImageFile(event);
+    if(this.imageError != '')
+      return false;
     this.isAccountPictureSelected = true;
     this.readImageFile(event);
   }
@@ -335,6 +369,9 @@ export class EditViewUserComponent implements OnInit {
   }
 
   fileChangeEvent(event: any) {
+    this.imageError= CustomValidators.validateImageFile(event.target.files[0]);
+    if(this.imageError != '')
+      return false;
     this.isAccountPictureSelected = true;
     this.imageChangedEvent = event;
   }
@@ -365,7 +402,22 @@ export class EditViewUserComponent implements OnInit {
   onSelectPictureConfirm(){
     this.isSelectPictureConfirm = true;
     this.isAccountPictureSelected = false;
-    //TODO : send cropped image to backend 
+
+    let objData = {
+      "blobId": this.blobId,
+      "accountId": this.accountInfoData.id,
+      "imageType": "P",
+      "image": this.croppedImage.split(",")[1]
+    }
+
+    this.accountService.saveAccountPicture(objData).subscribe(data => {
+      if(data){
+        
+      }
+    }, (error) => {
+      this.imageError= "Something went wrong. Please try again!";
+    })
+
   }
 
   viewUserGrpDetails(rowData: any){

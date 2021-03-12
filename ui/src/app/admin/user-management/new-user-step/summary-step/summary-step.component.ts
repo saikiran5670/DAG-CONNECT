@@ -34,6 +34,16 @@ export class SummaryStepComponent implements OnInit {
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
+  UserTypeList: any = [
+    {
+      name: 'System User',
+      value: 'S'
+    },
+    {
+      name: 'Portal User',
+      value: 'P'
+    }
+  ];
 
   constructor() { }
 
@@ -59,13 +69,19 @@ export class SummaryStepComponent implements OnInit {
     });
   }
 
-  getDefaultSetting(accountPreferenceData){
+  getDefaultSetting(accountPreferenceData: any){
     let respData: any = {};
+    let userTypeVal: any = [];
+    if(accountPreferenceData.userType && accountPreferenceData.userType.value != ''){
+      userTypeVal = this.UserTypeList.filter(res => res.value.toLowerCase() === accountPreferenceData.userType.value.toLowerCase());
+    }
+    
     respData = {
       salutationData: accountPreferenceData.salutation ? accountPreferenceData.salutation.value : '--',
       firstNameData: accountPreferenceData.firstName ? accountPreferenceData.firstName.value : '--',
       lastNameData: accountPreferenceData.lastName ? accountPreferenceData.lastName.value : '--',
       loginEmailData: accountPreferenceData.loginEmail ? accountPreferenceData.loginEmail.value : '--',
+      userTypeData: (userTypeVal.length > 0) ? userTypeVal[0].name : '--',
       organizationData: accountPreferenceData.organization ? accountPreferenceData.organization.value : '--',
       languageData: this.defaultSetting.languageDropdownData.filter(resp => resp.id === (accountPreferenceData.language.value != '' ? accountPreferenceData.language.value : 2 )),
       timezoneData: this.defaultSetting.timezoneDropdownData.filter(resp => resp.id === (accountPreferenceData.timeZone.value != '' ? accountPreferenceData.timeZone.value : 2)),

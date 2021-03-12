@@ -1,19 +1,17 @@
 ﻿using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.packageservice;
-using System;
-using System.Collections.Generic;
+using net.atos.daf.ct2.portalservice.Common;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Package
 {
     public class PackageMapper
     {
-        private readonly FeatureService.FeatureServiceClient _featureclient;
+       
+        private readonly FeatureSetMapper _featureSetMapper;
         public PackageMapper(FeatureService.FeatureServiceClient featureclient)
-        {
-            _featureclient = featureclient;
-
+        {           
+            _featureSetMapper = new FeatureSetMapper(featureclient);
         }
         public PackageCreateRequest ToCreatePackage(PackagePortalRequest request)
         {
@@ -23,9 +21,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                 Id = request.Id,
                 Code = request.Code,
                 Name = request.Name,
+                FeatureSetID=request.FeatureSetID,
                 Description = request.Description,
                 Status = ToPackageStatus(request.Status),
-                Type = ToPackageType(request.Type),
+                Type = request.Type,
 
             };
             createPackagerequest.Features.AddRange(request.Features.Select(x => x.ToString()));
@@ -63,7 +62,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
             var packageRequest = new ImportPackageRequest();
             foreach (var x in request.packages)
             {
-                var featureSetID = RetrieveFeatureSetId(x.Features).Result;
+                var featureSetID = _featureSetMapper.RetrieveFeatureSetId(x.Features).Result;
                 if (featureSetID > 0)
                 {
                     var pkgRequest = new PackageCreateRequest()
@@ -73,7 +72,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                         Description = x.Description,
                         Name = x.Name,
                         Status = ToPackageStatus(x.Status),
-                        Type = ToPackageType(x.Type)
+                        Type = x.Type
                     };
                     packageRequest.Packages.Add(pkgRequest);
                 }
@@ -81,81 +80,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
             return packageRequest;
 
         }
-
-        public async Task<int> RetrieveFeatureSetId(List<string> features)
-        {
-            var featureSetId = new List<int>();
-            var featureSetRequest = new FetureSetRequest();
-            var featureFilterRequest = new FeaturesFilterRequest();
-            var featureList = await _featureclient.GetFeaturesAsync(featureFilterRequest);
-            foreach (var item in features)
-            {
-                bool hasFeature = featureList.Features.Any(feature => feature.Name == item);
-                if (hasFeature)
-                {
-                    foreach (var feature in featureList.Features)
-                    {
-                        if (feature.Name == item)
-                        {
-                            featureSetId.Add(feature.Id);
-                        }
-                    }
-                }
-                else
-                {
-                    return 0;
-
-                }
-            }
-
-            featureSetRequest.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds();
-            featureSetId = featureSetId.Select(x => x).Distinct().ToList();
-            featureSetRequest.Features.AddRange(featureSetId);
-
-            var ObjResponse = await _featureclient.CreateFeatureSetAsync(featureSetRequest);
-            return Convert.ToInt32(ObjResponse.Message);
-
-        }
-
-
-        public async Task<int> UpdateFeatureSetId(List<string> features,int featureSetId)
-        {
-            var featureSetIds = new List<int>();
-            var featureSetRequest = new FetureSetRequest();
-            var featureFilterRequest = new FeaturesFilterRequest();
-            var featureList = await _featureclient.GetFeaturesAsync(featureFilterRequest);
-            foreach (var item in features)
-            {
-                bool hasFeature = featureList.Features.Any(feature => feature.Name == item);
-                if (hasFeature)
-                {
-                    foreach (var feature in featureList.Features)
-                    {
-                        if (feature.Name == item)
-                        {
-                            featureSetIds.Add(feature.Id);
-                        }
-                    }
-                }
-                else
-                {
-                    return 0;
-
-                }
-            }
-
-            featureSetRequest.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds(); 
-            featureSetIds = featureSetIds.Select(x => x).Distinct().ToList();
-            featureSetRequest.Features.AddRange(featureSetIds);
-
-            var ObjResponse = await _featureclient.CreateFeatureSetAsync(featureSetRequest);
-            return Convert.ToInt32(ObjResponse.Message);
-
-        }
-
-
-
-
 
     }
 }

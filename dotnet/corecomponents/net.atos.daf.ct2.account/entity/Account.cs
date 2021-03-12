@@ -21,10 +21,11 @@ namespace net.atos.daf.ct2.account.entity
         public long? StartDate { get; set; }   
         public long? EndDate { get; set; }  
         public bool isDuplicate { get; set; }
-        public bool isError { get; set; }        
+        public bool isError { get; set; }
+        public bool isErrorInEmail { get; set; }
         public int ? PreferenceId { get; set; } 
         public int ? BlobId { get; set; }
         public long ? CreatedAt { get; set; }
-        public Guid? ResetToken { get; set; }
+        public Guid? ProcessToken { get; set; }
     }
 }

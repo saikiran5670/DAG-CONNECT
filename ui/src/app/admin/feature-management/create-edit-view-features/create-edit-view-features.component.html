@@ -19,6 +19,76 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label style='display: flex; place-content: space-between;'>
+                        <span>{{ translationData.lblDataAttributeSetName || 'Data Attribute Set Name' }}</span>
+                    </mat-label>
+                    <div *ngIf="actionType != 'view'">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <input maxlength="100" placeholder="{{ translationData.lblEnterDataAttributeSetName || 'Enter Data Attribute Set Name' }}" matInput
+                                formControlName="dataAttributeSetName">
+                        </mat-form-field>
+                        <mat-error *ngIf="featureFormGroup.get('dataAttributeSetName').hasError('required')">
+                            {{ translationData.lblPleasenterdatattributesetname || 'Please enter data attribute set name'}}
+                        </mat-error>
+                        <mat-error *ngIf="featureFormGroup.get('dataAttributeSetName').hasError('whitespace')">
+                            {{ translationData.lblDataAttributeSetcannotcontainonlywhitespace || 'Data Attribute Set cannot contain only whitespace' }}
+                        </mat-error>
+                    </div> 
+                    <div *ngIf="actionType == 'view'">
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.name }}</span>
+                    </div> 
+                </div>
+                <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label style='display: flex; place-content: space-between;'>
+                        <span>{{ translationData.lblDataAttributeDescription || 'Data Attribute Description' }}</span>
+                        <span *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax || '120 characters max' }}</span>
+                    </mat-label>
+                    <div *ngIf="actionType != 'view'">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <input maxlength="100" placeholder="{{ translationData.lblEnterDataAttributeDescription || 'Enter Data Attribute Description' }}" matInput
+                                formControlName="dataAttributeDescription">
+                        </mat-form-field>
+                        <mat-error *ngIf="featureFormGroup.get('dataAttributeDescription').hasError('whitespace')">
+                        {{ translationData.lblDataAttributeDescriptioncannotcontainonlywhitespace || 'Data Attribute Description cannot contain only whitespace' }}
+                        </mat-error>
+                    </div>
+                    <div *ngIf="actionType == 'view'">
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.description}}</span>
+                    </div>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+                <div class='areaWidth min-width-20-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
+                    <span>{{ translationData.lblDataAttributeSetType || 'Data Attribute Set Type' }}:</span>
+                    <div *ngIf="actionType != 'view'" class='margin-top-5'>
+                        <mat-radio-group (change)='onSetTypeChange($event)'>
+                            <mat-radio-button [checked]="selectedSetType" style='margin-right: 20px;' value="true">{{ translationData.lblExclusive || 'Exclusive' }}
+                            </mat-radio-button>
+                            <mat-radio-button [checked]="!selectedSetType" style='margin-right: 20px;' value="false" >{{ translationData.lblInclusive || 'Inclusive' }}
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                    <div *ngIf="actionType == 'view'">
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.dataAttribute.isExclusive ? (translationData.lblExclusive || 'Exclusive') : (translationData.lblInclusive || 'Inclusive') }}</span>
+                    </div>
+                </div>
+                <div class='areaWidth min-width-60-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
+                    <span>{{ translationData.lblStatus || 'Status' }}</span>
+                    <div *ngIf="actionType != 'view'" class='margin-top-5'>
+                        <mat-radio-group (change)='onStatusChange($event)'>
+                            <mat-radio-button [checked]="selectedStatus ===  0 ? true : false" style='margin-right: 20px;' value="0">{{ translationData.lblActive || 'Active' }}
+                            </mat-radio-button>
+                            <mat-radio-button [checked]="selectedStatus ===  1 ? true : false" style='margin-right: 20px;' value="1" >{{ translationData.lblInactive || 'Inactive' }}
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                    <div *ngIf="actionType == 'view'">
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.state == 0 ? (translationData.lblActive || 'Active') : (translationData.lblInactive || 'Inactive') }}</span>
+                    </div>
+                </div>
+                </div>
+            <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblFeatureName || 'Feature Name' }}<span class='mandatoryColor'>*</span></mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
@@ -137,7 +207,7 @@
                     <span style='font-weight: 500!important;'>{{ selectedElementData.dataAttributeDescription }}</span>
                 </div>
             </div>
-            </div> 
+            </div>  -->
             <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="space-between center">
                 <div fxLayout="column" fxLayoutAlign="left">
                     <div fxLayout="row" fxLayoutAlign='center center'>
@@ -174,29 +244,30 @@
             </div>
             <div class='margin-bottom-xlg'>
                 <mat-table [dataSource]="dataSource" class="table-items" matSort>
+                    <ng-container matColumnDef="name">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttribute || 'Data Attribute' }}</mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                          {{ row.name }}
+                        </mat-cell>
+                      </ng-container>
                   <ng-container matColumnDef="select">
                     <div>
                       <mat-header-cell *matHeaderCellDef>
-                        <mat-checkbox (change)='$event ? masterToggleForDataAttribute() : null'
+                        <mat-slide-toggle color="primary" (change)='$event ? masterToggleForDataAttribute() : null'
                           [checked]='selectionForDataAttribute.hasValue() && isAllSelectedForDataAttribute()'
                           [indeterminate]='selectionForDataAttribute.hasValue() && !isAllSelectedForDataAttribute()'
                           [aria-label]='checkboxLabelForDataAttribute()' [disabled]="actionType == 'view'">
-                        </mat-checkbox>
-                        <span style="margin: 5px 0px 0px 5px;" [ngClass]="{'opacity-0-5': actionType == 'view'}">{{ translationData.lblAll || 'All' }}</span>
+                        </mat-slide-toggle>
+                        <span style="margin: 5px 0px 0px 5px;" [ngClass]="{'opacity-0-5': actionType == 'view'}">{{ translationData.lblExclude || 'Exclude' }}</span>
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row">
-                        <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectionForDataAttribute.toggle(row) : null'
+                        <mat-slide-toggle color="primary" (click)='$event.stopPropagation()' (change)='$event ? selectionForDataAttribute.toggle(row) : null'
                           [checked]='selectionForDataAttribute.isSelected(row)' [aria-label]='checkboxLabelForDataAttribute(row)' [disabled]="actionType == 'view'">
-                        </mat-checkbox>
+                        </mat-slide-toggle>
                       </mat-cell>
                     </div>
                   </ng-container>
-                  <ng-container matColumnDef="dataAttribute">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttribute || 'Data Attribute' }}</mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      {{ row.dataAttribute }}
-                    </mat-cell>
-                  </ng-container>
+
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                   <mat-row *matRowDef="let row; columns: displayedColumns;">
                   </mat-row>

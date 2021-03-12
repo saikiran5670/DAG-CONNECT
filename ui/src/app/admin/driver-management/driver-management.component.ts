@@ -12,6 +12,7 @@ import { TranslationService } from '../../services/translation.service';
 import { CommonTableComponent } from '../.././shared/common-table/common-table.component';
 import * as FileSaver from 'file-saver';
 import { Workbook } from 'exceljs';
+import { DriverService } from '../../services/driver.service';
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 
@@ -67,7 +68,7 @@ export class DriverManagementComponent implements OnInit {
   driverDialogRef: MatDialogRef<CommonTableComponent>;
   excelEmptyMsg: boolean = false;
 
-  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService, private translationService: TranslationService) { 
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService, private translationService: TranslationService, private driverService: DriverService) { 
       this.defaultTranslation();
   }
 
@@ -188,7 +189,8 @@ export class DriverManagementComponent implements OnInit {
         lastName: "Berry",
         emailId: "alanb@daf.com",
         consentStatus: 'Opt-In',
-        inheritStatus: true
+        inheritStatus: true,
+        createdAt: 1615393800000
       },
       {
         driverId: "I 0000000000000002",
@@ -196,7 +198,8 @@ export class DriverManagementComponent implements OnInit {
         lastName: "Joshi",
         emailId: "ritikaj@daf.com",
         consentStatus: 'Opt-Out',
-        inheritStatus: false
+        inheritStatus: false,
+        createdAt: 1613713670569
       },
       {
         driverId: "IN 0000000000000003",
@@ -204,7 +207,8 @@ export class DriverManagementComponent implements OnInit {
         lastName: "Pol",
         emailId: "shanup@daf.com",
         consentStatus: 'Opt-Out',
-        inheritStatus: false
+        inheritStatus: false,
+        createdAt: 1615384800000
       }
     ];
   }
@@ -215,7 +219,12 @@ export class DriverManagementComponent implements OnInit {
   }
 
   loadUsersData(){
-    this.onConsentChange(this.selectedConsentType);
+    let drvId: any = 0;
+    this.driverService.getDrivers(this.accountOrganizationId, drvId).subscribe((driverList) => {
+      console.log("driverList ::", driverList);
+      this.initData = driverList;
+      this.onConsentChange(this.selectedConsentType);
+    });
   }
 
   onConsentStatusChange(){
@@ -230,15 +239,15 @@ export class DriverManagementComponent implements OnInit {
     let data = [];
     switch(type){
       case "All":{
-        data = this.driverRestData;
+        data = this.initData;
         break;
       }
       case "Opt-In":{
-        data = this.driverRestData.filter((item: any) => item.consentStatus == 'Opt-In');
+        data = this.initData.filter((item: any) => item.consentStatus == 'Opt-In');
         break;
       }
       case "Opt-Out":{
-        data = this.driverRestData.filter((item: any) => item.consentStatus == 'Opt-Out');
+        data = this.initData.filter((item: any) => item.consentStatus == 'Opt-Out');
         break;
       }
     }
@@ -246,14 +255,31 @@ export class DriverManagementComponent implements OnInit {
   }
 
   updateGridData(tableData: any){
-    this.initData = tableData; 
-    this.dataSource = new MatTableDataSource(this.initData);
+    tableData = this.getNewTagData(tableData);
+    this.dataSource = new MatTableDataSource(tableData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
   }
 
+  getNewTagData(data: any){
+    let currentDate = new Date().getTime();
+    data.forEach((row: any) => {
+      let createdDate = new Date(row.createdAt).getTime(); //  need to check API response.
+      let nextDate = createdDate + 86400000;
+      if(currentDate > createdDate && currentDate < nextDate){
+        row.newTag = true;
+      }
+      else{
+        row.newTag = false;
+      }
+    });
+    let newTrueData = data.filter(item => item.newTag == true);
+    let newFalseData = data.filter(item => item.newTag == false);
+    Array.prototype.push.apply(newTrueData, newFalseData); 
+    return newTrueData;
+  }
 
   importDrivers(){ 
     if(this.filelist.length > 0){

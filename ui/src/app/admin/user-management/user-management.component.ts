@@ -204,8 +204,9 @@ export class UserManagementComponent implements OnInit {
       accountGroupId: 0,
       organizationId: this.accountOrganizationId,
       accountId: 0,
-      accounts: true,
-      accountCount: true
+      vehicleGroupId: 0,
+      roleId: 0,
+      name: ""
    }
 
    this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
@@ -226,8 +227,9 @@ export class UserManagementComponent implements OnInit {
       accountGroupId: 0,
       organizationId: this.accountOrganizationId,
       accountId: 0,
-      accounts: true,
-      accountCount: true
+      vehicleGroupId: 0,
+      roleId: 0,
+      name: ""
    }
    let selectedRoleObj = {
     accountId: element.id,
@@ -246,9 +248,10 @@ export class UserManagementComponent implements OnInit {
     this.roleData = allRoleData;
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
       this.userGrpData = allAccountGroupData;
+     this.userGrpData = [];
       this.accountService.getAccountRoles(selectedRoleObj).subscribe(selectedRoleData => { 
         this.selectedRoleData = selectedRoleData;
-        this.accountService.getAccountPreference(element.id).subscribe(accountPrefData => {
+        this.accountService.getAccountPreference(element.preferenceId).subscribe(accountPrefData => {
           this.userDataForEdit = element;
           this.selectedPreference = accountPrefData;
           this.accountService.getAccountDesc(selectedAccountGrpObj).subscribe((resp) => {

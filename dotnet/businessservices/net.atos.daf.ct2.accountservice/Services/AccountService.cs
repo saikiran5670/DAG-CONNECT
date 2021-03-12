@@ -11,6 +11,10 @@ using Group = net.atos.daf.ct2.group;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
 using Google.Protobuf;
+using net.atos.daf.ct2.account.entity;
+using Google.Protobuf.Collections;
+using net.atos.daf.ct2.accountservice.Entity;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.accountservice
 {
@@ -135,13 +139,19 @@ namespace net.atos.daf.ct2.accountservice
                 if (account.isDuplicate)
                 {
                     response.Message = "The duplicate account.";
-                    response.Code = Responcecode.Failed;
+                    response.Code = Responcecode.Conflict;
                     response.Account = _mapper.ToAccount(account);
                 }
                 else if (account.isError)
                 {
                     response.Message = "There is an error creating account.";
                     response.Code = Responcecode.Failed;
+                }
+                else if (account.isErrorInEmail)
+                {
+                    response.Message = "There is an error while sending account confirmation email to the account user.";
+                    response.Code = Responcecode.Failed;
+                    response.Account = _mapper.ToAccount(account);
                 }
                 else
                 {
@@ -583,7 +593,7 @@ namespace net.atos.daf.ct2.accountservice
             try
             {
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
-                account.ResetToken = new Guid(request.ResetToken);
+                account.ProcessToken = new Guid(request.ProcessToken);
                 account.Password = request.Password;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
                 var result = await accountmanager.ResetPassword(account);
@@ -591,13 +601,13 @@ namespace net.atos.daf.ct2.accountservice
                 ResetPasswordResponse response = new ResetPasswordResponse();
                 if (result)
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Password Reset with Token", 1, 2, request.ResetToken);
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Password Reset with Token", 1, 2, request.ProcessToken);
                     response.Code = Responcecode.Success;
                     response.Message = "Password has been reset successfully.";
                 }
                 else
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset with Token", 1, 2, request.ResetToken);
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset with Token", 1, 2, request.ProcessToken);
                     response.Code = Responcecode.NotFound;
                     response.Message = "Failed to reset password or Activation link is expired or invalidated.";
                 }
@@ -644,7 +654,40 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
+        
+        public override async Task<MenuFeatureResponse> GetMenuFeatures(MenuFeatureRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var result = await accountmanager.GetMenuFeatures(request.AccountId, request.RoleId, request.OrganizationId, request.LanguageCode);
 
+                MenuFeatureResponse response = new MenuFeatureResponse();
+                if (result.Count() > 0)
+                {
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.SUCCESS, "Get Menu Features", 1, 2, request.AccountId.ToString());
+                    response.Code = Responcecode.Success;
+                    response.Message = "Menu items and features fetched successfully.";
+                    response.MenuFeatures = MapMenuFeatureDtoToList(result.ToList());
+                }
+                else
+                {
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Get Menu Features", 1, 2, request.AccountId.ToString());
+                    response.Code = Responcecode.NotFound;
+                    response.Message = "No menu items and features found for the provided account details.";
+                }
+
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:GetMenuFeatures with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new MenuFeatureResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Get Menu Features failed due to the reason : " + ex.Message
+                });
+            }
+        }
         // End Account
         #endregion
 
@@ -892,6 +935,74 @@ namespace net.atos.daf.ct2.accountservice
 
                 });
             }
+        }
+        #endregion
+
+        #region VehicleAccount AccessRelationship
+        
+        public override async Task<VehicleAccessRelationship> CreateVehicleAccessRelationship(VehicleAccessRelationship request, ServerCallContext context)
+        {
+            string validationMessage = string.Empty;
+            return request;
+
+            //try
+            //{
+            //    int vehicleGroupId = 0;
+            //    int accountGroupId = 0;
+            //    string groupName = string.Empty;
+            //    if (!request.IsGroup)
+            //    {
+            //        // create vehicle group with vehicle
+            //        long CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            //        groupName = ("VehicleGroup_" + request.OrganizationId.ToString() + CreatedAt.ToString()).Substring(0, 49);
+            //        var group = _mapper.ToGroupObject(Group.GroupType.Single, Group.ObjectType.VehicleGroup, groupName, Group.FunctionEnum.None,
+            //            request.Id, groupName, null, CreatedAt);
+            //        group = await groupmanager.Create(group);
+            //        vehicleGroupId = group.Id;
+            //    }
+            //    if (vehicleGroupId > 0)
+            //    {
+            //        foreach (var account in request.AccountsAccountGroup)
+            //        {
+            //            // create group type single
+            //            if (!account.IsGroup)
+            //            {
+            //                // create group for account
+            //                // create vehicle group with vehicle
+            //                group = new Group.Group();
+            //                group.GroupType = Group.GroupType.Single;
+            //                group.ObjectType = Group.ObjectType.AccountGroup;
+            //                group.Argument = null;
+            //                group.FunctionEnum = Group.FunctionEnum.None;
+            //                group.RefId = account.Id;
+            //                group.Description = null;
+            //                group.CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            //                groupName = ("AccountGroup_" + request.OrganizationId.ToString() + UTCHandling.GetUTCFromDateTime(DateTime.Now).ToString()).Substring(0, 49);
+            //                group.Name = groupName;
+            //                group = await groupmanager.Create(group);
+            //                accountGroupId = group.Id;
+            //                var accessRelationship = new account.entity.AccessRelationship();
+            //                accessRelationship.VehicleGroupId = vehicleGroupId;
+            //                accessRelationship.AccountGroupId = accountGroupId;
+            //                accessRelationship.AccessRelationType = (AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType);
+            //                var result = accountmanager.CreateAccessRelationship(accessRelationship);
+            //            }
+            //            else
+            //            {
+            //                var accessRelationship = new account.entity.AccessRelationship();
+            //                accessRelationship.VehicleGroupId = vehicleGroupId;
+            //                accessRelationship.AccountGroupId = account.Id;
+            //                accessRelationship.AccessRelationType = (AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType);
+            //                var result = accountmanager.CreateAccessRelationship(accessRelationship);
+            //            }
+            //        }
+            //    }
+            //    return null;
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw ex;
+            //}
         }
         #endregion
 
@@ -1439,6 +1550,89 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
+        #endregion
+
+        #region Private Helper Methods
+
+        private MenuFeatureList MapMenuFeatureDtoToList(List<MenuFeatureDto> dtos)
+        {
+            var menuFeatures = new AccountMenuModel();
+            var menuFeatureList = new MenuFeatureList();
+
+            foreach (var dto in dtos)
+            {
+                if (dto.MenuId.HasValue)
+                {
+                    if (string.IsNullOrEmpty(dto.ParentMenuName))
+                    {
+                        menuFeatures.Menus.Add(new MainMenu()
+                        {
+                            FeatureId = dto.FeatureId,
+                            MenuId = dto.MenuId.Value,
+                            Name = dto.MenuName,
+                            TranslatedMenuName=dto.TranslatedMenuName,
+                            Key = dto.MenuKey,
+                            Url = dto.MenuUrl
+                        });
+                    }
+                    else
+                    {
+                        var menuItem = menuFeatures.Menus.Where(m => m.Name.Equals(dto.ParentMenuName)).FirstOrDefault();
+
+                        if (menuItem.SubMenus == null)
+                            menuItem.SubMenus = new RepeatedField<SubMenu>();
+
+                        menuItem.SubMenus.Add(new SubMenu()
+                        {
+                            FeatureId = dto.FeatureId,
+                            MenuId = dto.MenuId.Value,
+                            Name = dto.MenuName,
+                            TranslatedMenuName = dto.TranslatedMenuName,
+                            Key = dto.MenuKey,
+                            Url = dto.MenuUrl
+                        });
+                    }
+                }
+
+                menuFeatureList.Features.Add(new FeatureList()
+                {
+                    FeatureId = dto.FeatureId,
+                    Name = dto.FeatureName,
+                    Type = dto.FeatureType ?? string.Empty,
+                    Key = dto.FeatureKey ?? string.Empty,
+                    Level = dto.FeatureLevel
+                });
+            }
+            
+            foreach(var menu in menuFeatures.Menus)
+            {
+                var subMenus = new RepeatedField<SubMenuList>();
+                foreach(var subMenu in menu.SubMenus)
+                {
+                    subMenus.Add(new SubMenuList()
+                    {
+                        MenuId = subMenu.MenuId,
+                        FeatureId = subMenu.FeatureId,
+                        Name = subMenu.Name,
+                        TranslatedName = subMenu.TranslatedMenuName ?? subMenu.Name,
+                        Key = subMenu.Key ?? string.Empty,
+                        Url = subMenu.Url ?? string.Empty
+                    });
+                }
+                var mainMenu = new MainMenuList();
+                mainMenu.FeatureId = menu.FeatureId;
+                mainMenu.MenuId = menu.MenuId;
+                mainMenu.Name = menu.Name;
+                mainMenu.TranslatedName = menu.TranslatedMenuName ?? menu.Name;
+                mainMenu.Key = menu.Key ?? string.Empty;
+                mainMenu.Url = menu.Url ?? string.Empty;
+                mainMenu.SubMenus.AddRange(subMenus);
+                
+                menuFeatureList.Menus.Add(mainMenu);
+            }
+            return menuFeatureList;
+        }
+
         #endregion
 
     }

@@ -40,7 +40,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (string.IsNullOrEmpty(request.Code) || string.IsNullOrEmpty(request.Type))
                 {
-                    return StatusCode(400, "Langauge code and type required..");
+                    return StatusCode(400, "Language code and type required..");
                 }
                 _logger.LogInformation("Get translation Menu  method get " + request.Code + " " + request.MenuId);
 
@@ -53,7 +53,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (translationsResponce != null && translationsResponce.Code == Responcecode.Success)
                 {
-                    return Ok(translationsResponce);
+                    return Ok(translationsResponce.TranslationsList);
                 }
                 else
                 {
@@ -75,11 +75,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(request.Langaugecode))
+                if (string.IsNullOrEmpty(request.Languagecode))
                 {
-                    return StatusCode(400, "Langauge code  required..");
+                    return StatusCode(400, "Language code  required..");
                 }
-                _logger.LogInformation("Get translation Common  method get " + request.Langaugecode);
+                _logger.LogInformation("Get translation Common  method get " + request.Languagecode);
 
                 CodeResponce CommontranslationResponseList = await _translationServiceClient.GetCommonTranslationsAsync(request);
 
@@ -91,7 +91,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (CommontranslationResponseList != null && CommontranslationResponseList.Code == Responcecode.Success)
                 {
-                    return Ok(CommontranslationResponseList);
+                    return Ok(CommontranslationResponseList.CodeTranslationsList);
                 }
                 else
                 {
@@ -128,7 +128,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (KeyResponseList != null && KeyResponseList.Code == Responcecode.Success)
                 {
-                    return Ok(KeyResponseList);
+                    return Ok(KeyResponseList.KeyTranslationsList);
                 }
                 else
                 {
@@ -164,7 +164,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (CodeResponseList != null && CodeResponseList.Code == Responcecode.Success)
                 {
-                    return Ok(CodeResponseList);
+                    return Ok(CodeResponseList.KeyCodeTranslationsList);
                 }
                 else
                 {
@@ -185,11 +185,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(request.Langaugecode.Trim()) || string.IsNullOrEmpty(request.Dropdownname.Trim()))
+                if (string.IsNullOrEmpty(request.Languagecode.Trim()) || string.IsNullOrEmpty(request.Dropdownname.Trim()))
                 {
-                    return StatusCode(400, "Langauge code and dropdown  required..");
+                    return StatusCode(400, "Language code and dropdown  required..");
                 }
-                _logger.LogInformation("Drop down method get" + request.Dropdownname + request.Langaugecode);
+                _logger.LogInformation("Drop down method get" + request.Dropdownname + request.Languagecode);
 
                 dropdownnameResponce dropdownResponseList = await _translationServiceClient.GetTranslationsForDropDownsAsync(request);
 
@@ -201,7 +201,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (dropdownResponseList != null && dropdownResponseList.Code == Responcecode.Success)
                 {
-                    return Ok(dropdownResponseList);
+                    return Ok(dropdownResponseList.DropdownnameTranslationsList);
                 }
                 else
                 {
@@ -222,9 +222,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(request.Langaugecode.Trim()))
+                if (string.IsNullOrEmpty(request.Languagecode.Trim()))
                 {
-                    return StatusCode(400, "Langauge code and dropdown  required..");
+                    return StatusCode(400, "Language code and dropdown  required..");
                 }
 
                 dropdownarrayRequest transdropdown = new dropdownarrayRequest();
@@ -241,7 +241,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (dropdownResponseList != null && dropdownResponseList.Code == Responcecode.Success)
                 {
-                    return Ok(dropdownResponseList);
+                    return Ok(dropdownResponseList.DropdownnamearrayList);
                 }
                 else
                 {
@@ -262,25 +262,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(request.Langaugecode.Trim()))
+                if (string.IsNullOrEmpty(request.Languagecode.Trim()))
                 {
-                    return StatusCode(400, "Langauge code and dropdown  required..");
+                    return StatusCode(400, "Language code and dropdown  required..");
                 }
                 PreferenceResponse ResponseList = await _translationServiceClient.GetTranslationsPreferencDropDownsAsync(request);
 
-                if (ResponseList != null
-                && ResponseList.Message == "There is an error In GetTranslationsPreferencDropDowns.")
-                {
-                    return StatusCode(500, "There is an error In GetTranslationsPreferencDropDowns.");
-                }
-                else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
-                {
+                
                     return Ok(ResponseList);
-                }
-                else
-                {
-                    return StatusCode(500, "GetTranslationsPreferencDropDowns Response is null");
-                }
+              
 
             }
             catch (Exception ex)
@@ -292,16 +282,42 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("languagecodes")]
-        public async Task<IActionResult> GetAllLangaugecodes([FromQuery] Request request)
+        public async Task<IActionResult> GetAllLanguagecodes([FromQuery] Request request)
         {
-            _logger.LogInformation("All langauges method get");
+            _logger.LogInformation("All languages method get");
 
-            TranslationListResponce ResponseList = await _translationServiceClient.GetAllLangaugecodesAsync(request);
+            TranslationListResponce ResponseList = await _translationServiceClient.GetAllLanguagecodesAsync(request);
 
             if (ResponseList != null
-                 && ResponseList.Message == "There is an error In GetAllLangaugecodes.")
+                 && ResponseList.Message == "There is an error In GetAllLanguagecodes.")
             {
-                return StatusCode(500, "There is an error In GetAllLangaugecodes.");
+                return StatusCode(500, "There is an error In GetAllLanguagecodes.");
+            }
+            else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
+            {
+                return Ok(ResponseList.Languagelist);
+            }
+            else
+            {
+                return StatusCode(500, "GetAllLanguagecodes Response is null");
+            }
+        }
+
+        [HttpPost]
+        [Route("Import")]
+        public async Task<IActionResult> InsertTranslationFileDetails(FileUploadRequest request)
+        {
+            _logger.LogInformation("InsertTranslationFileDetails Method post");
+
+            TranslationUploadRequest transupload = new TranslationUploadRequest();
+            transupload = _mapper.MapFileDetailRequest(request);
+
+            TranslationUploadResponse ResponseList = await _translationServiceClient.InsertTranslationFileDetailsAsync(transupload);
+
+            if (ResponseList != null
+                 && ResponseList.Message == "There is an error In InsertTranslationFileDetails.")
+            {
+                return StatusCode(500, "There is an error In InsertTranslationFileDetails.");
             }
             else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
             {
@@ -309,8 +325,33 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             else
             {
-                return StatusCode(500, "GetAllLangaugecodes Response is null");
+                return StatusCode(500, "InsertTranslationFileDetails Response is null");
             }
+
         }
+        [HttpGet]
+        [Route("UploadDetails")]
+        public async Task<IActionResult> GetFileUploadDetails([FromQuery] FileUploadDetailsRequest request)
+        {
+            _logger.LogInformation("GetFileUploadDetails Method get");
+
+            FileUploadDetailsResponse ResponseList = await _translationServiceClient.GetFileUploadDetailsAsync(request);
+
+            if (ResponseList != null
+                 && ResponseList.Message == "There is an error In GetFileUploadDetails.")
+            {
+                return StatusCode(500, "There is an error In GetFileUploadDetails.");
+            }
+            else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
+            {
+                return Ok(ResponseList);
+            }
+            else
+            {
+                return StatusCode(500, "GetFileUploadDetails Response is null");
+            }
+
+        }
+
     }
 }

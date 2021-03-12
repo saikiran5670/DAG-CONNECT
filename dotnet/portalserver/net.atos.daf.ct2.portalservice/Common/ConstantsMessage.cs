@@ -13,6 +13,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             public const string InvalidData = "The EmailId address, first name, last name and organization id should be valid.";
             public const string InvalidAccountType = "The account type is not valid";
             public const string ErrorMessage = "There is an error creating account.";
+            public const string EmailSendingFailedMessage = "There is an error while sending account confirmation email to the account user.";
         }
         public static class ExceptionKeyWord
         {
@@ -24,6 +25,20 @@ namespace net.atos.daf.ct2.portalservice.Common
             public const string InternalServerError = "Internal Server Error.{0}";
             
         }
+
+        public static class PackageValidation
+        {
+            public const string CreateRequired = "The packageId , package code and featureset id  are required.";           
+            public const string InvalidPackageType = "The pakage type is not valid. It should be of single character";
+            public const string ErrorMessage = "There is an error creating package.";
+        }
+        public static class OrgRelationshipValidation
+        {
+           
+             public const string ErrorMessage = "There is an error creating Org Relationship.";
+        }
+
+
 
     }
 }

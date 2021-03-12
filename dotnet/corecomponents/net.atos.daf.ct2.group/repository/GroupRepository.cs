@@ -353,6 +353,7 @@ namespace net.atos.daf.ct2.group
             {
                 entity.FunctionEnum = (FunctionEnum)Convert.ToChar(record.function_enum);
             }
+
             entity.OrganizationId = record.organization_id;
             entity.RefId = record.ref_id;
             if ((object)record.created_at != null)
