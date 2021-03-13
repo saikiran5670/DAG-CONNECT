@@ -171,8 +171,7 @@ export class DriverManagementComponent implements OnInit {
 
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
-      //this.restMockData();
-      this.loadUsersData();
+      this.loadDriverData();
       this.setConsentDropdown();
     });
   }
@@ -181,47 +180,90 @@ export class DriverManagementComponent implements OnInit {
     this.consentFormGroup.get('consentType').setValue(this.selectedConsentType);
   }
 
-  restMockData(){
-    this.driverRestData = [
-      {
-        driverId: "IN 0000000000000001",
-        firstName: "Alan",
-        lastName: "Berry",
-        emailId: "alanb@daf.com",
-        consentStatus: 'Opt-In',
-        inheritStatus: true,
-        createdAt: 1615393800000
-      },
-      {
-        driverId: "I 0000000000000002",
-        firstName: "Ritika",
-        lastName: "Joshi",
-        emailId: "ritikaj@daf.com",
-        consentStatus: 'Opt-Out',
-        inheritStatus: false,
-        createdAt: 1613713670569
-      },
-      {
-        driverId: "IN 0000000000000003",
-        firstName: "Shanu",
-        lastName: "Pol",
-        emailId: "shanup@daf.com",
-        consentStatus: 'Opt-Out',
-        inheritStatus: false,
-        createdAt: 1615384800000
-      }
-    ];
-  }
-
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
   }
 
-  loadUsersData(){
+  loadDriverData(){
     let drvId: any = 0;
     this.driverService.getDrivers(this.accountOrganizationId, drvId).subscribe((driverList: any) => {
-      console.log("driverList ::", driverList);
+      // driverList = {
+      //   "code": 0,
+      //   "message": "Get",
+      //   "driver": [
+      //     {
+      //       "id": 13,
+      //       "organizationId": 10,
+      //       "driverIdExt": "",
+      //       "email": "driver13@gmail.com",
+      //       "firstName": "Driver",
+      //       "lastName": "One",
+      //       "status": "I",
+      //       "isActive": false,
+      //       "optIn": "",
+      //       "modifiedAt": "",
+      //       "modifiedBy": "",
+      //       "createdAt": ""
+      //     },
+      //     {
+      //       "id": 14,
+      //       "organizationId": 10,
+      //       "driverIdExt": "",
+      //       "email": "driver14@gmail.com",
+      //       "firstName": "Driver",
+      //       "lastName": "Two",
+      //       "status": "U",
+      //       "isActive": false,
+      //       "optIn": "",
+      //       "modifiedAt": "",
+      //       "modifiedBy": "",
+      //       "createdAt": ""
+      //     },
+      //     {
+      //       "id": 15,
+      //       "organizationId": 10,
+      //       "driverIdExt": "",
+      //       "email": "driver15@gmail.com",
+      //       "firstName": "Driver",
+      //       "lastName": "Three",
+      //       "status": "H",
+      //       "isActive": false,
+      //       "optIn": "I",
+      //       "modifiedAt": "",
+      //       "modifiedBy": "",
+      //       "createdAt": ""
+      //     },
+      //     {
+      //       "id": 16,
+      //       "organizationId": 10,
+      //       "driverIdExt": "",
+      //       "email": "driver16@gmail.com",
+      //       "firstName": "Driver",
+      //       "lastName": "Four",
+      //       "status": "U",
+      //       "isActive": false,
+      //       "optIn": "",
+      //       "modifiedAt": "",
+      //       "modifiedBy": "",
+      //       "createdAt": ""
+      //     },
+      //     {
+      //       "id": 17,
+      //       "organizationId": 10,
+      //       "driverIdExt": "",
+      //       "email": "driver17@gmail.com",
+      //       "firstName": "Driver",
+      //       "lastName": "Five",
+      //       "status": "I",
+      //       "isActive": false,
+      //       "optIn": "",
+      //       "modifiedAt": "",
+      //       "modifiedBy": "",
+      //       "createdAt": ""
+      //     }
+      //   ]
+      // };
       this.initData = driverList.driver;
       this.onConsentChange(this.selectedConsentType);
     });
@@ -285,7 +327,6 @@ export class DriverManagementComponent implements OnInit {
     if(this.filelist.length > 0){
       this.validateExcelFileField();
       this.excelEmptyMsg = false;
-      this.importDriverPopup = true;
     }else{
       console.log("Empty Excel File...");
       this.excelEmptyMsg = true;
@@ -297,15 +338,35 @@ export class DriverManagementComponent implements OnInit {
     //--- Parse driver data ---//
     this.filelist.map((item: any) => {
       driverAPIData.push({
-        driverId: item.DriverID,
+        driverID: item.DriverID,
         firstName: item.FirstName,
         lastName: item.LastName,
-        emailId: item.Email,
+        email: item.Email,
       });
     });
     console.log("Parse excel driver:: ", driverAPIData)
     let finalList: any = this.validateFields(driverAPIData);
     console.log("Validated driver:: ", finalList)
+    if(finalList.validDriverList.length > 0){
+      let objData = [
+        {
+          drivers: finalList.validDriverList,
+          organizationId: this.accountOrganizationId
+        }
+      ];
+      //------ TODO: import api called ----//
+      //this.driverService.importDrivers(objData).subscribe((res: any) => {
+        this.importDriverPopup = true;
+        this.selectedConsentType = 'All';
+        this.loadDriverData(); //-- load driver list
+        this.setConsentDropdown();
+      //});
+    }
+    else{
+      this.importDriverPopup = true;
+      this.importedDriverlist = finalList.validDriverList;
+      this.rejectedDriverList = finalList.invalidDriverList;
+    }
     this.importedDriverlist = finalList.validDriverList;
     this.rejectedDriverList = finalList.invalidDriverList;
   }
@@ -317,12 +378,12 @@ export class DriverManagementComponent implements OnInit {
       let driverId: any;
       let fname: any;
       let lname: any;
-      let emailId: any
+      let email: any
       for (const [key, value] of Object.entries(item)) {
         //console.log(`${key}: ${value}`);
         switch(key){
-          case "driverId":{
-            let objData: any = driverId = this.driveIdValidation(value);  
+          case "driverID":{
+            let objData: any = this.driveIdValidation(value);  
             driverId = objData.status;
             if(!driverId){
               item.failReason = objData.reason;
@@ -345,10 +406,10 @@ export class DriverManagementComponent implements OnInit {
             }
             break;
           }
-          case "emailId":{
-            let objData: any = this.emailIdValidation(value); 
-            emailId = objData.status;
-            if(!emailId){
+          case "email":{
+            let objData: any = this.emailValidation(value); 
+            email = objData.status;
+            if(!email){
               item.failReason = objData.reason;
             }
             break;
@@ -356,7 +417,7 @@ export class DriverManagementComponent implements OnInit {
         }
       }
 
-      if(driverId && fname && lname && emailId){
+      if(driverId && fname && lname && email){
         validData.push(item);
       }
       else{
@@ -366,7 +427,7 @@ export class DriverManagementComponent implements OnInit {
     return { validDriverList: validData, invalidDriverList: invalidData };
   }
 
-  emailIdValidation(value: any){
+  emailValidation(value: any){
     let obj: any = { status: true, reason: 'correct data'};
     const regx = /[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}/;
     if(!value || value == '' || value.length == 0){
@@ -463,8 +524,13 @@ export class DriverManagementComponent implements OnInit {
     let name = `${row.firstName} ${row.lastName}`;
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
-      if (res) {
-        this.successMsgBlink(this.getDeletMsg(name));
+      if(res) { //--- delete driver
+        this.driverService.deleteDriver(row.organizationId, row.id).subscribe((deleteDrv) => {
+          this.successMsgBlink(this.getDeletMsg(name));
+          this.selectedConsentType = 'All';
+          this.loadDriverData(); //-- load driver list
+          this.setConsentDropdown();
+        });
       }
    });
   }
@@ -554,7 +620,7 @@ export class DriverManagementComponent implements OnInit {
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
       tableData: driverList,
-      colsList: ['driverId','firstName','lastName','emailId','failReason'],
+      colsList: ['driverID','firstName','lastName','email','failReason'],
       colsName: [this.translationData.lblDriverID || 'Driver ID', this.translationData.lblFirstName || 'First Name', this.translationData.lblLastName || 'Last Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblFailReason || 'Fail Reason'],
       tableTitle: this.translationData.lblRejectedDriverDetails || 'Rejected Driver Details'
     }

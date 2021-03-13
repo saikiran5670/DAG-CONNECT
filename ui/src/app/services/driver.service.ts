@@ -34,6 +34,28 @@ export class DriverService {
           .pipe(catchError(this.handleError));
     }
 
+    importDrivers(data: any): Observable<any[]> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .post<any[]>(
+          `${this.driverServiceUrl}/importdrivers`, data, headers
+        )
+        .pipe(catchError(this.handleError));
+    }
+
+    deleteDriver(organizationId: any, driverId: any): Observable<void> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .delete<void>(`${this.driverServiceUrl}/delete?organizationId=${organizationId}&driverId=${driverId}`,headers)
+        .pipe(catchError(this.handleError));
+    }
+
     private handleError(errResponse: HttpErrorResponse) {
         console.error('Error : ', errResponse.error);
         return throwError(
