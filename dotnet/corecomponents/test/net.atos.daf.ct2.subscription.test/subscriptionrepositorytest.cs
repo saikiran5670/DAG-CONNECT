@@ -32,11 +32,12 @@ namespace net.atos.daf.ct2.subscription.test
         {
             long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
             Subscription objSubscription = new Subscription();
-            objSubscription.OrganizationId = $"Subscription {iSessionStartedAt}";
-            objSubscription.packageId = "";
+            objSubscription.OrganizationId = "ddsss";
+            objSubscription.packageId = "PKG007";
             objSubscription.VINs[0] = "v369369";
             objSubscription.VINs[1] = "v369370";
             objSubscription.VINs[2] = "v369371";
+            objSubscription.StartDateTime = DateTime.Now;
             var results = await _SubscriptionManager.Subscribe(objSubscription);
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);

@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections;
 using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.data;
@@ -18,76 +19,110 @@ namespace net.atos.daf.ct2.subscription.repository
         {
             dataAccess = _dataAccess;
         }
+        //forgeting package type and id
+        async Task<Package> GetPackageTypeByCode(string PackageCode)
+        {
+            var parameterToGetPackageId = new DynamicParameters();
+            parameterToGetPackageId.Add("@packagecode", PackageCode);
+            var data = await dataAccess.QueryFirstOrDefaultAsync<Package>
+                             (@"select id, type from master.package where packagecode = @packagecode and is_active = true",
+                            parameterToGetPackageId);
+            return data;
+        }
+
+        //forgeting package type and id
+        async Task<int> GetOrganizationIdByCode(string OrganizationCode)
+        {
+            
+            var parameterToGetPackageId = new DynamicParameters();
+            parameterToGetPackageId.Add("@org_id", OrganizationCode);
+            var data = await dataAccess.ExecuteScalarAsync<int>
+                             (@"select id from master.organization where org_id = and is_active = true",
+                            parameterToGetPackageId);
+            return data;
+        }
+
         public async Task<SubscriptionResponse> Subscribe(Subscription objSubscription)
         {
             log.Info("Subscribe Subscription method called in repository");
             try
             {
-                //for geting OrganizationId
-                var parameterToGetOrgId = new DynamicParameters();
-                parameterToGetOrgId.Add("@org_id", objSubscription.OrganizationId);
-                int orgexist = await dataAccess.ExecuteScalarAsync<int>
-                               (@"SELECT id FROM master.organization where org_id=@org_id",
-                               parameterToGetOrgId);
-
-                if (orgexist > 0)
+                var data = await GetPackageTypeByCode(objSubscription.packageId);
+                //Get Organization id to insert in subscription Table
+                int orgid = await GetOrganizationIdByCode(objSubscription.OrganizationId);
+                string SubscriptionId = new Guid().ToString();
+                SubscriptionResponse objSubscriptionResponse = new SubscriptionResponse();
+                objSubscriptionResponse.orderId = SubscriptionId;
+                if (data.id > 0 && data.type.ToLower() == "o")
                 {
-                    //
-                }
-                //forgeting packageid
-                var parameterToGetPackageId = new DynamicParameters();
-                parameterToGetPackageId.Add("@packagecode", objSubscription.packageId);
-                int packexist = await dataAccess.ExecuteScalarAsync<int>
-                                (@"SELECT id FROM master.package where packagecode=@packagecode",
-                                parameterToGetPackageId);
-
-                if (packexist > 0)
-                {
-                   //
-                }
-
-                    var parameter = new DynamicParameters();
-                    parameter.Add("@organization_id", orgexist);
-                    parameter.Add("@subscription_id", new Guid());
-                    parameter.Add("@package_code", objSubscription.packageId);
-                    parameter.Add("@package_id", packexist);
-                    parameter.Add("@subscription_start_date", "");
-                    parameter.Add("@subscription_end_date", "");
-                    parameter.Add("@is_active", true);
-                    int vinexist = 0; int subid = 0;int vincount = 0;
+                    //if package type is organization and has vins in the payload return bad request
                     if (objSubscription.VINs.Length > 0)
                     {
+                        return null;
+                    }
+                 
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@organization_id", orgid);
+                    parameter.Add("@subscription_id", SubscriptionId);
+                    parameter.Add("@package_code", objSubscription.packageId);
+                    parameter.Add("@package_id", data.id);
+                    parameter.Add("@subscription_start_date", objSubscription.StartDateTime);
+                    parameter.Add("@subscription_end_date", null);
+                    parameter.Add("@vehicle_id", null);
+                    parameter.Add("@is_active", true);
+                    parameter.Add("@is_zuora_package", true);
+                    string queryInsert = "insert into master.subscription(organization_id, subscription_id, package_code, package_id, vehicle_id, subscription_start_date, subscription_end_date, is_active,is_zuora_package) " +
+                                 "values(@organization_id, @subscription_id, @package_code, @package_id, @vehicle_id, @subscription_start_date, @subscription_end_date, @is_active,@is_zuora_package) RETURNING id";
+
+                   int subid = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
+
+                }
+                //if package type is vehicle then only check vehicle table
+                else if (data.id > 0 && data.type.ToLower() == "v")
+                {
+                    if (objSubscription.VINs.Length == 0)
+                    {
+                        return null;
+                    }
+                    if (objSubscription.VINs.Length > 0)
+                    {
+                        ArrayList objvinList = new ArrayList();
                         foreach (var item in objSubscription.VINs)
                         {
+                            int vinexist = 0;
                             //forgeting vehicle id
                             var parameterToGetVehicleId = new DynamicParameters();
                             parameterToGetVehicleId.Add("@vin", item);
                             vinexist = await dataAccess.ExecuteScalarAsync<int>
                                 (@"SELECT id FROM master.vehicle where vin=@vin", parameterToGetVehicleId);
-                            parameter.Add("@vehicle_id", vinexist);
-
-                            string queryInsert = "insert into master.subscription(organization_id, subscription_id, package_code, package_id, vehicle_id, subscription_start_date, subscription_end_date, is_active) " +
-                                 "values(organization_id, subscription_id, package_code, package_id, vehicle_id, NULL, NULL, true) RETURNING id";
-
-                            subid = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
-                            if (subid>0)
-                            {
-                                vincount = ++vincount;
+                            if (vinexist == 0)
+                            {//return Bad Request if vin does not exits in vehicle table
+                                return null;
                             }
+                            //This will get us the list of vins exits on Vehicle Table or Not
+                            objvinList.Add(vinexist);
                         }
-                    }
-                    else
-                    {
-                        parameter.Add("@vehicle_id", null);
+                        var parameter = new DynamicParameters();
+                        parameter.Add("@organization_id", orgid);
+                        parameter.Add("@subscription_id", SubscriptionId);
+                        parameter.Add("@package_code", objSubscription.packageId);
+                        parameter.Add("@package_id", data.id);
+                        parameter.Add("@subscription_start_date", objSubscription.StartDateTime);
+                        parameter.Add("@subscription_end_date", null);
+                        parameter.Add("@is_active", true);
+                        parameter.Add("@is_zuora_package", true);
+                        //This Condition to insert only if all the VIN exits in Vehicle Table
+                        foreach (var item in objvinList)
+                        {
+                            parameter.Add("@vehicle_id", item);
+                            string queryInsert = "insert into master.subscription(organization_id, subscription_id, package_code, package_id, vehicle_id, subscription_start_date, subscription_end_date, is_active,is_zuora_package) " +
+                                         "values(@organization_id, @subscription_id, @package_code, @package_id, @vehicle_id, @subscription_start_date, @subscription_end_date, @is_active, @is_zuora_package) RETURNING id";
 
-                        string queryInsert = "insert into master.subscription(organization_id, subscription_id, package_code, package_id, vehicle_id, subscription_start_date, subscription_end_date, is_active) " +
-                             "values(organization_id, subscription_id, package_code, package_id, NULL, NULL, NULL, NULL) RETURNING id";
-
-                        subid = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
+                            int subid = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
+                        }
+                        objSubscriptionResponse.numberOfVehicles = objvinList.Count;
                     }
-                    SubscriptionResponse objSubscriptionResponse = new SubscriptionResponse();
-                    objSubscriptionResponse.orderId = subid.ToString();
-                    objSubscriptionResponse.numberOfVehicles = vincount;
+                }
                 return objSubscriptionResponse;
             }
             catch (Exception ex)
@@ -103,7 +138,10 @@ namespace net.atos.daf.ct2.subscription.repository
             log.Info("Unsubscribe Subscription method called in repository");
             try
             {
-              
+                var data = await GetPackageTypeByCode(objUnSubscription.PackageId);
+                //Get Organization id to insert in subscription Table
+                int orgid = await GetOrganizationIdByCode(objUnSubscription.OrganizationID);
+
                 var parameter = new DynamicParameters();
                 parameter.Add("@subscription_id", objUnSubscription.OrderID);
 
