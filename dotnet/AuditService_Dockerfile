@@ -32,10 +32,10 @@ RUN mkdir log/Info
 
 
 
-RUN chown -R 10001:10001 log  && chmod -R 777  log 
+RUN chown -R 10001:3000 log  && chmod -R 777  log 
 
 COPY --from=publish /app/publish .
 
-RUN chown -R 10001:10001 /app  && chmod -R 777  /app
+RUN chown -R 10001:3000 /app  && chmod -R 777  /app
 
 ENTRYPOINT ["dotnet", "net.atos.daf.ct2.auditservice.dll"]
