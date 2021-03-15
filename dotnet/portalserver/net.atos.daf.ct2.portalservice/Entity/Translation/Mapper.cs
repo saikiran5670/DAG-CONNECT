@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
         {
             TranslationUploadRequest response = new TranslationUploadRequest();
             if (request == null) return response;
-            if (request != null && request.file_name != null && request.description != null && Convert.ToInt16(request.file_size) > 0 && Convert.ToInt16(request.failure_count) > 0 && request.file !=null)
+            if (request != null && request.file !=null)
             {
                 foreach (var item in request.file)
                 {

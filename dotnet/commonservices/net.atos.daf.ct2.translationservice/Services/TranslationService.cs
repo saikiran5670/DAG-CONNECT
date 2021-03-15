@@ -464,12 +464,16 @@ namespace net.atos.daf.ct2.translationservice
 
                 var result = await translationmanager.InsertTranslationFileDetails(Objtranslationupload);
                 _logger.LogInformation("InsertTranslationFileDetails service called.");
+                TranslationRecordResponce objresponce = new TranslationRecordResponce();
+                objresponce.Added = result.AddCount;
+                objresponce.Updated = result.UpdateCount;
+                objresponce.Failed = result.FailedCount;
 
                 return await Task.FromResult(new TranslationUploadResponse
                 {
-                    Message = "FileDetails uploaded with id:- " + result.id,
+                    Message = "FileDetails uploaded",
                     Code = Responcecode.Success,
-                    Translationupload = request
+                    Translationupload = objresponce
 
                 });
             }

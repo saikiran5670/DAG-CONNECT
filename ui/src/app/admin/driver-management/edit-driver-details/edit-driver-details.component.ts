@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../shared/custom.validators';
+import { DriverService } from '../../../services/driver.service';
 
 @Component({
   selector: 'app-edit-driver-details',
@@ -17,10 +18,12 @@ export class EditDriverDetailsComponent implements OnInit {
   breadcumMsg: any = '';
   selectedConsentType: any = '';
   duplicateEmailMsg: boolean = false;
+  accountOrganizationId: any = 0;
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder, private driverService: DriverService) { }
 
   ngOnInit() {
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.driverFormGroup = this._formBuilder.group({
       driverId: new FormControl({value: null, disabled: true}),
       emailId: ['', [Validators.required, Validators.email]],
@@ -41,11 +44,11 @@ export class EditDriverDetailsComponent implements OnInit {
   }
 
   setDefaultData(){
-    this.driverFormGroup.get('driverId').setValue(this.driverData.driverId);
-    this.driverFormGroup.get('emailId').setValue(this.driverData.emailId);
+    this.driverFormGroup.get('driverId').setValue(this.driverData.id);
+    this.driverFormGroup.get('emailId').setValue(this.driverData.email);
     this.driverFormGroup.get('firstName').setValue(this.driverData.firstName);
     this.driverFormGroup.get('lastName').setValue(this.driverData.lastName);
-    this.selectedConsentType = this.driverData.inheritStatus ? 'Inherit' : this.driverData.consentStatus;
+    this.selectedConsentType = this.driverData.status;
   }
 
   getBreadcum(actionType: any){
@@ -60,7 +63,11 @@ export class EditDriverDetailsComponent implements OnInit {
   }
 
   onCancel(){
-    this.backToPage.emit(false);
+    let returnObj: any = {
+      stepFlag: false,
+      msg: ''
+    }
+    this.backToPage.emit(returnObj);
   }
   
   onReset(){
@@ -69,7 +76,37 @@ export class EditDriverDetailsComponent implements OnInit {
   
   onConfirm(){
     //console.log(this.driverFormGroup.controls)
-    this.backToPage.emit(false);
+    let objData: any = {
+      id: this.driverFormGroup.controls.driverId.value,
+      organizationId: this.driverData.organizationId,
+      driverIdExt: "",
+      email: this.driverFormGroup.controls.emailId.value,
+      firstName: this.driverFormGroup.controls.firstName.value,
+      lastName: this.driverFormGroup.controls.lastName.value,
+      status: this.selectedConsentType, // this.driverFormGroup.controls.consentStatus.value
+      isActive: true,
+      optIn: "", // TODO: check for inherit
+      modifiedBy: 0
+    }
+    this.driverService.updateDriver(objData).subscribe((drv: any) => {
+      let drvId: any = 0;
+      this.driverService.getDrivers(this.accountOrganizationId, drvId).subscribe((drvList: any) => {
+        let returnObj: any = {
+          stepFlag: false,
+          msg: this.getDriverUpdateMsg(drv),
+          tableData: drvList
+        }; 
+        this.backToPage.emit(returnObj);
+      });
+    });
+  }
+
+  getDriverUpdateMsg(drv: any){
+    let drvName: any = `${drv.driver.firstName} ${drv.driver.lastName}`;
+    if(this.translationData.lblDriverwassuccessfullyupdated)
+      return this.translationData.lblDriverwassuccessfullyupdated.replace('$', drvName);
+    else
+      return ("Driver '$' was successfully updated").replace('$', drvName);
   }
 
   onConsentChange(event: any){

@@ -14,8 +14,12 @@ namespace net.atos.daf.ct2.vehicle
             Task<VehicleProperty> UpdateProperty(VehicleProperty vehicleproperty);
             Task<IEnumerable<VehicleGroupRequest>> GetOrganizationVehicleGroupdetails(long OrganizationId);
             Task<IEnumerable<VehicleGroup>> GetVehicleGroup(int organizationId,int vehicleId);
-            //  Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime);
-            // Task<int> Create(int orgID, string vin,string tcuId,string tcuactivation,string referenceDateTime);
+            Task<bool> SetOTAStatus(bool Is_Ota, int Modified_By, int Vehicle_Id);
+            Task<bool> SetOptInStatus(char Is_OptIn, int Modified_By, int Vehicle_Id);
+            Task<bool> Terminate(bool Is_Terminate, int Modified_By, int Vehicle_Id);
+            Task<Vehicle> GetVehicle(int Vehicle_Id);
+        //  Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime);
+        // Task<int> Create(int orgID, string vin,string tcuId,string tcuactivation,string referenceDateTime);
 
     }
 }

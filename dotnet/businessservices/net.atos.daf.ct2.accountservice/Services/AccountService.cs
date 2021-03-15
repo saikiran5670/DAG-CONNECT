@@ -593,7 +593,7 @@ namespace net.atos.daf.ct2.accountservice
             try
             {
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
-                account.ResetToken = new Guid(request.ResetToken);
+                account.ProcessToken = new Guid(request.ProcessToken);
                 account.Password = request.Password;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
                 var result = await accountmanager.ResetPassword(account);
@@ -601,13 +601,13 @@ namespace net.atos.daf.ct2.accountservice
                 ResetPasswordResponse response = new ResetPasswordResponse();
                 if (result)
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Password Reset with Token", 1, 2, request.ResetToken);
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Password Reset with Token", 1, 2, request.ProcessToken);
                     response.Code = Responcecode.Success;
                     response.Message = "Password has been reset successfully.";
                 }
                 else
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset with Token", 1, 2, request.ResetToken);
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset with Token", 1, 2, request.ProcessToken);
                     response.Code = Responcecode.NotFound;
                     response.Message = "Failed to reset password or Activation link is expired or invalidated.";
                 }
@@ -667,6 +667,7 @@ namespace net.atos.daf.ct2.accountservice
                     await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.SUCCESS, "Get Menu Features", 1, 2, request.AccountId.ToString());
                     response.Code = Responcecode.Success;
                     response.Message = "Menu items and features fetched successfully.";
+                    response.MenuFeatures = MapMenuFeatureDtoToList(result.ToList());
                 }
                 else
                 {
@@ -675,9 +676,6 @@ namespace net.atos.daf.ct2.accountservice
                     response.Message = "No menu items and features found for the provided account details.";
                 }
 
-                //var menuFeatureList = autoMapper.Map<IEnumerable<MenuFeatureDto>, IEnumerable<MenuFeatureList>>(result);
-                response.MenuFeatures = MapMenuFeatureDtoToList(result.ToList());
-                
                 return await Task.FromResult(response);
             }
             catch (Exception ex)

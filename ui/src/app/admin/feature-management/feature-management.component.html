@@ -42,27 +42,29 @@
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblType || 'Type' }}</mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.type }}</mat-cell>
             </ng-container> -->
-            <ng-container matColumnDef="setName">
+            <ng-container matColumnDef="name">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttributeSetName || 'Data Attribute Set Name' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
                   <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-                  <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.setName }}</span>
+                  <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.name }}</span>
               </mat-cell>
             </ng-container>
-            <ng-container matColumnDef="setType">
+            <ng-container matColumnDef="dataAttribute.isExclusive">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttributeSetType || 'Data Attribute Set Type' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.setType }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.dataAttribute.isExclusive ? "Exclusive" : "Inclusive" }}</mat-cell>
             </ng-container>
             <!-- <ng-container matColumnDef="dataAttribute">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttribute || 'Data Attribute' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.dataAttribute.length }}</mat-cell>
             </ng-container> -->
-            <ng-container matColumnDef="status">
+            <ng-container matColumnDef="state">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.status }}
-                  <button class='actionBtn' mat-flat-button (click)="changeFeatureStatus(row)" matTooltip="{{ row.status == 'Active' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}">
-                    <mat-icon>{{ row.status == 'Active' ? 'sync' : 'sync_disabled' }}</mat-icon>
+                  <button class='actionBtn' mat-flat-button (click)="changeFeatureStatus(row)" matTooltip="{{ row.state == 0 ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}">
+                    <mat-slide-toggle color="primary" [checked]='row.state == 0 ? true : false' >
+                  </mat-slide-toggle>
+                  <span>{{ row.state == 0 ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}</span>
                   </button>
                 </mat-cell>
             </ng-container>

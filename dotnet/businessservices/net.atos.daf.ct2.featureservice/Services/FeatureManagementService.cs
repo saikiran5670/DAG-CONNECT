@@ -76,9 +76,10 @@ namespace net.atos.daf.ct2.featureservice
                         FeatureRequest ObjResponce = new FeatureRequest();
                         ObjResponce.Id = item.Id;
                         ObjResponce.Name = item.Name;
-                        ObjResponce.State = (FeatureState)Enum.Parse(typeof(FeatureState), item.state.ToString().ToUpper());
+                        ObjResponce.State = item.state == "I" ? FeatureState.Inactive : FeatureState.Active;
                         ObjResponce.Key = item.Key == null ? "" : item.Key;
                         ObjResponce.Type = item.Type.ToString();
+                        ObjResponce.Level = item.Level;
                         features.Features.Add(ObjResponce);
                     }
 
@@ -122,6 +123,7 @@ namespace net.atos.daf.ct2.featureservice
                         }
                         
                         ObjResponce.Type = item.Type.ToString();
+                        ObjResponce.Level = item.Level;
                         features.Features.Add(ObjResponce);
                     }
 
@@ -328,5 +330,49 @@ namespace net.atos.daf.ct2.featureservice
             }
         }
 
+        public async override Task<FeatureResponce> Delete(FeatureRequest featureSetRequest, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("DeleteFeatureSet method in Feature API called.");
+
+                var FeatureId = await _FeaturesManager.DeleteFeature(featureSetRequest.Id);
+
+                //await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Feature Component", "Feature Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "DeleteFeatureSet method in Feature manager", FeatureSetId, FeatureSetId, JsonConvert.SerializeObject(FeatureSetId));
+                if (FeatureId > 0)
+                {
+                    return await Task.FromResult(new FeatureResponce
+                    {
+                        Message = featureSetRequest.Id.ToString() + " Deleted successfully",
+                        Code = Responcecode.Success,
+                        FeatureID = featureSetRequest.Id
+
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new FeatureResponce
+                    {
+                        Message = featureSetRequest.Id.ToString() + " Not a valid feature Id",
+                        Code = Responcecode.Failed,
+                        FeatureID = featureSetRequest.Id
+
+                    });
+                }
+               
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Feature Service:DeleteFeatureSet : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new FeatureResponce
+                {
+                    Message = featureSetRequest.Id.ToString() + " Delete failed",
+                    Code = Responcecode.Failed,
+                    FeatureID = featureSetRequest.Id
+
+                });
+
+            }
+        }
     }
 }

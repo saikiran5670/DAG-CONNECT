@@ -17,7 +17,7 @@
                 </div>
                 <div *ngIf='!data.actionType' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <span>{{ data.translationData.lblDriverId || 'Driver Id' }}</span>
-                    <span class='custom-font'>{{ data.driverData.driverId }}</span>
+                    <span class='custom-font'>{{ data.driverData.id }}</span>
                 </div>
                 <div *ngIf='data.actionType' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <span>{{ data.translationData.lblOrgnization || 'Orgnization' }}</span>
@@ -31,14 +31,14 @@
                     <div fxLayout="row" fxLayoutAlign="space-between">
                         <span>{{ data.translationData.lblCurrentConsentStatusForSubscriber || 'Current Consent Status For Subscriber' }} 'DAF Connect'= {{ 
                             (data.actionType == true) ? 
-                            ((data.consentType === 'Opt-Out') ? 
+                            ((data.consentType === 'U') ? 
                             (data.translationData.lblOptOutAll || 'Opt-Out All') : 
-                            (data.consentType === 'Opt-In') ? 
+                            (data.consentType === 'I') ? 
                             (data.translationData.lblOptInAll || 'Opt-In All'):
                             (data.translationData.lblInherit || 'Inherit')) : 
-                            ((data.consentType === 'Opt-Out') ? 
+                            ((data.consentType === 'U') ? 
                             (data.translationData.lblOptOut || 'Opt-Out') : 
-                            (data.consentType === 'Opt-In') ? 
+                            (data.consentType === 'I') ? 
                             (data.translationData.lblOptIn || 'Opt-In'):
                             (data.translationData.lblInherit || 'Inherit'))
                         }}</span>
@@ -46,9 +46,9 @@
                     <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="30px">
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                             <mat-radio-group (change)='onChange($event)'>
-                                <mat-radio-button style='margin-right: 20px;' value="Inherit" [checked]="data.consentType === 'Inherit' ? true : false">{{ data.translationData.lblInherit || 'Inherit' }}</mat-radio-button>
-                                <mat-radio-button style='margin-right: 20px;' value="Opt-In" [checked]="data.consentType === 'Opt-In' ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptInAll || 'Opt-In All') : (data.translationData.lblOptIn || 'Opt-In') }}</mat-radio-button>
-                                <mat-radio-button value="Opt-Out" [checked]="data.consentType === 'Opt-Out' ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptOutAll || 'Opt-Out All') : (data.translationData.lblOptOut || 'Opt-Out') }}</mat-radio-button>
+                                <mat-radio-button style='margin-right: 20px;' value="H" [checked]="data.consentType === 'H' ? true : false">{{ data.translationData.lblInherit || 'Inherit' }}</mat-radio-button>
+                                <mat-radio-button style='margin-right: 20px;' value="I" [checked]="data.consentType === 'I' ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptInAll || 'Opt-In All') : (data.translationData.lblOptIn || 'Opt-In') }}</mat-radio-button>
+                                <mat-radio-button value="U" [checked]="data.consentType === 'U' ? true : false">{{ (data.actionType == true) ? (data.translationData.lblOptOutAll || 'Opt-Out All') : (data.translationData.lblOptOut || 'Opt-Out') }}</mat-radio-button>
                             </mat-radio-group>
                         </div>
                     </div>

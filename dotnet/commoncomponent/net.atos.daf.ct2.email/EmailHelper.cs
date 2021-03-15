@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Reflection;
+using System.Resources;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.email.Entity;
+using net.atos.daf.ct2.email.Enum;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
@@ -47,6 +51,12 @@ namespace net.atos.daf.ct2.email
         private static void SetContent(SendGridMessage msg, string content, string mimeType)
         {
             msg.AddContent(mimeType, content);
+        }
+
+        public static string GetTemplateHtmlString(EmailTemplateType templateType)
+        {
+            ResourceManager rs = new ResourceManager("net.atos.daf.ct2.email.Templates", Assembly.GetExecutingAssembly());
+            return rs.GetString(templateType.ToString(), CultureInfo.CurrentCulture);
         }
     }
 }

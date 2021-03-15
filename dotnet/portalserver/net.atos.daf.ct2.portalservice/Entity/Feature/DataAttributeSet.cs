@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Feature
     }
     public enum StatusType
     {
-        Active = 'A',
-        Inactive = 'I'
+        Active = 0,
+        Inactive = 1
     }
 }

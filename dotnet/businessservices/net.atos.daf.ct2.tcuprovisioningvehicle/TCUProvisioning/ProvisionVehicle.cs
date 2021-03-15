@@ -38,8 +38,7 @@ namespace TCUProvisioning
 
             using (var consumer = new ConsumerBuilder<Null, string>(config).Build())
             {
-                CancellationTokenSource cts = new CancellationTokenSource();
-                Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
+               
                 log.Info("Subscribing Topic");
                 consumer.Subscribe(topic);
 
@@ -48,20 +47,25 @@ namespace TCUProvisioning
                     try
                     {
                         log.Info("Consuming Messages");
-                        var msg = consumer.Consume(cts.Token);
+                        var msg = consumer.Consume();
                         String TCUDataFromTopic = msg.Message.Value;
                         TCUDataReceive TCUDataReceive = JsonConvert.DeserializeObject<TCUDataReceive>(TCUDataFromTopic);
                         await updateVehicleDetails(TCUDataReceive, psqlconnstring);
+
+                        log.Info("Commiting message");
+                        consumer.Commit(msg);
 
                     }
                     catch (ConsumeException e)
                     {
                         log.Error($"Consume error: {e.Error.Reason}");
+                        consumer.Close();
 
                     }
                     catch (Exception e)
                     {
                         log.Error($"Error: {e.Message}");
+                        consumer.Close();
 
                     }
                 }
@@ -83,6 +87,7 @@ namespace TCUProvisioning
                 GroupId = consumergroup,
                 AutoOffsetReset = AutoOffsetReset.Earliest,
                 BrokerVersionFallback = "1.0.0",
+                EnableAutoCommit = false
                 //Debug = "security,broker,protocol"    //Uncomment for librdkafka debugging information
             };
             return config;

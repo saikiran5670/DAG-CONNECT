@@ -177,7 +177,7 @@ namespace net.atos.daf.ct2.features.repository
 								 join master.featuresetfeature fsf
 								on fsf.feature_id= f.id
 								 join master.Role r
-								on r.feature_set_id = fsf.feature_set_id";
+								on r.feature_set_id = fsf.feature_set_id where f.is_active= true";
             
             
             var parameter = new DynamicParameters();
@@ -203,7 +203,7 @@ namespace net.atos.daf.ct2.features.repository
             if(RoleId == 0  && Organizationid ==0)
             {
                  QueryStatement = @"SELECT id, name, type, is_active, data_attribute_set_id, key, level, state
-	                                FROM master.feature f where 1=1";
+	                                FROM master.feature f where f.is_active =true";
                if (Featuretype != '0')
                 {
                     parameter.Add("@type", Featuretype);
@@ -1008,7 +1008,7 @@ namespace net.atos.daf.ct2.features.repository
             {
                 if (FeatureId != 0)
                 {
-                    var FSQueryStatement = @"update master.feature set is_active= @is_active where id=@DataAttributeSetId  RETURNING id;";
+                    var FSQueryStatement = @"update master.feature set is_active= @is_active where id=@id  and type= 'D' RETURNING id;";
                     var parameter = new DynamicParameters();
                     parameter.Add("@id", FeatureId);
                     parameter.Add("@is_active", false);

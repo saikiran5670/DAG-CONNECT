@@ -95,22 +95,22 @@
                     </div>
                     <div class='areaWidth'>
                         <mat-form-field appearance="outline" class='margin-right-xxlg'>
-                            <mat-select formControlName="consentType" (selectionChange)="onConsentStatusChange()" placeholder="{{ translationData.lblSelectConsentIDStatus || 'Select Consent ID Status' }}">
+                            <mat-select [disabled]='initData.length == 0' formControlName="consentType" (selectionChange)="onConsentStatusChange()" placeholder="{{ translationData.lblSelectConsentIDStatus || 'Select Consent ID Status' }}">
                             <mat-option *ngFor="let rer of consentSelectionList" [value]="rer.name">
                                 {{ rer.name }}
                             </mat-option>
                             </mat-select>
                         </mat-form-field>
-                        <button mat-flat-button color="primary"
-                            (click)="onConsentClick('Inherit')" style='margin-right: 10px;'>
+                        <button mat-flat-button color="primary" [disabled]="initData.length == 0"
+                            (click)="onConsentClick('H')" style='margin-right: 10px;'>
                             <mat-icon style="font-size: 18px; padding-top: 2px;">refresh</mat-icon> {{ translationData.lblResetAll || 'Reset All'}}
                         </button>
-                        <button mat-flat-button color="primary"
-                            (click)="onConsentClick('Opt-In')" style='margin-right: 10px;'>
+                        <button mat-flat-button color="primary" [disabled]="initData.length == 0"
+                            (click)="onConsentClick('I')" style='margin-right: 10px;'>
                             <mat-icon style="font-size: 18px; padding-top: 2px;">done</mat-icon> {{ translationData.lblOptInAll || 'Opt-In All'}}
                         </button>
-                        <button mat-flat-button color="primary"
-                            (click)="onConsentClick('Opt-Out')">
+                        <button mat-flat-button color="primary" [disabled]="initData.length == 0"
+                            (click)="onConsentClick('U')">
                             <mat-icon style="font-size: 18px; padding-top: 2px;">close</mat-icon>{{ translationData.lblOptOutAll || 'Opt-Out All'}}
                         </button>
                     </div>
@@ -118,30 +118,33 @@
                 <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
                 <div *ngIf='initData.length > 0'>
                     <mat-table [dataSource]="dataSource" matSort>
-                        <ng-container matColumnDef="driverId">
+                        <ng-container matColumnDef="id">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverId || 'Driver Id' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
                                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-                                <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.driverId }}</span>
+                                <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.id }}</span>
                             </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="firstName">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Driver Name' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">{{ row.firstName }} {{ row.lastName }}</mat-cell>
                         </ng-container>
-                        <ng-container matColumnDef="emailId">
+                        <ng-container matColumnDef="email">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEmailID || 'Email ID' }}</mat-header-cell>
-                            <mat-cell *matCellDef="let row">{{ row.emailId }}</mat-cell>
+                            <mat-cell *matCellDef="let row">{{ row.email }}</mat-cell>
                         </ng-container>
-                        <ng-container matColumnDef="consentStatus">
+                        <ng-container matColumnDef="status">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblConsent || 'Consent' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">
-                                <div class='margin-left-10-per' *ngIf="row.consentStatus == 'Opt-In'">
-                                    <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ row.inheritStatus ? (translationData.lblInheritOptIn || 'Inherit Opt-In') : (translationData.lblOptIn || 'Opt-In') }}" src='assets/images/icons/driverOpt/opt-in.svg' style="width: 20px; height: 20px;" />
+                                <div class='margin-left-10-per' *ngIf="row.status == 'I'">
+                                    <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ translationData.lblOptIn || 'Opt-In' }}" src='assets/images/icons/driverOpt/opt-in.svg' style="width: 20px; height: 20px;" />
                                 </div>
-                                <div class='margin-left-10-per' *ngIf="row.consentStatus == 'Opt-Out'">
-                                    <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ row.inheritStatus ? (translationData.lblInheritOptOut || 'Inherit Opt-Out') : (translationData.lblOptOut || 'Opt-Out') }}" src='assets/images/icons/driverOpt/opt-out.svg' style="width: 20px; height: 20px;" />
+                                <div class='margin-left-10-per' *ngIf="row.status == 'U'">
+                                    <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ translationData.lblOptOut || 'Opt-Out' }}" src='assets/images/icons/driverOpt/opt-out.svg' style="width: 20px; height: 20px;" />
+                                </div>
+                                <div class='margin-left-10-per' *ngIf="row.status == 'H'">
+                                    <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ row.optIn == 'I' ? (translationData.lblInheritOptIn || 'Inherit Opt-In') : (translationData.lblInheritOptOut || 'Inherit Opt-Out') }}" [src]="(row.optIn == 'I') ? 'assets/images/icons/driverOpt/opt-in.svg' : 'assets/images/icons/driverOpt/opt-out.svg'" style="width: 20px; height: 20px;" />
                                 </div>
                             </mat-cell>
                         </ng-container>
@@ -170,6 +173,6 @@
         </mat-card>
     </div>
     <div *ngIf='editFlag'>
-        <app-edit-driver-details [translationData]='translationData' [actionType]='actionType' [driverData]='driverData' (backToPage)="editData($event)"></app-edit-driver-details>
+        <app-edit-driver-details [translationData]='translationData' [actionType]='actionType' [driverData]='driverData' (backToPage)="updateEditData($event)"></app-edit-driver-details>
     </div>
 </div>

@@ -16,6 +16,8 @@ parameters:
   - DEV01
   - DEV02
   - TEST01
+  - TEST02
+  - ACC03
 
 pool: $(PRIVATEAGENT)
 
@@ -28,11 +30,15 @@ variables:
   - group: DEV02-Build-Variables
 - ${{ if eq(parameters.ENV, 'TEST01') }}:
   - group: TEST01-Build-Variables
-
+- ${{ if eq(parameters.ENV, 'TEST02') }}:
+  - group: TEST02-Build-Variables
+- ${{ if eq(parameters.ENV, 'ACC03') }}:
+  - group: ACC03-Build-Variables
+  
 steps:
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/dataservices/net.atos.daf.ct2.authenticationservicerest/appsettings.json'
+    targetFiles: 'dotnet/dataservices/net.atos.daf.ct2.tcuprovisioningdataservice/TCUProvisioning/appsettings.json'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -45,15 +51,32 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/dataservices/net.atos.daf.ct2.authenticationservicerest/appsettings.json
+      cat dotnet/dataservices/net.atos.daf.ct2.tcuprovisioningdataservice/TCUProvisioning/appsettings.json
+
+- task: replacetokens@3
+  inputs:
+    targetFiles: 'dotnet/dataservices/net.atos.daf.ct2.tcuprovisioningdataservice/TCUProvisioning/log4net.config'
+    encoding: 'auto'
+    writeBOM: true
+    actionOnMissing: 'warn'
+    keepToken: false
+    tokenPrefix: '#{'
+    tokenSuffix: '}#'
+    useLegacyPattern: false
+    enableTelemetry: true
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      cat dotnet/dataservices/net.atos.daf.ct2.tcuprovisioningdataservice/TCUProvisioning/log4net.config
 
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
-    dockerFile: dotnet/AuthenticationServiceRest_Dockerfile
-    imageName: authenticationservicerest
+    dockerFile: dotnet/TCUData_Dockerfile
+    imageName: tcuprovisioningdataservice
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -61,5 +84,5 @@ steps:
     azureSubscription: $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
-    imageName: authenticationservicerest
+    imageName: tcuprovisioningdataservice
 
