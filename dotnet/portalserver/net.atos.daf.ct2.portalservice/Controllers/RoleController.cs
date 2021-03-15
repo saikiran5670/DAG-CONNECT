@@ -162,7 +162,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("get")]
-        public async Task<IActionResult> Get(int Roleid, int? Organizationid, bool IsGlobal)
+        public async Task<IActionResult> Get(int Roleid, int? Organizationid, bool IsGlobal, string LangaugeCode)
         {
             try
             {
@@ -179,6 +179,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Organization id required ");
                 }
+                obj.LangaugeCode = (LangaugeCode == null || LangaugeCode == "") ? "EN-GB" : LangaugeCode;
 
                 var role = await _roleclient.GetAsync(obj);
                 List<Rolerequest> roleList = new List<Rolerequest>();
@@ -190,7 +191,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     Robj.Description = roleitem.Description;
                     Robj.OrganizationId = roleitem.OrganizationId;
                     Robj.Level = roleitem.Level;
-                    Robj.Createdat = roleitem.CreatedAt;
+                    Robj.CreatedAt = roleitem.CreatedAt;
                     Robj.FeatureIds = roleitem.FeatureIds.ToArray();
                     roleList.Add(Robj);
                 }

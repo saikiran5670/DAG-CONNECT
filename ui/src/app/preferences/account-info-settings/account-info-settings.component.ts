@@ -262,17 +262,17 @@ export class AccountInfoSettingsComponent implements OnInit {
 
   onGeneralSettingsUpdate(){
     let objData: any = {
-      id: 0,
+      id: this.accountInfo[0]["preferenceId"],
       refId: this.accountId,
-      languageId: this.userSettingsForm.controls.language.value ? this.userSettingsForm.controls.language.value : 5,
-      timezoneId: this.userSettingsForm.controls.timeZone.value ? this.userSettingsForm.controls.timeZone.value : 45,
-      unitId: this.userSettingsForm.controls.unit.value ? this.userSettingsForm.controls.unit.value : 8,
-      currencyId: this.userSettingsForm.controls.currency.value ? this.userSettingsForm.controls.currency.value : 3,
-      dateFormatTypeId: this.userSettingsForm.controls.dateFormat.value ? this.userSettingsForm.controls.dateFormat.value : 10,
-      timeFormatId: this.userSettingsForm.controls.timeFormat.value ? this.userSettingsForm.controls.timeFormat.value : 8,
-      vehicleDisplayId: this.userSettingsForm.controls.vehDisplay.value ? this.userSettingsForm.controls.vehDisplay.value : 8,
-      landingPageDisplayId: this.userSettingsForm.controls.landingPage.value ? this.userSettingsForm.controls.landingPage.value : 10,
-      driverId: ""
+      languageId: this.userSettingsForm.controls.language.value ? this.userSettingsForm.controls.language.value : 24,
+      timezoneId: this.userSettingsForm.controls.timeZone.value ? this.userSettingsForm.controls.timeZone.value : 27,
+      unitId: this.userSettingsForm.controls.unit.value ? this.userSettingsForm.controls.unit.value : 5,
+      currencyId: this.userSettingsForm.controls.currency.value ? this.userSettingsForm.controls.currency.value : 4,
+      dateFormatTypeId: this.userSettingsForm.controls.dateFormat.value ? this.userSettingsForm.controls.dateFormat.value : 6,
+      timeFormatId: this.userSettingsForm.controls.timeFormat.value ? this.userSettingsForm.controls.timeFormat.value : 3,
+      vehicleDisplayId: this.userSettingsForm.controls.vehDisplay.value ? this.userSettingsForm.controls.vehDisplay.value : 5,
+      landingPageDisplayId: this.userSettingsForm.controls.landingPage.value ? this.userSettingsForm.controls.landingPage.value : 2
+      //driverId: ""
     }
     this.accountService.updateAccountPreference(objData).subscribe((data) => {
       this.filterDefaultGeneralSetting(data);

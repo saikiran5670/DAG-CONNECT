@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.role
                 var role = await roleRepository.GetRoles(rolefilter);
                 foreach(var item in role)
                 {
-                    var features = await FeatureManager.GetFeatureIdsForFeatureSet(item.Feature_set_id ?? 0);
+                    var features = await FeatureManager.GetFeatureIdsForFeatureSet(item.Feature_set_id ?? 0, rolefilter.LangaugeCode);
                     item.FeatureSet   = new FeatureSet();
                     item.FeatureSet.Features = new List<Feature>();
                     foreach(var t in features)

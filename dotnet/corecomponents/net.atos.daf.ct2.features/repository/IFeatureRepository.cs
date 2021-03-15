@@ -15,10 +15,10 @@ namespace net.atos.daf.ct2.features.repository
         Task<FeatureSet> UpdateFeatureSet(FeatureSet featureSet);
        // Task<int> DeleteFeatureSet(int FeatureSetId, int Userid);
         Task<IEnumerable<FeatureSet>> GetFeatureSet(int FeatureSetId,bool Active);
-        Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, int FeatureId, int level, char? Featuretype, string Langaugecode);
+        Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, int FeatureId, int level, char? Featuretype);
         Task<int> CheckFeatureSetExist(string FeatureSetName);
         Task<IEnumerable<FeatureSet>> GetFeatureSetFeature(int FeatureSetId);
-        Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int feature_set_id, string Langaugecode);
+        Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int feature_set_id);
         Task<DataAttributeSet> GetDataAttributeset(int DataAttributeSetID);
         Task<bool> DeleteFeatureSet(int FeatureSetId);
         Task<FeatureSet> CreateFeatureSet(FeatureSet featureSet);
@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.features.repository
         Task<List<DataAttributeSet>> GetDataAttributeSetDetails(int dataAttributeSetID);
         Task<int> UpdateFeatureSetMapping(int UpdateFeatureSetID, int ID);
 
-        Task<IEnumerable<DataAttribute>> GetDataAttributes(string Langaugecode);
+        Task<IEnumerable<DataAttribute>> GetDataAttributes();
         Task<Feature> UpdateFeature(Feature feature);
         Task<int> DeleteFeature(int FeatureId);
 

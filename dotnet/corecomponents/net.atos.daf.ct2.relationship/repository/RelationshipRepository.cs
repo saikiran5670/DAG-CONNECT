@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.relationship.repository
 {
-    public class RelationshipRepository: IRelationshipRepository
+    public class RelationshipRepository : IRelationshipRepository
     {
         private readonly IDataAccess _dataAccess;
-       
+
         private static readonly log4net.ILog log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public RelationshipRepository(IDataAccess dataAccess)
         {
             _dataAccess = dataAccess;
-           
+
         }
 
         public async Task<Relationship> CreateRelationship(Relationship relationship)
@@ -163,6 +163,11 @@ namespace net.atos.daf.ct2.relationship.repository
                         parameter.Add("@feature_set_id", filter.FeaturesetId);
                         query = query + " and relationship.feature_set_id = @feature_set_id ";
                     }
+                    if (filter.OrganizationId > 0)
+                    {
+                        parameter.Add("@organization_id", filter.OrganizationId);
+                        query = query + " and relationship.organization_id = @organization_id ";
+                    }
 
                     if (filter.Level != 0)
                     {
@@ -190,13 +195,13 @@ namespace net.atos.daf.ct2.relationship.repository
         private Relationship MapData(dynamic record)
         {
             var relationship = new Relationship();
-            relationship.Id = record.id;
-            relationship.Code = record.code;
-            relationship.Level = record.level;
-            relationship.Description = record.description;
-            relationship.Name = record.name;
-            relationship.FeaturesetId = record.feature_set_id;
-            relationship.OrganizationId = record.organization_id;
+            relationship.Id = record.id != null ? record.id : 0;
+            relationship.Code = !string.IsNullOrEmpty(record.code) ? record.code : string.Empty;
+            relationship.Level = record.level != null ? record.level : 0; 
+            relationship.Description = !string.IsNullOrEmpty(record.description) ? record.description : string.Empty;
+            relationship.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;
+            relationship.FeaturesetId = record.feature_set_id != null ? record.feature_set_id : 0; 
+            relationship.OrganizationId = record.organization_id != null ? record.organization_id : 0; 
             relationship.IsActive = record.is_active;
             return relationship;
         }

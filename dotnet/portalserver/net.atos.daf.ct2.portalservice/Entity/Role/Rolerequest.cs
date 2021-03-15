@@ -11,7 +11,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Role
         public int[] FeatureIds { get; set; }
         public int Createdby { get; set; }
         public int Level { get; set; }
-        public long Createdat { get; set; }
+        public long CreatedAt { get; set; }
     }
 
     public class Roleupdaterequest

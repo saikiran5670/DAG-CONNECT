@@ -70,12 +70,12 @@ namespace net.atos.daf.ct2.featureservice
                 FeaturesListResponce features = new FeaturesListResponce();
                 if (featurefilterRequest.FeatureSetID != 0)
                 {
-                    var listfeatures = await _FeaturesManager.GetFeatureIdsForFeatureSet(featurefilterRequest.FeatureSetID,featurefilterRequest.LangaugeCode);
+                    var listfeatures = await _FeaturesManager.GetFeatureIdsForFeatureSet(featurefilterRequest.FeatureSetID);
                     foreach (var item in listfeatures)
                     {
                         FeatureRequest ObjResponce = new FeatureRequest();
                         ObjResponce.Id = item.Id;
-                        ObjResponce.Name = item.Value == null ? item.Name : item.Value;
+                        ObjResponce.Name = item.Name;
                         ObjResponce.State = item.state == "I" ? FeatureState.Inactive : FeatureState.Active;
                         ObjResponce.Key = item.Key == null ? "" : item.Key;
                         ObjResponce.Type = item.Type.ToString();
@@ -87,12 +87,12 @@ namespace net.atos.daf.ct2.featureservice
                 }
                 else
                 {
-                    var feature = await _FeaturesManager.GetFeatures(featurefilterRequest.RoleID, featurefilterRequest.OrganizationID, featurefilterRequest.FeatureID, featurefilterRequest.Level, '0',featurefilterRequest.LangaugeCode);
+                    var feature = await _FeaturesManager.GetFeatures(featurefilterRequest.RoleID, featurefilterRequest.OrganizationID, featurefilterRequest.FeatureID, featurefilterRequest.Level, '0');
                     foreach (var item in feature)
                     {
                         FeatureRequest ObjResponce = new FeatureRequest();
                         ObjResponce.Id = item.Id;
-                        ObjResponce.Name = item.Value == null ? item.Name : item.Value ;
+                        ObjResponce.Name = item.Name;
                         //ObjResponce.Status = item.Is_Active;
                         //ObjResponce.State = (FeatureState)Enum.Parse(typeof(FeatureState), item.state.ToString().ToUpper());
                         ObjResponce.State = item.state == "I" ? FeatureState.Inactive : FeatureState.Active;
@@ -147,13 +147,13 @@ namespace net.atos.daf.ct2.featureservice
         {
             try
             {
-                var listfeatures = await _FeaturesManager.GetDataAttributes(Request.LangaugeCode);
+                var listfeatures = await _FeaturesManager.GetDataAttributes();
                 DataAttributeResponceList Dataresponce = new DataAttributeResponceList();
                 foreach (var item in listfeatures)
                 {
                     DataAttributeResponce responce = new DataAttributeResponce();
                     responce.Id = item.ID;
-                    responce.Name = item.Value == null ? item.Name : item.Value;
+                    responce.Name = item.Name;
                     responce.Description = item.Description == null ? "" : item.Description;
                     responce.Key = item.Key == null ? "" : item.Key;
                     Dataresponce.Responce.Add(responce);

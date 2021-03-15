@@ -19,11 +19,13 @@ export class EditDriverDetailsComponent implements OnInit {
   selectedConsentType: any = '';
   duplicateEmailMsg: boolean = false;
   accountOrganizationId: any = 0;
+  accountId: any = 0;
 
   constructor(private _formBuilder: FormBuilder, private driverService: DriverService) { }
 
   ngOnInit() {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.driverFormGroup = this._formBuilder.group({
       driverId: new FormControl({value: null, disabled: true}),
       emailId: ['', [Validators.required, Validators.email]],
@@ -48,7 +50,7 @@ export class EditDriverDetailsComponent implements OnInit {
     this.driverFormGroup.get('emailId').setValue(this.driverData.email);
     this.driverFormGroup.get('firstName').setValue(this.driverData.firstName);
     this.driverFormGroup.get('lastName').setValue(this.driverData.lastName);
-    this.selectedConsentType = this.driverData.status;
+    this.selectedConsentType = this.driverData.optIn; //status
   }
 
   getBreadcum(actionType: any){
@@ -78,13 +80,14 @@ export class EditDriverDetailsComponent implements OnInit {
     let objData: any = {
       id: this.driverData.id,
       organizationId: this.driverData.organizationId,
-      driverIdExt: this.driverFormGroup.controls.driverIdExt.value,
+      driverIdExt: this.driverFormGroup.controls.driverId.value,
       email: this.driverFormGroup.controls.emailId.value,
       firstName: this.driverFormGroup.controls.firstName.value,
       lastName: this.driverFormGroup.controls.lastName.value,
-      status: this.selectedConsentType,
-      isActive: this.driverData.isActive, 
-      modifiedBy: 0
+      //status: this.selectedConsentType,
+      optIn: this.selectedConsentType,
+      //isActive: true, 
+      modifiedBy: this.accountId // 0
     }
     this.driverService.updateDriver(objData).subscribe((drv: any) => {
       let drvId: any = 0;

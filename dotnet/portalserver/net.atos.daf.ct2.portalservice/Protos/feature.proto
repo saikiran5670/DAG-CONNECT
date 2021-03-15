@@ -26,7 +26,6 @@ service FeatureService {
 }
 message DataAtributeRequest
 {
-string LangaugeCode = 1;
 }
  message FeatureRequest
   {
@@ -95,7 +94,6 @@ string LangaugeCode = 1;
   int32 RoleID=3;
   int32 OrganizationID=4;
   int32 FeatureID = 5;
-  string LangaugeCode = 7;
   }
 
   message FeaturesResponce

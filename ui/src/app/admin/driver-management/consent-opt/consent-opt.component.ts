@@ -16,6 +16,7 @@ export class ConsentOptComponent implements OnInit {
   totalDrivers: number = 0;
   closePopup: boolean = true;
   accountOrganizationId: any = 0;
+  accountId: any = 0;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     translationData: any,
@@ -31,6 +32,7 @@ export class ConsentOptComponent implements OnInit {
 
   ngOnInit() { 
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
   }
 
   getConsentMsg(optValue: any){
@@ -88,9 +90,10 @@ export class ConsentOptComponent implements OnInit {
         email: this.data.driverData.email,
         firstName: this.data.driverData.firstName,
         lastName: this.data.driverData.lastName,
-        status: this.data.consentType,
-        isActive: this.data.driverData.isActive,
-        modifiedBy: 0
+        //status: this.data.consentType,
+        optIn: this.data.consentType,
+        //isActive: true,
+        modifiedBy: this.accountId //0
       }
       this.driverService.updateDriver(objData).subscribe((drv: any) => {
         this.getDriverList();

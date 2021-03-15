@@ -32,7 +32,7 @@ export class DriverManagementComponent implements OnInit {
   dataSource: any;
   initData: any = [];
   importDriverPopup: boolean = false;
-  displayedColumns: string[] = ['driverIdExt','firstName','email','status','action'];
+  displayedColumns: string[] = ['driverIdExt','firstName','email','optIn','action'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   importDriverFormGroup: FormGroup;
@@ -210,11 +210,11 @@ export class DriverManagementComponent implements OnInit {
         break;
       }
       case "Opt-In":{
-        data = this.initData.filter((item: any) => item.status == 'I');
+        data = this.initData.filter((item: any) => item.status == 'I'); //optIn
         break;
       }
       case "Opt-Out":{
-        data = this.initData.filter((item: any) => item.status == 'U');
+        data = this.initData.filter((item: any) => item.status == 'U'); //optIn
         break;
       }
     }
@@ -513,10 +513,8 @@ export class DriverManagementComponent implements OnInit {
     }
     if(item.tableData){
       this.initData = item.tableData;
-      this.updateGridData(this.initData);
-    }else{
-      this.updateGridData(this.initData);
     }
+    this.updateGridData(this.initData);
   }
 
   onCloseMsg(){
@@ -529,7 +527,7 @@ export class DriverManagementComponent implements OnInit {
   }
 
   changeOptStatus(driverData: any){ //--- single opt-in/out mode
-    this.callToCommonTable(driverData, false, driverData.status);
+    this.callToCommonTable(driverData, false, driverData.optIn); //status
   }
   
   onConsentClick(consentType: string){ //--- All opt-in/out mode

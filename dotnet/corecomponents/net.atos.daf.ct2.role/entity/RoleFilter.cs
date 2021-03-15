@@ -10,5 +10,6 @@ namespace net.atos.daf.ct2.role.entity
     public bool IsGlobal { get; set; }
     public int AccountId { get; set; }
     public bool Is_Active { get; set; }
+        public string LangaugeCode { get; set; }
     }
 }
