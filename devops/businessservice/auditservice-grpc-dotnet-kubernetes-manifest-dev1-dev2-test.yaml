@@ -47,6 +47,7 @@ spec:
           capabilities:
             drop:
              - all
+            add: ["CHOWN", "SYS_TIME"]
         resources:
           limits:
             cpu: 100m
