@@ -232,34 +232,7 @@ namespace net.atos.daf.ct2.driver
                 throw ex;
             }                  
         }
-        // public async Task<Driver> UpdateDriver(Driver driver)
-        // {
-        //     try{
-        //      var parameter = new DynamicParameters();
-        //                  parameter.Add("@id",driver.Id);
-        //                //  parameter.Add("@organization_id",driver.Organization_id);
-        //                 // parameter.Add("@opt_in",driver.opt_in);
-        //                  parameter.Add("@email",driver.Email.ToString());
-        //                  parameter.Add("@first_name",driver.FirstName.ToString());
-        //                  parameter.Add("@last_name",driver.LastName.ToString());
-        //                 // parameter.Add("@status",driver.Status);
-        //                 //  parameter.Add("@is_active",driver.IsActive);
-        //                 //  parameter.Add("@modified_at",UTCHandling.GetUTCFromDateTime(System.DateTime.Now));   
-        //                 //  parameter.Add("@modified_by",1);
-
-        //     var queryUpdate = @"update master.driver set first_name=@first_name, last_name=@last_name, email=@email
-	    //                              WHERE id= @id RETURNING id;";
-                 
-        //     return await dataAccess.ExecuteScalarAsync<Driver>(queryUpdate, parameter);   
-        //     }     
-        //     catch (Exception ex)
-        //     {
-        //         log.Info("Driver update method in repository failed :" );
-        //         log.Error(ex.ToString());
-        //         throw ex;
-        //     }                  
-        // }               
-        
+       
 
       public async Task<Driver> UpdateDriver(Driver driver)
         {
@@ -267,18 +240,15 @@ namespace net.atos.daf.ct2.driver
              var parameter = new DynamicParameters();
                          parameter.Add("@id",driver.Id);
                          parameter.Add("@organization_id",driver.Organization_id);
-                         parameter.Add("@opt_in",driver.opt_in);
-                         parameter.Add("@email",driver.Email.ToString());
-                         parameter.Add("@first_name",driver.FirstName.ToString());
-                         parameter.Add("@last_name",driver.LastName.ToString());
-                         parameter.Add("@status",driver.Status);
-                         parameter.Add("@is_active",driver.IsActive);
+                         parameter.Add("@email",driver.email.ToString());
+                         parameter.Add("@first_name",driver.first_name.ToString());
+                         parameter.Add("@last_name",driver.last_name.ToString());
+                         parameter.Add("@status",driver.Status);                        
                          parameter.Add("@modified_at",UTCHandling.GetUTCFromDateTime(System.DateTime.Now));   
-                         parameter.Add("@modified_by",1);
+                         parameter.Add("@modified_by",driver.modified_by);
 
-            var queryUpdate = @"update master.driver set  first_name=@first_name, last_name=@last_name, email=@email,opt_in=@opt_in,status=@status,
-             is_active=@is_active,modified_at=@modified_at,modified_by=@modified_by
-	                                 WHERE id= @id and organization_id=@organization_id and is_active=true RETURNING id;";
+            var queryUpdate = @"update master.driver set  first_name=@first_name, last_name=@last_name, email=@email,status=@status,
+             modified_at=@modified_at,modified_by=@modified_by WHERE id= @id and organization_id=@organization_id and is_active=true RETURNING id;";
             int drvID= await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameter);  
             return driver;            
             }     
@@ -366,15 +336,15 @@ namespace net.atos.daf.ct2.driver
                          var parameter = new DynamicParameters();
                          parameter.Add("@organization_id",orgid);
                          parameter.Add("@driver_id_ext",item.Driver_id_ext);                     
-                         parameter.Add("@first_name",item.FirstName);
-                         parameter.Add("@last_name",item.LastName);
-                         parameter.Add("@email",item.Email);
+                         parameter.Add("@first_name",item.first_name);
+                         parameter.Add("@last_name",item.last_name);
+                         parameter.Add("@email",item.email);
                          parameter.Add("@status",status);                        
                          parameter.Add("@opt_in",orgOptInStatus);
                          parameter.Add("@modified_at",UTCHandling.GetUTCFromDateTime(System.DateTime.Now));   
                          parameter.Add("@modified_by",item.modified_by);
                          parameter.Add("@created_at",UTCHandling.GetUTCFromDateTime(System.DateTime.Now));   
-
+                         
                          var parameterduplicate = new DynamicParameters();
                          parameterduplicate.Add("@driver_id_ext", item.Driver_id_ext);             
                          var query = @"SELECT id FROM master.driver where driver_id_ext=@driver_id_ext";
@@ -399,9 +369,9 @@ namespace net.atos.daf.ct2.driver
                          objDriver.ReturnMessage="Inserted";  
                     }
                     objDriver.DriverID= item.Driver_id_ext;
-                    objDriver.FirstName= item.FirstName;    
-                    objDriver.LastName= item.LastName;    
-                    objDriver.Email= item.Email; 
+                    objDriver.FirstName= item.first_name;    
+                    objDriver.LastName= item.last_name;    
+                    objDriver.Email= item.email; 
                     objDriver.Status= "PASS"; 
                     lstdrivers.Add(objDriver);  
                 }                
