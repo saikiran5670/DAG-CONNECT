@@ -8,9 +8,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
 {
     public class OrgRelationshipMapper
     {
-        internal OrgRelationshipCreateRequest ToOrgRelationshipRequest(OrgRelationshipPortalRequest request)
+        internal RelationshipCreateRequest ToOrgRelationshipRequest(OrgRelationshipPortalRequest request)
         {
-            var orgRelationshipRequest = new OrgRelationshipCreateRequest()
+            var orgRelationshipRequest = new RelationshipCreateRequest()
             {
                 Id = request.Id,
                 Code = request.Code,

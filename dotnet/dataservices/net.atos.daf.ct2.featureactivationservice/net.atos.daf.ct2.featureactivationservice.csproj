@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.account\net.atos.daf.ct2.account.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.subscription\net.atos.daf.ct2.subscription.csproj" />
   </ItemGroup>
 

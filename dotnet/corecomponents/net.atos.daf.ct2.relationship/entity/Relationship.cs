@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace net.atos.daf.ct2.portalservice.Entity.Organization
+namespace net.atos.daf.ct2.relationship.entity
 {
-    public class OrgRelationshipPortalRequest
+    public class Relationship
     {
         public int Id { get; set; }
         [Required]
@@ -18,7 +17,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
         public string Description { get; set; }
         [Required]
         public List<string> Features { get; set; }
-        [Required]
         public bool IsActive { get; set; }
     }
 }
