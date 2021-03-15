@@ -32,7 +32,7 @@ export class DriverManagementComponent implements OnInit {
   dataSource: any;
   initData: any = [];
   importDriverPopup: boolean = false;
-  displayedColumns: string[] = ['id','firstName','email','status','action'];
+  displayedColumns: string[] = ['driverIdExt','firstName','email','status','action'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   importDriverFormGroup: FormGroup;
@@ -67,6 +67,7 @@ export class DriverManagementComponent implements OnInit {
   rejectedDriverList: any = [];
   driverDialogRef: MatDialogRef<CommonTableComponent>;
   excelEmptyMsg: boolean = false;
+  newDriverCount: any = 0;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService, private translationService: TranslationService, private driverService: DriverService) { 
       this.defaultTranslation();
@@ -188,14 +189,11 @@ export class DriverManagementComponent implements OnInit {
   loadDriverData(){
     let drvId: any = 0;
     this.driverService.getDrivers(this.accountOrganizationId, drvId).subscribe((driverList: any) => {
-      // driverList = {
-      //   "code": 0,
-      //   "message": "Get",
-      //   "driver": [
+      // driverList = [
       //     {
       //       "id": 13,
       //       "organizationId": 10,
-      //       "driverIdExt": "",
+      //       "driverIdExt": "UK 1234567890123",
       //       "email": "driver13@gmail.com",
       //       "firstName": "Driver",
       //       "lastName": "One",
@@ -209,7 +207,7 @@ export class DriverManagementComponent implements OnInit {
       //     {
       //       "id": 14,
       //       "organizationId": 10,
-      //       "driverIdExt": "",
+      //       "driverIdExt": "I  1234567890123",
       //       "email": "driver14@gmail.com",
       //       "firstName": "Driver",
       //       "lastName": "Two",
@@ -223,7 +221,7 @@ export class DriverManagementComponent implements OnInit {
       //     {
       //       "id": 15,
       //       "organizationId": 10,
-      //       "driverIdExt": "",
+      //       "driverIdExt": "NL 1234567890123",
       //       "email": "driver15@gmail.com",
       //       "firstName": "Driver",
       //       "lastName": "Three",
@@ -237,7 +235,7 @@ export class DriverManagementComponent implements OnInit {
       //     {
       //       "id": 16,
       //       "organizationId": 10,
-      //       "driverIdExt": "",
+      //       "driverIdExt": "US 1234567890123",
       //       "email": "driver16@gmail.com",
       //       "firstName": "Driver",
       //       "lastName": "Four",
@@ -251,7 +249,7 @@ export class DriverManagementComponent implements OnInit {
       //     {
       //       "id": 17,
       //       "organizationId": 10,
-      //       "driverIdExt": "",
+      //       "driverIdExt": "FR 1234567890123",
       //       "email": "driver17@gmail.com",
       //       "firstName": "Driver",
       //       "lastName": "Five",
@@ -262,9 +260,8 @@ export class DriverManagementComponent implements OnInit {
       //       "modifiedBy": "",
       //       "createdAt": ""
       //     }
-      //   ]
-      // };
-      this.initData = driverList.driver;
+      // ];
+      this.initData = driverList; // driverList.driver
       this.onConsentChange(this.selectedConsentType);
     });
   }
@@ -297,7 +294,7 @@ export class DriverManagementComponent implements OnInit {
   }
 
   updateGridData(tableData: any){
-   // tableData = this.getNewTagData(tableData);
+    //tableData = this.getNewTagData(tableData);
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
@@ -346,6 +343,7 @@ export class DriverManagementComponent implements OnInit {
     });
     console.log("Parse excel driver:: ", driverAPIData)
     let finalList: any = this.validateFields(driverAPIData);
+    this.rejectedDriverList = finalList.invalidDriverList;
     console.log("Validated driver:: ", finalList)
     if(finalList.validDriverList.length > 0){
       let objData = [
@@ -353,22 +351,27 @@ export class DriverManagementComponent implements OnInit {
           drivers: finalList.validDriverList,
           organizationId: this.accountOrganizationId
         }
-      ];
-      //------ TODO: import api called ----//
-      //this.driverService.importDrivers(objData).subscribe((res: any) => {
-        this.importDriverPopup = true;
-        this.selectedConsentType = 'All';
-        this.loadDriverData(); //-- load driver list
-        this.setConsentDropdown();
-      //});
+      ]
+      this.driverService.importDrivers(objData).subscribe((importDrvList: any) => {
+        if(importDrvList && importDrvList.driver.length > 0){
+          let filterPassDrv: any = importDrvList.driver.filter(item => item.status == 'PASS');
+          let filterFailDrv: any = importDrvList.driver.filter(item => item.status == 'FAIL');
+          if(filterFailDrv && filterFailDrv.length > 0){ //- Fail drivers added
+            Array.prototype.push.apply(this.rejectedDriverList, filterFailDrv); 
+          }
+          this.importDriverPopup = true;
+          this.selectedConsentType = 'All';
+          this.loadDriverData(); //-- load driver list
+          this.setConsentDropdown();
+        }
+      });
     }
     else{
       this.importDriverPopup = true;
-      this.importedDriverlist = finalList.validDriverList;
-      this.rejectedDriverList = finalList.invalidDriverList;
+      //this.importedDriverlist = finalList.validDriverList;
+      //this.rejectedDriverList = finalList.invalidDriverList;
     }
-    this.importedDriverlist = finalList.validDriverList;
-    this.rejectedDriverList = finalList.invalidDriverList;
+    this.newDriverCount = (this.filelist.length - this.rejectedDriverList.length); // new = (total - rejected)
   }
 
   validateFields(driverList: any){
@@ -386,7 +389,7 @@ export class DriverManagementComponent implements OnInit {
             let objData: any = this.driveIdValidation(value);  
             driverId = objData.status;
             if(!driverId){
-              item.failReason = objData.reason;
+              item.returnMassage = objData.reason;
             }
             break;
           }
@@ -394,7 +397,7 @@ export class DriverManagementComponent implements OnInit {
             let objData: any = this.nameValidation(value, 30, 'firstName'); 
             fname = objData.status;
             if(!fname){
-              item.failReason = objData.reason;
+              item.returnMassage = objData.reason;
             }
             break;
           }
@@ -402,7 +405,7 @@ export class DriverManagementComponent implements OnInit {
             let objData: any = this.nameValidation(value, 20, 'lastName'); 
             lname = objData.status;
             if(!lname){
-              item.failReason = objData.reason;
+              item.returnMassage = objData.reason;
             }
             break;
           }
@@ -410,7 +413,7 @@ export class DriverManagementComponent implements OnInit {
             let objData: any = this.emailValidation(value); 
             email = objData.status;
             if(!email){
-              item.failReason = objData.reason;
+              item.returnMassage = objData.reason;
             }
             break;
           }
@@ -583,8 +586,8 @@ export class DriverManagementComponent implements OnInit {
       this.successMsgBlink(item.msg);
     }
     if(item.tableData){
-      this.initData = item.tableData.driver;
-      this.updateGridData(item.tableData.driver);
+      this.initData = item.tableData; //-- item.tableData.driver
+      this.updateGridData(this.initData);
     }else{
       this.updateGridData(this.initData);
     }
@@ -618,6 +621,14 @@ export class DriverManagementComponent implements OnInit {
       consentType: consentType
     }
     this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
+    this.dialogRef.afterClosed().subscribe(res => {
+      if(res.tableData && res.tableData.length > 0){
+        this.selectedConsentType = 'All';
+        this.setConsentDropdown();
+        this.initData = res.tableData; //-- item.tableData.driver
+        this.updateGridData(this.initData);
+      }
+    });
   }
 
   showDriverListPopup(driverList: any){ 
@@ -626,7 +637,7 @@ export class DriverManagementComponent implements OnInit {
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
       tableData: driverList,
-      colsList: ['driverID','firstName','lastName','email','failReason'],
+      colsList: ['driverID','firstName','lastName','email','returnMassage'],
       colsName: [this.translationData.lblDriverID || 'Driver ID', this.translationData.lblFirstName || 'First Name', this.translationData.lblLastName || 'Last Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblFailReason || 'Fail Reason'],
       tableTitle: this.translationData.lblRejectedDriverDetails || 'Rejected Driver Details'
     }

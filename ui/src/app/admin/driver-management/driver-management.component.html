@@ -70,7 +70,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="start space-between">
                 <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ translationData.lblImported || 'Imported' }} <span style='color: green'>{{ importedDriverlist.length }} {{ translationData.lblnewdrivers || 'new drivers' }}</span></span>
+                    <span>{{ translationData.lblImported || 'Imported' }} <span style='color: green'>{{ newDriverCount }} {{ translationData.lblnewdrivers || 'new drivers' }}</span></span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="start space-between">
@@ -118,12 +118,12 @@
                 <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
                 <div *ngIf='initData.length > 0'>
                     <mat-table [dataSource]="dataSource" matSort>
-                        <ng-container matColumnDef="id">
+                        <ng-container matColumnDef="driverIdExt">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverId || 'Driver Id' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
                                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-                                <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.id }}</span>
+                                <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.driverIdExt }}</span>
                             </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="firstName">
