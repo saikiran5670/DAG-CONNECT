@@ -80,6 +80,7 @@ export class NewUserStepComponent implements OnInit {
   linkFlag: boolean = false;
   linkAccountId: any = 0;
   imageError= '';
+  prefId: any = 0;
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -269,6 +270,7 @@ export class NewUserStepComponent implements OnInit {
         this.firstFormGroup.controls['loginEmail'].disable();
         this.setDefaultAccountInfo(linkAccountInfo.account);
         this.linkAccountId = linkAccountInfo.account.id; //--- link account id
+        this.prefId = linkAccountInfo.account.preferenceId;
         if(linkAccountInfo.preference){
           this.setDefaultSetting(linkAccountInfo.preference);
         }
@@ -595,7 +597,7 @@ export class NewUserStepComponent implements OnInit {
       }
       this.accountService.updateAccount(infoObj).subscribe((data)=>{
         let prefObj: any = {
-          id: 0,
+          id: this.prefId,
           refId: this.linkAccountId, //-- link account id
           languageId: this.firstFormGroup.controls.language.value ? this.firstFormGroup.controls.language.value : 24,
           timezoneId: this.firstFormGroup.controls.timeZone.value ? this.firstFormGroup.controls.timeZone.value : 17,
