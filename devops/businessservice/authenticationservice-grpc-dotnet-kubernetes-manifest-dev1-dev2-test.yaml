@@ -37,9 +37,12 @@ spec:
       - name: authenticationservice-grpc-container
         image: #{acrurl}#/authenticationservice-grpc
         imagePullPolicy: "Always"
+        volumeMounts:
+        - name: log
+          mountPath: /app/log
         securityContext:
           allowPrivilegeEscalation: false
-          #readOnlyRootFilesystem: true
+          readOnlyRootFilesystem: true
           capabilities:
             drop:
              - all
@@ -57,6 +60,9 @@ spec:
           value: "0"
         ports:
           - containerPort: 8080
+      volumes:
+      - name: log
+        emptyDir: {}
       nodeSelector:
         agentpool: npuser01         
   selector:
