@@ -61,6 +61,10 @@ spec:
           value: "0"
         ports:
           - containerPort: 8080
+      initContainers:
+      - name: volume-mount-hack
+        image: busybox
+        command: ["sh", "-c", "chown -R 10001:10001 /app/log"]    
       volumes:
       - name: log
         emptyDir: {}
