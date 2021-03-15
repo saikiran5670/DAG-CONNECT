@@ -39,7 +39,7 @@ spec:
         imagePullPolicy: "Always"
         volumeMounts:
         - name: log
-          mountPath: /app/log
+          mountPath: /log
         securityContext:
           allowPrivilegeEscalation: false
           #readOnlyRootFilesystem: true
