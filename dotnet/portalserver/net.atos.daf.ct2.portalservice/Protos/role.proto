@@ -57,7 +57,7 @@ message RoleRequest {
     int32 AccountId = 3;
     bool Active =4;
     bool IsGlobal = 9;
-  
+  string LangaugeCode = 5;
   }
 
   message FeaturesRequest
