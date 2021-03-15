@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.subscription.repository
             return data;
         }
 
-        public async Task<SubscriptionResponse> Subscribe(Subscription objSubscription)
+        public async Task<SubscriptionResponse> Subscribe(SubscriptionActivation objSubscription)
         {
             log.Info("Subscribe Subscription method called in repository");
             try
@@ -159,5 +159,142 @@ namespace net.atos.daf.ct2.subscription.repository
                 throw ex;
             }
         }
+
+        public async Task<Subscription> Create(Subscription subscription)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                //parameter.Add("@id", subscription.Id);
+                parameter.Add("@orderid", subscription.OrderId);
+                // parameter.Add("@orderid", Subscription.OrderId);
+                //parameter.Add("@organizationid", Subscription.OrganizationId);
+                // parameter.add("@organizationdate", Subscription.OrganizationDate )
+
+                string query = @"insert into master.subscription(id,orderid,organizationid,organizationdate) " +
+                              "values(@id,@orderid,@organizationid,@organizationdate,true) RETURNING id";
+
+                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                subscription.Id = id;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return subscription;
+        }
+        public async Task<Subscription> Update(Subscription subscription)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", subscription.Id);
+                parameter.Add("@orderid", subscription.OrderId);
+                parameter.Add("@organizationid", subscription.OrganizationId);
+                parameter.Add("@organizationdate", subscription.OrganizationDate);
+
+                string query = @"update master.subscription set orderid= @orderid, organizationid = @organizationid,
+                                organizationdate = @organizationdate,
+                                where id = @id RETURNING id";
+
+                subscription.Id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return subscription;
+        }
+
+
+        public async Task<Subscription> Get(int subscriptionId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", subscriptionId);
+
+                string query = string.Empty;
+                query = "select * from master.subscription where id=@id";
+                dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                return Map(result);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private Subscription Map(dynamic record)
+        {
+            Subscription subscription = new Subscription();
+            subscription.Id = record.id;
+            subscription.OrderId = record.orderid;
+            subscription.OrganizationId = record.organizationid;
+            subscription.OrganizationDate = record.organizationdate;
+            return subscription;
+        }
+        public async Task<Subscription> Get(int OrganizationId, int VehicleId, char Status, DateTime StartDate, DateTime EndDate)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@organizationId", OrganizationId);
+                parameter.Add("@vehicleId", VehicleId);
+                parameter.Add("@status", Status);
+                parameter.Add("@startdate", StartDate);
+                parameter.Add("@enddate", EndDate);
+                string query = string.Empty;
+                query = "select * from master.subscription where organizationid=@organizationid,vehicleid=@vehicleid,status=@status,startdate=@statrtdate,enddate=@enddate";
+                dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                return Map(result);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private Subscription Map1(dynamic record)
+        {
+            Subscription subscription = new Subscription();
+            subscription.Id = record.id;
+            subscription.OrderId = record.orderid;
+            subscription.OrganizationId = record.organizationid;
+            subscription.OrganizationDate = record.organizationdate;
+            return subscription;
+        }
+        public async Task<Subscription> Get(char Status, int VehicleGroupID, int VehicleId,  DateTime StartDate, DateTime EndDate)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@vehiclegroupid", VehicleGroupID);
+                parameter.Add("@vehicleid", VehicleId);
+                parameter.Add("@status", Status);
+                parameter.Add("@startdate", StartDate);
+                parameter.Add("@enddate", EndDate);
+                string query = string.Empty;
+                query = "select * from master.subscription where vehiclegroupid=@vehiclegroupid,vehicleid=@vehicleid,status=@status,startdate=@statrtdate,enddate=@enddate";
+                dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                return Map(result);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private Subscription Map2(dynamic record)
+        {
+            Subscription subscription = new Subscription();
+            subscription.Id = record.id;
+            subscription.OrderId = record.orderid;
+            subscription.OrganizationId = record.organizationid;
+            subscription.OrganizationDate = record.organizationdate;
+            return subscription;
+        }
+
     }
 }

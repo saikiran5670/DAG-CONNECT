@@ -45,8 +45,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         //OrgRelationship
         [HttpPost]
-        [Route("orgrelationship/create")]
-        public async Task<IActionResult> CreateOrgRelationship(OrgRelationshipPortalRequest request)
+        [Route("relationship/create")]
+        public async Task<IActionResult> CreateRelationship(RelationshipPortalRequest request)
         {
             try
             {
@@ -57,30 +57,30 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(400, "Please provide package features");
+                    return StatusCode(400, "Please provide relationship features");
                 }
                 
                 if (request.FeaturesetId > 0)
                 {                   
-                    logger.LogInformation("Organization relationship create function called ");
+                    logger.LogInformation("Relationship create function called ");
                     if (request.OrganizationId == 0)
                     {
                         return StatusCode(400, "Please provide OrganizationId:");
                     }
                     if (string.IsNullOrEmpty(request.Name) || (request.Name.Trim().Length < 1))
                     {
-                        return StatusCode(400, "Please provide organization relationship name:");
+                        return StatusCode(400, "Please provide relationship name:");
                     }
 
                     var objRequest = _orgRelationshipMapper.ToOrgRelationshipRequest(request);
-                    var orgResponse = await organizationClient.CreateOrgRelationshipAsync(objRequest);
-                    if (orgResponse.OrgRelation.Id < 1)
+                    var orgResponse = await organizationClient.CreateRelationshipAsync(objRequest);
+                    if (orgResponse.Relationship.Id < 1)
                     {
-                        return StatusCode(400, "This organization relationship is already exist :" + request.Id);
+                        return StatusCode(400, "Relationship not created. ");
                     }
                     else
                     {
-                        return Ok("Organization relationship Created :" + orgResponse);
+                        return Ok("Relationship Created :" + orgResponse);
                     }
                 }
                 else
@@ -102,22 +102,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
 
         [HttpPut]
-        [Route("orgrelationship/update")]
-        public async Task<IActionResult> UpdateOrgRelationship(OrgRelationshipPortalRequest request)
+        [Route("relationship/update")]
+        public async Task<IActionResult> UpdateRelationship(RelationshipPortalRequest request)
         {
             try
             {
 
                 if (request.FeaturesetId > 0)
                 {
-                    logger.LogInformation("Organization relationship update function called ");
+                    logger.LogInformation("Relationship update function called ");
                     if (request.OrganizationId == 0 || request.Id == 0)
                     {
                         return StatusCode(400, "Please provide OrganizationId and org relationship id:");
                     }
                     if (string.IsNullOrEmpty(request.Name) || (request.Name.Trim().Length < 1))
                     {
-                        return StatusCode(400, "Please provide organization relationship name:");
+                        return StatusCode(400, "Please provide  relationship name:");
                     }
                     if (request.Features.Count >= 1)
                     {
@@ -129,14 +129,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         return StatusCode(400, "Please provide relationship features");
                     }
                     var objRequest = _orgRelationshipMapper.ToOrgRelationshipRequest(request);
-                    var orgResponse = await organizationClient.UpdateOrgRelationshipAsync(objRequest);
-                    if (orgResponse.OrgRelation.Id < 1)
+                    var orgResponse = await organizationClient.UpdateRelationshipAsync(objRequest);
+                    if (orgResponse.Relationship.Id < 1)
                     {
-                        return StatusCode(400, "Organization relationship not updated :" + request.Id);
+                        return StatusCode(400, "Relationship not updated :" + request.Id);
                     }
                     else
                     {
-                        return Ok("Organization relationship updated :" + orgResponse);
+                        return Ok("Relationship updated :" + orgResponse);
                     }
                 }
                 else
@@ -162,14 +162,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
 
         [HttpGet]
-        [Route("orgrelationship/get")]
-        public async Task<IActionResult> GetOrgRelationship([FromQuery] OrgRelationshipCreateRequest request)
+        [Route("relationship/get")]
+        public async Task<IActionResult> GetRelationship([FromQuery] RelationshipCreateRequest request)
         {
             try
             {             
                 logger.LogInformation("Organization relationship get function called ");
-                var orgResponse = await organizationClient.GetOrgRelationshipAsync(request);
-                orgResponse.OrgRelationshipList.Where(S => S.Featuresetid > 0)
+                var orgResponse = await organizationClient.GetRelationshipAsync(request);
+                orgResponse.RelationshipList.Where(S => S.Featuresetid > 0)
                                                .Select(S => { S.Features.AddRange(_featureSetMapper.GetFeatures(S.Featuresetid).Result); return S; }).ToList();
                 return Ok(orgResponse);
             }
@@ -182,28 +182,28 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpDelete]
-        [Route("orgrelationship/delete")]
-        public async Task<IActionResult> DeleteOrgRelationship(int orgRelationshipId)
+        [Route("relationship/delete")]
+        public async Task<IActionResult> DeleteRelationship(int relationshipId)
         {
             try
             {
                 // Validation                 
-                if (orgRelationshipId <= 0)
+                if (relationshipId <= 0)
                 {
                     return StatusCode(400, "OrgRelationship id is required.");
                 }
-                var orgrelationshipRequest = new OrgRelationshipDeleteRequest();
-                orgrelationshipRequest.Id = orgRelationshipId;
-                var response = await organizationClient.DeleteOrgRelationshipAsync(orgrelationshipRequest);
-                response.OrgRelationshipRequest = orgrelationshipRequest;
+                var relationshipRequest = new RelationshipDeleteRequest();
+                relationshipRequest.Id = relationshipId;
+                var response = await organizationClient.DeleteRelationshipAsync(relationshipRequest);
+                response.RelationshipRequest = relationshipRequest;
                 if (response != null && response.Code ==organizationservice.Responcecode.Success)
                     return Ok(response);
                 else
-                    return StatusCode(404, "OrgRelationship not configured.");
+                    return StatusCode(404, "Relationship not configured.");
             }
             catch (Exception ex)
             {
-                logger.LogError("Error in OrgRelationship service:delete OrgRelationship with exception - " + ex.Message + ex.StackTrace);
+                logger.LogError("Error in Relationship service:delete Relationship with exception - " + ex.Message + ex.StackTrace);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }

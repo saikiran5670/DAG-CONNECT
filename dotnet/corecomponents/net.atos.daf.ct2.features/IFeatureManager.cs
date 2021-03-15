@@ -9,8 +9,8 @@ namespace net.atos.daf.ct2.features
     {
         Task<int> AddFeatureSet(FeatureSet featureSet);
         Task<IEnumerable<FeatureSet>> GetFeatureSet(int FeatureSetId,bool Active);
-         Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, int FeatureId, int level, char? Featuretype);
-        Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int GetFeatureIdsForFeatureSet);
+         Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, int FeatureId, int level, char? Featuretype, string Langaugecode);
+        Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int GetFeatureIdsForFeatureSet, string Langaugecode);
         Task<DataAttributeSet> GetDataAttributeset(int DataAttributeSetID);
         Task<bool> DeleteFeatureSet(int FeatureSetId);
         Task<FeatureSet> CreateFeatureSet(FeatureSet featureSet);
@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.features
         //Task<int> CreateDataattributeSetFeature(Feature feature, int InserteddataAttributeSetID);
         Task<int> CreateDataattributeFeature(Feature feature);
         Task<Feature> UpdateFeature(Feature feature);
-        Task<IEnumerable<DataAttribute>> GetDataAttributes();
+        Task<IEnumerable<DataAttribute>> GetDataAttributes(string Langaugecode);
         Task<int> DeleteFeature(int FeatureId);
     }
 }

@@ -8,8 +8,8 @@ namespace net.atos.daf.ct2.driver.entity
         public int Organization_id { get; set; }        
         public string Driver_id_ext { get; set; }
       //  public string Salutation { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string first_name { get; set; }
+        public string last_name { get; set; }
      //   public long DateOfBith { get; set; }
         public string Status { get; set; }
         public Boolean IsActive { get; set; }
@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.driver.entity
         public long modified_at { get; set; }
         public int modified_by { get; set; }
         public long created_at { get; set; }
-        public string Email { get; set; }
+        public string email { get; set; }
     }
     public class DriverResponse
     {
