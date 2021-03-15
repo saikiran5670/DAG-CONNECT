@@ -319,6 +319,8 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                             ObjGroupRef.IsVehicleGroup = true;
                             ObjGroupRef.OrganizationId = item.OrganizationId;
                             ObjGroupRef.Description = item.Description;
+                            if (item.CreatedAt != null)
+                                ObjGroupRef.CreatedAt = Convert.ToInt64(item.CreatedAt);
                             ObjVehicleGroupRes.GroupRefDetails.Add(ObjGroupRef);
                         }
                     }
@@ -358,6 +360,8 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         ObjGroupRef.IsVehicleGroup = false;
                         ObjGroupRef.ModelId = item.ModelId == null ? "" : item.ModelId;
                         ObjGroupRef.OrganizationId = item.Organization_Id;
+                        if (item.CreatedAt != null)
+                            ObjGroupRef.CreatedAt = Convert.ToInt64(item.CreatedAt);
                         ObjVehicleGroupRes.GroupRefDetails.Add(ObjGroupRef);
                     }
                 }
@@ -704,5 +708,6 @@ namespace net.atos.daf.ct2.vehicleservice.Services
 
 
         }
+
     }
 }

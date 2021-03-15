@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.vehicle.test
 
         public vehiclerepositorytest()
         {
-            string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y\\97;Ssl Mode=Require;";
+            string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             _dataAccess = new PgSQLDataAccess(connectionString);
             _vehicleRepository = new VehicleRepository(_dataAccess);
             _groupRepository=new GroupRepository(_dataAccess);
@@ -40,7 +40,7 @@ namespace net.atos.daf.ct2.vehicle.test
            // Objvehicle.ManufactureDate = DateTime.Now;
            // Objvehicle.ChassisNo = "123545";
             Objvehicle.Status_Changed_Date = DateTime.Now;
-            Objvehicle.Status = VehicleStatusType.OptIn;
+            Objvehicle.Status = VehicleCalculatedStatus.Connected;
             Objvehicle.Termination_Date = DateTime.Now;
             Objvehicle.Vid = "F344334";
             Objvehicle.Type = VehicleType.SemiTrailer;
@@ -71,7 +71,7 @@ namespace net.atos.daf.ct2.vehicle.test
           //  Objvehicle.ManufactureDate = DateTime.Now;
           //  Objvehicle.ChassisNo = "123545";
             Objvehicle.Status_Changed_Date = DateTime.Now;
-            Objvehicle.Status = VehicleStatusType.OptIn;
+            Objvehicle.Status = VehicleCalculatedStatus.Connected;
             Objvehicle.Termination_Date = DateTime.Now;
             Objvehicle.Vid = "F344334";
             Objvehicle.Type = VehicleType.SemiTrailer;
@@ -330,18 +330,33 @@ namespace net.atos.daf.ct2.vehicle.test
 
         }
 
-        // [TestMethod]
-        // public void UpdateVehicleforCRM()
-        // {          
-        //     string vin="V22";
-        //     string tcuId="V22UpdatedManager";
-        //     string tcuactivation="true";
-        //     string referenceDateTime="04-04-2019";
-        //     var resultUpdatevehicle = _vehicleRepository.update(vin,tcuId,tcuactivation,referenceDateTime).Result;
-        //     Assert.IsNotNull(resultUpdatevehicle);
-        //   //  Assert.IsTrue(resultUpdatevehicle.ID > 0);
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for update vehicle for keyhandover event")]
+        [TestMethod]
+        public void UpdateOrgVehicleDetails()
+        {
+            Vehicle Objvehicle = new Vehicle();
 
-        // }
+            Objvehicle.Organization_Id = 10;
+            Objvehicle.VIN = "V001119";
+            Objvehicle.Status_Changed_Date = DateTime.Now;
+            //Objvehicle.Status = VehicleCalculatedStatus.Connected;
+            //Objvehicle.Vid = "F344334";
+            //Objvehicle.Type = VehicleType.SemiTrailer;
+            //Objvehicle.Tcu_Id = "TId234234";
+            //Objvehicle.Tcu_Serial_Number = "S23432490892346";
+            //Objvehicle.Tcu_Brand = "Truck";
+            //Objvehicle.Tcu_Version = "Tv0.1";
+            //Objvehicle.Is_Tcu_Register = true;
+            Objvehicle.Reference_Date = Convert.ToDateTime("2019-02-02T12:34:56");
+            Objvehicle.Is_Ota = true;
+            Objvehicle.Modified_By = 15;
+            Objvehicle.Opt_In = VehicleStatusType.Inherit;
+            var resultUpdatevehicle = _vehicleRepository.UpdateOrgVehicleDetails(Objvehicle).Result;
+            Assert.IsNotNull(resultUpdatevehicle);
+            //  Assert.IsTrue(resultUpdatevehicle.ID > 0);
+
+        }
 
         //  [TestMethod]
         // public void CreateVehicleforCRM()

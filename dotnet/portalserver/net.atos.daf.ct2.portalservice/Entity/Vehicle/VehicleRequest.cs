@@ -57,5 +57,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
         public DateTime? Reference_Date { get; set; }
         public int VehiclePropertiesId { get; set; }
         public DateTime? CreatedAt { get; set; }
+        public int Oem_id { get; set; }
+        public int Oem_Organisation_id { get; set; }
+        public string Opt_In { get; set; }
+        public bool Is_Ota { get; set; }
     }
 }

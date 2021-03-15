@@ -18,6 +18,8 @@ namespace net.atos.daf.ct2.vehicle
             Task<bool> SetOptInStatus(char Is_OptIn, int Modified_By, int Vehicle_Id);
             Task<bool> Terminate(bool Is_Terminate, int Modified_By, int Vehicle_Id);
             Task<Vehicle> GetVehicle(int Vehicle_Id);
+            Task<Vehicle> UpdateOrgVehicleDetails(Vehicle vehicle);
+            Task<int> IsVINExists(string VIN);
         //  Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime);
         // Task<int> Create(int orgID, string vin,string tcuId,string tcuactivation,string referenceDateTime);
 

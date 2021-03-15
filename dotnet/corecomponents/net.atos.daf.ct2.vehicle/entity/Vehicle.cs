@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.vehicle.entity
         public bool Is_Tcu_Register { get; set; }
         public DateTime ? Reference_Date { get; set; }
         public int ? VehiclePropertiesId { get; set; }        
-        public DateTime? CreatedAt { get; set; }
+        public long ? CreatedAt { get; set; }
         public int Oem_id { get; set; }
         public int Oem_Organisation_id { get; set; } 
         public VehicleStatusType Opt_In { get; set; }
@@ -42,6 +42,6 @@ namespace net.atos.daf.ct2.vehicle.entity
         // public DateTime CreatedDate { get; set; }
         // public int CreatedBy { get; set; }
         // public DateTime UpdatedDate { get; set; }
-        // public int UpdatedBy { get; set; }
+        public int Modified_By { get; set; }
     }
 }

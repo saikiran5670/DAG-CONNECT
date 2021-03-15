@@ -82,6 +82,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
             vehicle.Tcu_Serial_Number = response.TcuSerialNumber;
             vehicle.Tcu_Version = response.TcuVersion;
             vehicle.Is_Tcu_Register = response.IsTcuRegister;
+            vehicle.Is_Ota = response.IsOta;
+            vehicle.Oem_id = response.OemId;
+            vehicle.Oem_Organisation_id = response.OemOrganisationId;
+            vehicle.Opt_In =response.OptIn;
 
             return vehicle;
         }
@@ -168,5 +172,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
             }
             return group;
         }
+
     }
 }

@@ -225,8 +225,30 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             vehicleGroupResonse.Name = request.Name;
             return vehicleGroupResonse;
         }
-    
-    
-    
+
+
+        public Vehicle ToVehicleEntity(VehicleDetails request)
+        {
+            Vehicle vehicle = new Vehicle();
+            vehicle.ID = request.Id;
+            vehicle.Name = request.Name;
+            vehicle.VIN = request.Vin;
+            vehicle.License_Plate_Number = request.LicensePlateNumber;
+            vehicle.Vid = request.Vid;
+            vehicle.ModelId = request.ModelId;
+            vehicle.Tcu_Id = request.TcuId;
+            vehicle.Tcu_Serial_Number = request.TcuSerialNumber;
+            vehicle.Tcu_Brand = request.TcuBrand;
+            vehicle.Tcu_Version = request.TcuVersion;
+            vehicle.Is_Tcu_Register = request.IsTcuRegister;
+            vehicle.Reference_Date = Convert.ToDateTime(request.ReferenceDate);
+            vehicle.Organization_Id = request.Organizationid;
+            vehicle.Is_Ota = request.IsOta;
+            vehicle.Oem_id = request.OemId;
+            vehicle.Oem_Organisation_id = request.OemOrganisationId;
+            vehicle.Opt_In = (vehicle.VehicleStatusType)Convert.ToChar(request.OptIn);
+
+            return vehicle;
+        }
     }
 }
