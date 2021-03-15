@@ -48,6 +48,7 @@ public class KafkaAuditService implements Serializable {
 	    } catch (Exception e) {
 	      log.error("Unable to initialize Audit Trials", e);
 	    }finally{
+			if(auditETLJobClient != null)
 		      auditETLJobClient.closeChannel();
 		}
 	  }
