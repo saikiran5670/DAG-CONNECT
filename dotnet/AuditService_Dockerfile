@@ -22,5 +22,7 @@ RUN dotnet publish "net.atos.daf.ct2.auditservice.csproj" -c Release -o /app/pub
 FROM base AS final
 WORKDIR /app
 
+RUN apt-get install -y vim
+
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "net.atos.daf.ct2.auditservice.dll"]
