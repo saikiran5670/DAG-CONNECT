@@ -44,6 +44,7 @@ namespace net.atos.daf.ct2.portalservice
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //gRPC service configuration
             var accountservice = Configuration["ServiceConfiguration:accountservice"];
             var packageservice = Configuration["ServiceConfiguration:packageservice"];
             var vehicleservice = Configuration["ServiceConfiguration:vehicleservice"];
@@ -52,12 +53,12 @@ namespace net.atos.daf.ct2.portalservice
             var featureservice= Configuration["ServiceConfiguration:featureservice"];
             var roleservice = Configuration["ServiceConfiguration:roleservice"];
             var organizationservice = Configuration["ServiceConfiguration:organizationservice"];
-            var isdevelopmentenv = Configuration["ServerConfiguration:isdevelopmentenv"];
-            var cookiesexpireat = Configuration["ServerConfiguration:cookiesexpireat"];
-            var authcookiesexpireat = Configuration["ServerConfiguration:authcookiesexpireat"];
             var driverservice = Configuration["ServiceConfiguration:driverservice"];
-
- 
+            
+            //Web Server Configuration
+            var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
+            var cookiesexpireat = Configuration["WebServerConfiguration:cookiesexpireat"];
+            var authcookiesexpireat = Configuration["WebServerConfiguration:authcookiesexpireat"];
 
             // We are enforcing to call Insercure service             
             AppContext.SetSwitch(
@@ -142,23 +143,35 @@ namespace net.atos.daf.ct2.portalservice
                 app.UseDeveloperExceptionPage();
             }
 
+            //Web Server Configuration
+            var headercachecontrol = Configuration["WebServerConfiguration:headercachecontrol"];
+            var headerexpires = Configuration["WebServerConfiguration:headerexpires"];
+            var headerpragma = Configuration["WebServerConfiguration:headerpragma"];
+            var headerxframeoptions = Configuration["WebServerConfiguration:headerxframeoptions"];
+            var headerxxssprotection = Configuration["WebServerConfiguration:headerxxssprotection"];
+            var headerstricttransportsecurity = Configuration["WebServerConfiguration:headerstricttransportsecurity"];
+            var headeraccesscontrolalloworigin = Configuration["WebServerConfiguration:headeraccesscontrolalloworigin"];
+            var headeraccesscontrolallowmethods = Configuration["WebServerConfiguration:headeraccesscontrolallowmethods"];
+            var headerAccesscontrolallowheaders = Configuration["WebServerConfiguration:headeraccesscontrolallowheaders"];
+
             app.Use(async (context, next) =>
             {
-                context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
-                context.Response.Headers["Expires"] = "-1";
-                context.Response.Headers["Pragma"] = "no-cache";
-
+                context.Response.Headers["Cache-Control"] = headercachecontrol;
+                context.Response.Headers["Expires"] = headerexpires;
+                context.Response.Headers["Pragma"] = headerpragma;                
+                context.Response.Headers.Add("X-Frame-Options", headerxframeoptions);
+                context.Response.Headers.Add("X-Xss-Protection",headerxxssprotection);
+                //context.Response.Headers.Add("Content-Security-Policy", "script-src 'self' 'unsafe-eval' 'unsafe-inline'; navigate-to https://www.daf.com; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'");
+                context.Response.Headers.Add("Strict-Transport-Security", headerstricttransportsecurity);
+                context.Response.Headers.Add("Access-Control-Allow-Origin", headeraccesscontrolalloworigin);
+                context.Response.Headers.Add("Access-Control-Allow-Methods", headeraccesscontrolallowmethods);
+                context.Response.Headers.Add("Access-Control-Allow-Headers", headerAccesscontrolallowheaders);
+                
                 context.Response.Headers.Remove("X-Powered-By");
                 context.Response.Headers.Remove("Server");
                 context.Response.Headers.Remove("X-AspNet-Version");
                 context.Response.Headers.Remove("X-AspNetMvc-Version");
-                context.Response.Headers.Add("X-Frame-Options", "DENY");
-                context.Response.Headers.Add("X-Xss-Protection", "1");
-                //context.Response.Headers.Add("Content-Security-Policy", "script-src 'self' 'unsafe-eval' 'unsafe-inline'; navigate-to https://www.daf.com; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'");
-                context.Response.Headers.Add("Strict-Transport-Security", "31536000");
-                context.Response.Headers.Add("Access-Control-Allow-Origin", "value");
-                context.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-                context.Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+
                 await next();
             });
 

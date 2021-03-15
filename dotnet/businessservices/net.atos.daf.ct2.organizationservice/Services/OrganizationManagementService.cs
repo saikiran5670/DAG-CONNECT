@@ -12,6 +12,9 @@ using Grpc.Core;
 using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.organizationservice.entity;
 using System.Linq;
+using net.atos.daf.ct2.relationship;
+using net.atos.daf.ct2.relationship.entity;
+
 namespace net.atos.daf.ct2.organizationservice
 {
     public class OrganizationManagementService : OrganizationService.OrganizationServiceBase
@@ -24,9 +27,16 @@ namespace net.atos.daf.ct2.organizationservice
         private readonly IPreferenceManager preferencemanager;
         private readonly IVehicleManager vehicleManager;
         private readonly EntityMapper _mapper;
+        private readonly IRelationshipManager _relationshipManager;
 
 
-        public OrganizationManagementService(ILogger<OrganizationManagementService> logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager, IPreferenceManager _preferencemanager, IVehicleManager _vehicleManager, IAuditTraillib _auditlog)
+        public OrganizationManagementService(ILogger<OrganizationManagementService> logger,
+                                             IAuditTraillib AuditTrail,
+                                             IOrganizationManager _organizationmanager,
+                                             IPreferenceManager _preferencemanager, 
+                                             IVehicleManager _vehicleManager,
+                                             IAuditTraillib _auditlog,
+                                             IRelationshipManager relationshipManager)
         {
             _logger = logger;
             _AuditTrail = AuditTrail;
@@ -35,98 +45,99 @@ namespace net.atos.daf.ct2.organizationservice
             vehicleManager = _vehicleManager;
             auditlog = _auditlog;
             _mapper = new EntityMapper();
+            _relationshipManager = relationshipManager;
         }
 
 
-        //Org Relationship
+        //Relationship Management
 
-        public override async Task<OrgRelationshipCreateResponse> CreateOrgRelationship(OrgRelationshipCreateRequest request, ServerCallContext context)
+        public override async Task<RelationshipCreateResponse> CreateRelationship(RelationshipCreateRequest request, ServerCallContext context)
         {
             try
             {
-                var orgRelationship = new OrgRelationship();
-                var response = new OrgRelationshipCreateResponse();
-                orgRelationship.OrganizationId = request.OrganizationId;
-                orgRelationship.Code = request.Code;
-                orgRelationship.Name = request.Name;
-                orgRelationship.Level = request.Level;
-                orgRelationship.FeaturesetId = request.Featuresetid;
-                orgRelationship.Description = request.Description;
-                orgRelationship.IsActive = request.IsActive;
+                var relationship = new Relationship();
+                var response = new RelationshipCreateResponse();
+                relationship.OrganizationId = request.OrganizationId;
+                relationship.Code = request.Code;
+                relationship.Name = request.Name;
+                relationship.Level = request.Level;
+                relationship.FeaturesetId = request.Featuresetid;
+                relationship.Description = request.Description;
+                relationship.IsActive = request.IsActive;
 
-                orgRelationship = await organizationtmanager.CreateOrgRelationship(orgRelationship);
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Relationship Component", "Organization Relationship Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Create", 1, 2, orgRelationship.Id.ToString());
+                relationship = await _relationshipManager.CreateRelationship(relationship);
+                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Relationship Component", "Relationship Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Create", 1, 2, relationship.Id.ToString());
                 response.Code = Responcecode.Success;
                 response.Message = "Created";
-                request.Id = orgRelationship.Id;
-                response.OrgRelation = request;
+                request.Id = relationship.Id;
+                response.Relationship = request;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
                 _logger.LogError("Orgganization Relationship Service: Create : " + ex.Message + " " + ex.StackTrace);
-                return await Task.FromResult(new OrgRelationshipCreateResponse
+                return await Task.FromResult(new RelationshipCreateResponse
                 {
                     Code = Responcecode.Failed,
                     Message = "Organization Relationship Creation failed due to - " + ex.Message,
-                    OrgRelation = null
+                    Relationship = null
                 });
             }
         }
 
-        public override async Task<OrgRelationshipCreateResponse> UpdateOrgRelationship(OrgRelationshipCreateRequest request, ServerCallContext context)
+        public override async Task<RelationshipCreateResponse> UpdateRelationship(RelationshipCreateRequest request, ServerCallContext context)
         {
             try
             {
-                var orgRelationship = new OrgRelationship();
-                var response = new OrgRelationshipCreateResponse();
-                orgRelationship.Id = request.Id;
-                orgRelationship.OrganizationId = request.OrganizationId;
-                orgRelationship.Code = request.Code;
-                orgRelationship.Name = request.Name;
-                orgRelationship.Level = request.Level;
-                orgRelationship.FeaturesetId = request.Featuresetid;
-                orgRelationship.Description = request.Description;
-                orgRelationship.IsActive = request.IsActive;
+                var relationship = new Relationship();
+                var response = new RelationshipCreateResponse();
+                relationship.Id = request.Id;
+                relationship.OrganizationId = request.OrganizationId;
+                relationship.Code = request.Code;
+                relationship.Name = request.Name;
+                relationship.Level = request.Level;
+                relationship.FeaturesetId = request.Featuresetid;
+                relationship.Description = request.Description;
+                relationship.IsActive = request.IsActive;
 
-                orgRelationship = await organizationtmanager.UpdateOrgRelationship(orgRelationship);
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Relationship Component", "Organization Relationship Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Updated", 1, 2, orgRelationship.Id.ToString());
+                relationship = await _relationshipManager.UpdateRelationship(relationship);
+                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Relationship Component", "Organization Relationship Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Updated", 1, 2, relationship.Id.ToString());
                 response.Code = Responcecode.Success;
-                response.Message = "Org relatioship Updated Successfully";
-                request.Id = orgRelationship.Id;
-                response.OrgRelation = request;
+                response.Message = "Relatioship Updated Successfully";
+                request.Id = relationship.Id;
+                response.Relationship = request;
 
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Orgganization Relationship Service: Update : " + ex.Message + " " + ex.StackTrace);
-                return await Task.FromResult(new OrgRelationshipCreateResponse
+                _logger.LogError("Relationship Service: Update : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new RelationshipCreateResponse
                 {
                     Code = Responcecode.Failed,
                     Message = "Organization Relationship Updation failed due to - " + ex.Message,
-                    OrgRelation = null
+                    Relationship = null
                 });
             }
         }
 
-        public async override Task<OrgRelationshipGetResponse> GetOrgRelationship(OrgRelationshipCreateRequest request, ServerCallContext context)
+        public async override Task<RelationshipGetResponse> GetRelationship(RelationshipCreateRequest request, ServerCallContext context)
         {
             try
             {
-                var response = new OrgRelationshipGetResponse();
-                var orgRelationshipFilter = new OrgRelationship();
-                orgRelationshipFilter.Id = request.Id;
-                orgRelationshipFilter.OrganizationId = request.OrganizationId;
-                orgRelationshipFilter.Code = request.Code;
-                orgRelationshipFilter.FeaturesetId = request.Featuresetid;
-                orgRelationshipFilter.Level = request.Level;
-                orgRelationshipFilter.Name = request.Name;
-                orgRelationshipFilter.Description = request.Description;
-                orgRelationshipFilter.IsActive = request.IsActive;
-                var orgRelationships = organizationtmanager.GetOrgRelationship(orgRelationshipFilter).Result;
-                response.OrgRelationshipList.AddRange(orgRelationships
-                                     .Select(x => new OrgRelationshipGetRequest()
+                var response = new RelationshipGetResponse();
+                var relationshipFilter = new Relationship();
+                relationshipFilter.Id = request.Id;
+                relationshipFilter.OrganizationId = request.OrganizationId;
+                relationshipFilter.Code = request.Code;
+                relationshipFilter.FeaturesetId = request.Featuresetid;
+                relationshipFilter.Level = request.Level;
+                relationshipFilter.Name = request.Name;
+                relationshipFilter.Description = request.Description;
+                relationshipFilter.IsActive = request.IsActive;
+                var orgRelationships = _relationshipManager.GetRelationship(relationshipFilter).Result;
+                response.RelationshipList.AddRange(orgRelationships
+                                     .Select(x => new RelationshipGetRequest()
                                      {
                                          Id = x.Id,
                                          OrganizationId = x.OrganizationId,
@@ -137,14 +148,14 @@ namespace net.atos.daf.ct2.organizationservice
                                          Level = x.Level,
                                          IsActive = x.IsActive
                                      }).ToList());
-                _logger.LogInformation("Get org relationship details.");
+                _logger.LogInformation("Get  relationship details.");
                 response.Code = Responcecode.Success;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in  org relationship service:get  org relationship  details with exception - " + ex.Message + ex.StackTrace);
-                return await Task.FromResult(new OrgRelationshipGetResponse
+                _logger.LogError("Error in   relationship service:get  org relationship  details with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new RelationshipGetResponse
                 {
                     Message = "Exception " + ex.Message,
                     Code = Responcecode.Failed
@@ -153,32 +164,32 @@ namespace net.atos.daf.ct2.organizationservice
         }
 
 
-        public async override Task<OrgRelationshipDeleteResponse> DeleteOrgRelationship(OrgRelationshipDeleteRequest request, ServerCallContext context)
+        public async override Task<RelationshipDeleteResponse> DeleteRelationship(RelationshipDeleteRequest request, ServerCallContext context)
         {
             try
             {
-                var result = organizationtmanager.DeleteOrgRelationship(request.Id).Result;
-                var response = new OrgRelationshipDeleteResponse();
+                var result = _relationshipManager.DeleteRelationship(request.Id).Result;
+                var response = new RelationshipDeleteResponse();
                 if (result)
                 {
                     response.Code = Responcecode.Success;
-                    response.Message = "org relationship deleted.";
+                    response.Message = "Relationship deleted.";
                 }
                 else
                 {
                     response.Code = Responcecode.NotFound;
-                    response.Message = "Org relationship Not Found.";
+                    response.Message = "Relationship Not Found.";
                 }
 
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in org relationship service:delete org relationship  with exception - " + ex.Message + ex.StackTrace);
-                return await Task.FromResult(new OrgRelationshipDeleteResponse
+                _logger.LogError("Error in  relationship service:delete  relationship  with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new RelationshipDeleteResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Org relationship Deletion Faile due to - " + ex.Message,
+                    Message = "Relationship Deletion Faile due to - " + ex.Message,
 
                 });
             }
