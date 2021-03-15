@@ -27,8 +27,10 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   featureFormGroup: FormGroup;
   selectionForDataAttribute = new SelectionModel(true, []);
   initData: any = [];
-  selectedSetType: any ;
-  selectedStatus: any ;
+  selectedSetType: any = true; //byDefault Exclusive
+  selectedStatus: any = 0; //byDefault active
+  userName: string = '';
+  userCreatedMsg: any = '';
   
   vehGrpName: string = '';
   showLoadingIndicator: any;
@@ -53,6 +55,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   setDefaultValue(){
+    // console.log("selectedElementData in setDefault---",this.selectedElementData)
     //this.featureFormGroup.get("featureName").setValue(this.selectedElementData.name);
     //this.featureFormGroup.get("featureDescription").setValue(this.selectedElementData.featureDescription);
     //this.featureFormGroup.get("featureType").setValue(this.selectedElementData.type);
@@ -105,7 +108,6 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   toBack(){
     let emitObj = {
       stepFlag: false,
-      msg: ""
     }    
     this.createViewEditFeatureEmit.emit(emitObj);    
   }
@@ -119,44 +121,93 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   onCancel(){
     let emitObj = {
       stepFlag: false,
-      msg: ""
     }    
     this.createViewEditFeatureEmit.emit(emitObj); 
   }
 
+  selectionIDs(){
+    return this.selectionForDataAttribute.selected.map(item => item.id)
+  }
   onCreate(){
-
+      let selectedId = this.selectionIDs();
       let createFeatureParams = {
         "id": 0,
-        "name": "strin2232eee",
-        "description": "stringstrineeee",
-        "type": "string",
+        "name": this.featureFormGroup.controls.dataAttributeSetName.value,
+        "description": this.featureFormGroup.controls.dataAttributeDescription.value,
+        "type": "D",
         "IsFeatureActive": true,
         "dataattributeSet": {
           "id": 0,
-          "name": "strin2232eee",
+          "name": "",
           "isActive": true,
-          "is_Exclusive": true,
-          "description": "string",
-          "status": 65
+          "is_Exclusive": this.selectedSetType == "true" ? true : false,
+          "description": "",
+          "status": parseInt(this.selectedStatus)
         },
         "key": "string",
-        "dataAttributeIds": [
-          6,7
-        ],
+        "dataAttributeIds": selectedId,
         "level": 0,
-        "featureState": 65
+        "featureState": 0
       }
-      console.log("----create calling...---")
-    this.featureService.createFeature(createFeatureParams).subscribe((data) => {
-      console.log("----create called---",data)
-    })
 
-    let emitObj = {
-      stepFlag: false,
-      msg: ""
-    }    
-    this.createViewEditFeatureEmit.emit(emitObj); 
+
+    if(this.actionType == 'create'){
+      this.featureService.createFeature(createFeatureParams).subscribe((data) => {
+        this.featureService.getFeatures().subscribe((getData) =>{
+
+
+          let filterTypeData = getData.filter(item => item.type == "D");
+          this.userCreatedMsg = this.getUserCreatedMessage();
+          let emitObj = {
+            stepFlag: false,
+            successMsg: this.userCreatedMsg,
+            tableData: filterTypeData
+          }    
+          this.createViewEditFeatureEmit.emit(emitObj); 
+
+        });
+      })
+      }
+      else if(this.actionType == 'edit'){
+        let selectedId = this.selectionIDs();
+          // console.log("---selectedRowData-----==--",this.selectedElementData)
+        let updatedFeatureParams = {
+          "id": this.selectedElementData.id,
+          "name": this.featureFormGroup.controls.dataAttributeSetName.value,
+          "description": this.featureFormGroup.controls.dataAttributeDescription.value,
+          "type": "D",
+          "IsFeatureActive": true,
+          "dataattributeSet": {
+            "id": this.selectedElementData.dataAttribute.dataAttributeSetId,
+            "name": "",
+            "isActive": true,
+            "is_Exclusive": this.selectedSetType == "true" ? true : false,
+            "description": "",
+            "status": parseInt(this.selectedStatus)
+          },
+          "key": "string",
+          "dataAttributeIds": selectedId,
+          "level": 0,
+          "featureState": 0
+        }        
+        // console.log("--edit called",this.selectedElementData);
+      this.featureService.updateFeature(updatedFeatureParams).subscribe((dataUpdated) => {
+        // console.log("---updated method called----",dataUpdated);
+        this.featureService.getFeatures().subscribe((getData) =>{
+          let filterTypeData = getData.filter(item => item.type == "D");
+          this.userCreatedMsg = this.getUserCreatedMessage();
+          let emitObj = {
+            stepFlag: false,
+            successMsg: this.userCreatedMsg,
+            tableData: filterTypeData
+
+          }    
+          this.createViewEditFeatureEmit.emit(emitObj); 
+        });
+      })
+      }
+      
+ 
   }
 
   onReset(){
@@ -185,6 +236,21 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     else
       return `${this.selectionForDataAttribute.isSelected(row) ? 'deselect' : 'select'
         } row`;
+  }
+
+  getUserCreatedMessage() {
+    this.userName = `${this.featureFormGroup.controls.dataAttributeSetName.value}`;
+    if (this.actionType == 'create') {
+      if (this.translationData.lblUserAccountCreatedSuccessfully)
+        return this.translationData.lblUserAccountCreatedSuccessfully.replace('$', this.userName);
+      else
+        return ("User Account '$' Created Successfully").replace('$', this.userName);
+    } else {
+      if (this.translationData.lblUserAccountUpdatedSuccessfully)
+        return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', this.userName);
+      else
+        return ("User Account '$' Updated Successfully").replace('$', this.userName);
+    }
   }
 
   onSetTypeChange(event: any){
