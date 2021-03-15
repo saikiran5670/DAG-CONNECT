@@ -27,14 +27,14 @@ namespace net.atos.daf.ct2.features
             return await FeatureRepository.GetFeatureSet(FeatureSetId, Active);
         }
 
-        public async Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, int FeatureId, int level, char? Featuretype)
+        public async Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, int FeatureId, int level, char? Featuretype, string Langaugecode)
         {
-            return await FeatureRepository.GetFeatures(RoleId,Organizationid, FeatureId,level,Featuretype);
+            return await FeatureRepository.GetFeatures(RoleId,Organizationid, FeatureId,level,Featuretype,Langaugecode);
         }
 
-        public async Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int GetFeatureIdsForFeatureSet)
+        public async Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int GetFeatureIdsForFeatureSet, string Langaugecode)
         {
-            return await FeatureRepository.GetFeatureIdsForFeatureSet(GetFeatureIdsForFeatureSet);
+            return await FeatureRepository.GetFeatureIdsForFeatureSet(GetFeatureIdsForFeatureSet,Langaugecode);
         }
 
         public async Task<DataAttributeSet> GetDataAttributeset(int DataAttributeSetID)
@@ -106,9 +106,9 @@ namespace net.atos.daf.ct2.features
             return await FeatureRepository.UpdateFeatureSet(featureSet);
         }
 
-        public async Task<IEnumerable<DataAttribute>> GetDataAttributes()
+        public async Task<IEnumerable<DataAttribute>> GetDataAttributes(string Langaugecode)
         {
-            return await FeatureRepository.GetDataAttributes();
+            return await FeatureRepository.GetDataAttributes(Langaugecode);
         }
 
         public async Task<int> DeleteFeature(int FeatureId)

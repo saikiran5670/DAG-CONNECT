@@ -14,29 +14,27 @@ namespace net.atos.daf.ct2.driverservice.entity
             net.atos.daf.ct2.driverservice.DriverResponse driver = new  net.atos.daf.ct2.driverservice.DriverResponse();
             driver.Id = request.Id;    
             driver.OrganizationId=request.Organization_id;
-            if (!(string.IsNullOrEmpty(request.Email)))
+            if (!(string.IsNullOrEmpty(request.email)))
             {
-                 driver.Email= request.Email;
+                 driver.Email= request.email;
             }
-            if (!(string.IsNullOrEmpty(request.FirstName)))
+            if (!(string.IsNullOrEmpty(request.first_name)))
             {
-                 driver.FirstName= request.FirstName;
+                 driver.FirstName= request.first_name;
             }
-            if (!(string.IsNullOrEmpty(request.LastName)))
+            if (!(string.IsNullOrEmpty(request.last_name)))
             {
-                 driver.LastName= request.LastName;
+                 driver.LastName= request.last_name;
             }
-            // if (!(string.IsNullOrEmpty(request.DateOfBith)))
-            // {
-            //      driver.DateOfBith= request.DateOfBith;
-            // }
            
-           // driver.DateOfBith= request.DateOfBith;
             driver.Status= request.Status;
            // driver.IsActive= request.IsActive;
             driver.OptIn= request.opt_in;
-          //  driver.modified_at= request.modified_at;
-          //  driver.modified_by= request.modified_by;
+            driver.DriverIdExt= request.Driver_id_ext;
+           
+
+           // driver.modified_at= request.modified_at;
+           // driver.modified_by= request.modified_by;
            // driver.created_at= request.created_at;
             return driver;
         }  
@@ -46,9 +44,9 @@ namespace net.atos.daf.ct2.driverservice.entity
             driver.entity.Driver driver=new driver.entity.Driver();
             driver.Id=request.Id;
            // driver.Organization_id=request.OrganizationId;
-            driver.Email=request.Email;
-            driver.FirstName=request.FirstName;
-            driver.LastName=request.LastName;
+            driver.email=request.Email;
+            driver.first_name=request.FirstName;
+            driver.last_name=request.LastName;
             driver.Status=request.Status;
           //  driver.opt_in=request.OptIn;
             //driver.Driver_id_ext=request.DriverIdExt;
@@ -63,9 +61,9 @@ namespace net.atos.daf.ct2.driverservice.entity
             net.atos.daf.ct2.driverservice.DriverUpdateRequest driver= new DriverUpdateRequest();           
             driver.Id=request.Id;
             driver.OrganizationId=request.Organization_id;
-            driver.Email=request.Email;
-            driver.FirstName=request.FirstName;
-            driver.LastName=request.LastName;
+            driver.Email=request.email;
+            driver.FirstName=request.first_name;
+            driver.LastName=request.last_name;
             driver.Status=request.Status;
             //driver.OptIn=request.opt_in;
             driver.ModifiedBy=request.modified_by;           
@@ -77,9 +75,9 @@ namespace net.atos.daf.ct2.driverservice.entity
         {
             driver.entity.Driver driver= new  driver.entity.Driver();      
             driver.Driver_id_ext=request.DriverIdExt;
-            driver.Email=request.Email;
-            driver.FirstName=request.FirstName;
-            driver.LastName=request.LastName;                   
+            driver.email=request.Email;
+            driver.first_name=request.FirstName;
+            driver.last_name=request.LastName;                   
             return driver;
         }  
 
