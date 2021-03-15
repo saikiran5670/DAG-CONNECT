@@ -168,7 +168,7 @@ namespace net.atos.daf.ct2.features.repository
 
         }
 
-        public async Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid,int FeatureId,int level, char? Featuretype)
+        public async Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid,int FeatureId,int level, char? Featuretype,string Langaugecode)
         {
 
             var QueryStatement = @"SELECT f.id, f.name, 
@@ -177,7 +177,10 @@ namespace net.atos.daf.ct2.features.repository
 								 join master.featuresetfeature fsf
 								on fsf.feature_id= f.id
 								 join master.Role r
-								on r.feature_set_id = fsf.feature_set_id where f.is_active= true";
+								on r.feature_set_id = fsf.feature_set_id 
+                                Left join translation.translation t
+                                on f.Key = t.name and t.code=@Code
+                                where f.is_active= true";
             
             
             var parameter = new DynamicParameters();
@@ -202,8 +205,11 @@ namespace net.atos.daf.ct2.features.repository
             }
             if(RoleId == 0  && Organizationid ==0)
             {
-                 QueryStatement = @"SELECT id, name, type, is_active, data_attribute_set_id, key, level, state
-	                                FROM master.feature f where f.is_active =true";
+                 QueryStatement = @"SELECT f.id, f.name,t.value, f.type, f.is_active, f.data_attribute_set_id, f.key, f.level, f.state
+	                                FROM master.feature f 
+									Left join translation.translation t
+                                    on f.Key = t.name and t.code=@Code
+                                    where f.is_active =true";
                if (Featuretype != '0')
                 {
                     parameter.Add("@type", Featuretype);
@@ -223,20 +229,22 @@ namespace net.atos.daf.ct2.features.repository
 
             }
 
-           
-           IEnumerable<Feature> FeatureSetDetails = await dataAccess.QueryAsync<Feature>(QueryStatement, parameter);
+            parameter.Add("@Code", Langaugecode);
+            IEnumerable<Feature> FeatureSetDetails = await dataAccess.QueryAsync<Feature>(QueryStatement, parameter);
             return FeatureSetDetails;
 
         }
 
-        public async Task<IEnumerable<DataAttribute>> GetDataAttributes()
+        public async Task<IEnumerable<DataAttribute>> GetDataAttributes(string Langaugecode)
         {
 
-            var QueryStatement = @"SELECT id, name, description, type, key
-	                                FROM master.dataattribute;";
-
-
-           IEnumerable<DataAttribute> DataAttributeDetails = await dataAccess.QueryAsync<DataAttribute>(QueryStatement);
+            var QueryStatement = @"SELECT d.id, d.name,t.value, d.description, d.type, d.key
+	                                FROM master.dataattribute d
+									Left join translation.translation t
+									on d.Key = t.name and t.code=@Code";
+            var parameter = new DynamicParameters();
+            parameter.Add("@Code", Langaugecode);
+            IEnumerable<DataAttribute> DataAttributeDetails = await dataAccess.QueryAsync<DataAttribute>(QueryStatement,parameter);
             return DataAttributeDetails;
 
         }
@@ -274,15 +282,18 @@ namespace net.atos.daf.ct2.features.repository
 
         }
 
-        public async Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int feature_set_id)
+        public async Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int feature_set_id,string Langaugecode)
          {
-             var QueryStatement = @"Select f.id,f.name,f.type,f.is_active,f.data_attribute_set_id,f.key,f.level,fs.feature_set_id from master.feature f
+             var QueryStatement = @"Select f.id,f.name,t.value,f.type,f.is_active,f.data_attribute_set_id,f.key,f.level,fs.feature_set_id from master.feature f
 	                                Left join master.featuresetfeature fS
 	                                on f.id=fs.feature_id
+                                    Left join translation.translation t
+                                    on f.Key = t.name and t.code=@Code
                                     Where fs.feature_set_id = @feature_set_id
                                     ";
 
             var parameter = new DynamicParameters();
+            parameter.Add("@Code", Langaugecode);
             parameter.Add("@feature_set_id", feature_set_id);
             IEnumerable<Feature> FeatureSetDetails = await dataAccess.QueryAsync<Feature>(QueryStatement, parameter);
             return FeatureSetDetails;
