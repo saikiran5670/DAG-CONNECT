@@ -75,7 +75,6 @@ export class EditDriverDetailsComponent implements OnInit {
   }
   
   onConfirm(){
-    //console.log(this.driverFormGroup.controls)
     let objData: any = {
       id: this.driverData.id,
       organizationId: this.driverData.organizationId,
@@ -83,9 +82,8 @@ export class EditDriverDetailsComponent implements OnInit {
       email: this.driverFormGroup.controls.emailId.value,
       firstName: this.driverFormGroup.controls.firstName.value,
       lastName: this.driverFormGroup.controls.lastName.value,
-      status: this.selectedConsentType, //--- this.driverFormGroup.controls.consentStatus.value
-      isActive: this.driverData.isActive, //--- alway true
-      //optIn: "", //--- remove from backend 
+      status: this.selectedConsentType,
+      isActive: this.driverData.isActive, 
       modifiedBy: 0
     }
     this.driverService.updateDriver(objData).subscribe((drv: any) => {
