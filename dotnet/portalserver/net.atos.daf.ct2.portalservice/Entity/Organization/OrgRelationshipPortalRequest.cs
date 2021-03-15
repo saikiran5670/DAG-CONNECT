@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Organization
 {
-    public class RelationshipPortalRequest
+    public class OrgRelationshipPortalRequest
     {
         public int Id { get; set; }
         [Required]
@@ -18,6 +18,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
         public string Description { get; set; }
         [Required]
         public List<string> Features { get; set; }
+        [Required]
         public bool IsActive { get; set; }
     }
 }

@@ -110,7 +110,51 @@ namespace net.atos.daf.ct2.organization.test
             var result = _organizationManager.KeyHandOverEvent(keyHandOver).Result;
             Assert.IsTrue(result != null);
         }
-      
+        [TestMethod]
+        public void CreateOrgRelationship_Manager()
+        {
+            var orgRelationship = new OrgRelationship();
+            orgRelationship.OrganizationId =1;
+            orgRelationship.Code = "C1";
+            orgRelationship.Level =1;
+            orgRelationship.Name = "Test Data";
+            orgRelationship.Description ="Unit testing";
+            orgRelationship.FeaturesetId = 1;
+            orgRelationship.IsActive = true;
+            var result = _organizationManager.CreateOrgRelationship(orgRelationship).Result;
+            Assert.IsTrue(result != null && result.Id > 0);
+        }
+
+
+
+        [TestMethod]
+        public void UpdateOrgRelationship_Manager()
+        {
+            var orgRelationship = new OrgRelationship();
+            orgRelationship.OrganizationId = 8;
+            orgRelationship.Code = "C1";
+            orgRelationship.Level = 1;
+            orgRelationship.Name = "Test Data";
+            orgRelationship.Description = "Unit testing";
+            orgRelationship.FeaturesetId = 1;
+            orgRelationship.IsActive = true;
+            var result = _organizationManager.UpdateOrgRelationship(orgRelationship).Result;
+            Assert.IsTrue(result != null && result.Id > 0);
+        }
+        [TestMethod]
+        public void DeleteOrgRelationship_Manager()
+        {
+            var result = _organizationManager.DeleteOrgRelationship(1).Result;
+            Assert.IsTrue(result == true);
+        }
+
+        [TestMethod]
+        public void GetOrgRelationship_Manager()
+        {
+            var orgRelationship = new OrgRelationship() { Id = 2 };
+            var result = _organizationManager.GetOrgRelationship(orgRelationship).Result;
+            Assert.IsTrue(result != null);
+        }
 
     }
 }

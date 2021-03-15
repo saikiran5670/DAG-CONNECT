@@ -20,13 +20,13 @@ service OrganizationService {
   rpc GetPreference (IdRequest) returns (OrganizationPreferenceResponse);
 
 //ORG Relationship manager
-  rpc CreateRelationship (RelationshipCreateRequest) returns (RelationshipCreateResponse);
-  rpc UpdateRelationship (RelationshipCreateRequest) returns (RelationshipCreateResponse);
-  rpc DeleteRelationship (RelationshipDeleteRequest) returns (RelationshipDeleteResponse);
-  rpc GetRelationship (RelationshipCreateRequest) returns (RelationshipGetResponse);
+  rpc CreateOrgRelationship (OrgRelationshipCreateRequest) returns (OrgRelationshipCreateResponse);
+  rpc UpdateOrgRelationship (OrgRelationshipCreateRequest) returns (OrgRelationshipCreateResponse);
+  rpc DeleteOrgRelationship (OrgRelationshipDeleteRequest) returns (OrgRelationshipDeleteResponse);
+  rpc GetOrgRelationship (OrgRelationshipCreateRequest) returns (OrgRelationshipGetResponse);
 }
 
-message RelationshipGetRequest{
+message OrgRelationshipGetRequest{
     int32 id = 1;
     int32 organizationId=2;
     string name=3;
@@ -37,12 +37,12 @@ message RelationshipGetRequest{
     int32 featuresetid =8; 
     bool isActive=9;
 }
-message RelationshipGetResponse{
+message OrgRelationshipGetResponse{
  Responcecode code=1;  
   string message = 2;
-   repeated RelationshipGetRequest RelationshipList=3;
+   repeated OrgRelationshipGetRequest OrgRelationshipList=3;
 }
-message RelationshipCreateRequest{
+message OrgRelationshipCreateRequest{
     int32 id = 1;
     int32 organizationId=2;
     string name=3;
@@ -54,20 +54,20 @@ message RelationshipCreateRequest{
     bool isActive=9;
 }
 
-message RelationshipCreateResponse{
+message OrgRelationshipCreateResponse{
   Responcecode Code=1;
   string Message = 2;
-  RelationshipCreateRequest relationship = 3;
+  OrgRelationshipCreateRequest OrgRelation = 3;
  
 }
-    message RelationshipDeleteRequest{
+    message OrgRelationshipDeleteRequest{
       int32 Id = 1;
     }
-   message RelationshipDeleteResponse
+   message OrgRelationshipDeleteResponse
     {
      Responcecode Code=1;
      string Message = 2;
-     RelationshipDeleteRequest RelationshipRequest= 3;      
+     OrgRelationshipDeleteRequest OrgRelationshipRequest= 3;      
     }
 
   message OrgCreateRequest {

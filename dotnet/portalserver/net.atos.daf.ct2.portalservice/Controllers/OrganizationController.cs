@@ -46,7 +46,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         //OrgRelationship
         [HttpPost]
         [Route("relationship/create")]
-        public async Task<IActionResult> CreateRelationship(RelationshipPortalRequest request)
+        public async Task<IActionResult> CreateRelationship(OrgRelationshipPortalRequest request)
         {
             try
             {
@@ -103,7 +103,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPut]
         [Route("relationship/update")]
-        public async Task<IActionResult> UpdateRelationship(RelationshipPortalRequest request)
+        public async Task<IActionResult> UpdateRelationship(OrgRelationshipPortalRequest request)
         {
             try
             {

@@ -21,8 +21,6 @@ using Microsoft.AspNetCore.Http;
 using AccountComponent = net.atos.daf.ct2.account;
 using Identity = net.atos.daf.ct2.identity;
 using AccountPreference = net.atos.daf.ct2.accountpreference;
-using net.atos.daf.ct2.relationship.repository;
-using net.atos.daf.ct2.relationship;
 //using Swashbuckle.AspNetCore.Swagger;
 //using Microsoft.OpenApi.Models;
 
@@ -59,8 +57,6 @@ namespace net.atos.daf.ct2.organizationservice
             services.AddTransient<IAuditLogRepository, AuditLogRepository>(); 
             services.AddTransient<IOrganizationManager,OrganizationManager>();
             services.AddTransient<IOrganizationRepository, OrganizationRepository>();
-            services.AddTransient<IRelationshipRepository, RelationshipRepository>();
-            services.AddTransient<IRelationshipManager, RelationshipManager>();
             services.AddTransient<IPreferenceManager,PreferenceManager>();
             services.AddTransient<IAccountPreferenceRepository, AccountPreferenceRepository>();
             services.AddTransient<IVehicleRepository, VehicleRepository>();

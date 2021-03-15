@@ -477,15 +477,12 @@ namespace net.atos.daf.ct2.translation.repository
             try
             {
                 var parameter = new DynamicParameters();
-                var InsertFileDetailsQueryStatement = @"SELECT id, file_name, description, file_size, failure_count, created_at, added_count, updated_count, created_by
+                var InsertFileDetailsQueryStatement = @"SELECT id, file_name, description, file_size, failure_count, created_at, file, added_count, updated_count, created_by
                                                              FROM translation.translationupload
                                                                   where 1=1";
                 if (FileID > 0)
                 {
                     parameter.Add("@FileID", FileID);
-                    InsertFileDetailsQueryStatement = @"SELECT id, file_name, description, file_size, failure_count, created_at, file, added_count, updated_count, created_by
-                                                             FROM translation.translationupload
-                                                                  where 1=1";
                     InsertFileDetailsQueryStatement = InsertFileDetailsQueryStatement + " and id=@FileID";
 
                 }
