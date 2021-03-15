@@ -18,7 +18,7 @@ spec:
       securityContext:
         runAsUser: 10001
         runAsGroup: 3000
-        fsGroup: 1234
+        fsGroup: 10001
         runAsNonRoot: true
       affinity:
         podAntiAffinity:
