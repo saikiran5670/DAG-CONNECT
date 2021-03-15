@@ -189,79 +189,7 @@ export class DriverManagementComponent implements OnInit {
   loadDriverData(){
     let drvId: any = 0;
     this.driverService.getDrivers(this.accountOrganizationId, drvId).subscribe((driverList: any) => {
-      // driverList = [
-      //     {
-      //       "id": 13,
-      //       "organizationId": 10,
-      //       "driverIdExt": "UK 1234567890123",
-      //       "email": "driver13@gmail.com",
-      //       "firstName": "Driver",
-      //       "lastName": "One",
-      //       "status": "I",
-      //       "isActive": false,
-      //       "optIn": "",
-      //       "modifiedAt": "",
-      //       "modifiedBy": "",
-      //       "createdAt": ""
-      //     },
-      //     {
-      //       "id": 14,
-      //       "organizationId": 10,
-      //       "driverIdExt": "I  1234567890123",
-      //       "email": "driver14@gmail.com",
-      //       "firstName": "Driver",
-      //       "lastName": "Two",
-      //       "status": "U",
-      //       "isActive": false,
-      //       "optIn": "",
-      //       "modifiedAt": "",
-      //       "modifiedBy": "",
-      //       "createdAt": ""
-      //     },
-      //     {
-      //       "id": 15,
-      //       "organizationId": 10,
-      //       "driverIdExt": "NL 1234567890123",
-      //       "email": "driver15@gmail.com",
-      //       "firstName": "Driver",
-      //       "lastName": "Three",
-      //       "status": "H",
-      //       "isActive": false,
-      //       "optIn": "I",
-      //       "modifiedAt": "",
-      //       "modifiedBy": "",
-      //       "createdAt": ""
-      //     },
-      //     {
-      //       "id": 16,
-      //       "organizationId": 10,
-      //       "driverIdExt": "US 1234567890123",
-      //       "email": "driver16@gmail.com",
-      //       "firstName": "Driver",
-      //       "lastName": "Four",
-      //       "status": "U",
-      //       "isActive": false,
-      //       "optIn": "",
-      //       "modifiedAt": "",
-      //       "modifiedBy": "",
-      //       "createdAt": ""
-      //     },
-      //     {
-      //       "id": 17,
-      //       "organizationId": 10,
-      //       "driverIdExt": "FR 1234567890123",
-      //       "email": "driver17@gmail.com",
-      //       "firstName": "Driver",
-      //       "lastName": "Five",
-      //       "status": "I",
-      //       "isActive": false,
-      //       "optIn": "",
-      //       "modifiedAt": "",
-      //       "modifiedBy": "",
-      //       "createdAt": ""
-      //     }
-      // ];
-      this.initData = driverList; // driverList.driver
+      this.initData = driverList;
       this.onConsentChange(this.selectedConsentType);
     });
   }
@@ -305,7 +233,7 @@ export class DriverManagementComponent implements OnInit {
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     data.forEach((row: any) => {
-      let createdDate = new Date(row.createdAt).getTime(); //  need to check API response.
+      let createdDate = new Date(row.createdAt).getTime();
       let nextDate = createdDate + 86400000;
       if(currentDate > createdDate && currentDate < nextDate){
         row.newTag = true;
@@ -368,8 +296,6 @@ export class DriverManagementComponent implements OnInit {
     }
     else{
       this.importDriverPopup = true;
-      //this.importedDriverlist = finalList.validDriverList;
-      //this.rejectedDriverList = finalList.invalidDriverList;
     }
     this.newDriverCount = (this.filelist.length - this.rejectedDriverList.length); // new = (total - rejected)
   }
@@ -586,7 +512,7 @@ export class DriverManagementComponent implements OnInit {
       this.successMsgBlink(item.msg);
     }
     if(item.tableData){
-      this.initData = item.tableData; //-- item.tableData.driver
+      this.initData = item.tableData;
       this.updateGridData(this.initData);
     }else{
       this.updateGridData(this.initData);
@@ -625,7 +551,7 @@ export class DriverManagementComponent implements OnInit {
       if(res.tableData && res.tableData.length > 0){
         this.selectedConsentType = 'All';
         this.setConsentDropdown();
-        this.initData = res.tableData; //-- item.tableData.driver
+        this.initData = res.tableData;
         this.updateGridData(this.initData);
       }
     });
