@@ -15,9 +15,9 @@ spec:
         app.kubernetes.io/type: businessservice
     spec:
       automountServiceAccountToken: false
-      securityContext:
-        runAsUser: root
-        runAsGroup: root
+      #securityContext:
+        #runAsUser: root
+        #runAsGroup: root
         #runAsNonRoot: true
       affinity:
         podAntiAffinity:
