@@ -21,8 +21,6 @@ RUN dotnet publish "net.atos.daf.ct2.auditservice.csproj" -c Release -o /app/pub
 
 FROM base AS final
 WORKDIR /app
-RUN chown -R 10001:10001 /app  && chmod -R 777  /app
-
 RUN apt-get update && apt-get install -y procps
 
 RUN mkdir log
@@ -32,4 +30,7 @@ RUN mkdir log/Info
 RUN chown -R 10001:10001 log  && chmod -R 777  log 
 
 COPY --from=publish /app/publish .
+
+RUN chown -R 10001:10001 /app  && chmod -R 777  /app
+
 ENTRYPOINT ["dotnet", "net.atos.daf.ct2.auditservice.dll"]
