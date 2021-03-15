@@ -194,11 +194,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         [HttpGet]
         [Route("GetDataAttribute")]
-        public async Task<IActionResult> GetDataAttributes()
+        public async Task<IActionResult> GetDataAttributes(string LangaugeCode)
         {
             try
             {
                 DataAtributeRequest request = new DataAtributeRequest();
+                request.LangaugeCode = (LangaugeCode == null ||LangaugeCode == "") ? "EN-GB" : LangaugeCode ;
                 var responce = await _featureclient.GetDataAttributesAsync(request);
                 return Ok(responce.Responce);
             }
@@ -217,7 +218,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                
+
+                request.LangaugeCode = (request.LangaugeCode == null || request.LangaugeCode == "") ? "EN-GB" : request.LangaugeCode;
                 var feature = await _featureclient.GetFeaturesAsync(request);
 
                 //List<FeatureResponce> featureList = new List<FeatureResponce>();

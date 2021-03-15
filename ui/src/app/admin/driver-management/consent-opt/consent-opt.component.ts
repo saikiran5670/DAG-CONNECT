@@ -1,5 +1,6 @@
 import { Component, OnInit, HostListener, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { DriverService } from '../../../services/driver.service';
 
 @Component({
   selector: 'app-consent-opt',
@@ -13,26 +14,24 @@ export class ConsentOptComponent implements OnInit {
   consentMsgExtra: any;
   organizationName: any;
   totalDrivers: number = 0;
+  closePopup: boolean = true;
+  accountOrganizationId: any = 0;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     translationData: any,
     driverData: any,
     actionType: any,
     consentType: any
-  }, private mdDialogRef: MatDialogRef<ConsentOptComponent>) {
+  }, private mdDialogRef: MatDialogRef<ConsentOptComponent>, private driverService: DriverService) {
     this.organizationName = localStorage.getItem('organizationName');
     this.totalDrivers = data.driverData.length;
-    // if(data.actionType){ //---  True -> All & False -> single 
-    //   //this.getDriverCount();
-    // }else{
-    //   //data.consentType = (data.driverData.status) ? 'Inherit' : data.consentType;
-    // }
     this.showOptOutMsg = data.consentType === 'U' ? true : false;
     this.getConsentMsg(data.consentType); 
-    //this.getConsentExtraMsg(data.consentType);
   }
 
-  ngOnInit() { }
+  ngOnInit() { 
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+  }
 
   getConsentMsg(optValue: any){
     let optVal: any = '';
@@ -66,37 +65,53 @@ export class ConsentOptComponent implements OnInit {
     }
   }
 
-  // getDriverCount(){
-  //   if(this.showOptOutMsg){ //-- opt-out mode
-  //     this.totalDrivers = this.data.driverData.filter((item: any) => item.status == 'U').length;
-  //   }
-  //   else{ //-- opt-in mode
-  //     this.totalDrivers = this.data.driverData.filter((item: any) => item.status == 'I').length;
-  //   }
-  // }
-
-  // getConsentExtraMsg(optValue: any){
-  //   if(this.data.translationData.lblConsentExtraMessage)  
-  //     this.consentMsgExtra = this.data.translationData.lblConsentExtraMessage.replace('$', optValue);
-  //   else
-  //     this.consentMsgExtra = ("By selecting and confirming '$' mode (i.e. by checking the opt-in checkbox) personal data such as the driver ID from your driver(s) will be visible in the DAF CONNECT portal. You state that you are aware of your responsibility with regard to data privacy. At the same time, you state that you have consent from all your drivers to have their driver ID stored and shown in the DAF CONNECT portal and/or, if applicable, to share information with third parties. By submitting this request, you fully accept your legal responsibilities and thereby indemnify DAF Trucks NV from any privacy related responsibilities based on this decision.").replace('$', optValue);
-  // }
-
-  public close(value: any) {
+  public onClose(value: any) {
+    this.closePopup = false;
     this.mdDialogRef.close(value);
   }
 
   public onConfirm() {
-    this.close(true);
+    if(this.data.actionType){ //-- update All
+      let objData: any = {
+        orgID: this.accountOrganizationId,
+        optoutoptinstatus: this.data.consentType
+      };
+      this.driverService.updateOptInOptOutDriver(objData).subscribe((drv: any) => {
+        this.getDriverList();
+      });
+    }
+    else{ //-- update single
+      let objData: any = {
+        id: this.data.driverData.id,
+        organizationId: this.data.driverData.organizationId,
+        driverIdExt: this.data.driverData.driverIdExt,
+        email: this.data.driverData.email,
+        firstName: this.data.driverData.firstName,
+        lastName: this.data.driverData.lastName,
+        status: this.data.consentType,
+        isActive: this.data.driverData.isActive,
+        modifiedBy: 0
+      }
+      this.driverService.updateDriver(objData).subscribe((drv: any) => {
+        this.getDriverList();
+      });
+    }
+  }
+
+  getDriverList(){
+    let drvId: any = 0;
+    this.driverService.getDrivers(this.accountOrganizationId, drvId).subscribe((driverList: any) => {
+      this.onClose({ tableData: driverList });
+    });
   }
 
   @HostListener('keydown.esc')
   public onEsc() {
-    this.close(false);
+    this.onClose(false);
   }
 
   onCancel(){
-    this.close(false);
+    this.onClose(false);
   }
 
   onChange(event: any){
@@ -104,17 +119,11 @@ export class ConsentOptComponent implements OnInit {
     if(event.value === 'U'){
       this.showOptOutMsg = true;
       this.getConsentMsg(event.value);
-      //this.getConsentExtraMsg(event.value);
     }
-    //else if(event.value === 'Opt-In'){
     else{
       this.showOptOutMsg = false;
       this.getConsentMsg(event.value);
-      //this.getConsentExtraMsg(event.value);
     }
-    // if(this.data.actionType){
-    //   //this.getDriverCount();
-    // }
   }
-
+  
 }

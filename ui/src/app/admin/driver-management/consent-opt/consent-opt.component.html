@@ -1,4 +1,4 @@
-<div>
+<div *ngIf='closePopup'>
     <mat-card class='mat-elevation-z margin-bottom-xlg no-padding'>
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="start space-around"
@@ -17,7 +17,7 @@
                 </div>
                 <div *ngIf='!data.actionType' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <span>{{ data.translationData.lblDriverId || 'Driver Id' }}</span>
-                    <span class='custom-font'>{{ data.driverData.id }}</span>
+                    <span class='custom-font'>{{ data.driverData.driverIdExt }}</span>
                 </div>
                 <div *ngIf='data.actionType' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <span>{{ data.translationData.lblOrgnization || 'Orgnization' }}</span>
