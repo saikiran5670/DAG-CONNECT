@@ -27,5 +27,13 @@ namespace net.atos.daf.ct2.account.entity
         public int ? BlobId { get; set; }
         public long ? CreatedAt { get; set; }
         public Guid? ProcessToken { get; set; }
+        public string OrgName { get; set; }
+        public string FullName
+        {
+            get
+            {
+                return $"{Salutation} {FirstName} {LastName}";
+            }
+        }
     }
 }

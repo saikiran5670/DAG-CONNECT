@@ -118,51 +118,29 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ChangeResetPasswordSuccess" xml:space="preserve">
-    <value>&lt;!DOCTYPE html&gt;
+    <value>Hello {0},
 
-&lt;html lang="en" xmlns="http://www.w3.org/1999/xhtml"&gt;
-&lt;head&gt;
-    &lt;meta charset="utf-8" /&gt;
-    &lt;title&gt;&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;/body&gt;
-&lt;/html&gt;</value>
+Your password has been changed successfully.</value>
   </data>
   <data name="CreateAccount" xml:space="preserve">
-    <value>&lt;!DOCTYPE html&gt;
+    <value>Hello {0},
 
-&lt;html lang="en" xmlns="http://www.w3.org/1999/xhtml"&gt;
-&lt;head&gt;
-    &lt;meta charset="utf-8" /&gt;
-    &lt;title&gt;&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;/body&gt;
-&lt;/html&gt;</value>
+You have been added as a new user to the DAF CT 2.0 portal,
+under Organisation {1}.
+
+Please click the below link to set your new password.
+{2}</value>
   </data>
   <data name="ResetPassword" xml:space="preserve">
-    <value>&lt;!DOCTYPE html&gt;
+    <value>Hello {0},
 
-&lt;html lang="en" xmlns="http://www.w3.org/1999/xhtml"&gt;
-&lt;head&gt;
-    &lt;meta charset="utf-8" /&gt;
-    &lt;title&gt;&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;/body&gt;
-&lt;/html&gt;</value>
-  </data>
-  <data name="ResetPasswordInvalidate" xml:space="preserve">
-    <value>&lt;!DOCTYPE html&gt;
+We heard you need a password reset.
 
-&lt;html lang="en" xmlns="http://www.w3.org/1999/xhtml"&gt;
-&lt;head&gt;
-    &lt;meta charset="utf-8" /&gt;
-    &lt;title&gt;&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;/body&gt;
-&lt;/html&gt;</value>
+Click on the below link to reset your new password.
+{1}
+
+If you have not requested for password reset then please
+click the below link to deactivate the reset request.
+{2}</value>
   </data>
 </root>

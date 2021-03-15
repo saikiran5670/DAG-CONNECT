@@ -61,16 +61,9 @@ namespace net.atos.daf.ct2.email {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
+        ///   Looks up a localized string similar to Hello {0},
         ///
-        ///&lt;html lang=&quot;en&quot; xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
-        ///&lt;head&gt;
-        ///    &lt;meta charset=&quot;utf-8&quot; /&gt;
-        ///    &lt;title&gt;&lt;/title&gt;
-        ///&lt;/head&gt;
-        ///&lt;body&gt;
-        ///&lt;/body&gt;
-        ///&lt;/html&gt;.
+        ///Your password has been changed successfully..
         /// </summary>
         internal static string ChangeResetPasswordSuccess {
             get {
@@ -79,16 +72,13 @@ namespace net.atos.daf.ct2.email {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
+        ///   Looks up a localized string similar to Hello {0},
         ///
-        ///&lt;html lang=&quot;en&quot; xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
-        ///&lt;head&gt;
-        ///    &lt;meta charset=&quot;utf-8&quot; /&gt;
-        ///    &lt;title&gt;&lt;/title&gt;
-        ///&lt;/head&gt;
-        ///&lt;body&gt;
-        ///&lt;/body&gt;
-        ///&lt;/html&gt;.
+        ///You have been added as a new user to the DAF CT 2.0 portal,
+        ///under Organisation {1}.
+        ///
+        ///Please click the below link to set your new password.
+        ///{2}.
         /// </summary>
         internal static string CreateAccount {
             get {
@@ -97,38 +87,20 @@ namespace net.atos.daf.ct2.email {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
+        ///   Looks up a localized string similar to Hello {0},
         ///
-        ///&lt;html lang=&quot;en&quot; xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
-        ///&lt;head&gt;
-        ///    &lt;meta charset=&quot;utf-8&quot; /&gt;
-        ///    &lt;title&gt;&lt;/title&gt;
-        ///&lt;/head&gt;
-        ///&lt;body&gt;
-        ///&lt;/body&gt;
-        ///&lt;/html&gt;.
+        ///We heard you need a password reset.
+        ///
+        ///Click on the below link to reset your new password.
+        ///{1}
+        ///
+        ///If you have not requested for password reset then please
+        ///click the below link to deactivate the reset request.
+        ///{2}.
         /// </summary>
         internal static string ResetPassword {
             get {
                 return ResourceManager.GetString("ResetPassword", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
-        ///
-        ///&lt;html lang=&quot;en&quot; xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
-        ///&lt;head&gt;
-        ///    &lt;meta charset=&quot;utf-8&quot; /&gt;
-        ///    &lt;title&gt;&lt;/title&gt;
-        ///&lt;/head&gt;
-        ///&lt;body&gt;
-        ///&lt;/body&gt;
-        ///&lt;/html&gt;.
-        /// </summary>
-        internal static string ResetPasswordInvalidate {
-            get {
-                return ResourceManager.GetString("ResetPasswordInvalidate", resourceCulture);
             }
         }
     }
