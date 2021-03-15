@@ -26,6 +26,9 @@ RUN dotnet publish "net.atos.daf.ct2.accountservice.csproj" -c Release -o /app/p
 
 FROM base AS final
 WORKDIR /app
+
+USER 10001
+
 RUN mkdir log
 RUN mkdir log/Error
 RUN mkdir log/Info
