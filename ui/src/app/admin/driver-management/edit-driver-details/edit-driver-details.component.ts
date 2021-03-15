@@ -44,7 +44,7 @@ export class EditDriverDetailsComponent implements OnInit {
   }
 
   setDefaultData(){
-    this.driverFormGroup.get('driverId').setValue(this.driverData.id);
+    this.driverFormGroup.get('driverId').setValue(this.driverData.driverIdExt);
     this.driverFormGroup.get('emailId').setValue(this.driverData.email);
     this.driverFormGroup.get('firstName').setValue(this.driverData.firstName);
     this.driverFormGroup.get('lastName').setValue(this.driverData.lastName);
@@ -77,15 +77,15 @@ export class EditDriverDetailsComponent implements OnInit {
   onConfirm(){
     //console.log(this.driverFormGroup.controls)
     let objData: any = {
-      id: this.driverFormGroup.controls.driverId.value,
+      id: this.driverData.id,
       organizationId: this.driverData.organizationId,
-      driverIdExt: "",
+      driverIdExt: this.driverFormGroup.controls.driverIdExt.value,
       email: this.driverFormGroup.controls.emailId.value,
       firstName: this.driverFormGroup.controls.firstName.value,
       lastName: this.driverFormGroup.controls.lastName.value,
-      status: this.selectedConsentType, // this.driverFormGroup.controls.consentStatus.value
-      isActive: true,
-      optIn: "", // TODO: check for inherit
+      status: this.selectedConsentType, //--- this.driverFormGroup.controls.consentStatus.value
+      isActive: this.driverData.isActive, //--- alway true
+      //optIn: "", //--- remove from backend 
       modifiedBy: 0
     }
     this.driverService.updateDriver(objData).subscribe((drv: any) => {
@@ -102,7 +102,7 @@ export class EditDriverDetailsComponent implements OnInit {
   }
 
   getDriverUpdateMsg(drv: any){
-    let drvName: any = `${drv.driver.firstName} ${drv.driver.lastName}`;
+    let drvName: any = `${drv.firstName} ${drv.lastName}`;
     if(this.translationData.lblDriverwassuccessfullyupdated)
       return this.translationData.lblDriverwassuccessfullyupdated.replace('$', drvName);
     else
