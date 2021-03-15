@@ -15,10 +15,11 @@ spec:
         app.kubernetes.io/type: businessservice
     spec:
       automountServiceAccountToken: false
-      #securityContext:
-        #runAsUser: root
-        #runAsGroup: root
-        #runAsNonRoot: true
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 3000
+        fsGroup: 1234
+        runAsNonRoot: true
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
