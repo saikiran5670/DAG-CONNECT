@@ -41,8 +41,8 @@ namespace net.atos.daf.ct2.packageservice
             }));
 
 
-            string connectionString = Configuration.GetConnectionString("ConnectionString");           
-           // var connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+            //string connectionString = Configuration.GetConnectionString("ConnectionString");           
+            var connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             services.AddSingleton(dataAccess);
             services.AddTransient<IAuditTraillib, AuditTraillib>();
