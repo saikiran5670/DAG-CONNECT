@@ -17,7 +17,8 @@ spec:
       automountServiceAccountToken: false
       securityContext:
         runAsUser: 10001
-        runAsGroup: 3000
+        runAsGroup: 10001
+        fsGroup: 10001
         runAsNonRoot: true
       affinity:
         podAntiAffinity:
@@ -37,9 +38,12 @@ spec:
       - name: auditservice-grpc-container
         image: #{acrurl}#/auditservice-grpc
         imagePullPolicy: "Always"
+        volumeMounts:
+        - name: log
+          mountPath: /app/log
         securityContext:
           allowPrivilegeEscalation: false
-          #readOnlyRootFilesystem: true
+          readOnlyRootFilesystem: true
           capabilities:
             drop:
              - all
@@ -57,6 +61,9 @@ spec:
           value: "0"
         ports:
           - containerPort: 8080
+      volumes:
+      - name: log
+        emptyDir: {}
       nodeSelector:
         agentpool: npuser01         
   selector:
