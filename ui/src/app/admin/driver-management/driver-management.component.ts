@@ -353,9 +353,9 @@ export class DriverManagementComponent implements OnInit {
         }
       ]
       this.driverService.importDrivers(objData).subscribe((importDrvList: any) => {
-        if(importDrvList && importDrvList.driver.length > 0){
-          let filterPassDrv: any = importDrvList.driver.filter(item => item.status == 'PASS');
-          let filterFailDrv: any = importDrvList.driver.filter(item => item.status == 'FAIL');
+        if(importDrvList && importDrvList.length > 0){
+          let filterPassDrv: any = importDrvList.filter(item => item.status == 'PASS');
+          let filterFailDrv: any = importDrvList.filter(item => item.status == 'FAIL');
           if(filterFailDrv && filterFailDrv.length > 0){ //- Fail drivers added
             Array.prototype.push.apply(this.rejectedDriverList, filterFailDrv); 
           }
