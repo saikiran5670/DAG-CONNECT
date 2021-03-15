@@ -97,6 +97,7 @@ namespace net.atos.daf.ct2.featureservice
                         //ObjResponce.State = (FeatureState)Enum.Parse(typeof(FeatureState), item.state.ToString().ToUpper());
                         ObjResponce.State = item.state == "I" ? FeatureState.Inactive : FeatureState.Active;
                         ObjResponce.Key = item.Key == null ? "" : item.Key;
+                       
                         if (item.Type.ToString() == "D")
                         {
                             try
@@ -107,6 +108,7 @@ namespace net.atos.daf.ct2.featureservice
                                 ObjResponce.DataAttribute.IsExclusive = DataAttributeSet.Is_exlusive;
                                 ObjResponce.DataAttribute.Description = DataAttributeSet.Description;
                                 ObjResponce.DataAttribute.DataAttributeSetId = DataAttributeSet.ID;
+                                ObjResponce.Description = DataAttributeSet.Description == null ? "" : DataAttributeSet.Description;
                                 //ObjResponce.DataAttribute.DataAttributeIDs = new 
                                 foreach (var items in DataAttributeSet.DataAttributes)
                                 {

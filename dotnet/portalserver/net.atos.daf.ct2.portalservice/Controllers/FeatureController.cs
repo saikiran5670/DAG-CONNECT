@@ -99,18 +99,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(401, "invalid featureSet Name: The featureSet Name is Empty.");
                 }
-                if (string.IsNullOrEmpty(featureRequest.Key))
-                {
-                    return StatusCode(401, "invalid FeatureSet Description : Feature Key is Empty.");
-                }
+                //if (string.IsNullOrEmpty(featureRequest.Key))
+                //{
+                //    return StatusCode(401, "invalid FeatureSet Description : Feature Key is Empty.");
+                //}
                 FeatureRequest FeatureObj = new FeatureRequest();
                 FeatureObj.Name = featureRequest.Name;
                 FeatureObj.Level = featureRequest.Level;
                 FeatureObj.State = (FeatureState)Enum.Parse(typeof(FeatureState), featureRequest.FeatureState.ToString());
                 FeatureObj.Description = featureRequest.Description;
                 FeatureObj.DataAttribute = new DataAttributeSetRequest();
-                FeatureObj.DataAttribute.Name = featureRequest.DataattributeSet.Name;
-                FeatureObj.DataAttribute.Description = featureRequest.DataattributeSet.Description;
+                FeatureObj.DataAttribute.Name = featureRequest.Name;
+                FeatureObj.DataAttribute.Description = featureRequest.Description;
                 FeatureObj.DataAttribute.IsExclusive = featureRequest.DataattributeSet.is_Exclusive;
                 //FeatureObj.DataAttribute. = (DataAttributeSetType)Enum.Parse(typeof(DataAttributeSetType), featureRequest.DataAttribute.AttributeType.ToString().ToUpper());
 
@@ -152,10 +152,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(401, "invalid featureSet Name: The featureSet Name is Empty.");
                 }
-                if (string.IsNullOrEmpty(featureRequest.Key))
-                {
-                    return StatusCode(401, "invalid FeatureSet Description : Feature Key is Empty.");
-                }
+                //if (string.IsNullOrEmpty(featureRequest.Key))
+                //{
+                //    return StatusCode(401, "invalid FeatureSet Description : Feature Key is Empty.");
+                //}
                 FeatureRequest FeatureObj = new FeatureRequest();
                 FeatureObj.Name = featureRequest.Name;
                 FeatureObj.Id = featureRequest.Id;
@@ -163,8 +163,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 FeatureObj.State = (FeatureState)Enum.Parse(typeof(FeatureState), featureRequest.FeatureState.ToString());
                 FeatureObj.Description = featureRequest.Description;
                 FeatureObj.DataAttribute = new DataAttributeSetRequest();
-                FeatureObj.DataAttribute.Name = featureRequest.DataattributeSet.Name;
-                FeatureObj.DataAttribute.Description = featureRequest.DataattributeSet.Description;
+                FeatureObj.DataAttribute.Name = featureRequest.Name;
+                FeatureObj.DataAttribute.Description = featureRequest.Description;
                 FeatureObj.DataAttribute.IsExclusive = featureRequest.DataattributeSet.is_Exclusive;
                 FeatureObj.DataAttribute.DataAttributeSetId = featureRequest.DataattributeSet.ID;
                 //FeatureObj.DataAttribute. = (DataAttributeSetType)Enum.Parse(typeof(DataAttributeSetType), featureRequest.DataAttribute.AttributeType.ToString().ToUpper());
