@@ -163,6 +163,11 @@ namespace net.atos.daf.ct2.relationship.repository
                         parameter.Add("@feature_set_id", filter.FeaturesetId);
                         query = query + " and relationship.feature_set_id = @feature_set_id ";
                     }
+                    if (filter.OrganizationId > 0)
+                    {
+                        parameter.Add("@organization_id", filter.OrganizationId);
+                        query = query + " and relationship.organization_id = @organization_id ";
+                    }
 
                     if (filter.Level != 0)
                     {
