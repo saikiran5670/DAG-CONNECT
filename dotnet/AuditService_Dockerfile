@@ -21,16 +21,13 @@ RUN dotnet publish "net.atos.daf.ct2.auditservice.csproj" -c Release -o /app/pub
 
 FROM base AS final
 WORKDIR /app
+
 RUN apt-get update && apt-get install -y procps
 RUN apt-get install -y vim
-
 
 RUN mkdir log
 RUN mkdir log/Error
 RUN mkdir log/Info
-
-
-
 
 RUN chown -R 10001:3000 log  && chmod -R 777  log 
 
