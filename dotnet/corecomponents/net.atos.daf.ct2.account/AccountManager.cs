@@ -52,10 +52,7 @@ namespace net.atos.daf.ct2.account
                 // if this fails
                 account = await repository.Create(account);
 
-                var tokenSecret = await ResetPasswordInitiate(account.EmailId, false);
-
-                //Send account confirmation email
-                account.isErrorInEmail = await TriggerSendEmailRequest(account.EmailId, EmailTemplateType.CreateAccount, tokenSecret);
+                account.isErrorInEmail = !(await SetPasswordViaEmail(account.EmailId));
             }
             else // there is issues and need delete user from IDP. 
             {
@@ -76,10 +73,7 @@ namespace net.atos.daf.ct2.account
                         account = await repository.Create(account);
                         await identity.UpdateUser(identityEntity);
 
-                        var tokenSecret = await ResetPasswordInitiate(account.EmailId, false);
-
-                        //Send account confirmation email
-                        account.isErrorInEmail = await TriggerSendEmailRequest(account.EmailId, EmailTemplateType.CreateAccount, tokenSecret);
+                        account.isErrorInEmail = !(await SetPasswordViaEmail(account.EmailId));
                     }
                     else
                     {
@@ -108,6 +102,7 @@ namespace net.atos.daf.ct2.account
             }
             return account;
         }
+
         public async Task<Account> Update(Account account)
         {
             // create user in identity
@@ -331,7 +326,7 @@ namespace net.atos.daf.ct2.account
                         if (canSendEmail)                      
                             isSent = await TriggerSendEmailRequest(account.EmailId, EmailTemplateType.ResetPassword, processToken);
 
-                        if (canSendEmail && isSent)
+                        if ((canSendEmail && isSent) || !canSendEmail)
                         {
                             //Update status to Issued
                             await repository.Update(objToken.Id, ResetTokenStatus.Issued);
@@ -409,6 +404,20 @@ namespace net.atos.daf.ct2.account
         }
 
         #region Private Helper Methods
+
+        private async Task<bool> SetPasswordViaEmail(string emailId)
+        {
+            var tokenSecret = await ResetPasswordInitiate(emailId, false);
+
+            if (!tokenSecret.HasValue)
+                return false;
+            else
+            {
+                //Send account confirmation email
+                return await TriggerSendEmailRequest(emailId, EmailTemplateType.CreateAccount, tokenSecret);
+            }
+        }
+
         private async Task<bool> TriggerSendEmailRequest(string toEmailAddress, EmailTemplateType templateType, Guid? tokenSecret = null)
         {
             var messageRequest = new MessageRequest();
