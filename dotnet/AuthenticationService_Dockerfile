@@ -28,7 +28,7 @@ WORKDIR /app
 RUN mkdir log
 RUN mkdir log/Error
 RUN mkdir log/Info
-RUN chown -R 10001:10001 /log  && chmod -R 777  /log 
+RUN chown -R 10001:10001 log  && chmod -R 777  log 
 
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "net.atos.daf.ct2.authenticationservice.dll"]
