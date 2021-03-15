@@ -43,11 +43,10 @@ spec:
           mountPath: /app/log
         securityContext:
           allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
+          #readOnlyRootFilesystem: true
           capabilities:
             drop:
              - all
-            add: ["CHOWN", "SYS_TIME"]
         resources:
           limits:
             cpu: 100m
