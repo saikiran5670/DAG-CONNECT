@@ -575,13 +575,19 @@ export class DriverManagementComponent implements OnInit {
     }    
   }
 
-  editData(item: boolean) {
-    this.editFlag = item;
-    setTimeout(()=>{
-      this.dataSource = new MatTableDataSource(this.initData);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
+  updateEditData(item: any) {
+    this.editFlag = item.stepFlag;
+    this.selectedConsentType = 'All';
+    this.setConsentDropdown();
+    if(item.msg && item.msg != ''){
+      this.successMsgBlink(item.msg);
+    }
+    if(item.tableData){
+      this.initData = item.tableData.driver;
+      this.updateGridData(item.tableData.driver);
+    }else{
+      this.updateGridData(this.initData);
+    }
   }
 
   onCloseMsg(){

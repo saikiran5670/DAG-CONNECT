@@ -56,6 +56,26 @@ export class DriverService {
         .pipe(catchError(this.handleError));
     }
 
+    updateDriver(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+     return this.httpClient
+        .put<any>(`${this.driverServiceUrl}/update`, data, headers)
+        .pipe(catchError(this.handleError));
+    }
+
+    updateOptInOptOutDriver(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+     return this.httpClient
+        .put<any>(`${this.driverServiceUrl}/updateoptinoptout`, data, headers)
+        .pipe(catchError(this.handleError));
+    }
+
     private handleError(errResponse: HttpErrorResponse) {
         console.error('Error : ', errResponse.error);
         return throwError(

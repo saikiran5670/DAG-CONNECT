@@ -173,6 +173,6 @@
         </mat-card>
     </div>
     <div *ngIf='editFlag'>
-        <app-edit-driver-details [translationData]='translationData' [actionType]='actionType' [driverData]='driverData' (backToPage)="editData($event)"></app-edit-driver-details>
+        <app-edit-driver-details [translationData]='translationData' [actionType]='actionType' [driverData]='driverData' (backToPage)="updateEditData($event)"></app-edit-driver-details>
     </div>
 </div>
