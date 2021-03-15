@@ -17,7 +17,7 @@ spec:
       automountServiceAccountToken: false
       securityContext:
         runAsUser: 10001
-        runAsGroup: 3000
+        runAsGroup: 10001
         fsGroup: 10001
         runAsNonRoot: true
       affinity:
