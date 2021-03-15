@@ -33,8 +33,8 @@ namespace net.atos.daf.ct2.driverservice.entity
            
            // driver.DateOfBith= request.DateOfBith;
             driver.Status= request.Status;
-            driver.IsActive= request.IsActive;
-           // driver.opt_in= request.opt_in;
+           // driver.IsActive= request.IsActive;
+            driver.OptIn= request.opt_in;
           //  driver.modified_at= request.modified_at;
           //  driver.modified_by= request.modified_by;
            // driver.created_at= request.created_at;
@@ -45,16 +45,16 @@ namespace net.atos.daf.ct2.driverservice.entity
         {
             driver.entity.Driver driver=new driver.entity.Driver();
             driver.Id=request.Id;
-            driver.Organization_id=request.OrganizationId;
+           // driver.Organization_id=request.OrganizationId;
             driver.Email=request.Email;
             driver.FirstName=request.FirstName;
             driver.LastName=request.LastName;
             driver.Status=request.Status;
-            driver.opt_in=request.OptIn;
+          //  driver.opt_in=request.OptIn;
             //driver.Driver_id_ext=request.DriverIdExt;
             driver.modified_by=request.ModifiedBy;           
             driver.Status= request.Status;
-            driver.IsActive= request.IsActive;          
+           // driver.IsActive= request.IsActive;          
             return driver;
         }  
 
@@ -67,10 +67,10 @@ namespace net.atos.daf.ct2.driverservice.entity
             driver.FirstName=request.FirstName;
             driver.LastName=request.LastName;
             driver.Status=request.Status;
-            driver.OptIn=request.opt_in;
+            //driver.OptIn=request.opt_in;
             driver.ModifiedBy=request.modified_by;           
             driver.Status= request.Status;
-            driver.IsActive= request.IsActive;          
+           // driver.IsActive= request.IsActive;          
             return driver;
         }  
         public driver.entity.Driver ToDriver(net.atos.daf.ct2.driverservice.DriversImport request )
