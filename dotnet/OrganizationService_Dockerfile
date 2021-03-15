@@ -25,6 +25,9 @@ RUN dotnet publish "net.atos.daf.ct2.organizationservice.csproj" -c Release -o /
 
 FROM base AS final
 WORKDIR /app
+
+RUN apt-get update && apt-get install -y procps
+
 RUN mkdir log
 RUN mkdir log/Error
 RUN mkdir log/Info
