@@ -51,7 +51,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                      return StatusCode(400,"Please provide organization ID:");
                 }                 
                 DriverBusinessService.DriverDataList drvResponse = await driverClient.GetAsync(idRequest);
-                return Ok(drvResponse);  
+                return Ok(drvResponse.Driver);  
             }
             catch(Exception ex)
             {            
@@ -84,8 +84,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }         
 
                 logger.LogInformation("Driver update function called ");     
-                DriverBusinessService.DriverUpdateResponse orgResponse = await driverClient.UpdateAsync(request); 
-                return Ok(orgResponse);                 
+                DriverBusinessService.DriverUpdateResponse Response = await driverClient.UpdateAsync(request); 
+                return Ok(Response.Driver);                 
              }
             catch(Exception ex)
             {         
@@ -172,6 +172,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }       
                 logger.LogInformation("Driver import function called ");   
                 net.atos.daf.ct2.driverservice.DriverImportRequest request=new DriverBusinessService.DriverImportRequest();
+                
+                //  List<List<DriverRequest>> driverList=new List<List<DriverRequest>>();
+                //  List<DriverRequest> ValidDrivers=new List<DriverRequest>();
+                //  List<DriverRequest> NoValidDrivers=new List<DriverRequest>();
+                // mapper.ToDriverImport(driverList);
+               
+               
+               
+               
                 request=mapper.ToDriverImport(drivers);
                
                 if (request.OrgID<=0)                   
@@ -180,7 +189,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }                                  
                 DriverBusinessService.DriverImportData response = await driverClient.ImportDriversAsync(request); 
                 
-                return Ok(response);                 
+                return Ok(response.Driver);                 
              }
             catch(Exception ex)
             {         

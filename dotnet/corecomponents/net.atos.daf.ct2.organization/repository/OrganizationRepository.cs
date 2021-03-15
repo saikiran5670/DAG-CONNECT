@@ -816,6 +816,46 @@ namespace net.atos.daf.ct2.organization.repository
                 count += 1;
             }
             return count;
-        }
+        }       
+       
+        public async Task<int> CraeteOwnerRelationship(RelationshipMapping relationshipMapping)
+        {
+              // 1. Check relationship exist in orgrelationshipmapping table based on VIN.
+              // 2. if relationship not exist then create the relationship in orgrelationshipmapping table with configured parameters and default values
+              // 3. Get configured parameter org_id and relationship_id from property file
+               
+                int OwnerRelationshipId=0;
+                var parameter = new DynamicParameters();
+                parameter.Add("@vin", relationshipMapping.vehicle_id);
+                var query = @"Select id from master.orgrelationshipmapping where vehicle_id=@vin";
+                int iscustomerexist = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                if (iscustomerexist<1 && relationshipMapping.isFirstRelation) // relationship not exist
+                {
+                     var Inputparameter = new DynamicParameters();
+                     Inputparameter.Add("@relationship_id", relationshipMapping.relationship_id);  // from property file
+                     Inputparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
+                     Inputparameter.Add("@vehicle_group_id", relationshipMapping.vehicle_group_id);
+                     Inputparameter.Add("@owner_org_id", relationshipMapping.owner_org_id);    // from property file 
+                     Inputparameter.Add("@created_org_id", relationshipMapping.created_org_id); // from property file --- first time it will same as owner_org_id
+                     Inputparameter.Add("@target_org_id", relationshipMapping.target_org_id);  // from property file -- first time it will same as owner_org_id
+                     Inputparameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(System.DateTime.Now));
+                     Inputparameter.Add("@end_date", relationshipMapping.end_date);   // First time -- NULL
+                     Inputparameter.Add("@allow_chain", relationshipMapping.allow_chain);   // Alway true
+
+                     var queryInsert = @"insert into master.orgrelationshipmapping(relationship_id,vehicle_id,vehicle_group_id,
+                     owner_org_id,created_org_id,target_org_id,start_date,end_date,allow_chain)                     
+                     values(@relationship_id,@vehicle_id,@vehicle_group_id,@owner_org_id,@created_org_id,@target_org_id,@start_date,@end_date,@allow_chain)";
+                     
+                    OwnerRelationshipId=  await dataAccess.ExecuteScalarAsync<int>(queryInsert, Inputparameter);
+                }
+
+                else  if (iscustomerexist<1 && (!relationshipMapping.isFirstRelation)) // relationship not exist
+                {
+                                       
+                    // update previuse relationship end date and insert new relationship
+                }
+            
+            return OwnerRelationshipId;
+        }   
     }
 }
