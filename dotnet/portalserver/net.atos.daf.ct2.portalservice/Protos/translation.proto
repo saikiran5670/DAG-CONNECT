@@ -193,7 +193,7 @@ message TranslationUploadResponse
 {
     Responcecode code=1;
     string message = 2;
-    TranslationUploadRequest translationupload=3;
+    TranslationRecordResponce translationupload=3;
 }
 
 message FileUploadDetailsRequest
@@ -224,4 +224,9 @@ message TranslationUpload
 
 }
 
-  
+  message TranslationRecordResponce
+{
+   int32 Failed = 1;
+    int32    Updated = 2;
+     int32   Added = 3;
+}
