@@ -37,6 +37,9 @@ spec:
       - name: auditservice-grpc-container
         image: #{acrurl}#/auditservice-grpc
         imagePullPolicy: "Always"
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
         securityContext:
           allowPrivilegeEscalation: false
           #readOnlyRootFilesystem: true
@@ -57,6 +60,9 @@ spec:
           value: "0"
         ports:
           - containerPort: 8080
+      volumes:
+      - name: tmp
+        emptyDir: {}
       nodeSelector:
         agentpool: npuser01         
   selector:
