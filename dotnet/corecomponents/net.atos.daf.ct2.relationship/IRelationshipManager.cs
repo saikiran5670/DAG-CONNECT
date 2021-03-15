@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.relationship
 {
-    internal interface IRelationshipManager
+    public interface IRelationshipManager
     {
         Task<Relationship> CreateRelationship(Relationship relationship);
         Task<Relationship> UpdateRelationship(Relationship relationship);

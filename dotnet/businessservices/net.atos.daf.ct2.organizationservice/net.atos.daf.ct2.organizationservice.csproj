@@ -25,6 +25,7 @@
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.account\net.atos.daf.ct2.account.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.accountpreference\net.atos.daf.ct2.accountpreference.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.group\net.atos.daf.ct2.group.csproj" />
+    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.relationship\net.atos.daf.ct2.relationship.csproj" />
   </ItemGroup>
 
 </Project>
