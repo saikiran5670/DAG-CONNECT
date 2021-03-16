@@ -13,6 +13,6 @@ namespace net.atos.daf.ct2.subscription.repository
         Task<Subscription> Get(int subscriptionId);
         Task<Subscription> Get(int organizationId, int vehicleId, char status, DateTime StartDate, DateTime EndDate);
         Task<Subscription> Get(char status, int vehicleGroupID, int vehicleId, DateTime StartDate, DateTime EndDate);
-        Task<SubscriptionResponse> Create(string orgId);
+        Task<SubscriptionResponse> Create(int orgId);
     }
 }
