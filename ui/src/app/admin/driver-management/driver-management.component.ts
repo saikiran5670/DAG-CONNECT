@@ -149,7 +149,16 @@ export class DriverManagementComponent implements OnInit {
       > Driver ID contains 19 characters and ends with the sequence number of the driver card
       E-mail: Driver's email-id. Optional input. In case of a non-empty input for an existing driver record, the email-id shall be updated accordingly. Please enter a valid email-id.
       First Name: Driver's first name. Optional input. In case of a non-empty input for an existing driver record, the email-id shall be updated accordingly. 
-      Last Name: Driver's last name.  Optional input. In case of a non-empty input for an existing driver record, the email-id shall be updated accordingly`
+      Last Name: Driver's last name.  Optional input. In case of a non-empty input for an existing driver record, the email-id shall be updated accordingly`,
+      lblEmailIDexceedsmaximumallowedlengthof100chars: "Email ID exceeds maximum allowed length of 100 chars",
+      lblEmailIDformatisinvalid: "Email ID format is invalid",
+      lblDriverIDismandatoryinput: "Driver ID is mandatory input",
+      lblDriverIDshouldbeexactly19charsinlength: "Driver ID should be exactly 19 chars in length",
+      lblDriverIDformatisinvalid: "Driver ID format is invalid",
+      lblexceedsmaximumallowedlengthofchars: "'$' exceeds maximum allowed length of '#' chars",
+      lblNumbersnotallowedin: "Numbers not allowed in '$'",
+      lblSpecialcharactersnotallowedin: "Special characters not allowed in '$'",
+      lblWhitespacesnotallowedin: "Whitespaces not allowed in '$'"
     }
   }
 
@@ -333,6 +342,8 @@ export class DriverManagementComponent implements OnInit {
               item.returnMassage = objData.reason;
             }else if(fname && objData.undefineStatus){
               item.firstName = '';
+            }else{
+              item.firstName = item.firstName.trim();
             }
             break;
           }
@@ -343,6 +354,8 @@ export class DriverManagementComponent implements OnInit {
               item.returnMassage = objData.reason;
             }else if(lname && objData.undefineStatus){
               item.lastName = '';
+            }else{
+              item.lastName = item.lastName.trim();
             }
             break;
           }
@@ -353,6 +366,8 @@ export class DriverManagementComponent implements OnInit {
               item.returnMassage = objData.reason;
             }else if(email && objData.undefineStatus){
               item.email = '';
+            }else{
+              item.email = item.email.trim();
             }
             break;
           }
@@ -376,7 +391,7 @@ export class DriverManagementComponent implements OnInit {
       obj.undefineStatus = true
       return obj; 
     }
-    if(value == '' && value.length == 0){ //-- optional field
+    if(value && value.trim().length == 0){ //-- optional field
      return obj; 
     }
     else{
@@ -387,12 +402,12 @@ export class DriverManagementComponent implements OnInit {
       // }
       if(value.length > 100){ //-- as per db table
         obj.status = false;
-        obj.reason = 'Email ID exceeds maximum allowed length of 120 chars';  
+        obj.reason = this.translationData.lblEmailIDexceedsmaximumallowedlengthof100chars || 'Email ID exceeds maximum allowed length of 100 chars';  
         return obj;
       }
       if(!regx.test(value)){
         obj.status = false;
-        obj.reason = 'Email ID format is invalid.';  
+        obj.reason = this.translationData.lblEmailIDformatisinvalid || 'Email ID format is invalid';  
         return obj;
       }
       return obj;
@@ -402,19 +417,19 @@ export class DriverManagementComponent implements OnInit {
   driveIdValidation(value: any){
     let obj: any = { status: true, reason: 'correct data'};
     const regx = /[A-Z]{1,1}[A-Z\s]{1,1}[\s]{1,1}[A-Z0-9]{16,16}/;
-    if(!value || value == '' || value.length == 0){
+    if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
-      obj.reason = 'Driver ID is mandatory input';
+      obj.reason = this.translationData.lblDriverIDismandatoryinput || 'Driver ID is mandatory input';
       return obj;  
     }
     if(value.length > 19){
       obj.status = false;
-      obj.reason = 'Driver ID should be exactly 19 chars in length';  
+      obj.reason = this.translationData.lblDriverIDshouldbeexactly19charsinlength || 'Driver ID should be exactly 19 chars in length';  
       return obj;
     }
     if(!regx.test(value)){
       obj.status = false;
-      obj.reason = 'Driver ID format is invalid.';  
+      obj.reason = this.translationData.lblDriverIDformatisinvalid || 'Driver ID format is invalid';  
       return obj;
     }
     return obj;
@@ -428,7 +443,7 @@ export class DriverManagementComponent implements OnInit {
       obj.undefineStatus = true
       return obj; 
     }
-    if(value && value == '' && value.length == 0){ //-- optional field
+    if(value && value.trim().length == 0){ //-- optional field
       return obj; 
     }
     else{
@@ -437,27 +452,40 @@ export class DriverManagementComponent implements OnInit {
       //   obj.reason = `Required ${type} field `;  
       //   return obj;
       // }
+
       if(value.length > maxLength){
         obj.status = false;
-        obj.reason = `${type} exceeds maximum allowed length of ${maxLength} chars`; 
+        obj.reason = this.getValidateMsg(type, this.translationData.lblexceedsmaximumallowedlengthofchars || "'$' exceeds maximum allowed length of '#' chars", maxLength) 
         return obj;
       }
       if(!numberRegex.test(value)){
         obj.status = false;
-        obj.reason = `Numbers not allowed in ${type}`; 
+        obj.reason = this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin || "Numbers not allowed in '$'"); 
         return obj;
       }
       if(!SpecialCharRegex.test(value)){
         obj.status = false;
-        obj.reason = `Special characters not allowed in ${type}`; 
+        obj.reason = this.getValidateMsg(type, this.translationData.lblSpecialcharactersnotallowedin || "Special characters not allowed in '$'");
         return obj;
       }
       if(value.toString().trim().length == 0){
         obj.status = false;
-        obj.reason = `Whitespaces not allowed in ${type}`; 
+        obj.reason = this.getValidateMsg(type, this.translationData.lblWhitespacesnotallowedin || "Whitespaces not allowed in '$'");
         return obj;
       }
       return obj;
+    }
+  }
+
+  getValidateMsg(type: any, typeTrans: any, maxLength?: any){
+    if(typeTrans){
+      if(maxLength){
+        typeTrans = typeTrans.replace('$', type); 
+        return typeTrans.replace('#', maxLength)
+      }
+      else{
+        return typeTrans.replace('$', type);
+      }
     }
   }
 
