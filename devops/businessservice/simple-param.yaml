@@ -62,8 +62,8 @@ jobs:
     inputs:
       azureSubscription: ${{ parameters.Subscription }}
       azureContainerRegistry:  ${{ parameters.ContainerRegistry }}
-      dockerFile: {{ parameters.dockerFile }}
-      imageName: {{ parameters.imageName }}
+      dockerFile: ${{ parameters.dockerFile }}
+      imageName: ${{ parameters.imageName }}
 
   - task: Docker@0
     displayName: 'Push an image'
@@ -71,4 +71,4 @@ jobs:
       azureSubscription:  ${{ parameters.Subscription }}
       azureContainerRegistry:  ${{ parameters.ContainerRegistry }}
       action: 'Push an image'
-      imageName: {{ parameters.imageName }}
+      imageName: ${{ parameters.imageName }}
