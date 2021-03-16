@@ -140,6 +140,11 @@ namespace net.atos.daf.ct2.relationship.repository
                         parameter.Add("@id", filter.Id);
                         query = query + " and relationship.id=@id ";
                     }
+                    if (filter.OrganizationId > 0)
+                    {
+                        parameter.Add("@organization_id", filter.OrganizationId);
+                        query = query + " and relationship.organization_id=@organization_id ";
+                    }
 
                     if (!string.IsNullOrEmpty(filter.Code))
                     {
