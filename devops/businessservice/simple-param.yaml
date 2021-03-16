@@ -9,12 +9,11 @@ parameters:
   type: string
   default: 'variableGroup'
 
+group: ${{ parameters.variableGroup }}
 
 jobs:
 - job:
   pool: $(PRIVATEAGENT)
-  variables:
-  - group: ${{ parameters.variableGroup }}
     
   steps:
   - task: replacetokens@3
@@ -55,15 +54,15 @@ jobs:
   - task: Docker@0
     displayName: 'Build an image'
     inputs:
-      azureSubscription: $(Subscription)
-      azureContainerRegistry:  $(ContainerRegistry)
+      azureSubscription: ${{ parameters.Subscription }}
+      azureContainerRegistry:  ${{ parameters.ContainerRegistry }}
       dockerFile: dotnet/AccountService_Dockerfile
       imageName: accountservice-grpc-automatic
 
   - task: Docker@0
     displayName: 'Push an image'
     inputs:
-      azureSubscription:  $(Subscription)
-      azureContainerRegistry:  $(ContainerRegistry)
+      azureSubscription:  ${{ parameters.Subscription }}
+      azureContainerRegistry:  ${{ parameters.ContainerRegistry }}
       action: 'Push an image'
       imageName: accountservice-grpc-automatic
