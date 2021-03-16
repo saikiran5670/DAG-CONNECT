@@ -54,12 +54,6 @@ jobs:
       useLegacyPattern: false
       enableTelemetry: true
       
-  - task: CmdLine@2
-    inputs:
-      script: |
-        echo $(Subscription)
-        echo $(ContainerRegistry)
-  
   - task: Docker@0
     displayName: 'Build an image'
     inputs:
@@ -75,6 +69,11 @@ jobs:
       azureContainerRegistry:  ${{ parameters.ContainerRegistry }}
       action: 'Push an image'
       imageName: ${{ parameters.imageName }}
+  
+  - task: CmdLine@2
+    inputs:
+      script: |
+        echo ${{ parameters.manifestFile }}
 
   - task: CopyFiles@2
     displayName: 'Copy Kubernetes manifest'
