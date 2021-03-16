@@ -16,10 +16,11 @@ spec:
         keycloak.kubernetes.io/type: businessservice
     spec:
       automountServiceAccountToken: false
-      #securityContext:
-        #runAsUser: 10001
-        #runAsGroup: 3000
-        #runAsNonRoot: true
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -39,12 +40,12 @@ spec:
         #image: jboss/keycloak:11.0.3
         image: #{acrurl}#/keycloak
         imagePullPolicy: "Always"
-        #securityContext:
-          #allowPrivilegeEscalation: false
+        securityContext:
+          allowPrivilegeEscalation: false
           #readOnlyRootFilesystem: true
-          #capabilities:
-            #drop:
-             #- all
+          capabilities:
+            drop:
+             - all
         resources:
           limits:
             cpu: 2000m

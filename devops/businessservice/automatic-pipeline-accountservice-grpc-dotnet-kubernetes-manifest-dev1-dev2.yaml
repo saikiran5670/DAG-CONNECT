@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: featureservice-grpc-deployment
+  name: accountservice-automatic-grpc-deployment
   labels:
-    app.kubernetes.io/name: featureservice-grpc
+    app.kubernetes.io/name: accountservice-automatic-grpc
     app.kubernetes.io/type: businessservice
 spec:
   template:
@@ -11,14 +11,13 @@ spec:
       annotations:
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
       labels:
-        app.kubernetes.io/name: featureservice-grpc
+        app.kubernetes.io/name: accountservice-automatic-grpc
         app.kubernetes.io/type: businessservice
     spec:
       automountServiceAccountToken: false
       securityContext:
         runAsUser: 10001
         runAsGroup: 3000
-        fsGroup: 10001
         runAsNonRoot: true
       affinity:
         podAntiAffinity:
@@ -28,22 +27,19 @@ spec:
               - key: app.kubernetes.io/name
                 operator: In
                 values:
-                - featureservice-grpc
+                - accountservice-automatic-grpc
               - key: app.kubernetes.io/type
                 operator: In
                 values:
                 - businessservice
             topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: featureservice-grpc-container
-        image: #{acrurl}#/featureservice-grpc
+      - name: accountservice-automatic-grpc-container
+        image: #{acrurl}#/accountservice-grpc-automatic
         imagePullPolicy: "Always"
-        volumeMounts:
-        - name: tmp
-          mountPath: /tmp
         securityContext:
           allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
+          #readOnlyRootFilesystem: true
           capabilities:
             drop:
              - all
@@ -61,22 +57,19 @@ spec:
           value: "0"
         ports:
           - containerPort: 8080
-      volumes:
-      - name: tmp
-        emptyDir: {}
       nodeSelector:
         agentpool: npuser01         
   selector:
     matchLabels:
-        app.kubernetes.io/name: featureservice-grpc
+        app.kubernetes.io/name: accountservice-automatic-grpc
         app.kubernetes.io/type: businessservice
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: featureservice
+  name: accountserviceautomatic
   labels:
-    svc.kubernetes.io/name: featureservice-grpc
+    svc.kubernetes.io/name: accountservice-automatic-grpc
     svc.kubernetes.io/type: businessservice
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
@@ -87,16 +80,16 @@ spec:
     port: 80
     targetPort: 8080
   selector:
-    app.kubernetes.io/name: featureservice-grpc
+    app.kubernetes.io/name: accountservice-automatic-grpc
     app.kubernetes.io/type: businessservice
 
 ---
 kind: HorizontalPodAutoscaler 
 apiVersion: autoscaling/v2beta1 
 metadata: 
-  name: featureservice-grpc-hpa
+  name: accountservice-automatic-grpc-hpa
   labels:
-    hpa.kubernetes.io/name: featureservice-grpc
+    hpa.kubernetes.io/name: accountservice-automatic-grpc
     hpa.kubernetes.io/type: businessservice 
 spec: 
   maxReplicas: 5 
@@ -104,7 +97,7 @@ spec:
   scaleTargetRef: 
     apiVersion: apps/v1 
     kind: Deployment 
-    name: featureservice-grpc-deployment 
+    name: accountservice-automatic-grpc-deployment 
   metrics: 
   - type: Resource 
     resource: 
