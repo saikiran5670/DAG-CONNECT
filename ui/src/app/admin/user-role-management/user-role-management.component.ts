@@ -130,7 +130,7 @@ export class UserRoleManagementComponent implements OnInit {
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     data.forEach(row => {
-      let createdDate = new Date(row.createdat).getTime();
+      let createdDate = new Date(row.createdAt).getTime();
       let nextDate = createdDate + 86400000;
       if(currentDate > createdDate && currentDate < nextDate){
         row.newTag = true;
