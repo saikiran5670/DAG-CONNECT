@@ -800,7 +800,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         private async Task<dynamic> GetOEM_Id(string vin)
         {
             string vin_prefix = vin.Substring(0, 3);
-            dynamic result;
+            dynamic result=null;
             var QueryStatement = @"SELECT id, oem_organisation_id
 	                             FROM master.oem
                                  where vin_prefix=@vin_prefix";
@@ -810,7 +810,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
             result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
 
-            if (result == 0)
+            if (result == null)
             {
                 vin_prefix = "UNK";
                 parameter.Add("@vin_prefix", vin_prefix);

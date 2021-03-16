@@ -39,7 +39,7 @@
         <div class='userBgImg'>
             <div class="userImageContainer" fxLayout="row" fxLayoutAlign="start" fxLayoutGap="5px">
                 <div fxLayout="column">
-                    <img class="userIcon" mat-card-avatar src="{{fileUploadedPath}}">
+                    <img class="userIcon" mat-card-avatar [src]="fileUploadedPath ? fileUploadedPath : 'assets/images/john.png'">
                 </div>
                 <div *ngIf="!menuCollapsed" style='width: 75%;' fxLayoutAlign="center" fxLayout="column"
                     class='font-size-0-9'>

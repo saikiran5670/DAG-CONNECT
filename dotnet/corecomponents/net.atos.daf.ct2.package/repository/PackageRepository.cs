@@ -268,13 +268,12 @@ namespace net.atos.daf.ct2.package.repository
         {
             Package package = new Package();
             package.Id = record.id;
-            package.Code = record.packagecode;
-
+            package.Code = !string.IsNullOrEmpty(record.packagecode) ? record.packagecode : string.Empty;            
             package.Status = record.is_active ? PackageStatus.Active : PackageStatus.Inactive;
             package.Type = MapCharToPackageType(record.type);
-            package.Name = record.name;
-            package.Description = record.description;
-            package.FeatureSetID = record.feature_set_id;
+            package.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty; 
+            package.Description = !string.IsNullOrEmpty(record.description) ? record.description : string.Empty; 
+            package.FeatureSetID = record.feature_set_id != null ? record.feature_set_id : 0; 
             return package;
         }
 

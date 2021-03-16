@@ -105,8 +105,8 @@ export class AccountInfoSettingsComponent implements OnInit {
       vehDisplay: ['',[]],
       landingPage: ['', []]
     });
-    this.changePictureFlag = true;
-    this.isSelectPictureConfirm = true;
+    // this.changePictureFlag = true;
+    // this.isSelectPictureConfirm = true;
     this.orgName = localStorage.getItem("organizationName");
     this.accountId = parseInt(localStorage.getItem('accountId'));
     this.organizationId = parseInt(localStorage.getItem('accountOrganizationId'));
@@ -131,12 +131,18 @@ export class AccountInfoSettingsComponent implements OnInit {
       if(this.accountInfo.length != 0)
       this.blobId = this.accountInfo[0]["blobId"];
       if(this.blobId != 0){
+        this.changePictureFlag= true;
+        this.isSelectPictureConfirm= true;
         this.accountService.getAccountPicture(this.blobId).subscribe(data => {
           if(data){
             this.profilePicture = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
             this.croppedImage = this.profilePicture;
           }
         })
+      }
+      else{
+        this.changePictureFlag= false;
+        this.isSelectPictureConfirm= false;
       }
     });
   }
@@ -243,7 +249,8 @@ export class AccountInfoSettingsComponent implements OnInit {
 
   onEditAccountSettingsCancel(){
     this.editAccountSettingsFlag = false;
-    this.isSelectPictureConfirm = true;
+    if(this.blobId != 0)
+      this.isSelectPictureConfirm = true;
     this.imageError= '';
     if(this.blobId!= 0){
       this.isSelectPictureConfirm = true
@@ -318,29 +325,31 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   onSelectPictureConfirm(){
-    this.isSelectPictureConfirm = true;
-    this.isAccountPictureSelected = false;
+    if(this.croppedImage != ''){
+      this.isSelectPictureConfirm = true;
+      this.isAccountPictureSelected = false;
 
-    let objData = {
-      "blobId": this.blobId,
-      "accountId": this.accountId,
-      "imageType": "P",
-      "image": this.croppedImage.split(",")[1]
-    }
-
-    this.accountService.saveAccountPicture(objData).subscribe(data => {
-      if(data){
-        let msg = '';
-        if(this.translationData.lblAccountPictureSuccessfullyUpdated)
-          msg= this.translationData.lblAccountPictureSuccessfullyUpdated;
-        else
-          msg= "Account picture successfully updated";
-
-        this.successMsgBlink(msg);  
+      let objData = {
+        "blobId": this.blobId,
+        "accountId": this.accountId,
+        "imageType": "P",
+        "image": this.croppedImage.split(",")[1]
       }
-    }, (error) => {
-      this.imageError= "Something went wrong. Please try again!";
-    })
+
+      this.accountService.saveAccountPicture(objData).subscribe(data => {
+        if(data){
+          let msg = '';
+          if(this.translationData.lblAccountPictureSuccessfullyUpdated)
+            msg= this.translationData.lblAccountPictureSuccessfullyUpdated;
+          else
+            msg= "Account picture successfully updated";
+
+          this.successMsgBlink(msg);  
+        }
+      }, (error) => {
+        this.imageError= "Something went wrong. Please try again!";
+      })
+    }
   }
   
   fileChangeEvent(event: any): boolean {
