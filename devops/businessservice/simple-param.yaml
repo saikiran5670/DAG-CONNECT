@@ -14,7 +14,7 @@ parameters:
 - name: imageName
   type: string
   default: 'imageName'
-- name: 'manifestFile'
+- name: manifestFile
   type: string
   default: 'manifestFile'
 
