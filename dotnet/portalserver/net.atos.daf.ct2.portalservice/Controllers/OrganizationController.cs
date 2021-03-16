@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly OrganizationMapper _mapper;
         private readonly FeatureSetMapper _featureSetMapper;
         private readonly FeatureService.FeatureServiceClient _featureclient;
-        private readonly OrgRelationshipMapper _orgRelationshipMapper;
+        private readonly RelationshipMapper _relationshipMapper;
         private readonly AccountBusinessService.AccountService.AccountServiceClient _accountClient;
         private readonly OrganizationBusinessService.OrganizationService.OrganizationServiceClient organizationClient;
         private string FK_Constraint = "violates foreign key constraint";
@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             organizationClient = _organizationClient;
             _accountClient = accountClient;
             _mapper = new OrganizationMapper();
-            _orgRelationshipMapper = new OrgRelationshipMapper();
+            _relationshipMapper = new RelationshipMapper();
             _featureSetMapper = new FeatureSetMapper(featureclient);
         }
 
@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         return StatusCode(400, "Please provide relationship name:");
                     }
 
-                    var objRequest = _orgRelationshipMapper.ToOrgRelationshipRequest(request);
+                    var objRequest = _relationshipMapper.ToRelationshipRequest(request);
                     var orgResponse = await organizationClient.CreateRelationshipAsync(objRequest);
                     if (orgResponse.Relationship.Id < 1)
                     {
@@ -128,7 +128,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         return StatusCode(400, "Please provide relationship features");
                     }
-                    var objRequest = _orgRelationshipMapper.ToOrgRelationshipRequest(request);
+                    var objRequest = _relationshipMapper.ToRelationshipRequest(request);
                     var orgResponse = await organizationClient.UpdateRelationshipAsync(objRequest);
                     if (orgResponse.Relationship.Id < 1)
                     {
