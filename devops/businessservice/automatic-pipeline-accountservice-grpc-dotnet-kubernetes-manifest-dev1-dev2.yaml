@@ -74,7 +74,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: accountservice
+  name: accountserviceautomatic
   labels:
     svc.kubernetes.io/name: accountservice-automatic-grpc
     svc.kubernetes.io/type: businessservice
