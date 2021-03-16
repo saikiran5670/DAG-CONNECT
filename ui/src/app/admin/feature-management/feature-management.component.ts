@@ -56,7 +56,8 @@ export class FeatureManagementComponent implements OnInit {
       lblView: "View",
       lblEdit: "Edit",
       lblDelete: "Delete",
-      lblExclude: "Exclude"
+      lblExclude: "Exclude",
+      lblInclude: "Include"
     }
   }
 
@@ -74,10 +75,8 @@ export class FeatureManagementComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
-      // this.loadRestData();
       this.loadFeatureData();
     });
-      // this.loadRestData();
       this.loadFeatureData();
   }
 
