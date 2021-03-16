@@ -25,6 +25,17 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             try
             {
+                char org_status = await GetOrganisationStatusofVehicle(Convert.ToInt32(vehicle.Organization_Id));
+                vehicle.Opt_In = VehicleStatusType.Inherit;
+                vehicle.Is_Ota = false;
+                vehicle.Status = (VehicleCalculatedStatus)await GetCalculatedVehicleStatus(org_status, vehicle.Is_Ota);
+                dynamic oiedetail = await GetOEM_Id(vehicle.VIN);
+                if (oiedetail != null)
+                {
+                    vehicle.Oem_id = oiedetail[0].id;
+                    vehicle.Oem_Organisation_id = oiedetail[0].oem_organisation_id;
+                }
+
                 var QueryStatement = @"INSERT INTO master.vehicle
                                       (
                                        organization_id
@@ -88,7 +99,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@vin", string.IsNullOrEmpty(vehicle.VIN) ? null : vehicle.VIN);
                 parameter.Add("@license_plate_number", string.IsNullOrEmpty(vehicle.License_Plate_Number) ? null : vehicle.License_Plate_Number);
                 parameter.Add("@status", (char)vehicle.Status);
-                parameter.Add("@status_changed_date", (vehicle.Status_Changed_Date != null && DateTime.Compare(DateTime.MinValue, vehicle.Status_Changed_Date) > 0) ? UTCHandling.GetUTCFromDateTime(vehicle.Status_Changed_Date.ToString()) : 0);
+                parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 parameter.Add("@termination_date", vehicle.Termination_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Termination_Date.ToString()) : (long?)null);
                 parameter.Add("@vid", string.IsNullOrEmpty(vehicle.Vid) ? null : vehicle.Vid);
                 parameter.Add("@type", null);
@@ -224,6 +235,9 @@ namespace net.atos.daf.ct2.vehicle.repository
                 vehicle.Is_Ota = record.is_ota;
             if (record.opt_in != null)
                 vehicle.Opt_In = (VehicleStatusType)(Convert.ToChar(record.opt_in));
+            if (record.created_at != null)
+                // vehicle.CreatedAt = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.created_at, "Africa/Mbabane", "yyyy-MM-ddTHH:mm:ss"));
+                vehicle.CreatedAt = record.created_at;
             return vehicle;
         }
 
@@ -425,6 +439,48 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
         }
 
+        public async Task<Vehicle> UpdateOrgVehicleDetails(Vehicle vehicle)
+        {
+
+            vehicle.ID = await IsVINExists(vehicle.VIN);
+            await VehicleOptInOptOutHistory(vehicle.ID);
+            char VehOptIn = await dataAccess.QuerySingleAsync<char>("select coalesce((select vehicle_default_opt_in FROM master.organization where id=@id), 'U')", new { id = vehicle.Organization_Id });
+            vehicle.Status = (VehicleCalculatedStatus)await GetCalculatedVehicleStatus(VehOptIn, false);
+
+            var QueryStatement = @" UPDATE master.vehicle
+                                    SET 
+                                     organization_id=@organization_id                                        
+                                    ,opt_in=@opt_in
+                                    ,modified_at=@modified_at
+                                    ,modified_by=@modified_by
+                                    ,status_changed_date=@status_changed_date
+                                    ,status=@status
+                                    ,reference_date=@reference_date
+                                    ,is_ota=@is_ota
+                                     WHERE id = @id
+                                     RETURNING id;";
+
+            var parameter = new DynamicParameters();
+            parameter.Add("@id", vehicle.ID);
+            parameter.Add("@organization_id", vehicle.Organization_Id);
+            parameter.Add("@opt_in", (char)VehicleStatusType.Inherit);
+            parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+            parameter.Add("@modified_by", vehicle.Modified_By);
+            parameter.Add("@status", (char)vehicle.Status);
+            parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+            parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : 0);
+            parameter.Add("@is_ota", vehicle.Is_Ota);
+            int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+
+            return vehicle;
+        }
+
+        public async Task<int> IsVINExists(string VIN)
+        {
+            int VehicleId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = VIN });
+            return VehicleId;
+        }
+
 
         #endregion
 
@@ -449,16 +505,16 @@ namespace net.atos.daf.ct2.vehicle.repository
                 objVeh.ModelId = vehicleproperty.Classification_Model_Id;
                 objVeh.License_Plate_Number = vehicleproperty.License_Plate_Number;
                 objVeh.VehiclePropertiesId = VehiclePropertiesId;
-                dynamic oiedetail = await GetOEM_Id(vehicleproperty.VIN);
-                if (oiedetail != null)
-                {
-                    objVeh.Oem_id = oiedetail[0].id;
-                    objVeh.Oem_Organisation_id = oiedetail[0].oem_organisation_id;
-                }
-                char org_status = await GetOrganisationStatusofVehicle(OrgId);
-                objVeh.Opt_In = VehicleStatusType.Inherit;
-                objVeh.Is_Ota = false;
-                objVeh.Status = (VehicleCalculatedStatus)await GetCalculatedVehicleStatus(org_status, objVeh.Is_Ota);
+                //dynamic oiedetail = await GetOEM_Id(vehicleproperty.VIN);
+                //if (oiedetail != null)
+                //{
+                //    objVeh.Oem_id = oiedetail[0].id;
+                //    objVeh.Oem_Organisation_id = oiedetail[0].oem_organisation_id;
+                //}
+                //char org_status = await GetOrganisationStatusofVehicle(OrgId);
+                //objVeh.Opt_In = VehicleStatusType.Inherit;
+                //objVeh.Is_Ota = false;
+                //objVeh.Status = (VehicleCalculatedStatus)await GetCalculatedVehicleStatus(org_status, objVeh.Is_Ota);
                 if (VehiclePropertiesId > 0)
                 {
                     UpdateQueryStatement = @"UPDATE master.vehicleproperties
@@ -744,6 +800,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         private async Task<dynamic> GetOEM_Id(string vin)
         {
             string vin_prefix = vin.Substring(0, 3);
+            dynamic result;
             var QueryStatement = @"SELECT id, oem_organisation_id
 	                             FROM master.oem
                                  where vin_prefix=@vin_prefix";
@@ -751,7 +808,15 @@ namespace net.atos.daf.ct2.vehicle.repository
             var parameter = new DynamicParameters();
             parameter.Add("@vin_prefix", vin_prefix);
 
-            dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+
+            if (result == 0)
+            {
+                vin_prefix = "UNK";
+                parameter.Add("@vin_prefix", vin_prefix);
+                result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            }
+
 
             return result;
         }
