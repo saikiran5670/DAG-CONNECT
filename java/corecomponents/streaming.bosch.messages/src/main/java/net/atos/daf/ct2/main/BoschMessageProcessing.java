@@ -86,7 +86,8 @@ public class BoschMessageProcessing {
 				properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER),
 				properties.getProperty(DAFCT2Constant.HBASE_MASTER),
 				properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER_PORT),
-				properties.getProperty(DAFCT2Constant.HBASE_BOSCH_HISTORICAL_TABLE_NAME)));
+				properties.getProperty(DAFCT2Constant.HBASE_BOSCH_HISTORICAL_TABLE_NAME),
+				properties.getProperty(DAFCT2Constant.HBASE_BOSCH_HISTORICAL_TABLE_CF)));
 
 		DataStream<Tuple2<Integer, KafkaRecord<String>>> boschStreamValidSts = validateSourceStream
 				.isValidJSON(boschInputStream);

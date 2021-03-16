@@ -30,9 +30,10 @@ public class StoreHistoricalData extends RichSinkFunction<KafkaRecord<String>> {
 	private String hbaseMaster = null;
 	private String regionServerPort = null;
 	private String tableName = null;
+	private String colFm = null;
 	
 	public StoreHistoricalData(String quorum, String clientPort, String parent, String regionserver, String master,
-			String port, String tableNm) {
+			String port, String tableNm, String cf) {
 		zookeeperQuorum = quorum;
 		zookeeperClientPort = clientPort;
 		zookeeperNodeParent = parent;
@@ -40,6 +41,7 @@ public class StoreHistoricalData extends RichSinkFunction<KafkaRecord<String>> {
 		hbaseMaster = master;
 		regionServerPort = port;
 		tableName = tableNm;
+		colFm = cf;
 	}
 
 	@Override
@@ -55,12 +57,11 @@ public class StoreHistoricalData extends RichSinkFunction<KafkaRecord<String>> {
 			conn = connectionPool.getHbaseConnection();
 			if (null == conn) {
 				logger.warn("Getting connection from HBase connection pool failed");
-
 			}
 			TableName tblName = TableName.valueOf(tableName);
 			table = conn.getConnection().getTable(tblName);
 
-			logger.info("tableName " + tableName);
+			logger.info("historical tableName " + tableName);
 
 		} catch (IOException e) {
 			// TODO: handle exception both logger and throw is not required
@@ -79,7 +80,7 @@ public class StoreHistoricalData extends RichSinkFunction<KafkaRecord<String>> {
 		//need to check on rowKey
 		Put put = new Put(Bytes.toBytes(String.valueOf(value.getKey())));
 	
-		put.addColumn(Bytes.toBytes(KafkaCT2Constant.HBASE_HISTORICAL_TABLE_CF),
+		put.addColumn(Bytes.toBytes(colFm),
 				Bytes.toBytes(KafkaCT2Constant.HBASE_HISTORICAL_TABLE_COLNM),
 				Bytes.toBytes(String.valueOf(value.getValue())));
 		table.put(put);

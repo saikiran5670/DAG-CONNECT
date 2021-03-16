@@ -40,7 +40,7 @@ public class DAFCT2Constant {
     public static final String POSTGRE_PLUGIN_NAME = "postgre.plugin.name";
     
     public static final String HBASE_BOSCH_HISTORICAL_TABLE_NAME = "bosch.historical.table.name";
-    public static final String HBASE_BOSCH_HISTORICAL_TABLE_CF = "rawcf";
+    public static final String HBASE_BOSCH_HISTORICAL_TABLE_CF = "bosch.historical.table.colfm";
     
 	//HBase
 	public static final String HBASE_ZOOKEEPER_QUORUM = "hbase.zookeeper.quorum";
