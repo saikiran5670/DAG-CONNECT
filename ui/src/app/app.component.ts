@@ -6,6 +6,8 @@ import { TranslationService } from './services/translation.service';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DOCUMENT } from '@angular/common';
+import { AccountService } from './services/account.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +27,7 @@ export class AppComponent {
   public currentTitle: string = '';
   public menuCollapsed:boolean = false;
   public pageName:string = '';
-  public fileUploadedPath: any;
+  public fileUploadedPath: SafeUrl;
   isLogedIn: boolean = false;
   menuPages: any = (data as any).default;
   languages= [];
@@ -136,7 +138,7 @@ export class AppComponent {
     }
   }
 
-  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any) {
+  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -225,6 +227,13 @@ export class AppComponent {
       this.organizationDropdown = this.accountInfo.organization;
       this.roleDropdown = this.accountInfo.role;
       this.setDropdownValues();
+      if(this.accountInfo.accountDetail.blobId != 0){
+        this.accountService.getAccountPicture(this.accountInfo.accountDetail.blobId).subscribe(data => {
+          if(data){
+            this.fileUploadedPath = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
+          }
+        })
+      }
     }
   }
 
@@ -355,8 +364,7 @@ export class AppComponent {
     if (this.router.url) {
       //this.isLogedIn = true;
     }
-    this.fileUploadedPath = 'assets/images/john.png';
-}
+  }
 
 private setPageTitle() {
   if(this.subpage) {
@@ -409,6 +417,7 @@ private setPageTitle() {
     this.isLogedIn = false;
     localStorage.clear(); // clear all localstorage
     this.router.navigate(["/auth/login"]);
+    this.fileUploadedPath= '';
   }
 
   fullScreen() {
