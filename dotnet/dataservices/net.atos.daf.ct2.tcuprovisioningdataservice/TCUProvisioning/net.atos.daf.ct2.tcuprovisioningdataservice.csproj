@@ -15,9 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="repository">
-      <HintPath>..\..\..\businessservices\net.atos.daf.ct2.tcuprovisioningvehicle\repository\repository\bin\Debug\repository.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\..\corecomponents\net.atos.daf.ct2.tcu\net.atos.daf.ct2.tcu.csproj" />
   </ItemGroup>
 
 
