@@ -637,14 +637,7 @@ export class DriverManagementComponent implements OnInit {
     Last Name: Driver's last name.  Optional input. In case of a non-empty input for an existing driver record, the email-id shall be updated accordingly`;
     const header = [this.translationData.lblExcelDriverID || 'DriverID', this.translationData.lblExcelEmail || 'Email', this.translationData.lblExcelFirstName || 'FirstName', this.translationData.lblExcelLastName || 'LastName', excelHintMsg];
     const data = [
-      ['B  B110000123456001', 'johan.peeters@test.com', "Johan", "Peeters", ""],
-      ['F  1000000123456001', 'jeanne.dubois@test.com', "Jeanne", "Dubois", ""],
-      ['PL 1234567890120002', 'alex.nowak@test.com', "Alex", "Nowak", ""],
-      ['D  DF00001234567001', 'p.muller@test.com', "Paul H.F.", "Müller", ""],
-      ['NL B000012345000002', 'jan.de.jong@test.com', "Jan", "de Jong", ""],
-      ['SK A000000001234000', 'eric.m.horvath@test.com', "Eric M.", "Horváth", ""],
-      ['I  I000000123456001', 'f.rossi@test.com', "Francesco", "Rossi", ""],
-      ['UK 0000000123456001', 'j.wilson@test.com', "John", "Wilson", ""]
+      ['B  B110000123456001', 'johan.peeters@test.com', "Johan", "Peeters", ""]
     ];
     let workbook = new Workbook();
     let worksheet = workbook.addWorksheet('Driver Template');
