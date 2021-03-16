@@ -35,7 +35,10 @@ namespace net.atos.daf.ct2.driverservice.entity
 
            // driver.modified_at= request.modified_at;
            // driver.modified_by= request.modified_by;
-           // driver.created_at= request.created_at;
+           if (!(string.IsNullOrEmpty(request.created_at.ToString())))
+           {
+                driver.CreatedAt= UTCHandling.GetConvertedDateTimeFromUTC(request.created_at, "America/New_York", "yyyy-MM-ddTHH:mm:ss");
+           }
             return driver;
         }  
 
@@ -43,13 +46,13 @@ namespace net.atos.daf.ct2.driverservice.entity
         {
             driver.entity.Driver driver=new driver.entity.Driver();
             driver.Id=request.Id;
-           // driver.Organization_id=request.OrganizationId;
+            driver.Organization_id=request.OrganizationId;
             driver.email=request.Email;
             driver.first_name=request.FirstName;
             driver.last_name=request.LastName;
             driver.Status=request.Status;
-          //  driver.opt_in=request.OptIn;
-            //driver.Driver_id_ext=request.DriverIdExt;
+         //  driver.opt_in=request.OptIn;
+            driver.Driver_id_ext=request.DriverIdExt;
             driver.modified_by=request.ModifiedBy;           
             driver.Status= request.Status;
            // driver.IsActive= request.IsActive;          
