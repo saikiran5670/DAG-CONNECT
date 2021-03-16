@@ -254,7 +254,8 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   onSetTypeChange(event: any){
-    this.selectedSetType = event.value;
+     let valueToBoolean = event.value == "true" ? true : false 
+    this.selectedSetType = valueToBoolean;
   }
 
   onStatusChange(event: any){
