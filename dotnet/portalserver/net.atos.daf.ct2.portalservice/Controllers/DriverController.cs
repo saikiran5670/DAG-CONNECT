@@ -173,11 +173,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 logger.LogInformation("Driver import function called ");   
                 net.atos.daf.ct2.driverservice.DriverImportRequest request=new DriverBusinessService.DriverImportRequest();
                 
-                //  List<List<DriverRequest>> driverList=new List<List<DriverRequest>>();
-                //  List<DriverRequest> ValidDrivers=new List<DriverRequest>();
-                //  List<DriverRequest> NoValidDrivers=new List<DriverRequest>();
-                // mapper.ToDriverImport(driverList);
+                List<List<DriverRequest>> driverList=new List<List<DriverRequest>>();
+                List<DriverRequest> ValidDrivers=new List<DriverRequest>();
+                List<DriverRequest> NoValidDrivers=new List<DriverRequest>();
                
+               // mapper.ToDriverImport(drivers);         
                
                
                
