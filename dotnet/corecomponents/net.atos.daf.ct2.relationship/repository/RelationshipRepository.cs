@@ -70,6 +70,7 @@ namespace net.atos.daf.ct2.relationship.repository
 
                 if (orgexist > 0)
                 {
+                    parameter.Add("@Id", relationship.Id);
                     parameter.Add("@OrganizationId", relationship.OrganizationId);
                     parameter.Add("@Name", relationship.Name);
                     parameter.Add("@Code", relationship.Code);
