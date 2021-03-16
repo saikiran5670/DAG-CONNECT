@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (request.Features.Count >= 1)
                 {
-                    var featureSetId = await _featureSetMapper.RetrieveFeatureSetId(request.Features);
+                    var featureSetId = await _featureSetMapper.RetrieveFeatureSetIdByName(request.Features);
                     request.FeatureSetID = featureSetId;
                 }
                 else
@@ -115,7 +115,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     if (request.Features.Count >= 1)
                     {
-                        var featureSetId = await _featureSetMapper.UpdateFeatureSetId(request.Features, request.FeatureSetID);
+                        var featureSetId = await _featureSetMapper.UpdateFeatureSetIdByName(request.Features, request.FeatureSetID);
                         request.FeatureSetID = featureSetId;
                     }
                     else
