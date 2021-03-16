@@ -1,124 +1,105 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: accountservice-automatic-grpc-deployment
+  labels:
+    app.kubernetes.io/name: accountservice-automatic-grpc
+    app.kubernetes.io/type: businessservice
+spec:
+  template:
+    metadata:
+      annotations:
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+      labels:
+        app.kubernetes.io/name: accountservice-automatic-grpc
+        app.kubernetes.io/type: businessservice
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 3000
+        runAsNonRoot: true
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                - accountservice-automatic-grpc
+              - key: app.kubernetes.io/type
+                operator: In
+                values:
+                - businessservice
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: accountservice-automatic-grpc-container
+        image: #{acrurl}#/accountservice-grpc-automatic
+        imagePullPolicy: "Always"
+        securityContext:
+          allowPrivilegeEscalation: false
+          #readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+             - all
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        env:
+        - name: ASPNETCORE_URLS
+          value: "http://*:8080"
+        - name: COMPlus_EnableDiagnostics
+          value: "0"
+        ports:
+          - containerPort: 8080
+      nodeSelector:
+        agentpool: npuser01         
+  selector:
+    matchLabels:
+        app.kubernetes.io/name: accountservice-automatic-grpc
+        app.kubernetes.io/type: businessservice
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: accountserviceautomatic
+  labels:
+    svc.kubernetes.io/name: accountservice-automatic-grpc
+    svc.kubernetes.io/type: businessservice
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: accountservice-automatic-grpc
+    app.kubernetes.io/type: businessservice
 
-trigger:
-- none
-
-jobs:
-  - job:
-    pool: $(PRIVATEAGENT)
-    variables:
-    - group: DEV01-Build-Variables
-    - name: a
-      value: 'DAF CT AZURE DTA LANDING ZONE DEV1'
-    - name: b
-      value: '{"loginServer":"acrakspzfu3h3wyefhu.azurecr.io", "id" : "/subscriptions/6bd8b39f-86c3-4026-985a-34db67361301/resourceGroups/daf-lan1-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acrakspzfu3h3wyefhu"}'
-    steps:
-      - task: replacetokens@3
-        inputs:
-          targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json'
-          encoding: 'auto'
-          writeBOM: true
-          actionOnMissing: 'warn'
-          keepToken: false
-          tokenPrefix: '#{'
-          tokenSuffix: '}#'
-          useLegacyPattern: false
-          enableTelemetry: true
-      - task: CmdLine@2
-        inputs:
-          script: |
-            cat dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json
-      
-      - task: replacetokens@3
-        inputs:
-          targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config'
-          encoding: 'auto'
-          writeBOM: true
-          actionOnMissing: 'warn'
-          keepToken: false
-          tokenPrefix: '#{'
-          tokenSuffix: '}#'
-          useLegacyPattern: false
-          enableTelemetry: true
-      - task: CmdLine@2
-        inputs:
-          script: |
-            echo $(Subscription)
-            echo $(ContainerRegistry)
-      
-      - task: Docker@0
-        displayName: 'Build an image'
-        inputs:
-          azureSubscription: ${{ variables.a }}
-          azureContainerRegistry: ${{ variables.b }}
-          dockerFile: dotnet/AccountService_Dockerfile
-          imageName: accountservice-grpc-automatic
-
-      - task: Docker@0
-        displayName: 'Push an image'
-        inputs:
-          azureSubscription: ${{ variables.a }}
-          azureContainerRegistry: ${{ variables.b }}
-          action: 'Push an image'
-          imageName: accountservice-grpc-automatic
-    
-  - job:
-    pool: $(PRIVATEAGENT)
-    variables:
-    - group: DEV0-Build-Variables
-    - name: a
-      value: 'ats-sub1-d-app-automation'
-    - name: b
-      value: '{"loginServer":"dafdev017756.azurecr.io", "id" : "/subscriptions/f0b7c74e-ef18-46e8-ae31-7abbd0e5fd8f/resourceGroups/DAFCT_DEV0_DTA_K8S/providers/Microsoft.ContainerRegistry/registries/dafdev017756"}'
-    steps:
-      - task: replacetokens@3
-        inputs:
-          targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json'
-          encoding: 'auto'
-          writeBOM: true
-          actionOnMissing: 'warn'
-          keepToken: false
-          tokenPrefix: '#{'
-          tokenSuffix: '}#'
-          useLegacyPattern: false
-          enableTelemetry: true
-      - task: CmdLine@2
-        inputs:
-          script: |
-            cat dotnet/businessservices/net.atos.daf.ct2.accountservice/appsettings.json
-      
-      - task: replacetokens@3
-        inputs:
-          targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.accountservice/log4net.config'
-          encoding: 'auto'
-          writeBOM: true
-          actionOnMissing: 'warn'
-          keepToken: false
-          tokenPrefix: '#{'
-          tokenSuffix: '}#'
-          useLegacyPattern: false
-          enableTelemetry: true
-      - task: CmdLine@2
-        inputs:
-          script: |
-            echo $(Subscription)
-            echo $(ContainerRegistry)
-      
-      - task: Docker@0
-        displayName: 'Build an image'
-        inputs:
-          azureSubscription: ${{ variables.a }}
-          azureContainerRegistry: ${{ variables.b }}
-          dockerFile: dotnet/AccountService_Dockerfile
-          imageName: accountservice-grpc-automatic
-
-      - task: Docker@0
-        displayName: 'Push an image'
-        inputs:
-          azureSubscription: ${{ variables.a }}
-          azureContainerRegistry: ${{ variables.b }}
-          action: 'Push an image'
-          imageName: accountservice-grpc-automatic
+---
+kind: HorizontalPodAutoscaler 
+apiVersion: autoscaling/v2beta1 
+metadata: 
+  name: accountservice-automatic-grpc-hpa
+  labels:
+    hpa.kubernetes.io/name: accountservice-automatic-grpc
+    hpa.kubernetes.io/type: businessservice 
+spec: 
+  maxReplicas: 5 
+  minReplicas: 2
+  scaleTargetRef: 
+    apiVersion: apps/v1 
+    kind: Deployment 
+    name: accountservice-automatic-grpc-deployment 
+  metrics: 
+  - type: Resource 
+    resource: 
+      name: cpu 
+      targetAverageUtilization: 70
