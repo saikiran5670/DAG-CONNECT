@@ -231,11 +231,31 @@ export class DriverManagementComponent implements OnInit {
         break;
       }
       case "Opt-In":{
-        data = this.initData.filter((item: any) => item.status == 'I'); //optIn
+        data = [];
+        this.initData.forEach((obj: any) => {
+          if(obj.optIn == 'H'){
+            if(obj.status == 'I') {
+              data.push(obj);
+            }
+          }else if(obj.optIn == 'I'){
+            data.push(obj);
+          }
+        });
+        //data = this.initData.filter((item: any) => item.status == 'I'); //--optIn
         break;
       }
       case "Opt-Out":{
-        data = this.initData.filter((item: any) => item.status == 'U'); //optIn
+        data = [];
+        this.initData.forEach((obj: any) => {
+          if(obj.optIn == 'H'){
+            if(obj.status == 'U') {
+              data.push(obj);
+            }
+          }else if(obj.optIn == 'U'){
+            data.push(obj);
+          }
+        });
+        //data = this.initData.filter((item: any) => item.status == 'U'); //optIn
         break;
       }
     }
