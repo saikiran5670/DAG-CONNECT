@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.subscription.entity;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.subscription.repository
 {
@@ -24,8 +25,9 @@ namespace net.atos.daf.ct2.subscription.repository
         {
             var parameterToGetPackageId = new DynamicParameters();
             parameterToGetPackageId.Add("@packagecode", PackageCode);
+            parameterToGetPackageId.Add("@is_active", true);
             var data = await dataAccess.QueryFirstOrDefaultAsync<Package>
-                             (@"select id, type from master.package where packagecode = @packagecode and is_active = true",
+                             (@"select id, type from master.package where packagecode =@packagecode and is_active =@is_active",
                             parameterToGetPackageId);
             return data;
         }
@@ -36,9 +38,10 @@ namespace net.atos.daf.ct2.subscription.repository
             
             var parameterToGetPackageId = new DynamicParameters();
             parameterToGetPackageId.Add("@org_id", OrganizationCode);
+            parameterToGetPackageId.Add("@is_active", true);
+            string query = @"select id from master.organization where org_id=@org_id and is_active = @is_active";
             var data = await dataAccess.ExecuteScalarAsync<int>
-                             (@"select id from master.organization where org_id = and is_active = true",
-                            parameterToGetPackageId);
+                             (query,parameterToGetPackageId);
             return data;
         }
 
@@ -296,5 +299,40 @@ namespace net.atos.daf.ct2.subscription.repository
             return subscription;
         }
 
+       public async Task<SubscriptionResponse> Create(string orgId)
+        {
+            try
+            {
+                int orgid = await GetOrganizationIdByCode(orgId);
+                string SubscriptionId = Guid.NewGuid().ToString();
+                var parameter = new DynamicParameters();
+                parameter.Add("@organization_id", orgid);
+                parameter.Add("@subscription_id", SubscriptionId);
+                parameter.Add("@type", null);
+                parameter.Add("@package_code", null);
+                parameter.Add("@package_id", null);
+                parameter.Add("@vehicle_id", null);
+                parameter.Add("@subscription_start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                parameter.Add("@subscription_end_date", null);
+                parameter.Add("@is_active", true);
+                parameter.Add("@is_zuora_package", false);
+                
+                string queryInsert = "insert into master.subscription(organization_id, subscription_id,type , package_code, package_id, vehicle_id, subscription_start_date, subscription_end_date, is_active,is_zuora_package) " +
+                             "values(@organization_id, @subscription_id,@type, @package_code, @package_id, @vehicle_id, @subscription_start_date, @subscription_end_date, @is_active,@is_zuora_package) RETURNING id";
+
+                int subid = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
+
+                SubscriptionResponse objSubscriptionResponse = new SubscriptionResponse();
+                objSubscriptionResponse.orderId = SubscriptionId;
+                return objSubscriptionResponse;
+
+            }
+            catch (Exception ex)
+            {
+                log.Info("Create Subscription by OrganizationId method in repository failed with OrganizationId" + orgId);
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }
     }
 }
