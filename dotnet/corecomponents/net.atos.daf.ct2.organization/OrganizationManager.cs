@@ -43,7 +43,7 @@ namespace net.atos.daf.ct2.organization
         {
             return await organizationRepository.UpdateCustomer(customer);
         }
-        public async Task<KeyHandOver> KeyHandOverEvent(KeyHandOver keyHandOver)
+        public async Task<HandOver> KeyHandOverEvent(HandOver keyHandOver)
         {
             return await organizationRepository.KeyHandOverEvent(keyHandOver);
         }

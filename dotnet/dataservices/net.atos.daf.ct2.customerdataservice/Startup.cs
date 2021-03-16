@@ -14,12 +14,14 @@ using net.atos.daf.ct2.organization;
 using net.atos.daf.ct2.audit.repository;  
 using net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.vehicle;
-using  net.atos.daf.ct2.vehicle.repository;
+using net.atos.daf.ct2.vehicle.repository;
 using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Http;
 using AccountComponent = net.atos.daf.ct2.account;
 using Identity = net.atos.daf.ct2.identity;
 using AccountPreference = net.atos.daf.ct2.accountpreference;
+using Subscription=net.atos.daf.ct2.subscription;
+using net.atos.daf.ct2.subscription.repository;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.OpenApi.Models;
 
@@ -56,9 +58,7 @@ namespace net.atos.daf.ct2.customerdataservice
             services.AddTransient<IAccountPreferenceRepository, AccountPreferenceRepository>();
             services.AddTransient<IVehicleRepository, VehicleRepository>();
             services.AddTransient<IVehicleManager,VehicleManager>();
-            //services.AddTransient<IVehicleManagerRepository, VehicleManagerRepository>();
-
-             services.AddTransient<Identity.IAccountManager,Identity.AccountManager>();
+            services.AddTransient<Identity.IAccountManager,Identity.AccountManager>();
             services.AddTransient<Identity.ITokenManager,Identity.TokenManager>();
             services.AddTransient<Identity.IAccountAuthenticator,Identity.AccountAuthenticator>();            
             services.AddTransient<AccountComponent.IAccountIdentityManager,AccountComponent.AccountIdentityManager>();            
@@ -66,6 +66,8 @@ namespace net.atos.daf.ct2.customerdataservice
             services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();
             services.AddTransient<AccountComponent.IAccountRepository,AccountComponent.AccountRepository>();
             services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();   
+            services.AddTransient<Subscription.ISubscriptionManager,Subscription.SubscriptionManager>(); 
+            services.AddTransient<ISubscriptionRepository,SubscriptionRepository>();            
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             
             services.AddSwaggerGen(c =>
