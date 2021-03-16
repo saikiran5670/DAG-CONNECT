@@ -9,12 +9,13 @@ parameters:
   type: string
   default: 'variableGroup'
 
-group: ${{ parameters.variableGroup }}
+
 
 jobs:
 - job:
   pool: $(PRIVATEAGENT)
-    
+  variables:
+    group: ${{ parameters.variableGroup }}
   steps:
   - task: replacetokens@3
     inputs:
