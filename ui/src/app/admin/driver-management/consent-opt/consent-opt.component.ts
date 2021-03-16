@@ -18,7 +18,7 @@ export class ConsentOptComponent implements OnInit {
   closePopup: boolean = true;
   accountOrganizationId: any = 0;
   accountId: any = 0;
-  orgInheritMode: any = 'U'; // TODO: check current organisation opt-out/opt-in status 
+  orgInheritMode: any = 'I'; // TODO: check current organisation opt-out/opt-in status 
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     translationData: any,

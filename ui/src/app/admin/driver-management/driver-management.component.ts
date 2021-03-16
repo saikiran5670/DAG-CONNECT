@@ -502,6 +502,7 @@ export class DriverManagementComponent implements OnInit {
 
   onEditView(element: any, type: any){
     this.driverData = element;
+    this.importDriverPopup = false;
     this.editFlag = true;
     this.actionType = type; 
   }
