@@ -14,12 +14,17 @@ using Microsoft.OpenApi.Models;
 using static Dapper.SqlMapper;
 using net.atos.daf.ct2.subscription.repository;
 using net.atos.daf.ct2.subscription;
+using AccountComponent = net.atos.daf.ct2.account;
+using Identity = net.atos.daf.ct2.identity;
+using AccountPreference = net.atos.daf.ct2.accountpreference;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.repository;
 
 namespace net.atos.daf.ct2.featureactivationservice
 {
     public class Startup
     {
-        private readonly string swaggerBasePath = "subscription";
+        private readonly string swaggerBasePath = "customer-data";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -34,10 +39,22 @@ namespace net.atos.daf.ct2.featureactivationservice
             var connectionString = Configuration.GetConnectionString("ConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             services.AddSingleton(dataAccess);
-            //services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
+            services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
             services.AddSingleton(dataAccess);
+            services.AddTransient<IAuditTraillib, AuditTraillib>();
+            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
             services.AddTransient<ISubscriptionManager, SubscriptionManager>();
+
+            services.AddTransient<Identity.IAccountManager, Identity.AccountManager>();
+            services.AddTransient<Identity.ITokenManager, Identity.TokenManager>();
+            services.AddTransient<Identity.IAccountAuthenticator, Identity.AccountAuthenticator>();
+            services.AddTransient<AccountComponent.IAccountIdentityManager, AccountComponent.AccountIdentityManager>();
+            services.AddTransient<AccountPreference.IPreferenceManager, AccountPreference.PreferenceManager>();
+            services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();
+            services.AddTransient<AccountComponent.IAccountRepository, AccountComponent.AccountRepository>();
+            services.AddTransient<AccountComponent.IAccountManager, AccountComponent.AccountManager>();
+
 
             services.AddSwaggerGen(c =>
             {

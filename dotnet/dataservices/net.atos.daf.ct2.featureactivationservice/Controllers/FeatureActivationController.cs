@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using net.atos.daf.ct2.accountpreference;
+using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.entity;
 using AccountComponent = net.atos.daf.ct2.account;
@@ -17,10 +19,15 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
         private readonly ILogger<FeatureActivationController> logger;
         private readonly ISubscriptionManager subscriptionManager;
         AccountComponent.IAccountIdentityManager accountIdentityManager;
-        public FeatureActivationController(ILogger<FeatureActivationController> _logger, ISubscriptionManager _subscriptionManager, AccountComponent.IAccountIdentityManager _accountIdentityManager)
+        private readonly IPreferenceManager preferencemanager;
+        private readonly IAuditTraillib AuditTrail;
+        public FeatureActivationController(ILogger<FeatureActivationController> _logger, IAuditTraillib _AuditTrail, ISubscriptionManager _subscriptionManager, IPreferenceManager _preferencemanager, AccountComponent.IAccountIdentityManager _accountIdentityManager)
         {
             logger = _logger;
+            AuditTrail = _AuditTrail;
             subscriptionManager = _subscriptionManager;
+            preferencemanager = _preferencemanager;
+            accountIdentityManager = _accountIdentityManager;
         }
 
         [HttpPost]
@@ -50,7 +57,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                         {
                             return StatusCode(400, "Please provide packageId ");
                         }
-                        
+
 
                         var orderId = await subscriptionManager.Subscribe(objsubscriptionActivation);
                         logger.LogInformation($"Subscription data has been Inserted, order ID - {orderId}");
