@@ -238,6 +238,19 @@ namespace net.atos.daf.ct2.driver
         {
             try
             {
+                var orgOptInStatus = string.Empty;
+                if (driver.opt_in == "I" || driver.opt_in == "U")
+                {
+                    driver.Status = driver.opt_in;
+                }
+                else if (driver.opt_in == "H")
+                {
+                    var parameterOpt = new DynamicParameters();
+                    parameterOpt.Add("@id", driver.Organization_id);
+                    var queryOptIn = @"select driver_default_opt_in from master.organization where id=@id and is_active=true";
+                    orgOptInStatus = await dataAccess.ExecuteScalarAsync<string>(queryOptIn, parameterOpt);
+                    driver.Status = orgOptInStatus;
+                }
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", driver.Id);
                 parameter.Add("@organization_id", driver.Organization_id);
@@ -247,8 +260,9 @@ namespace net.atos.daf.ct2.driver
                 parameter.Add("@opt_in", driver.opt_in);
                 parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(System.DateTime.Now));
                 parameter.Add("@modified_by", driver.modified_by);
+                parameter.Add("@status", driver.Status);
 
-                var queryUpdate = @"update master.driver set  first_name=@first_name, last_name=@last_name, email=@email,opt_in=@opt_in,
+                var queryUpdate = @"update master.driver set  first_name=@first_name, last_name=@last_name, email=@email,opt_in=@opt_in,status=@status,
              modified_at=@modified_at,modified_by=@modified_by WHERE id= @id and organization_id=@organization_id and is_active=true RETURNING id;";
                 int drvID = await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameter);
                 return driver;
