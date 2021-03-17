@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.data;
@@ -435,6 +436,23 @@ namespace net.atos.daf.ct2.subscription.repository
             catch (Exception ex)
             {
                 log.Info("Create Subscription by OrganizationId method in repository failed with OrganizationId" + orgId);
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<SubscriptionDetails>> Get()
+        {
+            try
+            {
+                string query = string.Empty;
+                query = string.Format("select sub.subscription_id,sub.type,pak.name,sub.package_code,sub.subscription_start_date,sub.subscription_end_date,sub.is_active from master.Subscription sub join master.package pak on sub.package_id = pak.id");
+                IEnumerable<SubscriptionDetails> objsubscriptionDetails = await dataAccess.QueryAsync<SubscriptionDetails>(query);
+                return objsubscriptionDetails;
+            }
+            catch (Exception ex)
+            {
+                log.Info("Subscribe Get method in repository failed ");
                 log.Error(ex.ToString());
                 throw ex;
             }
