@@ -60,7 +60,7 @@ namespace net.atos.daf.ct2.portalservice
             var cookiesexpireat = Configuration["WebServerConfiguration:cookiesexpireat"];
             var authcookiesexpireat = Configuration["WebServerConfiguration:authcookiesexpireat"];
             var headerstricttransportsecurity = Configuration["WebServerConfiguration:headerstricttransportsecurity"];
-            var httpsport = Configuration["WebServerConfiguration:httpsport"];
+           // var httpsport = Configuration["WebServerConfiguration:httpsport"];
 
             // We are enforcing to call Insercure service             
             AppContext.SetSwitch(
