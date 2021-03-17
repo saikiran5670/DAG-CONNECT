@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
         public string Type { get; set; }
         [StringLength(100)]
         public string Description { get; set; }        
-        public string Status { get; set; }
+        public bool Status { get; set; }
     }
 
     public class PackageImportRequest

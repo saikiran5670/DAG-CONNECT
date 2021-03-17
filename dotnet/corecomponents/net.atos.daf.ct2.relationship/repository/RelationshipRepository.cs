@@ -130,7 +130,7 @@ namespace net.atos.daf.ct2.relationship.repository
                 var relationships = new List<Relationship>();
                 string query = string.Empty;
 
-                query = @"select id, organization_id, feature_set_id, name, description, code, is_active, level from master.orgrelationship relationship where 1=1 ";
+                query = @"select id, organization_id, feature_set_id, name, description, code, is_active, level from master.orgrelationship relationship where is_active=true ";
 
                 if (filter != null)
                 {
