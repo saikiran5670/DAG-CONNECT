@@ -79,7 +79,7 @@ export class OrganizationService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .post<any>(`${this.createRelationship}/relationship/create`, data, headers)
+      .post<any>(`${this.relationServiceUrl}/relationship/create`, data, headers)
       .pipe(catchError(this.handleError));
   }
 
