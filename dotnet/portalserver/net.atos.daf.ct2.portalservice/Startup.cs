@@ -155,10 +155,10 @@ namespace net.atos.daf.ct2.portalservice
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
+           // else
+           // {
+           //     app.UseHsts();
+           // }
             //Web Server Configuration
             var headercachecontrol = Configuration["WebServerConfiguration:headercachecontrol"];
             var headerexpires = Configuration["WebServerConfiguration:headerexpires"];
