@@ -18,7 +18,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   loggedInUser : string = 'admin';
   userRoleFormGroup: FormGroup;
   @Output() backToPage = new EventEmitter<any>();
-  featureDisplayedColumns: string[] = ['featureName', 'select'];
+  featureDisplayedColumns: string[] = ['name', 'select'];
   @Input() gridData: any;
   @Input() title: string;
   @Input() createStatus: boolean;
