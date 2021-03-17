@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feactureactivationservice
+spec:
+  selector:
+    matchLabels:
+      run: feactureactivationservice
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: feactureactivationservice
+    spec:
+      containers:
+      - name: feactureactivationservice
+        image: dafdev017756.azurecr.io/feactureactivationservice
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: feactureactivationservice
+spec:
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    run: feactureactivationservice
