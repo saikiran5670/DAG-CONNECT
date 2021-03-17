@@ -1,8 +1,10 @@
 ﻿using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.relationship.entity;
+using net.atos.daf.ct2.relationship.ENUM;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -205,6 +207,26 @@ namespace net.atos.daf.ct2.relationship.repository
             relationship.OrganizationId = record.organization_id != null ? record.organization_id : 0; 
             relationship.IsActive = record.is_active;
             return relationship;
+        }
+        public async Task<RelationshipLevelCode> GetRelationshipLevelCode() {          
+
+            var levelCode = new RelationshipLevelCode();
+            levelCode.Levels= Enum.GetValues(typeof(RelationshipLevel))
+                 .Cast<RelationshipLevel>()
+                 .Select(t => new Level
+                 {
+                     Id = ((int)t),
+                     Name = t.ToString()
+                 }).ToList();
+
+            levelCode.Codes = Enum.GetValues(typeof(RelationshipCode))
+                 .Cast<RelationshipCode>()
+                 .Select(t => new Code
+                 {
+                     Id = ((int)t),
+                     Name = t.ToString()
+                 }).ToList();
+            return levelCode;
         }
 
     }

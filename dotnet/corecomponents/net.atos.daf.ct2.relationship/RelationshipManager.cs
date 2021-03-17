@@ -36,5 +36,9 @@ namespace net.atos.daf.ct2.relationship
         {
             return await _relationshipRepository.GetRelationship(orgRelationship);
         }
+        public async Task<RelationshipLevelCode> GetRelationshipLevelCode()
+        {
+            return await _relationshipRepository.GetRelationshipLevelCode();
+        }
     }
 }
