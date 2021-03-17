@@ -179,10 +179,11 @@ namespace net.atos.daf.ct2.organizationservice
                 }
                 else
                 {
-                    response.Code = Responcecode.NotFound;
-                    response.Message = "Relationship Not Found.";
-                }
+                    response.Code = Responcecode.Conflict;
+                    response.Message = "Relationship cannot be deleted as it is mapped with organiztion.";
 
+                }
+                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Service", "Relationship Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Delete", 1, 2, request.Id.ToString());
                 return await Task.FromResult(response);
             }
             catch (Exception ex)

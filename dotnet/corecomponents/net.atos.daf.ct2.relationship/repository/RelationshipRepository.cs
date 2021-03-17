@@ -112,11 +112,24 @@ namespace net.atos.daf.ct2.relationship.repository
             log.Info("Delete Organization Relationship method called in repository");
             try
             {
-                var parameter = new DynamicParameters();
-                parameter.Add("@id", relationshipId);
-                var query = @"update master.orgrelationship set is_active=false where id=@id";
-                int isdelete = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                return true;
+                //check either relationship id maaped with organization or not 
+                var parameterduplicate = new DynamicParameters();
+                parameterduplicate.Add("@relationship_id", relationshipId);
+                var query = @"SELECT relationship_id FROM master.orgrelationshipmapping where relationship_id=@relationship_id";
+                int relationshipexist = await _dataAccess.ExecuteScalarAsync<int>(query, parameterduplicate);
+
+                if (relationshipexist > 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@id", relationshipId);
+                    var deletequery = @"update master.orgrelationship set is_active=false where id=@id";
+                    int isdelete = await _dataAccess.ExecuteScalarAsync<int>(deletequery, parameter);
+                    return true;
+                }
             }
             catch (Exception ex)
             {
