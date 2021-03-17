@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                 Name = request.Name,
                 FeatureSetID=request.FeatureSetID,
                 Description = request.Description,
-                Status = ToPackageStatus(request.Status),
+                Status = request.Status,
                 Type = request.Type,
 
             };
@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
             var packageRequest = new ImportPackageRequest();
             foreach (var x in request.packages)
             {
-                var featureSetID = _featureSetMapper.RetrieveFeatureSetId(x.Features).Result;
+                var featureSetID = _featureSetMapper.RetrieveFeatureSetIdByName(x.Features).Result;
                 if (featureSetID > 0)
                 {
                     var pkgRequest = new PackageCreateRequest()
@@ -71,7 +71,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                         FeatureSetID = featureSetID,
                         Description = x.Description,
                         Name = x.Name,
-                        Status = ToPackageStatus(x.Status),
+                        Status = x.Status,
                         Type = x.Type
                     };
                     packageRequest.Packages.Add(pkgRequest);

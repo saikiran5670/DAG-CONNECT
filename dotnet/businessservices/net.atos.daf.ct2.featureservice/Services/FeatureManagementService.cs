@@ -106,7 +106,7 @@ namespace net.atos.daf.ct2.featureservice
                                 var DataAttributeSet = await _FeaturesManager.GetDataAttributeset(item.Data_attribute_Set_id);
                                 ObjResponce.DataAttribute.Name = DataAttributeSet.Name;
                                 ObjResponce.DataAttribute.IsExclusive = DataAttributeSet.Is_exlusive;
-                                ObjResponce.DataAttribute.Description = DataAttributeSet.Description;
+                                ObjResponce.DataAttribute.Description = DataAttributeSet.Description == null ? "" : DataAttributeSet.Description;
                                 ObjResponce.DataAttribute.DataAttributeSetId = DataAttributeSet.ID;
                                 ObjResponce.Description = DataAttributeSet.Description == null ? "" : DataAttributeSet.Description;
                                 //ObjResponce.DataAttribute.DataAttributeIDs = new 

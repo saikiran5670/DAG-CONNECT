@@ -244,17 +244,18 @@ export class CreateEditViewFeaturesComponent implements OnInit {
       if (this.translationData.lblUserAccountCreatedSuccessfully)
         return this.translationData.lblUserAccountCreatedSuccessfully.replace('$', this.userName);
       else
-        return ("User Account '$' Created Successfully").replace('$', this.userName);
+        return ("New Feature '$' Created Successfully").replace('$', this.userName);
     } else {
       if (this.translationData.lblUserAccountUpdatedSuccessfully)
         return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', this.userName);
       else
-        return ("User Account '$' Updated Successfully").replace('$', this.userName);
+        return ("New Details '$' Updated Successfully").replace('$', this.userName);
     }
   }
 
   onSetTypeChange(event: any){
-    this.selectedSetType = event.value;
+     let valueToBoolean = event.value == "true" ? true : false 
+    this.selectedSetType = valueToBoolean;
   }
 
   onStatusChange(event: any){

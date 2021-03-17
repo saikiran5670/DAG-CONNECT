@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly OrganizationMapper _mapper;
         private readonly FeatureSetMapper _featureSetMapper;
         private readonly FeatureService.FeatureServiceClient _featureclient;
-        private readonly OrgRelationshipMapper _orgRelationshipMapper;
+        private readonly RelationshipMapper _relationshipMapper;
         private readonly AccountBusinessService.AccountService.AccountServiceClient _accountClient;
         private readonly OrganizationBusinessService.OrganizationService.OrganizationServiceClient organizationClient;
         private string FK_Constraint = "violates foreign key constraint";
@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             organizationClient = _organizationClient;
             _accountClient = accountClient;
             _mapper = new OrganizationMapper();
-            _orgRelationshipMapper = new OrgRelationshipMapper();
+            _relationshipMapper = new RelationshipMapper();
             _featureSetMapper = new FeatureSetMapper(featureclient);
         }
 
@@ -50,9 +50,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (request.Features.Count >= 1)
+                if (request.FeatureIds.Count >= 1)
                 {
-                    var featureSetId = await _featureSetMapper.RetrieveFeatureSetId(request.Features);
+                    var featureSetId = await _featureSetMapper.RetrieveFeatureSetIdById(request.FeatureIds);
                     request.FeaturesetId = featureSetId;
                 }
                 else
@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         return StatusCode(400, "Please provide relationship name:");
                     }
 
-                    var objRequest = _orgRelationshipMapper.ToOrgRelationshipRequest(request);
+                    var objRequest = _relationshipMapper.ToRelationshipRequest(request);
                     var orgResponse = await organizationClient.CreateRelationshipAsync(objRequest);
                     if (orgResponse.Relationship.Id < 1)
                     {
@@ -111,24 +111,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (request.FeaturesetId > 0)
                 {
                     logger.LogInformation("Relationship update function called ");
-                    if (request.OrganizationId == 0 || request.Id == 0)
+                    if (request.OrganizationId == 0 || request.Id == 0 || request.Level==0 || string.IsNullOrEmpty(request.Code))
                     {
-                        return StatusCode(400, "Please provide OrganizationId and org relationship id:");
+                        return StatusCode(400, "Please provide OrganizationId, Level,Code and org relationship id:");
                     }
                     if (string.IsNullOrEmpty(request.Name) || (request.Name.Trim().Length < 1))
                     {
                         return StatusCode(400, "Please provide  relationship name:");
                     }
-                    if (request.Features.Count >= 1)
+                    if (request.FeatureIds.Count >= 1)
                     {
-                        var featureSetId = await _featureSetMapper.UpdateFeatureSetId(request.Features, request.FeaturesetId);
+                        var featureSetId = await _featureSetMapper.UpdateFeatureSetIdById(request.FeatureIds, request.FeaturesetId);
                         request.FeaturesetId = featureSetId;
                     }
                     else
                     {
                         return StatusCode(400, "Please provide relationship features");
                     }
-                    var objRequest = _orgRelationshipMapper.ToOrgRelationshipRequest(request);
+                    var objRequest = _relationshipMapper.ToRelationshipRequest(request);
                     var orgResponse = await organizationClient.UpdateRelationshipAsync(objRequest);
                     if (orgResponse.Relationship.Id < 1)
                     {
@@ -170,7 +170,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 logger.LogInformation("Organization relationship get function called ");
                 var orgResponse = await organizationClient.GetRelationshipAsync(request);
                 orgResponse.RelationshipList.Where(S => S.Featuresetid > 0)
-                                               .Select(S => { S.Features.AddRange(_featureSetMapper.GetFeatures(S.Featuresetid).Result); return S; }).ToList();
+                                               .Select(S => { S.FeatureIds.AddRange(_featureSetMapper.GetFeatureIds(S.Featuresetid).Result); return S; }).ToList();
                 return Ok(orgResponse);
             }
             catch (Exception ex)
@@ -180,6 +180,25 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        //[HttpGet]
+        //[Route("relationship/getlevelcode")]
+        //public async Task<IActionResult> GetRelationshipLevelCode([FromQuery] RelationshipCreateRequest request)
+        //{
+        //    try
+        //    {
+        //        logger.LogInformation("Organization relationship get function called ");
+        //        var orgResponse = await organizationClient.GetRelationshipAsync(request);
+        //        orgResponse.RelationshipList.Where(S => S.Featuresetid > 0)
+        //                                       .Select(S => { S.FeatureIds.AddRange(_featureSetMapper.GetFeatureIds(S.Featuresetid).Result); return S; }).ToList();
+        //        return Ok(orgResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logger.LogError(ex.Message + " " + ex.StackTrace);
+
+        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
+        //    }
+        //}
 
         [HttpDelete]
         [Route("relationship/delete")]

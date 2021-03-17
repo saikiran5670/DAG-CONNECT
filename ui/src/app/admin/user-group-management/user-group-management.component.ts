@@ -50,7 +50,7 @@ export class UserGroupManagementComponent implements OnInit {
   viewDisplayFlag: boolean = false;
   editSampleData: any;
   newGroupName: string = '';
-  displayedColumns: string[] = ['name', 'vehicles', 'users', 'action'];
+  displayedColumns: string[] = ['accountGroupName', 'vehicleCount', 'accountCount', 'action'];
   roleData: any;
   vehGrpData: any;
   initData: any = [];
@@ -292,7 +292,7 @@ export class UserGroupManagementComponent implements OnInit {
   onUserClick(data: any) {
     const colsList = ['firstName', 'emailId', 'roles'];
     const colsName = [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'];
-    const tableTitle = `${data.name} - ${this.translationData.lblUsers || 'Users'}`;
+    const tableTitle = `${data.accountGroupName} - ${this.translationData.lblUsers || 'Users'}`;
 
     let obj: any = {
       "accountId": 0,
@@ -376,6 +376,7 @@ export class UserGroupManagementComponent implements OnInit {
       }
     });
     let newTrueData = data.filter(item => item.newTag == true);
+    newTrueData.sort((userobj1,userobj2) => userobj2.createdAt - userobj1.createdAt);
     let newFalseData = data.filter(item => item.newTag == false);
     Array.prototype.push.apply(newTrueData,newFalseData); 
     return newTrueData;

@@ -47,69 +47,7 @@ export class TranslationDataUploadComponent implements OnInit {
 
   defaultTranslation(){
     this.translationData = {
-      // lblSearch: "Search",
-      // lblConsent: "Consent",
-      // lblAction: "Action", 
-      // lblCancel: "Cancel",
-      // lblConfirm: "Confirm",
-      // lblReset: "Reset",
-      // lblNew: "New",
-      // lblSave: "Save",
-      // lblDriverManagement: "Driver Management",
-      // lblImportNewDrivers: "Import New Drivers",
-      // lblDownloadaTemplate: "Download a Template",
-      // lblDownloadaTemplateMessage: "You can enter multiple driver records. New Driver IDs records will be added and existing Driver ID records will be updated. Few fields are mandatory; the rest optional – please see the template for details. All the fields (with the exception of the Driver ID) can be edited later from the Driver Management screen shown below.",
-      // lblUploadupdateddriverdetailsandselectgroupfordefiningcategory: "Upload updated driver details and select group for defining category",
-      // lblSelectUserGroupOptional: "Select User Group (Optional)",
-      // lblUploadUpdatedExcelFile: "Upload Updated Excel File",
-      // lblBrowse: "Browse",
-      // lblImport: "Import",
-      // lblSelectUserGroup: "Select User Group",
-      // lblDriverDetails: "Driver Details",
-      // lblDrivers: "Drivers",
-      // lblDriverID: "Driver ID",
-      // lblDriverName: "Driver Name",
-      // lblEmailID: "Email ID",
-      // lblUserGroup: "User Group",
-      // lblOptInAll: "Opt-In All",
-      // lblOptOutAll: "Opt-Out All",
-      // lblOptIn: "Opt-In",
-      // lblOptOut: "Opt-Out",
-      // lblImportedFileDetails: "Imported File Details",
-      // lblImportedUpdateddriverrecords: "Imported/Updated '$' driver records",
-      // lblRejecteddriverrecordsduetofollowingerrors: "Rejected '$' driver records due to following errors",
-      // lblRole: "Role",
-      // lblnewdrivers: "new drivers",
-      // lblEditDriverDetails: "Edit Driver Details",
-      // lblDriverIDConsentStatus: "Driver ID Consent Status",
-      // lblAlldetailsaremandatory: "All details are mandatory",
-      // lblSalutation: "Salutation",
-      // lblFirstName: "First Name",
-      // lblLastName: "Last Name",
-      // lblBirthDate: "Birth Date",
-      // lblLanguage: "Language",
-      // lblUnits: "Units", 
-      // lblTimeZone: "Time Zone",
-      // lblCurrency: "Currency",
-      // lblDriverIDConsent: "Driver ID Consent",
-      // lblOrganisation: "Organisation",
-      // lblTotalDrivers: "Total Drivers",
-      // lblCurrentConsentStatusForSubscriber: "Current Consent Status For Subscriber ",
-      // lblOptOutMessage: "Now you are proceeding with Driver ID Consent Opt-Out operation!, Click 'Confirm' to change the consent status.",
-      // lblOptInOutChangeMessage: "You are currently in '$' mode. This means no personal data from your driver(s) such as the driver ID are visible in the DAF CONNECT portal.",
-      // lblConsentExtraMessage: "By selecting and confirming '$' mode (i.e. by checking the opt-in checkbox) personal data such as the driver ID from your driver(s) will be visible in the DAF CONNECT portal. You state that you are aware of your responsibility with regard to data privacy. At the same time, you state that you have consent from all your drivers to have their driver ID stored and shown in the DAF CONNECT portal and/or, if applicable, to share information with third parties. By submitting this request, you fully accept your legal responsibilities and thereby indemnify DAF Trucks NV from any privacy related responsibilities based on this decision.",
-      // lblConsentNote: "Please also refer to the DAF CONNECT terms & conditions for more information.",
-      // lblName: "Name",
-      // lblDriverrecordupdated: "Driver record updated",
-      // lblErrorinupdatingdriverrecordPleasetryagain: "Error in updating driver record '$'. Please try again.",
-      // lblDeleteDriver: "Delete Driver ",
-      // lblAreyousureyouwanttodeletedriver: "Are you sure you want to delete driver '$'?",
-      // lblDriversuccessfullydeleted: "Driver '$' successfully deleted",
-      // lblErrordeletingdriver: "Error deleting driver",
-      // lblThedriverwasoptedinsuccessfully: "The driver '$' was opted-in successfully",
-      // lblThedrivercouldnobeoptedin: "The driver could not be opted-in '$'",
-      // lblThedriverwasoptedoutsuccessfully: "The driver '$' was opted-out successfully",
-      // lblThedrivercouldnobeoptedout: "The driver could not be opted-out '$'"
+      
     }
   }
 
@@ -136,33 +74,19 @@ export class TranslationDataUploadComponent implements OnInit {
 
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
-      
-    });this.mockData();
+      this.loadInitData();
+    })
   }
 
-  mockData(){
-    let data = [
-      {
-        fileName: "File1.xlsx",
-        uploadedDate: "01/01/2001",
-        fileSize: "100kb",
-        description: "File 1"
-      },
-      {
-        fileName: "File2.xlsx",
-        uploadedDate: "02/01/2001",
-        fileSize: "100kb",
-        description: "File 2"
-      },
-      {
-        fileName: "File3.xlsx",
-        uploadedDate: "03/01/2001",
-        fileSize: "100kb",
-        description: "File 3"
+  loadInitData(){
+    this.translationService.getTranslationUploadDetails().subscribe(data => {
+      if(data){
+        this.initData = data["translationupload"];
+        this.updateGridData(this.initData);
       }
-    ];
+    }, (error) => {
 
-    this.updateGridData(data);
+    })
   }
 
   processTranslation(transData: any){
@@ -230,42 +154,54 @@ export class TranslationDataUploadComponent implements OnInit {
 
   onDownloadExcel(row: any){
     //TODO: send file id to backend and get JSON data
-    //mock data
-    let data = [
-      {
-        fileName: "File1.xlsx",
-        uploadedDate: "01/01/2001",
-        fileSize: "100kb",
-        description: "File 1"
-      },
-      {
-        fileName: "File2.xlsx",
-        uploadedDate: "02/01/2001",
-        fileSize: "100kb",
-        description: "File 2"
-      },
-      {
-        fileName: "File3.xlsx",
-        uploadedDate: "03/01/2001",
-        fileSize: "100kb",
-        description: "File 3"
-      }
-    ];
+    this.translationService.getTranslationUploadDetails(row.id).subscribe(fileData => {
+      if(fileData){
+        console.log(fileData["translationupload"][0].file);
+        const blob = new Blob([fileData["translationupload"][0].file], { 
+          type: EXCEL_TYPE
+        });
+        const file = new File([blob], row.fileName,
+        { type: EXCEL_TYPE });
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-    console.log('worksheet',worksheet);
-    const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    //const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
-    this.saveAsExcelFile(excelBuffer, row.fileName);
+        this.saveAsExcelFile(file);
+      }
+    })
+    //mock data
+    // let data = [
+    //   {
+    //     fileName: "File1.xlsx",
+    //     uploadedDate: "01/01/2001",
+    //     fileSize: "100kb",
+    //     description: "File 1"
+    //   },
+    //   {
+    //     fileName: "File2.xlsx",
+    //     uploadedDate: "02/01/2001",
+    //     fileSize: "100kb",
+    //     description: "File 2"
+    //   },
+    //   {
+    //     fileName: "File3.xlsx",
+    //     uploadedDate: "03/01/2001",
+    //     fileSize: "100kb",
+    //     description: "File 3"
+    //   }
+    // ];
+
+    // const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+    // console.log('worksheet',worksheet);
+    // const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+    // const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    // //const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+     
 
   }
 
-  private saveAsExcelFile(buffer: any, fileName: string): void {
-    const data: Blob = new Blob([buffer], {
-      type: EXCEL_TYPE
-    });
-    FileSaver.saveAs(data, fileName);
+  private saveAsExcelFile(file: any): void {
+    // const data: Blob = new Blob([buffer], {
+    //   type: EXCEL_TYPE
+    // });
+    FileSaver.saveAs(file);
   }
 
   onCloseMsg(){

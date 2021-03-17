@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Organization
 {
-    public class OrgRelationshipMapper
+    public class RelationshipMapper
     {
-        internal RelationshipCreateRequest ToOrgRelationshipRequest(RelationshipPortalRequest request)
+        internal RelationshipCreateRequest ToRelationshipRequest(RelationshipPortalRequest request)
         {
             var orgRelationshipRequest = new RelationshipCreateRequest()
             {

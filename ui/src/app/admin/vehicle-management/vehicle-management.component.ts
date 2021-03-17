@@ -604,6 +604,7 @@ export class VehicleManagementComponent implements OnInit {
       }
     });
     let newTrueData = data.filter(item => item.newTag == true);
+    newTrueData.sort((userobj1,userobj2) => userobj2.createdAt - userobj1.createdAt);
     let newFalseData = data.filter(item => item.newTag == false);
     Array.prototype.push.apply(newTrueData,newFalseData); 
     return newTrueData;

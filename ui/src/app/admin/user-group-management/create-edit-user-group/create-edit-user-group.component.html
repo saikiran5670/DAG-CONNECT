@@ -2,9 +2,8 @@
   <mat-card *ngIf="createStatus || editUserContent" class='mat-elevation-z margin-bottom-xlg'>
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-            translationData.lblUserGroupName || 'User Group Name' }} <span class='mandatoryColor'>*</span>
+        <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblUserGroupName || 'User Group Name' }} <span class='mandatoryColor'>*</span>
           </mat-label>
           <mat-form-field appearance="outline" class="full-width">
             <input (keyup)="onInputChange($event)"
@@ -17,10 +16,22 @@
           <mat-error *ngIf="duplicateEmailMsg">{{translationData.lblDuplicateUserGroupName || 'Duplicate User Group
             Name' }}</mat-error>
         </div>
-        <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+        <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblGroupType || 'Group Type' }}<span class='mandatoryColor'>*</span></mat-label>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-select placeholder="{{ translationData.lblGroupType || 'Group Type' }}" formControlName="groupType" required>
+              <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
+                {{ rer.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-error *ngIf="UserGroupForm.get('groupType').hasError('required')">
+            {{ translationData.lblPleasechoosegrouptype || 'Please choose group type' }}
+          </mat-error>
+        </div>
+        <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label style='display: flex; place-content: space-between;'>
-            <span
-              style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{translationData.lblUserGroupDescriptionOptional
+            <span>{{translationData.lblUserGroupDescriptionOptional
               || 'User Group Description (Optional)' }}</span>
             <span>{{ translationData.lbl100CharMax || '100 characters max' }}</span>
           </mat-label>
@@ -70,13 +81,17 @@
     class='mat-elevation-z margin-bottom-xlg'>
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+        <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
           <div>{{translationData.lblUserGroupName || 'User Group Name' }}</div>
-          <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedRowData.name }}</div>
+          <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedRowData.name ? selectedRowData.name : '--' }}</div>
         </div>
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+        <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+          <div>{{translationData.lblGroupType || 'Group Type' }}</div>
+          <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedRowData.groupType ? (selectedRowData.groupType == 'G' ? 'Group' : 'Dynamic' ) : '--' }}</div>
+        </div>
+        <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
           <div>{{translationData.lblUserGroupDescription || 'User Group Description' }}</div>
-          <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedRowData.description }}</div>
+          <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedRowData.description ? selectedRowData.description : '--' }}</div>
         </div>
         <div *ngIf="editFlag" fxLayout="column" fxLayoutAlign="right">
           <button style='background:none' class='actionBtn' mat-flat-button (click)="onEdit()" matTooltip="Edit">

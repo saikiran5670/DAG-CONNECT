@@ -6,6 +6,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { PackageService } from 'src/app/services/package.service';
 
 @Component({
   selector: 'app-package-management',
@@ -15,7 +16,7 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 export class PackageManagementComponent implements OnInit {
   
   packageRestData: any = [];
-  displayedColumns = ['packageCode','name', 'type', 'features', 'status', 'action'];
+  displayedColumns = ['code','name', 'type', 'status', 'action'];
   selectedElementData: any;
   featureList: any = [];
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -30,8 +31,14 @@ export class PackageManagementComponent implements OnInit {
   accountOrganizationId: any = 0;
   localStLanguage: any;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
+  showLoadingIndicator: any;
 
-  constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog) { 
+  constructor(
+      private translationService: TranslationService,
+      private packageService: PackageService, 
+      private dialogService: ConfirmDialogService, 
+      private dialog: MatDialog
+    ) { 
     this.defaultTranslation();
   }
 
@@ -83,121 +90,25 @@ export class PackageManagementComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
-      this.loadRestData();
       this.loadPackageData();
     });
+    this.loadPackageData();
   }
 
   loadPackageData(){
-    this.initData = this.packageRestData;
+    this.packageService.getPackages().subscribe((data : any) => {
+      this.initData = data["pacakageList"]
+      this.updatedTableData(this.initData);
+    });
+  }
+
+  updatedTableData(tableData : any) {
+    // this.initData = this.getNewTagData(filterTypeData);
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
-  }
-
-  loadRestData(){
-    this.packageRestData = [
-      {
-        packageCode: "Package code 1",
-        name: "Package Name 1",
-        type: "org pkg",
-        features: 20,
-        status: "Active",
-        startDate: "02/03/2021",
-        endDate: "02/05/2021",
-        featureName: [
-          {
-            id: 3,
-            featureName: "Feature Name " 
-          },
-          {
-            id: 4,
-            featureName: "Feature Name " 
-          },
-          {
-            id: 5,
-            featureName: "Feature Name " 
-          },
-          {
-            id: 6,
-            featureName: "Feature Name " 
-          }
-        ],
-        description : "This is Package 1"
-      },
-      {
-        packageCode: "Package code 2",
-        name: "Package Name 2",
-        type: "org VIN",
-        features: 30,
-        status: "Inactive",
-        startDate: "02/03/2021",
-        endDate: "02/05/2021",
-        featureName: [
-          {
-            id: 3,
-            featureName: "Feature Name " 
-          },
-          {
-            id: 4,
-            featureName: "Feature Name " 
-          }
-        ],
-        description : "This is Package 2"
-      },
-      {
-        packageCode: "Package code 3",
-        name: "Package Name 3",
-        type: "org VIN",
-        features: 40,
-        status: "Inactive",
-        startDate: "02/03/2021",
-        endDate: "02/05/2021",
-        featureName: [
-          {
-            id: 3,
-            featureName: "Feature Name " 
-          },
-          {
-            id: 4,
-            featureName: "Feature Name " 
-          },
-          {
-            id: 5,
-            featureName: "Feature Name " 
-          }
-        ],
-        description : "This is Package 3"
-      }
-    ];
-    this.featureList = [
-      {
-        id: 1,
-        featureName: "Feature Name 1" 
-      },
-      {
-        id: 2,
-        featureName: "Feature Name 2" 
-      },
-      {
-        id: 3,
-        featureName: "Feature Name 3" 
-      },
-      {
-        id: 4,
-        featureName: "Feature Name 4" 
-      },
-      {
-        id: 5,
-        featureName: "Feature Name 5" 
-      },
-      {
-        id: 6,
-        featureName: "Feature Name 6" 
-      }
-    ];
   }
 
   createNewPackage(){
@@ -211,13 +122,13 @@ export class PackageManagementComponent implements OnInit {
     this.createEditViewPackageFlag = true;
   }
 
-  changeFeatureStatus(rowData: any){
+  changePackageStatus(rowData: any){
     const options = {
       title: this.translationData.lblAlert || "Alert",
       message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
       cancelText: this.translationData.lblNo || "No",
       confirmText: this.translationData.lblYes || "Yes",
-      status: rowData.status == 'Active' ? 'Inactive' : 'Active' ,
+      status: rowData.status == '1' ? 'Inactive' : 'Active' ,
       name: rowData.name
     };
     const dialogConfig = new MatDialogConfig();
@@ -268,5 +179,10 @@ export class PackageManagementComponent implements OnInit {
 
   checkCreationForPackage(item: any){
     this.createEditViewPackageFlag = !this.createEditViewPackageFlag;
+  }
+
+  hideloader() {
+    // Setting display of spinner
+      this.showLoadingIndicator=false;
   }
 }

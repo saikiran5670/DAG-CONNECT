@@ -28,17 +28,17 @@ export class EditDriverDetailsComponent implements OnInit {
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.driverFormGroup = this._formBuilder.group({
       driverId: new FormControl({value: null, disabled: true}),
-      emailId: ['', [Validators.required, Validators.email]],
+      emailId: ['', [Validators.email]], // Validators.required
       consentStatus: ['', []],
-      firstName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
-      lastName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
+      firstName: ['', [CustomValidators.noWhitespaceValidatorWithoutRequired]], //Validators.required, CustomValidators.noWhitespaceValidator 
+      lastName: ['', [CustomValidators.noWhitespaceValidatorWithoutRequired]], //Validators.required, CustomValidators.noWhitespaceValidator
     },
     {
       validator: [
-        CustomValidators.specialCharValidationForName('firstName'),
-        CustomValidators.numberValidationForName('firstName'),
-        CustomValidators.specialCharValidationForName('lastName'), 
-        CustomValidators.numberValidationForName('lastName')
+        CustomValidators.specialCharValidationForNameWithoutRequired('firstName'), // specialCharValidationForName
+        CustomValidators.numberValidationForNameWithoutRequired('firstName'), // numberValidationForName
+        CustomValidators.specialCharValidationForNameWithoutRequired('lastName'), // specialCharValidationForName 
+        CustomValidators.numberValidationForNameWithoutRequired('lastName') // numberValidationForName
       ]
     });
     this.breadcumMsg = this.getBreadcum(this.actionType);
@@ -84,7 +84,7 @@ export class EditDriverDetailsComponent implements OnInit {
       email: this.driverFormGroup.controls.emailId.value,
       firstName: this.driverFormGroup.controls.firstName.value,
       lastName: this.driverFormGroup.controls.lastName.value,
-      //status: this.selectedConsentType,
+      //status: this.selectedConsentType, //-- delete from backend api
       optIn: this.selectedConsentType,
       //isActive: true, 
       modifiedBy: this.accountId // 0

@@ -154,6 +154,30 @@ namespace net.atos.daf.ct2.vehicle
             }
         }
 
+        public async Task<Vehicle> UpdateOrgVehicleDetails(Vehicle vehicle)
+        {
+            try
+            {
+                return await vehicleRepository.UpdateOrgVehicleDetails(vehicle);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<int> IsVINExists(string VIN)
+        {
+            try
+            {
+                return await vehicleRepository.IsVINExists(VIN);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         //   public async Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime)
         // {
         //     try
