@@ -30,12 +30,12 @@
 <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
 <div *ngIf='initData.length > 0'>
   <mat-table [dataSource]="dataSource" class="table-items" matSort>
-    <ng-container matColumnDef="packageCode">
+    <ng-container matColumnDef="code">
       <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPackageCode || 'Package Code' }}</mat-header-cell>
       <mat-cell *matCellDef="let row">
         <!-- <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
         <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span> -->
-        <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.packageCode }}</span>
+        <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.code }}</span>
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="name">
@@ -46,20 +46,22 @@
       <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblType || 'Type' }}</mat-header-cell>
       <mat-cell *matCellDef="let row">{{ row.type }}</mat-cell>
   </ng-container>
-  <ng-container matColumnDef="features">
-      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatures || 'Features' }}</mat-header-cell>
-      <mat-cell *matCellDef="let row">{{ row.features }}</mat-cell>
-  </ng-container>
   <ng-container matColumnDef="status">
     <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
-    <mat-cell *matCellDef="let row">{{ row.status }}</mat-cell>
+    <mat-cell *matCellDef="let row">
+      <button class='actionBtn' mat-flat-button (click)="changePackageStatus(row)" matTooltip="{{ row.status == 1 ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Inactive' }}">
+        <mat-slide-toggle color="primary" [checked]='row.status == 1 ? true : false' >
+      </mat-slide-toggle>&nbsp;
+      <span>{{ row.status == 1 ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Inactive' }}</span>
+      </button>
+    </mat-cell>
   </ng-container>
   <ng-container matColumnDef="action">
     <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
     <mat-cell *matCellDef="let row">
-      <button class='actionBtn' mat-flat-button (click)="changeFeatureStatus(row)" matTooltip="{{ row.status == 'Active' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}">
-          <mat-icon>{{ row.status == 'Active' ? 'sync' : 'sync_disabled' }}</mat-icon>
-      </button>
+      <!-- <button class='actionBtn' mat-flat-button (click)="changePackageStatus(row)" matTooltip="{{ row.status == '1' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}">
+          <mat-icon>{{ row.status == '1' ? 'sync' : 'sync_disabled' }}</mat-icon>
+      </button> -->
       <button class='actionBtn' mat-flat-button (click)="editViewFeature(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
         <mat-icon>visibility</mat-icon>
       </button>
@@ -78,5 +80,5 @@
   <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
 </div>
 </mat-card>
-<app-create-edit-package-details *ngIf='createEditViewPackageFlag' [translationData]='translationData' [actionType]='actionType' [featureList]='featureList' [selectedElementData]='selectedElementData' (createViewEditPackageEmit)='checkCreationForPackage($event)'></app-create-edit-package-details>
+<!-- <app-create-edit-package-details *ngIf='createEditViewPackageFlag' [translationData]='translationData' [actionType]='actionType' [featureList]='featureList' [selectedElementData]='selectedElementData' (createViewEditPackageEmit)='checkCreationForPackage($event)'></app-create-edit-package-details> -->
 </div>

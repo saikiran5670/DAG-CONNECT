@@ -26,7 +26,7 @@ export class DriverManagementComponent implements OnInit {
   //--------------Rest mock data----------------//
   driverRestData: any = [];
   //--------------------------------------------//
-  grpTitleVisible : boolean = false;
+  titleVisibleMsg : boolean = false;
   userCreatedMsg : any;
   accountOrganizationId: any = 0;
   dataSource: any;
@@ -125,9 +125,6 @@ export class DriverManagementComponent implements OnInit {
       lblTotalDrivers: "Total Drivers",
       lblCurrentConsentStatusForSubscriber: "Current Consent Status For Subscriber ",
       lblOptOutMessage: "Now you are proceeding with Driver ID Consent Opt-Out operation!, Click 'Confirm' to change the consent status.",
-      lblOptInOutChangeMessage: "You are currently in '$' mode. This means no personal data from your driver(s) such as the driver ID are visible in the DAF CONNECT portal.",
-      lblConsentExtraMessage: "By selecting and confirming '$' mode (i.e. by checking the opt-in checkbox) personal data such as the driver ID from your driver(s) will be visible in the DAF CONNECT portal. You state that you are aware of your responsibility with regard to data privacy. At the same time, you state that you have consent from all your drivers to have their driver ID stored and shown in the DAF CONNECT portal and/or, if applicable, to share information with third parties. By submitting this request, you fully accept your legal responsibilities and thereby indemnify DAF Trucks NV from any privacy related responsibilities based on this decision.",
-      lblConsentNote: "Please also refer to the DAF CONNECT terms & conditions for more information.",
       lblName: "Name",
       lblDriverrecordupdated: "Driver record updated",
       lblErrorinupdatingdriverrecordPleasetryagain: "Error in updating driver record '$'. Please try again.",
@@ -135,9 +132,7 @@ export class DriverManagementComponent implements OnInit {
       lblAreyousureyouwanttodeletedriver: "Are you sure you want to delete driver '$'?",
       lblDriverwassuccessfullydeleted: "Driver '$' was successfully deleted",
       lblErrordeletingdriver: "Error deleting driver",
-      lblThedriverwasoptedinsuccessfully: "The driver '$' was opted-in successfully",
       lblThedrivercouldnobeoptedin: "The driver could not be opted-in '$'",
-      lblThedriverwasoptedoutsuccessfully: "The driver '$' was opted-out successfully",
       lblThedrivercouldnobeoptedout: "The driver could not be opted-out '$'",
       lblExcelDriverID: 'DriverID',
       lblExcelFirstName: 'FirstName',
@@ -158,7 +153,17 @@ export class DriverManagementComponent implements OnInit {
       lblexceedsmaximumallowedlengthofchars: "'$' exceeds maximum allowed length of '#' chars",
       lblNumbersnotallowedin: "Numbers not allowed in '$'",
       lblSpecialcharactersnotallowedin: "Special characters not allowed in '$'",
-      lblWhitespacesnotallowedin: "Whitespaces not allowed in '$'"
+      lblWhitespacesnotallowedin: "Whitespaces not allowed in '$'",
+      lblOptInOptOutAttemptingMsg: "You are attempting to change consent to '$'",
+      lblInheritAttemptingMsg: "You are attempting to '$' your organisation’s consent setting. This means that the consent of this driver will set to the consent of your organisation" ,
+      lblOptOutExtraMsg: "By selecting and confirming this option, you are confirming that you understand that the personal data of the selected driver(s) such as the driver ID will no longer be visible in the DAF CONNECT portal. As a result of opting-out some services will no longer show the driver ID in the DAF CONNECT portal while some services may be terminated altogether. Termination (or partial or complete unavailability) of any services as a result of the opt-out request will by no means result in any restitution of fees or any other form of compensation from DAF Trucks NV.",
+      lblOptInExtraMsg: "By selecting and confirming this option you are confirming that the personal data of the selected driver(s), such as the driver ID, will be visible in the DAF CONNECT portal. You state that you are aware of your responsibility with regard to data privacy. At the same time, you state that you have consent from all your drivers to have their driver ID stored and shown in the DAF CONNECT portal and/or, if applicable, to share information with third parties. By submitting this request, you fully accept your legal responsibilities and thereby indemnify DAF Trucks NV from any privacy related responsibilities based on this decision.",
+      lblSinceyourorganisationconsentis : "Since your organisation’s consent is '$'.",
+      lblHence : "Hence",
+      lblThedrivewasOptedoutsuccessfully : "The driver '$' was Opted-out successfully",
+      lblThedrivewasOptedinsuccessfully : "The driver '$' was Opted-in successfully",
+      lblThedrivewassuccessfully : "The driver '$' was successfully '#'",
+      lblAlldriverswassuccessfully: "All drivers was '$' successfully"
     }
   }
 
@@ -226,11 +231,31 @@ export class DriverManagementComponent implements OnInit {
         break;
       }
       case "Opt-In":{
-        data = this.initData.filter((item: any) => item.status == 'I'); //optIn
+        data = [];
+        this.initData.forEach((obj: any) => {
+          if(obj.optIn == 'H'){
+            if(obj.status == 'I') {
+              data.push(obj);
+            }
+          }else if(obj.optIn == 'I'){
+            data.push(obj);
+          }
+        });
+        //data = this.initData.filter((item: any) => item.status == 'I'); //--optIn
         break;
       }
       case "Opt-Out":{
-        data = this.initData.filter((item: any) => item.status == 'U'); //optIn
+        data = [];
+        this.initData.forEach((obj: any) => {
+          if(obj.optIn == 'H'){
+            if(obj.status == 'U') {
+              data.push(obj);
+            }
+          }else if(obj.optIn == 'U'){
+            data.push(obj);
+          }
+        });
+        //data = this.initData.filter((item: any) => item.status == 'U'); //optIn
         break;
       }
     }
@@ -497,6 +522,7 @@ export class DriverManagementComponent implements OnInit {
 
   onEditView(element: any, type: any){
     this.driverData = element;
+    this.importDriverPopup = false;
     this.editFlag = true;
     this.actionType = type; 
   }
@@ -531,10 +557,10 @@ export class DriverManagementComponent implements OnInit {
   }
 
   successMsgBlink(msg: any){
-    this.grpTitleVisible = true;
+    this.titleVisibleMsg = true;
     this.userCreatedMsg = msg;
     setTimeout(() => {  
-      this.grpTitleVisible = false;
+      this.titleVisibleMsg = false;
     }, 5000);
   }
 
@@ -577,7 +603,7 @@ export class DriverManagementComponent implements OnInit {
   }
 
   onCloseMsg(){
-    this.grpTitleVisible = false;
+    this.titleVisibleMsg = false;
   }
 
   hideloader() {
@@ -610,6 +636,9 @@ export class DriverManagementComponent implements OnInit {
         this.setConsentDropdown();
         this.initData = res.tableData;
         this.updateGridData(this.initData);
+      }
+      if(res.consentMsg && res.consentMsg != ''){
+        this.successMsgBlink(res.consentMsg);
       }
     });
   }

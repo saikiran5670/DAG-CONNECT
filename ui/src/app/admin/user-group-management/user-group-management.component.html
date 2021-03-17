@@ -35,23 +35,21 @@
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
     <div *ngIf='initData.length > 0'>
       <mat-table [dataSource]="dataSource" matSort>
-        <ng-container matColumnDef="name">
+        <ng-container matColumnDef="accountGroupName">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblGroupName || 'Group Name'}}
           </mat-header-cell>
           <mat-cell *matCellDef="let row"> 
             <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
             <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-            <span [ngClass]="{ 'marginLeft-14': row.newTag }"> 
-
-            {{row.name}} </span></mat-cell>
+            <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{row.accountGroupName}}</span></mat-cell>
         </ng-container>
-        <ng-container matColumnDef="vehicles">
+        <ng-container matColumnDef="vehicleCount">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicles || 'Vehicles'}}
           </mat-header-cell>
           <mat-cell *matCellDef="let row"><span [ngClass]="row.vehicleCount !=0 ? 'row-hover' : '' "
               (click)="row.vehicleCount !=0 ? onVehicleClick(row) : ''">{{row.vehicleCount}}</span></mat-cell>
         </ng-container>
-        <ng-container matColumnDef="users">
+        <ng-container matColumnDef="accountCount">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Users'}}</mat-header-cell>
           <mat-cell *matCellDef="let row"> <span [ngClass]="row.accountCount !=0 ? 'row-hover' : '' "
               (click)="row.accountCount !=0 ? onUserClick(row) : ''">{{row.accountCount}}</span> </mat-cell>

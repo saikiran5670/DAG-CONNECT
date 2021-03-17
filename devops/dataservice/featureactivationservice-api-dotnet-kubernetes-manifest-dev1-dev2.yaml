@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: accountservice-automatic-grpc-deployment
+  name: featureactivationservice-deployment
   labels:
-    app.kubernetes.io/name: accountservice-automatic-grpc
-    app.kubernetes.io/type: businessservice
+    app.kubernetes.io/name: featureactivationservice
+    app.kubernetes.io/type: dataservice
 spec:
   template:
     metadata:
       annotations:
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
       labels:
-        app.kubernetes.io/name: accountservice-automatic-grpc
-        app.kubernetes.io/type: businessservice
+        app.kubernetes.io/name: featureactivationservice
+        app.kubernetes.io/type: dataservice
     spec:
       automountServiceAccountToken: false
       securityContext:
@@ -28,15 +28,15 @@ spec:
               - key: app.kubernetes.io/name
                 operator: In
                 values:
-                - accountservice-automatic-grpc
+                - featureactivationservice
               - key: app.kubernetes.io/type
                 operator: In
                 values:
-                - businessservice
+                - dataservice
             topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: accountservice-automatic-grpc-container
-        image: #{acrurl}#/accountservice-grpc-automatic
+      - name: featureactivationservice-container
+        image: #{acrurl}#/featureactivationservice
         imagePullPolicy: "Always"
         volumeMounts:
         - name: tmp
@@ -68,43 +68,43 @@ spec:
         agentpool: npuser01         
   selector:
     matchLabels:
-        app.kubernetes.io/name: accountservice-automatic-grpc
-        app.kubernetes.io/type: businessservice
+        app.kubernetes.io/name: featureactivationservice
+        app.kubernetes.io/type: dataservice
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: accountserviceautomatic
+  name: featureactivationservice
   labels:
-    svc.kubernetes.io/name: accountservice-automatic-grpc
-    svc.kubernetes.io/type: businessservice
+    svc.kubernetes.io/name: featureactivationservice
+    svc.kubernetes.io/type: dataservice
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
   - protocol: TCP
     port: 80
     targetPort: 8080
   selector:
-    app.kubernetes.io/name: accountservice-automatic-grpc
-    app.kubernetes.io/type: businessservice
+    app.kubernetes.io/name: featureactivationservice
+    app.kubernetes.io/type: dataservice
 
 ---
 kind: HorizontalPodAutoscaler 
 apiVersion: autoscaling/v2beta1 
 metadata: 
-  name: accountservice-automatic-grpc-hpa
+  name: featureactivationservice-hpa
   labels:
-    hpa.kubernetes.io/name: accountservice-automatic-grpc
-    hpa.kubernetes.io/type: businessservice 
+    hpa.kubernetes.io/name: featureactivationservice
+    hpa.kubernetes.io/type: dataservice 
 spec: 
   maxReplicas: 5 
   minReplicas: 2
   scaleTargetRef: 
     apiVersion: apps/v1 
     kind: Deployment 
-    name: accountservice-automatic-grpc-deployment
+    name: featureactivationservice-deployment 
   metrics: 
   - type: Resource 
     resource: 
