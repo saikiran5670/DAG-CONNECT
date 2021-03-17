@@ -30,19 +30,19 @@ export class CreateEditUserGroupComponent implements OnInit {
     roleId: 0,
     name: ""
   }
-  createaccountgrp = {
-    id: 0,
-    name: "",
-    organizationId: this.OrgId,
-    description: "",
-    accountCount: 0,
-    accounts: [
-      {
-        "accountGroupId": 0,
-        "accountId": 0
-      }
-    ]
-  }
+  // createaccountgrp = {
+  //   id: 0,
+  //   name: "",
+  //   organizationId: this.OrgId,
+  //   description: "",
+  //   accountCount: 0,
+  //   accounts: [
+  //     {
+  //       "accountGroupId": 0,
+  //       "accountId": 0
+  //     }
+  //   ]
+  // }
   @Output() backToPage = new EventEmitter<any>();
   displayedColumns: string[] = ['select', 'firstName', 'emailId', 'roles', 'accountGroups'];
   vehGrp: VehicleGroup;
@@ -79,6 +79,16 @@ export class CreateEditUserGroupComponent implements OnInit {
   duplicateEmailMsg: boolean = false;
   breadcumMsg: any = '';
   UserGroupForm: FormGroup;
+  groupTypeList: any = [
+    {
+      name: 'Group',
+      value: 'G'
+    },
+    {
+      name: 'Dynamic',
+      value: 'D'
+    }
+  ];
 
   constructor(private _formBuilder: FormBuilder, private _snackBar: MatSnackBar, private accountService: AccountService) { }
 
@@ -87,6 +97,7 @@ export class CreateEditUserGroupComponent implements OnInit {
     this.UserGroupForm = this._formBuilder.group({
       userGroupName: ['', [Validators.required]],
       userGroupDescription: [],
+      groupType: ['', [Validators.required]]
     });
     this.loadUsersData();
     this.breadcumMsg = this.getBreadcum();
@@ -152,6 +163,7 @@ export class CreateEditUserGroupComponent implements OnInit {
     this.UserGroupForm.patchValue({
       userGroupName: this.selectedRowData.name,
       userGroupDescription: this.selectedRowData.description,
+      groupType: this.selectedRowData.groupType
     });
     this.accountSelected = this.selectedRowData.groupRef;
     this.dataSourceUsers.data.forEach(row => {
@@ -193,26 +205,27 @@ export class CreateEditUserGroupComponent implements OnInit {
       accountList.push({ "accountGroupId": (element.accountGroups.length > 0 ? element.accountGroups[0].id : 0), "accountId": element.id })
     });
 
-    this.createaccountgrp = {
-      id: 0,
-      name: this.UserGroupForm.controls.userGroupName.value,
-      description: this.UserGroupForm.controls.userGroupDescription.value,
-      organizationId: this.OrgId,
-      accounts: accountList,
-      accountCount: 0,
-    }
+    // this.createaccountgrp = {
+    //   id: 0,
+    //   name: this.UserGroupForm.controls.userGroupName.value,
+    //   description: this.UserGroupForm.controls.userGroupDescription.value,
+    //   organizationId: this.OrgId,
+    //   accounts: accountList,
+    //   accountCount: 0,
+    // }
 
     if (create.innerText == "Confirm") {
-      this.createaccountgrp = {
+      let updateAccGrpObj = {
         id: this.selectedRowData.id,
         name: this.UserGroupForm.controls.userGroupName.value,
-        description: this.UserGroupForm.controls.userGroupDescription.value,
         organizationId: this.selectedRowData.organizationId,
-        accounts: accountList,
-        accountCount: 0,
+        refId: 0,
+        description: this.UserGroupForm.controls.userGroupDescription.value,
+        groupType: this.UserGroupForm.controls.groupType.value,
+        accounts: accountList
       }
 
-      this.accountService.updateAccountGroup(this.createaccountgrp).subscribe((d) => {
+      this.accountService.updateAccountGroup(updateAccGrpObj).subscribe((d) => {
         this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp) => {
           this.userCreatedMsg = this.getUserCreatedMessage();
           this.createStatus = false;
@@ -233,7 +246,16 @@ export class CreateEditUserGroupComponent implements OnInit {
         }
       });
     } else if (create.innerText == "Create") {
-      this.accountService.createAccountGroup(this.createaccountgrp).subscribe((d) => {
+      let createAccGrpObj = {
+        id: 0,
+        name: this.UserGroupForm.controls.userGroupName.value,
+        organizationId: this.OrgId,
+        refId: 0,
+        description: this.UserGroupForm.controls.userGroupDescription.value,
+        groupType: this.UserGroupForm.controls.groupType.value,
+        accounts: accountList
+      }
+      this.accountService.createAccountGroup(createAccGrpObj).subscribe((d) => {
         this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp) => {
           this.userCreatedMsg = this.getUserCreatedMessage();
           this.createStatus = false;
@@ -279,6 +301,7 @@ export class CreateEditUserGroupComponent implements OnInit {
     this.UserGroupForm.patchValue({
       userGroupName: this.selectedRowData.name,
       userGroupDescription: this.selectedRowData.description,
+      groupType: this.selectedRowData.groupType
     })
   }
 

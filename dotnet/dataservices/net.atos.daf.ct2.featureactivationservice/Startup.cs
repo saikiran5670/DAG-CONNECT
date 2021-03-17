@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.featureactivationservice
 {
     public class Startup
     {
-        private readonly string swaggerBasePath = "customer-data";
+        private readonly string swaggerBasePath = "subscription";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
