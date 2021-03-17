@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.subscription.entity
 {
@@ -7,8 +8,8 @@ namespace net.atos.daf.ct2.subscription.entity
 		public string OrganizationID { get; set; }//M
 		public string PackageId { get; set; }//M
 		public string OrderID { get; set; }
-		public string[] VINs { get; set; }
-		public DateTime EndDateTime { get; set; }
+		public List<string> VINs { get; set; }
+		public long EndDateTime { get; set; }
 
 	}
 }

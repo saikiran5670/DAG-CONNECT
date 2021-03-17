@@ -70,6 +70,7 @@ namespace net.atos.daf.ct2.relationship.repository
 
                 if (orgexist > 0)
                 {
+                    parameter.Add("@Id", relationship.Id);
                     parameter.Add("@OrganizationId", relationship.OrganizationId);
                     parameter.Add("@Name", relationship.Name);
                     parameter.Add("@Code", relationship.Code);
@@ -139,6 +140,11 @@ namespace net.atos.daf.ct2.relationship.repository
                         parameter.Add("@id", filter.Id);
                         query = query + " and relationship.id=@id ";
                     }
+                    if (filter.OrganizationId > 0)
+                    {
+                        parameter.Add("@organization_id", filter.OrganizationId);
+                        query = query + " and relationship.organization_id=@organization_id ";
+                    }
 
                     if (!string.IsNullOrEmpty(filter.Code))
                     {
@@ -170,7 +176,7 @@ namespace net.atos.daf.ct2.relationship.repository
 
                         query = query + " and relationship.level=@level";
                     }
-
+                    query = query + "ORDER BY id ASC; ";
                     dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
 
                     foreach (dynamic record in result)

@@ -19,10 +19,13 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label style='display: flex; place-content: space-between;'>
+                    <mat-label style='display: flex;'>
                         <span>{{ translationData.lblDataAttributeSetName || 'Data Attribute Set Name' }}</span>
+                        <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+                        <span *ngIf="actionType != 'view'"><mat-icon style="margin-left: 15px;" >info</mat-icon></span>
                     </mat-label>
                     <div *ngIf="actionType != 'view'">
+                        
                         <mat-form-field appearance="outline" class="full-width">
                             <input maxlength="100" placeholder="{{ translationData.lblEnterDataAttributeSetName || 'Enter Data Attribute Set Name' }}" matInput
                                 formControlName="dataAttributeSetName">
@@ -40,7 +43,9 @@
                 </div>
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
-                        <span>{{ translationData.lblDataAttributeDescription || 'Data Attribute Description' }}</span>
+                        <span>{{ translationData.lblDataAttributeDescription || 'Data Attribute Description' }}
+                            <mat-icon *ngIf="actionType != 'view'" style="margin-left: 15px; vertical-align: bottom;">info</mat-icon>
+                        </span>
                         <span *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax || '120 characters max' }}</span>
                     </mat-label>
                     <div *ngIf="actionType != 'view'">
@@ -258,8 +263,8 @@
                           [indeterminate]='selectionForDataAttribute.hasValue() && !isAllSelectedForDataAttribute()'
                           [aria-label]='checkboxLabelForDataAttribute()' [disabled]="actionType == 'view'">
                         </mat-slide-toggle>
-                        <span style="margin: 5px 0px 0px 5px;" [ngClass]="{'opacity-0-5': actionType == 'view'}">{{ translationData.lblExclude || 'Exclude' }}</span>
-                      </mat-header-cell>
+                        <span style="margin: 5px 0px 0px 5px;" [ngClass]="{'opacity-0-5': actionType == 'view'}">{{selectedSetType ?  (translationData.lblExclude || 'Exclude') : ( translationData.lblInclude || 'Include')}}</span>
+                    </mat-header-cell>
                       <mat-cell *matCellDef="let row">
                         <mat-slide-toggle color="primary" (click)='$event.stopPropagation()' (change)='$event ? selectionForDataAttribute.toggle(row) : null'
                           [checked]='selectionForDataAttribute.isSelected(row)' [aria-label]='checkboxLabelForDataAttribute(row)' [disabled]="actionType == 'view'">

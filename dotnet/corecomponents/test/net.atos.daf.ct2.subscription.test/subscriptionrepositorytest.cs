@@ -6,6 +6,7 @@ using net.atos.daf.ct2.utilities;
 using System;
 using net.atos.daf.ct2.subscription.entity;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.subscription.test
 {
@@ -19,25 +20,32 @@ namespace net.atos.daf.ct2.subscription.test
         public Subscriptionrepositorytest()
         {
             _config = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json").Build();
-             var connectionString = _config.GetConnectionString("DevAzure");
+            var connectionString = _config.GetConnectionString("DevAzure");
             _dataAccess = new PgSQLDataAccess(connectionString);
             _subscriptionRepository = new SubscriptionRepository(_dataAccess);
             _SubscriptionManager = new SubscriptionManager(_subscriptionRepository);
         }
-
+        /// <summary>
+        /// Case if package type is O and has Vins -- fail
+        /// Case if package type is V and does'nt have Vins -- fail
+        /// if passed package or organization does'nt exists -- fail
+        /// </summary>
+        /// <returns></returns>
         [TestCategory("Unit-Test-Case")]
         [Description("Test for Subscribe SubscriptionSet ")]
         [TestMethod]
         public async Task UnT_subscribe_SubscriptionManager_SubscribeSubscriptionSet()
         {
             long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-            Subscription objSubscription = new Subscription();
+            SubscriptionActivation objSubscription = new SubscriptionActivation();
             objSubscription.OrganizationId = "ddsss";
-            objSubscription.packageId = "PKG007";
-            objSubscription.VINs[0] = "v369369";
-            objSubscription.VINs[1] = "v369370";
-            objSubscription.VINs[2] = "v369371";
-            objSubscription.StartDateTime = DateTime.Now;
+            //objSubscription.packageId = "PKG007";//for type O
+            objSubscription.packageId = "string12";//for type V
+            objSubscription.VINs = new List<string>();
+            objSubscription.VINs.Add("Vehicle_143_1");
+            objSubscription.VINs.Add("Vehicle_143_2");
+            objSubscription.VINs.Add("Vehicle_143_3");
+            objSubscription.StartDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
             var results = await _SubscriptionManager.Subscribe(objSubscription);
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);
@@ -49,13 +57,30 @@ namespace net.atos.daf.ct2.subscription.test
         public async Task UnT_subscribe_SubscriptionManager_UnSubscribeSubscriptionSet()
         {
             long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-            Subscription objSubscription = new Subscription();
-            objSubscription.OrganizationId = $"Subscription {iSessionStartedAt}";
-            objSubscription.packageId = "";
-            objSubscription.VINs[0] = "v369369";
-            objSubscription.VINs[1] = "v369370";
-            objSubscription.VINs[2] = "v369371";
-            var results = await _SubscriptionManager.Subscribe(objSubscription);
+            UnSubscription objUnSubscription = new UnSubscription();
+            //when subscription id sent as orderid
+            //objUnSubscription.OrderID = "00000000-0000-0000-0000-000000000000";
+            objUnSubscription.OrganizationID = "ddsss";
+            //objUnSubscription.PackageId = "PKG007";//for type O
+            objUnSubscription.PackageId = "string12";//for type V
+            objUnSubscription.VINs = new List<string>();
+            objUnSubscription.VINs.Add("Vehicle_143_1");
+            objUnSubscription.VINs.Add("Vehicle_143_2");
+            objUnSubscription.VINs.Add("Vehicle_143_3");
+            objUnSubscription.EndDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            var results = await _SubscriptionManager.Unsubscribe(objUnSubscription);
+            Assert.IsNotNull(results);
+            Assert.IsTrue(results != null);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for CreatebyOrgId SubscriptionSet ")]
+        [TestMethod]
+        public async Task UnT_subscribe_SubscriptionManager_CreatebyOrgIdSubscriptionSet()
+        {
+            long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            int orgId = 60;
+            var results = await _SubscriptionManager.Create(orgId);
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);
         }

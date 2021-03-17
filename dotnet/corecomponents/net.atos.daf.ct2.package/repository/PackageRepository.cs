@@ -183,7 +183,7 @@ namespace net.atos.daf.ct2.package.repository
                 List<Package> packages = new List<Package>();
                 string query = string.Empty;
 
-                query = @"select id,packagecode,feature_set_id,name,type,description,is_active from master.package pkg where 1=1 ";
+                query = @"select id,packagecode,feature_set_id,name,type,description,is_active from master.package pkg where id !=1 ";
 
                 if (filter != null)
                 {
@@ -248,7 +248,7 @@ namespace net.atos.daf.ct2.package.repository
                         parameter.Add("@packagecodes", packagecodes);
                         query = query + " and pkg_.id = ANY(@packagecodes)";
                     }
-
+                    query = query + "ORDER BY id ASC; ";
                     dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
 
                     foreach (dynamic record in result)
@@ -268,13 +268,12 @@ namespace net.atos.daf.ct2.package.repository
         {
             Package package = new Package();
             package.Id = record.id;
-            package.Code = record.packagecode;
-
+            package.Code = !string.IsNullOrEmpty(record.packagecode) ? record.packagecode : string.Empty;            
             package.Status = record.is_active ? PackageStatus.Active : PackageStatus.Inactive;
             package.Type = MapCharToPackageType(record.type);
-            package.Name = record.name;
-            package.Description = record.description;
-            package.FeatureSetID = record.feature_set_id;
+            package.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty; 
+            package.Description = !string.IsNullOrEmpty(record.description) ? record.description : string.Empty; 
+            package.FeatureSetID = record.feature_set_id != null ? record.feature_set_id : 0; 
             return package;
         }
 

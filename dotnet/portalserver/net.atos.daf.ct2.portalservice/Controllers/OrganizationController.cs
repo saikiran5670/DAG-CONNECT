@@ -50,9 +50,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (request.Features.Count >= 1)
+                if (request.FeatureIds.Count >= 1)
                 {
-                    var featureSetId = await _featureSetMapper.RetrieveFeatureSetId(request.Features);
+                    var featureSetId = await _featureSetMapper.RetrieveFeatureSetIdById(request.FeatureIds);
                     request.FeaturesetId = featureSetId;
                 }
                 else
@@ -119,9 +119,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         return StatusCode(400, "Please provide  relationship name:");
                     }
-                    if (request.Features.Count >= 1)
+                    if (request.FeatureIds.Count >= 1)
                     {
-                        var featureSetId = await _featureSetMapper.UpdateFeatureSetId(request.Features, request.FeaturesetId);
+                        var featureSetId = await _featureSetMapper.UpdateFeatureSetIdById(request.FeatureIds, request.FeaturesetId);
                         request.FeaturesetId = featureSetId;
                     }
                     else
@@ -170,7 +170,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 logger.LogInformation("Organization relationship get function called ");
                 var orgResponse = await organizationClient.GetRelationshipAsync(request);
                 orgResponse.RelationshipList.Where(S => S.Featuresetid > 0)
-                                               .Select(S => { S.Features.AddRange(_featureSetMapper.GetFeatures(S.Featuresetid).Result); return S; }).ToList();
+                                               .Select(S => { S.FeatureIds.AddRange(_featureSetMapper.GetFeatureIds(S.Featuresetid).Result); return S; }).ToList();
                 return Ok(orgResponse);
             }
             catch (Exception ex)

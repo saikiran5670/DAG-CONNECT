@@ -6,6 +6,7 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["dataservices/net.atos.daf.ct2.tcuprovisioningdataservice/TCUProvisioning/net.atos.daf.ct2.tcuprovisioningdataservice.csproj", "dataservices/net.atos.daf.ct2.tcuprovisioningdataservice/TCUProvisioning/"]
+COPY ["corecomponents/net.atos.daf.ct2.tcu/net.atos.daf.ct2.tcu.csproj", "corecomponents/net.atos.daf.ct2.tcu/"]
 RUN dotnet restore "dataservices/net.atos.daf.ct2.tcuprovisioningdataservice/TCUProvisioning/net.atos.daf.ct2.tcuprovisioningdataservice.csproj"
 COPY . .
 WORKDIR "/src/dataservices/net.atos.daf.ct2.tcuprovisioningdataservice/TCUProvisioning"
