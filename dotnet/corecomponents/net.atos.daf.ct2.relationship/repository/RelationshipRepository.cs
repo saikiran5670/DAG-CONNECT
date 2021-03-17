@@ -2,6 +2,7 @@
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.relationship.entity;
 using net.atos.daf.ct2.relationship.ENUM;
+using net.atos.daf.ct2.utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,8 +45,9 @@ namespace net.atos.daf.ct2.relationship.repository
                     parameter.Add("@Description", relationship.Description);
                     parameter.Add("@FeatureSetId", relationship.FeaturesetId);
                     parameter.Add("@Is_active", relationship.IsActive);
-                    string queryInsert = "insert into master.orgrelationship(organization_id, feature_set_id, name, description, code, is_active, level) " +
-                                          "values(@OrganizationId,@FeatureSetId, @Name, @Description, @Code,@Is_active, @Level) RETURNING id";
+                    parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                    string queryInsert = "insert into master.orgrelationship(organization_id, feature_set_id, name, description, code, is_active, level,created_at) " +
+                                          "values(@OrganizationId,@FeatureSetId, @Name, @Description, @Code,@Is_active, @Level,@created_at) RETURNING id";
                     var orgid = await _dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
                     relationship.Id = orgid;
                 }
@@ -80,7 +82,7 @@ namespace net.atos.daf.ct2.relationship.repository
                     parameter.Add("@Level", relationship.Level);
                     parameter.Add("@Description", relationship.Description);
                     parameter.Add("@FeatureSetId", relationship.FeaturesetId);
-                    parameter.Add("@Is_active", relationship.IsActive);
+                    parameter.Add("@Is_active", relationship.IsActive);                   
 
                     var queryUpdate = @"update master.orgrelationship set organization_id=@OrganizationId,
                                                                           feature_set_id=@FeatureSetId,
@@ -133,7 +135,7 @@ namespace net.atos.daf.ct2.relationship.repository
                 var relationships = new List<Relationship>();
                 string query = string.Empty;
 
-                query = @"select id, organization_id, feature_set_id, name, description, code, is_active, level from master.orgrelationship relationship where is_active=true ";
+                query = @"select id, organization_id, feature_set_id, name, description, code, is_active, level,created_at from master.orgrelationship relationship where is_active=true ";
 
                 if (filter != null)
                 {
@@ -207,6 +209,7 @@ namespace net.atos.daf.ct2.relationship.repository
             relationship.FeaturesetId = record.feature_set_id != null ? record.feature_set_id : 0;
             relationship.OrganizationId = record.organization_id != null ? record.organization_id : 0;
             relationship.IsActive = record.is_active;
+            relationship.CreatedAt = record.created_at;
             return relationship;
         }
         public async Task<RelationshipLevelCode> GetRelationshipLevelCode()

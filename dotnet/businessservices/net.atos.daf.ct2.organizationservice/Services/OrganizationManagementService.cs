@@ -146,7 +146,9 @@ namespace net.atos.daf.ct2.organizationservice
                                          Name = x.Name,
                                          Featuresetid = x.FeaturesetId,
                                          Level = x.Level,
-                                         IsActive = x.IsActive
+                                         IsActive = x.IsActive,
+                                         CreatedAt=x.CreatedAt
+                                         
                                      }).ToList());
                 _logger.LogInformation("Get  relationship details.");
                 response.Code = Responcecode.Success;
