@@ -86,7 +86,7 @@
           <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedRowData.name ? selectedRowData.name : '--' }}</div>
         </div>
         <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-          <div>{{translationData.lblUserGroupDescription || 'User Group Description' }}</div>
+          <div>{{translationData.lblGroupType || 'Group Type' }}</div>
           <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedRowData.groupType ? (selectedRowData.groupType == 'G' ? 'Group' : 'Dynamic' ) : '--' }}</div>
         </div>
         <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">

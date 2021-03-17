@@ -13,9 +13,11 @@ import { ConfigService } from '@ngx-config/core';
 @Injectable()
 export class OrganizationService {
     organizationServiceUrl: string = '';
+    relationServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
     this.organizationServiceUrl = config.getSettings("foundationServices").organizationRESTServiceURL;
+    this.relationServiceUrl = config.getSettings("foundationServices").relationRESTServiceURL;
   }
 
   private handleError(errResponse: HttpErrorResponse) {
@@ -59,4 +61,37 @@ export class OrganizationService {
       .get<any[]>(`${this.organizationServiceUrl}/group/getvehiclelist?GroupId=${id}`,headers)
       .pipe(catchError(this.handleError));
   }
+
+  getRelationship(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+     headers: new HttpHeaders({ headerObj }),
+   };
+     const options =  { params: new HttpParams(data), headers: headers };
+     return this.httpClient
+       .get<any[]>(`${this.relationServiceUrl}/relationship/get?Organizationid=${data.Organizationid}`,headers)
+       .pipe(catchError(this.handleError));
+   }
+
+   createRelationship(data): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any>(`${this.createRelationship}/relationship/create`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteRelationship(id: number): Observable<void> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    let data = { id: id };
+   return this.httpClient
+      .delete<any>(`${this.relationServiceUrl}/relationship/delete?relationshipId=${id}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+   
 }
