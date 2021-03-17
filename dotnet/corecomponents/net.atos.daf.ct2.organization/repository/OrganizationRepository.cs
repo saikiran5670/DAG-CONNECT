@@ -356,7 +356,7 @@ namespace net.atos.daf.ct2.organization.repository
                    int organizationId= await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameterInsert);
                   // await subscriptionManager.Create(organizationId);
                    // Assign base package at ORG lavel
-                  // SubscriptionManager.Create(organizationId);
+                  // await SubscriptionManager.Create(organizationId);
 
                 }
             }
