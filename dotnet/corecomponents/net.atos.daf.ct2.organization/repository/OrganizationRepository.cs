@@ -354,12 +354,9 @@ namespace net.atos.daf.ct2.organization.repository
                                   "values(@org_id, @Name,@Type ,@AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@reference_date,@vehicle_default_opt_in,@driver_default_opt_in) RETURNING id";
 
                    int organizationId= await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameterInsert);
-                   
+                  // await subscriptionManager.Create(organizationId);
                    // Assign base package at ORG lavel
-                  SubscriptionComponent.entity.PackageSubscription objPackageSubscription=new SubscriptionComponent.entity.PackageSubscription();
-                 objPackageSubscription.
-                 
-                  //  subscriptionManager.Create(organizationId);
+                  // SubscriptionManager.Create(organizationId);
 
                 }
             }
@@ -452,10 +449,50 @@ namespace net.atos.daf.ct2.organization.repository
                      objvehicle.VIN=keyHandOver.VIN;
                      objvehicle.Tcu_Id=keyHandOver.TCUID;
                      objvehicle.Is_Tcu_Register=istcuactive;
-
                      if (!string.IsNullOrEmpty(keyHandOver.ReferenceDateTime))
                           objvehicle.Reference_Date=Convert.ToDateTime(keyHandOver.ReferenceDateTime);
                           objvehicle.Reference_Date=null;
+                 
+                    objvehicle.Oem_id=Convert.ToInt32(keyHandOver.OEMRelationship);
+                    objvehicle.Oem_Organisation_id=OrganizationId;
+                    objvehicle.Status_Changed_Date=Convert.ToDateTime(UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                    objvehicle.CreatedAt=UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                
+                 // NULL FIELDS
+                 objvehicle.Name=null;
+                 objvehicle.License_Plate_Number=null;
+                // objvehicle.Status=null;               
+                 objvehicle.Termination_Date=null;
+                 objvehicle.Vid=null;
+                 objvehicle.Type=objvehicle.Type;
+                 objvehicle.Tcu_Serial_Number=null;
+                 objvehicle.Tcu_Brand=null;
+                 objvehicle.Tcu_Version=null;
+                 objvehicle.VehiclePropertiesId=null;  
+                 objvehicle.ModelId=null;      
+                // objvehicle.Opt_In="N";
+                 objvehicle.Is_Ota=false; 
+
+                // parameter.Add("@name", string.IsNullOrEmpty(vehicle.Name) ? null : vehicle.Name);
+               
+                // parameter.Add("@license_plate_number", string.IsNullOrEmpty(vehicle.License_Plate_Number) ? null : vehicle.License_Plate_Number);
+                // parameter.Add("@status", (char)vehicle.Status);
+                // parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                // parameter.Add("@termination_date", vehicle.Termination_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Termination_Date.ToString()) : (long?)null);
+                // parameter.Add("@vid", string.IsNullOrEmpty(vehicle.Vid) ? null : vehicle.Vid);
+                // parameter.Add("@type", null);               
+                // parameter.Add("@tcu_serial_number", string.IsNullOrEmpty(vehicle.Tcu_Serial_Number) ? null : vehicle.Tcu_Serial_Number);
+                // parameter.Add("@tcu_brand", string.IsNullOrEmpty(vehicle.Tcu_Brand) ? null : vehicle.Tcu_Brand);
+                // parameter.Add("@tcu_version", string.IsNullOrEmpty(vehicle.Tcu_Version) ? null : vehicle.Tcu_Version);              
+                // parameter.Add("@vehicle_property_id", vehicle.VehiclePropertiesId != 0 ? vehicle.VehiclePropertiesId : null);
+                // parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                // parameter.Add("@model_id", string.IsNullOrEmpty(vehicle.ModelId) ? null : vehicle.ModelId);
+                // parameter.Add("@oem_id", vehicle.Oem_id);
+                // parameter.Add("@oem_organisation_id", vehicle.Oem_Organisation_id);
+                // parameter.Add("@opt_in", (char)vehicle.Opt_In);
+                // parameter.Add("@is_ota", vehicle.Is_Ota);
+                // parameter.Add("@id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
+
                   
                 await vehicelManager.Create(objvehicle);   
                 return 1;
@@ -493,7 +530,7 @@ namespace net.atos.daf.ct2.organization.repository
                       objvehicle.Tcu_Brand=null;
                       objvehicle.Tcu_Serial_Number=null;
                       objvehicle.Tcu_Version=null;
-                      await vehicelManager.Update(objvehicle); 
+                      await vehicelManager.Update(objvehicle);                     
                }
                catch(Exception ex )
                 {
@@ -632,6 +669,8 @@ namespace net.atos.daf.ct2.organization.repository
                  set vehicle_id=@vehicle_id,vehicle_group_id=@vehicle_group_id,owner_org_id=@owner_org_id,created_org_id=@created_org_id,
                  target_org_id=@target_org_id,start_date=@start_date,end_date=@end_date,allow_chain=@allow_chain";
                  await dataAccess.ExecuteScalarAsync<int>(queryUpdate, Inputparameter);
+
+                // await VehicleOptInOptOutHistory(keyHandOver.VIN);
                  return OwnerRelationshipId;
             }
             }

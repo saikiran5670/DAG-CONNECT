@@ -243,11 +243,11 @@ namespace net.atos.daf.ct2.driver
                          parameter.Add("@email",driver.email.ToString());
                          parameter.Add("@first_name",driver.first_name.ToString());
                          parameter.Add("@last_name",driver.last_name.ToString());
-                         parameter.Add("@status",driver.Status);                        
+                         parameter.Add("@opt_in",driver.opt_in);                        
                          parameter.Add("@modified_at",UTCHandling.GetUTCFromDateTime(System.DateTime.Now));   
                          parameter.Add("@modified_by",driver.modified_by);
 
-            var queryUpdate = @"update master.driver set  first_name=@first_name, last_name=@last_name, email=@email,status=@status,
+            var queryUpdate = @"update master.driver set  first_name=@first_name, last_name=@last_name, email=@email,opt_in=@opt_in,
              modified_at=@modified_at,modified_by=@modified_by WHERE id= @id and organization_id=@organization_id and is_active=true RETURNING id;";
             int drvID= await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameter);  
             return driver;            
@@ -312,7 +312,7 @@ namespace net.atos.daf.ct2.driver
              DriverImportResponse objDriver=new DriverImportResponse();  
             try
             {
-            string status="C";
+            string status="H";
             var parameterOpt = new DynamicParameters();    
             parameterOpt.Add("@id", orgid);             
             var queryOptIn =@"select driver_default_opt_in from master.organization where id=@id and is_active=true";

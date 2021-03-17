@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
 
         private IHttpContextAccessor _httpContextAccessor;
         public IConfiguration Configuration { get; }
-        public customerdataController(ILogger<customerdataController> _logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager,IHttpContextAccessor httpContextAccessor,AccountComponent.IAccountIdentityManager _accountIdentityManager, SubscriptionComponent.ISubscriptionManager _subscriptionManager)
+        public customerdataController(ILogger<customerdataController> _logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager,IHttpContextAccessor httpContextAccessor,AccountComponent.IAccountIdentityManager _accountIdentityManager, SubscriptionComponent.ISubscriptionManager _subscriptionManager,IConfiguration configuration)
         {
             logger = _logger;
            _AuditTrail = AuditTrail;
@@ -55,6 +55,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
            _httpContextAccessor=httpContextAccessor;
             accountIdentityManager=_accountIdentityManager;
            subscriptionManager=_subscriptionManager;
+           Configuration=configuration;
         } 
         
         [HttpPost]      
@@ -142,12 +143,11 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                objHandOver.CountryCode=keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode;
 
 
-               // Configuarable values
-               // var connectionString = Configuration.GetConnectionString("ConnectionString");              
-               objHandOver.OwnerRelationship=Configuration.DefaultSettings("OwnerRelationship");
-               objHandOver.OEMRelationship=Configuration.DefaultSettings("OEMRelationship");
-               objHandOver.OrgCreationPackage=Configuration.DefaultSettings("OrgCreationPackage");
-               objHandOver.DAFPACCAR=Configuration.DefaultSettings("DAFPACCAR");
+               // Configuarable values                                       
+               objHandOver.OwnerRelationship= Configuration.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value; 
+               objHandOver.OEMRelationship=Configuration.GetSection("DefaultSettings").GetSection("OEMRelationship").Value; 
+               objHandOver.OrgCreationPackage=Configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value; 
+               objHandOver.DAFPACCAR=Configuration.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value; 
                
                 var OrgId= await organizationtmanager.KeyHandOverEvent(objHandOver);
                 return Ok(1);
