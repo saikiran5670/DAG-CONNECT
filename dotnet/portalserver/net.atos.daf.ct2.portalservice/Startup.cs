@@ -78,7 +78,7 @@ namespace net.atos.daf.ct2.portalservice
                     options.ExpireTimeSpan = TimeSpan.FromSeconds(string.IsNullOrEmpty(authcookiesexpireat)? 5184000 : Convert.ToDouble(authcookiesexpireat));
             });
             
-            services.AddHsts(options =>
+         /*   services.AddHsts(options =>
             {
                 options.Preload = true;
                 options.IncludeSubDomains = true;
@@ -88,7 +88,7 @@ namespace net.atos.daf.ct2.portalservice
             {
                 options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
                 options.HttpsPort = string.IsNullOrEmpty(httpsport)? 443 : Convert.ToInt32(httpsport);
-            });
+            }); */
             services.AddControllers();
 
             services.AddDistributedMemoryCache();
@@ -191,7 +191,7 @@ namespace net.atos.daf.ct2.portalservice
                 await next();
             });
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
             //This need to be change to orgin specific on UAT and prod
