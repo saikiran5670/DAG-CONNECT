@@ -11,7 +11,7 @@ using AccountComponent = net.atos.daf.ct2.account;
 namespace net.atos.daf.ct2.featureactivationservice.Controllers
 {
     [ApiController]
-    [Route("subscription-data")]
+    [Route("subscription")]
     public class FeatureActivationController : ControllerBase
     {
         private readonly ILogger<FeatureActivationController> logger;
@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
         }
 
         [HttpPost]
-        [Route("Subscribe")]
+        [Route("subscribe")]
         public async Task<IActionResult> Subscription(SubscriptionActivation objsubscriptionActivation)
         {
             string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
         }
 
         [HttpPost]
-        [Route("UnSubscribe")]
+        [Route("unsubscribe")]
         public async Task<IActionResult> UnSubscribe(UnSubscription objUnSubscription)
         {
             string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");

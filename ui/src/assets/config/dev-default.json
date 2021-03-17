@@ -9,6 +9,7 @@
       "accountRESTServiceURL": "https://api.dev1.ct2.atos.net/account",
       "translationRESTServiceURL": "https://api.dev1.ct2.atos.net/translation",
       "organizationRESTServiceURL": "https://api.dev1.ct2.atos.net/vehicle",
-      "driverRESTServiceURL": "https://api.dev1.ct2.atos.net/driver"
+      "driverRESTServiceURL": "https://api.dev1.ct2.atos.net/driver",
+      "packageRESTServiceURL": "https://api.dev1.ct2.atos.net/package"
     }
 }
