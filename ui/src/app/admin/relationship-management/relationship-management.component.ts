@@ -183,8 +183,12 @@ export class RelationshipManagementComponent implements OnInit {
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
        {
+        this.organizationService
+        .deleteRelationship(row.id)
+        .subscribe((d) => {
           this.successMsgBlink(this.getDeletMsg(name));
           this.loadInitData();
+        });
         }
     }
   });

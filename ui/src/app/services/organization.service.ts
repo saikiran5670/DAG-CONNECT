@@ -82,5 +82,16 @@ export class OrganizationService {
       .post<any>(`${this.createRelationship}/relationship/create`, data, headers)
       .pipe(catchError(this.handleError));
   }
+
+  deleteRelationship(id: number): Observable<void> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    let data = { id: id };
+   return this.httpClient
+      .delete<any>(`${this.relationServiceUrl}/relationship/delete?relationshipId=${id}`, headers)
+      .pipe(catchError(this.handleError));
+  }
    
 }
