@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog, MatDialogRef, MatDialogConfig } from '@angular/material/dialog';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
-import { AccountGroup, UserGroup, GetAccountGrp } from '../../models/users.model';
+import { AccountGroup, UserGroup } from '../../models/users.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslationService } from '../../services/translation.service';
 import { AccountService } from '../../services/account.service';
@@ -20,13 +20,6 @@ import { UserDetailTableComponent } from '../user-management/new-user-step/user-
 export class UserGroupManagementComponent implements OnInit {
   OrgId: number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
   dialogRef: MatDialogRef<UserDetailTableComponent>;
-  getAccountGrp: GetAccountGrp = {
-    accountGroupId: null,
-    organizationId: null,
-    accountId: null,
-    accounts: true,
-    accountCount: true
-  }
   accountgrp: AccountGroup = {
     accountId: 0,
     organizationId: this.OrgId,
@@ -207,14 +200,14 @@ export class UserGroupManagementComponent implements OnInit {
 
   viewGroup(element: any) {
     this.selectedRowData = element;
-    this.getAccountGrp = {
-      accountGroupId: this.selectedRowData.id,
+    let getAccGrpObj = {
+      id: this.selectedRowData.groupId, // id
+      groupRef: true,
+      groupRefCount: true,
       organizationId: this.OrgId,
-      accountId: 0,
-      accounts: true,
-      accountCount: true
+      accountId: 0
     }
-    this.accountService.getAccountDesc(this.getAccountGrp).subscribe((usrlist) => {
+    this.accountService.getAccountDesc(getAccGrpObj).subscribe((usrlist) => {
       this.selectedRowData = usrlist[0];
       this.viewDisplayFlag = true;
     });
@@ -222,14 +215,14 @@ export class UserGroupManagementComponent implements OnInit {
 
   editGroup(element: any) {
     this.selectedRowData = element;
-    this.getAccountGrp = {
-      accountGroupId: this.selectedRowData.id,
+    let getAccGrpObj = {
+      id: this.selectedRowData.groupId, // id
+      groupRef: true,
+      groupRefCount: true,
       organizationId: this.OrgId,
-      accountId: 0,
-      accounts: true,
-      accountCount: true
+      accountId: 0
     }
-    this.accountService.getAccountDesc(this.getAccountGrp).subscribe((usrlist) => {
+    this.accountService.getAccountDesc(getAccGrpObj).subscribe((usrlist) => {
       this.selectedRowData = usrlist[0];
       this.editFlag = true;
     });
