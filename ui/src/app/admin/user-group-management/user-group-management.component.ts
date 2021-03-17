@@ -4,7 +4,6 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog, MatDialogRef, MatDialogConfig } from '@angular/material/dialog';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
-import { AccountGroup, UserGroup } from '../../models/users.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslationService } from '../../services/translation.service';
 import { AccountService } from '../../services/account.service';
@@ -18,26 +17,8 @@ import { UserDetailTableComponent } from '../user-management/new-user-step/user-
 })
 
 export class UserGroupManagementComponent implements OnInit {
-  OrgId: number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+  OrgId: any = 0; 
   dialogRef: MatDialogRef<UserDetailTableComponent>;
-  accountgrp: AccountGroup = {
-    accountId: 0,
-    organizationId: this.OrgId,
-    accountGroupId: 0,
-    vehicleGroupId: 0,
-    roleId: 0,
-    name: ""
-  }
-  usrgrp: UserGroup = {
-    organizationId: this.OrgId,
-    name: null,
-    isActive: null,
-    id: null,
-    usergroupId: null,
-    vehicles: null,
-    users: null,
-    userGroupDescriptions: null,
-  };
   stepFlag: boolean = false;
   editFlag: boolean = false;
   viewDisplayFlag: boolean = false;
@@ -48,10 +29,9 @@ export class UserGroupManagementComponent implements OnInit {
   vehGrpData: any;
   initData: any = [];
   titleText: string;
-  rowsData: any;
   createStatus: boolean = false;
   viewFlag: boolean = false;
-  selectedRowData: any;
+  selectedRowData: any = [];
   grpTitleVisible: boolean = false;
   dataSource = new MatTableDataSource(this.initData);
   userCreatedMsg: any = '';
@@ -61,11 +41,8 @@ export class UserGroupManagementComponent implements OnInit {
   translationData: any;
   localStLanguage: any;
   showLoadingIndicator: any;
-
-  ngAfterViewInit() {
-    // this.dataSource.paginator = this.paginator;
-    // this.dataSource.sort = this.sort;
-  }
+  createViewEditStatus: boolean = false;
+  actionType: any = '';
 
   constructor(
     private dialogService: ConfirmDialogService,
@@ -146,6 +123,7 @@ export class UserGroupManagementComponent implements OnInit {
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.OrgId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -172,16 +150,6 @@ export class UserGroupManagementComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
-  openSnackBar(message: string, action: string) {
-    let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
-    snackBarRef.afterDismissed().subscribe(() => {
-      console.log('The snackbar is dismissed');
-    });
-    snackBarRef.onAction().subscribe(() => {
-      console.log('The snackbar action was triggered!');
-    });
-  }
-
   deleteGroup(item: any) {
     const options = {
       title: this.translationData.lblDeleteGroup || "Delete Group",
@@ -189,19 +157,18 @@ export class UserGroupManagementComponent implements OnInit {
       cancelText: this.translationData.lblNo || "No",
       confirmText: this.translationData.lblYes || "Yes"
     };
-    this.OpenDeleteDialog(options, item);
+    this.openDeleteDialog(options, item);
   }
 
-  newUserGroup() {
+  onNewUserGroup() {
     this.titleText = this.translationData.lblNewUserGroupName || "New User Group Name";
-    this.rowsData = [];
-    this.createStatus = true;
+    this.actionType = 'create';
+    this.createViewEditStatus = true;
   }
 
-  viewGroup(element: any) {
-    this.selectedRowData = element;
+  editViewGroup(element: any, type: any) {
     let getAccGrpObj = {
-      id: this.selectedRowData.groupId, // id
+      id: element.groupId, // id
       groupRef: true,
       groupRefCount: true,
       organizationId: this.OrgId,
@@ -209,22 +176,8 @@ export class UserGroupManagementComponent implements OnInit {
     }
     this.accountService.getAccountDesc(getAccGrpObj).subscribe((usrlist) => {
       this.selectedRowData = usrlist[0];
-      this.viewDisplayFlag = true;
-    });
-  }
-
-  editGroup(element: any) {
-    this.selectedRowData = element;
-    let getAccGrpObj = {
-      id: this.selectedRowData.groupId, // id
-      groupRef: true,
-      groupRefCount: true,
-      organizationId: this.OrgId,
-      accountId: 0
-    }
-    this.accountService.getAccountDesc(getAccGrpObj).subscribe((usrlist) => {
-      this.selectedRowData = usrlist[0];
-      this.editFlag = true;
+      this.actionType = type;
+      this.createViewEditStatus = true;
     });
   }
 
@@ -234,68 +187,82 @@ export class UserGroupManagementComponent implements OnInit {
 
   loadUserGroupData() {
     this.showLoadingIndicator = true;
-    this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp) => {
+    let accountGrpObj: any = {
+      accountId: 0,
+      organizationId: this.OrgId,
+      accountGroupId: 0,
+      vehicleGroupId: 0,
+      roleId: 0,
+      name: ""
+    }
+    this.accountService.getAccountGroupDetails(accountGrpObj).subscribe((grpData) => {
       this.hideloader();
-      this.initData = grp;
-      this.onUpdateDataSource(grp);
+      this.onUpdateDataSource(grpData);
     });
   }
 
-  onUpdateDataSource(updatedData: any) {
-    this.getNewTagData(updatedData);
-    this.dataSource = new MatTableDataSource(updatedData);
+  onUpdateDataSource(tableData: any) {
+    this.initData = tableData;
+    //this.initData = this.getNewTagData(this.initData);
+    this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
   }
 
-  OpenDeleteDialog(options: any, item: any) {
+  openDeleteDialog(options: any, item: any) {
     // Model for delete
-    let name = item.name;
+    let name = item.accountGroupName;
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
       if (res) {
-        this.accountService.deleteAccountGroup(item).subscribe((d) => {
-          this.openSnackBar('Item delete', 'dismiss');
+        this.accountService.deleteAccountGroup(item.groupId).subscribe((d) => {
+          this.showSuccessMessage(this.getDeleteMsg(name));
           this.loadUserGroupData();
         });
-        
       }
     });
   }
 
-  onBackToPage(data: any) {
-    if (data.editText == "create") {
-      // this.loadUserGroupData();
-      this.initData = data.gridData;
-      this.userCreatedMsg = data.successMsg;
-      this.grpTitleVisible = true;
-      setTimeout(() => {
-        this.grpTitleVisible = false;
-      }, 5000);
+  getDeleteMsg(grpName: any){
+    if(this.translationData.lblUserGroupDelete)
+      return this.translationData.lblUserGroupDelete.replace('$', grpName);
+    else
+      return ("User Group '$' was successfully deleted").replace('$', grpName);
+  }
+
+  onBackToPage(objData: any) {
+    this.createViewEditStatus = objData.stepFlag;
+    if(objData.successMsg && objData.successMsg != ''){
+      this.showSuccessMessage(objData.successMsg);
     }
-    this.viewFlag = data.FalseFlag;
-    this.createStatus = data.FalseFlag;
-    this.editFlag = data.FalseFlag;
-    this.viewDisplayFlag = data.FalseFlag;
+    if(objData.gridData){
+      this.initData = objData.gridData;
+    }
     this.onUpdateDataSource(this.initData);
+  }
+
+  showSuccessMessage(msg: any){
+    this.userCreatedMsg = msg;
+    this.grpTitleVisible = true;
+    setTimeout(() => {
+      this.grpTitleVisible = false;
+    }, 5000);
   }
 
   onUserClick(data: any) {
     const colsList = ['firstName', 'emailId', 'roles'];
     const colsName = [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'];
     const tableTitle = `${data.accountGroupName} - ${this.translationData.lblUsers || 'Users'}`;
-
     let obj: any = {
-      "accountId": 0,
-      "organizationId": data.organizationId,
-      "accountGroupId": data.id,
-      "vehicleGroupId": 0,
-      "roleId": 0,
-      "name": ""
+      accountId: 0,
+      organizationId: data.organizationId,
+      accountGroupId: data.id,
+      vehicleGroupId: 0,
+      roleId: 0,
+      name: ""
     }
-
     this.accountService.getAccountDetails(obj).subscribe((data) => {
       data = this.makeRoleAccountGrpList(data);
       this.callToCommonTable(data, colsList, colsName, tableTitle);
@@ -306,7 +273,6 @@ export class UserGroupManagementComponent implements OnInit {
     const colsList = ['name', 'vin', 'license_Plate_Number'];
     const colsName = [this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
     const tableTitle = `${data.name} - ${this.translationData.lblVehicles || 'Vehicles'}`;
-
     this.vehicleService.getVehiclesDataByAccGrpID(data.id, data.organizationId).subscribe((data) => {
       this.callToCommonTable(data, colsList, colsName, tableTitle);
     });
