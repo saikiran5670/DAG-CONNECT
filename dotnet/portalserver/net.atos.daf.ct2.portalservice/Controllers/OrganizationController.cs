@@ -11,6 +11,7 @@ using net.atos.daf.ct2.portalservice.Account;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.organizationservice;
 using net.atos.daf.ct2.featureservice;
+using net.atos.daf.ct2.portalservice.Entity.Relationship;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -180,25 +181,42 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        //[HttpGet]
-        //[Route("relationship/getlevelcode")]
-        //public async Task<IActionResult> GetRelationshipLevelCode([FromQuery] RelationshipCreateRequest request)
-        //{
-        //    try
-        //    {
-        //        logger.LogInformation("Organization relationship get function called ");
-        //        var orgResponse = await organizationClient.GetRelationshipAsync(request);
-        //        orgResponse.RelationshipList.Where(S => S.Featuresetid > 0)
-        //                                       .Select(S => { S.FeatureIds.AddRange(_featureSetMapper.GetFeatureIds(S.Featuresetid).Result); return S; }).ToList();
-        //        return Ok(orgResponse);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        logger.LogError(ex.Message + " " + ex.StackTrace);
+        [HttpGet]
+        [Route("relationship/getlevelcode")]
+        public async Task<IActionResult> GetRelationshipLevelCode()
+        {
+            try
+            {               
+                 
+             
+                var levelCode = new RelationshipLevelCode();
+                levelCode.Levels = Enum.GetValues(typeof(RelationshipLevel))
+                     .Cast<RelationshipLevel>()
+                     .Select(t => new Level
+                     {
+                         Id = ((int)t),
+                         Name = t.ToString()
+                     }).ToList();
 
-        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
-        //    }
-        //}
+                levelCode.Codes = Enum.GetValues(typeof(RelationshipCode))
+                     .Cast<RelationshipCode>()
+                     .Select(t => new Code
+                     {
+                         Id = ((int)t),
+                         Name = t.ToString()
+                     }).ToList();
+
+                logger.LogInformation("Relationship get level and code function called ");
+                
+                return Ok(levelCode);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message + " " + ex.StackTrace);
+
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
 
         [HttpDelete]
         [Route("relationship/delete")]
