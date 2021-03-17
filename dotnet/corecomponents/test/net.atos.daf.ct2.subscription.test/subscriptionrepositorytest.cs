@@ -84,5 +84,16 @@ namespace net.atos.daf.ct2.subscription.test
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);
         }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Get SubscriptionSet ")]
+        [TestMethod]
+        public async Task UnT_subscribe_SubscriptionManager_GetSubscriptionSet()
+        {
+            long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            var results = await _SubscriptionManager.Get();
+            Assert.IsNotNull(results);
+            Assert.IsTrue(results != null);
+        }
     }
 }
