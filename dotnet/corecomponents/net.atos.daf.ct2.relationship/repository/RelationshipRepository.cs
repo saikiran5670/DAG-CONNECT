@@ -28,7 +28,8 @@ namespace net.atos.daf.ct2.relationship.repository
             try
             {
                 var parameter = new DynamicParameters();
-
+                var defaultLevelCode = 30;
+                var defaultCode = "Owner";
                 var parameterduplicate = new DynamicParameters();
                 parameterduplicate.Add("@org_id", relationship.OrganizationId);
                 var query = @"SELECT id FROM master.organization where id=@org_id";
@@ -38,8 +39,8 @@ namespace net.atos.daf.ct2.relationship.repository
                 {
                     parameter.Add("@OrganizationId", relationship.OrganizationId);
                     parameter.Add("@Name", relationship.Name);
-                    parameter.Add("@Code", relationship.Code);
-                    parameter.Add("@Level", relationship.Level);
+                    parameter.Add("@Code", !string.IsNullOrEmpty(relationship.Code) ? relationship.Code : defaultCode);
+                    parameter.Add("@Level", relationship.Level != 0 ? relationship.Level : defaultLevelCode);
                     parameter.Add("@Description", relationship.Description);
                     parameter.Add("@FeatureSetId", relationship.FeaturesetId);
                     parameter.Add("@Is_active", relationship.IsActive);
@@ -178,7 +179,7 @@ namespace net.atos.daf.ct2.relationship.repository
 
                         query = query + " and relationship.level=@level";
                     }
-                    query = query + "ORDER BY id ASC; ";
+                    query = query + "or level=40 ORDER BY id ASC; ";
                     dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
 
                     foreach (dynamic record in result)
@@ -200,18 +201,19 @@ namespace net.atos.daf.ct2.relationship.repository
             var relationship = new Relationship();
             relationship.Id = record.id != null ? record.id : 0;
             relationship.Code = !string.IsNullOrEmpty(record.code) ? record.code : string.Empty;
-            relationship.Level = record.level != null ? record.level : 0; 
+            relationship.Level = record.level != null ? record.level : 0;
             relationship.Description = !string.IsNullOrEmpty(record.description) ? record.description : string.Empty;
             relationship.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;
-            relationship.FeaturesetId = record.feature_set_id != null ? record.feature_set_id : 0; 
-            relationship.OrganizationId = record.organization_id != null ? record.organization_id : 0; 
+            relationship.FeaturesetId = record.feature_set_id != null ? record.feature_set_id : 0;
+            relationship.OrganizationId = record.organization_id != null ? record.organization_id : 0;
             relationship.IsActive = record.is_active;
             return relationship;
         }
-        public async Task<RelationshipLevelCode> GetRelationshipLevelCode() {          
+        public async Task<RelationshipLevelCode> GetRelationshipLevelCode()
+        {
 
             var levelCode = new RelationshipLevelCode();
-            levelCode.Levels= Enum.GetValues(typeof(RelationshipLevel))
+            levelCode.Levels = Enum.GetValues(typeof(RelationshipLevel))
                  .Cast<RelationshipLevel>()
                  .Select(t => new Level
                  {

@@ -111,9 +111,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (request.FeaturesetId > 0)
                 {
                     logger.LogInformation("Relationship update function called ");
-                    if (request.OrganizationId == 0 || request.Id == 0)
+                    if (request.OrganizationId == 0 || request.Id == 0 || request.Level==0 || string.IsNullOrEmpty(request.Code))
                     {
-                        return StatusCode(400, "Please provide OrganizationId and org relationship id:");
+                        return StatusCode(400, "Please provide OrganizationId, Level,Code and org relationship id:");
                     }
                     if (string.IsNullOrEmpty(request.Name) || (request.Name.Trim().Length < 1))
                     {
@@ -180,6 +180,25 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        //[HttpGet]
+        //[Route("relationship/getlevelcode")]
+        //public async Task<IActionResult> GetRelationshipLevelCode([FromQuery] RelationshipCreateRequest request)
+        //{
+        //    try
+        //    {
+        //        logger.LogInformation("Organization relationship get function called ");
+        //        var orgResponse = await organizationClient.GetRelationshipAsync(request);
+        //        orgResponse.RelationshipList.Where(S => S.Featuresetid > 0)
+        //                                       .Select(S => { S.FeatureIds.AddRange(_featureSetMapper.GetFeatureIds(S.Featuresetid).Result); return S; }).ToList();
+        //        return Ok(orgResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logger.LogError(ex.Message + " " + ex.StackTrace);
+
+        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
+        //    }
+        //}
 
         [HttpDelete]
         [Route("relationship/delete")]
