@@ -64,7 +64,7 @@
             </mat-radio-group>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ (driverData.optIn == 'I') ? (translationData.lblOptIn || 'Opt-In') : (driverData.optIn == 'U') ? (translationData.lblOptOut || 'Opt-Out') : (translationData.lblInherit || 'Inherit') }}</span>
+            <span style='font-weight: 500!important;'>{{ (driverData.status == 'I') ? (translationData.lblOptIn || 'Opt-In') : (driverData.status == 'U') ? (translationData.lblOptOut || 'Opt-Out') : (translationData.lblInherit || 'Inherit') }}</span>
           </div>
         </div>
       </div>

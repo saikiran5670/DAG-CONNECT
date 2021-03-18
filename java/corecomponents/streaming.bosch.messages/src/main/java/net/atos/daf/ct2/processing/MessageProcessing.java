@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import net.atos.daf.common.ct2.utc.TimeFormatter;
+import net.atos.daf.ct2.constant.DAFCT2Constant;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Monitor;
 import net.atos.daf.ct2.pojo.standard.MonitorDocument;
@@ -51,14 +52,15 @@ public class MessageProcessing<U, T> implements Serializable {
 						JsonNode metaData = (JsonNode) jsonNodeRec.get("metaData");
 						if (metaData != null) {
 							JsonNode vehicle = (JsonNode) metaData.get("vehicle");
-
-							if (vehicle.get("vin") != null)
-								monitoringObj.setVin(vehicle.get("vin").asText());
-							else
-								monitoringObj.setVin("UNKNOWN");
-
+							if(vehicle != null){
+								if (vehicle.get("vin") != null)
+									monitoringObj.setVin(vehicle.get("vin").asText());
+								else
+									monitoringObj.setVin(DAFCT2Constant.UNKNOWN);
+							}
+							
 							// TODO Dummy Variable
-							monitorDocument.setTripID("BOCSH_" + TimeFormatter.getInstance().getCurrentUTCTime());
+							monitorDocument.setTripID("BOSCH_" + TimeFormatter.getInstance().getCurrentUTCTime());
 						}
 
 						if (jsonNodeRec.get("kafkaProcessingTS") != null)

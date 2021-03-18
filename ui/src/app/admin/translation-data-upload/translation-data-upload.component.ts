@@ -8,6 +8,8 @@ import { TranslationService } from 'src/app/services/translation.service';
 import { FileValidator } from 'ngx-material-file-input';
 import { MatTableDataSource } from '@angular/material/table';
 import * as FileSaver from 'file-saver';
+import { LanguageSelectionComponent } from './language-selection/language-selection.component';
+import { stringify } from '@angular/compiler/src/util';
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 
@@ -18,7 +20,7 @@ const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.
 })
 export class TranslationDataUploadComponent implements OnInit {
   grpTitleVisible : boolean = false;
-  userCreatedMsg : any;
+  fileUploadedMsg : any;
   accountOrganizationId: any = 0;
   dataSource: any;
   initData: any = [];
@@ -26,9 +28,6 @@ export class TranslationDataUploadComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   uploadTranslationDataFormGroup: FormGroup;
-  templateFileUrl: string = 'assets/docs/driverTemplate.xlsx';
-  templateFileName: string = 'driver-Template.xlsx';
-  //@ViewChild('UploadFileInput') uploadFileInput: ElementRef;
   readonly maxSize = 104857600;
   rowData: any;
   file: any;
@@ -39,7 +38,7 @@ export class TranslationDataUploadComponent implements OnInit {
   type: any = '';
   showLoadingIndicator: any;
   isTranslationDataUploaded: boolean = false;
-  
+  dialogRef: MatDialogRef<LanguageSelectionComponent>;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) { 
       this.defaultTranslation();
@@ -47,69 +46,7 @@ export class TranslationDataUploadComponent implements OnInit {
 
   defaultTranslation(){
     this.translationData = {
-      // lblSearch: "Search",
-      // lblConsent: "Consent",
-      // lblAction: "Action", 
-      // lblCancel: "Cancel",
-      // lblConfirm: "Confirm",
-      // lblReset: "Reset",
-      // lblNew: "New",
-      // lblSave: "Save",
-      // lblDriverManagement: "Driver Management",
-      // lblImportNewDrivers: "Import New Drivers",
-      // lblDownloadaTemplate: "Download a Template",
-      // lblDownloadaTemplateMessage: "You can enter multiple driver records. New Driver IDs records will be added and existing Driver ID records will be updated. Few fields are mandatory; the rest optional – please see the template for details. All the fields (with the exception of the Driver ID) can be edited later from the Driver Management screen shown below.",
-      // lblUploadupdateddriverdetailsandselectgroupfordefiningcategory: "Upload updated driver details and select group for defining category",
-      // lblSelectUserGroupOptional: "Select User Group (Optional)",
-      // lblUploadUpdatedExcelFile: "Upload Updated Excel File",
-      // lblBrowse: "Browse",
-      // lblImport: "Import",
-      // lblSelectUserGroup: "Select User Group",
-      // lblDriverDetails: "Driver Details",
-      // lblDrivers: "Drivers",
-      // lblDriverID: "Driver ID",
-      // lblDriverName: "Driver Name",
-      // lblEmailID: "Email ID",
-      // lblUserGroup: "User Group",
-      // lblOptInAll: "Opt-In All",
-      // lblOptOutAll: "Opt-Out All",
-      // lblOptIn: "Opt-In",
-      // lblOptOut: "Opt-Out",
-      // lblImportedFileDetails: "Imported File Details",
-      // lblImportedUpdateddriverrecords: "Imported/Updated '$' driver records",
-      // lblRejecteddriverrecordsduetofollowingerrors: "Rejected '$' driver records due to following errors",
-      // lblRole: "Role",
-      // lblnewdrivers: "new drivers",
-      // lblEditDriverDetails: "Edit Driver Details",
-      // lblDriverIDConsentStatus: "Driver ID Consent Status",
-      // lblAlldetailsaremandatory: "All details are mandatory",
-      // lblSalutation: "Salutation",
-      // lblFirstName: "First Name",
-      // lblLastName: "Last Name",
-      // lblBirthDate: "Birth Date",
-      // lblLanguage: "Language",
-      // lblUnits: "Units", 
-      // lblTimeZone: "Time Zone",
-      // lblCurrency: "Currency",
-      // lblDriverIDConsent: "Driver ID Consent",
-      // lblOrganisation: "Organisation",
-      // lblTotalDrivers: "Total Drivers",
-      // lblCurrentConsentStatusForSubscriber: "Current Consent Status For Subscriber ",
-      // lblOptOutMessage: "Now you are proceeding with Driver ID Consent Opt-Out operation!, Click 'Confirm' to change the consent status.",
-      // lblOptInOutChangeMessage: "You are currently in '$' mode. This means no personal data from your driver(s) such as the driver ID are visible in the DAF CONNECT portal.",
-      // lblConsentExtraMessage: "By selecting and confirming '$' mode (i.e. by checking the opt-in checkbox) personal data such as the driver ID from your driver(s) will be visible in the DAF CONNECT portal. You state that you are aware of your responsibility with regard to data privacy. At the same time, you state that you have consent from all your drivers to have their driver ID stored and shown in the DAF CONNECT portal and/or, if applicable, to share information with third parties. By submitting this request, you fully accept your legal responsibilities and thereby indemnify DAF Trucks NV from any privacy related responsibilities based on this decision.",
-      // lblConsentNote: "Please also refer to the DAF CONNECT terms & conditions for more information.",
-      // lblName: "Name",
-      // lblDriverrecordupdated: "Driver record updated",
-      // lblErrorinupdatingdriverrecordPleasetryagain: "Error in updating driver record '$'. Please try again.",
-      // lblDeleteDriver: "Delete Driver ",
-      // lblAreyousureyouwanttodeletedriver: "Are you sure you want to delete driver '$'?",
-      // lblDriversuccessfullydeleted: "Driver '$' successfully deleted",
-      // lblErrordeletingdriver: "Error deleting driver",
-      // lblThedriverwasoptedinsuccessfully: "The driver '$' was opted-in successfully",
-      // lblThedrivercouldnobeoptedin: "The driver could not be opted-in '$'",
-      // lblThedriverwasoptedoutsuccessfully: "The driver '$' was opted-out successfully",
-      // lblThedrivercouldnobeoptedout: "The driver could not be opted-out '$'"
+      
     }
   }
 
@@ -136,33 +73,19 @@ export class TranslationDataUploadComponent implements OnInit {
 
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
-      
-    });this.mockData();
+      this.loadInitData();
+    })
   }
 
-  mockData(){
-    let data = [
-      {
-        fileName: "File1.xlsx",
-        uploadedDate: "01/01/2001",
-        fileSize: "100kb",
-        description: "File 1"
-      },
-      {
-        fileName: "File2.xlsx",
-        uploadedDate: "02/01/2001",
-        fileSize: "100kb",
-        description: "File 2"
-      },
-      {
-        fileName: "File3.xlsx",
-        uploadedDate: "03/01/2001",
-        fileSize: "100kb",
-        description: "File 3"
+  loadInitData(){
+    this.translationService.getTranslationUploadDetails().subscribe(data => {
+      if(data){
+        this.initData = data["translationupload"];
+        this.updateGridData(this.initData);
       }
-    ];
+    }, (error) => {
 
-    this.updateGridData(data);
+    })
   }
 
   processTranslation(transData: any){
@@ -181,12 +104,14 @@ export class TranslationDataUploadComponent implements OnInit {
   uploadTranslationData(){ 
     this.validateExcelFileField();
     //TODO : Read file, parse into JSON and send to API
-    this.isTranslationDataUploaded = true;
 
+    let msg= this.translationData.lblTranslationFileSuccessfullyUploaded ? this.translationData.lblTranslationFileSuccessfullyUploaded : "Translation file successfully uploaded";
+    this.successMsgBlink(msg);
+    this.isTranslationDataUploaded = true;
   }
 
   validateExcelFileField(){
-    console.log("filelist:: ", this.filelist)
+    console.log("filelist:: ", JSON.stringify(this.filelist));
   }
 
   applyFilter(filterValue: string) {
@@ -197,7 +122,7 @@ export class TranslationDataUploadComponent implements OnInit {
 
   successMsgBlink(msg: any){
     this.grpTitleVisible = true;
-    this.userCreatedMsg = msg;
+    this.fileUploadedMsg = msg;
     setTimeout(() => {  
       this.grpTitleVisible = false;
     }, 5000);
@@ -217,11 +142,10 @@ export class TranslationDataUploadComponent implements OnInit {
         var workbook = XLSX.read(bstr, {type:"binary"});    
         var first_sheet_name = workbook.SheetNames[0];    
         var worksheet = workbook.Sheets[first_sheet_name];    
-        //console.log(XLSX.utils.sheet_to_json(worksheet,{raw:true}));    
           var arraylist = XLSX.utils.sheet_to_json(worksheet,{raw:true});     
               this.filelist = [];
               this.filelist = arraylist;    
-    }    
+   }    
   }
 
   onClose(){
@@ -229,36 +153,35 @@ export class TranslationDataUploadComponent implements OnInit {
   }
 
   onDownloadExcel(row: any){
-    //TODO: send file id to backend and get JSON data
-    //mock data
-    let data = [
-      {
-        fileName: "File1.xlsx",
-        uploadedDate: "01/01/2001",
-        fileSize: "100kb",
-        description: "File 1"
-      },
-      {
-        fileName: "File2.xlsx",
-        uploadedDate: "02/01/2001",
-        fileSize: "100kb",
-        description: "File 2"
-      },
-      {
-        fileName: "File3.xlsx",
-        uploadedDate: "03/01/2001",
-        fileSize: "100kb",
-        description: "File 3"
-      }
-    ];
+    let languageMap = new Map();
+      this.translationService.getTranslationUploadDetails(row.id).subscribe(fileData => {
+        if(fileData){
+          let count = 0;
+          fileData.forEach(element => {
+              if(languageMap.get(element.name)){
+                let tempObj = languageMap.get(element.name);
+                tempObj[element.code] = element.value;
+                languageMap.set(element.name, tempObj);
+              }
+              else{
+                languageMap.set(element.name, this.manipulateLanguageObject(element, count++));
+              }
+          });
+          let jsonData = [];
+          for(let i of languageMap.values()){
+            jsonData.push(i);
+          }
+          this.convertJSONtoXLSX(jsonData, row.fileName);
+        }
+      })
+    }
 
+  convertJSONtoXLSX(data: any, fileName: string){
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-    console.log('worksheet',worksheet);
+    //console.log('worksheet',worksheet);
     const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    //const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
-    this.saveAsExcelFile(excelBuffer, row.fileName);
-
+    this.saveAsExcelFile(excelBuffer, fileName);
   }
 
   private saveAsExcelFile(buffer: any, fileName: string): void {
@@ -270,6 +193,61 @@ export class TranslationDataUploadComponent implements OnInit {
 
   onCloseMsg(){
     this.grpTitleVisible = false;
+  }
+
+  openLanguageSelectionPopup(){
+    let tableHeader: any = this.translationData.lblDownloadTemplate || 'Download Template';
+    let colsList: any = ['select', 'name'];
+    let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lbllanguage || 'Language'];
+
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.maxHeight = '90vh';
+    dialogConfig.data = {
+      colsList: colsList,
+      colsName: colsName,
+      translationData: this.translationData,
+      tableHeader: tableHeader,
+    }
+    this.dialogRef = this.dialog.open(LanguageSelectionComponent, dialogConfig);
+    this.dialogRef.afterClosed().subscribe(response => {
+      let languageMap = new Map();
+      if(response.languagesSelected){
+        console.log(response);
+        this.translationService.getTranslations().subscribe(translationsData => {
+          if(translationsData){
+            let count = 0;
+            translationsData.forEach(element => {
+              if(response.languagesSelected.filter(item => item === element.code)){
+                if(languageMap.get(element.name)){
+                  let tempObj = languageMap.get(element.name);
+                  tempObj[element.code] = element.value;
+                  languageMap.set(element.name, tempObj);
+                }
+                else{
+                  languageMap.set(element.name, this.manipulateLanguageObject(element, count++));
+                }
+              }
+            });
+            let jsonData = [];
+            for(let i of languageMap.values()){
+              jsonData.push(i);
+            }
+            this.convertJSONtoXLSX(jsonData, "TranslationUploadTemplate.xlsx");
+          }
+        })
+      }
+    });
+  }
+
+  manipulateLanguageObject(langObj: any, count: number): any{
+    let tempObj = {};
+    tempObj["Sr.No."] = count;
+    tempObj["Labels"] = langObj.name;
+    tempObj[langObj.code] = langObj.value;
+    
+    return tempObj;
   }
 
   hideloader() {

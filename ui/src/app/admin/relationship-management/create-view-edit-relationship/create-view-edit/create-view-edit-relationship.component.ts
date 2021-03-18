@@ -6,6 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { RoleService } from 'src/app/services/role.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
+import { OrganizationService } from 'src/app/services/organization.service';
 
 @Component({
   selector: 'app-create-view-edit-relationship',
@@ -17,7 +18,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   //loggedInUser : string = 'admin';
   relationshipFormGroup: FormGroup;
   @Output() backToPage = new EventEmitter<any>();
-  featureDisplayedColumns: string[] = ['select', 'featureName'];
+  featureDisplayedColumns: string[] = ['select', 'name'];
   @Input() gridData: any;
   @Input() title: string;
   @Input() createStatus: boolean;
@@ -35,10 +36,10 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   featuresSelected = [];
   featuresData = [];
   organizationId: number;
-  levels= ['Level 1', 'Level 2', 'Level 3'];
+  levels= [10, 20, 30];
   codes= ['Code 1', 'Code 2', 'Code 3'];
 
-  constructor(private _formBuilder: FormBuilder, private roleService: RoleService) { }
+  constructor(private _formBuilder: FormBuilder, private roleService: RoleService, private organizationService: OrganizationService) { }
 
   ngAfterViewInit() {}
 
@@ -148,15 +149,22 @@ export class CreateViewEditRelationshipComponent implements OnInit {
         let objData = {
           organizationId: this.organizationId,
           featureIds: featureIds,
-          createdby: 0
+          featuresetId: 0,
+          name : this.relationshipFormGroup.controls.relationshipName.value,
+          description:this.relationshipFormGroup.controls.relationshipDescription.value,
+          level: this.relationshipFormGroup.controls.level.value,
+          code: this.relationshipFormGroup.controls.code.value,
+          id: 0,
+          isActive: true
         }
-       // this.roleService.createUserRole(objData).subscribe((res) => {
+
+        this.organizationService.createRelationship(objData).subscribe((res) => {
           this.backToPage.emit({ editFlag: false, editText: 'create',  name: this.relationshipFormGroup.controls.relationshipName.value });
-        // }, (error) => { 
-        //   if(error.status == 409){
-        //     this.isRelationshipExist = true;
-        //   }
-        // });
+        }, (error) => { 
+          if(error.status == 409){
+            this.isRelationshipExist = true;
+          }
+        });
       }
   }
 
@@ -172,74 +180,43 @@ export class CreateViewEditRelationshipComponent implements OnInit {
       return;
     }
     let objData = {
+      id: this.gridData[0].id,
       organizationId: this.gridData[0].organizationId,
+      featuresetId: this.gridData[0].featuresetid,
+      name : this.relationshipFormGroup.controls.relationshipName.value,
+      level: this.relationshipFormGroup.controls.level.value,
+      code: this.relationshipFormGroup.controls.code.value,
+      description:this.relationshipFormGroup.controls.relationshipDescription.value,
       featureIds: featureIds,
-      createdby: 0,
-      updatedby: 0
+      isActive: this.gridData[0].isActive
     }
-   // this.roleService.updateUserRole(objData).subscribe((res) => {
+
+    this.organizationService.updateRelationship(objData).subscribe((res) => {
       this.backToPage.emit({ editFlag: false, editText: 'edit', name: this.relationshipFormGroup.controls.relationshipName.value});
-    //}, (error) => { });
+    }, (error) => { });
+
   }
 
-  isAllSelectedForFeatures(){
+  masterToggleForFeatures() {
+    this.isAllSelectedForFeatures()
+      ? this.selectionForFeatures.clear()
+      : this.dataSource.data.forEach((row) =>
+        this.selectionForFeatures.select(row)
+      );
+  }
+
+  isAllSelectedForFeatures() {
     const numSelected = this.selectionForFeatures.selected.length;
     const numRows = this.dataSource.data.length;
     return numSelected === numRows;
   }
 
-  masterToggleForFeatures(){
-    this.isAllSelectedForFeatures() ? 
-    this.selectionForFeatures.clear() : this.dataSource.data.forEach(row => {this.selectionForFeatures.select(row)});
-
-  }
-
-  checkboxLabelForFeatures(row?: any): string{
-    if(row)
+  checkboxLabelForFeatures(row?: any): string {
+    if (row)
       return `${this.isAllSelectedForFeatures() ? 'select' : 'deselect'} all`;
-    else  
-      return `${this.selectionForFeatures.isSelected(row) ? 'deselect' : 'select'} row`;
+    else
+      return `${this.selectionForFeatures.isSelected(row) ? 'deselect' : 'select'
+        } row`;
   }
 
-  onCheckboxChange(event: any, row: any){
-    if(event.checked){  
-      if(row.featureName.includes(" _fullAccess")){
-        this.dataSource.data.forEach(item => {
-          if(item.featureName.includes(row.featureName.split(" _")[0])){
-            this.selectionForFeatures.select(item);
-          }
-        })
-      }
-      else if(row.featureName.includes(" _create") || row.featureName.includes(" _edit") || row.featureName.includes(" _delete") ){
-        this.dataSource.data.forEach(item => {
-          if(item.featureName.includes(row.featureName.split(" _")[0]+" _view")){
-            this.selectionForFeatures.select(item);
-          }
-        })
-      }
-    }
-    else {
-      if(row.featureName.includes(" _fullAccess")){
-        this.dataSource.data.forEach(item => {
-          if(item.featureName.includes(row.featureName.split(" _")[0])){
-            this.selectionForFeatures.deselect(item);
-          }
-        })
-      }
-      else if(row.featureName.includes(" _view")){
-        this.dataSource.data.forEach(item => {
-          if(item.featureName.includes(row.featureName.split(" _")[0])){
-            this.selectionForFeatures.deselect(item);
-          }
-        })
-      }
-      else if(!row.featureName.includes(" _fullAccess")){
-        this.dataSource.data.forEach(item => {
-          if(item.featureName.includes(row.featureName.split(" _")[0]+" _fullAccess")){
-            this.selectionForFeatures.deselect(item);
-          }
-        })
-      }
-    }
-  }
 }

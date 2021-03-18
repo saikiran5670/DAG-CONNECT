@@ -51,7 +51,7 @@ export class CommonFilterComponent implements OnInit {
 
     this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grpData)=>{
       grpData.forEach(item => {
-        this.userGroups.push(item.name);
+        this.userGroups.push(item.accountGroupName);
       })
     });
 

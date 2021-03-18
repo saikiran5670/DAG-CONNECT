@@ -24,7 +24,8 @@ message DriverUpdateRequest {
     string FirstName=5;
     string LastName=6;
     string Status=7;  
-    int32 modified_by=8;    
+    int32 modified_by=8;  
+    string opt_in = 9;   
   }
 message DriverUpdateResponse {
   Responcecode Code=1;

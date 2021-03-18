@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import net.atos.daf.common.AuditETLJobClient;
 import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.common.realtime.hbase.IndexDataHbaseSink;
+import net.atos.daf.ct2.common.realtime.postgresql.LiveFleetCurrentTripPostgreSink;
 import net.atos.daf.ct2.common.realtime.postgresql.LiveFleetDriverActivityPostgreSink;
 
 import net.atos.daf.ct2.common.util.DafConstants;
@@ -58,7 +59,9 @@ public class IndexDataProcess {
 
 			consumerStream.addSink(new IndexDataHbaseSink()); // Writing into HBase Table
 
-			consumerStream.addSink(new LiveFleetDriverActivityPostgreSink()); // Writing into PostgreSQL Table
+			consumerStream.addSink(new LiveFleetDriverActivityPostgreSink()); // Writing into Driver Activity PostgreSQL Table
+			
+			consumerStream.addSink(new LiveFleetCurrentTripPostgreSink()); // Writing into Current Trip PostgreSQL Table
 
 			log.info("after addsink");
 
@@ -80,7 +83,7 @@ public class IndexDataProcess {
 		} catch (Exception e) {
 
 			log.error("Error in Index Data Process" + e.getMessage());
-			// e.printStackTrace();
+			e.printStackTrace();
 
 			try {
 				auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_FAIL,
@@ -102,7 +105,6 @@ public class IndexDataProcess {
 		Map<String, String> auditMap = new HashMap<>();
 
 		auditMap.put(DafConstants.JOB_EXEC_TIME, String.valueOf(TimeFormatter.getInstance().getCurrentUTCTimeInSec()));
-		
 		auditMap.put(DafConstants.AUDIT_PERFORMED_BY, DafConstants.TRIP_JOB_NAME);
 		auditMap.put(DafConstants.AUDIT_COMPONENT_NAME, DafConstants.TRIP_JOB_NAME);
 		auditMap.put(DafConstants.AUDIT_SERVICE_NAME, DafConstants.AUDIT_SERVICE);

@@ -73,5 +73,12 @@ namespace net.atos.daf.ct2.relationship.test
             var result = _relationshipManager.GetRelationship(relationship).Result;
             Assert.IsTrue(result != null);
         }
+        [TestMethod]
+        public void GetRelationshipLevelCode_Test()
+        {
+           
+            var result = _relationshipManager.GetRelationshipLevelCode().Result;
+            Assert.IsTrue(result != null);
+        }        
     }
 }

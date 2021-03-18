@@ -18,5 +18,6 @@ namespace net.atos.daf.ct2.relationship.entity
         [Required]
         public List<int> FeatureIds { get; set; }
         public bool IsActive { get; set; }
+        public long CreatedAt { get; set; }
     }
 }

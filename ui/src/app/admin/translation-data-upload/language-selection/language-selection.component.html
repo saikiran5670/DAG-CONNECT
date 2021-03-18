@@ -1,0 +1,71 @@
+<mat-card class='mat-elevation-z margin-bottom-xlg no-padding' *ngIf='closePopup'
+    style="min-width: 600px; min-height: 400px;">
+    <mat-card-content>
+        <div fxLayout="row" fxLayoutAlign="start space-around"
+            style='padding: 10px 20px !important; background: #65c3f8; color: #fff;'>
+            <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                <span class='custom-font'>{{ data.tableHeader }}</span>
+            </div>
+            <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
+                <mat-icon matTooltip="{{ data.translationData.lblClose || 'Close'}}" (click)='onClose(false)' style='cursor: pointer; color: #000;'>close</mat-icon>
+            </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start space-around">
+            <div style='padding: 10px 20px 0px 20px;' class='full-width' fxLayout="column" fxLayoutGap="3px"
+                fxLayoutAlign="left">
+                <!-- <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+                    <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                      <mat-form-field appearance="outline">
+                          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ data.translationData.lblSearch || 'Search' }}">
+                          <span matPrefix><mat-icon>search</mat-icon></span>
+                      </mat-form-field>
+                    </div>
+                  </div> -->
+                <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
+                    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectLanguage || 'Select Language' }}</span>
+                    </div>
+                    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
+                        <span style='display: flex; '>
+                            <img matTooltip='Download Excel' src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 30px; height: 30px;" />&nbsp;
+                            <!-- <a [download]="templateFileName" [href]="templateFileUrl" -->
+                            <a (click)="onClickDownloadTemplate()"    
+                                style='font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline; cursor: pointer;'>{{ translationData.lblDownloadTranslatedData || 'Download Translated Data' }}
+                            </a>
+                        </span>
+                    </div>
+                </div>
+                <mat-table [dataSource]="dataSource" class="table-items" matSort>
+                    <ng-container *ngFor="let disCol of data.colsList; let colIndex = index" matColumnDef="{{disCol}}">
+                        <div *ngIf="disCol == 'select'">
+                            <mat-header-cell *matHeaderCellDef>
+                                <mat-checkbox (change)='$event ? masterToggleForSelectionData() : null'
+                                    [checked]='selectionData.hasValue() && isAllSelectedForSelectionData()'
+                                    [indeterminate]='selectionData.hasValue() && !isAllSelectedForSelectionData()'
+                                    [aria-label]='checkboxLabelForSelectionData()'>
+                                </mat-checkbox><span style='margin: 5px 0px 0px 5px;'>{{ data.colsName[colIndex]
+                                    }}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <mat-checkbox (click)='$event.stopPropagation()'
+                                    (change)='$event ? selectionData.toggle(row) : null'
+                                    [checked]='selectionData.isSelected(row)'
+                                    [aria-label]='checkboxLabelForSelectionData(row)'>
+                                </mat-checkbox>
+                            </mat-cell>
+                        </div>
+                        <div *ngIf="disCol != 'select'">
+                            <mat-header-cell *matHeaderCellDef> {{ data.colsName[colIndex] }}</mat-header-cell>
+                            <mat-cell *matCellDef="let element "> {{ element[disCol] }}
+                            </mat-cell>
+                        </div>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="data.colsList"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: data.colsList;">
+                    </mat-row>
+                </mat-table>
+                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+            </div>
+        </div>
+    </mat-card-content>
+</mat-card>

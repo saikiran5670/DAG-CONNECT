@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.data;
@@ -57,7 +58,17 @@ namespace net.atos.daf.ct2.subscription.repository
             return data;
         }
 
-
+        //To check if Organization is already inserted
+        async Task<string> OrganizationExits(int orgId)
+        {
+            var parameterToGetSubscribeId = new DynamicParameters();
+            parameterToGetSubscribeId.Add("@organization_Id", orgId);
+            parameterToGetSubscribeId.Add("@is_active", true);
+            string data = await dataAccess.ExecuteScalarAsync<string>
+                             (@"select subscription_id from master.subscription where organization_Id =@organization_Id and is_active =@is_active",
+                            parameterToGetSubscribeId);
+            return data;
+        }
         public async Task<SubscriptionResponse> Subscribe(SubscriptionActivation objSubscription)
         {
             log.Info("Subscribe Subscription method called in repository");
@@ -408,8 +419,15 @@ namespace net.atos.daf.ct2.subscription.repository
         {
             try
             {
-                //int orgid = await GetOrganizationIdByCode(orgId);
-                string SubscriptionId = Guid.NewGuid().ToString();
+                SubscriptionResponse objSubscriptionResponse = new SubscriptionResponse();
+                string SubscriptionId = string.Empty;
+                SubscriptionId = await OrganizationExits(orgId);
+                if (!string.IsNullOrEmpty(SubscriptionId))
+                {
+                    objSubscriptionResponse.orderId = SubscriptionId;
+                    return objSubscriptionResponse;
+                }
+                SubscriptionId = Guid.NewGuid().ToString();
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", orgId);
                 parameter.Add("@subscription_id", SubscriptionId);
@@ -427,7 +445,7 @@ namespace net.atos.daf.ct2.subscription.repository
 
                 int subid = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
 
-                SubscriptionResponse objSubscriptionResponse = new SubscriptionResponse();
+                
                 objSubscriptionResponse.orderId = SubscriptionId;
                 return objSubscriptionResponse;
 
@@ -435,6 +453,23 @@ namespace net.atos.daf.ct2.subscription.repository
             catch (Exception ex)
             {
                 log.Info("Create Subscription by OrganizationId method in repository failed with OrganizationId" + orgId);
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<SubscriptionDetails>> Get()
+        {
+            try
+            {
+                string query = string.Empty;
+                query = string.Format("select sub.subscription_id,sub.type,pak.name,sub.package_code,sub.subscription_start_date,sub.subscription_end_date,sub.is_active from master.Subscription sub join master.package pak on sub.package_id = pak.id");
+                IEnumerable<SubscriptionDetails> objsubscriptionDetails = await dataAccess.QueryAsync<SubscriptionDetails>(query);
+                return objsubscriptionDetails;
+            }
+            catch (Exception ex)
+            {
+                log.Info("Subscribe Get method in repository failed ");
                 log.Error(ex.ToString());
                 throw ex;
             }

@@ -68,6 +68,30 @@ export class TranslationService {
             .pipe(catchError(this.handleError));
     }
 
+    getTranslationUploadDetails(id?: number): Observable<any> {
+        let headerObj = this.generateHeader();
+        const headers = {
+          headers: new HttpHeaders({ headerObj }),
+        };
+        return this.httpClient
+            .get<any>(
+                id? `${this.translationUrl}/getUploadDetails?FileID=${id}` : `${this.translationUrl}/getUploadDetails`,headers
+                )
+            .pipe(catchError(this.handleError));
+    }
+
+    getTranslations(): Observable<any> {
+        let headerObj = this.generateHeader();
+        const headers = {
+          headers: new HttpHeaders({ headerObj }),
+        };
+        return this.httpClient
+            .get<any>(
+                `${this.translationUrl}/translations`,headers
+                )
+            .pipe(catchError(this.handleError));
+    }
+
     private handleError(errResponse: HttpErrorResponse) {
         if (errResponse.error instanceof ErrorEvent) {
             console.error('Client side error', errResponse.error.message);

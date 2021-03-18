@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using net.atos.daf.ct2.featureservice;
@@ -27,15 +28,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly Mapper _mapper;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-
+        private IMemoryCacheProvider _cache;
         #endregion
 
         #region Constructor
-        public FeatureController(FeatuseBusinessService.FeatureService.FeatureServiceClient Featureclient, ILogger<AccountController> logger)
+        public FeatureController(FeatuseBusinessService.FeatureService.FeatureServiceClient Featureclient, ILogger<AccountController> logger, IMemoryCacheProvider cache)
         {
             _featureclient = Featureclient;
             _logger = logger;
             _mapper = new Mapper();
+            _cache = cache;
         }
         #endregion
 
@@ -218,8 +220,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                //var users = _cacheProvider.GetFromCache<IEnumerable<User>>(cacheKey);
+                //if (users != null) return users;
 
                 request.LangaugeCode = (request.LangaugeCode == null || request.LangaugeCode == "") ? "EN-GB" : request.LangaugeCode;
+
                 var feature = await _featureclient.GetFeaturesAsync(request);
 
                 //List<FeatureResponce> featureList = new List<FeatureResponce>();
@@ -235,7 +240,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //    obj.FeatureType = featureitem.Type;
                 //    featureList.Add(obj);
                 //}
+                // Set cache options.
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    // Keep in cache for this time, reset time if accessed.
+                    .SetSlidingExpiration(TimeSpan.FromSeconds(10));
 
+                _cache.SetCache(request.LangaugeCode, feature.Features, cacheEntryOptions);
                 return Ok(feature.Features);
             }
             catch (Exception ex)

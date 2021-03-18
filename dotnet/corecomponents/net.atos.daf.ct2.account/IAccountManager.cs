@@ -20,7 +20,10 @@ namespace net.atos.daf.ct2.account
         Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter);    
         Task<AccessRelationship> CreateAccessRelationship(AccessRelationship entity);
         Task<AccessRelationship> UpdateAccessRelationship(AccessRelationship entity);
-        Task<bool> DeleteAccessRelationship(int accountGroupId,int vehicleGroupId);
+        Task<bool> DeleteAccessRelationship(int accountGroupId,int vehicleGroupId);        
+        Task<List<AccountVehicleAccessRelationship>> GetAccountVehicleAccessRelationship(AccountVehicleAccessRelationshipFilter filter, bool is_vehicleGroup);
+        Task<List<AccountVehicleEntity>> GetAccountVehicle(AccountVehicleAccessRelationshipFilter filter, bool is_vehicle);
+        Task<bool> DeleteVehicleAccessRelationship(int organizationId, int groupId, bool isVehicle);
         Task<bool> AddRole(AccountRole accountRoles);
         Task<bool> RemoveRole(AccountRole accountRoles);
         Task<List<KeyValue>> GetRoles(AccountRole accountRole);

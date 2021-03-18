@@ -17,16 +17,20 @@ namespace net.atos.daf.ct2.customerdataservice
             CreateHostBuilder(args).Build().Run();
         }
 
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-                    Host.CreateDefaultBuilder(args)
-                        .ConfigureWebHostDefaults(webBuilder =>
-                        {
-                            webBuilder.UseStartup<Startup>();
-                        }).ConfigureLogging(builder =>
-                        {
-                            builder.SetMinimumLevel(LogLevel.Trace);
-                            builder.AddLog4Net("log4net.config");
-                        });
+ public static IHostBuilder CreateHostBuilder(string[] args) =>
+Host.CreateDefaultBuilder(args)
+.ConfigureWebHostDefaults(webBuilder =>
+{
+webBuilder.ConfigureKestrel(serverOptions =>
+{
+serverOptions.AddServerHeader = false;
+})
+.UseStartup<Startup>();
+}).ConfigureLogging(builder =>
+{
+builder.SetMinimumLevel(LogLevel.Trace);
+builder.AddLog4Net("log4net.config");
+});
 
     }
     }

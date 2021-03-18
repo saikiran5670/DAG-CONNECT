@@ -81,10 +81,8 @@ jobs:
       SourceFolder: '$(system.defaultworkingdirectory)'
       Contents: ${{ parameters.manifestFile }} 
       TargetFolder: '$(build.artifactstagingdirectory)'
-    condition: succeededOrFailed()
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: Drop'
     inputs:
       PathtoPublish: '$(build.artifactstagingdirectory)'
-    condition: succeededOrFailed()

@@ -13,10 +13,11 @@ namespace net.atos.daf.ct2.organization.repository
         Task<PreferenceResponse> GetPreference(int organizationId);
 
         //Task<Organization> UpdateCustomer(Organization organization);
-        Task<Customer> UpdateCustomer(Customer customer);
-        Task<KeyHandOver> KeyHandOverEvent(KeyHandOver keyHandOver);
-        Task<int> CreateVehicleParty(List<Customer> customers);
-
+        Task<CustomerRequest> UpdateCustomer(CustomerRequest customer);
+        Task<HandOver> KeyHandOverEvent(HandOver keyHandOver);
+     //   Task<int> CreateVehicleParty(List<Customer> customers);
+         
+        Task<int> CreateOwnerRelationship(RelationshipMapping relationshipMapping);
        
     }
 }
