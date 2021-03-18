@@ -67,7 +67,7 @@ jobs:
     inputs:
       azureSubscription:  ${{ parameters.Subscription }}
       azureContainerRegistry:  ${{ parameters.ContainerRegistry }}
-      action: 'Push an image'
+      action: 'Push an image 1'
       imageName: ${{ parameters.imageName }}
   
   - task: CmdLine@2
@@ -79,7 +79,7 @@ jobs:
     displayName: 'Copy Kubernetes manifest'
     inputs:
       SourceFolder: '$(system.defaultworkingdirectory)'
-      Contents: ${{ parameters.manifestFile1 }} 
+      Contents: ${{ parameters.manifestFile }} 
       TargetFolder: '$(build.artifactstagingdirectory)'
 
   - task: PublishBuildArtifacts@1
