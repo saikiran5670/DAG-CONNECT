@@ -10,5 +10,6 @@ namespace net.atos.daf.ct2.relationship
         Task<Relationship> UpdateRelationship(Relationship relationship);
         Task<bool> DeleteRelationship(int relationshipId);
         Task<List<Relationship>> GetRelationship(Relationship filter);
+        Task<RelationshipLevelCode> GetRelationshipLevelCode();
     }
 }

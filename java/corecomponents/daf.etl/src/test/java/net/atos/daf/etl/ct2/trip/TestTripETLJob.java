@@ -24,10 +24,11 @@ import org.slf4j.LoggerFactory;
 
 import junit.framework.Assert;
 import net.atos.daf.common.ct2.utc.TimeFormatter;
-import net.atos.daf.etl.ct2.common.bo.Trip;
+//import net.atos.daf.etl.ct2.common.bo.Trip;
 import net.atos.daf.etl.ct2.common.bo.TripStatusData;
 import net.atos.daf.etl.ct2.common.util.ETLConstants;
 import net.atos.daf.etl.ct2.common.util.FlinkUtil;
+import net.atos.daf.postgre.bo.Trip;
 
 public class TestTripETLJob {
 

@@ -132,9 +132,9 @@
         <div fxLayout="row" class='margin-top-xlg'>
             <div fxLayout="column" class='full-width'>
                 <mat-table [dataSource]="dataSource" matSort>      
-                    <ng-container matColumnDef="featureName">
+                    <ng-container matColumnDef="name">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatureName || 'Feature Name'}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row; let index"> {{row.featureName}} </mat-cell>
+                        <mat-cell *matCellDef="let row; let index"> {{row.name}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="select">
                         <mat-header-cell *matHeaderCellDef>{{ translationData.lblAccess || 'Access'}}

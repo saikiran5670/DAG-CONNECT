@@ -33,13 +33,13 @@
 		<version>0.0.1</version>
 	</dependency>
 	
-	<!-- <dependency>
+	<dependency>
 		<groupId>net.atos</groupId>
 		<artifactId>daf.postgre.connection</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</dependency>
 	
-	 <dependency>
+<!-- 	 <dependency>
 		<groupId>org.hibernate</groupId>
 		<artifactId>hibernate-entitymanager</artifactId>
 		<version>4.3.0.CR2</version>

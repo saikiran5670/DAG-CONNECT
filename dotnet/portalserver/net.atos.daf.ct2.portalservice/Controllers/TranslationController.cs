@@ -107,15 +107,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
 
         [HttpGet]
-        [Route("languagetranslationsbykey")]
+        [Route("translations")]
         public async Task<IActionResult> GetLangagugeTranslationByKey([FromQuery] KeyRequest request)
         {
             try
             {
-                if (string.IsNullOrEmpty(request.Key))
-                {
-                    return StatusCode(400, " Key  required..");
-                }
+                //if (string.IsNullOrEmpty(request.Key))
+                //{
+                //    return StatusCode(400, " Key  required..");
+                //}
                 _logger.LogInformation("GetLangagugeTranslationByKey  method " + request.Key);
 
                 KeyResponce KeyResponseList = await _translationServiceClient.GetLangagugeTranslationByKeyAsync(request);

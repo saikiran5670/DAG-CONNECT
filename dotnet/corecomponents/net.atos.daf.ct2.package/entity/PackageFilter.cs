@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.package.entity
         public string Name { get; set; }
         public string Type { get; set; }
         public int FeatureSetId { get; set; }
-        public PackageStatus  Status { get; set; }
+        public bool  Status { get; set; }
         public string PackageCodes { get; set; }
     }
 }

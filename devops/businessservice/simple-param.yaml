@@ -14,7 +14,7 @@ parameters:
 - name: imageName
   type: string
   default: 'imageName'
-- name: 'manifestFile'
+- name: manifestFile
   type: string
   default: 'manifestFile'
 
@@ -54,12 +54,6 @@ jobs:
       useLegacyPattern: false
       enableTelemetry: true
       
-  - task: CmdLine@2
-    inputs:
-      script: |
-        echo $(Subscription)
-        echo $(ContainerRegistry)
-  
   - task: Docker@0
     displayName: 'Build an image'
     inputs:
@@ -75,17 +69,20 @@ jobs:
       azureContainerRegistry:  ${{ parameters.ContainerRegistry }}
       action: 'Push an image'
       imageName: ${{ parameters.imageName }}
+  
+  - task: CmdLine@2
+    inputs:
+      script: |
+        echo ${{ parameters.manifestFile }}
 
   - task: CopyFiles@2
-      displayName: 'Copy Kubernetes manifest'
-      inputs:
-        SourceFolder: '$(system.defaultworkingdirectory)'
-        Contents: ${{ parameters.manifestFile }} 
-        TargetFolder: '$(build.artifactstagingdirectory)'
-      condition: succeededOrFailed()
+    displayName: 'Copy Kubernetes manifest'
+    inputs:
+      SourceFolder: '$(system.defaultworkingdirectory)'
+      Contents: ${{ parameters.manifestFile }} 
+      TargetFolder: '$(build.artifactstagingdirectory)'
 
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: drop'
-      inputs:
-        PathtoPublish: '$(build.artifactstagingdirectory)'
-      condition: succeededOrFailed()
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: Drop'
+    inputs:
+      PathtoPublish: '$(build.artifactstagingdirectory)'

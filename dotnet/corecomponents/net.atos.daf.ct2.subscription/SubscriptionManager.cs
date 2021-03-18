@@ -2,6 +2,7 @@
 using System;
 using net.atos.daf.ct2.subscription.repository;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.subscription
 {
@@ -49,5 +50,15 @@ namespace net.atos.daf.ct2.subscription
         {
             return await subscriptionRepository.Get(status, vehicleGroupID, vehicleId, StartDate, EndDate);
         }
+
+        public async Task<SubscriptionResponse> Create(int orgId)
+        {
+            return await subscriptionRepository.Create(orgId);
+        }
+        public async Task<IEnumerable<SubscriptionDetails>> Get()
+        {
+            return await subscriptionRepository.Get();
+        }
+        
     }
 }

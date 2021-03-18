@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <Appenders>
+        <Http name="Http" url="http://10.0.5.6:9200/applogs/_doc">
+            <Property name="Content-Type" value="application/json" />
+            <PatternLayout pattern='{"message":"%msg"}' />
+        </Http>
+        
+         <!-- Console Appender -->
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n" />
+        </Console>
+        
+    </Appenders>
+
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="Http" />
+            <AppenderRef ref="STDOUT" />
+        </Root>
+    </Loggers>
+</Configuration>

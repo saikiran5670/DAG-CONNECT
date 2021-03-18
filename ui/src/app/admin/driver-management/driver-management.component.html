@@ -1,6 +1,6 @@
 <div class='bgtrans'>
     <div *ngIf='!editFlag'>
-        <div *ngIf='grpTitleVisible' fxLayout="row" fxLayoutAlign="center center"
+        <div *ngIf='titleVisibleMsg' fxLayout="row" fxLayoutAlign="center center"
             style='padding:10px; color:#fff; background: #5dc24e;' class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
             {{ userCreatedMsg }}
@@ -137,15 +137,15 @@
                         <ng-container matColumnDef="optIn">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblConsent || 'Consent' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">
-                                <div class='margin-left-10-per' *ngIf="row.optIn == 'I'">
+                                <div class='margin-left-10-per' *ngIf="row.status == 'I'">
                                     <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ translationData.lblOptIn || 'Opt-In' }}" src='assets/images/icons/driverOpt/opt-in.svg' style="width: 20px; height: 20px;" />
                                 </div>
-                                <div class='margin-left-10-per' *ngIf="row.optIn == 'U'">
+                                <div class='margin-left-10-per' *ngIf="row.status == 'U'">
                                     <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ translationData.lblOptOut || 'Opt-Out' }}" src='assets/images/icons/driverOpt/opt-out.svg' style="width: 20px; height: 20px;" />
                                 </div>
-                                <div class='margin-left-10-per' *ngIf="row.optIn == 'H'">
-                                    <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ row.status == 'I' ? (translationData.lblInheritOptIn || 'Inherit Opt-In') : (translationData.lblInheritOptOut || 'Inherit Opt-Out') }}" [src]="(row.status == 'I') ? 'assets/images/icons/driverOpt/opt-in.svg' : 'assets/images/icons/driverOpt/opt-out.svg'" style="width: 20px; height: 20px;" />
-                                </div>
+                                <!-- <div class='margin-left-10-per' *ngIf="row.optIn == 'H'">
+                                    <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ row.status == 'I' ? (translationData.lblOptIn || 'Opt-In') : (translationData.lblOptOut || 'Opt-Out') }}" [src]="(row.status == 'I') ? 'assets/images/icons/driverOpt/opt-in.svg' : 'assets/images/icons/driverOpt/opt-out.svg'" style="width: 20px; height: 20px;" />
+                                </div> -->
                             </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="action">
