@@ -358,7 +358,7 @@ namespace net.atos.daf.ct2.organization.repository
                    int organizationId= await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameterInsert);
                                      
                    // CraeteOrganizationRelationship
-                   // await subscriptionManager.Create(organizationId); 
+                   // need to discuss here
                    
                    // Assign base package at ORG lavel
                     await subscriptionManager.Create(organizationId);
@@ -545,7 +545,8 @@ namespace net.atos.daf.ct2.organization.repository
                    relationshipMapping.vehicle_id=VehicleID;                 
                    relationshipMapping.start_date=UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
                    relationshipMapping.created_at=UTCHandling.GetUTCFromDateTime(System.DateTime.Now);                   
-                   relationshipMapping.allow_chain=true;                   
+                   relationshipMapping.allow_chain=true;  
+                   relationshipMapping.isFirstRelation=true;                 
                    await CreateOwnerRelationship(relationshipMapping);              
                }
                catch(Exception ex )
@@ -555,30 +556,7 @@ namespace net.atos.daf.ct2.organization.repository
                  throw ex;
                 }    
                return 1;          
-         }
-        // public async Task<int> OrganizationRelationship(HandOver keyHandOver,int OrganizationId)
-        //  {
-        //        try{
-                  
-        //             OrganizationRelationship organizationRelationship=new OrganizationRelationship();
-        //             organizationRelationship.organization_id=OrganizationId;
-        //             organizationRelationship.feature_set_id=1; // need to delete 
-        //             organizationRelationship.name="OrgRelatrionship"; // need to define the name paterns
-        //             organizationRelationship.description="OrgRelatrionship description"; // need to define the name paterns
-        //             organizationRelationship.code="ORGCODE"; // need to define the name paterns
-        //             organizationRelationship.is_active=true; 
-        //             organizationRelationship.level=0;  // need to define the level
-                    
-        //             await CraeteOrganizationRelationship(organizationRelationship);              
-        //        }
-        //        catch(Exception ex )
-        //         {
-        //          log.Info("UpdatetVehicle method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
-        //          log.Error(ex.ToString());
-        //          throw ex;
-        //         }    
-        //        return 1;          
-        //  }
+         }       
         public async Task<HandOver> KeyHandOverEvent(HandOver keyHandOver)
         {
            // 1. Check the VIN in exist in vehicle table.
@@ -699,9 +677,7 @@ namespace net.atos.daf.ct2.organization.repository
                 }  
                 else{
                     Inputparameter.Add("@vehicle_group_id", relationshipMapping.vehicle_group_id);
-                }                 
-              
-                //Inputparameter.Add("@vehicle_group_id", relationshipMapping.vehicle_group_id);
+                } 
                 Inputparameter.Add("@owner_org_id",relationshipMapping.owner_org_id);    // from property file 
                 Inputparameter.Add("@created_org_id", relationshipMapping.created_org_id); // from property file --- first time it will same as owner_org_id
                 Inputparameter.Add("@target_org_id", relationshipMapping.target_org_id);  // from property file -- first time it will same as owner_org_id
@@ -718,11 +694,9 @@ namespace net.atos.daf.ct2.organization.repository
                 return OwnerRelationshipId;
             }
 
-            else if (isRelationshipExist > 1 && (!relationshipMapping.isFirstRelation)) // relationship exist
-           // else if (iscustomerexist > 1)
+            else if (isRelationshipExist > 1 && (!relationshipMapping.isFirstRelation)) // relationship exist          
             {
-                // update previuse relationship end date and insert new relationship
-                // Update orgrelationshipmapping 
+                // update previuse relationship end date and insert new relationship              
                 var Inputparameter = new DynamicParameters();
                 Inputparameter.Add("@relationship_id", relationshipMapping.relationship_id);  
                 Inputparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
@@ -745,8 +719,6 @@ namespace net.atos.daf.ct2.organization.repository
                  set vehicle_id=@vehicle_id,vehicle_group_id=@vehicle_group_id,owner_org_id=@owner_org_id,created_org_id=@created_org_id,
                  target_org_id=@target_org_id,start_date=@start_date,end_date=@end_date,allow_chain=@allow_chain,created_at=@created_at";
                  await dataAccess.ExecuteScalarAsync<int>(queryUpdate, Inputparameter);
-
-                // await VehicleOptInOptOutHistory(keyHandOver.VIN);
                  return OwnerRelationshipId;
             }
             }
