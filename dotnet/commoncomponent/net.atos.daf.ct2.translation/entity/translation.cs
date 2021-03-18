@@ -3,6 +3,7 @@ using static net.atos.daf.ct2.translation.Enum.translationenum;
 
 namespace net.atos.daf.ct2.translation.entity
 {
+    [Serializable]
     public class Translations
     {
 

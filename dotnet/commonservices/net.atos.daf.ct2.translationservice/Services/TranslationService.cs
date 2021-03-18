@@ -502,7 +502,7 @@ namespace net.atos.daf.ct2.translationservice
                     response.Translationupload.Add(_mapper.ToTranslationUploadDetailEntity(item));
                 }
 
-                response.Message = "Vehicles data retrieved";
+                response.Message = "Translations data retrieved";
                 response.Code = Responcecode.Success;
                 _logger.LogInformation("Get method in vehicle service called.");
                 return await Task.FromResult(response);
