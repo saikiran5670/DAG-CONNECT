@@ -32,7 +32,7 @@ export class DriverManagementComponent implements OnInit {
   dataSource: any;
   initData: any = [];
   importDriverPopup: boolean = false;
-  displayedColumns: string[] = ['driverIdExt','firstName','email','optIn','action'];
+  displayedColumns: string[] = ['driverIdExt','firstName','email','status','action'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   importDriverFormGroup: FormGroup;

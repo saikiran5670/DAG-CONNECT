@@ -134,8 +134,8 @@
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEmailID || 'Email ID' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">{{ row.email }}</mat-cell>
                         </ng-container>
-                        <ng-container matColumnDef="optIn">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblConsent || 'Consent' }}</mat-header-cell>
+                        <ng-container matColumnDef="status">
+                            <mat-header-cell *matHeaderCellDef>{{ translationData.lblConsent || 'Consent' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <div class='margin-left-10-per' *ngIf="row.status == 'I'">
                                     <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ translationData.lblOptIn || 'Opt-In' }}" src='assets/images/icons/driverOpt/opt-in.svg' style="width: 20px; height: 20px;" />
