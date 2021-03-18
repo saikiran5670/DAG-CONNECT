@@ -109,7 +109,7 @@
                     </mat-error>
                   </div>
                   <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblFirstName || '`' }}<span class='mandatoryColor'>*</span></mat-label>
+                    <mat-label>{{ translationData.lblFirstName || 'First Name' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                       <input maxlength="30" placeholder="{{ translationData.lblFirstName || 'First Name' }}" matInput formControlName="firstName" required>
                     </mat-form-field>
@@ -390,9 +390,9 @@
       <div fxLayout="row" *ngIf='selecteUserGrpDataSource.filteredData.length > 0'>
           <div fxLayout="column" class='full-width'>
               <mat-table [dataSource]="selecteUserGrpDataSource" matSort>
-                 <ng-container matColumnDef="name">
+                 <ng-container matColumnDef="accountGroupName">
                       <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblGroupName || 'Group Name' }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
+                      <mat-cell *matCellDef="let row">{{ row.accountGroupName }}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="accountCount">
                       <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Users' }}</mat-header-cell>

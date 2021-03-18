@@ -46,7 +46,7 @@ export class EditCommonTableComponent implements OnInit {
 
   selectTableRows() {
     this.dataSource.data.forEach(row => {
-      let search = this.data.selectedData.filter(item => item.id == (this.data.type == 'role' ? row.roleId : row.id));
+      let search = this.data.selectedData.filter(item => (this.data.type == 'role' ? item.id : item.groupId) == (this.data.type == 'role' ? row.roleId : row.groupId));
       if (search.length > 0) {
         this.selectionData.select(row);
       }
@@ -64,7 +64,7 @@ export class EditCommonTableComponent implements OnInit {
   }
 
   onConfirm() {
-    if (this.data.type == 'role') {
+    if (this.data.type == 'role') { //-- role
       let mapRoleIds: any = this.data.selectedData.map(resp => resp.id);
 
       let roleDeleteObj = {
@@ -109,10 +109,10 @@ export class EditCommonTableComponent implements OnInit {
         this.onClose({ data: updatedRoles, type: this.data.type });
       }
     }
-    else {
+    else { // account group
       let accountId = this.data.accountInfo.id;
       let mapGrpData: any = [];
-      let selectedGrpIds: any = this.selectionData.selected.map(resp => resp.id);
+      let selectedGrpIds: any = this.selectionData.selected.map(resp => resp.groupId); //--id
       if (selectedGrpIds.length > 0) {
         selectedGrpIds.forEach(element => {
           mapGrpData.push({
