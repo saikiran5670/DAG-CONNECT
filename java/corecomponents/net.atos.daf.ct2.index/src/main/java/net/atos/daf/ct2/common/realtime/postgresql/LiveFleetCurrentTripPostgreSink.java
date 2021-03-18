@@ -18,12 +18,15 @@ import net.atos.daf.ct2.common.realtime.dataprocess.IndexDataProcess;
 import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Index;
+import net.atos.daf.postgre.bo.CurrentTrip;
 import net.atos.daf.postgre.bo.Trip;
 import net.atos.daf.postgre.connection.PostgreDataSourceConnection;
 import net.atos.daf.postgre.dao.LiveFleetDriverActivityDao;
+import net.atos.daf.postgre.dao.LiveFleetPosition;
+import net.atos.daf.postgre.dao.LivefleetCurrentTripStatisticsDao;
 
 @SuppressWarnings({})
-public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRecord<Index>> implements Serializable {
+public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecord<Index>> implements Serializable {
 	/*
 	 * This class is used to write Index message data in a postgres table.
 	 */
@@ -32,33 +35,42 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 
 	private static final long serialVersionUID = 1L;
 
-	private List<Index> queue;
-	private List<Index> synchronizedCopy;
-
 	Connection connection = null;
-	String livefleetdriver = null;
-	String driverreadquery = null;
+	//Connection connection2 = null;
 
-	LiveFleetDriverActivityDao driverDAO;
+	String livefleettrip = null;
+	String readtrip = null;
+	String readposition = null;
+
+	private List<Index> queue = new ArrayList<Index>();
+	private List<Index> synchronizedCopy = new ArrayList<Index>();
+
+	LivefleetCurrentTripStatisticsDao currentTripDAO;
+	LiveFleetPosition positionDAO;
 
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 
 		// this function is used to set up a connection to postgres table
 
-		log.info("########## In LiveFleet Driver Activity ##############");
+		log.info("########## In LiveFleet current trip statistics ##############");
 
-		driverDAO = new LiveFleetDriverActivityDao();
+		currentTripDAO = new LivefleetCurrentTripStatisticsDao();
+		positionDAO = new LiveFleetPosition();
 
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 
-		livefleetdriver = envParams.get(DafConstants.QUERY_DRIVER_ACTIVITY);
-		driverreadquery = envParams.get(DafConstants.QUERY_DRIVER_ACTIVITY_READ);
+		livefleettrip = envParams.get(DafConstants.QUERY_LIVEFLEET_TRIP_STATISTICS);
 
-		System.out.println("livefleetdriver --> " + livefleetdriver);
-		System.out.println("driverreadquery --> " + driverreadquery);
+		readtrip = envParams.get(DafConstants.QUERY_LIVEFLEET_TRIP_READ);
+		readposition = envParams.get(DafConstants.QUERY_LIVEFLEET_POSITION_READ);
+
+		System.out.println("livefleettrip --> " + livefleettrip);
+		System.out.println("livefleettripread --> " + readtrip);
+		System.out.println("livefleetposition --> " + readposition);
 
 		try {
+			System.out.println("in open try");
 
 			connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
 					envParams.get(DafConstants.DATAMART_POSTGRE_SERVER_NAME),
@@ -66,7 +78,18 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 					envParams.get(DafConstants.DATAMART_POSTGRE_DATABASE_NAME),
 					envParams.get(DafConstants.DATAMART_POSTGRE_USER),
 					envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
-			driverDAO.setConnection(connection);
+			currentTripDAO.setConnection(connection);
+			positionDAO.setConnection(connection);
+			
+			
+			/*connection2 = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
+					envParams.get(DafConstants.DATAMART_POSTGRE_SERVER_NAME),
+					Integer.parseInt(envParams.get(DafConstants.DATAMART_POSTGRE_PORT)),
+					envParams.get(DafConstants.DATAMART_POSTGRE_DATABASE_NAME),
+					envParams.get(DafConstants.DATAMART_POSTGRE_USER),
+					envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
+			positionDAO.setConnection(connection2);*/
+			System.out.println("After Connection");
 
 		} catch (Exception e) {
 			log.error("Error in Live fleet driver" + e.getMessage());
@@ -79,23 +102,46 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 	public void invoke(KafkaRecord<Index> index) throws Exception {
 		// this function is used to write data into postgres table
 
-		// Live Fleet Driver Activity
+		// Live Fleet CURRENT TRIP Activity
 		Index row = index.getValue();
-		queue = new ArrayList<Index>();
-		synchronizedCopy = new ArrayList<Index>();
+		
+		
 
 		try {
 			queue.add(row);
-			if (queue.size() >= 1) {
-				System.out.println("inside syncronized");
+			if (queue.size() >= 3) {
+				System.out.println("inside current trip syncronized");
 				synchronized (synchronizedCopy) {
 					synchronizedCopy = new ArrayList<Index>(queue);
 					queue.clear();
-					Long trip_Start_time = driverDAO.read(index.getValue().getDocument().getTripID());
-					driverDAO.insert(row, trip_Start_time);
-					// jPAPostgreDao.saveTripDetails(synchronizedCopy);
-					System.out.println("Driver activity save done");
-					// System.out.println("anshu1");
+					
+					System.out.println("In current trip INVOKE");
+					for (Index indexValue : synchronizedCopy) {
+						
+						int varVEvtid = indexValue.getVEvtID();
+						if (varVEvtid != 4) {
+
+							CurrentTrip current_trip_start_var = currentTripDAO
+									.read(index.getValue().getDocument().getTripID());
+
+							indexValue.setReceivedTimestamp(current_trip_start_var.getStart_time_stamp());
+
+							indexValue.setGpsLongitude(current_trip_start_var.getStart_position_longitude());
+
+							indexValue.setGpsLatitude(current_trip_start_var.getStart_position_lattitude());
+
+						}
+
+						int distance_until_next_service = positionDAO.read(index.getValue().getVin());
+
+						currentTripDAO.insert(indexValue, distance_until_next_service);
+						// jPAPostgreDao.saveTripDetails(synchronizedCopy);
+						System.out.println(" current trip save done");
+						// System.out.println("anshu1");
+						
+					}
+					
+					
 
 				}
 			}
@@ -116,7 +162,9 @@ public class LiveFleetDriverActivityPostgreSink extends RichSinkFunction<KafkaRe
 	 * log.info("Valid Url = " + url);
 	 * 
 	 * return url; }
-	 * 
+	 */
+
+	/*
 	 * private static String encodeValue(String value) { try { return
 	 * URLEncoder.encode(value, StandardCharsets.UTF_8.toString()); } catch
 	 * (UnsupportedEncodingException ex) { throw new
