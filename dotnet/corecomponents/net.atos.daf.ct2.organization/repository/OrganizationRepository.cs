@@ -282,13 +282,13 @@ namespace net.atos.daf.ct2.organization.repository
         }
 
 
-        public async Task<Customer> UpdateCustomer(Customer customer)
+        public async Task<CustomerRequest> UpdateCustomer(CustomerRequest customer)
         {
             log.Info("Update Customer method called in repository");
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@org_id", customer.CompanyUpdatedEvent.Company.ID);
+                parameter.Add("@org_id", customer.CustomerID);
                 var query = @"SELECT id FROM master.organization where org_id=@org_id";
                 int iscustomerexist = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
@@ -296,18 +296,18 @@ namespace net.atos.daf.ct2.organization.repository
                 {
                     Int64 referenceDateTime;
                     var parameterUpdate = new DynamicParameters();
-                    parameterUpdate.Add("@org_id", customer.CompanyUpdatedEvent.Company.ID);
-                    parameterUpdate.Add("@Name", customer.CompanyUpdatedEvent.Company.Name);
-                    parameterUpdate.Add("@Type", customer.CompanyUpdatedEvent.Company.type);
-                    parameterUpdate.Add("@AddressType", customer.CompanyUpdatedEvent.Company.Address.Type);
-                    parameterUpdate.Add("@AddressStreet", customer.CompanyUpdatedEvent.Company.Address.Street);
-                    parameterUpdate.Add("@AddressStreetNumber", customer.CompanyUpdatedEvent.Company.Address.StreetNumber);
-                    parameterUpdate.Add("@PostalCode", customer.CompanyUpdatedEvent.Company.Address.PostalCode);
-                    parameterUpdate.Add("@City", customer.CompanyUpdatedEvent.Company.Address.City);
-                    parameterUpdate.Add("@CountryCode", customer.CompanyUpdatedEvent.Company.Address.CountryCode);                     
-                    if ((customer.CompanyUpdatedEvent.Company.ReferenceDateTime != null) && (DateTime.Compare(DateTime.MinValue, customer.CompanyUpdatedEvent.Company.ReferenceDateTime) < 0))
+                    parameterUpdate.Add("@org_id", customer.CustomerID);
+                    parameterUpdate.Add("@Name", customer.CustomerName);
+                    parameterUpdate.Add("@Type", customer.CompanyType);
+                    parameterUpdate.Add("@AddressType", customer.AddressType);
+                    parameterUpdate.Add("@AddressStreet", customer.Street);
+                    parameterUpdate.Add("@AddressStreetNumber", customer.StreetNumber);
+                    parameterUpdate.Add("@PostalCode", customer.PostalCode);
+                    parameterUpdate.Add("@City", customer.City);
+                    parameterUpdate.Add("@CountryCode", customer.CountryCode);                     
+                    if ((customer.ReferenceDateTime != null) && (DateTime.Compare(DateTime.MinValue, customer.ReferenceDateTime) < 0))
                     {
-                        referenceDateTime = UTCHandling.GetUTCFromDateTime(customer.CompanyUpdatedEvent.Company.ReferenceDateTime);
+                        referenceDateTime = UTCHandling.GetUTCFromDateTime(customer.ReferenceDateTime);
                     }
                     else
                     {
@@ -330,20 +330,20 @@ namespace net.atos.daf.ct2.organization.repository
                 {
                     Int64 referenceDateTime;
                     var parameterInsert = new DynamicParameters();
-                    parameterInsert.Add("@org_id", customer.CompanyUpdatedEvent.Company.ID);
-                    parameterInsert.Add("@Name", customer.CompanyUpdatedEvent.Company.Name);
-                    parameterInsert.Add("@Type", customer.CompanyUpdatedEvent.Company.type);
-                    parameterInsert.Add("@AddressType", customer.CompanyUpdatedEvent.Company.Address.Type);
-                    parameterInsert.Add("@AddressStreet", customer.CompanyUpdatedEvent.Company.Address.Street);
-                    parameterInsert.Add("@AddressStreetNumber", customer.CompanyUpdatedEvent.Company.Address.StreetNumber);
-                    parameterInsert.Add("@PostalCode", customer.CompanyUpdatedEvent.Company.Address.PostalCode);
-                    parameterInsert.Add("@City", customer.CompanyUpdatedEvent.Company.Address.City);
-                    parameterInsert.Add("@CountryCode", customer.CompanyUpdatedEvent.Company.Address.CountryCode);
+                    parameterInsert.Add("@org_id", customer.CustomerID);
+                    parameterInsert.Add("@Name", customer.CustomerName);
+                    parameterInsert.Add("@Type", customer.CompanyType);
+                    parameterInsert.Add("@AddressType", customer.AddressType);
+                    parameterInsert.Add("@AddressStreet", customer.Street);
+                    parameterInsert.Add("@AddressStreetNumber", customer.StreetNumber);
+                    parameterInsert.Add("@PostalCode", customer.PostalCode);
+                    parameterInsert.Add("@City", customer.City);
+                    parameterInsert.Add("@CountryCode", customer.CountryCode);
                    
 
-                    if ((customer.CompanyUpdatedEvent.Company.ReferenceDateTime != null) && (DateTime.Compare(DateTime.MinValue, customer.CompanyUpdatedEvent.Company.ReferenceDateTime) < 0))
+                    if ((customer.ReferenceDateTime != null) && (DateTime.Compare(DateTime.MinValue, customer.ReferenceDateTime) < 0))
                     {
-                        referenceDateTime = UTCHandling.GetUTCFromDateTime(customer.CompanyUpdatedEvent.Company.ReferenceDateTime);
+                        referenceDateTime = UTCHandling.GetUTCFromDateTime(customer.ReferenceDateTime);
                     }
                     else
                     {
@@ -351,9 +351,7 @@ namespace net.atos.daf.ct2.organization.repository
                     }
                     parameterInsert.Add("@vehicle_default_opt_in", "I");
                     parameterInsert.Add("@driver_default_opt_in", "U");
-
-                    // parameterInsert.Add("@reference_date", customer.CompanyUpdatedEvent.Company.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(customer.CompanyUpdatedEvent.Company.ReferenceDateTime.ToString()) : 0);                
-                    parameterInsert.Add("@reference_date", referenceDateTime);
+                   parameterInsert.Add("@reference_date", referenceDateTime);
                     string queryInsert = "insert into master.organization(org_id, name,type ,address_type, street, street_number, postal_code, city,country_code,reference_date,vehicle_default_opt_in,driver_default_opt_in) " +
                                   "values(@org_id, @Name,@Type ,@AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@reference_date,@vehicle_default_opt_in,@driver_default_opt_in) RETURNING id";
 
@@ -545,17 +543,14 @@ namespace net.atos.daf.ct2.organization.repository
                    relationshipMapping.target_org_id=Convert.ToInt32(keyHandOver.OwnerRelationship);
                    relationshipMapping.created_org_id=Convert.ToInt32(keyHandOver.OwnerRelationship);
                    relationshipMapping.vehicle_id=VehicleID;                 
-                 //  relationshipMapping.vehicle_group_id=190;  // Need to delete this  - what is default vehicle group id ?
                    relationshipMapping.start_date=UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
-                  // relationshipMapping.end_date=0;
-                   relationshipMapping.created_at=UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
-                   
+                   relationshipMapping.created_at=UTCHandling.GetUTCFromDateTime(System.DateTime.Now);                   
                    relationshipMapping.allow_chain=true;                   
                    await CreateOwnerRelationship(relationshipMapping);              
                }
                catch(Exception ex )
                 {
-                 log.Info("UpdatetVehicle method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                 log.Info("UpdatetVehicle method called in repository failed :");
                  log.Error(ex.ToString());
                  throw ex;
                 }    
@@ -669,16 +664,16 @@ namespace net.atos.daf.ct2.organization.repository
             return keyHandOver;
         }
 
-        public async Task<int> CreateVehicleParty(List<Customer> customers)
-        {
-            int count = 0;
-            foreach (var item in customers)
-            {
-                await UpdateCustomer(item);
-                count += 1;
-            }
-            return count;
-        }
+        // public async Task<int> CreateVehicleParty(List<Customer> customers)
+        // {
+        //     int count = 0;
+        //     foreach (var item in customers)
+        //     {
+        //         await UpdateCustomer(item);
+        //         count += 1;
+        //     }
+        //     return count;
+        // }
 
         public async Task<int> CreateOwnerRelationship(RelationshipMapping relationshipMapping)
         {
