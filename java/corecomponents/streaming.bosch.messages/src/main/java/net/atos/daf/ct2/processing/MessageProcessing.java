@@ -58,7 +58,7 @@ public class MessageProcessing<U, T> implements Serializable {
 								monitoringObj.setVin("UNKNOWN");
 
 							// TODO Dummy Variable
-							monitorDocument.setTripID("BOCSH_" + TimeFormatter.getInstance().getCurrentUTCTime());
+							monitorDocument.setTripID("BOSCH_" + TimeFormatter.getInstance().getCurrentUTCTime());
 						}
 
 						if (jsonNodeRec.get("kafkaProcessingTS") != null)

@@ -5,14 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
-import { VehicleGroup } from '../../../models/vehicle.model';
-import { AccountGroup } from '../../../models/users.model';
 import { AccountService } from '../../../services/account.service';
-
-export interface vehGrpCreation {
-  groupName: null;
-  groupDesc: null;
-}
 
 @Component({
   selector: 'app-create-edit-user-group',
@@ -21,64 +14,20 @@ export interface vehGrpCreation {
 })
 
 export class CreateEditUserGroupComponent implements OnInit {
-  OrgId: number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-  accountgrp: AccountGroup = {
-    accountId: 0,
-    organizationId: this.OrgId,
-    accountGroupId: 0,
-    vehicleGroupId: 0,
-    roleId: 0,
-    name: ""
-  }
-  // createaccountgrp = {
-  //   id: 0,
-  //   name: "",
-  //   organizationId: this.OrgId,
-  //   description: "",
-  //   accountCount: 0,
-  //   accounts: [
-  //     {
-  //       "accountGroupId": 0,
-  //       "accountId": 0
-  //     }
-  //   ]
-  // }
+  OrgId: any = 0;
   @Output() backToPage = new EventEmitter<any>();
   displayedColumns: string[] = ['select', 'firstName', 'emailId', 'roles', 'accountGroups'];
-  vehGrp: VehicleGroup;
-  vehSelectionFlag: boolean = false;
-  mainTableFlag: boolean = true;
-  vehGC: vehGrpCreation = { groupName: null, groupDesc: null };
-  selectionForVehGrp = new SelectionModel(true, []);
-  dataSource: any = new MatTableDataSource([]);
-  dataSourceUsers: any = new MatTableDataSource([]);
-  selectedType: any = '';
-  columnNames: string[];
-  products: any[] = [];
-  newUserGroupName: any;
-  enteredUserGroupDescription: any;
-  editUserContent: boolean = false;
-  updatedRowData: object = {}
   selectedAccounts = new SelectionModel(true, []);
-  accountSelected = [];
+  dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  inputText: any;
   @Input() translationData: any;
-  @Input() createStatus: boolean;
-  @Input() editFlag: boolean;
-  @Input() viewDisplayFlag: boolean;
   @Input() selectedRowData: any;
+  @Input() actionType: any;
   userCreatedMsg: any = '';
-  userName: string = '';
-  viewFlag: boolean = false;
-  initData: any;
-  rowsData: any;
-  titleText: string;
-  orgId: number;
   duplicateEmailMsg: boolean = false;
   breadcumMsg: any = '';
-  UserGroupForm: FormGroup;
+  userGroupForm: FormGroup;
   groupTypeList: any = [
     {
       name: 'Group',
@@ -89,26 +38,35 @@ export class CreateEditUserGroupComponent implements OnInit {
       value: 'D'
     }
   ];
-
-  constructor(private _formBuilder: FormBuilder, private _snackBar: MatSnackBar, private accountService: AccountService) { }
+  
+  constructor(private _formBuilder: FormBuilder, private accountService: AccountService) { }
 
   ngOnInit() {
-    this.orgId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    this.UserGroupForm = this._formBuilder.group({
+    this.OrgId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.userGroupForm = this._formBuilder.group({
       userGroupName: ['', [Validators.required]],
-      userGroupDescription: [],
-      groupType: ['', [Validators.required]]
+      groupType: ['', [Validators.required]],
+      userGroupDescription: []
     });
+    if(this.actionType == 'edit' ){
+      this.setDefaultValue();
+    }
     this.loadUsersData();
     this.breadcumMsg = this.getBreadcum();
+  }
+
+  setDefaultValue(){
+    this.userGroupForm.get('userGroupName').setValue(this.selectedRowData.name);
+    this.userGroupForm.get('groupType').setValue(this.selectedRowData.groupType);
+    this.userGroupForm.get('userGroupDescription').setValue(this.selectedRowData.description);
   }
 
   getBreadcum() {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblUserGroupManagement ? this.translationData.lblUserGroupManagement : "User Group Management"} / ${this.translationData.lblUserGroupDetails ? this.translationData.lblUserGroupDetails : 'User Group Details'}`;
   }
 
-  makeRoleAccountGrpList(initdata) {
-    initdata.forEach((element, index) => {
+  makeRoleAccountGrpList(initdata: any) {
+    initdata.forEach((element: any, index: any) => {
       let roleTxt: any = '';
       let accGrpTxt: any = '';
       element.roles.forEach(resp => {
@@ -124,11 +82,9 @@ export class CreateEditUserGroupComponent implements OnInit {
       if (accGrpTxt != '') {
         accGrpTxt = accGrpTxt.slice(0, -1);
       }
-
       initdata[index].roleList = roleTxt;
       initdata[index].accountGroupList = accGrpTxt;
     });
-
     return initdata;
   }
 
@@ -141,132 +97,125 @@ export class CreateEditUserGroupComponent implements OnInit {
       roleId: 0,
       name: ""
     }
-    this.accountService.getAccountDetails(getUserData).subscribe((usrlist) => {
-      usrlist = this.makeRoleAccountGrpList(usrlist);
-      this.updatedRowData = usrlist;
-      this.initData = usrlist;
-      this.dataSourceUsers = new MatTableDataSource(usrlist);
-      this.dataSourceUsers.paginator = this.paginator;
-      this.dataSourceUsers.sort = this.sort;
-      if (this.editFlag || this.viewDisplayFlag) {
-        this.onReset();
-      }
+    this.accountService.getAccountDetails(getUserData).subscribe((usrlist: any) => {
+      let userGridData = this.makeRoleAccountGrpList(usrlist);
+      this.loadGridData(userGridData);
     });
   }
 
-  onCancel() {
-    this.createStatus = false;
-    this.backToPage.emit({ editFlag: false, editText: 'cancel' });
-  }
-
-  onReset() {
-    this.UserGroupForm.patchValue({
-      userGroupName: this.selectedRowData.name,
-      userGroupDescription: this.selectedRowData.description,
-      groupType: this.selectedRowData.groupType
-    });
-    this.accountSelected = this.selectedRowData.groupRef;
-    this.dataSourceUsers.data.forEach(row => {
-      if (this.accountSelected) {
-        for (let element of this.accountSelected) {
-          if (element.ref_Id == row.id) {
-            this.selectionForVehGrp.select(row);
-            if (this.viewDisplayFlag) {
-              let selectedRow = this.selectionForVehGrp.selected;
-              this.displayedColumns = ['firstName', 'emailId', 'roles', 'accountGroups'];
-              this.initData = selectedRow;
-              this.dataSourceUsers = new MatTableDataSource(selectedRow);
-              this.dataSourceUsers.paginator = this.paginator;
-              this.dataSourceUsers.sort = this.sort;
-            }
-            break;
-          }
-          else {
-            this.selectionForVehGrp.deselect(row);
-          }
-        }
-      }
-    })
-  }
-
-  onInputChange(event: any) {
-    this.newUserGroupName = event.target.value;
-  }
-
-  onInputGD(event: any) {
-    this.enteredUserGroupDescription = event.target.value;
-  }
-
-  onCreate() {
-    this.duplicateEmailMsg = false;
-    let create = document.getElementById("createUpdateButton");
-    let accountList = [];
-    this.selectionForVehGrp.selected.forEach(element => {
-      accountList.push({ "accountGroupId": (element.accountGroups.length > 0 ? element.accountGroups[0].id : 0), "accountId": element.id })
-    });
-
-    // this.createaccountgrp = {
-    //   id: 0,
-    //   name: this.UserGroupForm.controls.userGroupName.value,
-    //   description: this.UserGroupForm.controls.userGroupDescription.value,
-    //   organizationId: this.OrgId,
-    //   accounts: accountList,
-    //   accountCount: 0,
-    // }
-
-    if (create.innerText == "Confirm") {
-      let updateAccGrpObj = {
-        id: this.selectedRowData.id,
-        name: this.UserGroupForm.controls.userGroupName.value,
-        organizationId: this.selectedRowData.organizationId,
-        refId: 0,
-        description: this.UserGroupForm.controls.userGroupDescription.value,
-        groupType: this.UserGroupForm.controls.groupType.value,
-        accounts: accountList
-      }
-
-      this.accountService.updateAccountGroup(updateAccGrpObj).subscribe((d) => {
-        this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp) => {
-          this.userCreatedMsg = this.getUserCreatedMessage();
-          this.createStatus = false;
-          this.editUserContent = false;
-          this.editFlag = false;
-          this.viewDisplayFlag = false;
-          this.products = grp;
-          this.initData = grp;
-          this.dataSource = new MatTableDataSource(grp);
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
-          this.backToPage.emit({ FalseFlag: false, editText: 'create', gridData: grp, successMsg: this.userCreatedMsg });
-        }, (err) => { });
-      }, (error) => {
-        //console.log(error);
-        if (error.status == 409) {
-          this.duplicateEmailMsg = true;
+  loadGridData(tableData: any){
+    let selectedAccountList: any = [];
+    if(this.actionType == 'view'){
+      tableData.forEach((row: any) => {
+        let search = this.selectedRowData.groupRef.filter((item: any) => item.refId == row.id);
+        if (search.length > 0) {
+          selectedAccountList.push(row);
         }
       });
-    } else if (create.innerText == "Create") {
+      tableData = selectedAccountList;
+      this.displayedColumns = ['firstName', 'emailId', 'roles', 'accountGroups'];
+    }
+    this.updateDataSource(tableData);
+    if(this.actionType == 'edit' ){
+      this.selectTableRows();
+    }
+  }
+
+  updateDataSource(tableData: any){
+    this.dataSource = new MatTableDataSource(tableData);
+    setTimeout(()=>{
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    });
+  }
+
+  selectTableRows(){
+    this.dataSource.data.forEach((row: any) => {
+      let search = this.selectedRowData.groupRef.filter((item: any) => item.refId == row.id);
+      if (search.length > 0) {
+        this.selectedAccounts.select(row);
+      }
+    });
+  }
+
+  onReset(){ //-- Reset
+    this.selectedAccounts.clear();
+    this.selectTableRows();
+    this.setDefaultValue();
+  }
+
+  onCancel(){
+    let emitObj = {
+      stepFlag: false,
+      successMsg: ""
+    }  
+    this.backToPage.emit(emitObj);
+  }
+
+  onCreateUpdate() {
+    this.duplicateEmailMsg = false;
+    let accountList = [];
+    this.selectedAccounts.selected.forEach(element => {
+      accountList.push({ "accountGroupId": (this.actionType == 'create' ? 0 : this.selectedRowData.id), "accountId": element.id })
+    });
+    if(this.actionType == 'create'){ // create
       let createAccGrpObj = {
-        id: 0,
-        name: this.UserGroupForm.controls.userGroupName.value,
-        organizationId: this.OrgId,
+          id: 0,
+          name: this.userGroupForm.controls.userGroupName.value,
+          organizationId: this.OrgId,
+          refId: 0,
+          description: this.userGroupForm.controls.userGroupDescription.value,
+          groupType: this.userGroupForm.controls.groupType.value,
+          accounts: accountList
+        }
+        this.accountService.createAccountGroup(createAccGrpObj).subscribe((d) => {
+          let accountGrpObj: any = {
+            accountId: 0,
+            organizationId: this.OrgId,
+            accountGroupId: 0,
+            vehicleGroupId: 0,
+            roleId: 0,
+            name: ""
+          }
+          this.accountService.getAccountGroupDetails(accountGrpObj).subscribe((accountGrpData: any) => {
+            this.userCreatedMsg = this.getUserCreatedMessage();
+            let emitObj = { stepFlag: false, gridData: accountGrpData, successMsg: this.userCreatedMsg };
+            this.backToPage.emit(emitObj);
+          }, (err) => { });
+        }, (err) => {
+          //console.log(err);
+          if (err.status == 409) {
+            this.duplicateEmailMsg = true;
+          }
+        });
+    }
+    else{ // update
+      let updateAccGrpObj = {
+        id: this.selectedRowData.id,
+        name: this.userGroupForm.controls.userGroupName.value,
+        organizationId: this.selectedRowData.organizationId,
         refId: 0,
-        description: this.UserGroupForm.controls.userGroupDescription.value,
-        groupType: this.UserGroupForm.controls.groupType.value,
+        description: this.userGroupForm.controls.userGroupDescription.value,
+        groupType: this.userGroupForm.controls.groupType.value,
         accounts: accountList
       }
-      this.accountService.createAccountGroup(createAccGrpObj).subscribe((d) => {
-        this.accountService.getAccountGroupDetails(this.accountgrp).subscribe((grp) => {
+      this.accountService.updateAccountGroup(updateAccGrpObj).subscribe((d) => {
+        let accountGrpObj: any = {
+          accountId: 0,
+          organizationId: this.OrgId,
+          accountGroupId: 0,
+          vehicleGroupId: 0,
+          roleId: 0,
+          name: ""
+        }
+        this.accountService.getAccountGroupDetails(accountGrpObj).subscribe((accountGrpData: any) => {
           this.userCreatedMsg = this.getUserCreatedMessage();
-          this.createStatus = false;
-          this.editUserContent = false;
-          this.editFlag = false;
-          this.viewDisplayFlag = false;
-          this.backToPage.emit({ FalseFlag: false, editText: 'create', gridData: grp, successMsg: this.userCreatedMsg });
+          let emitObj = { stepFlag: false, gridData: accountGrpData, successMsg: this.userCreatedMsg };
+          this.backToPage.emit(emitObj);
         }, (err) => { });
-      }, (error) => {
-        console.log(error);
-        if (error.status == 409) {
+      }, (err) => {
+        //console.log(err);
+        if (err.status == 409) {
           this.duplicateEmailMsg = true;
         }
       });
@@ -274,56 +223,48 @@ export class CreateEditUserGroupComponent implements OnInit {
   }
 
   getUserCreatedMessage() {
-    this.userName = `${this.UserGroupForm.controls.userGroupName.value}`;
-    if (this.createStatus) {
-      if (this.translationData.lblUserAccountCreatedSuccessfully)
-        return this.translationData.lblUserAccountCreatedSuccessfully.replace('$', this.userName);
+    let userName = `${this.userGroupForm.controls.userGroupName.value}`;
+    if(this.actionType == 'create') {
+      if(this.translationData.lblUserAccountCreatedSuccessfully)
+        return this.translationData.lblUserAccountCreatedSuccessfully.replace('$', userName);
       else
-        return ("User Account '$' Created Successfully").replace('$', this.userName);
-    } else {
+        return ("User Account '$' Created Successfully").replace('$', userName);
+    }else if(this.actionType == 'edit') {
       if (this.translationData.lblUserAccountUpdatedSuccessfully)
-        return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', this.userName);
+        return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', userName);
       else
-        return ("User Account '$' Updated Successfully").replace('$', this.userName);
+        return ("User Account '$' Updated Successfully").replace('$', userName);
+    }
+    else{
+      return '';
     }
   }
 
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    this.dataSourceUsers.filter = filterValue;
+    this.dataSource.filter = filterValue;
   }
 
-  onEdit() {
-    this.createStatus = false;
-    this.editFlag = false;
-    this.editUserContent = true;
-    this.UserGroupForm.patchValue({
-      userGroupName: this.selectedRowData.name,
-      userGroupDescription: this.selectedRowData.description,
-      groupType: this.selectedRowData.groupType
-    })
-  }
-
-  masterToggleForVehGrp() {
-    this.isAllSelectedForVehGrp()
-      ? this.selectionForVehGrp.clear()
-      : this.dataSourceUsers.data.forEach((row) =>
-        this.selectionForVehGrp.select(row)
+  masterToggleForAccount() {
+    this.isAllSelectedForAccount()
+      ? this.selectedAccounts.clear()
+      : this.dataSource.data.forEach((row) =>
+        this.selectedAccounts.select(row)
       );
   }
 
-  isAllSelectedForVehGrp() {
-    const numSelected = this.selectionForVehGrp.selected.length;
-    const numRows = this.dataSourceUsers.data.length;
+  isAllSelectedForAccount() {
+    const numSelected = this.selectedAccounts.selected.length;
+    const numRows = this.dataSource.data.length;
     return numSelected === numRows;
   }
 
-  checkboxLabelForVehGrp(row?: any): string {
+  checkboxLabelForAccount(row?: any): string {
     if (row)
-      return `${this.isAllSelectedForVehGrp() ? 'select' : 'deselect'} all`;
+      return `${this.isAllSelectedForAccount() ? 'select' : 'deselect'} all`;
     else
-      return `${this.selectionForVehGrp.isSelected(row) ? 'deselect' : 'select'
+      return `${this.selectedAccounts.isSelected(row) ? 'deselect' : 'select'
         } row`;
   }
 

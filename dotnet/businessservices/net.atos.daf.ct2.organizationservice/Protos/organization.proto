@@ -36,6 +36,7 @@ message RelationshipGetRequest{
     repeated int32 featureIds=7;    
     int32 featuresetid =8; 
     bool isActive=9;
+    int64 CreatedAt=10;
 }
 message RelationshipGetResponse{
  Responcecode code=1;  
@@ -52,6 +53,7 @@ message RelationshipCreateRequest{
     repeated int32 featureIds=7;
     int32 featuresetid =8; 
     bool isActive=9;
+    int64 CreatedAt=10;
 }
 
 message RelationshipCreateResponse{

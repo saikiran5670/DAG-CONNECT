@@ -60,9 +60,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Please provide relationship features");
                 }
-                
+
                 if (request.FeaturesetId > 0)
-                {                   
+                {
                     logger.LogInformation("Relationship create function called ");
                     if (request.OrganizationId == 0)
                     {
@@ -112,7 +112,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (request.FeaturesetId > 0)
                 {
                     logger.LogInformation("Relationship update function called ");
-                    if (request.OrganizationId == 0 || request.Id == 0 || request.Level==0 || string.IsNullOrEmpty(request.Code))
+                    if (request.OrganizationId == 0 || request.Id == 0 || request.Level == 0 || string.IsNullOrEmpty(request.Code))
                     {
                         return StatusCode(400, "Please provide OrganizationId, Level,Code and org relationship id:");
                     }
@@ -167,7 +167,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> GetRelationship([FromQuery] RelationshipCreateRequest request)
         {
             try
-            {             
+            {
                 logger.LogInformation("Organization relationship get function called ");
                 var orgResponse = await organizationClient.GetRelationshipAsync(request);
                 orgResponse.RelationshipList.Where(S => S.Featuresetid > 0)
@@ -186,9 +186,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> GetRelationshipLevelCode()
         {
             try
-            {               
-                 
-             
+            {
+
+
                 var levelCode = new RelationshipLevelCode();
                 levelCode.Levels = Enum.GetValues(typeof(RelationshipLevel))
                      .Cast<RelationshipLevel>()
@@ -207,7 +207,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                      }).ToList();
 
                 logger.LogInformation("Relationship get level and code function called ");
-                
+
                 return Ok(levelCode);
             }
             catch (Exception ex)
@@ -233,10 +233,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 relationshipRequest.Id = relationshipId;
                 var response = await organizationClient.DeleteRelationshipAsync(relationshipRequest);
                 response.RelationshipRequest = relationshipRequest;
-                if (response != null && response.Code ==organizationservice.Responcecode.Success)
+                if (response != null && response.Code == organizationservice.Responcecode.Success)
                     return Ok(response);
-                else
-                    return StatusCode(404, "Relationship not configured.");
+                else if (response.Code == organizationservice.Responcecode.Conflict)
+                {
+                    return StatusCode(409, "Relationship cannot be deleted as it is mapped with organiztion.");
+                }
+                else { return StatusCode(404, "Relationship not configured."); }
             }
             catch (Exception ex)
             {
