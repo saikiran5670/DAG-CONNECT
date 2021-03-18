@@ -185,6 +185,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return Ok(driverInValidList);
                 }
                     DriverBusinessService.DriverImportData response = await driverClient.ImportDriversAsync(request);
+                if (response!=null && response.Code== DriverBusinessService.Responcecode.Failed)
+                    return StatusCode(500, response.Message);
 
                 if (response.Driver == null)
                     response = new DriverBusinessService.DriverImportData();

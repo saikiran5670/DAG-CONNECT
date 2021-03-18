@@ -99,9 +99,11 @@ message DriversImport {
   }
 
 
- message DriverImportData{
-   repeated DriverReturns Driver =1;
-} 
+message DriverImportData{
+ Responcecode Code=1;
+ string Message = 2;
+ repeated DriverReturns Driver =3;
+}
 
 message DriverReturns {   
     string DriverID=1;  
