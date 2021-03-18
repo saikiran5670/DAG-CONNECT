@@ -79,12 +79,10 @@ jobs:
     displayName: 'Copy Kubernetes manifest'
     inputs:
       SourceFolder: '$(system.defaultworkingdirectory)'
-      Contents: ${{ parameters.manifestFile }} 
+      Contents: ${{ parameters.manifestFile1 }} 
       TargetFolder: '$(build.artifactstagingdirectory)'
-    condition: succeeded()
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: Drop'
     inputs:
       PathtoPublish: '$(build.artifactstagingdirectory)'
-    condition: succeeded()
