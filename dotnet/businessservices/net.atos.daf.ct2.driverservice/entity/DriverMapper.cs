@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.driverservice.entity
             // driver.modified_by= request.modified_by;
             if (!(string.IsNullOrEmpty(request.created_at.ToString())))
             {
-                driver.CreatedAt = UTCHandling.GetConvertedDateTimeFromUTC(request.created_at, "America/New_York", "yyyy-MM-ddTHH:mm:ss");
+                driver.CreatedAt = Convert.ToString(request.created_at);
             }
             return driver;
         }
