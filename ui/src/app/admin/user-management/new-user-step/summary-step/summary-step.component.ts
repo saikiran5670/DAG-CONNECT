@@ -11,6 +11,7 @@ import { MatSort } from '@angular/material/sort';
 export class SummaryStepComponent implements OnInit {
   @Input() translationData: any;
   @Input() defaultSetting: any;
+  @Input() privilegeAccess: any;
   @Input() set selectedRoleData(value: any) {
     this.confirmRoleData = value;
     this.loadRoleData();
