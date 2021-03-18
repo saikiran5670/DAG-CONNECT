@@ -6,7 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace net.atos.daf.ct2.portalservice.Common
 {
-    public class MemoryCacheProvider
+    public class MemoryCacheProvider: IMemoryCacheProvider
     {
         private const int CacheSeconds = 10; // 10 Seconds
         private readonly IMemoryCache _cache;

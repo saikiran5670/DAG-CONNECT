@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.portalservice.Common
 {
-    interface IMemoryCacheProvider
+    public interface IMemoryCacheProvider
     {
         T GetFromCache<T>(string key) where T : class;
         void SetCache<T>(string key, T value) where T : class;

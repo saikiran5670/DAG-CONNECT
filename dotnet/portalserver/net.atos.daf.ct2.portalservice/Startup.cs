@@ -97,7 +97,8 @@ namespace net.atos.daf.ct2.portalservice
             services.AddDistributedMemoryCache();
             
             services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
-            
+            services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();
+
             services.AddGrpcClient<AccountService.AccountServiceClient>(o =>
             {
                 o.Address = new Uri(accountservice);
