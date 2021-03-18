@@ -55,8 +55,7 @@ export class EditViewUserComponent implements OnInit {
   @Input() allUserGrpData: any;
   @Input() selectedPreference: any;
   displayedColumnsRoleConfirm: string[] = ['roleName', 'featureIds'];
-  displayedColumnsUserGrpConfirm: string[] = ['name', 'accountCount'];
-  displayedColumnsVehGrpConfirm: string[] = ['name', 'vehicles', 'registrationNumber'];
+  displayedColumnsUserGrpConfirm: string[] = ['accountGroupName', 'accountCount'];
   selectedRoleDataSource: any = [];
   selecteUserGrpDataSource: any = [];
   selectedVehGrpDataSource: any = [];
@@ -150,7 +149,7 @@ export class EditViewUserComponent implements OnInit {
   }
 
   filterAccountGroupTableData(){
-    let filteredAccountGroup = this.allUserGrpData.filter(resp => this.selectedUserGrpData.some(_data => _data.id === resp.id));
+    let filteredAccountGroup = this.allUserGrpData.filter(resp => this.selectedUserGrpData.some(_data => _data.groupId === resp.groupId));
     return filteredAccountGroup;
   }
 
@@ -320,7 +319,7 @@ export class EditViewUserComponent implements OnInit {
   editUserGroupData(){
     let type= "userGroup";
     let tableHeader: any = this.translationData.lblSelectedUserGroups || 'Selected User Groups';
-    let colsList: any = ['select', 'name', 'accountCount'];
+    let colsList: any = ['select', 'accountGroupName', 'accountCount'];
     let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lblGroupName || 'Group Name', this.translationData.lblUsers || 'Users'];
     this.callCommonTableToEdit(this.accountInfoData, type, colsList, colsName, tableHeader, this.selectedUserGrpData, this.allUserGrpData);
   }
@@ -424,7 +423,7 @@ export class EditViewUserComponent implements OnInit {
     let objData = {
       accountId: 0,
       organizationId: rowData.organizationId, //32
-      accountGroupId: rowData.id, 
+      accountGroupId: rowData.groupId, 
       vehicleGroupId: 0,
       roleId: 0,
       name: ""
@@ -469,7 +468,7 @@ export class EditViewUserComponent implements OnInit {
       tableData: tableData,
       colsList: ['firstName','emailId','roles'],
       colsName: [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'],
-      tableTitle: `${rowData.name} - ${this.translationData.lblUsers || 'Users'}`
+      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers || 'Users'}`
     }
     this.dialogRefForView = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }

@@ -318,7 +318,7 @@ export class NewUserStepComponent implements OnInit {
 
     //---- Accnt Grp obj----------//
     let mapGrpData: any = [];
-    let mapGrpIds: any = this.selectionForUserGrp.selected.map(resp => resp.id);
+    let mapGrpIds: any = this.selectionForUserGrp.selected.map(resp => resp.groupId);
     if(mapGrpIds.length > 0)
     {
       mapGrpIds.forEach(element => {
@@ -526,7 +526,7 @@ export class NewUserStepComponent implements OnInit {
     let objData = {
       accountId: 0,
       organizationId: rowData.organizationId, 
-      accountGroupId: rowData.id, 
+      accountGroupId: rowData.groupId, 
       vehicleGroupId: 0,
       roleId: 0,
       name: ""
@@ -571,7 +571,7 @@ export class NewUserStepComponent implements OnInit {
       tableData: tableData,
       colsList: ['firstName','emailId','roles'],
       colsName: [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'],
-      tableTitle: `${rowData.name} - ${this.translationData.lblUsers || 'Users'}`
+      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers || 'Users'}`
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }

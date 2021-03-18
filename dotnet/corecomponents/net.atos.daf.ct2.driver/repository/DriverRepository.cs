@@ -300,10 +300,25 @@ namespace net.atos.daf.ct2.driver
             log.Info("Delete driver method called in repository");
             try
             {
+                var orgOptInStatus = string.Empty;
+                var status = string.Empty;
+                if (optoutStatus == "I" || optoutStatus == "U")
+                {
+                    status = optoutStatus;
+                }
+                else if (optoutStatus == "H")
+                {
+                    var parameterOpt = new DynamicParameters();
+                    parameterOpt.Add("@id", organizationId);
+                    var queryOptIn = @"select driver_default_opt_in from master.organization where id=@id and is_active=true";
+                    orgOptInStatus = await dataAccess.ExecuteScalarAsync<string>(queryOptIn, parameterOpt);
+                    status = orgOptInStatus;
+                }
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", organizationId);
                 parameter.Add("@opt_in", optoutStatus);
-                var query = @"update master.driver set opt_in=@opt_in where organization_id=@organization_id and is_active=true";
+                parameter.Add("@status", status);
+                var query = @"update master.driver set status=@status, opt_in=@opt_in where organization_id=@organization_id and is_active=true";
                 int isUpdated = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
             }
@@ -348,46 +363,59 @@ namespace net.atos.daf.ct2.driver
                 foreach (var item in drivers)
                 {
                     objDriver = new DriverImportResponse();
-                    var parameter = new DynamicParameters();
-                    parameter.Add("@organization_id", orgid);
-                    parameter.Add("@driver_id_ext", item.Driver_id_ext);
-                    parameter.Add("@first_name", item.first_name);
-                    parameter.Add("@last_name", item.last_name);
-                    parameter.Add("@email", item.email);
-                    parameter.Add("@status", status);
-                    parameter.Add("@opt_in", orgOptInStatus);
-                    parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(System.DateTime.Now));
-                    parameter.Add("@modified_by", item.modified_by);
-                    parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(System.DateTime.Now));
-
-                    var parameterduplicate = new DynamicParameters();
-                    parameterduplicate.Add("@driver_id_ext", item.Driver_id_ext);
-                    var query = @"SELECT id FROM master.driver where driver_id_ext=@driver_id_ext";
-                    int ObjDriverExist = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-
-                    if (ObjDriverExist > 0)
+                    try
                     {
-                        var queryUpdate = @"update master.driver set first_name=@first_name, last_name=@last_name,email=@email,opt_in=@opt_in,modified_at=@modified_by,created_at=@created_at
-	                                 WHERE driver_id_ext = @driver_id_ext RETURNING id;";
-                        await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameter);
-                        // ErrorMessage=item.Driver_id_ext + "Not Updated";
+                        var parameter = new DynamicParameters();
+                        parameter.Add("@organization_id", orgid);
+                        parameter.Add("@driver_id_ext", item.Driver_id_ext);
+                        parameter.Add("@first_name", item.first_name);
+                        parameter.Add("@last_name", item.last_name);
+                        parameter.Add("@email", item.email);
+                        parameter.Add("@status", status);
+                        parameter.Add("@opt_in", orgOptInStatus);
+                        parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(System.DateTime.Now));
+                        parameter.Add("@modified_by", item.modified_by);
+                        parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(System.DateTime.Now));
 
-                        //dicMessage.Add(item.Driver_id_ext,"Updated");
-                        objDriver.ReturnMessage = "Updated";
+                        var parameterduplicate = new DynamicParameters();
+                        parameterduplicate.Add("@driver_id_ext", item.Driver_id_ext);
+                        var query = @"SELECT id FROM master.driver where driver_id_ext=@driver_id_ext";
+                        int ObjDriverExist = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+
+
+                        if (ObjDriverExist > 0)
+                        {
+                            var queryUpdate = @"update master.driver set first_name=@first_name, last_name=@last_name,email=@email,opt_in=@opt_in,modified_at=@modified_by,created_at=@created_at
+                                        WHERE driver_id_ext = @driver_id_ext RETURNING id;";
+                            await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameter);
+                            // ErrorMessage=item.Driver_id_ext + "Not Updated";
+
+                            //dicMessage.Add(item.Driver_id_ext,"Updated");
+                            objDriver.ReturnMessage = "Updated";
+                            objDriver.Status = "PASS";
+                        }
+                        else
+                        {
+                            var queryInsert = @"insert into master.driver(organization_id,driver_id_ext, first_name, last_name,email,status, opt_in,modified_at,modified_by,created_at) values(@organization_id,@driver_id_ext, @first_name, @last_name,@email ,@status, @opt_in,@modified_at,@modified_by,@created_at)";
+                            await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
+                            //  ErrorMessage=item.Driver_id_ext + "Not Inserted";
+                            //  dicMessage.Add(item.Driver_id_ext,"Inserted");
+                            objDriver.ReturnMessage = "Inserted";
+                            objDriver.Status = "PASS";
+                        }
+
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        var queryInsert = @"insert into master.driver(organization_id,driver_id_ext, first_name, last_name,email,status, opt_in,modified_at,modified_by,created_at) values(@organization_id,@driver_id_ext, @first_name, @last_name,@email ,@status, @opt_in,@modified_at,@modified_by,@created_at)";
-                        await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
-                        //  ErrorMessage=item.Driver_id_ext + "Not Inserted";
-                        //  dicMessage.Add(item.Driver_id_ext,"Inserted");
-                        objDriver.ReturnMessage = "Inserted";
+                        objDriver.ReturnMessage = ex.Message;
+                        objDriver.Status = "FAIL";
                     }
+
                     objDriver.DriverID = item.Driver_id_ext;
                     objDriver.FirstName = item.first_name;
                     objDriver.LastName = item.last_name;
                     objDriver.Email = item.email;
-                    objDriver.Status = "PASS";
+
                     lstdrivers.Add(objDriver);
                 }
             }
