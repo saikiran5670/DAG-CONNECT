@@ -284,7 +284,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return Ok("Organization Created :" + orgResponse);
+                    return Ok(orgResponse);
                 }
             }
             catch (Exception ex)
@@ -345,7 +345,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return Ok("Organization Created :" + orgResponse);
+                    return Ok(orgResponse);
                 }
             }
             catch (Exception ex)
@@ -389,6 +389,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("getall")]
+        public async Task<IActionResult> GetAll(int organizationId)
+        {
+            try
+            {               
+                var idRequest = new IdRequest();
+                idRequest.Id = organizationId;
+                logger.LogInformation("Organization get all function called ");
+                var orgResponse = await organizationClient.GetAllAsync(idRequest);
+                return Ok(orgResponse);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message + " " + ex.StackTrace);             
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         //Begin Account Preference
         [HttpPost]
         [Route("preference/create")]

@@ -5,7 +5,8 @@ namespace net.atos.daf.ct2.account.ENUM
     public enum AccessRelationType
     {
         ViewOnly = 'V',
-        FullAccess = 'F'  
+        FullAccess = 'F',
+        ReadWrite='W'
     }
     public enum RelationType
     {

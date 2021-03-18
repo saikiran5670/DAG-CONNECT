@@ -10,6 +10,7 @@ namespace net.atos.daf.ct2.organization
         Task<Organization> Update(Organization group);
         Task<bool> Delete(int organizationId);
         Task<OrganizationResponse> Get(int organizationId);
+        Task<List<OrganizationResponse>> GetAll(int organizationId);
         Task<PreferenceResponse> GetPreference(int organizationId);
         Task<Customer> UpdateCustomer(Customer customer);
         Task<HandOver> KeyHandOverEvent(HandOver keyHandOver);

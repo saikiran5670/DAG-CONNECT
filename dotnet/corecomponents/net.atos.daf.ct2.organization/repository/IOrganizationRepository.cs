@@ -18,6 +18,6 @@ namespace net.atos.daf.ct2.organization.repository
         Task<int> CreateVehicleParty(List<Customer> customers);
          
         Task<int> CreateOwnerRelationship(RelationshipMapping relationshipMapping);
-       
+        Task<List<OrganizationResponse>> GetAll(int organizationId);
     }
 }

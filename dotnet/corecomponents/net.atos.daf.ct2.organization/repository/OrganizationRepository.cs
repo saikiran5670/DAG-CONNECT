@@ -202,7 +202,7 @@ namespace net.atos.daf.ct2.organization.repository
 	                        FROM master.organization where id=@Id and is_active=true";
                 parameter.Add("@Id", organizationId);
                 IEnumerable<OrganizationResponse> OrganizationDetails = await dataAccess.QueryAsync<OrganizationResponse>(query, parameter);
-                OrganizationResponse objOrganization = new OrganizationResponse();
+                OrganizationResponse objOrganization = new OrganizationResponse();               
                 foreach (var item in OrganizationDetails)
                 {
                     objOrganization.Id = item.Id;
@@ -218,7 +218,7 @@ namespace net.atos.daf.ct2.organization.repository
                     objOrganization.is_active = item.is_active;
                     objOrganization.reference_date = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(item.reference_date), "America/New_York", "yyyy-MM-ddTHH:mm:ss");
                     objOrganization.vehicle_default_opt_in = item.vehicle_default_opt_in;
-                    objOrganization.driver_default_opt_in = item.driver_default_opt_in;
+                    objOrganization.driver_default_opt_in = item.driver_default_opt_in;                   
                 }
                 if (objOrganization.Id < 1)
                 {
@@ -762,6 +762,59 @@ namespace net.atos.daf.ct2.organization.repository
                 throw ex;
             }
             return 0;           
+        }
+
+        public async Task<List<OrganizationResponse>> GetAll(int organizationId)      
+        {
+            log.Info("Get Organization method called in repository");
+            try
+            {
+                var parameter = new DynamicParameters();
+                var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date, is_active,vehicle_default_opt_in,driver_default_opt_in
+	                        FROM master.organization org where  org.is_active=true";
+                if (organizationId > 0)
+                {
+                    parameter.Add("@id", organizationId);
+                    query = query + " and org.id=@id ";
+                }
+                          
+                var OrganizationDetails = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                var objOrganization = new OrganizationResponse();
+                objOrganization.OrganizationList = new List<OrganizationResponse>();
+                foreach (dynamic record in OrganizationDetails)
+                {
+
+                    objOrganization.OrganizationList.Add(MapOrg(record));
+                }
+              
+                return objOrganization.OrganizationList;
+            }
+            catch (Exception ex)
+            {
+                log.Info("Get Organization method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }
+
+        private OrganizationResponse MapOrg(dynamic record)
+        {
+            var orgResponse = new OrganizationResponse();
+            orgResponse.Id = record.id;
+            orgResponse.type = record.type;
+            orgResponse.name = record.name;
+            orgResponse.street = record.street;
+            orgResponse.address_type = record.address_type;
+            orgResponse.street_number = record.street_number;
+            orgResponse.postal_code = record.postal_code;
+            orgResponse.city = record.city;
+            orgResponse.country_code = record.country_code;
+            orgResponse.org_id = record.org_id;
+            orgResponse.is_active = record.is_active;
+            orgResponse.reference_date = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(record.reference_date), "America/New_York", "yyyy-MM-ddTHH:mm:ss");
+            orgResponse.vehicle_default_opt_in = record.vehicle_default_opt_in;
+            orgResponse.driver_default_opt_in = record.driver_default_opt_in;
+            return orgResponse;
         }
         // public async Task<int> CraeteOrganizationRelationship(OrganizationRelationship organizationRelationship)
         // {

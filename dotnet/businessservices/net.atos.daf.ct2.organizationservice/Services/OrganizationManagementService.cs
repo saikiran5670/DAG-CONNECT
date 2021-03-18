@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.organizationservice
         public OrganizationManagementService(ILogger<OrganizationManagementService> logger,
                                              IAuditTraillib AuditTrail,
                                              IOrganizationManager _organizationmanager,
-                                             IPreferenceManager _preferencemanager, 
+                                             IPreferenceManager _preferencemanager,
                                              IVehicleManager _vehicleManager,
                                              IAuditTraillib _auditlog,
                                              IRelationshipManager relationshipManager)
@@ -147,8 +147,8 @@ namespace net.atos.daf.ct2.organizationservice
                                          Featuresetid = x.FeaturesetId,
                                          Level = x.Level,
                                          IsActive = x.IsActive,
-                                         CreatedAt=x.CreatedAt
-                                         
+                                         CreatedAt = x.CreatedAt
+
                                      }).ToList());
                 _logger.LogInformation("Get  relationship details.");
                 response.Code = Responcecode.Success;
@@ -293,12 +293,57 @@ namespace net.atos.daf.ct2.organizationservice
             OrganizationGetData response = new OrganizationGetData();
             _logger.LogInformation("Get Organization .");
             organization = await organizationtmanager.Get(request.Id);
-            response.Organization = _mapper.ToOrganizationResponse(organization);
             response.Message = "Get";
-            response.Code = Responcecode.Success;
+            if (organization.Id > 0)
+            {
+                response.Organization = _mapper.ToOrganizationResponse(organization);
+                response.Code = Responcecode.Success;
+            }
+            else
+            {
+                response.Code = Responcecode.NotFound;
+                response.Message = "Organization not found";
+            }
             return await Task.FromResult(response);
         }
+        public override async Task<GetAllOrgResponse> GetAll(IdRequest request, ServerCallContext context)
+        {
+            var organization = new OrganizationResponse();
+            var response = new GetAllOrgResponse();
+            _logger.LogInformation("Get Organization .");
+            organization.OrganizationList = await organizationtmanager.GetAll(request.Id);
+            response.OrganizationList.AddRange(organization.OrganizationList
+                                    .Select(x => new OrgGetResponse()
+                                    {
+                                        Id = x.Id,
+                                        Type = x.type,
+                                        Name = x.name,
+                                        AddressStreet = x.street,
+                                        AddressType = x.address_type,
+                                        AddressStreetNumber = x.street_number,
+                                        PostalCode = x.postal_code,
+                                        City = x.city,
+                                        CountryCode = x.country_code,
+                                        OrganizationId = x.org_id,
+                                        Referenced = x.reference_date,
+                                        VehicleOptIn = x.vehicle_default_opt_in,
+                                        DriverOptIn = x.driver_default_opt_in,
+                                        IsActive=x.is_active
+                                    }).ToList());
 
+
+            response.Message = "Get";
+            if (organization.OrganizationList.Count > 0)
+            {
+
+                response.Code = Responcecode.Success;
+            }
+            else
+            {
+                response.Code = Responcecode.NotFound;
+            }
+            return await Task.FromResult(response);
+        }
         public override async Task<AccountPreferenceResponse> CreatePreference(AccountPreference request, ServerCallContext context)
         {
             try

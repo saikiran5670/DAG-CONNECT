@@ -56,6 +56,10 @@ namespace net.atos.daf.ct2.organization
         {
             return await organizationRepository.CreateOwnerRelationship(relationshipMapping);
         }
-       
+
+        public async Task<List<OrganizationResponse>> GetAll(int organizationId)
+        {
+            return await organizationRepository.GetAll(organizationId);
+        }
     }
 }
