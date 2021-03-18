@@ -75,7 +75,7 @@ export class TranslationService {
         };
         return this.httpClient
             .get<any>(
-                id? `${this.translationUrl}/UploadDetails?FileID=${id}` : `${this.translationUrl}/UploadDetails`,headers
+                id? `${this.translationUrl}/getUploadDetails?FileID=${id}` : `${this.translationUrl}/getUploadDetails`,headers
                 )
             .pipe(catchError(this.handleError));
     }
