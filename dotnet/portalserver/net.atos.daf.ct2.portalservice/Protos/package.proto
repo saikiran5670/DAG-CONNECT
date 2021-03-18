@@ -27,8 +27,8 @@ message ImportPackageResponce
 {
   repeated GetPackageRequest PackageList=1;
   Responsecode Responsecode=2;
-   string Message = 3;
-   Responsecode Code=4;
+  string Message = 3;
+  Responsecode Code=4;
 }
 message PackageCreateRequest {   
     int32 Id=1;
@@ -38,7 +38,7 @@ message PackageCreateRequest {
     string Name=5;
     string Type =6;
     string Description=7;    
-    PackageStatus Status =8;
+    bool Status =8;
   }
 
   message PackageUpdateRequest { 
@@ -49,11 +49,11 @@ message PackageCreateRequest {
     string Name=5;
     string Type =6;
     string Description=7;    
-    PackageStatus Status =8;
+    bool Status =8;
   }
    message PackageDeleteRequest {
     int32 Id = 1;  
-    }
+  }
   message GetPackageRequest {  
     int32 Id=1;
     string Code= 2;
@@ -62,11 +62,11 @@ message PackageCreateRequest {
     string Name=5;
     string Type =6;
     string Description=7; 
-    PackageStatus Status =8;
+    bool Status =8;
 }
 message GetPackageResponce { 
    Responsecode code=1;  
-  string message = 2;
+   string message = 2;
    repeated GetPackageRequest PacakageList=3;
 }
     enum PackageDefault

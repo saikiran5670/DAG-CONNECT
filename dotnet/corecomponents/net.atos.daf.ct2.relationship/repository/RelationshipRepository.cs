@@ -1,8 +1,11 @@
 ﻿using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.relationship.entity;
+using net.atos.daf.ct2.relationship.ENUM;
+using net.atos.daf.ct2.utilities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,7 +29,8 @@ namespace net.atos.daf.ct2.relationship.repository
             try
             {
                 var parameter = new DynamicParameters();
-
+                var defaultLevelCode = 30;
+                var defaultCode = "Owner";
                 var parameterduplicate = new DynamicParameters();
                 parameterduplicate.Add("@org_id", relationship.OrganizationId);
                 var query = @"SELECT id FROM master.organization where id=@org_id";
@@ -36,13 +40,14 @@ namespace net.atos.daf.ct2.relationship.repository
                 {
                     parameter.Add("@OrganizationId", relationship.OrganizationId);
                     parameter.Add("@Name", relationship.Name);
-                    parameter.Add("@Code", relationship.Code);
-                    parameter.Add("@Level", relationship.Level);
+                    parameter.Add("@Code", !string.IsNullOrEmpty(relationship.Code) ? relationship.Code : defaultCode);
+                    parameter.Add("@Level", relationship.Level != 0 ? relationship.Level : defaultLevelCode);
                     parameter.Add("@Description", relationship.Description);
                     parameter.Add("@FeatureSetId", relationship.FeaturesetId);
                     parameter.Add("@Is_active", relationship.IsActive);
-                    string queryInsert = "insert into master.orgrelationship(organization_id, feature_set_id, name, description, code, is_active, level) " +
-                                          "values(@OrganizationId,@FeatureSetId, @Name, @Description, @Code,@Is_active, @Level) RETURNING id";
+                    parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                    string queryInsert = "insert into master.orgrelationship(organization_id, feature_set_id, name, description, code, is_active, level,created_at) " +
+                                          "values(@OrganizationId,@FeatureSetId, @Name, @Description, @Code,@Is_active, @Level,@created_at) RETURNING id";
                     var orgid = await _dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
                     relationship.Id = orgid;
                 }
@@ -77,7 +82,7 @@ namespace net.atos.daf.ct2.relationship.repository
                     parameter.Add("@Level", relationship.Level);
                     parameter.Add("@Description", relationship.Description);
                     parameter.Add("@FeatureSetId", relationship.FeaturesetId);
-                    parameter.Add("@Is_active", relationship.IsActive);
+                    parameter.Add("@Is_active", relationship.IsActive);                   
 
                     var queryUpdate = @"update master.orgrelationship set organization_id=@OrganizationId,
                                                                           feature_set_id=@FeatureSetId,
@@ -107,11 +112,24 @@ namespace net.atos.daf.ct2.relationship.repository
             log.Info("Delete Organization Relationship method called in repository");
             try
             {
-                var parameter = new DynamicParameters();
-                parameter.Add("@id", relationshipId);
-                var query = @"update master.orgrelationship set is_active=false where id=@id";
-                int isdelete = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                return true;
+                //check either relationship id maaped with organization or not 
+                var parameterduplicate = new DynamicParameters();
+                parameterduplicate.Add("@relationship_id", relationshipId);
+                var query = @"SELECT relationship_id FROM master.orgrelationshipmapping where relationship_id=@relationship_id";
+                int relationshipexist = await _dataAccess.ExecuteScalarAsync<int>(query, parameterduplicate);
+
+                if (relationshipexist > 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@id", relationshipId);
+                    var deletequery = @"update master.orgrelationship set is_active=false where id=@id";
+                    int isdelete = await _dataAccess.ExecuteScalarAsync<int>(deletequery, parameter);
+                    return true;
+                }
             }
             catch (Exception ex)
             {
@@ -130,7 +148,7 @@ namespace net.atos.daf.ct2.relationship.repository
                 var relationships = new List<Relationship>();
                 string query = string.Empty;
 
-                query = @"select id, organization_id, feature_set_id, name, description, code, is_active, level from master.orgrelationship relationship where 1=1 ";
+                query = @"select id, organization_id, feature_set_id, name, description, code, is_active, level,created_at from master.orgrelationship relationship where is_active=true ";
 
                 if (filter != null)
                 {
@@ -176,7 +194,7 @@ namespace net.atos.daf.ct2.relationship.repository
 
                         query = query + " and relationship.level=@level";
                     }
-                    query = query + "ORDER BY id ASC; ";
+                    query = query + "or level=40 ORDER BY id ASC; ";
                     dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
 
                     foreach (dynamic record in result)
@@ -198,13 +216,35 @@ namespace net.atos.daf.ct2.relationship.repository
             var relationship = new Relationship();
             relationship.Id = record.id != null ? record.id : 0;
             relationship.Code = !string.IsNullOrEmpty(record.code) ? record.code : string.Empty;
-            relationship.Level = record.level != null ? record.level : 0; 
+            relationship.Level = record.level != null ? record.level : 0;
             relationship.Description = !string.IsNullOrEmpty(record.description) ? record.description : string.Empty;
             relationship.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;
-            relationship.FeaturesetId = record.feature_set_id != null ? record.feature_set_id : 0; 
-            relationship.OrganizationId = record.organization_id != null ? record.organization_id : 0; 
+            relationship.FeaturesetId = record.feature_set_id != null ? record.feature_set_id : 0;
+            relationship.OrganizationId = record.organization_id != null ? record.organization_id : 0;
             relationship.IsActive = record.is_active;
+            relationship.CreatedAt = record.created_at;
             return relationship;
+        }
+        public async Task<RelationshipLevelCode> GetRelationshipLevelCode()
+        {
+
+            var levelCode = new RelationshipLevelCode();
+            levelCode.Levels = Enum.GetValues(typeof(RelationshipLevel))
+                 .Cast<RelationshipLevel>()
+                 .Select(t => new Level
+                 {
+                     Id = ((int)t),
+                     Name = t.ToString()
+                 }).ToList();
+
+            levelCode.Codes = Enum.GetValues(typeof(RelationshipCode))
+                 .Cast<RelationshipCode>()
+                 .Select(t => new Code
+                 {
+                     Id = ((int)t),
+                     Name = t.ToString()
+                 }).ToList();
+            return levelCode;
         }
 
     }

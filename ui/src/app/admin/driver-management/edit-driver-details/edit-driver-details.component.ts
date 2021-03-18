@@ -50,7 +50,7 @@ export class EditDriverDetailsComponent implements OnInit {
     this.driverFormGroup.get('emailId').setValue(this.driverData.email);
     this.driverFormGroup.get('firstName').setValue(this.driverData.firstName);
     this.driverFormGroup.get('lastName').setValue(this.driverData.lastName);
-    this.selectedConsentType = this.driverData.optIn; //status
+    this.selectedConsentType = this.driverData.status;
   }
 
   getBreadcum(actionType: any){
@@ -84,10 +84,8 @@ export class EditDriverDetailsComponent implements OnInit {
       email: this.driverFormGroup.controls.emailId.value,
       firstName: this.driverFormGroup.controls.firstName.value,
       lastName: this.driverFormGroup.controls.lastName.value,
-      //status: this.selectedConsentType, //-- delete from backend api
       optIn: this.selectedConsentType,
-      //isActive: true, 
-      modifiedBy: this.accountId // 0
+      modifiedBy: this.accountId
     }
     this.driverService.updateDriver(objData).subscribe((drv: any) => {
       let drvId: any = 0;

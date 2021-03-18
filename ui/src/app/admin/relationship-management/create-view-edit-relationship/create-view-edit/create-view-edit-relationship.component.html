@@ -158,9 +158,9 @@
                             </mat-checkbox>
                           </mat-cell>
                     </ng-container> 
-                    <ng-container matColumnDef="featureName">
+                    <ng-container matColumnDef="name">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatureName || 'Feature Name'}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row; let index"> {{row.featureName}} </mat-cell>
+                        <mat-cell *matCellDef="let row; let index"> {{row.name}} </mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="featureDisplayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: featureDisplayedColumns;">

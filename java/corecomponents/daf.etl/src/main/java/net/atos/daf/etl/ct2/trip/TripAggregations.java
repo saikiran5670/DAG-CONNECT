@@ -34,12 +34,13 @@ import org.apache.flink.types.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.atos.daf.etl.ct2.common.bo.Trip;
+//import net.atos.daf.etl.ct2.common.bo.Trip;
 import net.atos.daf.etl.ct2.common.bo.TripStatusAggregation;
 import net.atos.daf.etl.ct2.common.bo.TripStatusData;
 import net.atos.daf.etl.ct2.common.hbase.TripIndexData;
 import net.atos.daf.etl.ct2.common.util.ETLConstants;
 import net.atos.daf.etl.ct2.common.util.ETLQueries;
+import net.atos.daf.postgre.bo.Trip;
 
 public class TripAggregations implements Serializable{
 

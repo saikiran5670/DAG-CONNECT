@@ -131,9 +131,7 @@ export class ConsentOptComponent implements OnInit {
         email: this.data.driverData.email,
         firstName: this.data.driverData.firstName,
         lastName: this.data.driverData.lastName,
-        //status: this.data.consentType,
         optIn: this.data.consentType,
-        //isActive: true,
         modifiedBy: this.accountId //0
       }
       this.driverService.updateDriver(objData).subscribe((drv: any) => {
