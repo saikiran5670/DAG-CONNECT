@@ -754,188 +754,188 @@ namespace net.atos.daf.ct2.accountservice
         #endregion
 
         #region AccessRelationship
-        public override async Task<AccessRelationshipResponse> CreateAccessRelationship(AccessRelationship request, ServerCallContext context)
-        {
-            string validationMessage = string.Empty;
-            try
-            {
-                // access relation ship entity
-                AccountComponent.entity.AccessRelationship accessRelationship = new AccountComponent.entity.AccessRelationship();
-                // response 
-                AccessRelationshipResponse response = new AccessRelationshipResponse();
-                accessRelationship.Id = request.Id;
-                accessRelationship.AccountGroupId = request.AccountGroupId;
-                accessRelationship.VehicleGroupId = request.VehicleGroupId;
-                if (!string.IsNullOrWhiteSpace(request.AccessRelationType) && request.AccessRelationType == "R")
-                {
-                    accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadOnly;
-                }
-                if (!string.IsNullOrWhiteSpace(request.AccessRelationType) && request.AccessRelationType == "W")
-                {
-                    accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadWrite;
-                }
-                else
-                {
-                    validationMessage = "The AccessType should be ReadOnly / ReadWrite.(R/W).";
-                    response.Message = validationMessage;
-                    response.Code = Responcecode.Failed;
-                    return await Task.FromResult(response);
-                }
-                accessRelationship.StartDate = DateTime.Now;
-                accessRelationship.EndDate = null;
-                accessRelationship = await accountmanager.CreateAccessRelationship(accessRelationship);
-                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Access Relationship", 1, 2, Convert.ToString(accessRelationship.AccountGroupId)).Result;
-                response.AccessRelationship = new AccessRelationship();
-                response.AccessRelationship.Id = accessRelationship.Id;
-                response.AccessRelationship.AccessRelationType = accessRelationship.AccessRelationType.ToString();
-                response.AccessRelationship.AccountGroupId = accessRelationship.AccountGroupId;
-                response.AccessRelationship.VehicleGroupId = accessRelationship.VehicleGroupId;
-                response.Code = Responcecode.Success;
-                response.Message = "AccessRelationship Created";
-                return await Task.FromResult(response);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
-                return await Task.FromResult(new AccessRelationshipResponse
-                {
-                    Code = Responcecode.Failed,
-                    Message = "Account Creation Faile due to - " + ex.Message
+        //public override async Task<AccessRelationshipResponse> CreateAccessRelationship(AccessRelationship request, ServerCallContext context)
+        //{
+        //    string validationMessage = string.Empty;
+        //    try
+        //    {
+        //        // access relation ship entity
+        //        AccountComponent.entity.AccessRelationship accessRelationship = new AccountComponent.entity.AccessRelationship();
+        //        // response 
+        //        AccessRelationshipResponse response = new AccessRelationshipResponse();
+        //        accessRelationship.Id = request.Id;
+        //        accessRelationship.AccountGroupId = request.AccountGroupId;
+        //        accessRelationship.VehicleGroupId = request.VehicleGroupId;
+        //        if (!string.IsNullOrWhiteSpace(request.AccessRelationType) && request.AccessRelationType == "V")
+        //        {
+        //            accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ViewOnly;
+        //        }
+        //        if (!string.IsNullOrWhiteSpace(request.AccessRelationType) && request.AccessRelationType == "F")
+        //        {
+        //            accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.FullAccess;
+        //        }
+        //        else
+        //        {
+        //            validationMessage = "The AccessType should be ReadOnly / ReadWrite.(V/F).";
+        //            response.Message = validationMessage;
+        //            response.Code = Responcecode.Failed;
+        //            return await Task.FromResult(response);
+        //        }
+        //        accessRelationship.StartDate = DateTime.Now;
+        //        accessRelationship.EndDate = null;
+        //        accessRelationship = await accountmanager.CreateAccessRelationship(accessRelationship);
+        //        var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Access Relationship", 1, 2, Convert.ToString(accessRelationship.AccountGroupId)).Result;
+        //        response.AccessRelationship = new AccessRelationship();
+        //        response.AccessRelationship.Id = accessRelationship.Id;
+        //        response.AccessRelationship.AccessRelationType = accessRelationship.AccessRelationType.ToString();
+        //        response.AccessRelationship.AccountGroupId = accessRelationship.AccountGroupId;
+        //        response.AccessRelationship.VehicleGroupId = accessRelationship.VehicleGroupId;
+        //        response.Code = Responcecode.Success;
+        //        response.Message = "AccessRelationship Created";
+        //        return await Task.FromResult(response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
+        //        return await Task.FromResult(new AccessRelationshipResponse
+        //        {
+        //            Code = Responcecode.Failed,
+        //            Message = "Account Creation Faile due to - " + ex.Message
 
-                });
-            }
-        }
-        public override async Task<AccessRelationshipResponse> UpdateAccessRelationship(AccessRelationship request, ServerCallContext context)
-        {
-            string validationMessage = string.Empty;
-            try
-            {
-                // access relation ship entity
-                AccountComponent.entity.AccessRelationship accessRelationship = new AccountComponent.entity.AccessRelationship();
-                // response 
-                AccessRelationshipResponse response = new AccessRelationshipResponse();
+        //        });
+        //    }
+        //}
+        //public override async Task<AccessRelationshipResponse> UpdateAccessRelationship(AccessRelationship request, ServerCallContext context)
+        //{
+        //    string validationMessage = string.Empty;
+        //    try
+        //    {
+        //        // access relation ship entity
+        //        AccountComponent.entity.AccessRelationship accessRelationship = new AccountComponent.entity.AccessRelationship();
+        //        // response 
+        //        AccessRelationshipResponse response = new AccessRelationshipResponse();
 
-                accessRelationship.Id = request.Id;
-                accessRelationship.AccountGroupId = request.AccountGroupId;
-                accessRelationship.VehicleGroupId = request.VehicleGroupId;
-                if (!string.IsNullOrWhiteSpace(request.AccessRelationType) && request.AccessRelationType == "R")
-                {
-                    accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadOnly;
-                }
-                if (!string.IsNullOrWhiteSpace(request.AccessRelationType) && request.AccessRelationType == "W")
-                {
-                    accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadWrite;
-                }
-                else
-                {
-                    validationMessage = "The AccessType should be ReadOnly / ReadWrite.(R/W).";
-                    response.Message = validationMessage;
-                    response.Code = Responcecode.Failed;
-                    return await Task.FromResult(response);
-                }
-                accessRelationship.StartDate = DateTime.Now;
-                accessRelationship.EndDate = null;
-                accessRelationship = await accountmanager.UpdateAccessRelationship(accessRelationship);
-                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Update Access Relationship", 1, 2, Convert.ToString(accessRelationship.AccountGroupId));
-                response.Code = Responcecode.Success;
-                response.Message = "AccessRelationship Updated";
-                return await Task.FromResult(response);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
-                return await Task.FromResult(new AccessRelationshipResponse
-                {
-                    Code = Responcecode.Failed,
-                    Message = "Account Creation Faile due to - " + ex.Message
+        //        accessRelationship.Id = request.Id;
+        //        accessRelationship.AccountGroupId = request.AccountGroupId;
+        //        accessRelationship.VehicleGroupId = request.VehicleGroupId;
+        //        if (!string.IsNullOrWhiteSpace(request.AccessRelationType) && request.AccessRelationType == "V")
+        //        {
+        //            accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ViewOnly;
+        //        }
+        //        if (!string.IsNullOrWhiteSpace(request.AccessRelationType) && request.AccessRelationType == "F")
+        //        {
+        //            accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.FullAccess;
+        //        }
+        //        else
+        //        {
+        //            validationMessage = "The AccessType should be ReadOnly / ReadWrite.(R/W).";
+        //            response.Message = validationMessage;
+        //            response.Code = Responcecode.Failed;
+        //            return await Task.FromResult(response);
+        //        }
+        //        accessRelationship.StartDate = DateTime.Now;
+        //        accessRelationship.EndDate = null;
+        //        accessRelationship = await accountmanager.UpdateAccessRelationship(accessRelationship);
+        //        var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Update Access Relationship", 1, 2, Convert.ToString(accessRelationship.AccountGroupId));
+        //        response.Code = Responcecode.Success;
+        //        response.Message = "AccessRelationship Updated";
+        //        return await Task.FromResult(response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
+        //        return await Task.FromResult(new AccessRelationshipResponse
+        //        {
+        //            Code = Responcecode.Failed,
+        //            Message = "Account Creation Faile due to - " + ex.Message
 
-                });
-            }
-        }
-        public override async Task<AccessRelationshipResponse> DeleteAccessRelationship(AccessRelationshipDeleteRequest request, ServerCallContext context)
-        {
-            string validationMessage = string.Empty;
-            try
-            {
-                // response 
-                AccessRelationshipResponse response = new AccessRelationshipResponse();
-                if (request == null || request.AccountGroupId <= 0)
-                {
-                    validationMessage = "The delete access group , Account Group Id and Vehicle Group Id is required.";
-                }
-                if (request == null || request.VehicleGroupId <= 0)
-                {
-                    validationMessage = "The delete access group , Account Group Id and Vehicle Group Id is required.";
-                }
-                if (!string.IsNullOrEmpty(validationMessage))
-                {
+        //        });
+        //    }
+        //}
+        //public override async Task<AccessRelationshipResponse> DeleteAccessRelationship(AccessRelationshipDeleteRequest request, ServerCallContext context)
+        //{
+        //    string validationMessage = string.Empty;
+        //    try
+        //    {
+        //        // response 
+        //        AccessRelationshipResponse response = new AccessRelationshipResponse();
+        //        if (request == null || request.AccountGroupId <= 0)
+        //        {
+        //            validationMessage = "The delete access group , Account Group Id and Vehicle Group Id is required.";
+        //        }
+        //        if (request == null || request.VehicleGroupId <= 0)
+        //        {
+        //            validationMessage = "The delete access group , Account Group Id and Vehicle Group Id is required.";
+        //        }
+        //        if (!string.IsNullOrEmpty(validationMessage))
+        //        {
 
-                    response.Message = validationMessage;
-                    response.Code = Responcecode.Failed;
-                    return await Task.FromResult(response);
-                }
-                var result = accountmanager.DeleteAccessRelationship(request.AccountGroupId, request.VehicleGroupId);
-                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Access Relationship", 1, 2, Convert.ToString(request.AccountGroupId)).Result;
-                response.Code = Responcecode.Success;
-                response.Message = "AccessRelationship Deleted";
-                return await Task.FromResult(response);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error in account service:create access relationship with exception - " + ex.StackTrace + ex.Message);
-                return await Task.FromResult(new AccessRelationshipResponse
-                {
-                    Code = Responcecode.Failed,
-                    Message = "Delete Access Relationship Faile due to - " + ex.Message
+        //            response.Message = validationMessage;
+        //            response.Code = Responcecode.Failed;
+        //            return await Task.FromResult(response);
+        //        }
+        //        var result = accountmanager.DeleteAccessRelationship(request.AccountGroupId, request.VehicleGroupId);
+        //        var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Access Relationship", 1, 2, Convert.ToString(request.AccountGroupId)).Result;
+        //        response.Code = Responcecode.Success;
+        //        response.Message = "AccessRelationship Deleted";
+        //        return await Task.FromResult(response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError("Error in account service:create access relationship with exception - " + ex.StackTrace + ex.Message);
+        //        return await Task.FromResult(new AccessRelationshipResponse
+        //        {
+        //            Code = Responcecode.Failed,
+        //            Message = "Delete Access Relationship Faile due to - " + ex.Message
 
-                });
-            }
-        }
-        public override async Task<AccessRelationshipDataList> GetAccessRelationship(AccessRelationshipFilter request, ServerCallContext context)
-        {
-            string validationMessage = string.Empty;
-            try
-            {
-                // access relation ship entity
-                AccountComponent.entity.AccessRelationshipFilter filter = new AccountComponent.entity.AccessRelationshipFilter();
-                // response 
-                AccessRelationshipDataList response = new AccessRelationshipDataList();
+        //        });
+        //    }
+        //}
+        //public override async Task<AccessRelationshipDataList> GetAccessRelationship(AccessRelationshipFilter request, ServerCallContext context)
+        //{
+        //    string validationMessage = string.Empty;
+        //    try
+        //    {
+        //        // access relation ship entity
+        //        AccountComponent.entity.AccessRelationshipFilter filter = new AccountComponent.entity.AccessRelationshipFilter();
+        //        // response 
+        //        AccessRelationshipDataList response = new AccessRelationshipDataList();
 
-                filter.AccountId = request.AccountId;
-                filter.AccountGroupId = request.AccountGroupId;
-                filter.VehicleGroupId = request.VehicleGroupId;
+        //        filter.AccountId = request.AccountId;
+        //        filter.AccountGroupId = request.AccountGroupId;
+        //        filter.VehicleGroupId = request.VehicleGroupId;
 
-                if (request.AccountId == 0 && request.AccountGroupId == 0 && request.VehicleGroupId == 0)
-                {
-                    validationMessage = "Please provide AccountId or AccountGroupId or VehicleGroupId to get AccessRelationship.";
-                }
-                if (!string.IsNullOrEmpty(validationMessage))
-                {
-                    response.Message = validationMessage;
-                    response.Code = Responcecode.Failed;
-                    return await Task.FromResult(response);
-                }
-                var accessResult = accountmanager.GetAccessRelationship(filter).Result;
-                _logger.LogInformation("Get account relationship.");
-                foreach (AccountComponent.entity.AccessRelationship accessRelationship in accessResult)
-                {
-                    response.AccessRelationship.Add(_mapper.ToAccessRelationShip(accessRelationship));
-                }
-                response.Code = Responcecode.Success;
-                response.Message = "AccessRelationship Get";
-                return await Task.FromResult(response);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error in account service:get accessrelatioship with exception - " + ex.Message + ex.StackTrace);
-                return await Task.FromResult(new AccessRelationshipDataList
-                {
-                    Code = Responcecode.Failed,
-                    Message = "Account Creation Faile due to - " + ex.Message
+        //        if (request.AccountId == 0 && request.AccountGroupId == 0 && request.VehicleGroupId == 0)
+        //        {
+        //            validationMessage = "Please provide AccountId or AccountGroupId or VehicleGroupId to get AccessRelationship.";
+        //        }
+        //        if (!string.IsNullOrEmpty(validationMessage))
+        //        {
+        //            response.Message = validationMessage;
+        //            response.Code = Responcecode.Failed;
+        //            return await Task.FromResult(response);
+        //        }
+        //        var accessResult = accountmanager.GetAccessRelationship(filter).Result;
+        //        _logger.LogInformation("Get account relationship.");
+        //        foreach (AccountComponent.entity.AccessRelationship accessRelationship in accessResult)
+        //        {
+        //            response.AccessRelationship.Add(_mapper.ToAccessRelationShip(accessRelationship));
+        //        }
+        //        response.Code = Responcecode.Success;
+        //        response.Message = "AccessRelationship Get";
+        //        return await Task.FromResult(response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError("Error in account service:get accessrelatioship with exception - " + ex.Message + ex.StackTrace);
+        //        return await Task.FromResult(new AccessRelationshipDataList
+        //        {
+        //            Code = Responcecode.Failed,
+        //            Message = "Account Creation Faile due to - " + ex.Message
 
-                });
-            }
-        }
+        //        });
+        //    }
+        //}
         #endregion
 
         #region VehicleAccount AccessRelationship
@@ -943,67 +943,260 @@ namespace net.atos.daf.ct2.accountservice
         public override async Task<VehicleAccessRelationship> CreateVehicleAccessRelationship(VehicleAccessRelationship request, ServerCallContext context)
         {
             string validationMessage = string.Empty;
-            return request;
-
-            //try
-            //{
-            //    int vehicleGroupId = 0;
-            //    int accountGroupId = 0;
-            //    string groupName = string.Empty;
-            //    if (!request.IsGroup)
-            //    {
-            //        // create vehicle group with vehicle
-            //        long CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-            //        groupName = ("VehicleGroup_" + request.OrganizationId.ToString() + CreatedAt.ToString()).Substring(0, 49);
-            //        var group = _mapper.ToGroupObject(Group.GroupType.Single, Group.ObjectType.VehicleGroup, groupName, Group.FunctionEnum.None,
-            //            request.Id, groupName, null, CreatedAt);
-            //        group = await groupmanager.Create(group);
-            //        vehicleGroupId = group.Id;
-            //    }
-            //    if (vehicleGroupId > 0)
-            //    {
-            //        foreach (var account in request.AccountsAccountGroup)
-            //        {
-            //            // create group type single
-            //            if (!account.IsGroup)
-            //            {
-            //                // create group for account
-            //                // create vehicle group with vehicle
-            //                group = new Group.Group();
-            //                group.GroupType = Group.GroupType.Single;
-            //                group.ObjectType = Group.ObjectType.AccountGroup;
-            //                group.Argument = null;
-            //                group.FunctionEnum = Group.FunctionEnum.None;
-            //                group.RefId = account.Id;
-            //                group.Description = null;
-            //                group.CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-            //                groupName = ("AccountGroup_" + request.OrganizationId.ToString() + UTCHandling.GetUTCFromDateTime(DateTime.Now).ToString()).Substring(0, 49);
-            //                group.Name = groupName;
-            //                group = await groupmanager.Create(group);
-            //                accountGroupId = group.Id;
-            //                var accessRelationship = new account.entity.AccessRelationship();
-            //                accessRelationship.VehicleGroupId = vehicleGroupId;
-            //                accessRelationship.AccountGroupId = accountGroupId;
-            //                accessRelationship.AccessRelationType = (AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType);
-            //                var result = accountmanager.CreateAccessRelationship(accessRelationship);
-            //            }
-            //            else
-            //            {
-            //                var accessRelationship = new account.entity.AccessRelationship();
-            //                accessRelationship.VehicleGroupId = vehicleGroupId;
-            //                accessRelationship.AccountGroupId = account.Id;
-            //                accessRelationship.AccessRelationType = (AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType);
-            //                var result = accountmanager.CreateAccessRelationship(accessRelationship);
-            //            }
-            //        }
-            //    }
-            //    return null;
-            //}
-            //catch (Exception ex)
-            //{
-            //    throw ex;
-            //}
+            int vehicleGroupId = 0;
+            int accountGroupId = 0;
+            string groupName = string.Empty;
+            Group.Group group = null;
+            try
+            {
+                
+                vehicleGroupId = request.Id;
+                if (!request.IsGroup)
+                {
+                    // create vehicle group with vehicle                    
+                    groupName = string.Format("VehicleGroup_{0}_{1}",request.OrganizationId.ToString(), request.Id.ToString());
+                    if (groupName.Length > 50) groupName = groupName.Substring(0, 49);                    
+                    group = new Group.Group(Group.GroupType.Single, Group.ObjectType.VehicleGroup, null,
+                                                    Group.FunctionEnum.None, request.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
+                    group = await groupmanager.Create(group);
+                    vehicleGroupId = group.Id;
+                }                
+                if (vehicleGroupId > 0)
+                {
+                    foreach (var account in request.AccountsAccountGroup)
+                    {
+                        // create group type single
+                        if (!account.IsGroup && account.Id >0)
+                        {
+                            // create vehicle group with vehicle                            
+                            groupName = string.Format("AccountGroup_{0}_{1}", request.OrganizationId.ToString(), account.Id.ToString());
+                            if (groupName.Length > 50) groupName = groupName.Substring(0, 49);
+                            group = new Group.Group(Group.GroupType.Single, Group.ObjectType.AccountGroup,null,
+                                                          Group.FunctionEnum.None, account.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
+                            group = await groupmanager.Create(group);
+                            accountGroupId = group.Id;
+                            var accessRelationship = new account.entity.AccessRelationship((AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType),accountGroupId,vehicleGroupId);                            
+                            var result = await accountmanager.CreateAccessRelationship(accessRelationship);
+                        }
+                        else if(account.Id > 0)
+                        {
+                            accountGroupId = account.Id;
+                            var accessRelationship = new account.entity.AccessRelationship((AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType), accountGroupId, vehicleGroupId);
+                            var result = await accountmanager.CreateAccessRelationship(accessRelationship);
+                        }
+                    }
+                }
+                return request;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
+        public override async Task<VehicleAccessRelationship> UpdateVehicleAccessRelationship(VehicleAccessRelationship request, ServerCallContext context)
+        {
+            string validationMessage = string.Empty;
+            int vehicleGroupId = 0;
+            int accountGroupId = 0;
+            string groupName = string.Empty;
+            bool result = true;
+            Group.Group group = null;
+            try
+            {
+
+                vehicleGroupId = request.Id;
+                // delete access relatioship for vehicle or vehicle group
+                if (request.OrganizationId > 0 && request.Id > 0)
+                {
+                    result = await accountmanager.DeleteVehicleAccessRelationship(request.OrganizationId, request.Id, true);
+                }
+                if (result)
+                {
+                    foreach (var account in request.AccountsAccountGroup)
+                    {
+                        // create group type single
+                        if (!account.IsGroup && account.Id > 0)
+                        {
+                            // create vehicle group with vehicle                            
+                            groupName = string.Format("AccountGroup_{0}_{1}", request.OrganizationId.ToString(), account.Id.ToString());
+                            if (groupName.Length > 50) groupName = groupName.Substring(0, 49);
+                            group = new Group.Group(Group.GroupType.Single, Group.ObjectType.AccountGroup, null,
+                                                          Group.FunctionEnum.None, account.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
+                            group = await groupmanager.Create(group);
+                            accountGroupId = group.Id;
+                            var accessRelationship = new account.entity.AccessRelationship((AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType), accountGroupId, vehicleGroupId);
+                            var accessRelationshipResult = await accountmanager.CreateAccessRelationship(accessRelationship);
+                        }
+                        else if (account.Id > 0)
+                        {
+                            accountGroupId = account.Id;
+                            var accessRelationship = new account.entity.AccessRelationship((AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType), accountGroupId, vehicleGroupId);
+                            var accessRelationshipResult = await accountmanager.CreateAccessRelationship(accessRelationship);
+                        }
+                    }
+                }
+                return request;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public override async Task<AccountAccessRelationship> CreateAccountAccessRelationship(AccountAccessRelationship request, ServerCallContext context)
+        {
+            string validationMessage = string.Empty;
+            int vehicleGroupId = 0;
+            int accountGroupId = 0;
+            string groupName = string.Empty;
+            Group.Group group = null;
+            try
+            {
+
+               // long CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                accountGroupId = request.Id;
+                if (!request.IsGroup && request.Id>0)
+                {
+                    // create vehicle group with vehicle                    
+                    groupName = string.Format("AccountGroup_{0}_{1}", request.OrganizationId.ToString(), request.Id.ToString());
+                    if (groupName.Length > 50) groupName = groupName.Substring(0, 49);
+                    group = new Group.Group(Group.GroupType.Single, Group.ObjectType.AccountGroup, null,
+                                                    Group.FunctionEnum.None, request.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
+                    group = await groupmanager.Create(group);
+                    accountGroupId = group.Id;
+                }
+                if (accountGroupId > 0)
+                {
+                    foreach (var vehicle in request.VehiclesVehicleGroups)
+                    {
+                        // create group type single
+                        if (!vehicle.IsGroup)
+                        {
+                            // create group for account
+                            // create vehicle group with vehicle                            
+                            groupName = string.Format("VehicleGroup_{0}_{1}", request.OrganizationId.ToString(), vehicle.Id.ToString());
+                            if (groupName.Length > 50) groupName = groupName.Substring(0, 49);
+                            group = new Group.Group(Group.GroupType.Single, Group.ObjectType.VehicleGroup, null,
+                                                          Group.FunctionEnum.None, vehicle.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
+                            group = await groupmanager.Create(group);
+                            vehicleGroupId = group.Id;
+                            var accessRelationship = new account.entity.AccessRelationship((AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType), accountGroupId, vehicleGroupId);                            
+                            var result = await accountmanager.CreateAccessRelationship(accessRelationship);
+                        }
+                        else
+                        {
+                            vehicleGroupId = vehicle.Id;
+                            var accessRelationship = new account.entity.AccessRelationship((AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType), accountGroupId,vehicleGroupId);
+                            var result = await accountmanager.CreateAccessRelationship(accessRelationship);
+                        }
+                    }
+                }
+                return request;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public override async Task<AccountAccessRelationship> UpdateAccountAccessRelationship(AccountAccessRelationship request, ServerCallContext context)
+        {
+            string validationMessage = string.Empty;
+            int vehicleGroupId = 0;
+            int accountGroupId = 0;
+            string groupName = string.Empty;
+            Group.Group group = null;
+            bool result = true;
+            try
+            {
+
+                accountGroupId = request.Id;
+                // delete access relatioship for account or account group
+                if (request.OrganizationId > 0 && request.Id > 0)
+                {
+                    result = await accountmanager.DeleteVehicleAccessRelationship(request.OrganizationId, request.Id, true);
+                }
+                
+                if (result)
+                {
+                    foreach (var vehicle in request.VehiclesVehicleGroups)
+                    {
+                        // create group type single
+                        if (!vehicle.IsGroup)
+                        {
+                            // create group for account
+                            // create vehicle group with vehicle                            
+                            groupName = string.Format("VehicleGroup_{0}_{1}", request.OrganizationId.ToString(), vehicle.Id.ToString());
+                            if (groupName.Length > 50) groupName = groupName.Substring(0, 49);
+                            group = new Group.Group(Group.GroupType.Single, Group.ObjectType.VehicleGroup, null,
+                                                          Group.FunctionEnum.None, vehicle.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
+                            group = await groupmanager.Create(group);
+                            vehicleGroupId = group.Id;
+                            var accessRelationship = new account.entity.AccessRelationship((AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType), accountGroupId, vehicleGroupId);
+                            var accessRelationshipResult = await accountmanager.CreateAccessRelationship(accessRelationship);
+                        }
+                        else
+                        {
+                            vehicleGroupId = vehicle.Id;
+                            var accessRelationship = new account.entity.AccessRelationship((AccountComponent.ENUM.AccessRelationType)Convert.ToChar(request.AccessType), accountGroupId, vehicleGroupId);
+                            var accessRelationshipResult = await accountmanager.CreateAccessRelationship(accessRelationship);
+                        }
+                    }
+                }
+                return request;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public override async Task<AccessRelationshipResponse> GetAccessRelationship(AccessRelationshipFilter request, ServerCallContext context)
+        {
+            string validationMessage = string.Empty;
+            AccessRelationshipResponse accessRelationship = new AccessRelationshipResponse();
+            
+            try
+            {
+                if (request.OrganizationId > 0)
+                {
+                    AccountVehicleAccessRelationshipFilter filter = new AccountVehicleAccessRelationshipFilter();
+                    filter.OrganizationId = request.OrganizationId;
+                    var vehicleAccessRelation = await accountmanager.GetAccountVehicleAccessRelationship(filter,true);
+                    var accountAccessRelation = await accountmanager.GetAccountVehicleAccessRelationship(filter,false);
+                    accessRelationship.VehicleAccessRelationship.AddRange(_mapper.ToVehicleAccessRelationShip(vehicleAccessRelation));
+                    accessRelationship.AccountAccessRelationship.AddRange(_mapper.ToVehicleAccessRelationShip(accountAccessRelation));
+                }
+                accessRelationship.Code = Responcecode.Success;
+                return accessRelationship;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public override async Task<AccountVehiclesResponse> GetAccountsVehicles(AccessRelationshipFilter request, ServerCallContext context)
+        {
+            string validationMessage = string.Empty;
+            AccountVehiclesResponse accountVehiclesResponse = new AccountVehiclesResponse();
+
+            try
+            {
+                if (request.OrganizationId > 0)
+                {
+                    AccountVehicleAccessRelationshipFilter filter = new AccountVehicleAccessRelationshipFilter();
+                    filter.OrganizationId = request.OrganizationId;
+                    var vehiclesVehicleGroups = await accountmanager.GetAccountVehicle(filter, true);
+                    var accountAccountGroups = await accountmanager.GetAccountVehicle(filter, false);
+                    accountVehiclesResponse.VehiclesVehicleGroup.AddRange(_mapper.ToAccountVehicles(vehiclesVehicleGroups));
+                    accountVehiclesResponse.AccountsAccountGroups.AddRange(_mapper.ToAccountVehicles(accountAccountGroups));
+                }
+                accountVehiclesResponse.Code = Responcecode.Success;
+                return accountVehiclesResponse;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         #endregion
 
         #region AccountPreference

@@ -7,14 +7,20 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 
 import net.atos.daf.common.ct2.exception.TechnicalException;
+//import net.atos.daf.common.ct2.postgre.PostgreDataSourceConnection;
 import net.atos.daf.common.ct2.util.DAFConstants;
-import net.atos.daf.etl.ct2.common.bo.Trip;
+//import net.atos.daf.etl.ct2.common.bo.Trip;
 import net.atos.daf.etl.ct2.common.util.ETLConstants;
+import net.atos.daf.postgre.bo.Trip;
+import net.atos.daf.postgre.connection.PostgreDataSourceConnection;
+import net.atos.daf.postgre.dao.TripSinkDao;
 
 public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 	
@@ -25,6 +31,9 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private PreparedStatement statement;
 	private Connection connection;
+	private List<Trip> queue;//=new ArrayList<Trip>();
+	private List<Trip> synchronizedCopy;// = new ArrayList<Trip>();
+	TripSinkDao tripDao; //= new TripSinkDao();
 	
 	String query = "INSERT INTO tripdetail.trip_statistics( trip_id, vin, start_time_stamp, end_time_stamp, veh_message_distance, etl_gps_distance, idle_duration"
 			+ ", average_speed, average_weight, start_odometer, last_odometer, start_position_lattitude, start_position_longitude, end_position_lattitude"
@@ -50,8 +59,26 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 	  
 	  @Override
 	public void invoke(Trip rec) throws Exception {
-		 
-		statement.setString(1, rec.getTripId());
+
+		try {
+			queue.add(rec);
+			if (queue.size() >= 1) {
+				System.out.println("inside syncronized");
+				synchronized (synchronizedCopy) {
+					synchronizedCopy = new ArrayList<Trip>(queue);
+					queue.clear();
+					for (Trip tripData : synchronizedCopy) {
+					tripDao.insert(tripData);
+					// jPAPostgreDao.saveTripDetails(synchronizedCopy);
+					System.out.println("save done");
+					// System.out.println("anshu1");
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		/*statement.setString(1, rec.getTripId());
 		
 		//TODO only for testing
 		System.out.println("Sink TripId : "+rec.getTripId() +" VIN : "+rec.getVin() +" VID : "+rec.getVid());
@@ -473,14 +500,25 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 		System.out.println("Prepared data for trip :: "+rec.getTripId());
 
 		statement.addBatch();
-		statement.executeBatch();
+		statement.executeBatch();*/
 	}
 
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
-
-		//TODOonly for testing remove
+		
+		tripDao = new TripSinkDao();
+		queue =new ArrayList<Trip>();
+		synchronizedCopy = new ArrayList<Trip>();
+		connection=PostgreDataSourceConnection.getInstance().getDataSourceConnection(envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME),
+				Integer.parseInt(envParams.get(ETLConstants.DATAMART_POSTGRE_PORT)),
+				envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME),
+				envParams.get(ETLConstants.DATAMART_POSTGRE_USER),
+				envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
+		System.out.println("In trip sink connection done" + connection);
+		tripDao.setConnection(connection);
+		
+		/*//TODOonly for testing remove
  		System.out.println("envParams.get(ETLConstants.POSTGRE_SQL_SERVER_NAME) :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME));
 		System.out.println("envParams.get(ETLConstants.POSTGRE_SQL_PORT) :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_PORT));
 		System.out.println("envParams.get(ETLConstants.POSTGRE_SQL_DATABASE_NAME) :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME));
@@ -496,8 +534,11 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 		connection = DriverManager.getConnection(dbUrl);
 		System.out.println("Connect created individually ::: " + connection);
 		
-		statement = connection.prepareStatement(query); 
+		statement = connection.prepareStatement(query); */
 		
+//		PostgreDataSourceConnection connectionInstance=PostgreDataSourceConnection.getInstance();
+//		connection=connectionInstance.getDataSourceConnection("jdbc:postgresql://dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com", 5432, "vehicledatamart", "W%PQ1AI}Y97", "W%PQ1AI}Y97");
+//		statement = connection.prepareStatement(query);
 	}
 
 	//@SuppressWarnings("unchecked")

@@ -208,6 +208,10 @@ public class ETLConstants {
 	public static final String SASL_MECHANISM = "sasl.mechanism";
 	public static final String SASL_JAAS_CONFIG = "sasl.jaas.config";
 	public static final String AUTO_OFFSET_RESET_CONFIG ="auto.offset.reset.config";
+	public static final String CLIENT_ID = "client.id";
+	public static final String EGRESS_TRIP_AGGR_TOPIC_NAME = "egress.trip.aggr.data.topic";
+	public static final String EGRESS_TRIP_AGGR_DATA = "egress.trip.aggr.data";
+	public static final String REQUEST_TIMEOUT_MILLISEC = "request.timeout.ms";
 		
 
 	//Testing parameter

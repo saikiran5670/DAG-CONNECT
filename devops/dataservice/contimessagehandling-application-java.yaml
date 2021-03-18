@@ -50,6 +50,13 @@ jobs:
         goals: clean install
 
     - task: Maven@3
+      displayName: 'Maven java/commoncomponent/daf.postgre.connection/pom.xml'
+      inputs:
+        mavenPomFile: java/commoncomponent/daf.postgre.connection/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+
+    - task: Maven@3
       displayName: 'Maven java/commoncomponent/kafka.common/pom.xml'
       inputs:
         mavenPomFile: java/commoncomponent/kafka.common/pom.xml

@@ -18,7 +18,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   //loggedInUser : string = 'admin';
   relationshipFormGroup: FormGroup;
   @Output() backToPage = new EventEmitter<any>();
-  featureDisplayedColumns: string[] = ['select', 'featureName'];
+  featureDisplayedColumns: string[] = ['select', 'name'];
   @Input() gridData: any;
   @Input() title: string;
   @Input() createStatus: boolean;
@@ -36,7 +36,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   featuresSelected = [];
   featuresData = [];
   organizationId: number;
-  levels= ['Level 1', 'Level 2', 'Level 3'];
+  levels= [10, 20, 30];
   codes= ['Code 1', 'Code 2', 'Code 3'];
 
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService, private organizationService: OrganizationService) { }
@@ -149,7 +149,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
         let objData = {
           organizationId: this.organizationId,
           featureIds: featureIds,
-          createdby: 0,
+          // createdby: 0,
           featuresetId: this.gridData[0].featuresetid,
           name : this.relationshipFormGroup.controls.relationshipName.value,
           description:this.relationshipFormGroup.controls.relationshipDescription.value,
@@ -159,7 +159,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
           isActive: this.gridData[0].isActive
         }
        // this.roleService.createUserRole(objData).subscribe((res) => {
-          this.backToPage.emit({ editFlag: false, editText: 'create',  name: this.relationshipFormGroup.controls.relationshipName.value });
+          // this.backToPage.emit({ editFlag: false, editText: 'create',  name: this.relationshipFormGroup.controls.relationshipName.value });
         // }, (error) => { 
         //   if(error.status == 409){
         //     this.isRelationshipExist = true;
