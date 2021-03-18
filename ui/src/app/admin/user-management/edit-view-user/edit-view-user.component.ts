@@ -55,8 +55,7 @@ export class EditViewUserComponent implements OnInit {
   @Input() allUserGrpData: any;
   @Input() selectedPreference: any;
   displayedColumnsRoleConfirm: string[] = ['roleName', 'featureIds'];
-  displayedColumnsUserGrpConfirm: string[] = ['name', 'accountCount'];
-  displayedColumnsVehGrpConfirm: string[] = ['name', 'vehicles', 'registrationNumber'];
+  displayedColumnsUserGrpConfirm: string[] = ['accountGroupName', 'accountCount'];
   selectedRoleDataSource: any = [];
   selecteUserGrpDataSource: any = [];
   selectedVehGrpDataSource: any = [];
@@ -82,6 +81,7 @@ export class EditViewUserComponent implements OnInit {
   imageError= '';
   profilePicture: any= '';
   servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
+  @Input() privilegeAccess: any;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer) { }
 
@@ -102,7 +102,7 @@ export class EditViewUserComponent implements OnInit {
       firstName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       lastName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       loginEmail: ['', [Validators.required, Validators.email]],
-      userType: ['', [Validators.required]],
+      userType: ['', []],
       organization: new FormControl({value: null, disabled: true})
     },
     {
@@ -150,7 +150,7 @@ export class EditViewUserComponent implements OnInit {
   }
 
   filterAccountGroupTableData(){
-    let filteredAccountGroup = this.allUserGrpData.filter(resp => this.selectedUserGrpData.some(_data => _data.id === resp.id));
+    let filteredAccountGroup = this.allUserGrpData.filter(resp => this.selectedUserGrpData.some(_data => _data.groupId === resp.groupId));
     return filteredAccountGroup;
   }
 
@@ -162,7 +162,7 @@ export class EditViewUserComponent implements OnInit {
       this.accountInfoForm.get('loginEmail').setValue(this.accountInfoData.emailId ? this.accountInfoData.emailId : '--');
       this.accountInfoForm.get('userType').setValue(this.accountInfoData.type ? this.accountInfoData.type : 'P');
       this.accountInfoForm.get('organization').setValue(this.accountInfoData.organization ? this.accountInfoData.organization : localStorage.getItem("organizationName"));
-      this.blobId = this.accountInfoData.blobId;
+      this.blobId = this.accountInfoData.blobId ? this.accountInfoData.blobId : 0;
       if(this.blobId != 0){
         this.accountService.getAccountPicture(this.blobId).subscribe(data => {
           if(data){
@@ -289,9 +289,10 @@ export class EditViewUserComponent implements OnInit {
         salutation: this.accountInfoForm.controls.salutation.value,
         firstName: this.accountInfoForm.controls.firstName.value,
         lastName: this.accountInfoForm.controls.lastName.value,
-        type: this.accountInfoForm.controls.userType.value,
+        type: (this.privilegeAccess) ? this.accountInfoForm.controls.userType.value : 'P', //-- privilege check
         organizationId: this.accountInfoData.organizationId,
-        driverId: ""
+        driverId: "",
+        password: ""
     }
     this.accountService.updateAccount(objData).subscribe((data)=>{
       this.accountInfoData = data;
@@ -320,7 +321,7 @@ export class EditViewUserComponent implements OnInit {
   editUserGroupData(){
     let type= "userGroup";
     let tableHeader: any = this.translationData.lblSelectedUserGroups || 'Selected User Groups';
-    let colsList: any = ['select', 'name', 'accountCount'];
+    let colsList: any = ['select', 'accountGroupName', 'accountCount'];
     let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lblGroupName || 'Group Name', this.translationData.lblUsers || 'Users'];
     this.callCommonTableToEdit(this.accountInfoData, type, colsList, colsName, tableHeader, this.selectedUserGrpData, this.allUserGrpData);
   }
@@ -424,7 +425,7 @@ export class EditViewUserComponent implements OnInit {
     let objData = {
       accountId: 0,
       organizationId: rowData.organizationId, //32
-      accountGroupId: rowData.id, 
+      accountGroupId: rowData.groupId, 
       vehicleGroupId: 0,
       roleId: 0,
       name: ""
@@ -469,7 +470,7 @@ export class EditViewUserComponent implements OnInit {
       tableData: tableData,
       colsList: ['firstName','emailId','roles'],
       colsName: [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'],
-      tableTitle: `${rowData.name} - ${this.translationData.lblUsers || 'Users'}`
+      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers || 'Users'}`
     }
     this.dialogRefForView = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }

@@ -77,24 +77,28 @@ namespace net.atos.daf.ct2.portalservice
                     options.SlidingExpiration = true;
                     options.ExpireTimeSpan = TimeSpan.FromSeconds(string.IsNullOrEmpty(authcookiesexpireat)? 5184000 : Convert.ToDouble(authcookiesexpireat));
             });
-            
-         /*   services.AddHsts(options =>
-            {
-                options.Preload = true;
-                options.IncludeSubDomains = true;
-                options.MaxAge = TimeSpan.FromHours(Convert.ToInt32(headerstricttransportsecurity));
-            });
-            services.AddHttpsRedirection(options =>
-            {
-                options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
-                options.HttpsPort = string.IsNullOrEmpty(httpsport)? 443 : Convert.ToInt32(httpsport);
-            }); */
+
+            /*   services.AddHsts(options =>
+               {
+                   options.Preload = true;
+                   options.IncludeSubDomains = true;
+                   options.MaxAge = TimeSpan.FromHours(Convert.ToInt32(headerstricttransportsecurity));
+               });
+               services.AddHttpsRedirection(options =>
+               {
+                   options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+                   options.HttpsPort = string.IsNullOrEmpty(httpsport)? 443 : Convert.ToInt32(httpsport);
+               }); */
+
+            services.AddMemoryCache();
+
             services.AddControllers();
 
             services.AddDistributedMemoryCache();
             
             services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
-            
+            services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();
+
             services.AddGrpcClient<AccountService.AccountServiceClient>(o =>
             {
                 o.Address = new Uri(accountservice);

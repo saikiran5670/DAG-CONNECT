@@ -13,7 +13,7 @@ const routes: Routes = [
   { path: 'mobileportal', loadChildren: () => import('./mobile-portal/mobile-portal.module').then(m => m.MobilePortalModule) },
   { path: 'shop', loadChildren: () => import('./shop/shop.module').then(m => m.ShopModule) },
   { path: 'information', loadChildren: () => import('./information/information.module').then(m => m.InformationModule) },
-  { path: 'Accordion', loadChildren: () => import('./accordian/list-accordian.module').then(m => m.ListAccordianModule) }
+
 ];
 
 @NgModule({

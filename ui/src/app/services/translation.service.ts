@@ -75,7 +75,19 @@ export class TranslationService {
         };
         return this.httpClient
             .get<any>(
-                id ? `${this.translationUrl}/UploadDetails?FileID=${id}` : `${this.translationUrl}/UploadDetails`,headers,
+                id? `${this.translationUrl}/getUploadDetails?FileID=${id}` : `${this.translationUrl}/getUploadDetails`,headers
+                )
+            .pipe(catchError(this.handleError));
+    }
+
+    getTranslations(): Observable<any> {
+        let headerObj = this.generateHeader();
+        const headers = {
+          headers: new HttpHeaders({ headerObj }),
+        };
+        return this.httpClient
+            .get<any>(
+                `${this.translationUrl}/translations`,headers
                 )
             .pipe(catchError(this.handleError));
     }

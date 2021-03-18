@@ -109,7 +109,7 @@
                             (click)="onConsentClick('I')" style='margin-right: 10px;'>
                             <mat-icon style="font-size: 18px; padding-top: 2px;">done</mat-icon> {{ translationData.lblOptInAll || 'Opt-In All'}}
                         </button>
-                        <button mat-flat-button color="primary" [disabled]="initData.length == 0"
+                        <button style='background-color: #d62a29 !important;' mat-flat-button color="primary" [disabled]="initData.length == 0"
                             (click)="onConsentClick('U')">
                             <mat-icon style="font-size: 18px; padding-top: 2px;">close</mat-icon>{{ translationData.lblOptOutAll || 'Opt-Out All'}}
                         </button>
@@ -134,8 +134,8 @@
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEmailID || 'Email ID' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">{{ row.email }}</mat-cell>
                         </ng-container>
-                        <ng-container matColumnDef="optIn">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblConsent || 'Consent' }}</mat-header-cell>
+                        <ng-container matColumnDef="status">
+                            <mat-header-cell *matHeaderCellDef>{{ translationData.lblConsent || 'Consent' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <div class='margin-left-10-per' *ngIf="row.status == 'I'">
                                     <img class='cursor-pointer' (click)='changeOptStatus(row)' matTooltip="{{ translationData.lblOptIn || 'Opt-In' }}" src='assets/images/icons/driverOpt/opt-in.svg' style="width: 20px; height: 20px;" />

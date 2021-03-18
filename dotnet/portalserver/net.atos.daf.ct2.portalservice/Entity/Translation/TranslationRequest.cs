@@ -16,15 +16,13 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
             public int MenuId { get; set; }
     }
 
-    public class TranslationResponse
+    public class TranslationFileData
     {
-        public int Id { get; set; }
+        
         public string Code { get; set; }
         public string Type { get; set; }
         public string Name { get; set; }
         public string Value { get; set; }
-        public string Filter { get; set; }
-        public int MenuId { get; set; }
 
     }
 

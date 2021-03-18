@@ -24,4 +24,17 @@ namespace net.atos.daf.ct2.customerdataservice.Entity
         public string DAFPACCAR  { get; set; } 
 
     }
+     public class CustomerRequest
+    { 
+        public string CompanyType { get; set; } 
+        public string CustomerID { get; set; } 
+        public string CustomerName { get; set; } 
+        public string AddressType { get; set; } 
+        public string Street { get; set; } 
+        public string StreetNumber { get; set; } 
+        public string PostalCode { get; set; } 
+        public string City { get; set; } 
+        public string CountryCode { get; set; } 
+        public DateTime ReferenceDateTime { get; set; } 
+    }
 }

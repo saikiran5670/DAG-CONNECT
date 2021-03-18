@@ -78,9 +78,10 @@ namespace net.atos.daf.ct2.organizationservice.entity
             objResponse.OrganizationId=request.org_id;
             objResponse.Referenced=request.reference_date; 
             objResponse.VehicleOptIn=request.vehicle_default_opt_in;
-            objResponse.DriverOptIn=request.driver_default_opt_in;   
-             return objResponse;          
-        }    
+            objResponse.DriverOptIn=request.driver_default_opt_in;
+            objResponse.IsActive = request.is_active;
+            return objResponse;          
+        }
 
         public net.atos.daf.ct2.organizationservice.OrgUpdateRequest TOOrgUpdateResponse(net.atos.daf.ct2.organizationservice.OrgCreateRequest request)
         {

@@ -11,6 +11,7 @@ service OrganizationService {
   rpc Update (OrgUpdateRequest) returns (OrganizationUpdateData);
  // rpc Delete (IdRequest) returns (OrganizationResponse);
   rpc Get (IdRequest) returns (OrganizationGetData); 
+  rpc GetAll(IdRequest)returns(GetAllOrgResponse);
 
   // Account Preference Mthod
   rpc CreatePreference (AccountPreference) returns (AccountPreferenceResponse);
@@ -114,7 +115,13 @@ message OrgGetResponse {
     google.protobuf.StringValue Referenced=11;  
     bool IsActive=12;  
     google.protobuf.StringValue VehicleOptIn=13;
-    google.protobuf.StringValue DriverOptIn=14;
+    google.protobuf.StringValue DriverOptIn=14;   
+}
+
+message GetAllOrgResponse{
+  repeated OrgGetResponse OrganizationList=1;
+  Responcecode Code=2;
+  string Message = 3;
 }
 
 message OrganizationCreateData {
@@ -132,7 +139,7 @@ message OrganizationUpdateData {
 message OrganizationGetData {
   Responcecode Code=1;
   string Message = 2;
-  OrgGetResponse Organization = 3;
+  OrgGetResponse Organization = 3; 
 }
 
  message AccountPreference

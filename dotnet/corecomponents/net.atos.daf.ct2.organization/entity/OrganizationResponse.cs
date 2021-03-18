@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.organization.entity
 {
@@ -19,6 +20,7 @@ namespace net.atos.daf.ct2.organization.entity
         public int preference_id { get; set; }
         public string vehicle_default_opt_in { get; set; }
         public string driver_default_opt_in { get; set; }
-       
+        public List<OrganizationResponse> OrganizationList { get; set; }
+
     }
 }

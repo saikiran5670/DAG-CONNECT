@@ -288,6 +288,9 @@ namespace net.atos.daf.ct2.package.repository
                 case "Vehicle":
                     type = 'V';
                     break;
+                case "ORGVIN":
+                    type = 'R';
+                    break;
             }
             return type; ;
         }
@@ -299,10 +302,13 @@ namespace net.atos.daf.ct2.package.repository
             switch (type)
             {
                 case "O":
-                    ptype = "Organization";
+                    ptype = "Org Pkg";
                     break;
                 case "V":
-                    ptype = "Vehicle";
+                    ptype = "VIN Pkg";
+                    break;
+                case "R":
+                    ptype = "ORG VIN";
                     break;
             }
             return ptype; ;

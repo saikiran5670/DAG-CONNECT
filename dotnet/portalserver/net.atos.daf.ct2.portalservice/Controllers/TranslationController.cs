@@ -344,6 +344,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
             {
+                if (request.FileID >= 0)
+                {
+                    return Ok(ResponseList.Translationupload.FirstOrDefault().File);
+                }
                 return Ok(ResponseList);
             }
             else

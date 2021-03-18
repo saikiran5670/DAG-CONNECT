@@ -8,6 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Text;
 using Google.Protobuf;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.translationservice.Entity
 {
@@ -26,19 +27,8 @@ namespace net.atos.daf.ct2.translationservice.Entity
             obj.description = request.Description;
             obj.file_size = request.FileSize;
             obj.failure_count = request.FailureCount;
-           // obj.created_by = request.CreatedBy;
-
-            if (request.File !=null)
-            {
-                Encoding u8 = Encoding.UTF8;
-                obj.file = request.File.SelectMany(s =>
- System.Text.Encoding.UTF8.GetBytes(s + Environment.NewLine)).ToArray();
-             
-            }
-
-            obj.added_count = request.AddedCount;
-            obj.updated_count = request.UpdatedCount;
-             if (request.File !=null)
+            // obj.created_by = request.CreatedBy;
+            if (request.File != null)
             {
                 foreach (var item in request.File)
                 {
@@ -51,6 +41,26 @@ namespace net.atos.daf.ct2.translationservice.Entity
                 }
 
             }
+            if (request.File !=null)
+            {
+                Encoding u8 = Encoding.UTF8;
+                BinaryFormatter bf = new BinaryFormatter();
+                //MemoryStream ms = new MemoryStream();
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    bf.Serialize(ms, obj.translations);
+                    obj.file = ms.ToArray();
+                }
+                //bf.Serialize(ms, request.File);
+                //obj.file = request.File.SelectMany(s =>
+                // System.Text.Encoding.UTF8.GetBytes(s + Environment.NewLine)).ToArray();
+                
+             
+            }
+
+            obj.added_count = request.AddedCount;
+            obj.updated_count = request.UpdatedCount;
+             
             
             return obj;
         }
@@ -78,13 +88,36 @@ namespace net.atos.daf.ct2.translationservice.Entity
                //ByteString bytestring;
                 using (var str = new MemoryStream(translationupload.file))
                 {
-                    obj.File = ByteString.FromStream(str);
+                    //obj.File = ByteString.FromStream(str);
+                    var Translations = parse(translationupload.file);
+                    TranslationData objdata = new TranslationData();
+                    foreach (var item in Translations)
+                    {
+                        objdata.Code = item.Code;
+                        objdata.Type = item.Type;
+                        objdata.Name = item.Name;
+                        objdata.Value = item.Value;
+                        obj.File.Add(objdata);
+                    }
                 }
 
             }
 
             obj.AddedCount = translationupload.added_count;
             obj.UpdatedCount = translationupload.updated_count;
+            return obj;
+        }
+        public static dynamic parse(byte[] json)
+        {
+            //var reader = new StreamReader(new MemoryStream(json), Encoding.Default);
+
+            //var values = new JsonSerializer().Deserialize(new JsonTextReader(reader));
+            MemoryStream memStream = new MemoryStream();
+            BinaryFormatter binForm = new BinaryFormatter();
+            memStream.Write(json, 0, json.Length);
+            memStream.Seek(0, SeekOrigin.Begin);
+            Object obj = (Object)binForm.Deserialize(memStream);
+
             return obj;
         }
 

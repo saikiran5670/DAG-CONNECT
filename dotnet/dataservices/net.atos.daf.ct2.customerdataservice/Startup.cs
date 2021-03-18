@@ -25,6 +25,7 @@ using Subscription=net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.repository;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace net.atos.daf.ct2.customerdataservice
 {
@@ -73,6 +74,7 @@ namespace net.atos.daf.ct2.customerdataservice
             services.AddTransient<IGroupRepository, GroupRepository>();          
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             
+            services.AddMvc(options => { options.Filters.Add(new ProducesAttribute("application/json")); });
             services.AddSwaggerGen(c =>
             {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Customer Data Service", Version = "v1" });

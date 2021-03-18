@@ -21,15 +21,11 @@ export class OrganizationService {
   }
 
   private handleError(errResponse: HttpErrorResponse) {
-    if (errResponse.error instanceof ErrorEvent) {
-      console.error('Client side error', errResponse.error.message);
-    } else {
-      console.error('Server side error', errResponse);
-    }
+    console.error('Error : ', errResponse.error);
     return throwError(
-      'There is a problem with the service. Please try again later.'
+      errResponse
     );
-  }
+}
 
   generateHeader(){
     let genericHeader : object = {
@@ -93,5 +89,16 @@ export class OrganizationService {
       .delete<any>(`${this.relationServiceUrl}/relationship/delete?relationshipId=${id}`, headers)
       .pipe(catchError(this.handleError));
   }
+
+  updateRelationship(data): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .put<any>(`${this.relationServiceUrl}/relationship/update`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+
    
 }

@@ -217,7 +217,7 @@ message TranslationUpload
       int32 file_size =4;
       int32 failure_count =5;
       //int32 created_by =6;
-      bytes file =6;
+      repeated TranslationData file =6;
       int32 added_count =7;
       string updated_count =8;
      // repeated Translation translations =9;

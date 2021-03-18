@@ -41,6 +41,7 @@ public class DAFCT2Constant {
     
     public static final String HBASE_BOSCH_HISTORICAL_TABLE_NAME = "bosch.historical.table.name";
     public static final String HBASE_BOSCH_HISTORICAL_TABLE_CF = "bosch.historical.table.colfm";
+    public static final String UNKNOWN = "UNKNOWN";
     
 	//HBase
 	public static final String HBASE_ZOOKEEPER_QUORUM = "hbase.zookeeper.quorum";

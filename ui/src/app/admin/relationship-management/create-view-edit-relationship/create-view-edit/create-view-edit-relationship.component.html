@@ -141,30 +141,31 @@
           </div>
         <div fxLayout="row" class='margin-top-xlg'>
             <div fxLayout="column" class='full-width'>
-                <mat-table [dataSource]="dataSource" matSort>      
+                <mat-table [dataSource]="dataSource" class="table-items" matSort>
                     <ng-container matColumnDef="select">
-                        <mat-header-cell *matHeaderCellDef>{{ translationData.lblAccess || 'Access'}}
-                            <mat-checkbox color="primary" (change)='$event ? masterToggleForFeatures() : null;' [disabled]="viewFlag"
-                              [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
-                              [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
-                              [aria-label]='checkboxLabelForFeatures()'>
-                            </mat-checkbox>
-                          </mat-header-cell>
-                          <mat-cell *matCellDef="let row">
-                            <mat-checkbox color="primary" (click)='$event.stopPropagation()' [disabled]="viewFlag"
-                              (change)='$event ? selectionForFeatures.toggle(row) : null; onCheckboxChange($event, row)'
-                              [checked]='selectionForFeatures.isSelected(row)'
-                              [aria-label]='checkboxLabelForFeatures(row)'>
-                            </mat-checkbox>
-                          </mat-cell>
-                    </ng-container> 
-                    <ng-container matColumnDef="name">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatureName || 'Feature Name'}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row; let index"> {{row.name}} </mat-cell>
+                      <mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox (change)='$event ? masterToggleForFeatures() : null'
+                          [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
+                          [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
+                          [aria-label]='checkboxLabelForFeatures()'>
+                        </mat-checkbox>
+                        <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row">
+                        <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectionForFeatures.toggle(row) : null'
+                          [checked]='selectionForFeatures.isSelected(row)' [aria-label]='checkboxLabelForFeatures(row)'>
+                        </mat-checkbox>
+                      </mat-cell>
                     </ng-container>
-                    <mat-header-row *matHeaderRowDef="featureDisplayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: featureDisplayedColumns;">
-                    </mat-row>
+                    <ng-container matColumnDef="name">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatureName || 'Feature Name' }}</mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                          {{ row.name }}
+                        </mat-cell>
+                      </ng-container>
+                      <mat-header-row *matHeaderRowDef="featureDisplayedColumns"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: featureDisplayedColumns;">
+                        </mat-row>
                 </mat-table>
                 <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
             </div>
