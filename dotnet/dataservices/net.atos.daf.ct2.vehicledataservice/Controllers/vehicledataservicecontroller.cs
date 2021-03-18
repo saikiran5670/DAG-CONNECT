@@ -233,6 +233,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     relationshipMapping.created_org_id = DAFPACCAR;
                     relationshipMapping.target_org_id = DAFPACCAR;
                     relationshipMapping.isFirstRelation = true;
+                    relationshipMapping.allow_chain = true;
                     await organizationManager.CreateOwnerRelationship(relationshipMapping);   
 
                     logger.LogInformation("Vehicle Properties updated with VIN - " + vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN);

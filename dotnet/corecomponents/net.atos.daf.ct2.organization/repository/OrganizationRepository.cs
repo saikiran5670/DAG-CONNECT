@@ -706,14 +706,14 @@ namespace net.atos.daf.ct2.organization.repository
                     Inputparameter.Add("@vehicle_group_id", relationshipMapping.vehicle_group_id);
                 }                 
               
-                Inputparameter.Add("@vehicle_group_id", relationshipMapping.vehicle_group_id);
+                //Inputparameter.Add("@vehicle_group_id", relationshipMapping.vehicle_group_id);
                 Inputparameter.Add("@owner_org_id",relationshipMapping.owner_org_id);    // from property file 
                 Inputparameter.Add("@created_org_id", relationshipMapping.created_org_id); // from property file --- first time it will same as owner_org_id
                 Inputparameter.Add("@target_org_id", relationshipMapping.target_org_id);  // from property file -- first time it will same as owner_org_id
-                Inputparameter.Add("@start_date", relationshipMapping.start_date);
+                Inputparameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 Inputparameter.Add("@end_date", null);   // First time -- NULL
                 Inputparameter.Add("@allow_chain", relationshipMapping.allow_chain);   // Alway true
-                Inputparameter.Add("@created_at", relationshipMapping.created_at);   // Alway true
+                Inputparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));   // Alway true
 
                 var queryInsert = @"insert into master.orgrelationshipmapping(relationship_id,vehicle_id,vehicle_group_id,
                      owner_org_id,created_org_id,target_org_id,start_date,end_date,allow_chain,created_at)                     
@@ -741,10 +741,10 @@ namespace net.atos.daf.ct2.organization.repository
                 Inputparameter.Add("@owner_org_id", relationshipMapping.owner_org_id);  
                 Inputparameter.Add("@created_org_id", relationshipMapping.created_org_id); 
                 Inputparameter.Add("@target_org_id", relationshipMapping.target_org_id); 
-                Inputparameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(System.DateTime.Now));
+                Inputparameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 Inputparameter.Add("@end_date",null);
                 Inputparameter.Add("@allow_chain", relationshipMapping.allow_chain); // Alway true
-                Inputparameter.Add("@created_at",UTCHandling.GetUTCFromDateTime(System.DateTime.Now));
+                Inputparameter.Add("@created_at",UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 
                 var queryUpdate = @"update into master.orgrelationshipmapping
                  set vehicle_id=@vehicle_id,vehicle_group_id=@vehicle_group_id,owner_org_id=@owner_org_id,created_org_id=@created_org_id,
