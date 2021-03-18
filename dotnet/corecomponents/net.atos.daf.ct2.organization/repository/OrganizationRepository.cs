@@ -549,7 +549,7 @@ namespace net.atos.daf.ct2.organization.repository
                    relationshipMapping.start_date=UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
                   // relationshipMapping.end_date=0;
                    relationshipMapping.created_at=UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
-
+                   
                    relationshipMapping.allow_chain=true;                   
                    await CreateOwnerRelationship(relationshipMapping);              
                }
@@ -690,10 +690,10 @@ namespace net.atos.daf.ct2.organization.repository
 
             int OwnerRelationshipId = 0;
             var parameter = new DynamicParameters();
-            parameter.Add("@vin", relationshipMapping.VIN);
-            var query = @"Select id from master.orgrelationshipmapping where vehicle_id=@vin";
-            int iscustomerexist = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-            if (iscustomerexist < 1 && relationshipMapping.isFirstRelation) // relationship not exist
+            parameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
+            var query = @"Select id from master.orgrelationshipmapping where vehicle_id=@vehicle_id";
+            int isRelationshipExist = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+            if (isRelationshipExist < 1 && relationshipMapping.isFirstRelation) // relationship not exist
             // if (iscustomerexist< 1)
             {
                 var Inputparameter = new DynamicParameters();
@@ -723,7 +723,7 @@ namespace net.atos.daf.ct2.organization.repository
                 return OwnerRelationshipId;
             }
 
-            else if (iscustomerexist > 1 && (!relationshipMapping.isFirstRelation)) // relationship exist
+            else if (isRelationshipExist > 1 && (!relationshipMapping.isFirstRelation)) // relationship exist
            // else if (iscustomerexist > 1)
             {
                 // update previuse relationship end date and insert new relationship
