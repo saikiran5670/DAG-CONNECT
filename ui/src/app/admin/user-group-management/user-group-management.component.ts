@@ -258,7 +258,7 @@ export class UserGroupManagementComponent implements OnInit {
     let obj: any = {
       accountId: 0,
       organizationId: data.organizationId,
-      accountGroupId: data.id,
+      accountGroupId: data.groupId, //id
       vehicleGroupId: 0,
       roleId: 0,
       name: ""
