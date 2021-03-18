@@ -82,7 +82,7 @@ namespace net.atos.daf.ct2.relationship.repository
                     parameter.Add("@Level", relationship.Level);
                     parameter.Add("@Description", relationship.Description);
                     parameter.Add("@FeatureSetId", relationship.FeaturesetId);
-                    parameter.Add("@Is_active", relationship.IsActive);                   
+                    parameter.Add("@Is_active", relationship.IsActive);
 
                     var queryUpdate = @"update master.orgrelationship set organization_id=@OrganizationId,
                                                                           feature_set_id=@FeatureSetId,
@@ -148,7 +148,7 @@ namespace net.atos.daf.ct2.relationship.repository
                 var relationships = new List<Relationship>();
                 string query = string.Empty;
 
-                query = @"select id, organization_id, feature_set_id, name, description, code, is_active, level,created_at from master.orgrelationship relationship where is_active=true ";
+                query = @"select id, organization_id, feature_set_id, name, description, code, is_active, level,created_at from master.orgrelationship relationship where is_active = true ";
 
                 if (filter != null)
                 {
@@ -161,7 +161,7 @@ namespace net.atos.daf.ct2.relationship.repository
                     if (filter.OrganizationId > 0)
                     {
                         parameter.Add("@organization_id", filter.OrganizationId);
-                        query = query + " and relationship.organization_id=@organization_id ";
+                        query = query + "and ( level=40 or relationship.organization_id=@organization_id )";
                     }
 
                     if (!string.IsNullOrEmpty(filter.Code))
@@ -194,7 +194,7 @@ namespace net.atos.daf.ct2.relationship.repository
 
                         query = query + " and relationship.level=@level";
                     }
-                    query = query + "or level=40 ORDER BY id ASC; ";
+                    query = query + "ORDER BY id ASC; ";
                     dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
 
                     foreach (dynamic record in result)

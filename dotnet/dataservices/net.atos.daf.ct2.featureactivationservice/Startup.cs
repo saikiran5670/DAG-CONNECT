@@ -55,7 +55,10 @@ namespace net.atos.daf.ct2.featureactivationservice
             services.AddTransient<AccountComponent.IAccountRepository, AccountComponent.AccountRepository>();
             services.AddTransient<AccountComponent.IAccountManager, AccountComponent.AccountManager>();
 
-
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new ProducesAttribute("application/json"));
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Customer Data Service", Version = "v1" });
