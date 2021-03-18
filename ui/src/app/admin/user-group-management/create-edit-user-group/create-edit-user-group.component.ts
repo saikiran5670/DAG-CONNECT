@@ -38,7 +38,8 @@ export class CreateEditUserGroupComponent implements OnInit {
       value: 'D'
     }
   ];
-  
+  showUserList: boolean = true;
+
   constructor(private _formBuilder: FormBuilder, private accountService: AccountService) { }
 
   ngOnInit() {
@@ -51,6 +52,9 @@ export class CreateEditUserGroupComponent implements OnInit {
     if(this.actionType == 'edit' ){
       this.setDefaultValue();
     }
+    if(this.actionType == 'view' || this.actionType == 'edit'){
+      this.showHideUserList();
+    }
     this.loadUsersData();
     this.breadcumMsg = this.getBreadcum();
   }
@@ -59,6 +63,14 @@ export class CreateEditUserGroupComponent implements OnInit {
     this.userGroupForm.get('userGroupName').setValue(this.selectedRowData.name);
     this.userGroupForm.get('groupType').setValue(this.selectedRowData.groupType);
     this.userGroupForm.get('userGroupDescription').setValue(this.selectedRowData.description);
+  }
+
+  showHideUserList(){
+    if(this.selectedRowData.groupType == 'D'){ //-- dynamic
+      this.showUserList = false;
+    }else{ //-- normal
+      this.showUserList = true;
+    }
   }
 
   getBreadcum() {
@@ -166,7 +178,7 @@ export class CreateEditUserGroupComponent implements OnInit {
           refId: 0,
           description: this.userGroupForm.controls.userGroupDescription.value,
           groupType: this.userGroupForm.controls.groupType.value,
-          accounts: accountList
+          accounts: this.showUserList ? accountList : []
         }
         this.accountService.createAccountGroup(createAccGrpObj).subscribe((d) => {
           let accountGrpObj: any = {
@@ -197,7 +209,7 @@ export class CreateEditUserGroupComponent implements OnInit {
         refId: 0,
         description: this.userGroupForm.controls.userGroupDescription.value,
         groupType: this.userGroupForm.controls.groupType.value,
-        accounts: accountList
+        accounts: this.showUserList ? accountList : []
       }
       this.accountService.updateAccountGroup(updateAccGrpObj).subscribe((d) => {
         let accountGrpObj: any = {
@@ -266,6 +278,16 @@ export class CreateEditUserGroupComponent implements OnInit {
     else
       return `${this.selectedAccounts.isSelected(row) ? 'deselect' : 'select'
         } row`;
+  }
+
+  groupTypeChange(event: any){
+    //console.log("event:: ", event)
+    if(event.value == 'D'){ //-- dynamic
+      this.showUserList = false;
+    }
+    else{ //-- normal
+      this.showUserList = true;
+    }
   }
 
 }

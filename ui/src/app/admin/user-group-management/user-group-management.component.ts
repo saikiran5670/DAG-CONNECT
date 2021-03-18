@@ -198,12 +198,20 @@ export class UserGroupManagementComponent implements OnInit {
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe((grpData) => {
       this.hideloader();
       this.onUpdateDataSource(grpData);
+    }, (error) => {
+      if(error.status == 404){
+        this.initData = [];
+        this.hideloader();
+        this.onUpdateDataSource(this.initData);
+      }
     });
   }
 
   onUpdateDataSource(tableData: any) {
     this.initData = tableData;
-    //this.initData = this.getNewTagData(this.initData);
+    if(this.initData.length > 0){
+      //this.initData = this.getNewTagData(this.initData);
+    }
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
