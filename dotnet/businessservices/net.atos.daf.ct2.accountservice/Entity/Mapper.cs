@@ -183,15 +183,92 @@ namespace net.atos.daf.ct2.accountservice
             entity.GroupRef = new List<Group.GroupRef>();            
             return entity;
         }
-        public AccessRelationship ToAccessRelationShip(AccountComponent.entity.AccessRelationship entity)
+        #region AccessRelationship
+        //public AccessRelationship ToAccessRelationShip(AccountComponent.entity.AccessRelationship entity)
+        //{
+        //    AccessRelationship request = new AccessRelationship();
+        //    request.Id = entity.Id;
+        //    request.AccessRelationType = entity.AccessRelationType.ToString();
+        //    request.AccountGroupId = entity.AccountGroupId;
+        //    request.VehicleGroupId = entity.VehicleGroupId;
+        //    return request;
+        //}
+
+        public List<AccountVehicles> ToAccountVehicles(List<AccountComponent.entity.AccountVehicleEntity> entity)
         {
-            AccessRelationship request = new AccessRelationship();
-            request.Id = entity.Id;
-            request.AccessRelationType = entity.AccessRelationType.ToString();
-            request.AccountGroupId = entity.AccountGroupId;
-            request.VehicleGroupId = entity.VehicleGroupId;
-            return request;
+            List<AccountVehicles> response = new List<AccountVehicles>();
+
+            foreach (var record in entity)
+            {
+                AccountVehicles accountVehicle = new AccountVehicles();
+                accountVehicle.Id = record.id;
+                if (!string.IsNullOrEmpty(record.name)) accountVehicle.Name = record.name;
+                else accountVehicle.Name = string.Empty;
+                accountVehicle.IsGroup = record.is_group;
+                accountVehicle.Count = record.count;
+                response.Add(accountVehicle);
+            }
+            return response;
         }
+        public List<VehicleAccountAccessData> ToVehicleAccessRelationShip(List<AccountComponent.entity.AccountVehicleAccessRelationship> entity)
+        {
+            List<VehicleAccountAccessData> response = new List<VehicleAccountAccessData>();
+            
+            foreach (var group in entity)
+            {
+                response.Add(ToAccessRelationShipData(group));
+            }
+            return response;
+        }
+        public VehicleAccountAccessData ToAccessRelationShipData(AccountComponent.entity.AccountVehicleAccessRelationship entity)
+        {
+            VehicleAccountAccessData response = new VehicleAccountAccessData();
+            response.Id = entity.Id;
+            response.Name = entity.Name;
+            response.AccessType = Convert.ToString((char) entity.AccessType);
+            response.IsGroup = entity.IsGroup;
+            response.Count = entity.Count;
+            foreach (var account in entity.RelationshipData)
+            {
+                RelationshipData data = new RelationshipData();
+                data.Id = account.Id;
+                data.Name = account.Name;
+                data.IsGroup = account.IsGroup;
+                response.AssociateData.Add(data);
+            }
+            return response;
+        }
+        //public List<VehicleAccessData> ToAccountAccessRelationShip(List<AccountComponent.entity.AccountAccessRelationship> entity)
+        //{
+        //    List<VehicleAccessData> response = new List<VehicleAccessData>();
+
+        //    foreach (var group in entity)
+        //    {
+        //        response.Add(ToAccessRelationShipData(group));
+        //    }
+        //    return response;
+        //}
+       
+        //public VehicleAccessData ToAccessRelationShipData(AccountComponent.entity.AccountAccessRelationship entity)
+        //{
+        //    VehicleAccessData response = new VehicleAccessData();
+        //    response.Id = entity.Id;
+        //    response.Name = entity.Name;
+        //    response.AccessType = Enum.GetName(typeof(AccountComponent.ENUM.AccessRelationType), entity.AccessType);
+        //    response.IsGroup = entity.IsGroup;
+        //    response.Count = entity.AccountCount;
+        //    foreach (var account in entity.AccountsAccountGroups)
+        //    {
+        //        RelationshipData data = new RelationshipData();
+        //        data.Id = account.Id;
+        //        data.Name = account.Name;
+        //        data.IsGroup = account.IsGroup;
+        //        response.AccountsAccountGroups.Add(data);
+        //    }
+        //    return response;
+        //}
+
+        #endregion
         public AccountGroupRequest ToAccountGroup(Group.Group entity)
         {
             AccountGroupRequest request = new AccountGroupRequest();
@@ -248,43 +325,14 @@ namespace net.atos.daf.ct2.accountservice
             return group;
         }
 
-        //private AccountType SetEnumAccountType(AccountComponent.ENUM.AccountType type)
-        //{
-        //    AccountType accountType = AccountType.None;
+        public string TimeStampString()
+        {
+            return UTCHandling.GetUTCFromDateTime(DateTime.Now).ToString();
+        }
 
-        //    if (type == AccountComponent.ENUM.AccountType.None)
-        //    {
-        //        accountType = AccountType.None;
-        //    }
-        //    else if (type == AccountComponent.ENUM.AccountType.SystemAccount)
-        //    {
-        //        accountType = AccountType.SystemAccount;
-        //    }
-        //    else if (type == AccountComponent.ENUM.AccountType.PortalAccount)
-        //    {
-        //        accountType = AccountType.PortalAccount;
-        //    }
-        //    return accountType;
-        //}
-        // private AccountComponent.ENUM.AccountType GetEnum(int value)
-        // {
-        //     AccountComponent.ENUM.AccountType accountType;
-        //     switch (value)
-        //     {
-        //         case 0:
-        //             accountType = AccountComponent.ENUM.AccountType.None;
-        //             break;
-        //         case 1:
-        //             accountType = AccountComponent.ENUM.AccountType.SystemAccount;
-        //             break;
-        //         case 2:
-        //             accountType = AccountComponent.ENUM.AccountType.PortalAccount;
-        //             break;
-        //         default:
-        //             accountType = AccountComponent.ENUM.AccountType.PortalAccount;
-        //             break;
-        //     }
-        //     return accountType;
-        // }
+        public long TimeStamp()
+        {
+            return UTCHandling.GetUTCFromDateTime(DateTime.Now);
+        }
     }
 }

@@ -193,7 +193,7 @@ namespace net.atos.daf.ct2.account
                     {
 
                         account = Map(record);
-                        account.isDuplicate = true;                        
+                        account.isDuplicate = true;
                     }
                 }
                 return account;
@@ -384,18 +384,28 @@ namespace net.atos.daf.ct2.account
         #endregion
 
         #region Account Access Relationship
+
         public async Task<AccessRelationship> CreateAccessRelationship(AccessRelationship entity)
         {
             try
             {
                 var parameter = new DynamicParameters();
-
-                //parameter.Add("@id", account.Id);
+                string query = string.Empty;
                 parameter.Add("@access_type", (char)entity.AccessRelationType);
                 parameter.Add("@account_group_id", entity.AccountGroupId);
                 parameter.Add("@vehicle_group_id", entity.VehicleGroupId);
 
-                string query = @"insert into master.accessrelationship(access_type,account_group_id,vehicle_group_id) " +
+                //TODO:check for duplicate access relationship, if not required and is not the case from UI will remove this check.
+                query = @"select id from master.accessrelationship where access_type=@access_type and account_group_id=@account_group_id and vehicle_group_id=@vehicle_group_id";
+                var accessId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                if (accessId > 0)
+                {
+                    entity.Exists = true;
+                    entity.Id = accessId;
+                    return entity;
+                }
+
+                query = @"insert into master.accessrelationship(access_type,account_group_id,vehicle_group_id) " +
                               "values(@access_type,@account_group_id,@vehicle_group_id) RETURNING id";
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
@@ -506,6 +516,209 @@ namespace net.atos.daf.ct2.account
                 throw ex;
             }
         }
+        
+        #endregion
+
+        #region Account/Vehicle Access Relationship
+
+        public async Task<List<AccountVehicleAccessRelationship>> GetAccountVehicleAccessRelationship(AccountVehicleAccessRelationshipFilter filter,bool is_vehicleGroup)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                List<AccountAccessRelationshipEntity> entity = new List<AccountAccessRelationshipEntity>();
+                string query = string.Empty;
+                List<AccountVehicleAccessRelationship> response = new List<AccountVehicleAccessRelationship>();               
+                if (filter != null)
+                {
+                    // org filter
+                    if (filter.OrganizationId > 0 && is_vehicleGroup)
+                    {
+                        query = @"select id,name,access_type,count,true as is_group,group_id,group_name,is_ag_vg_group from (
+                            select vg.id,vg.name,ar.access_type,
+                            (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id ) as count,
+                            case when (a.id is NULL) then ag.id else a.id end as group_id,
+                            case when (a.id is NULL) then ag.name else a.salutation || ' ' || a.first_name || ' ' || a.last_name  end as group_name,
+                            case when (a.id is NULL) then true else false end as is_ag_vg_group
+                            from master.group vg 
+                            inner join master.accessrelationship ar on ar.vehicle_group_id=vg.id 
+                            and vg.object_type='V' and vg.group_type='G' 
+                            inner join master.group ag on ag.id = ar.account_group_id 
+                            and ag.organization_id=@organization_id and ag.object_type='A' 
+                            --and vg.group_type='G' 
+                            left outer join master.account a on a.id = ag.ref_id 
+                            where vg.organization_id=@organization_id
+                            order by vg.id desc ) vehiclegroup
+                            union all
+                            select id,name,access_type,count,false as is_group,group_id,group_name,is_ag_vg_group from (
+                            select vg.id,v.name,ar.access_type,0 as count,
+                            case when (a.id is NULL) then ag.id else a.id end as group_id,
+                            case when (a.id is NULL) then ag.name else a.salutation || ' ' || a.first_name || ' ' || a.last_name  end as group_name,
+                            case when (a.id is NULL) then true else false end as is_ag_vg_group
+                            from master.group vg 
+                            inner join master.vehicle v on v.id=vg.ref_id 
+                            and vg.organization_id=@organization_id and vg.group_type='S' and vg.object_type='V'
+                            inner join master.accessrelationship ar on ar.vehicle_group_id=vg.id 
+                            inner join master.group ag on ag.id = ar.account_group_id 
+                            and ag.organization_id=@organization_id and ag.group_type='S' and ag.object_type='A'
+                            left outer join master.account a on a.id = ag.ref_id where vg.ref_id > 0
+                            order by v.id desc) vehicles";
+                    }
+                    else
+                    {
+                        query = @"-- account group (account group)
+                            select id,name,access_type,count,true as is_group,group_id,group_name,is_ag_vg_group  from (
+                            select ag.id,ag.name,ar.access_type,
+                            (select count(gr.group_id) from master.groupref gr where gr.group_id=ag.id ) as count,
+                            case when (v.id is NULL) then vg.id else v.id end as group_id,
+                            case when (v.id is NULL) then vg.name else v.name end as group_name,
+                            case when (v.id is NULL) then true else false end as is_ag_vg_group
+                            from master.group ag 
+                            inner join master.accessrelationship ar on ar.account_group_id=ag.id 
+                            and ag.organization_id=@organization_id and ag.object_type='A' and ag.group_type='G' 
+                            inner join master.group vg on vg.id = ar.vehicle_group_id 
+                            and vg.organization_id=@organization_id and vg.object_type='V' 
+                            left outer join master.vehicle v on v.id = vg.ref_id 
+                            where vg.organization_id=@organization_id --and ag.id=@id
+                            order by ag.id desc ) accountgroup
+                            -- accounts
+                            union all
+                            select id,name,access_type,count,true as is_group,group_id,group_name,is_ag_vg_group from (
+                            select ag.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name as name,
+                            ar.access_type,0 as count,
+                            case when (v.id is NULL) then vg.id else v.id end as group_id,
+                            case when (v.id is NULL) then ag.name else v.name end as group_name,
+                            case when (a.id is NULL) then true else false end as is_ag_vg_group
+                            from master.group ag 
+                            inner join master.account a on a.id=ag.ref_id 
+                            and ag.organization_id=@organization_id and ag.group_type='S' and ag.object_type='A'
+                            inner join master.accessrelationship ar on ar.account_group_id=ag.id 
+                            inner join master.group vg on vg.id = ar.vehicle_group_id 
+                            and vg.organization_id=@organization_id and ag.group_type='S'
+                            left outer join master.vehicle v on v.id = vg.ref_id where vg.ref_id > 0 and ag.ref_id >0
+                            order by a.id desc) accounts";
+                    }
+                    parameter.Add("@organization_id", filter.OrganizationId);
+                    IEnumerable<AccountAccessRelationshipEntity> accessRelationship = await dataAccess.QueryAsync<AccountAccessRelationshipEntity>(query, parameter);
+                    var groups = from stu in accessRelationship group stu by stu.id into egroup orderby egroup.Key descending select egroup;
+                    //Account account;
+                    int firstRecord = 0;
+                    foreach (var group in groups)
+                    {
+                        firstRecord = 0;
+                        AccountVehicleAccessRelationship relationship = null;
+                        foreach (var account in group)
+                        {
+                            if (firstRecord == 0)
+                            {
+                                // map both
+                                relationship = MapVehicleAccessRelationship(account);
+                            }
+                            else
+                            {
+                                // add child only 
+                                relationship.RelationshipData.Add(MapAccessRelationshipData(account));
+                            }
+                            firstRecord++;
+                        }
+                        response.Add(relationship);
+                    }
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<List<AccountVehicleEntity>> GetAccountVehicle(AccountVehicleAccessRelationshipFilter filter, bool is_vehicle)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();               
+                string query = string.Empty;
+                List<AccountVehicleEntity> response = new List<AccountVehicleEntity>();                
+                if (filter != null)
+                {
+                    // org filter
+                    if (filter.OrganizationId > 0 && is_vehicle)
+                    {
+                        query = @"select id,name,count,true as is_group from (
+                                select vg.id,vg.name,
+                                case when (vg.group_type ='D') then 
+	                                (select count(gr.group_id) 
+                                        from master.groupref gr inner join master.group g on g.id=gr.group_id and g.organization_id=@organization_id)
+	                                else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id ) end as count
+                                from master.group vg 
+                                where vg.organization_id=@organization_id and vg.object_type='V' and vg.group_type in ('G','D')
+                                ) vehicleGroup
+                                union all
+                                select id,name,count,false as is_group from (
+                                select v.id,v.name, 0 as count
+                                from master.vehicle v 
+                                where v.organization_id=@organization_id 
+                                ) vehicles";
+                    }
+                    else
+                    {
+                        query = @"-- account group
+                                        select id,name,count,true as is_group from (
+                                        select ag.id,ag.name,
+                                        case when (ag.group_type ='D') then 
+	                                        (select count(gr.group_id) from master.groupref gr inner join master.group g on g.id=gr.group_id
+                                            and g.organization_id=@organization_id)
+	                                        else (select count(gr.group_id) from master.groupref gr where gr.group_id=ag.id ) end as count
+                                        from master.group ag 
+                                        where ag.object_type='A' and ag.group_type in ('G','D') and ag.organization_id=@organization_id
+                                        ) accountGroup
+                                        union all
+                                        select id,name,count,false as is_group from (
+                                        select a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name  as name,0 as count
+                                        from master.account a inner join master.accountorg ar on ar.account_id=a.id 
+                                        where ar.organization_id=@organization_id
+                                        ) accounts";
+                    }
+                    parameter.Add("@organization_id", filter.OrganizationId);
+                    IEnumerable<AccountVehicleEntity> accessRelationship = await dataAccess.QueryAsync<AccountVehicleEntity>(query, parameter);
+                    response =  accessRelationship.ToList();
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<bool> DeleteVehicleAccessRelationship(int organizationId, int groupId, bool isVehicle)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();                
+                string query = string.Empty;
+                
+                //TODO: duplicate access relationship check and should not insert
+                if (organizationId > 0 && groupId > 0 && isVehicle)
+                {
+                    // delete vehicle group access relation                    
+                    query = "delete from master.accessrelationship where vehicle_group_id=@id";
+                }
+                else
+                {
+                    // delete vehicle group relationship
+                    query = "delete from master.accessrelationship where account_group_id=@id";
+                }
+                parameter.Add("@id", groupId);
+                var result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         #endregion
 
         #region Account Role
@@ -867,6 +1080,46 @@ namespace net.atos.daf.ct2.account
             entity.VehicleGroupId = record.vehicle_group_id;
             return entity;
         }
+        private AccountVehicleAccessRelationship MapVehicleAccessRelationship(AccountAccessRelationshipEntity record)
+        {
+            AccountVehicleAccessRelationship entity = new AccountVehicleAccessRelationship();
+            entity.Id = record.id;
+            entity.Name = record.name;
+            entity.AccessType = (AccessRelationType)Convert.ToChar(record.access_type);
+            entity.Count = record.count;
+            entity.IsGroup = record.is_group;
+            entity.RelationshipData = new List<RelationshipData>();
+            entity.RelationshipData.Add(MapAccessRelationshipData(record));
+            return entity;
+        }
+        //private RelationshipData MapAccountAccessRelationship(AccountAccessRelationshipEntity record)
+        //{
+        //    RelationshipData entity = new RelationshipData();
+        //    entity.Id = record.id;
+        //    entity.Name = record.name;
+        //    entity.AccessType = (AccessRelationType)Convert.ToChar(record.access_type);
+        //    entity.Count = record.count;
+        //    entity.IsGroup = record.is_group;
+        //    entity.RelationshipData = new List<RelationshipData>();
+        //    entity.RelationshipData.Add(MapAccessRelationshipData(record));
+        //    return entity;
+        //}
+        private RelationshipData MapAccessRelationshipData(AccountAccessRelationshipEntity record)
+        {
+            RelationshipData entity = new RelationshipData();
+            entity.Id = record.group_id;
+            entity.Name = record.group_name;
+            entity.IsGroup = record.is_ag_vg_group;
+            return entity;
+        }
+        //private RelationshipData MapAccessRelationshipData(AccountAccessRelationshipEntity record)
+        //{
+        //    RelationshipData entity = new RelationshipData();
+        //    entity.Id = record.vehicle_id;
+        //    entity.Name = record.vehicle_name;
+        //    entity.IsGroup = record.is_vehicle_group;
+        //    return entity;
+        //}
 
         private ResetPasswordToken MapToken(dynamic record)
         {
