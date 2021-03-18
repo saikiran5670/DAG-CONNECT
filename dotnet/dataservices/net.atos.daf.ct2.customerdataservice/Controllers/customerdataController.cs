@@ -63,62 +63,62 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
         public async Task<IActionResult> update(Customer customer)
         {
          
-        //    var OrgId= await organizationtmanager.UpdateCustomer(customer);
-        //    return Ok("done");
-            string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
-            bool valid=false;
-            try 
-            {               
-                if(string.IsNullOrEmpty(token))
-                {
-                    logger.LogInformation("UpdateCustomerData function called with empty token, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
-                    return StatusCode(400,"Bad Request:");
-                }
-                else
-                {  
-                     logger.LogInformation("UpdateCustomerData function called , company ID -" + customer.CompanyUpdatedEvent.Company.ID);
-                     valid = await accountIdentityManager.ValidateToken(token);
-                     if(valid)
-                     {
-                        if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.ID) || (customer.CompanyUpdatedEvent.Company.ID.Trim().Length<1))
-                        {
-                             return StatusCode(400,"Please provide company ID:");
-                        } 
-                        else if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.type) || (customer.CompanyUpdatedEvent.Company.type.Trim().Length<1))
-                        {
-                             return StatusCode(400,"Please provide company type:");
-                        }
-                        else if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.Name) || (customer.CompanyUpdatedEvent.Company.Name.Trim().Length<1))
-                        {
-                             return StatusCode(400,"Please provide company name:");
-                        }
-                        else  if ((customer.CompanyUpdatedEvent.Company.ReferenceDateTime == null) && (DateTime.Compare(DateTime.MinValue, customer.CompanyUpdatedEvent.Company.ReferenceDateTime)< 0))
-                        {
-                             return StatusCode(400,"Please provide company reference date:");                            
-                        }
-                        else if (customer.CompanyUpdatedEvent.Company.ReferenceDateTime.ToUniversalTime() >System.DateTime.Now.ToUniversalTime() )
-                        {
-                             return StatusCode(400,"Future date time is not allowed in company reference date, please provide company reference date time less then toaday :");
-                        }
+          var OrgId= await organizationtmanager.UpdateCustomer(customer);
+          return Ok("done");
+            // string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
+            // bool valid=false;
+            // try 
+            // {               
+            //     if(string.IsNullOrEmpty(token))
+            //     {
+            //         logger.LogInformation("UpdateCustomerData function called with empty token, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
+            //         return StatusCode(400,"Bad Request:");
+            //     }
+            //     else
+            //     {  
+            //          logger.LogInformation("UpdateCustomerData function called , company ID -" + customer.CompanyUpdatedEvent.Company.ID);
+            //          valid = await accountIdentityManager.ValidateToken(token);
+            //          if(valid)
+            //          {
+            //             if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.ID) || (customer.CompanyUpdatedEvent.Company.ID.Trim().Length<1))
+            //             {
+            //                  return StatusCode(400,"Please provide company ID:");
+            //             } 
+            //             else if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.type) || (customer.CompanyUpdatedEvent.Company.type.Trim().Length<1))
+            //             {
+            //                  return StatusCode(400,"Please provide company type:");
+            //             }
+            //             else if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.Name) || (customer.CompanyUpdatedEvent.Company.Name.Trim().Length<1))
+            //             {
+            //                  return StatusCode(400,"Please provide company name:");
+            //             }
+            //             else  if ((customer.CompanyUpdatedEvent.Company.ReferenceDateTime == null) && (DateTime.Compare(DateTime.MinValue, customer.CompanyUpdatedEvent.Company.ReferenceDateTime)< 0))
+            //             {
+            //                  return StatusCode(400,"Please provide company reference date:");                            
+            //             }
+            //             else if (customer.CompanyUpdatedEvent.Company.ReferenceDateTime.ToUniversalTime() >System.DateTime.Now.ToUniversalTime() )
+            //             {
+            //                  return StatusCode(400,"Future date time is not allowed in company reference date, please provide company reference date time less then toaday :");
+            //             }
 
-                        var OrgId= await organizationtmanager.UpdateCustomer(customer);
-                        logger.LogInformation("Customer data has been updated, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
-                        return Ok(OrgId);
-                    }
-                     else
-                     {
-                         logger.LogInformation("Customer data not updated, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
-                         return StatusCode(401,"Forbidden:");
-                     }
-             }
-            }
-            catch(Exception ex)
-            {
-                valid = false;
-                logger.LogError(ex.Message +" " +ex.StackTrace);
-                return StatusCode(500,"Internal Server Error.");
-               // return StatusCode(500,ex.Message +" " +ex.StackTrace);
-            }                        
+            //             var OrgId= await organizationtmanager.UpdateCustomer(customer);
+            //             logger.LogInformation("Customer data has been updated, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
+            //             return Ok(OrgId);
+            //         }
+            //          else
+            //          {
+            //              logger.LogInformation("Customer data not updated, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
+            //              return StatusCode(401,"Forbidden:");
+            //          }
+            //  }
+            // }
+            // catch(Exception ex)
+            // {
+            //     valid = false;
+            //     logger.LogError(ex.Message +" " +ex.StackTrace);
+            //     return StatusCode(500,"Internal Server Error.");
+            //    // return StatusCode(500,ex.Message +" " +ex.StackTrace);
+            // }                        
         }  
 
         [HttpPost]

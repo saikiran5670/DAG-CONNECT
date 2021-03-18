@@ -52,7 +52,10 @@ namespace net.atos.daf.ct2.organization
         {
             return await organizationRepository.CreateVehicleParty(customers);
         }
-
+       public async Task<int> CreateOwnerRelationship(RelationshipMapping relationshipMapping)
+        {
+            return await organizationRepository.CreateOwnerRelationship(relationshipMapping);
+        }
        
     }
 }
