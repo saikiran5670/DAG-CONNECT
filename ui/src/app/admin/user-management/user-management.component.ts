@@ -41,6 +41,7 @@ export class UserManagementComponent implements OnInit {
   localStLanguage: any;
   dialogRef: MatDialogRef<CommonTableComponent>;
   showLoadingIndicator: any;
+  privilegeAccess: boolean = true; //-- false
 
   constructor(
     private dialogService: ConfirmDialogService,
