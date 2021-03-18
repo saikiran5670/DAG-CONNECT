@@ -107,7 +107,7 @@ namespace net.atos.daf.ct2.organization.repository
                     AccessRelationship accessRelationship = new AccessRelationship();
                     accessRelationship.AccountGroupId = groupAccount.Id;
                     accessRelationship.VehicleGroupId = groupVehicle.Id;
-                    accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadWrite;
+                    accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ViewOnly;
                     await accountManager.CreateAccessRelationship(accessRelationship);
 
                 }
