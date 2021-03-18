@@ -11,6 +11,7 @@ import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { UserDetailTableComponent } from './user-detail-table/user-detail-table.component';
 import { LinkOrgPopupComponent } from './link-org-popup/link-org-popup.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-new-user-step',
@@ -40,7 +41,7 @@ export class NewUserStepComponent implements OnInit {
   selectionForRole = new SelectionModel(true, []);
   selectionForUserGrp = new SelectionModel(true, []);
   roleDisplayedColumns: string[] = ['select', 'roleName', 'featureIds'];
-  userGrpDisplayedColumns: string[] = ['select',  'name', 'accountCount'];
+  userGrpDisplayedColumns: string[] = ['select',  'accountGroupName', 'accountCount'];
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   solutationList: any = [
@@ -78,6 +79,7 @@ export class NewUserStepComponent implements OnInit {
   servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
   linkFlag: boolean = false;
   linkAccountId: any = 0;
+  imageError= '';
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -86,7 +88,7 @@ export class NewUserStepComponent implements OnInit {
     return date > now;
   }
 
-  constructor(private _formBuilder: FormBuilder, private cdref: ChangeDetectorRef, private dialog: MatDialog, private accountService: AccountService) { }
+  constructor(private _formBuilder: FormBuilder, private cdref: ChangeDetectorRef, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer) { }
 
   ngAfterViewInit() {
     this.roleDataSource.paginator = this.paginator.toArray()[0];
@@ -132,6 +134,7 @@ export class NewUserStepComponent implements OnInit {
     });
     this.roleDataSource = new MatTableDataSource(this.roleData);
     this.userGrpDataSource = new MatTableDataSource(this.userGrpData);
+    //call to organization/preference/get to get org default preferences and pass the res to below function
     this.setDefaultSetting();
   }
 
@@ -146,16 +149,16 @@ export class NewUserStepComponent implements OnInit {
       this.firstFormGroup.get('timeFormat').setValue(prefObj.timeFormatId);
       this.firstFormGroup.get('landingPage').setValue(prefObj.landingPageDisplayId);
     }
-    else{
-      this.firstFormGroup.get('language').setValue(2);
-      this.firstFormGroup.get('timeZone').setValue(2);
-      this.firstFormGroup.get('unit').setValue(2);
-      this.firstFormGroup.get('currency').setValue(2);
-      this.firstFormGroup.get('dateFormat').setValue(2);
-      this.firstFormGroup.get('vehDisplay').setValue(2);
-      this.firstFormGroup.get('timeFormat').setValue(2);
-      this.firstFormGroup.get('landingPage').setValue(2); 
-    }
+    // else{
+    //   this.firstFormGroup.get('language').setValue(24);
+    //   this.firstFormGroup.get('timeZone').setValue(17);
+    //   this.firstFormGroup.get('unit').setValue(5);
+    //   this.firstFormGroup.get('currency').setValue(4);
+    //   this.firstFormGroup.get('dateFormat').setValue(6);
+    //   this.firstFormGroup.get('vehDisplay').setValue(5);
+    //   this.firstFormGroup.get('timeFormat').setValue(3);
+    //   this.firstFormGroup.get('landingPage').setValue(2); 
+    // }
    }
 
   onClose(){
@@ -195,13 +198,13 @@ export class NewUserStepComponent implements OnInit {
         let preferenceObj = {
           id: 0,
           refId: this.userData.id,
-          languageId: this.firstFormGroup.controls.language.value != '' ? this.firstFormGroup.controls.language.value : 2,
-          timezoneId: this.firstFormGroup.controls.timeZone.value != '' ?  this.firstFormGroup.controls.timeZone.value : 2,
-          unitId: this.firstFormGroup.controls.unit.value != '' ?  this.firstFormGroup.controls.unit.value : 2,
-          currencyId: this.firstFormGroup.controls.currency.value != '' ?  this.firstFormGroup.controls.currency.value : 2,
-          dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value != '' ?  this.firstFormGroup.controls.dateFormat.value : 2,
-          timeFormatId: this.firstFormGroup.controls.timeFormat.value != '' ?  this.firstFormGroup.controls.timeFormat.value : 2,
-          vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : 2,
+          languageId: this.firstFormGroup.controls.language.value != '' ? this.firstFormGroup.controls.language.value : 24,
+          timezoneId: this.firstFormGroup.controls.timeZone.value != '' ?  this.firstFormGroup.controls.timeZone.value : 17,
+          unitId: this.firstFormGroup.controls.unit.value != '' ?  this.firstFormGroup.controls.unit.value : 5,
+          currencyId: this.firstFormGroup.controls.currency.value != '' ?  this.firstFormGroup.controls.currency.value : 4,
+          dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value != '' ?  this.firstFormGroup.controls.dateFormat.value : 6,
+          timeFormatId: this.firstFormGroup.controls.timeFormat.value != '' ?  this.firstFormGroup.controls.timeFormat.value : 3,
+          vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : 5,
           landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : 2
         }
         
@@ -218,6 +221,22 @@ export class NewUserStepComponent implements OnInit {
             this.stepper.next();
           }
         });
+        if(this.croppedImage != ''){
+          let objData = {
+            "blobId": this.userData.blobId,
+            "accountId": this.userData.id,
+            "imageType": "P",
+            "image": this.croppedImage.split(",")[1]
+          }
+      
+          this.accountService.saveAccountPicture(objData).subscribe(data => {
+            if(data){
+              
+            }
+          }, (error) => {
+            this.imageError= "Something went wrong. Please try again!";
+          })
+        }
       }, (error) => { 
         console.log(error);
         if(error.status == 409){
@@ -268,6 +287,15 @@ export class NewUserStepComponent implements OnInit {
     this.firstFormGroup.get('firstName').setValue(accountInfo.firstName);
     this.firstFormGroup.get('lastName').setValue(accountInfo.lastName);
     this.firstFormGroup.get('userType').setValue(accountInfo.type);
+
+    let blobId = accountInfo.blobId;
+      if(blobId != 0){
+        this.accountService.getAccountPicture(blobId).subscribe(data => {
+          if(data){
+            this.croppedImage = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
+          }
+        })
+      }
   }
 
   onUpdateUserData(){
@@ -438,6 +466,9 @@ export class NewUserStepComponent implements OnInit {
   }
 
   filesDroppedMethod(event: any) {
+    this.imageError= CustomValidators.validateImageFile(event);
+    if(this.imageError != '')
+      return false;
     this.isAccountPictureSelected = true;
     this.readImageFile(event);
   }
@@ -451,6 +482,9 @@ export class NewUserStepComponent implements OnInit {
   }
 
   fileChangeEvent(event: any) {
+    this.imageError= CustomValidators.validateImageFile(event.target.files[0]);
+    if(this.imageError != '')
+      return false;
     this.isAccountPictureSelected = true;
     this.imageChangedEvent = event;
   }
@@ -563,13 +597,13 @@ export class NewUserStepComponent implements OnInit {
         let prefObj: any = {
           id: 0,
           refId: this.linkAccountId, //-- link account id
-          languageId: this.firstFormGroup.controls.language.value ? this.firstFormGroup.controls.language.value : 2,
-          timezoneId: this.firstFormGroup.controls.timeZone.value ? this.firstFormGroup.controls.timeZone.value : 2,
-          unitId: this.firstFormGroup.controls.unit.value ? this.firstFormGroup.controls.unit.value : 2,
-          currencyId: this.firstFormGroup.controls.currency.value ? this.firstFormGroup.controls.currency.value : 2,
-          dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value ? this.firstFormGroup.controls.dateFormat.value : 2,
-          timeFormatId: this.firstFormGroup.controls.timeFormat.value ? this.firstFormGroup.controls.timeFormat.value : 2,
-          vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value ? this.firstFormGroup.controls.vehDisplay.value : 2,
+          languageId: this.firstFormGroup.controls.language.value ? this.firstFormGroup.controls.language.value : 24,
+          timezoneId: this.firstFormGroup.controls.timeZone.value ? this.firstFormGroup.controls.timeZone.value : 17,
+          unitId: this.firstFormGroup.controls.unit.value ? this.firstFormGroup.controls.unit.value : 5,
+          currencyId: this.firstFormGroup.controls.currency.value ? this.firstFormGroup.controls.currency.value : 4,
+          dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value ? this.firstFormGroup.controls.dateFormat.value : 6,
+          timeFormatId: this.firstFormGroup.controls.timeFormat.value ? this.firstFormGroup.controls.timeFormat.value : 3,
+          vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value ? this.firstFormGroup.controls.vehDisplay.value : 5,
           landingPageDisplayId: this.firstFormGroup.controls.landingPage.value ? this.firstFormGroup.controls.landingPage.value : 2
         }
         this.accountService.updateAccountPreference(prefObj).subscribe((data) => {

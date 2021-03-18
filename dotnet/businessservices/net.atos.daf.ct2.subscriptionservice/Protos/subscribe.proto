@@ -1,0 +1,17 @@
+﻿syntax = "proto3";
+
+
+
+option csharp_namespace = "net.atos.daf.ct2.subscriptionservice";
+
+package feature;
+
+
+enum Responcecode{
+  Success = 0;
+  Failed = 1;
+}
+
+service SubscribeService {  
+  rpc Get  returns(FeaturesListResponce);
+}

@@ -5,6 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { CustomValidators } from '../../../shared/custom.validators';
+import { FeatureService } from '../../../services/feature.service'
 
 @Component({
   selector: 'app-create-edit-view-features',
@@ -19,22 +20,24 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   @Input() selectedElementData: any;
   @Output() createViewEditFeatureEmit = new EventEmitter<object>();
   breadcumMsg: any = '';  
-  displayedColumns: string[] = ['select', 'dataAttribute'];
+  displayedColumns: string[] = ['name', 'select'];
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   featureFormGroup: FormGroup;
   selectionForDataAttribute = new SelectionModel(true, []);
   initData: any = [];
-  selectedSetType: any = 'exclusive';
-  selectedStatus: any = 'active';
+  selectedSetType: any = true; //byDefault Exclusive
+  selectedStatus: any = 0; //byDefault active
+  userName: string = '';
+  userCreatedMsg: any = '';
   
   vehGrpName: string = '';
   showLoadingIndicator: any;
   createStatus:boolean;
   duplicateMsg:boolean;
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder, private featureService: FeatureService) { }
 
   ngOnInit() {
     this.featureFormGroup = this._formBuilder.group({
@@ -52,13 +55,14 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   setDefaultValue(){
+    // console.log("selectedElementData in setDefault---",this.selectedElementData)
     //this.featureFormGroup.get("featureName").setValue(this.selectedElementData.name);
     //this.featureFormGroup.get("featureDescription").setValue(this.selectedElementData.featureDescription);
     //this.featureFormGroup.get("featureType").setValue(this.selectedElementData.type);
-    this.featureFormGroup.get("dataAttributeSetName").setValue(this.selectedElementData.setName);
-    this.featureFormGroup.get("dataAttributeDescription").setValue(this.selectedElementData.dataAttributeDescription);
-    this.selectedSetType = this.selectedElementData.setType.toLowerCase();
-    this.selectedStatus = this.selectedElementData.status.toLowerCase();
+    this.featureFormGroup.get("dataAttributeSetName").setValue(this.selectedElementData.name);
+    this.featureFormGroup.get("dataAttributeDescription").setValue(this.selectedElementData.description);
+    this.selectedSetType = this.selectedElementData.dataAttribute.isExclusive;
+    this.selectedStatus = this.selectedElementData.state;
   }
 
   getBreadcum(type: any){
@@ -69,13 +73,13 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     let selectedDataAttributeList: any = [];
     if(this.actionType == 'view'){
       tableData.forEach((row: any) => {
-        let search = this.selectedElementData.dataAttribute.filter((item: any) => item.id == row.id);
-        if (search.length > 0) {
+        let search = this.selectedElementData.dataAttribute.dataAttributeIDs.includes(row.id);
+        if (search) {
           selectedDataAttributeList.push(row);
         }
       });
       tableData = selectedDataAttributeList;
-      this.displayedColumns = ['dataAttribute'];
+      this.displayedColumns = ['name'];
     }
     this.initData = tableData;
     this.updateDataSource(tableData);
@@ -86,8 +90,8 @@ export class CreateEditViewFeaturesComponent implements OnInit {
 
   selectTableRows() {
     this.dataSource.data.forEach((row: any) => {
-      let search = this.selectedElementData.dataAttribute.filter((item: any) => item.id == row.id);
-      if (search.length > 0) {
+      let search = this.selectedElementData.dataAttribute.dataAttributeIDs.includes(row.id);
+      if (search) {
         this.selectionForDataAttribute.select(row);
       }
     });
@@ -104,7 +108,6 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   toBack(){
     let emitObj = {
       stepFlag: false,
-      msg: ""
     }    
     this.createViewEditFeatureEmit.emit(emitObj);    
   }
@@ -118,17 +121,93 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   onCancel(){
     let emitObj = {
       stepFlag: false,
-      msg: ""
     }    
     this.createViewEditFeatureEmit.emit(emitObj); 
   }
 
+  selectionIDs(){
+    return this.selectionForDataAttribute.selected.map(item => item.id)
+  }
   onCreate(){
-    let emitObj = {
-      stepFlag: false,
-      msg: ""
-    }    
-    this.createViewEditFeatureEmit.emit(emitObj); 
+      let selectedId = this.selectionIDs();
+      let createFeatureParams = {
+        "id": 0,
+        "name": this.featureFormGroup.controls.dataAttributeSetName.value,
+        "description": this.featureFormGroup.controls.dataAttributeDescription.value,
+        "type": "D",
+        "IsFeatureActive": true,
+        "dataattributeSet": {
+          "id": 0,
+          "name": "",
+          "isActive": true,
+          "is_Exclusive": this.selectedSetType == "true" ? true : false,
+          "description": "",
+          "status": parseInt(this.selectedStatus)
+        },
+        "key": "string",
+        "dataAttributeIds": selectedId,
+        "level": 0,
+        "featureState": 0
+      }
+
+
+    if(this.actionType == 'create'){
+      this.featureService.createFeature(createFeatureParams).subscribe((data) => {
+        this.featureService.getFeatures().subscribe((getData) =>{
+
+
+          let filterTypeData = getData.filter(item => item.type == "D");
+          this.userCreatedMsg = this.getUserCreatedMessage();
+          let emitObj = {
+            stepFlag: false,
+            successMsg: this.userCreatedMsg,
+            tableData: filterTypeData
+          }    
+          this.createViewEditFeatureEmit.emit(emitObj); 
+
+        });
+      })
+      }
+      else if(this.actionType == 'edit'){
+        let selectedId = this.selectionIDs();
+          // console.log("---selectedRowData-----==--",this.selectedElementData)
+        let updatedFeatureParams = {
+          "id": this.selectedElementData.id,
+          "name": this.featureFormGroup.controls.dataAttributeSetName.value,
+          "description": this.featureFormGroup.controls.dataAttributeDescription.value,
+          "type": "D",
+          "IsFeatureActive": true,
+          "dataattributeSet": {
+            "id": this.selectedElementData.dataAttribute.dataAttributeSetId,
+            "name": "",
+            "isActive": true,
+            "is_Exclusive": this.selectedSetType == "true" ? true : false,
+            "description": "",
+            "status": parseInt(this.selectedStatus)
+          },
+          "key": "string",
+          "dataAttributeIds": selectedId,
+          "level": 0,
+          "featureState": 0
+        }        
+        // console.log("--edit called",this.selectedElementData);
+      this.featureService.updateFeature(updatedFeatureParams).subscribe((dataUpdated) => {
+        // console.log("---updated method called----",dataUpdated);
+        this.featureService.getFeatures().subscribe((getData) =>{
+          let filterTypeData = getData.filter(item => item.type == "D");
+          this.userCreatedMsg = this.getUserCreatedMessage();
+          let emitObj = {
+            stepFlag: false,
+            successMsg: this.userCreatedMsg,
+            tableData: filterTypeData
+
+          }    
+          this.createViewEditFeatureEmit.emit(emitObj); 
+        });
+      })
+      }
+      
+ 
   }
 
   onReset(){
@@ -159,8 +238,24 @@ export class CreateEditViewFeaturesComponent implements OnInit {
         } row`;
   }
 
+  getUserCreatedMessage() {
+    this.userName = `${this.featureFormGroup.controls.dataAttributeSetName.value}`;
+    if (this.actionType == 'create') {
+      if (this.translationData.lblUserAccountCreatedSuccessfully)
+        return this.translationData.lblUserAccountCreatedSuccessfully.replace('$', this.userName);
+      else
+        return ("New Feature '$' Created Successfully").replace('$', this.userName);
+    } else {
+      if (this.translationData.lblUserAccountUpdatedSuccessfully)
+        return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', this.userName);
+      else
+        return ("New Details '$' Updated Successfully").replace('$', this.userName);
+    }
+  }
+
   onSetTypeChange(event: any){
-    this.selectedSetType = event.value;
+     let valueToBoolean = event.value == "true" ? true : false 
+    this.selectedSetType = valueToBoolean;
   }
 
   onStatusChange(event: any){

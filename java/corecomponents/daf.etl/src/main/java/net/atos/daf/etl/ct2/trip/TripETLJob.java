@@ -18,12 +18,13 @@ import org.slf4j.LoggerFactory;
 
 import net.atos.daf.common.ct2.audittrail.TripAuditTrail;
 import net.atos.daf.common.ct2.utc.TimeFormatter;
-import net.atos.daf.etl.ct2.common.bo.Trip;
+//import net.atos.daf.etl.ct2.common.bo.Trip;
 import net.atos.daf.etl.ct2.common.bo.TripStatusData;
 import net.atos.daf.etl.ct2.common.hbase.TripStatusCompletion;
 import net.atos.daf.etl.ct2.common.postgre.TripSink;
 import net.atos.daf.etl.ct2.common.util.ETLConstants;
 import net.atos.daf.etl.ct2.common.util.FlinkUtil;
+import net.atos.daf.postgre.bo.Trip;
 
 public class TripETLJob {
 	private static Logger logger = LoggerFactory.getLogger(TripETLJob.class);

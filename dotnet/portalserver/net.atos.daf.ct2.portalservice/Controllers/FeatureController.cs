@@ -99,18 +99,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(401, "invalid featureSet Name: The featureSet Name is Empty.");
                 }
-                if (string.IsNullOrEmpty(featureRequest.Key))
-                {
-                    return StatusCode(401, "invalid FeatureSet Description : Feature Key is Empty.");
-                }
+                //if (string.IsNullOrEmpty(featureRequest.Key))
+                //{
+                //    return StatusCode(401, "invalid FeatureSet Description : Feature Key is Empty.");
+                //}
                 FeatureRequest FeatureObj = new FeatureRequest();
                 FeatureObj.Name = featureRequest.Name;
                 FeatureObj.Level = featureRequest.Level;
                 FeatureObj.State = (FeatureState)Enum.Parse(typeof(FeatureState), featureRequest.FeatureState.ToString());
                 FeatureObj.Description = featureRequest.Description;
                 FeatureObj.DataAttribute = new DataAttributeSetRequest();
-                FeatureObj.DataAttribute.Name = featureRequest.DataattributeSet.Name;
-                FeatureObj.DataAttribute.Description = featureRequest.DataattributeSet.Description;
+                FeatureObj.DataAttribute.Name = featureRequest.Name;
+                FeatureObj.DataAttribute.Description = featureRequest.Description;
                 FeatureObj.DataAttribute.IsExclusive = featureRequest.DataattributeSet.is_Exclusive;
                 //FeatureObj.DataAttribute. = (DataAttributeSetType)Enum.Parse(typeof(DataAttributeSetType), featureRequest.DataAttribute.AttributeType.ToString().ToUpper());
 
@@ -152,10 +152,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(401, "invalid featureSet Name: The featureSet Name is Empty.");
                 }
-                if (string.IsNullOrEmpty(featureRequest.Key))
-                {
-                    return StatusCode(401, "invalid FeatureSet Description : Feature Key is Empty.");
-                }
+                //if (string.IsNullOrEmpty(featureRequest.Key))
+                //{
+                //    return StatusCode(401, "invalid FeatureSet Description : Feature Key is Empty.");
+                //}
                 FeatureRequest FeatureObj = new FeatureRequest();
                 FeatureObj.Name = featureRequest.Name;
                 FeatureObj.Id = featureRequest.Id;
@@ -163,8 +163,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 FeatureObj.State = (FeatureState)Enum.Parse(typeof(FeatureState), featureRequest.FeatureState.ToString());
                 FeatureObj.Description = featureRequest.Description;
                 FeatureObj.DataAttribute = new DataAttributeSetRequest();
-                FeatureObj.DataAttribute.Name = featureRequest.DataattributeSet.Name;
-                FeatureObj.DataAttribute.Description = featureRequest.DataattributeSet.Description;
+                FeatureObj.DataAttribute.Name = featureRequest.Name;
+                FeatureObj.DataAttribute.Description = featureRequest.Description;
                 FeatureObj.DataAttribute.IsExclusive = featureRequest.DataattributeSet.is_Exclusive;
                 FeatureObj.DataAttribute.DataAttributeSetId = featureRequest.DataattributeSet.ID;
                 //FeatureObj.DataAttribute. = (DataAttributeSetType)Enum.Parse(typeof(DataAttributeSetType), featureRequest.DataAttribute.AttributeType.ToString().ToUpper());
@@ -194,13 +194,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         [HttpGet]
         [Route("GetDataAttribute")]
-        public async Task<IActionResult> GetDataAttributes()
+        public async Task<IActionResult> GetDataAttributes(string LangaugeCode)
         {
             try
             {
                 DataAtributeRequest request = new DataAtributeRequest();
+                request.LangaugeCode = (LangaugeCode == null ||LangaugeCode == "") ? "EN-GB" : LangaugeCode ;
                 var responce = await _featureclient.GetDataAttributesAsync(request);
-                return Ok(responce);
+                return Ok(responce.Responce);
             }
             catch (Exception)
             {
@@ -213,13 +214,50 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [HttpGet]        
         [Route("getfeatures")]
 
-        public async Task<IActionResult> GetFeatures([FromBody] FeaturesFilterRequest request)
+        public async Task<IActionResult> GetFeatures([FromQuery] FeaturesFilterRequest request)
         {
             try
             {
-                
+
+                request.LangaugeCode = (request.LangaugeCode == null || request.LangaugeCode == "") ? "EN-GB" : request.LangaugeCode;
                 var feature = await _featureclient.GetFeaturesAsync(request);
 
+                //List<FeatureResponce> featureList = new List<FeatureResponce>();
+                //foreach (var featureitem in feature.Features)
+                //{
+                //    FeatureResponce obj = new FeatureResponce();
+                //    obj.I = featureitem.Id;
+                //    obj.CreatedBy = featureitem.Createdby;
+                //    obj.FeatureName = featureitem.Name;
+                //    obj.Description = featureitem.Description;
+                //    obj.RoleId = featureitem.RoleId;
+                //    obj.OrganizationId = featureitem.Organization_Id;
+                //    obj.FeatureType = featureitem.Type;
+                //    featureList.Add(obj);
+                //}
+
+                return Ok(feature.Features);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+
+        [HttpPost]
+        [Route("Delete")]
+
+        public async Task<IActionResult> DeleteFeatures([FromQuery] int FeatureId)
+        {
+            try
+            {
+
+               
+                FeatureRequest FeatureObj = new FeatureRequest();
+               
+                FeatureObj.Id = FeatureId;
+                var feature = await _featureclient.DeleteAsync(FeatureObj);
                 //List<FeatureResponce> featureList = new List<FeatureResponce>();
                 //foreach (var featureitem in feature.Features)
                 //{

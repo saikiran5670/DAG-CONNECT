@@ -23,10 +23,9 @@ message DriverUpdateRequest {
     string Email=4;
     string FirstName=5;
     string LastName=6;
-    string Status=7;    
-    bool IsActive=8;
-    string opt_in=9; 
-    int32 modified_by=10;    
+    string Status=7;  
+    int32 modified_by=8;  
+    string opt_in = 9;   
   }
 message DriverUpdateResponse {
   Responcecode Code=1;
@@ -41,12 +40,11 @@ message DriverResponse {
     string Email=4;
     string FirstName=5;
     string LastName=6;
-    string Status =7;    
-    bool IsActive=8;
-    string opt_in =9;
-    string modified_at =10;
-    string modified_by=11;
-    string created_at=12; 
+    string Status =7;
+    string opt_in=8;     
+    string modified_at =9;
+    string modified_by=10;
+    string created_at=11; 
   }
 
 message DriverDataList {

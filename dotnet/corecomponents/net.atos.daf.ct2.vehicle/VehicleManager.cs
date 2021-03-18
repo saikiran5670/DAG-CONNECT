@@ -105,6 +105,79 @@ namespace net.atos.daf.ct2.vehicle
                 throw ex;
             }
         }
+
+        public async Task<bool> SetOTAStatus(bool Is_Ota, int Modified_By, int Vehicle_Id)
+        {
+            try
+            {
+                return await vehicleRepository.SetOTAStatus(Is_Ota, Modified_By, Vehicle_Id);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<bool> Terminate(bool Is_Terminate, int Modified_By, int Vehicle_Id)
+        {
+            try
+            {
+                return await vehicleRepository.Terminate(Is_Terminate, Modified_By, Vehicle_Id);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<bool> SetOptInStatus(char Is_OptIn, int Modified_By, int Vehicle_Id)
+        {
+            try
+            {
+                return await vehicleRepository.SetOptInStatus(Is_OptIn, Modified_By, Vehicle_Id);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<Vehicle> GetVehicle(int Vehicle_Id)
+        {
+            try
+            {
+                return await vehicleRepository.GetVehicle(Vehicle_Id);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<Vehicle> UpdateOrgVehicleDetails(Vehicle vehicle)
+        {
+            try
+            {
+                return await vehicleRepository.UpdateOrgVehicleDetails(vehicle);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<int> IsVINExists(string VIN)
+        {
+            try
+            {
+                return await vehicleRepository.IsVINExists(VIN);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         //   public async Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime)
         // {
         //     try

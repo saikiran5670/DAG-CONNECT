@@ -70,15 +70,16 @@ namespace net.atos.daf.ct2.featureservice
                 FeaturesListResponce features = new FeaturesListResponce();
                 if (featurefilterRequest.FeatureSetID != 0)
                 {
-                    var listfeatures = await _FeaturesManager.GetFeatureIdsForFeatureSet(featurefilterRequest.FeatureSetID);
+                    var listfeatures = await _FeaturesManager.GetFeatureIdsForFeatureSet(featurefilterRequest.FeatureSetID,featurefilterRequest.LangaugeCode);
                     foreach (var item in listfeatures)
                     {
                         FeatureRequest ObjResponce = new FeatureRequest();
                         ObjResponce.Id = item.Id;
-                        ObjResponce.Name = item.Name;
-                        ObjResponce.State = (FeatureState)Enum.Parse(typeof(FeatureState), item.state.ToString().ToUpper());
+                        ObjResponce.Name = item.Value == null ? item.Name : item.Value;
+                        ObjResponce.State = item.state == "I" ? FeatureState.Inactive : FeatureState.Active;
                         ObjResponce.Key = item.Key == null ? "" : item.Key;
                         ObjResponce.Type = item.Type.ToString();
+                        ObjResponce.Level = item.Level;
                         features.Features.Add(ObjResponce);
                     }
 
@@ -86,16 +87,17 @@ namespace net.atos.daf.ct2.featureservice
                 }
                 else
                 {
-                    var feature = await _FeaturesManager.GetFeatures(featurefilterRequest.RoleID, featurefilterRequest.OrganizationID, featurefilterRequest.FeatureID, featurefilterRequest.Level, '0');
+                    var feature = await _FeaturesManager.GetFeatures(featurefilterRequest.RoleID, featurefilterRequest.OrganizationID, featurefilterRequest.FeatureID, featurefilterRequest.Level, '0',featurefilterRequest.LangaugeCode);
                     foreach (var item in feature)
                     {
                         FeatureRequest ObjResponce = new FeatureRequest();
                         ObjResponce.Id = item.Id;
-                        ObjResponce.Name = item.Name;
+                        ObjResponce.Name = item.Value == null ? item.Name : item.Value ;
                         //ObjResponce.Status = item.Is_Active;
                         //ObjResponce.State = (FeatureState)Enum.Parse(typeof(FeatureState), item.state.ToString().ToUpper());
                         ObjResponce.State = item.state == "I" ? FeatureState.Inactive : FeatureState.Active;
                         ObjResponce.Key = item.Key == null ? "" : item.Key;
+                       
                         if (item.Type.ToString() == "D")
                         {
                             try
@@ -104,8 +106,9 @@ namespace net.atos.daf.ct2.featureservice
                                 var DataAttributeSet = await _FeaturesManager.GetDataAttributeset(item.Data_attribute_Set_id);
                                 ObjResponce.DataAttribute.Name = DataAttributeSet.Name;
                                 ObjResponce.DataAttribute.IsExclusive = DataAttributeSet.Is_exlusive;
-                                ObjResponce.DataAttribute.Description = DataAttributeSet.Description;
+                                ObjResponce.DataAttribute.Description = DataAttributeSet.Description == null ? "" : DataAttributeSet.Description;
                                 ObjResponce.DataAttribute.DataAttributeSetId = DataAttributeSet.ID;
+                                ObjResponce.Description = DataAttributeSet.Description == null ? "" : DataAttributeSet.Description;
                                 //ObjResponce.DataAttribute.DataAttributeIDs = new 
                                 foreach (var items in DataAttributeSet.DataAttributes)
                                 {
@@ -122,6 +125,7 @@ namespace net.atos.daf.ct2.featureservice
                         }
                         
                         ObjResponce.Type = item.Type.ToString();
+                        ObjResponce.Level = item.Level;
                         features.Features.Add(ObjResponce);
                     }
 
@@ -145,14 +149,14 @@ namespace net.atos.daf.ct2.featureservice
         {
             try
             {
-                var listfeatures = await _FeaturesManager.GetDataAttributes();
+                var listfeatures = await _FeaturesManager.GetDataAttributes(Request.LangaugeCode);
                 DataAttributeResponceList Dataresponce = new DataAttributeResponceList();
                 foreach (var item in listfeatures)
                 {
                     DataAttributeResponce responce = new DataAttributeResponce();
                     responce.Id = item.ID;
-                    responce.Name = item.Name;
-                    responce.Description = item.Description;
+                    responce.Name = item.Value == null ? item.Name : item.Value;
+                    responce.Description = item.Description == null ? "" : item.Description;
                     responce.Key = item.Key == null ? "" : item.Key;
                     Dataresponce.Responce.Add(responce);
                 }
@@ -328,5 +332,49 @@ namespace net.atos.daf.ct2.featureservice
             }
         }
 
+        public async override Task<FeatureResponce> Delete(FeatureRequest featureSetRequest, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("DeleteFeatureSet method in Feature API called.");
+
+                var FeatureId = await _FeaturesManager.DeleteFeature(featureSetRequest.Id);
+
+                //await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Feature Component", "Feature Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "DeleteFeatureSet method in Feature manager", FeatureSetId, FeatureSetId, JsonConvert.SerializeObject(FeatureSetId));
+                if (FeatureId > 0)
+                {
+                    return await Task.FromResult(new FeatureResponce
+                    {
+                        Message = featureSetRequest.Id.ToString() + " Deleted successfully",
+                        Code = Responcecode.Success,
+                        FeatureID = featureSetRequest.Id
+
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new FeatureResponce
+                    {
+                        Message = featureSetRequest.Id.ToString() + " Not a valid feature Id",
+                        Code = Responcecode.Failed,
+                        FeatureID = featureSetRequest.Id
+
+                    });
+                }
+               
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Feature Service:DeleteFeatureSet : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new FeatureResponce
+                {
+                    Message = featureSetRequest.Id.ToString() + " Delete failed",
+                    Code = Responcecode.Failed,
+                    FeatureID = featureSetRequest.Id
+
+                });
+
+            }
+        }
     }
 }

@@ -265,7 +265,7 @@ namespace net.atos.daf.ct2.translation.repository
             Entity.Name = record.name;
             Entity.Value = record.value;
             Entity.Filter = record.filter;
-            Entity.MenuId = record.ref_id;
+           // Entity.MenuId = record.MenuId;
             return Entity;
         }
 
@@ -317,15 +317,24 @@ namespace net.atos.daf.ct2.translation.repository
 
 
         }
-        public  List<Translations> GetAllTranslations()
+        public async Task<List<Translations>> GetAllTranslations()
         {
             try
             {
+                List<Translations> translations = new List<Translations>();
                 var QueryStatement = @" SELECT *
                                     FROM translation.translation  ";
                 var parameter = new DynamicParameters();
-                var result = dataAccess.ExecuteScalar<List<Translations>>(QueryStatement, parameter);
-                return result;
+
+                dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+
+                foreach (dynamic record in result)
+                {
+
+                    translations.Add(Map(record));
+                }
+                // var result = dataAccess.ExecuteScalar<List<Translations>>(QueryStatement, parameter);
+                return translations;
             }
             catch (Exception ex)
             {
@@ -366,13 +375,13 @@ namespace net.atos.daf.ct2.translation.repository
                     //    myList = (List<Translations>)bf.Deserialize(ms);
                     //}
 
-                    if (translationupload.translations != null)
-                    {
-                        // foreach (var item in myList)
-                        // {
-                        var parameterfeature = ImportExcelDataIntoTranslations(translationupload.translations);
-                        // }
-                    }
+                    //if (translationupload.translations != null)
+                    //{
+                    //    // foreach (var item in myList)
+                    //    // {
+                    //    var parameterfeature = ImportExcelDataIntoTranslations(translationupload.translations);
+                    //    // }
+                    //}
                     if (InsertedFileUploadID > 0)
                     {
                         translationupload.id = InsertedFileUploadID;
@@ -400,21 +409,25 @@ namespace net.atos.daf.ct2.translation.repository
                 var parameter = new DynamicParameters();
                 string query = string.Empty;
                 //TranslationsList = GetAllTranslations(translationdata.Name, translationdata.Code);
+                
                 var translationcodeList = TranslationsList.Where(I => I.Name == translationdata.Name).ToList();
+
+
                 if (translationcodeList != null && translationcodeList.Count > 0)
                 {
                     var translationobjdata = translationcodeList.Where(I => I.Name == translationdata.Name && I.Code == translationdata.Code).FirstOrDefault();
                     if (translationobjdata != null)
                     {
                         parameter = new DynamicParameters();
-                        parameter.Add("@Code", translationdata.Code);
-                        parameter.Add("@Type", translationdata.Type);
-                        parameter.Add("@Name", translationdata.Name);
-                        parameter.Add("@Value", translationdata.Value);
+                        parameter.Add("@id", translationobjdata.Id);
+                        parameter.Add("@Code", translationobjdata.Code);
+                        parameter.Add("@Type", translationobjdata.Type);
+                        parameter.Add("@Name", translationobjdata.Name);
+                        parameter.Add("@Value", translationobjdata.Value);
                         //parameter.Add("@Created_at", translationdata.created_at);
                         parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-                        query = @"update translation.translation set (code, type, name, value,  modified_at) " +
-                                "values(code= @Code,type= @ype,name= @Name,value = @Value,modified_at = @modified_at) RETURNING id";
+                        query = @"update translation.translation set 
+                                code= @Code,type= @Type,name= @Name,value = @Value,modified_at = @modified_at Where id=@id RETURNING id";
                         var translationId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                         return translationStatus.Updated;
                     }
@@ -438,12 +451,15 @@ namespace net.atos.daf.ct2.translation.repository
                 {
                     return translationStatus.Failed;
                 }
+                
+
+               
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                throw ex;
             }
         }
 
@@ -461,12 +477,15 @@ namespace net.atos.daf.ct2.translation.repository
             try
             {
                 var parameter = new DynamicParameters();
-                var InsertFileDetailsQueryStatement = @"SELECT id, file_name, description, file_size, failure_count, created_at, file, added_count, updated_count, created_by
+                var InsertFileDetailsQueryStatement = @"SELECT id, file_name, description, file_size, failure_count, created_at, added_count, updated_count, created_by
                                                              FROM translation.translationupload
                                                                   where 1=1";
                 if (FileID > 0)
                 {
                     parameter.Add("@FileID", FileID);
+                    InsertFileDetailsQueryStatement = @"SELECT id, file_name, description, file_size, failure_count, created_at, file, added_count, updated_count, created_by
+                                                             FROM translation.translationupload
+                                                                  where 1=1";
                     InsertFileDetailsQueryStatement = InsertFileDetailsQueryStatement + " and id=@FileID";
 
                 }

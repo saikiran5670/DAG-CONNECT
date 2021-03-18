@@ -248,9 +248,10 @@ export class UserManagementComponent implements OnInit {
     this.roleData = allRoleData;
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
       this.userGrpData = allAccountGroupData;
+     this.userGrpData = [];
       this.accountService.getAccountRoles(selectedRoleObj).subscribe(selectedRoleData => { 
         this.selectedRoleData = selectedRoleData;
-        this.accountService.getAccountPreference(element.id).subscribe(accountPrefData => {
+        this.accountService.getAccountPreference(element.preferenceId).subscribe(accountPrefData => {
           this.userDataForEdit = element;
           this.selectedPreference = accountPrefData;
           this.accountService.getAccountDesc(selectedAccountGrpObj).subscribe((resp) => {
@@ -285,8 +286,8 @@ export class UserManagementComponent implements OnInit {
     this.accountService.getAccountDetails(obj).subscribe((usrlist)=>{
       this.filterFlag = true;
       this.hideloader();
-      // this.initData = this.getNewTagData(usrlist);
       this.initData = this.makeRoleAccountGrpList(usrlist);
+      this.initData = this.getNewTagData(usrlist);
       this.dataSource = new MatTableDataSource(this.initData);
       setTimeout(()=>{
         this.dataSource.paginator = this.paginator;
@@ -325,7 +326,7 @@ export class UserManagementComponent implements OnInit {
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     data.forEach(row => {
-      let createdDate = new Date(row.createdAt).getTime(); //  need to check API response.
+      let createdDate = row.createdAt; 
       let nextDate = createdDate + 86400000;
       if(currentDate > createdDate && currentDate < nextDate){
         row.newTag = true;
@@ -335,6 +336,7 @@ export class UserManagementComponent implements OnInit {
       }
     });
     let newTrueData = data.filter(item => item.newTag == true);
+    newTrueData.sort((userobj1,userobj2) => userobj2.createdAt - userobj1.createdAt);
     let newFalseData = data.filter(item => item.newTag == false);
     Array.prototype.push.apply(newTrueData,newFalseData); 
     return newTrueData;
@@ -374,7 +376,7 @@ export class UserManagementComponent implements OnInit {
       this.successMsgBlink(item.msg);
     }
     if(item.tableData){
-      // this.initData = this.getNewTagData(item.tableData);
+      this.initData = this.getNewTagData(item.tableData);
       this.initData = this.makeRoleAccountGrpList(this.initData);
     }
     setTimeout(()=>{

@@ -30,7 +30,17 @@ namespace net.atos.daf.ct2.vehicle.repository
             Task<IEnumerable<VehicleGroup>> GetVehicleGroup(int organizationId,int vehicleId);
             Task<char> GetCalculatedVehicleStatus(char opt_in, bool is_ota);
             Task<char> GetOrganisationStatusofVehicle(int org_id);
-            // Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime);
-            // Task<int> Create(int orgID, string vin,string tcuId,string tcuactivation,string referenceDateTime);
+            Task<bool> SetOTAStatus(bool Is_Ota, int Modified_By, int Vehicle_Id);
+            Task<bool> SetOptInStatus(char Is_OptIn, int Modified_By, int Vehicle_Id);
+            Task<bool> Terminate(bool Is_Terminate,int Modified_By, int Vehicle_Id);
+            Task<bool> VehicleOptInOptOutHistory(int VehicleId);
+            Task<Vehicle> GetVehicle(int Vehicle_Id);
+            Task<Vehicle> UpdateOrgVehicleDetails(Vehicle vehicle);
+            Task<int> IsVINExists(string VIN);
+
+        // Task<bool> SetConnectionStatus(char Status);
+
+        // Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime);
+        // Task<int> Create(int orgID, string vin,string tcuId,string tcuactivation,string referenceDateTime);
     }
 }

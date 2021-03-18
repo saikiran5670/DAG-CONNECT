@@ -1,6 +1,5 @@
 syntax ="proto3";
 import "google/protobuf/wrappers.proto";
-import "google/protobuf/timestamp.proto";
 option csharp_namespace = "net.atos.daf.ct2.organizationservice";
 package net.atos.daf.ct2.organizationservice;
 
@@ -19,41 +18,58 @@ service OrganizationService {
   rpc DeletePreference (IdRequest) returns (AccountPreferenceResponse);
   rpc GetPreference (IdRequest) returns (OrganizationPreferenceResponse);
 
-  //ORG Relationship manager
-   rpc CreateOrgRelationship (OrgRelationshipCreateRequest) returns (OrgRelationshipCreateResponse);
-  rpc UpdateOrgRelationship (OrgRelationshipCreateRequest) returns (OrgRelationshipCreateResponse);
-  rpc DeleteOrgRelationship (OrgRelationshipDeleteRequest) returns (OrgRelationshipDeleteResponse);
-
+//ORG Relationship manager
+  rpc CreateRelationship (RelationshipCreateRequest) returns (RelationshipCreateResponse);
+  rpc UpdateRelationship (RelationshipCreateRequest) returns (RelationshipCreateResponse);
+  rpc DeleteRelationship (RelationshipDeleteRequest) returns (RelationshipDeleteResponse);
+  rpc GetRelationship (RelationshipCreateRequest) returns (RelationshipGetResponse);
 }
 
-
-message OrgRelationshipCreateRequest{
+message RelationshipGetRequest{
     int32 id = 1;
-    string name=2;
-    string description =3;
-    string level=4;
-    string code=5;
-    repeated string features=6;
-    int32 featuresetid =7; 
+    int32 organizationId=2;
+    string name=3;
+    string description =4;
+    int32 level=5;
+    string code=6;
+    repeated int32 featureIds=7;
+    int32 featuresetid =8; 
+    bool isActive=9;
+    int64 CreatedAt=10;
+}
+message RelationshipGetResponse{
+ Responcecode code=1;  
+  string message = 2;
+   repeated RelationshipGetRequest RelationshipList=3;
+}
+message RelationshipCreateRequest{
+    int32 id = 1;
+    int32 organizationId=2;
+    string name=3;
+    string description =4;
+    int32 level=5;
+    string code=6;
+     repeated int32 featureIds=7;
+    int32 featuresetid =8; 
+    bool isActive=9;
+    int64 CreatedAt=10;
 }
 
-message OrgRelationshipCreateResponse{
+message RelationshipCreateResponse{
   Responcecode Code=1;
   string Message = 2;
-  OrgRelationshipCreateRequest OrgRelation = 3;
+  RelationshipCreateRequest relationship = 3;
  
 }
-    message OrgRelationshipDeleteRequest{
+    message RelationshipDeleteRequest{
       int32 Id = 1;
     }
-   message OrgRelationshipDeleteResponse
+   message RelationshipDeleteResponse
     {
      Responcecode Code=1;
      string Message = 2;
-     OrgRelationshipCreateRequest OrgRelationshipRequest= 3;      
+     RelationshipDeleteRequest RelationshipRequest= 3;      
     }
-
-
 
   message OrgCreateRequest {
     int32 id = 1;

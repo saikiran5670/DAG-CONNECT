@@ -26,13 +26,13 @@ export class DriverManagementComponent implements OnInit {
   //--------------Rest mock data----------------//
   driverRestData: any = [];
   //--------------------------------------------//
-  grpTitleVisible : boolean = false;
+  titleVisibleMsg : boolean = false;
   userCreatedMsg : any;
   accountOrganizationId: any = 0;
   dataSource: any;
   initData: any = [];
   importDriverPopup: boolean = false;
-  displayedColumns: string[] = ['driverId','firstName','emailId','consentStatus','action'];
+  displayedColumns: string[] = ['driverIdExt','firstName','email','optIn','action'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   importDriverFormGroup: FormGroup;
@@ -67,6 +67,7 @@ export class DriverManagementComponent implements OnInit {
   rejectedDriverList: any = [];
   driverDialogRef: MatDialogRef<CommonTableComponent>;
   excelEmptyMsg: boolean = false;
+  newDriverCount: any = 0;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService, private translationService: TranslationService, private driverService: DriverService) { 
       this.defaultTranslation();
@@ -85,7 +86,7 @@ export class DriverManagementComponent implements OnInit {
       lblDriverManagement: "Driver Management",
       lblImportNewDrivers: "Import New Drivers",
       lblDownloadaTemplate: "Download a Template",
-      lblDownloadaTemplateMessage: "You can enter multiple driver records. New Driver IDs records will be added and existing Driver ID records will be updated. Few fields are mandatory; the rest optional – please see the template for details. All the fields (with the exception of the Driver ID) can be edited later from the Driver Management screen shown below.",
+      lblDownloadaTemplateMessage: "You can enter multiple driver records. New Driver IDs records will be added and existing Driver ID records will be updated. Only Driver ID is mandatory, rest all fields are optional. See the template for details on valid input criteria for each field. All the fields (with the exception of the Driver ID) can be edited later from the Driver Management screen shown below.",
       lblUploadupdateddriverdetailsandselectgroupfordefiningcategory: "Upload updated driver details and select group for defining category",
       lblSelectUserGroupOptional: "Select User Group (Optional)",
       lblUploadUpdatedExcelFile: "Upload Updated Excel File",
@@ -124,9 +125,6 @@ export class DriverManagementComponent implements OnInit {
       lblTotalDrivers: "Total Drivers",
       lblCurrentConsentStatusForSubscriber: "Current Consent Status For Subscriber ",
       lblOptOutMessage: "Now you are proceeding with Driver ID Consent Opt-Out operation!, Click 'Confirm' to change the consent status.",
-      lblOptInOutChangeMessage: "You are currently in '$' mode. This means no personal data from your driver(s) such as the driver ID are visible in the DAF CONNECT portal.",
-      lblConsentExtraMessage: "By selecting and confirming '$' mode (i.e. by checking the opt-in checkbox) personal data such as the driver ID from your driver(s) will be visible in the DAF CONNECT portal. You state that you are aware of your responsibility with regard to data privacy. At the same time, you state that you have consent from all your drivers to have their driver ID stored and shown in the DAF CONNECT portal and/or, if applicable, to share information with third parties. By submitting this request, you fully accept your legal responsibilities and thereby indemnify DAF Trucks NV from any privacy related responsibilities based on this decision.",
-      lblConsentNote: "Please also refer to the DAF CONNECT terms & conditions for more information.",
       lblName: "Name",
       lblDriverrecordupdated: "Driver record updated",
       lblErrorinupdatingdriverrecordPleasetryagain: "Error in updating driver record '$'. Please try again.",
@@ -134,14 +132,38 @@ export class DriverManagementComponent implements OnInit {
       lblAreyousureyouwanttodeletedriver: "Are you sure you want to delete driver '$'?",
       lblDriverwassuccessfullydeleted: "Driver '$' was successfully deleted",
       lblErrordeletingdriver: "Error deleting driver",
-      lblThedriverwasoptedinsuccessfully: "The driver '$' was opted-in successfully",
       lblThedrivercouldnobeoptedin: "The driver could not be opted-in '$'",
-      lblThedriverwasoptedoutsuccessfully: "The driver '$' was opted-out successfully",
       lblThedrivercouldnobeoptedout: "The driver could not be opted-out '$'",
       lblExcelDriverID: 'DriverID',
       lblExcelFirstName: 'FirstName',
       lblExcelLastName: 'LastName',
       lblExcelEmail: 'Email',
+      lblExcelHintMsg: `Driver ID: Driver's ID. Mandatory input. Format must follow the listed rules - 
+      > If Driver ID contains a country code of 1 character (e.g. F)  then country code is followed by 2 space characters e.g.  F[space][space]1000000123456001
+      > If Driver ID contains a country code of  2 characters (e.g. NL) then country code is followed by 1 space character e.g. NL[space]B000012345000002
+      > Driver ID contains 19 characters and ends with the sequence number of the driver card
+      E-mail: Driver's email-id. Optional input. In case of a non-empty input for an existing driver record, the email-id shall be updated accordingly. Please enter a valid email-id.
+      First Name: Driver's first name. Optional input. In case of a non-empty input for an existing driver record, the email-id shall be updated accordingly. 
+      Last Name: Driver's last name.  Optional input. In case of a non-empty input for an existing driver record, the email-id shall be updated accordingly`,
+      lblEmailIDexceedsmaximumallowedlengthof100chars: "Email ID exceeds maximum allowed length of 100 chars",
+      lblEmailIDformatisinvalid: "Email ID format is invalid",
+      lblDriverIDismandatoryinput: "Driver ID is mandatory input",
+      lblDriverIDshouldbeexactly19charsinlength: "Driver ID should be exactly 19 chars in length",
+      lblDriverIDformatisinvalid: "Driver ID format is invalid",
+      lblexceedsmaximumallowedlengthofchars: "'$' exceeds maximum allowed length of '#' chars",
+      lblNumbersnotallowedin: "Numbers not allowed in '$'",
+      lblSpecialcharactersnotallowedin: "Special characters not allowed in '$'",
+      lblWhitespacesnotallowedin: "Whitespaces not allowed in '$'",
+      lblOptInOptOutAttemptingMsg: "You are attempting to change consent to '$'",
+      lblInheritAttemptingMsg: "You are attempting to '$' your organisation’s consent setting. This means that the consent of this driver will set to the consent of your organisation" ,
+      lblOptOutExtraMsg: "By selecting and confirming this option, you are confirming that you understand that the personal data of the selected driver(s) such as the driver ID will no longer be visible in the DAF CONNECT portal. As a result of opting-out some services will no longer show the driver ID in the DAF CONNECT portal while some services may be terminated altogether. Termination (or partial or complete unavailability) of any services as a result of the opt-out request will by no means result in any restitution of fees or any other form of compensation from DAF Trucks NV.",
+      lblOptInExtraMsg: "By selecting and confirming this option you are confirming that the personal data of the selected driver(s), such as the driver ID, will be visible in the DAF CONNECT portal. You state that you are aware of your responsibility with regard to data privacy. At the same time, you state that you have consent from all your drivers to have their driver ID stored and shown in the DAF CONNECT portal and/or, if applicable, to share information with third parties. By submitting this request, you fully accept your legal responsibilities and thereby indemnify DAF Trucks NV from any privacy related responsibilities based on this decision.",
+      lblSinceyourorganisationconsentis : "Since your organisation’s consent is '$'.",
+      lblHence : "Hence",
+      lblThedrivewasOptedoutsuccessfully : "The driver '$' was Opted-out successfully",
+      lblThedrivewasOptedinsuccessfully : "The driver '$' was Opted-in successfully",
+      lblThedrivewassuccessfully : "The driver '$' was successfully '#'",
+      lblAlldriverswassuccessfully: "All drivers was '$' successfully"
     }
   }
 
@@ -171,8 +193,7 @@ export class DriverManagementComponent implements OnInit {
 
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
-      this.restMockData();
-      this.loadUsersData();
+      this.loadDriverData();
       this.setConsentDropdown();
     });
   }
@@ -181,47 +202,14 @@ export class DriverManagementComponent implements OnInit {
     this.consentFormGroup.get('consentType').setValue(this.selectedConsentType);
   }
 
-  restMockData(){
-    this.driverRestData = [
-      {
-        driverId: "IN 0000000000000001",
-        firstName: "Alan",
-        lastName: "Berry",
-        emailId: "alanb@daf.com",
-        consentStatus: 'Opt-In',
-        inheritStatus: true,
-        createdAt: 1615393800000
-      },
-      {
-        driverId: "I 0000000000000002",
-        firstName: "Ritika",
-        lastName: "Joshi",
-        emailId: "ritikaj@daf.com",
-        consentStatus: 'Opt-Out',
-        inheritStatus: false,
-        createdAt: 1613713670569
-      },
-      {
-        driverId: "IN 0000000000000003",
-        firstName: "Shanu",
-        lastName: "Pol",
-        emailId: "shanup@daf.com",
-        consentStatus: 'Opt-Out',
-        inheritStatus: false,
-        createdAt: 1615384800000
-      }
-    ];
-  }
-
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
   }
 
-  loadUsersData(){
+  loadDriverData(){
     let drvId: any = 0;
-    this.driverService.getDrivers(this.accountOrganizationId, drvId).subscribe((driverList) => {
-      console.log("driverList ::", driverList);
+    this.driverService.getDrivers(this.accountOrganizationId, drvId).subscribe((driverList: any) => {
       this.initData = driverList;
       this.onConsentChange(this.selectedConsentType);
     });
@@ -243,11 +231,11 @@ export class DriverManagementComponent implements OnInit {
         break;
       }
       case "Opt-In":{
-        data = this.initData.filter((item: any) => item.consentStatus == 'Opt-In');
+        data = this.initData.filter((item: any) => item.status == 'I');
         break;
       }
       case "Opt-Out":{
-        data = this.initData.filter((item: any) => item.consentStatus == 'Opt-Out');
+        data = this.initData.filter((item: any) => item.status == 'U');
         break;
       }
     }
@@ -255,7 +243,7 @@ export class DriverManagementComponent implements OnInit {
   }
 
   updateGridData(tableData: any){
-    tableData = this.getNewTagData(tableData);
+    //tableData = this.getNewTagData(tableData);
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
@@ -266,7 +254,7 @@ export class DriverManagementComponent implements OnInit {
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     data.forEach((row: any) => {
-      let createdDate = new Date(row.createdAt).getTime(); //  need to check API response.
+      let createdDate = new Date(row.createdAt).getTime();
       let nextDate = createdDate + 86400000;
       if(currentDate > createdDate && currentDate < nextDate){
         row.newTag = true;
@@ -285,7 +273,6 @@ export class DriverManagementComponent implements OnInit {
     if(this.filelist.length > 0){
       this.validateExcelFileField();
       this.excelEmptyMsg = false;
-      this.importDriverPopup = true;
     }else{
       console.log("Empty Excel File...");
       this.excelEmptyMsg = true;
@@ -297,17 +284,41 @@ export class DriverManagementComponent implements OnInit {
     //--- Parse driver data ---//
     this.filelist.map((item: any) => {
       driverAPIData.push({
-        driverId: item.DriverID,
+        driverID: item.DriverID,
         firstName: item.FirstName,
         lastName: item.LastName,
-        emailId: item.Email,
+        email: item.Email,
       });
     });
     console.log("Parse excel driver:: ", driverAPIData)
     let finalList: any = this.validateFields(driverAPIData);
-    console.log("Validated driver:: ", finalList)
-    this.importedDriverlist = finalList.validDriverList;
     this.rejectedDriverList = finalList.invalidDriverList;
+    console.log("Validated driver:: ", finalList)
+    if(finalList.validDriverList.length > 0){
+      let objData = [
+        {
+          drivers: finalList.validDriverList,
+          organizationId: this.accountOrganizationId
+        }
+      ]
+      this.driverService.importDrivers(objData).subscribe((importDrvList: any) => {
+        if(importDrvList && importDrvList.length > 0){
+          let filterPassDrv: any = importDrvList.filter(item => item.status == 'PASS');
+          let filterFailDrv: any = importDrvList.filter(item => item.status == 'FAIL');
+          if(filterFailDrv && filterFailDrv.length > 0){ //- Fail drivers added
+            Array.prototype.push.apply(this.rejectedDriverList, filterFailDrv); 
+          }
+          this.importDriverPopup = true;
+          this.selectedConsentType = 'All';
+          this.loadDriverData(); //-- load driver list
+          this.setConsentDropdown();
+        }
+      });
+    }
+    else{
+      this.importDriverPopup = true;
+    }
+    this.newDriverCount = (this.filelist.length - this.rejectedDriverList.length); // new = (total - rejected)
   }
 
   validateFields(driverList: any){
@@ -317,15 +328,15 @@ export class DriverManagementComponent implements OnInit {
       let driverId: any;
       let fname: any;
       let lname: any;
-      let emailId: any
+      let email: any
       for (const [key, value] of Object.entries(item)) {
         //console.log(`${key}: ${value}`);
         switch(key){
-          case "driverId":{
-            let objData: any = driverId = this.driveIdValidation(value);  
+          case "driverID":{
+            let objData: any = this.driveIdValidation(value);  
             driverId = objData.status;
             if(!driverId){
-              item.failReason = objData.reason;
+              item.returnMassage = objData.reason;
             }
             break;
           }
@@ -333,7 +344,11 @@ export class DriverManagementComponent implements OnInit {
             let objData: any = this.nameValidation(value, 30, 'firstName'); 
             fname = objData.status;
             if(!fname){
-              item.failReason = objData.reason;
+              item.returnMassage = objData.reason;
+            }else if(fname && objData.undefineStatus){
+              item.firstName = '';
+            }else{
+              item.firstName = item.firstName.trim();
             }
             break;
           }
@@ -341,22 +356,30 @@ export class DriverManagementComponent implements OnInit {
             let objData: any = this.nameValidation(value, 20, 'lastName'); 
             lname = objData.status;
             if(!lname){
-              item.failReason = objData.reason;
+              item.returnMassage = objData.reason;
+            }else if(lname && objData.undefineStatus){
+              item.lastName = '';
+            }else{
+              item.lastName = item.lastName.trim();
             }
             break;
           }
-          case "emailId":{
-            let objData: any = this.emailIdValidation(value); 
-            emailId = objData.status;
-            if(!emailId){
-              item.failReason = objData.reason;
+          case "email":{
+            let objData: any = this.emailValidation(value); 
+            email = objData.status;
+            if(!email){
+              item.returnMassage = objData.reason;
+            }else if(email && objData.undefineStatus){
+              item.email = '';
+            }else{
+              item.email = item.email.trim();
             }
             break;
           }
         }
       }
 
-      if(driverId && fname && lname && emailId){
+      if(driverId && fname && lname && email){
         validData.push(item);
       }
       else{
@@ -366,43 +389,52 @@ export class DriverManagementComponent implements OnInit {
     return { validDriverList: validData, invalidDriverList: invalidData };
   }
 
-  emailIdValidation(value: any){
+  emailValidation(value: any){ 
     let obj: any = { status: true, reason: 'correct data'};
     const regx = /[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}/;
-    if(!value || value == '' || value.length == 0){
-      obj.status = false;
-      obj.reason = 'Required Email field';
-      return obj;  
+    if(!value){
+      obj.undefineStatus = true
+      return obj; 
     }
-    if(value.length > 50){
-      obj.status = false;
-      obj.reason = 'Email length can not be (>50)';  
+    if(value && value.trim().length == 0){ //-- optional field
+     return obj; 
+    }
+    else{
+      // if(!value || value == '' || value.length == 0){
+      //   obj.status = false;
+      //   obj.reason = 'Required Email field';
+      //   return obj;  
+      // }
+      if(value.length > 100){ //-- as per db table
+        obj.status = false;
+        obj.reason = this.translationData.lblEmailIDexceedsmaximumallowedlengthof100chars || 'Email ID exceeds maximum allowed length of 100 chars';  
+        return obj;
+      }
+      if(!regx.test(value)){
+        obj.status = false;
+        obj.reason = this.translationData.lblEmailIDformatisinvalid || 'Email ID format is invalid';  
+        return obj;
+      }
       return obj;
     }
-    if(!regx.test(value)){
-      obj.status = false;
-      obj.reason = 'Invalid Email pattern';  
-      return obj;
-    }
-    return obj;
   }
 
   driveIdValidation(value: any){
     let obj: any = { status: true, reason: 'correct data'};
     const regx = /[A-Z]{1,1}[A-Z\s]{1,1}[\s]{1,1}[A-Z0-9]{16,16}/;
-    if(!value || value == '' || value.length == 0){
+    if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
-      obj.reason = 'Required driverID field';
+      obj.reason = this.translationData.lblDriverIDismandatoryinput || 'Driver ID is mandatory input';
       return obj;  
     }
     if(value.length > 19){
       obj.status = false;
-      obj.reason = 'DriverID length can not be (>19)';  
+      obj.reason = this.translationData.lblDriverIDshouldbeexactly19charsinlength || 'Driver ID should be exactly 19 chars in length';  
       return obj;
     }
     if(!regx.test(value)){
       obj.status = false;
-      obj.reason = 'Mismatch Regx pattern in driverID (F[space][space]1234567890123456) or (FF[space]1234567890123456)';  
+      obj.reason = this.translationData.lblDriverIDformatisinvalid || 'Driver ID format is invalid';  
       return obj;
     }
     return obj;
@@ -412,32 +444,54 @@ export class DriverManagementComponent implements OnInit {
     let obj: any = { status: true, reason: 'correct data'};
     let numberRegex = /[^0-9]+$/;
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
-    if(!value || value == '' || value.length == 0){
-      obj.status = false;
-      obj.reason = `Required ${type} field `;  
+    if(!value){
+      obj.undefineStatus = true
+      return obj; 
+    }
+    if(value && value.trim().length == 0){ //-- optional field
+      return obj; 
+    }
+    else{
+      // if(!value || value == '' || value.length == 0){
+      //   obj.status = false;
+      //   obj.reason = `Required ${type} field `;  
+      //   return obj;
+      // }
+
+      if(value.length > maxLength){
+        obj.status = false;
+        obj.reason = this.getValidateMsg(type, this.translationData.lblexceedsmaximumallowedlengthofchars || "'$' exceeds maximum allowed length of '#' chars", maxLength) 
+        return obj;
+      }
+      if(!numberRegex.test(value)){
+        obj.status = false;
+        obj.reason = this.getValidateMsg(type, this.translationData.lblNumbersnotallowedin || "Numbers not allowed in '$'"); 
+        return obj;
+      }
+      if(!SpecialCharRegex.test(value)){
+        obj.status = false;
+        obj.reason = this.getValidateMsg(type, this.translationData.lblSpecialcharactersnotallowedin || "Special characters not allowed in '$'");
+        return obj;
+      }
+      if(value.toString().trim().length == 0){
+        obj.status = false;
+        obj.reason = this.getValidateMsg(type, this.translationData.lblWhitespacesnotallowedin || "Whitespaces not allowed in '$'");
+        return obj;
+      }
       return obj;
     }
-    if(value.length > maxLength){
-      obj.status = false;
-      obj.reason = `${type} length can not be (>${maxLength})`; 
-      return obj;
+  }
+
+  getValidateMsg(type: any, typeTrans: any, maxLength?: any){
+    if(typeTrans){
+      if(maxLength){
+        typeTrans = typeTrans.replace('$', type); 
+        return typeTrans.replace('#', maxLength)
+      }
+      else{
+        return typeTrans.replace('$', type);
+      }
     }
-    if(!numberRegex.test(value)){
-      obj.status = false;
-      obj.reason = `Number not allowed in ${type}`; 
-      return obj;
-    }
-    if(!SpecialCharRegex.test(value)){
-      obj.status = false;
-      obj.reason = `Special character not allowed in ${type}`; 
-      return obj;
-    }
-    if(value.toString().trim().length == 0){
-      obj.status = false;
-      obj.reason = `Whitespaces not allowed in ${type}`; 
-      return obj;
-    }
-    return obj;
   }
 
   applyFilter(filterValue: string) {
@@ -448,6 +502,7 @@ export class DriverManagementComponent implements OnInit {
 
   onEditView(element: any, type: any){
     this.driverData = element;
+    this.importDriverPopup = false;
     this.editFlag = true;
     this.actionType = type; 
   }
@@ -463,8 +518,13 @@ export class DriverManagementComponent implements OnInit {
     let name = `${row.firstName} ${row.lastName}`;
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
-      if (res) {
-        this.successMsgBlink(this.getDeletMsg(name));
+      if(res) { //--- delete driver
+        this.driverService.deleteDriver(row.organizationId, row.id).subscribe((deleteDrv) => {
+          this.successMsgBlink(this.getDeletMsg(name));
+          this.selectedConsentType = 'All';
+          this.loadDriverData(); //-- load driver list
+          this.setConsentDropdown();
+        });
       }
    });
   }
@@ -477,10 +537,10 @@ export class DriverManagementComponent implements OnInit {
   }
 
   successMsgBlink(msg: any){
-    this.grpTitleVisible = true;
+    this.titleVisibleMsg = true;
     this.userCreatedMsg = msg;
     setTimeout(() => {  
-      this.grpTitleVisible = false;
+      this.titleVisibleMsg = false;
     }, 5000);
   }
 
@@ -509,17 +569,21 @@ export class DriverManagementComponent implements OnInit {
     }    
   }
 
-  editData(item: boolean) {
-    this.editFlag = item;
-    setTimeout(()=>{
-      this.dataSource = new MatTableDataSource(this.initData);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
+  updateEditData(item: any) {
+    this.editFlag = item.stepFlag;
+    this.selectedConsentType = 'All';
+    this.setConsentDropdown();
+    if(item.msg && item.msg != ''){
+      this.successMsgBlink(item.msg);
+    }
+    if(item.tableData){
+      this.initData = item.tableData;
+    }
+    this.updateGridData(this.initData);
   }
 
   onCloseMsg(){
-    this.grpTitleVisible = false;
+    this.titleVisibleMsg = false;
   }
 
   hideloader() {
@@ -528,11 +592,11 @@ export class DriverManagementComponent implements OnInit {
   }
 
   changeOptStatus(driverData: any){ //--- single opt-in/out mode
-    this.callToCommonTable(driverData, false, driverData.consentStatus);
+    this.callToCommonTable(driverData, false, driverData.status);
   }
   
   onConsentClick(consentType: string){ //--- All opt-in/out mode
-    this.callToCommonTable(this.driverRestData, true, consentType);
+    this.callToCommonTable(this.initData, true, consentType);
   }
 
   callToCommonTable(driverData: any, actionType: any, consentType: any){
@@ -546,6 +610,17 @@ export class DriverManagementComponent implements OnInit {
       consentType: consentType
     }
     this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
+    this.dialogRef.afterClosed().subscribe(res => {
+      if(res.tableData && res.tableData.length > 0){
+        this.selectedConsentType = 'All';
+        this.setConsentDropdown();
+        this.initData = res.tableData;
+        this.updateGridData(this.initData);
+      }
+      if(res.consentMsg && res.consentMsg != ''){
+        this.successMsgBlink(res.consentMsg);
+      }
+    });
   }
 
   showDriverListPopup(driverList: any){ 
@@ -554,7 +629,7 @@ export class DriverManagementComponent implements OnInit {
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
       tableData: driverList,
-      colsList: ['driverId','firstName','lastName','emailId','failReason'],
+      colsList: ['driverID','firstName','lastName','email','returnMassage'],
       colsName: [this.translationData.lblDriverID || 'Driver ID', this.translationData.lblFirstName || 'First Name', this.translationData.lblLastName || 'Last Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblFailReason || 'Fail Reason'],
       tableTitle: this.translationData.lblRejectedDriverDetails || 'Rejected Driver Details'
     }
@@ -562,21 +637,16 @@ export class DriverManagementComponent implements OnInit {
   }
 
   downloadDriverTemplate(){
-    let excelHintMsg = `DriverID: 
-    If DriverID contains a country code of 1 character (e.g. F)  then country code is followed by 2 space characters e.g.  F[space][space]1000000123456001
-    If DriverID contains a country code of  2 characters (e.g. NL) then country code is followed by 1 space character e.g. NL[space]B000012345000002
-    DriverID contains 19 characters and ends with the sequence number of the driver card
-    EMail: must be filled`;
+    let excelHintMsg = this.translationData.lblExcelHintMsg || `Driver ID: Driver's ID. Mandatory input. Format must follow the listed rules - 
+    > If Driver ID contains a country code of 1 character (e.g. F)  then country code is followed by 2 space characters e.g.  F[space][space]1000000123456001
+    > If Driver ID contains a country code of  2 characters (e.g. NL) then country code is followed by 1 space character e.g. NL[space]B000012345000002
+    > Driver ID contains 19 characters and ends with the sequence number of the driver card
+    E-mail: Driver's email-id. Optional input. In case of a non-empty input for an existing driver record, the email-id shall be updated accordingly. Please enter a valid email-id.
+    First Name: Driver's first name. Optional input. In case of a non-empty input for an existing driver record, the email-id shall be updated accordingly. 
+    Last Name: Driver's last name.  Optional input. In case of a non-empty input for an existing driver record, the email-id shall be updated accordingly`;
     const header = [this.translationData.lblExcelDriverID || 'DriverID', this.translationData.lblExcelEmail || 'Email', this.translationData.lblExcelFirstName || 'FirstName', this.translationData.lblExcelLastName || 'LastName', excelHintMsg];
     const data = [
-      ['B  B110000123456001', 'johan.peeters@test.com', "Johan", "Peeters", ""],
-      ['F  1000000123456001', 'jeanne.dubois@test.com', "Jeanne", "Dubois", ""],
-      ['PL 1234567890120002', 'alex.nowak@test.com', "Alex", "Nowak", ""],
-      ['D  DF00001234567001', 'p.muller@test.com', "Paul H.F.", "Müller", ""],
-      ['NL B000012345000002', 'jan.de.jong@test.com', "Jan", "de Jong", ""],
-      ['SK A000000001234000', 'eric.m.horvath@test.com', "Eric M.", "Horváth", ""],
-      ['I  I000000123456001', 'f.rossi@test.com', "Francesco", "Rossi", ""],
-      ['UK 0000000123456001', 'j.wilson@test.com', "John", "Wilson", ""]
+      ['B  B110000123456001', 'johan.peeters@test.com', "Johan", "Peeters", ""]
     ];
     let workbook = new Workbook();
     let worksheet = workbook.addWorksheet('Driver Template');

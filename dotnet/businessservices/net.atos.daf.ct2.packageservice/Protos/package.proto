@@ -15,6 +15,7 @@ service PackageService{
 message PackageResponse {
   Responsecode Code=1;
   string Message = 2;
+  PackageDeleteRequest PackageDeleteRequest= 3; 
 }
 
 message ImportPackageRequest
@@ -37,7 +38,7 @@ message PackageCreateRequest {
     string Name=5;
     string Type =6;
     string Description=7;    
-    PackageStatus Status =8;
+    bool Status =8;
   }
 
   message PackageUpdateRequest { 
@@ -48,7 +49,7 @@ message PackageCreateRequest {
     string Name=5;
     string Type =6;
     string Description=7;    
-    PackageStatus Status =8;
+    bool Status =8;
   }
    message PackageDeleteRequest {
     int32 Id = 1;  
@@ -61,7 +62,7 @@ message PackageCreateRequest {
     string Name=5;
     string Type =6;
     string Description=7; 
-    PackageStatus Status =8;
+    bool Status =8;
 }
 message GetPackageResponce { 
    Responsecode code=1;  

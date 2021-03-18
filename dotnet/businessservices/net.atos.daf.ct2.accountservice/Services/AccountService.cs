@@ -593,7 +593,7 @@ namespace net.atos.daf.ct2.accountservice
             try
             {
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
-                account.ResetToken = new Guid(request.ResetToken);
+                account.ProcessToken = new Guid(request.ProcessToken);
                 account.Password = request.Password;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
                 var result = await accountmanager.ResetPassword(account);
@@ -601,13 +601,13 @@ namespace net.atos.daf.ct2.accountservice
                 ResetPasswordResponse response = new ResetPasswordResponse();
                 if (result)
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Password Reset with Token", 1, 2, request.ResetToken);
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Password Reset with Token", 1, 2, request.ProcessToken);
                     response.Code = Responcecode.Success;
                     response.Message = "Password has been reset successfully.";
                 }
                 else
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset with Token", 1, 2, request.ResetToken);
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset with Token", 1, 2, request.ProcessToken);
                     response.Code = Responcecode.NotFound;
                     response.Message = "Failed to reset password or Activation link is expired or invalidated.";
                 }
@@ -667,6 +667,7 @@ namespace net.atos.daf.ct2.accountservice
                     await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.SUCCESS, "Get Menu Features", 1, 2, request.AccountId.ToString());
                     response.Code = Responcecode.Success;
                     response.Message = "Menu items and features fetched successfully.";
+                    response.MenuFeatures = MapMenuFeatureDtoToList(result.ToList());
                 }
                 else
                 {
@@ -675,9 +676,6 @@ namespace net.atos.daf.ct2.accountservice
                     response.Message = "No menu items and features found for the provided account details.";
                 }
 
-                //var menuFeatureList = autoMapper.Map<IEnumerable<MenuFeatureDto>, IEnumerable<MenuFeatureList>>(result);
-                response.MenuFeatures = MapMenuFeatureDtoToList(result.ToList());
-                
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -1767,15 +1765,13 @@ namespace net.atos.daf.ct2.accountservice
                             Name = dto.MenuName,
                             TranslatedMenuName=dto.TranslatedMenuName,
                             Key = dto.MenuKey,
-                            Url = dto.MenuUrl
+                            Url = dto.MenuUrl,
+                            SubMenus = new RepeatedField<SubMenu>()
                         });
                     }
                     else
                     {
                         var menuItem = menuFeatures.Menus.Where(m => m.Name.Equals(dto.ParentMenuName)).FirstOrDefault();
-
-                        if (menuItem.SubMenus == null)
-                            menuItem.SubMenus = new RepeatedField<SubMenu>();
 
                         menuItem.SubMenus.Add(new SubMenu()
                         {
@@ -1793,8 +1789,8 @@ namespace net.atos.daf.ct2.accountservice
                 {
                     FeatureId = dto.FeatureId,
                     Name = dto.FeatureName,
-                    Type = dto.FeatureType ?? string.Empty,
-                    Key = dto.FeatureKey ?? string.Empty,
+                    Type = string.IsNullOrEmpty(dto.FeatureType) ? string.Empty : dto.FeatureType,
+                    Key = string.IsNullOrEmpty(dto.FeatureKey) ? string.Empty : dto.FeatureKey,
                     Level = dto.FeatureLevel
                 });
             }
@@ -1809,18 +1805,18 @@ namespace net.atos.daf.ct2.accountservice
                         MenuId = subMenu.MenuId,
                         FeatureId = subMenu.FeatureId,
                         Name = subMenu.Name,
-                        TranslatedName = subMenu.TranslatedMenuName ?? subMenu.Name,
-                        Key = subMenu.Key ?? string.Empty,
-                        Url = subMenu.Url ?? string.Empty
+                        TranslatedName = string.IsNullOrEmpty(subMenu.TranslatedMenuName) ? subMenu.Name : string.Empty,
+                        Key = string.IsNullOrEmpty(subMenu.Key) ? string.Empty : subMenu.Key,
+                        Url = string.IsNullOrEmpty(subMenu.Url) ? string.Empty : subMenu.Url
                     });
                 }
                 var mainMenu = new MainMenuList();
                 mainMenu.FeatureId = menu.FeatureId;
                 mainMenu.MenuId = menu.MenuId;
                 mainMenu.Name = menu.Name;
-                mainMenu.TranslatedName = menu.TranslatedMenuName ?? menu.Name;
-                mainMenu.Key = menu.Key ?? string.Empty;
-                mainMenu.Url = menu.Url ?? string.Empty;
+                mainMenu.TranslatedName = string.IsNullOrEmpty(menu.TranslatedMenuName) ? menu.Name : string.Empty;
+                mainMenu.Key = string.IsNullOrEmpty(menu.Key) ? string.Empty : menu.Key;
+                mainMenu.Url = string.IsNullOrEmpty(menu.Url) ? string.Empty : menu.Url;
                 mainMenu.SubMenus.AddRange(subMenus);
                 
                 menuFeatureList.Menus.Add(mainMenu);

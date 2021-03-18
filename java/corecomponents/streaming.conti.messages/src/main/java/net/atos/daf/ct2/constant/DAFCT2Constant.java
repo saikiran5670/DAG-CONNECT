@@ -56,8 +56,8 @@ public class DAFCT2Constant {
     public static final String POSTGRE_PLUGIN_NAME = "postgre.plugin.name";
     
     public static final String HBASE_CONTI_HISTORICAL_TABLE_NAME = "conti.historical.table.name";
-    public static final String HBASE_CONTI_HISTORICAL_TABLE_CF = "rawcf";
-    
+    public static final String HBASE_CONTI_HISTORICAL_TABLE_CF = "conti.historical.table.colfm";
+        
 	//HBase
 	public static final String HBASE_ZOOKEEPER_QUORUM = "hbase.zookeeper.quorum";
 	public static final String HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT = "hbase.zookeeper.property.clientPort";

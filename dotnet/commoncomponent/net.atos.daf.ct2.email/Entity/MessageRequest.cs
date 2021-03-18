@@ -4,12 +4,6 @@ using System.Text;
 
 namespace net.atos.daf.ct2.email.Entity
 {
-    public static class MimeType
-    {
-        public const string Text = "text/plain";
-        public const string Html = "text/html";
-    }
-
     public class MessageRequest
     {
          public Dictionary<string, string> ToAddressList { get; set; }

@@ -28,7 +28,7 @@ export class SummaryStepComponent implements OnInit {
   confirmRoleData: any = [];
   confirmUserGrpData: any = [];
   displayedColumnsRoleConfirm: string[] = ['roleName', 'featureIds'];
-  displayedColumnsUserGrpConfirm: string[] = ['name', 'accountCount'];
+  displayedColumnsUserGrpConfirm: string[] = ['accountGroupName', 'accountCount'];
   selectedRoleDataSource: any = [];
   selecteUserGrpDataSource: any = [];
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();

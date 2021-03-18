@@ -24,15 +24,55 @@ export class FeatureService {
         return getHeaderObj;
     }
 
-    getFeatures(data: any): Observable<any[]> {
+    getFeatures(): Observable<any[]> {
         let headerObj = this.generateHeader();
         const headers = new HttpHeaders({ headerObj });
-        const options =  { params: new HttpParams(data), headers: headers };
+        const options =  { headers: headers };
         return this.httpClient
           .get<any[]>(`${this.featureServiceUrl}/getfeatures`, options)
           .pipe(catchError(this.handleError));
     }
 
+    getDataAttribute(): Observable<any[]> {
+      let headerObj = this.generateHeader();
+      const headers = new HttpHeaders({ headerObj });
+      const options =  {  headers: headers };
+      return this.httpClient
+        .get<any[]>(`${this.featureServiceUrl}/GetDataAttribute`, options)
+        .pipe(catchError(this.handleError));
+  }
+
+    createFeature(data): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+     return this.httpClient
+        .post<any>(`${this.featureServiceUrl}/createfeature`, data, headers)
+        .pipe(catchError(this.handleError));
+    }
+
+    updateFeature(data): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+     return this.httpClient
+        .post<any>(`${this.featureServiceUrl}/update`, data, headers)
+        .pipe(catchError(this.handleError));
+    }
+
+    deleteFeature(featureId): Observable<any[]> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .post<any[]>(
+          `${this.featureServiceUrl}/Delete?FeatureId=${featureId}`, featureId, headers
+        )
+        .pipe(catchError(this.handleError));
+    }
     private handleError(errResponse: HttpErrorResponse) {
         console.error('Error : ', errResponse.error);
         return throwError(

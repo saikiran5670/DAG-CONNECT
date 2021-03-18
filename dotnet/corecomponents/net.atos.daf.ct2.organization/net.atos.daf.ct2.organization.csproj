@@ -7,6 +7,7 @@
     <ProjectReference Include="..\net.atos.daf.ct2.accountpreference\net.atos.daf.ct2.accountpreference.csproj" />
     <ProjectReference Include="..\net.atos.daf.ct2.group\net.atos.daf.ct2.group.csproj" />
     <ProjectReference Include="..\net.atos.daf.ct2.account\net.atos.daf.ct2.account.csproj" />
+    <ProjectReference Include="..\net.atos.daf.ct2.subscription\net.atos.daf.ct2.subscription.csproj" />
   </ItemGroup>
 
   <ItemGroup>

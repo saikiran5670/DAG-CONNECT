@@ -116,13 +116,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "accountResponse is null");
+                    return StatusCode(500, "vehicleResponse is null");
                 }
 
             }
             catch (Exception ex)
             {
-                _logger.LogError("Vehicle Service:Create : " + ex.Message + " " + ex.StackTrace);
+                _logger.LogError("Vehicle Service:Update : " + ex.Message + " " + ex.StackTrace);
                 // check for fk violation
                 if (ex.Message.Contains(FK_Constraint))
                 {
@@ -149,7 +149,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var vehicleFilterRequest = _mapper.ToVehicleFilter(vehicleFilter);
                 VehicleBusinessService.VehicleListResponce vehicleListResponse = await _vehicleClient.GetAsync(vehicleFilterRequest);
                 List<VehicleResponse> response = new List<VehicleResponse>();
-                 response = _mapper.ToVehicles(vehicleListResponse);
+                response = _mapper.ToVehicles(vehicleListResponse);
 
                 if (vehicleListResponse != null && vehicleListResponse.Code == VehicleBusinessService.Responcecode.Success)
                 {
@@ -347,7 +347,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.LogInformation("Get vehicle list by group id method in vehicle API called.");
 
-                if (Convert.ToInt32(GroupId)<=0)
+                if (Convert.ToInt32(GroupId) <= 0)
                 {
                     return StatusCode(401, "invalid Vehicle Group Id: The Vehicle group id is Empty.");
                 }
@@ -434,7 +434,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.LogInformation("Get vehicle group list by orgnization & vehicle id method in vehicle API called.");
 
-                if (Convert.ToInt32(OrganizationId)<= 0)
+                if (Convert.ToInt32(OrganizationId) <= 0)
                 {
                     return StatusCode(401, "invalid organization ID: The organization Id is Empty.");
                 }
@@ -515,6 +515,188 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+        [HttpPut]
+        [Route("setoptinstatus")]
+        public async Task<IActionResult> SetOptInStatus(VehicleBusinessService.VehicleOptInRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("Create method in vehicle API called.");
+
+                // Validation 
+                if (request.VehicleId <= 0)
+                {
+                    return StatusCode(400, "The VehicleId is required.");
+                }
+
+                VehicleBusinessService.VehicleGroupDeleteResponce vehicleResponse = await _vehicleClient.SetOptInStatusAsync(request);
+
+                if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Failed
+                     && vehicleResponse.Message == "There is an error updating vehicle opt in status.")
+                {
+                    return StatusCode(500, "There is an error updating vehicle opt in status.");
+                }
+                else if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Success)
+                {
+                    return Ok(vehicleResponse.Result);
+                }
+                else
+                {
+                    return StatusCode(500, "vehicleResponse is null");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Vehicle Service:SetOptInStatus : " + ex.Message + " " + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(500, "Internal Server Error.(01)");
+                }
+                // check for fk violation
+                if (ex.Message.Contains(SocketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpPut]
+        [Route("setotastatus")]
+        public async Task<IActionResult> SetOTAStatus(VehicleBusinessService.VehicleOtaRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("Create method in vehicle API called.");
+
+                // Validation 
+                if (request.VehicleId <= 0)
+                {
+                    return StatusCode(400, "The VehicleId is required.");
+                }
+
+                VehicleBusinessService.VehicleGroupDeleteResponce vehicleResponse = await _vehicleClient.SetOTAStatusAsync(request);
+
+                if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Failed
+                     && vehicleResponse.Message == "There is an error updating vehicle ota status.")
+                {
+                    return StatusCode(500, "There is an error updating vehicle ota status.");
+                }
+                else if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Success)
+                {
+                    return Ok(vehicleResponse.Result);
+                }
+                else
+                {
+                    return StatusCode(500, "vehicleResponse is null");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Vehicle Service:SetOTAStatus : " + ex.Message + " " + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(500, "Internal Server Error.(01)");
+                }
+                // check for fk violation
+                if (ex.Message.Contains(SocketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpPut]
+        [Route("terminate")]
+        public async Task<IActionResult> Terminate(VehicleBusinessService.VehicleTerminateRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("Create method in vehicle API called.");
+
+                // Validation 
+                if (request.VehicleId <= 0)
+                {
+                    return StatusCode(400, "The VehicleId is required.");
+                }
+
+                VehicleBusinessService.VehicleGroupDeleteResponce vehicleResponse = await _vehicleClient.TerminateAsync(request);
+
+                if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Failed
+                     && vehicleResponse.Message == "There is an error updating vehicle terminate status.")
+                {
+                    return StatusCode(500, "There is an error updating vehicle terminate status.");
+                }
+                else if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Success)
+                {
+                    return Ok(vehicleResponse.Result);
+                }
+                else
+                {
+                    return StatusCode(500, "vehicleResponse is null");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Vehicle Service:Terminate : " + ex.Message + " " + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(500, "Internal Server Error.(01)");
+                }
+                // check for fk violation
+                if (ex.Message.Contains(SocketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpGet]
+        [Route("getvehicle")]
+        public async Task<IActionResult> GetVehicle([FromQuery] int vehicleId)
+        {
+            try
+            {
+                _logger.LogInformation("Get method in vehicle API called.");
+
+                VehicleBusinessService.VehicleIdRequest Vid = new VehicleBusinessService.VehicleIdRequest();
+                Vid.VehicleId = vehicleId;
+                VehicleBusinessService.VehicleDetailsResponce vehicleListResponse = await _vehicleClient.GetVehicleAsync(Vid);
+
+                if (vehicleListResponse != null && vehicleListResponse.Code == VehicleBusinessService.Responcecode.Success)
+                {
+                    if (vehicleListResponse.Vehicle != null)
+                    {
+                        return Ok(vehicleListResponse.Vehicle);
+                    }
+                    else
+                    {
+                        return StatusCode(404, "vehicle details are found.");
+                    }
+                }
+                else
+                {
+                    return StatusCode(500, vehicleListResponse.Message);
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
     }
 
 }

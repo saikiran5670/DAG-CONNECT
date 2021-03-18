@@ -22,8 +22,8 @@
           <div *ngIf="!changePictureFlag" fxLayout="row" style="box-sizing: content-box; width: 170px; height: 170px;">
             <mat-icon  style="cursor: pointer; font-size: 150px; text-align: center; color: grey;"
               (click)="onchangePictureClick()">account_circle</mat-icon>
-            <span fxLayout="row"
-              style="margin-left: 30px; margin-top: 90px;">{{ translationData.lblChange || 'Change' }}</span>
+            <span fxLayout="row" (click)="onchangePictureClick()"
+              style="cursor: pointer; margin-left: 30px; margin-top: 90px;">{{ translationData.lblChange || 'Change' }}</span>
           </div>
           <div *ngIf="changePictureFlag" appDragDrop (files)="filesDroppedMethod($event)" style="background-color: rgb(241, 240, 240); box-sizing: content-box; width: 170px; height: 170px;">
             <input *ngIf="!isSelectPictureConfirm" type="file" (change)="fileChangeEvent($event)" />
@@ -53,10 +53,14 @@
                   (click)="onSelectPictureConfirm()">{{ translationData.lblConfirm || 'Confirm' }}</a>
               </span>
             </div>
+            
           </div>
           <div class="linkBtn" style="margin-top: 10px;">
             <a style='margin-left: 20px;'
               (click)="openChangePasswordPopup()">{{ translationData.lblChangePassword || 'Change Password' }}</a>
+          </div>
+          <div fxLayout="row" *ngIf="imageError!=''">
+            <span style="color:red">{{imageError}}</span>
           </div>
         </div>
         <div class="areaWidth min-width-75-per accountInfo">

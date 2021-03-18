@@ -6,6 +6,8 @@ import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog
 import { TranslationService } from '../../services/translation.service';
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { FeatureService } from '../../services/feature.service'
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-feature-management',
@@ -17,8 +19,9 @@ export class FeatureManagementComponent implements OnInit {
   //--------Rest data-----------//
   featureRestData: any = [];
   dataAttributeList: any = [];
+
   //displayedColumns = ['name','type', 'setName', 'setType', 'dataAttribute', 'status', 'action'];
-  displayedColumns = ['setName', 'setType','status', 'action'];
+  displayedColumns = ['name','dataAttribute.isExclusive','state', 'action'];
   selectedElementData: any;
   //-------------------------//
   titleVisible : boolean = false;
@@ -29,12 +32,17 @@ export class FeatureManagementComponent implements OnInit {
   accountOrganizationId: any = 0;
   localStLanguage: any;
   dataSource: any;
+  // viewFlag: any;
   translationData: any;
   createEditViewFeatureFlag: boolean = false;
   actionType: any;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
 
-  constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog) { 
+  constructor(private translationService: TranslationService,
+    private featureService: FeatureService,
+     private dialogService: ConfirmDialogService,
+      private dialog: MatDialog,
+      private _snackBar: MatSnackBar) { 
     this.defaultTranslation();
   }
 
@@ -47,7 +55,9 @@ export class FeatureManagementComponent implements OnInit {
       lblNoRecordFound: "No Record Found",
       lblView: "View",
       lblEdit: "Edit",
-      lblDelete: "Delete"
+      lblDelete: "Delete",
+      lblExclude: "Exclude",
+      lblInclude: "Include"
     }
   }
 
@@ -65,18 +75,19 @@ export class FeatureManagementComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
-      this.loadRestData();
       this.loadFeatureData();
     });
+      this.loadFeatureData();
   }
 
   loadFeatureData(){
-    this.initData = this.getNewTagData(this.featureRestData);
-    this.dataSource = new MatTableDataSource(this.initData);
-    setTimeout(()=>{
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
+  
+    this.featureService.getFeatures().subscribe((data : any) => {
+      let filterTypeData = data.filter(item => item.type == "D");
+
+      this.updatedTableData(filterTypeData);
+    })
+
   }
 
   getNewTagData(data: any){
@@ -97,88 +108,6 @@ export class FeatureManagementComponent implements OnInit {
     return newTrueData;
   }
 
-  loadRestData(){
-    this.featureRestData = [
-      {
-        name: "Feature Name 1",
-        type: "Data Attribute",
-        setName: "DA Set Name A",
-        setType: "Exclusive",
-        featureDescription: "Feature 1 Description",
-        dataAttributeDescription: "Data Attribute 1 Description",
-        dataAttribute: [
-          {
-            id: 1,
-            dataAttribute: "Vehicle.vin" 
-          },
-          {
-            id: 2,
-            dataAttribute: "Vehicle.name" 
-          },
-          {
-            id: 3,
-            dataAttribute: "Data Attribute 1" 
-          }
-        ],
-        status: "Active",
-        createdAt: 1615384800000
-      },
-      {
-        name: "Feature Name 2",
-        type: "Data Attribute",
-        setName: "DA Set Name B",
-        setType: "Inclusive",
-        featureDescription: "feature 2 Description",
-        dataAttributeDescription: "Data Attribute 2 Description",
-        dataAttribute: [
-          {
-            id: 3,
-            dataAttribute: "Data Attribute 1" 
-          },
-          {
-            id: 4,
-            dataAttribute: "Data Attribute 2" 
-          },
-          {
-            id: 5,
-            dataAttribute: "Data Attribute 3" 
-          },
-          {
-            id: 6,
-            dataAttribute: "Data Attribute 4" 
-          }
-        ],
-        status: "Inactive",
-        createdAt: 1615393800000
-      }
-    ];
-    this.dataAttributeList = [
-      {
-        id: 1,
-        dataAttribute: "Vehicle.vin" 
-      },
-      {
-        id: 2,
-        dataAttribute: "Vehicle.name" 
-      },
-      {
-        id: 3,
-        dataAttribute: "Data Attribute 1" 
-      },
-      {
-        id: 4,
-        dataAttribute: "Data Attribute 2" 
-      },
-      {
-        id: 5,
-        dataAttribute: "Data Attribute 3" 
-      },
-      {
-        id: 6,
-        dataAttribute: "Data Attribute 4" 
-      }
-    ];
-  }
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -192,8 +121,16 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   createNewFeature(){
-    this.actionType = 'create';
-    this.createEditViewFeatureFlag = true;
+
+    
+    this.featureService.getDataAttribute().subscribe((data : any) => {
+      // console.log("--getDataAttribute---",data)
+      this.dataAttributeList = data;
+      this.actionType = 'create';
+      this.createEditViewFeatureFlag = true;
+
+    })
+
   }
 
   onClose(){
@@ -201,9 +138,14 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   editViewFeature(rowData: any, type: any){
-    this.actionType = type;
-    this.selectedElementData = rowData;
-    this.createEditViewFeatureFlag = true;
+    // console.log("----rowData--- in parent---",rowData,type)
+    this.featureService.getDataAttribute().subscribe((data : any) => {
+      this.dataAttributeList =  data;
+      this.actionType = type;
+      this.selectedElementData = rowData;
+      this.createEditViewFeatureFlag = true;
+    }) 
+   
   }
 
   changeFeatureStatus(rowData: any){
@@ -228,6 +170,7 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   deleteFeature(rowData: any){
+    let fetureId = rowData.id;
     const options = {
       title: this.translationData.lblDelete || "Delete",
       message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
@@ -237,8 +180,22 @@ export class FeatureManagementComponent implements OnInit {
     this.dialogService.DeleteModelOpen(options, rowData.name);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
+        this.featureService.deleteFeature(fetureId).subscribe((data) => {
+          this.openSnackBar('Item delete', 'dismiss');
+          this.loadFeatureData();
+        })
         this.successMsgBlink(this.getDeletMsg(rowData.name));
       }
+    });
+    
+  }
+  openSnackBar(message: string, action: string) {
+    let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
+    snackBarRef.afterDismissed().subscribe(() => {
+      console.log('The snackbar is dismissed');
+    });
+    snackBarRef.onAction().subscribe(() => {
+      console.log('The snackbar action was triggered!');
     });
   }
 
@@ -258,7 +215,24 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   checkCreationForFeature(item: any){
+    // console.log("---item---",item)
     this.createEditViewFeatureFlag = !this.createEditViewFeatureFlag;
+    if(item.successMsg) {
+      this.successMsgBlink(item.successMsg);
+    }
+    if(item.tableData) {
+      this.updatedTableData(item.tableData)
+    }
+  }
+
+  updatedTableData(tableData : any) {
+    this.initData = tableData;
+    // this.initData = this.getNewTagData(filterTypeData);
+    this.dataSource = new MatTableDataSource(this.initData);
+    setTimeout(()=>{
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    });
   }
 
 }

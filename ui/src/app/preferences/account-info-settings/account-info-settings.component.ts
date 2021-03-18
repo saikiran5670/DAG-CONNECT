@@ -105,8 +105,8 @@ export class AccountInfoSettingsComponent implements OnInit {
       vehDisplay: ['',[]],
       landingPage: ['', []]
     });
-    this.changePictureFlag = true;
-    this.isSelectPictureConfirm = true;
+    // this.changePictureFlag = true;
+    // this.isSelectPictureConfirm = true;
     this.orgName = localStorage.getItem("organizationName");
     this.accountId = parseInt(localStorage.getItem('accountId'));
     this.organizationId = parseInt(localStorage.getItem('accountOrganizationId'));
@@ -131,12 +131,18 @@ export class AccountInfoSettingsComponent implements OnInit {
       if(this.accountInfo.length != 0)
       this.blobId = this.accountInfo[0]["blobId"];
       if(this.blobId != 0){
+        this.changePictureFlag= true;
+        this.isSelectPictureConfirm= true;
         this.accountService.getAccountPicture(this.blobId).subscribe(data => {
           if(data){
             this.profilePicture = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + data["image"]);
             this.croppedImage = this.profilePicture;
           }
         })
+      }
+      else{
+        this.changePictureFlag= false;
+        this.isSelectPictureConfirm= false;
       }
     });
   }
@@ -243,7 +249,9 @@ export class AccountInfoSettingsComponent implements OnInit {
 
   onEditAccountSettingsCancel(){
     this.editAccountSettingsFlag = false;
-    this.isSelectPictureConfirm = true;
+    if(this.blobId != 0)
+      this.isSelectPictureConfirm = true;
+    this.imageError= '';
     if(this.blobId!= 0){
       this.isSelectPictureConfirm = true
       this.changePictureFlag = true;
@@ -261,17 +269,17 @@ export class AccountInfoSettingsComponent implements OnInit {
 
   onGeneralSettingsUpdate(){
     let objData: any = {
-      id: 0,
+      id: this.accountInfo[0]["preferenceId"],
       refId: this.accountId,
-      languageId: this.userSettingsForm.controls.language.value ? this.userSettingsForm.controls.language.value : 5,
-      timezoneId: this.userSettingsForm.controls.timeZone.value ? this.userSettingsForm.controls.timeZone.value : 45,
-      unitId: this.userSettingsForm.controls.unit.value ? this.userSettingsForm.controls.unit.value : 8,
-      currencyId: this.userSettingsForm.controls.currency.value ? this.userSettingsForm.controls.currency.value : 3,
-      dateFormatTypeId: this.userSettingsForm.controls.dateFormat.value ? this.userSettingsForm.controls.dateFormat.value : 10,
-      timeFormatId: this.userSettingsForm.controls.timeFormat.value ? this.userSettingsForm.controls.timeFormat.value : 8,
-      vehicleDisplayId: this.userSettingsForm.controls.vehDisplay.value ? this.userSettingsForm.controls.vehDisplay.value : 8,
-      landingPageDisplayId: this.userSettingsForm.controls.landingPage.value ? this.userSettingsForm.controls.landingPage.value : 10,
-      driverId: ""
+      languageId: this.userSettingsForm.controls.language.value ? this.userSettingsForm.controls.language.value : 24,
+      timezoneId: this.userSettingsForm.controls.timeZone.value ? this.userSettingsForm.controls.timeZone.value : 27,
+      unitId: this.userSettingsForm.controls.unit.value ? this.userSettingsForm.controls.unit.value : 5,
+      currencyId: this.userSettingsForm.controls.currency.value ? this.userSettingsForm.controls.currency.value : 4,
+      dateFormatTypeId: this.userSettingsForm.controls.dateFormat.value ? this.userSettingsForm.controls.dateFormat.value : 6,
+      timeFormatId: this.userSettingsForm.controls.timeFormat.value ? this.userSettingsForm.controls.timeFormat.value : 3,
+      vehicleDisplayId: this.userSettingsForm.controls.vehDisplay.value ? this.userSettingsForm.controls.vehDisplay.value : 5,
+      landingPageDisplayId: this.userSettingsForm.controls.landingPage.value ? this.userSettingsForm.controls.landingPage.value : 2
+      //driverId: ""
     }
     this.accountService.updateAccountPreference(objData).subscribe((data) => {
       this.filterDefaultGeneralSetting(data);
@@ -317,32 +325,36 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   onSelectPictureConfirm(){
-    this.isSelectPictureConfirm = true;
-    this.isAccountPictureSelected = false;
+    if(this.croppedImage != ''){
+      this.isSelectPictureConfirm = true;
+      this.isAccountPictureSelected = false;
 
-    let objData = {
-      "blobId": this.blobId,
-      "accountId": this.accountId,
-      "imageType": "P",
-      "image": this.croppedImage.split(",")[1]
-    }
-
-    this.accountService.saveAccountPicture(objData).subscribe(data => {
-      if(data){
-        let msg = '';
-        if(this.translationData.lblAccountPictureSuccessfullyUpdated)
-          msg= this.translationData.lblAccountPictureSuccessfullyUpdated;
-        else
-          msg= "Account picture successfully updated";
-
-        this.successMsgBlink(msg);  
+      let objData = {
+        "blobId": this.blobId,
+        "accountId": this.accountId,
+        "imageType": "P",
+        "image": this.croppedImage.split(",")[1]
       }
-    })
+
+      this.accountService.saveAccountPicture(objData).subscribe(data => {
+        if(data){
+          let msg = '';
+          if(this.translationData.lblAccountPictureSuccessfullyUpdated)
+            msg= this.translationData.lblAccountPictureSuccessfullyUpdated;
+          else
+            msg= "Account picture successfully updated";
+
+          this.successMsgBlink(msg);  
+        }
+      }, (error) => {
+        this.imageError= "Something went wrong. Please try again!";
+      })
+    }
   }
   
   fileChangeEvent(event: any): boolean {
-    this.imageError= '';
-    if(!this.validateImageFile(event.target.files[0]))
+    this.imageError= CustomValidators.validateImageFile(event.target.files[0]);
+    if(this.imageError != '')
       return false;
     this.isAccountPictureSelected = true;
     this.imageChangedEvent = event;
@@ -365,8 +377,8 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   filesDroppedMethod(event : any): boolean {
-    this.imageError= '';
-    if(!this.validateImageFile(event))
+    this.imageError= CustomValidators.validateImageFile(event);
+    if(this.imageError != '')
       return false;
     this.isAccountPictureSelected = true;
     this.readImageFile(event);
@@ -380,21 +392,7 @@ export class AccountInfoSettingsComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
-  validateImageFile(inputFile): boolean{
-    const max_size = 1024*1024;
-    if (inputFile.size > max_size) {
-      this.imageError =
-          'Maximum size allowed is ' + max_size / (1024*1024) + 'Mb';
-
-      return false;
-    }
-
-    if (!(inputFile.type).includes("image")) {
-        this.imageError = 'Only Images are allowed';
-        return false;
-    }
-    return true;
-  }
+  
 
   getEditMsg(editText){
     if(editText == 'AccountSettings'){

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<persistence version="2.0"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+   http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+
+	<persistence-unit name="TestJPA45" transaction-type="RESOURCE_LOCAL">
+
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+		<class>net.atos.daf.postgre.bo.TripMessage</class>
+
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		<properties>
+			<!-- <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com:5432/Test?sslmode=require"/> -->
+			<!-- <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com:5432/vehicle_aggregrations?sslmode=require"/> -->
+			<!-- <property name="javax.persistence.jdbc.password" value="W%PQ1AI}Y97"/> -->
+			<!-- <property name="eclipselink.logging.level" value="FINE"/> <property 
+				name="eclipselink.ddl-generation" value="create-tables"/> -->
+			
+			<property name="javax.persistence.jdbc.user" value="pgadmin@dafct-dev0-dta-cdp-pgsql" />
+			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
+			<property name="hibernate.temp.use_jdbc_metadata_defaults"
+				value="false" />
+			<property name="hibernate.jdbc.batch_size" value="5" />
+
+
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+		</properties>
+
+	</persistence-unit>
+</persistence>

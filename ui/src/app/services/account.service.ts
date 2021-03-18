@@ -158,13 +158,13 @@ export class AccountService {
       .pipe(catchError(this.handleError));
   }
   
-  deleteAccountGroup(data): Observable<any> {
+  deleteAccountGroup(id: any): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
    return this.httpClient
-      .put<any>(`${this.accountServiceUrl}/accountgroup/delete?id=${data.id}`, data, headers)
+      .put<any>(`${this.accountServiceUrl}/accountgroup/delete?id=${id}`, null, headers)
       .pipe(catchError(this.handleError));
   }
 

@@ -12,12 +12,7 @@ namespace net.atos.daf.ct2.organization
         Task<OrganizationResponse> Get(int organizationId);
         Task<PreferenceResponse> GetPreference(int organizationId);
         Task<Customer> UpdateCustomer(Customer customer);
-        Task<KeyHandOver> KeyHandOverEvent(KeyHandOver keyHandOver);
-        Task<int> CreateVehicleParty(List<Customer> customers);
-
-        Task<OrgRelationship> CreateOrgRelationship(OrgRelationship orgRelationship);
-        Task<OrgRelationship> UpdateOrgRelationship(OrgRelationship orgRelationship);
-        Task<bool> DeleteOrgRelationship(int orgRelationshipId);
-        Task<List<OrgRelationship>> GetOrgRelationship(OrgRelationship filter);
+        Task<HandOver> KeyHandOverEvent(HandOver keyHandOver);
+        Task<int> CreateVehicleParty(List<Customer> customers);     
     }
 }

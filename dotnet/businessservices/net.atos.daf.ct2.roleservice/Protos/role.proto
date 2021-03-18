@@ -33,7 +33,7 @@ message RoleRequest {
     string RoleName = 3;
     string Description=4;
     int32 CreatedBy=5;
-    int64 Created_at=9;
+    int64 Created_at=10;
     repeated int32 FeatureIds = 6;
     int32 UpdatedBy=7;
     int32 Level = 8;
@@ -55,6 +55,7 @@ message RoleRequest {
     int32 OrganizationId = 2;
     int32 AccountId = 3;
     bool Active =4;
+    string LangaugeCode = 5;
   
   }
 

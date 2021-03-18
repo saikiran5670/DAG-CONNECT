@@ -38,8 +38,7 @@ namespace TCUProvisioning
 
             using (var consumer = new ConsumerBuilder<Null, string>(config).Build())
             {
-                CancellationTokenSource cts = new CancellationTokenSource();
-                Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
+               
                 log.Info("Subscribing Topic");
                 consumer.Subscribe(topic);
 
@@ -48,20 +47,25 @@ namespace TCUProvisioning
                     try
                     {
                         log.Info("Consuming Messages");
-                        var msg = consumer.Consume(cts.Token);
+                        var msg = consumer.Consume();
                         String TCUDataFromTopic = msg.Message.Value;
                         TCUDataReceive TCUDataReceive = JsonConvert.DeserializeObject<TCUDataReceive>(TCUDataFromTopic);
                         await updateVehicleDetails(TCUDataReceive, psqlconnstring);
+
+                        log.Info("Commiting message");
+                        consumer.Commit(msg);
 
                     }
                     catch (ConsumeException e)
                     {
                         log.Error($"Consume error: {e.Error.Reason}");
+                        consumer.Close();
 
                     }
                     catch (Exception e)
                     {
                         log.Error($"Error: {e.Message}");
+                        consumer.Close();
 
                     }
                 }
@@ -83,6 +87,7 @@ namespace TCUProvisioning
                 GroupId = consumergroup,
                 AutoOffsetReset = AutoOffsetReset.Earliest,
                 BrokerVersionFallback = "1.0.0",
+                EnableAutoCommit = false
                 //Debug = "security,broker,protocol"    //Uncomment for librdkafka debugging information
             };
             return config;
@@ -97,7 +102,7 @@ namespace TCUProvisioning
             //VehicleFilter vehicleFilter = getFilteredVehicle(TCUDataReceive);
             IDataAccess dataacess = new PgSQLDataAccess(psqlConnString);
             Vehicle receivedVehicle = null;
-            
+
 
             try
 
@@ -120,22 +125,15 @@ namespace TCUProvisioning
                     receivedVehicle.Tcu_Brand = "Bosch";
                     receivedVehicle.Tcu_Version = "1.0";
                     receivedVehicle.Reference_Date = TCUDataReceive.ReferenceDate;
+
+
                     receivedVehicle.VehiclePropertiesId = 0;
                     receivedVehicle.Opt_In = VehicleStatusType.Inherit;
                     receivedVehicle.Is_Ota = false;
-                  
-                    dynamic oiedetail = await GetOEM_Id(TCUDataReceive.Vin, dataacess);
-                    if (oiedetail != null)
-                    {
-                        receivedVehicle.Oem_id = oiedetail[0].id;
-                        receivedVehicle.Oem_Organisation_id = oiedetail[0].oem_organisation_id;
-                    }
 
                     int OrgId = await dataacess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.organization where lower(name)=@name), null)", new { name = "daf-paccar" });
                     receivedVehicle.Organization_Id = OrgId;
-                    char org_status = await GetOrganisationStatusofVehicle(OrgId, dataacess);
-                    receivedVehicle.Status = (VehicleCalculatedStatus)GetCalculatedVehicleStatus(org_status, receivedVehicle.Is_Ota);
-
+                   
                     log.Info("Creating Vehicle Object in database");
                     await vehicleManager.Create(receivedVehicle);
                 }
@@ -161,61 +159,6 @@ namespace TCUProvisioning
             }
         }
 
-
-        private  async Task<dynamic> GetOEM_Id(string vin, IDataAccess dataacess)
-        {
-            string vin_prefix = vin.Substring(0, 3);
-            var QueryStatement = @"SELECT id, oem_organisation_id
-	                             FROM master.oem
-                                 where vin_prefix=@vin_prefix";
-
-            var parameter = new DynamicParameters();
-            parameter.Add("@vin_prefix", vin_prefix);
-
-            dynamic result = await dataacess.QueryAsync<dynamic>(QueryStatement, parameter);
-
-            return result;
-        }
-
-
-        public  async Task<char> GetOrganisationStatusofVehicle(int org_id, IDataAccess dataacess)
-        {
-
-            char optin = await dataacess.QuerySingleAsync<char>("SELECT vehicle_default_opt_in FROM master.organization where id=@id", new { id = org_id });
-
-            return optin;
-        }
-
-        public  char GetCalculatedVehicleStatus(char opt_in, bool is_ota)
-        {
-            char calVehicleStatus = 'I';
-            //Connected
-            if (opt_in == (char)VehicleStatusType.OptIn && !is_ota)
-            {
-                calVehicleStatus = (char)VehicleCalculatedStatus.Connected;
-            }
-            //Off 
-            if (opt_in == (char)VehicleStatusType.OptOut && !is_ota)
-            {
-                calVehicleStatus = (char)VehicleCalculatedStatus.Off;
-            }
-            //Connected + OTA
-            if (opt_in == (char)VehicleStatusType.OptIn && is_ota)
-            {
-                calVehicleStatus = (char)VehicleCalculatedStatus.Connected_OTA;
-            }
-            //OTA only
-            if (opt_in == (char)VehicleStatusType.OptOut && is_ota)
-            {
-                calVehicleStatus = (char)VehicleCalculatedStatus.OTA;
-            }
-            //Terminated
-            if (opt_in == (char)VehicleStatusType.Terminate)
-            {
-                calVehicleStatus = (char)VehicleCalculatedStatus.Terminate;
-            }
-            return calVehicleStatus;
-        }
 
         private  VehicleFilter getFilteredVehicle(TCUDataReceive TCUDataReceive)
         {

@@ -14,13 +14,9 @@ namespace net.atos.daf.ct2.organization.repository
 
         //Task<Organization> UpdateCustomer(Organization organization);
         Task<Customer> UpdateCustomer(Customer customer);
-        Task<KeyHandOver> KeyHandOverEvent(KeyHandOver keyHandOver);
+        Task<HandOver> KeyHandOverEvent(HandOver keyHandOver);
         Task<int> CreateVehicleParty(List<Customer> customers);
 
-        //Org Relationship
-        Task<OrgRelationship> CreateOrgRelationship(OrgRelationship orgRelationship);
-        Task<OrgRelationship> UpdateOrgRelationship(OrgRelationship orgRelationship);
-        Task<bool> DeleteOrgRelationship(int orgRelationshipId);
-        Task<List<OrgRelationship>> GetOrgRelationship(OrgRelationship filter);
+       
     }
 }

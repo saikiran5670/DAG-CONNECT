@@ -911,7 +911,7 @@ namespace net.atos.daf.ct2.account
                 var parameter = new DynamicParameters();
 
                 parameter.Add("@account_id", resetPasswordToken.AccountId);
-                parameter.Add("@token_secret", resetPasswordToken.TokenSecret);
+                parameter.Add("@token_secret", resetPasswordToken.ProcessToken);
                 parameter.Add("@status", resetPasswordToken.Status.ToString());
                 parameter.Add("@expiry_at", resetPasswordToken.ExpiryAt.Value);
                 parameter.Add("@created_at", resetPasswordToken.CreatedAt.Value);
@@ -998,17 +998,17 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@account_id", accountId);
                 parameter.Add("@role_id", roleId);
                 parameter.Add("@organization_id", organizationId);
-                parameter.Add("@code", languageCode.ToLower());
+                parameter.Add("@code", languageCode);
 
                 string query =
-                    @"SELECT 
+                    @"SELECT DISTINCT
                     f.id as FeatureId, f.name as FeatureName, f.type as FeatureType, f.key as FeatureKey, f.level as FeatureLevel, mn.id as MenuId, mn.name as MenuName, tl.value as TranslatedValue, COALESCE(mn2.name, '') as ParentMenuName, mn.key as MenuKey, mn.url as MenuUrl, mn.seq_no as MenuSeqNo
                     FROM
                     (
 	                    --Account Route
 	                    SELECT r.feature_set_id
 	                    FROM master.Account acc
-	                    INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.id = @account_id AND ar.role_id = @role_id AND acc.is_active = True
+	                    INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.id = @account_id AND ar.organization_id = @organization_id AND ar.role_id = @role_id AND acc.is_active = True
 	                    INNER JOIN master.Role r ON ar.role_id = r.id AND r.is_active = True
 	                    UNION
 	                    --Subscription Route
@@ -1024,9 +1024,9 @@ namespace net.atos.daf.ct2.account
                     INNER JOIN master.FeatureSet fset ON fsets.feature_set_id = fset.id AND fset.is_active = True
                     INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
                     INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True
-                    LEFT JOIN master.Menu mn ON mn.feature_id = f.id AND mn.is_active = True
-                    LEFT JOIN master.Menu mn2 ON mn.parent_id = mn2.id AND mn2.is_active = True
-                    LEFT JOIN translation.translation tl ON tl.name = mn.name AND lower(tl.code) = @code
+                    LEFT JOIN master.Menu mn ON mn.feature_id = f.id AND mn.is_active = True AND mn.id <> 0
+                    LEFT JOIN master.Menu mn2 ON mn.parent_id = mn2.id AND mn2.is_active = True AND mn2.id <> 0
+                    LEFT JOIN translation.translation tl ON tl.name = mn.key AND tl.code = @code
                     ORDER BY MenuId, MenuSeqNo";
 
                 var record = await dataAccess.QueryAsync<MenuFeatureDto>(query, parameter);
@@ -1126,7 +1126,7 @@ namespace net.atos.daf.ct2.account
             ResetPasswordToken objToken = new ResetPasswordToken();
             objToken.Id = record.id;
             objToken.AccountId = record.account_id;
-            objToken.TokenSecret = record.token_secret;
+            objToken.ProcessToken = record.token_secret;
             objToken.Status = Enum.Parse<ResetTokenStatus>(record.status, false);
             objToken.ExpiryAt = record.expiry_at;
             objToken.CreatedAt = record.created_at;

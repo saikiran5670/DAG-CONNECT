@@ -120,6 +120,19 @@ export class CustomValidators {
     };
   }
 
+  static specialCharValidationForNameWithoutRequired(name: any) {
+    return (formGroup: FormGroup) => {
+      const NAME = formGroup.controls[name];
+      var regex = /[^!@#\$%&*]+$/;
+
+      if(NAME.value.length > 0){
+        if (!regex.test(NAME.value)) {
+          NAME.setErrors({ specialCharsNotAllowed: true });
+        }
+      }
+    };
+  }
+
   static numberValidationForName(name) {
     return (formGroup: FormGroup) => {
       const NAME = formGroup.controls[name];
@@ -133,6 +146,18 @@ export class CustomValidators {
     };
   }
 
+  static numberValidationForNameWithoutRequired(name: any) {
+    return (formGroup: FormGroup) => {
+      const NAME = formGroup.controls[name];
+      var regex = /[^0-9]+$/;
+      if(NAME.value.length > 0){
+        if (!regex.test(NAME.value)) {
+          NAME.setErrors({ numberNotAllowed: true });
+        }
+      }
+    };
+  }
+
   static noWhitespaceValidator(control: FormControl) {
     const isWhitespace =
       ((control && control.value && control.value.toString()) || '').trim()
@@ -140,8 +165,34 @@ export class CustomValidators {
     const isValid = !isWhitespace;
     return isValid ? null : { whitespace: true };
   }
+
+  static noWhitespaceValidatorWithoutRequired(control: FormControl) {
+    let isWhitespace =
+      ((control && control.value && control.value.toString()) || '').trim()
+        .length === 0;
+    if(control.value.length == 0){
+      isWhitespace = false;
+    }
+    const isValid = !isWhitespace;
+    return isValid ? null : { whitespace: true };
+  }
+
   static noWhitespaceValidatorforDesc(control: FormControl) {
     const isSpace = (control.value || '').match(/^(\s+\S+\s*)*(?!\s).*$/);
     return isSpace ? null : { whitespace: true };
+  }
+
+  static validateImageFile(inputFile): string{
+    let imageError= '';
+    const max_size = 1024*1024;
+    if (inputFile.size > max_size) {
+      imageError = 'Maximum size allowed is ' + max_size / (1024*1024) + 'Mb';
+
+    }
+
+    if (!(inputFile.type).includes("image")) {
+        imageError = 'Only Images are allowed';
+    }
+    return imageError;
   }
 }

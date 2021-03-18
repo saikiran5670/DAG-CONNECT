@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { TranslationService } from 'src/app/services/translation.service';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
-
+import { OrganizationService } from 'src/app/services/organization.service';
 
 @Component({
   selector: 'app-relationship-management',
@@ -30,7 +30,7 @@ export class RelationshipManagementComponent implements OnInit {
   showLoadingIndicator: any;
 
 
-  constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService) {
+  constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private organizationService: OrganizationService) {
     this.defaultTranslation();
    }
 
@@ -69,12 +69,17 @@ export class RelationshipManagementComponent implements OnInit {
         Organizationid : this.organizationId,
      };
      
-     this.mockData(); //temporary
-    //api call to get relationship data
+    //  this.mockData(); //temporary
+    this.organizationService.getRelationship(objData).subscribe((data) => {
+      if(data){
+       this.initData = data["relationshipList"];
+       setTimeout(()=>{
         this.dataSource = new MatTableDataSource(this.initData);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-    
+      });
+    }
+    }); 
   }
 
   mockData(){
@@ -178,8 +183,12 @@ export class RelationshipManagementComponent implements OnInit {
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
        {
+        this.organizationService
+        .deleteRelationship(row.id)
+        .subscribe((d) => {
           this.successMsgBlink(this.getDeletMsg(name));
           this.loadInitData();
+        });
         }
     }
   });
