@@ -39,7 +39,7 @@
           <mat-label>{{ translationData.lblGroupType || 'Group Type' }}<span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">  
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{ translationData.lblGroupType || 'Group Type' }}" formControlName="groupType" required>
+                <mat-select (selectionChange)="groupTypeChange($event)" placeholder="{{ translationData.lblGroupType || 'Group Type' }}" formControlName="groupType" required>
                 <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
                   {{ rer.name }}
                 </mat-option>
@@ -75,7 +75,7 @@
     <mat-card-actions class='no-margin no-padding'>
       <div fxLayout="row" fxLayoutAlign="space-between center">
         <div fxLayout="column" fxLayoutAlign="left">
-          <div fxLayout="row" fxLayoutAlign='center center'>
+          <div *ngIf='showUserList' fxLayout="row" fxLayoutAlign='center center'>
             <mat-icon class='margin-right-10'>info</mat-icon>
             <span>{{translationData.lblUserGroupManagementInfo || 'You can select User from below list to map with this
               User Group' }}</span>
@@ -93,66 +93,68 @@
         </div>
       </div>
     </mat-card-actions>
-    <div style='padding: 20px; position: relative;'>
-      <mat-divider></mat-divider>
-    </div>
-    <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
-      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-          <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedUser || 'Selected User') : (translationData.lblSelectUser || 'Select User') }}</span>&nbsp;<span>{{ translationData.lblOptional || 'Optional' }}</span></span>
+    <div *ngIf='showUserList'>
+      <div style='padding: 20px; position: relative;'>
+        <mat-divider></mat-divider>
       </div>
-    </div>
-    <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
-      <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <mat-form-field appearance="outline">
-            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
-            <span matPrefix><mat-icon>search</mat-icon></span>
-        </mat-form-field>
+      <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+            <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedUser || 'Selected User') : (translationData.lblSelectUser || 'Select User') }}</span>&nbsp;<span>{{ translationData.lblOptional || 'Optional' }}</span></span>
+        </div>
       </div>
-    </div>
-    <div>
-      <mat-table [dataSource]="dataSource" class="table-items" matSort>
-        <ng-container matColumnDef="select">
-          <mat-header-cell *matHeaderCellDef>
-            <mat-checkbox (change)='$event ? masterToggleForAccount() : null'
-              [checked]='selectedAccounts.hasValue() && isAllSelectedForAccount()'
-              [indeterminate]='selectedAccounts.hasValue() && !isAllSelectedForAccount()'
-              [aria-label]='checkboxLabelForAccount()'>
-            </mat-checkbox>
-            <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
-          </mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedAccounts.toggle(row) : null'
-              [checked]='selectedAccounts.isSelected(row)' [aria-label]='checkboxLabelForAccount(row)'>
-            </mat-checkbox>
-          </mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="firstName">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row">
-            {{ row.firstName }}
-          </mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="emailId">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEmailID || 'Email ID' }}
-          </mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ row.emailId }}</mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="roles">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRole || 'Role' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}"><span class="text-truncate">{{
-              row.roles.length > 0 ? row.roleList : '&nbsp; &nbsp; -' }}</span></mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="accountGroups">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserGroup || 'User Group' }}
-          </mat-header-cell>
-          <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}"><span class="text-truncate">{{
-              row.accountGroups.length > 0 ? row.accountGroupList : '&nbsp; &nbsp; -' }}</span></mat-cell>
-        </ng-container>
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;">
-        </mat-row>
-      </mat-table>
-      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+      <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
+        <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+          <mat-form-field appearance="outline">
+              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+              <span matPrefix><mat-icon>search</mat-icon></span>
+          </mat-form-field>
+        </div>
+      </div>
+      <div>
+        <mat-table [dataSource]="dataSource" class="table-items" matSort>
+          <ng-container matColumnDef="select">
+            <mat-header-cell *matHeaderCellDef>
+              <mat-checkbox (change)='$event ? masterToggleForAccount() : null'
+                [checked]='selectedAccounts.hasValue() && isAllSelectedForAccount()'
+                [indeterminate]='selectedAccounts.hasValue() && !isAllSelectedForAccount()'
+                [aria-label]='checkboxLabelForAccount()'>
+              </mat-checkbox>
+              <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedAccounts.toggle(row) : null'
+                [checked]='selectedAccounts.isSelected(row)' [aria-label]='checkboxLabelForAccount(row)'>
+              </mat-checkbox>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="firstName">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              {{ row.firstName }}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="emailId">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEmailID || 'Email ID' }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.emailId }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="roles">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRole || 'Role' }}</mat-header-cell>
+            <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}"><span class="text-truncate">{{
+                row.roles.length > 0 ? row.roleList : '&nbsp; &nbsp; -' }}</span></mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="accountGroups">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserGroup || 'User Group' }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}"><span class="text-truncate">{{
+                row.accountGroups.length > 0 ? row.accountGroupList : '&nbsp; &nbsp; -' }}</span></mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;">
+          </mat-row>
+        </mat-table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+      </div>
     </div>
   </mat-card>
 </form>
