@@ -36,6 +36,7 @@ public class DAFCT2Constant {
     public static final String MONITOR_TRANSID = "monitor.transid";
 
     public static final String BROADCAST_NAME = "broadcast.name";
+    public static final String UNKNOWN = "UNKNOWN";
 
     public static final String SINK_JSON_STRING_TOPIC_NAME = "sink.external.topic.name";
 
