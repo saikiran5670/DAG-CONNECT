@@ -54,80 +54,77 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
             vehicleManager=_vehicleManager;
            _httpContextAccessor=httpContextAccessor;
             accountIdentityManager=_accountIdentityManager;
-           subscriptionManager=_subscriptionManager;
-           Configuration=configuration;
+            subscriptionManager=_subscriptionManager;
+            Configuration=configuration;
         } 
         
         [HttpPost]      
         [Route("update")]
         public async Task<IActionResult> update(Customer customer)
-        {
-         
-          var OrgId= await organizationtmanager.UpdateCustomer(customer);
-          return Ok("done");
-            // string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
-            // bool valid=false;
-            // try 
-            // {               
-            //     if(string.IsNullOrEmpty(token))
-            //     {
-            //         logger.LogInformation("UpdateCustomerData function called with empty token, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
-            //         return StatusCode(400,"Bad Request:");
-            //     }
-            //     else
-            //     {  
-            //          logger.LogInformation("UpdateCustomerData function called , company ID -" + customer.CompanyUpdatedEvent.Company.ID);
-            //          valid = await accountIdentityManager.ValidateToken(token);
-            //          if(valid)
-            //          {
-            //             if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.ID) || (customer.CompanyUpdatedEvent.Company.ID.Trim().Length<1))
-            //             {
-            //                  return StatusCode(400,"Please provide company ID:");
-            //             } 
-            //             else if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.type) || (customer.CompanyUpdatedEvent.Company.type.Trim().Length<1))
-            //             {
-            //                  return StatusCode(400,"Please provide company type:");
-            //             }
-            //             else if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.Name) || (customer.CompanyUpdatedEvent.Company.Name.Trim().Length<1))
-            //             {
-            //                  return StatusCode(400,"Please provide company name:");
-            //             }
-            //             else  if ((customer.CompanyUpdatedEvent.Company.ReferenceDateTime == null) && (DateTime.Compare(DateTime.MinValue, customer.CompanyUpdatedEvent.Company.ReferenceDateTime)< 0))
-            //             {
-            //                  return StatusCode(400,"Please provide company reference date:");                            
-            //             }
-            //             else if (customer.CompanyUpdatedEvent.Company.ReferenceDateTime.ToUniversalTime() >System.DateTime.Now.ToUniversalTime() )
-            //             {
-            //                  return StatusCode(400,"Future date time is not allowed in company reference date, please provide company reference date time less then toaday :");
-            //             }
-
-            //             var OrgId= await organizationtmanager.UpdateCustomer(customer);
-            //             logger.LogInformation("Customer data has been updated, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
-            //             return Ok(OrgId);
-            //         }
-            //          else
-            //          {
-            //              logger.LogInformation("Customer data not updated, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
-            //              return StatusCode(401,"Forbidden:");
-            //          }
-            //  }
-            // }
-            // catch(Exception ex)
-            // {
-            //     valid = false;
-            //     logger.LogError(ex.Message +" " +ex.StackTrace);
-            //     return StatusCode(500,"Internal Server Error.");
-            //    // return StatusCode(500,ex.Message +" " +ex.StackTrace);
-            // }                        
+        {         
+         CustomerRequest customerRequest=new CustomerRequest();
+         customerRequest.CompanyType=customer.CompanyUpdatedEvent.Company.type;
+         customerRequest.CustomerID=customer.CompanyUpdatedEvent.Company.ID;
+         customerRequest.CustomerName=customer.CompanyUpdatedEvent.Company.Name;
+         customerRequest.AddressType=customer.CompanyUpdatedEvent.Company.type;
+         customerRequest.Street=customer.CompanyUpdatedEvent.Company.Address.Street;
+         customerRequest.StreetNumber=customer.CompanyUpdatedEvent.Company.Address.StreetNumber;
+         customerRequest.PostalCode=customer.CompanyUpdatedEvent.Company.Address.PostalCode;
+         customerRequest.City=customer.CompanyUpdatedEvent.Company.Address.City;
+         customerRequest.CountryCode=customer.CompanyUpdatedEvent.Company.Address.CountryCode;
+         customerRequest.ReferenceDateTime=customer.CompanyUpdatedEvent.Company.ReferenceDateTime;
+         string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
+        // string token ="TestToken";
+        // bool valid=true;  for testing only
+         bool valid=false;
+            try 
+            {               
+                if(string.IsNullOrEmpty(token))
+                {
+                    logger.LogInformation("UpdateCustomerData function called with empty token, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
+                    return StatusCode(400);
+                }
+                else
+                {  
+                     logger.LogInformation("UpdateCustomerData function called , company ID -" + customer.CompanyUpdatedEvent.Company.ID);
+                     valid = await accountIdentityManager.ValidateToken(token);
+                     if(valid)
+                     {
+                          if (!(
+                                 (string.IsNullOrEmpty(customerRequest.CompanyType) || (customerRequest.CompanyType.Trim().Length<1))
+                                 || ((string.IsNullOrEmpty(customerRequest.CustomerID) || (customerRequest.CustomerID.Trim().Length<1)))
+                                 || ((string.IsNullOrEmpty(customerRequest.CustomerName) || (customerRequest.CustomerName.Trim().Length<1)))
+                                 || ((string.IsNullOrEmpty( customerRequest.AddressType) || ( customerRequest.AddressType.Trim().Length<1)))
+                                 || ((Convert.ToDateTime(customerRequest.ReferenceDateTime).ToUniversalTime()>System.DateTime.Now.ToUniversalTime()))
+                              ))
+                                {
+                                   return StatusCode(400);
+                                 }
+                                 else{
+                        
+                                      await organizationtmanager.UpdateCustomer(customerRequest);
+                                      logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
+                                      return Ok();
+                                     }
+                    }
+                     else
+                     {
+                         logger.LogInformation("Customer data not updated, company ID -" + customerRequest.CustomerID);
+                         return StatusCode(401);
+                     }
+                }
+            }
+            catch(Exception ex)
+            {
+                logger.LogError(ex.Message +" " +ex.StackTrace);
+                return StatusCode(500,"Internal Server Error.");              
+            }                        
         }  
 
         [HttpPost]
         [Route("keyhandover")]
         public async Task<IActionResult> keyhandover(KeyHandOver keyHandOver)
         {
-            //   var OrgId= await organizationtmanager.KeyHandOverEvent(keyHandOver);
-            //   return Ok("done");             
-              
                HandOver objHandOver=new  HandOver();
                objHandOver.VIN=keyHandOver.KeyHandOverEvent.VIN;
                objHandOver.TCUID=keyHandOver.KeyHandOverEvent.TCUID;
@@ -141,77 +138,58 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                objHandOver.PostalCode=keyHandOver.KeyHandOverEvent.EndCustomer.Address.PostalCode;
                objHandOver.City=keyHandOver.KeyHandOverEvent.EndCustomer.Address.City;
                objHandOver.CountryCode=keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode;
-
-
                // Configuarable values                                       
                objHandOver.OwnerRelationship= Configuration.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value; 
                objHandOver.OEMRelationship=Configuration.GetSection("DefaultSettings").GetSection("OEMRelationship").Value; 
                objHandOver.OrgCreationPackage=Configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value; 
                objHandOver.DAFPACCAR=Configuration.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value; 
                
-                var OrgId= await organizationtmanager.KeyHandOverEvent(objHandOver);
-                return Ok(1);
-
-        //     string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
-        //     bool valid=false;
-        //     try 
-        //     {
-        //         if(string.IsNullOrEmpty(token))
-        //         {
-        //             logger.LogInformation("KeyHandOverEvent function called with empty token, company ID -" + keyHandOver.KeyHandOverEvent.EndCustomer.ID);
-        //             return StatusCode(400,"Bad Request:");
-        //         }
-        //         else
-        //         {
-        //              valid = await accountIdentityManager.ValidateToken(token);
-        //              if(valid)
-        //              {
-        //                 if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.VIN)  || (keyHandOver.KeyHandOverEvent.VIN.Trim().Length<1))
-        //                 {
-        //                      return StatusCode(400,"Please provide VIN:");
-        //                 } 
-        //                 else if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.TCUID) || (keyHandOver.KeyHandOverEvent.TCUID.Trim().Length<1))
-        //                 {
-        //                      return StatusCode(400,"Please provide TCUID:");
-        //                 }
-        //                 else if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.EndCustomer.ID) || (keyHandOver.KeyHandOverEvent.EndCustomer.ID.Trim().Length<1))
-        //                 {
-        //                      return StatusCode(400,"Please provide company ID:");
-        //                 }
-        //                 else if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.EndCustomer.Name) || (keyHandOver.KeyHandOverEvent.EndCustomer.Name.Trim().Length<1))
-        //                 {
-        //                      return StatusCode(400,"Please provide company name:");
-        //                 }
-        //                 else  if (string.IsNullOrEmpty(keyHandOver.KeyHandOverEvent.ReferenceDateTime) || (keyHandOver.KeyHandOverEvent.ReferenceDateTime.Trim().Length<1))
-        //                 {
-        //                      return StatusCode(400,"Please provide company reference date:");
-        //                 }
-        //                 else  if (Convert.ToDateTime(keyHandOver.KeyHandOverEvent.ReferenceDateTime).ToUniversalTime()>System.DateTime.Now.ToUniversalTime())
-        //                 {
-        //                     return StatusCode(400,"Future date time is not allowed in company reference date, please provide company reference date time less then toaday :");
-        //                 }
-        //                 else  if (!((keyHandOver.KeyHandOverEvent.TCUActivation.ToUpper()=="YES") || (keyHandOver.KeyHandOverEvent.TCUActivation.ToUpper()=="NO")))
-        //                 {
-        //                       return StatusCode(400,"Please provide correct TCU Activation status:");
-        //                  }                             
-        //                 var OrgId= await organizationtmanager.KeyHandOverEvent(keyHandOver);
-        //                 logger.LogInformation("KeyHandOverEvent executed successfully, company ID -" + keyHandOver.KeyHandOverEvent.EndCustomer.ID);
-        //                 return Ok(OrgId);
-        //              }
-        //              else
-        //              {
-        //                  logger.LogInformation("KeyHandOverEvent not executed successfully, company ID -" + keyHandOver.KeyHandOverEvent.EndCustomer.ID);
-        //                  return StatusCode(401,"Forbidden:");
-        //              }
-        //         }
-        //     }
-        //     catch(Exception ex)
-        //     {
-        //         valid = false;
-        //         logger.LogError(ex.Message +" " +ex.StackTrace);
-        //         return StatusCode(500,"Internal Server Error.");
-        //        // return StatusCode(500,ex.Message +" " +ex.StackTrace);
-        //     }   
+               string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
+             
+              // bool valid=true; for testing only
+              // string token="testToken"; for testing only
+              bool valid=false;
+            try 
+            {
+                if(string.IsNullOrEmpty(token))
+                {
+                    logger.LogInformation("KeyHandOverEvent function called with empty token, company ID -" +objHandOver.CustomerID);
+                    return StatusCode(400);
+                }
+                else
+                {
+                  valid = await accountIdentityManager.ValidateToken(token);
+                   if(valid)
+                     {
+                        if (!(
+                            (string.IsNullOrEmpty(objHandOver.VIN) || (objHandOver.VIN.Trim().Length<1))
+                           || ((string.IsNullOrEmpty(objHandOver.TCUID) || (objHandOver.TCUID.Trim().Length<1)))
+                           || ((string.IsNullOrEmpty(objHandOver.CustomerName) || (objHandOver.CustomerName.Trim().Length<1)))
+                           || ((string.IsNullOrEmpty(objHandOver.ReferenceDateTime) || (objHandOver.ReferenceDateTime.Trim().Length<1)))
+                           || ((Convert.ToDateTime(objHandOver.ReferenceDateTime).ToUniversalTime()>System.DateTime.Now.ToUniversalTime()))
+                           || (!((objHandOver.TCUActivation.ToUpper()=="YES") || (objHandOver.TCUActivation.ToUpper()=="NO")))
+                        ))
+                        {
+                         return StatusCode(400);
+                        }                                              
+                        else
+                            {
+                               await organizationtmanager.KeyHandOverEvent(objHandOver);
+                                return Ok();
+                            }                                         
+                     }
+                     else
+                     {
+                         logger.LogInformation("KeyHandOverEvent not executed successfully, company ID -" + keyHandOver.KeyHandOverEvent.EndCustomer.ID);
+                         return StatusCode(401);
+                     }
+                }
+            }
+            catch(Exception ex)
+            {               
+                logger.LogError(ex.Message +" " +ex.StackTrace);
+                return StatusCode(500,"Internal Server Error.");             
+            }   
         }       
     }
 }

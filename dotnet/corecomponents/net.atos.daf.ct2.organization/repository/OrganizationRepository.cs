@@ -107,7 +107,7 @@ namespace net.atos.daf.ct2.organization.repository
                     AccessRelationship accessRelationship = new AccessRelationship();
                     accessRelationship.AccountGroupId = groupAccount.Id;
                     accessRelationship.VehicleGroupId = groupVehicle.Id;
-                    accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ReadWrite;
+                    accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ViewOnly;
                     await accountManager.CreateAccessRelationship(accessRelationship);
 
                 }
@@ -282,13 +282,13 @@ namespace net.atos.daf.ct2.organization.repository
         }
 
 
-        public async Task<Customer> UpdateCustomer(Customer customer)
+        public async Task<CustomerRequest> UpdateCustomer(CustomerRequest customer)
         {
             log.Info("Update Customer method called in repository");
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@org_id", customer.CompanyUpdatedEvent.Company.ID);
+                parameter.Add("@org_id", customer.CustomerID);
                 var query = @"SELECT id FROM master.organization where org_id=@org_id";
                 int iscustomerexist = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
@@ -296,18 +296,18 @@ namespace net.atos.daf.ct2.organization.repository
                 {
                     Int64 referenceDateTime;
                     var parameterUpdate = new DynamicParameters();
-                    parameterUpdate.Add("@org_id", customer.CompanyUpdatedEvent.Company.ID);
-                    parameterUpdate.Add("@Name", customer.CompanyUpdatedEvent.Company.Name);
-                    parameterUpdate.Add("@Type", customer.CompanyUpdatedEvent.Company.type);
-                    parameterUpdate.Add("@AddressType", customer.CompanyUpdatedEvent.Company.Address.Type);
-                    parameterUpdate.Add("@AddressStreet", customer.CompanyUpdatedEvent.Company.Address.Street);
-                    parameterUpdate.Add("@AddressStreetNumber", customer.CompanyUpdatedEvent.Company.Address.StreetNumber);
-                    parameterUpdate.Add("@PostalCode", customer.CompanyUpdatedEvent.Company.Address.PostalCode);
-                    parameterUpdate.Add("@City", customer.CompanyUpdatedEvent.Company.Address.City);
-                    parameterUpdate.Add("@CountryCode", customer.CompanyUpdatedEvent.Company.Address.CountryCode);                     
-                    if ((customer.CompanyUpdatedEvent.Company.ReferenceDateTime != null) && (DateTime.Compare(DateTime.MinValue, customer.CompanyUpdatedEvent.Company.ReferenceDateTime) < 0))
+                    parameterUpdate.Add("@org_id", customer.CustomerID);
+                    parameterUpdate.Add("@Name", customer.CustomerName);
+                    parameterUpdate.Add("@Type", customer.CompanyType);
+                    parameterUpdate.Add("@AddressType", customer.AddressType);
+                    parameterUpdate.Add("@AddressStreet", customer.Street);
+                    parameterUpdate.Add("@AddressStreetNumber", customer.StreetNumber);
+                    parameterUpdate.Add("@PostalCode", customer.PostalCode);
+                    parameterUpdate.Add("@City", customer.City);
+                    parameterUpdate.Add("@CountryCode", customer.CountryCode);                     
+                    if ((customer.ReferenceDateTime != null) && (DateTime.Compare(DateTime.MinValue, customer.ReferenceDateTime) < 0))
                     {
-                        referenceDateTime = UTCHandling.GetUTCFromDateTime(customer.CompanyUpdatedEvent.Company.ReferenceDateTime);
+                        referenceDateTime = UTCHandling.GetUTCFromDateTime(customer.ReferenceDateTime);
                     }
                     else
                     {
@@ -330,20 +330,20 @@ namespace net.atos.daf.ct2.organization.repository
                 {
                     Int64 referenceDateTime;
                     var parameterInsert = new DynamicParameters();
-                    parameterInsert.Add("@org_id", customer.CompanyUpdatedEvent.Company.ID);
-                    parameterInsert.Add("@Name", customer.CompanyUpdatedEvent.Company.Name);
-                    parameterInsert.Add("@Type", customer.CompanyUpdatedEvent.Company.type);
-                    parameterInsert.Add("@AddressType", customer.CompanyUpdatedEvent.Company.Address.Type);
-                    parameterInsert.Add("@AddressStreet", customer.CompanyUpdatedEvent.Company.Address.Street);
-                    parameterInsert.Add("@AddressStreetNumber", customer.CompanyUpdatedEvent.Company.Address.StreetNumber);
-                    parameterInsert.Add("@PostalCode", customer.CompanyUpdatedEvent.Company.Address.PostalCode);
-                    parameterInsert.Add("@City", customer.CompanyUpdatedEvent.Company.Address.City);
-                    parameterInsert.Add("@CountryCode", customer.CompanyUpdatedEvent.Company.Address.CountryCode);
+                    parameterInsert.Add("@org_id", customer.CustomerID);
+                    parameterInsert.Add("@Name", customer.CustomerName);
+                    parameterInsert.Add("@Type", customer.CompanyType);
+                    parameterInsert.Add("@AddressType", customer.AddressType);
+                    parameterInsert.Add("@AddressStreet", customer.Street);
+                    parameterInsert.Add("@AddressStreetNumber", customer.StreetNumber);
+                    parameterInsert.Add("@PostalCode", customer.PostalCode);
+                    parameterInsert.Add("@City", customer.City);
+                    parameterInsert.Add("@CountryCode", customer.CountryCode);
                    
 
-                    if ((customer.CompanyUpdatedEvent.Company.ReferenceDateTime != null) && (DateTime.Compare(DateTime.MinValue, customer.CompanyUpdatedEvent.Company.ReferenceDateTime) < 0))
+                    if ((customer.ReferenceDateTime != null) && (DateTime.Compare(DateTime.MinValue, customer.ReferenceDateTime) < 0))
                     {
-                        referenceDateTime = UTCHandling.GetUTCFromDateTime(customer.CompanyUpdatedEvent.Company.ReferenceDateTime);
+                        referenceDateTime = UTCHandling.GetUTCFromDateTime(customer.ReferenceDateTime);
                     }
                     else
                     {
@@ -351,16 +351,14 @@ namespace net.atos.daf.ct2.organization.repository
                     }
                     parameterInsert.Add("@vehicle_default_opt_in", "I");
                     parameterInsert.Add("@driver_default_opt_in", "U");
-
-                    // parameterInsert.Add("@reference_date", customer.CompanyUpdatedEvent.Company.ReferenceDateTime != null ? UTCHandling.GetUTCFromDateTime(customer.CompanyUpdatedEvent.Company.ReferenceDateTime.ToString()) : 0);                
-                    parameterInsert.Add("@reference_date", referenceDateTime);
+                   parameterInsert.Add("@reference_date", referenceDateTime);
                     string queryInsert = "insert into master.organization(org_id, name,type ,address_type, street, street_number, postal_code, city,country_code,reference_date,vehicle_default_opt_in,driver_default_opt_in) " +
                                   "values(@org_id, @Name,@Type ,@AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@reference_date,@vehicle_default_opt_in,@driver_default_opt_in) RETURNING id";
 
                    int organizationId= await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameterInsert);
                                      
                    // CraeteOrganizationRelationship
-                   // await subscriptionManager.Create(organizationId); 
+                   // need to discuss here
                    
                    // Assign base package at ORG lavel
                     await subscriptionManager.Create(organizationId);
@@ -545,45 +543,20 @@ namespace net.atos.daf.ct2.organization.repository
                    relationshipMapping.target_org_id=Convert.ToInt32(keyHandOver.OwnerRelationship);
                    relationshipMapping.created_org_id=Convert.ToInt32(keyHandOver.OwnerRelationship);
                    relationshipMapping.vehicle_id=VehicleID;                 
-                 //  relationshipMapping.vehicle_group_id=190;  // Need to delete this  - what is default vehicle group id ?
                    relationshipMapping.start_date=UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
-                  // relationshipMapping.end_date=0;
-                   relationshipMapping.created_at=UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
-
-                   relationshipMapping.allow_chain=true;                   
+                   relationshipMapping.created_at=UTCHandling.GetUTCFromDateTime(System.DateTime.Now);                   
+                   relationshipMapping.allow_chain=true;  
+                   relationshipMapping.isFirstRelation=true;                 
                    await CreateOwnerRelationship(relationshipMapping);              
                }
                catch(Exception ex )
                 {
-                 log.Info("UpdatetVehicle method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                 log.Info("UpdatetVehicle method called in repository failed :");
                  log.Error(ex.ToString());
                  throw ex;
                 }    
                return 1;          
-         }
-        // public async Task<int> OrganizationRelationship(HandOver keyHandOver,int OrganizationId)
-        //  {
-        //        try{
-                  
-        //             OrganizationRelationship organizationRelationship=new OrganizationRelationship();
-        //             organizationRelationship.organization_id=OrganizationId;
-        //             organizationRelationship.feature_set_id=1; // need to delete 
-        //             organizationRelationship.name="OrgRelatrionship"; // need to define the name paterns
-        //             organizationRelationship.description="OrgRelatrionship description"; // need to define the name paterns
-        //             organizationRelationship.code="ORGCODE"; // need to define the name paterns
-        //             organizationRelationship.is_active=true; 
-        //             organizationRelationship.level=0;  // need to define the level
-                    
-        //             await CraeteOrganizationRelationship(organizationRelationship);              
-        //        }
-        //        catch(Exception ex )
-        //         {
-        //          log.Info("UpdatetVehicle method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
-        //          log.Error(ex.ToString());
-        //          throw ex;
-        //         }    
-        //        return 1;          
-        //  }
+         }       
         public async Task<HandOver> KeyHandOverEvent(HandOver keyHandOver)
         {
            // 1. Check the VIN in exist in vehicle table.
@@ -669,16 +642,16 @@ namespace net.atos.daf.ct2.organization.repository
             return keyHandOver;
         }
 
-        public async Task<int> CreateVehicleParty(List<Customer> customers)
-        {
-            int count = 0;
-            foreach (var item in customers)
-            {
-                await UpdateCustomer(item);
-                count += 1;
-            }
-            return count;
-        }
+        // public async Task<int> CreateVehicleParty(List<Customer> customers)
+        // {
+        //     int count = 0;
+        //     foreach (var item in customers)
+        //     {
+        //         await UpdateCustomer(item);
+        //         count += 1;
+        //     }
+        //     return count;
+        // }
 
         public async Task<int> CreateOwnerRelationship(RelationshipMapping relationshipMapping)
         {
@@ -690,10 +663,10 @@ namespace net.atos.daf.ct2.organization.repository
 
             int OwnerRelationshipId = 0;
             var parameter = new DynamicParameters();
-            parameter.Add("@vin", relationshipMapping.VIN);
-            var query = @"Select id from master.orgrelationshipmapping where vehicle_id=@vin";
-            int iscustomerexist = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-            if (iscustomerexist < 1 && relationshipMapping.isFirstRelation) // relationship not exist
+            parameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
+            var query = @"Select id from master.orgrelationshipmapping where vehicle_id=@vehicle_id";
+            int isRelationshipExist = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+            if (isRelationshipExist < 1 && relationshipMapping.isFirstRelation) // relationship not exist
             // if (iscustomerexist< 1)
             {
                 var Inputparameter = new DynamicParameters();
@@ -704,16 +677,14 @@ namespace net.atos.daf.ct2.organization.repository
                 }  
                 else{
                     Inputparameter.Add("@vehicle_group_id", relationshipMapping.vehicle_group_id);
-                }                 
-              
-                Inputparameter.Add("@vehicle_group_id", relationshipMapping.vehicle_group_id);
+                } 
                 Inputparameter.Add("@owner_org_id",relationshipMapping.owner_org_id);    // from property file 
                 Inputparameter.Add("@created_org_id", relationshipMapping.created_org_id); // from property file --- first time it will same as owner_org_id
                 Inputparameter.Add("@target_org_id", relationshipMapping.target_org_id);  // from property file -- first time it will same as owner_org_id
-                Inputparameter.Add("@start_date", relationshipMapping.start_date);
+                Inputparameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 Inputparameter.Add("@end_date", null);   // First time -- NULL
                 Inputparameter.Add("@allow_chain", relationshipMapping.allow_chain);   // Alway true
-                Inputparameter.Add("@created_at", relationshipMapping.created_at);   // Alway true
+                Inputparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));   // Alway true
 
                 var queryInsert = @"insert into master.orgrelationshipmapping(relationship_id,vehicle_id,vehicle_group_id,
                      owner_org_id,created_org_id,target_org_id,start_date,end_date,allow_chain,created_at)                     
@@ -723,11 +694,9 @@ namespace net.atos.daf.ct2.organization.repository
                 return OwnerRelationshipId;
             }
 
-            else if (iscustomerexist > 1 && (!relationshipMapping.isFirstRelation)) // relationship exist
-           // else if (iscustomerexist > 1)
+            else if (isRelationshipExist > 1 && (!relationshipMapping.isFirstRelation)) // relationship exist          
             {
-                // update previuse relationship end date and insert new relationship
-                // Update orgrelationshipmapping 
+                // update previuse relationship end date and insert new relationship              
                 var Inputparameter = new DynamicParameters();
                 Inputparameter.Add("@relationship_id", relationshipMapping.relationship_id);  
                 Inputparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
@@ -741,17 +710,15 @@ namespace net.atos.daf.ct2.organization.repository
                 Inputparameter.Add("@owner_org_id", relationshipMapping.owner_org_id);  
                 Inputparameter.Add("@created_org_id", relationshipMapping.created_org_id); 
                 Inputparameter.Add("@target_org_id", relationshipMapping.target_org_id); 
-                Inputparameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(System.DateTime.Now));
+                Inputparameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 Inputparameter.Add("@end_date",null);
                 Inputparameter.Add("@allow_chain", relationshipMapping.allow_chain); // Alway true
-                Inputparameter.Add("@created_at",UTCHandling.GetUTCFromDateTime(System.DateTime.Now));
+                Inputparameter.Add("@created_at",UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 
                 var queryUpdate = @"update into master.orgrelationshipmapping
                  set vehicle_id=@vehicle_id,vehicle_group_id=@vehicle_group_id,owner_org_id=@owner_org_id,created_org_id=@created_org_id,
                  target_org_id=@target_org_id,start_date=@start_date,end_date=@end_date,allow_chain=@allow_chain,created_at=@created_at";
                  await dataAccess.ExecuteScalarAsync<int>(queryUpdate, Inputparameter);
-
-                // await VehicleOptInOptOutHistory(keyHandOver.VIN);
                  return OwnerRelationshipId;
             }
             }

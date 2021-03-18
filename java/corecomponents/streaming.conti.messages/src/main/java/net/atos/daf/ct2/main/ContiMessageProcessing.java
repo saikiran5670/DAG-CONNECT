@@ -114,22 +114,18 @@ public class ContiMessageProcessing {
     DataStream<KafkaRecord<String>> contiInputStream = consumeSrcStream.consumeSourceInputStream(
 			streamExecutionEnvironment, DAFCT2Constant.SOURCE_TOPIC_NAME, properties);
 
-    contiInputStream.map(new MapFunction<KafkaRecord<String>,KafkaRecord<String>>(){
+   /* contiInputStream.map(new MapFunction<KafkaRecord<String>,KafkaRecord<String>>(){
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
         String rowKey = null;
 		@Override
 		public KafkaRecord<String> map(KafkaRecord<String> value) throws Exception {
 			try{
 				JsonNode jsonNodeRec = JsonMapper.configuring().readTree(value.getValue());
-				System.out.println("for history :: "+jsonNodeRec);
+				log.info("Conti rec for history :: "+jsonNodeRec);
 				rowKey = jsonNodeRec.get("TransID").asText() + "_" + jsonNodeRec.get("VID").asText() + "_" + TimeFormatter.getInstance().getCurrentUTCTime();
 				
 			}catch(Exception e){
-				rowKey = "CorruptMessage" + "_" + TimeFormatter.getInstance().getCurrentUTCTime();
+				rowKey = "UnknownMessage" + "_" + TimeFormatter.getInstance().getCurrentUTCTime();
 			}
 			
 			value.setKey(rowKey);
@@ -142,7 +138,13 @@ public class ContiMessageProcessing {
 			properties.getProperty(DAFCT2Constant.HBASE_MASTER),
 			properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER_PORT),
 			properties.getProperty(DAFCT2Constant.HBASE_CONTI_HISTORICAL_TABLE_NAME),
-			properties.getProperty(DAFCT2Constant.HBASE_CONTI_HISTORICAL_TABLE_CF)));
+			properties.getProperty(DAFCT2Constant.HBASE_CONTI_HISTORICAL_TABLE_CF)));*/
+    
+    new MessageProcessing<String, String>()
+    .contiMessageForHistorical(
+    	contiInputStream,
+        properties,
+        broadcastStream);
 	
     DataStream<Tuple2<Integer, KafkaRecord<String>>> contiStreamValiditySts = validateSourceStream
 			.isValidJSON(contiInputStream);

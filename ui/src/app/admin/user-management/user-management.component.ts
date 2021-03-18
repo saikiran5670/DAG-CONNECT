@@ -41,6 +41,7 @@ export class UserManagementComponent implements OnInit {
   localStLanguage: any;
   dialogRef: MatDialogRef<CommonTableComponent>;
   showLoadingIndicator: any;
+  privilegeAccess: boolean = true; //-- false
 
   constructor(
     private dialogService: ConfirmDialogService,
@@ -231,44 +232,26 @@ export class UserManagementComponent implements OnInit {
       roleId: 0,
       name: ""
    }
-   let selectedRoleObj = {
-    accountId: element.id,
-    organizationId: element.organizationId,
-    roles: [0]
-  }
-  let selectedAccountGrpObj = {
-    accountGroupId: 0,
-    organizationId: element.organizationId,
-    accountId: element.id,
-    accounts: false,
-    accountCount: false
-  };
 
   this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
     this.roleData = allRoleData;
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
       this.userGrpData = allAccountGroupData;
-     this.userGrpData = [];
-      this.accountService.getAccountRoles(selectedRoleObj).subscribe(selectedRoleData => { 
-        this.selectedRoleData = selectedRoleData;
+      this.selectedRoleData = element.roles;
         this.accountService.getAccountPreference(element.preferenceId).subscribe(accountPrefData => {
           this.userDataForEdit = element;
           this.selectedPreference = accountPrefData;
-          this.accountService.getAccountDesc(selectedAccountGrpObj).subscribe((resp) => {
-            this.selectedUserGrpData = resp;
+            let reflectArray: any = [];
+            if(element.accountGroups.length > 0){
+              element.accountGroups.forEach((elem: any) => {
+                reflectArray.push({groupId: elem.id, accountGroupName: elem.name});
+              });
+            }
+            this.selectedUserGrpData = reflectArray;
             this.editFlag = (type == 'edit') ? true : false;
             this.viewFlag = (type == 'view') ? true : false;
             this.isCreateFlag = false;
-          }, (error) => { 
-              if(error.status == 404){
-                this.selectedUserGrpData = [];
-                this.editFlag = (type == 'edit') ? true : false;
-                this.viewFlag = (type == 'view') ? true : false;
-                this.isCreateFlag = false;
-              }
-           });
         }, (error)=> {});
-      }, (error)=> {});
     }, (error)=> {});
    }, (error)=> {});
   }

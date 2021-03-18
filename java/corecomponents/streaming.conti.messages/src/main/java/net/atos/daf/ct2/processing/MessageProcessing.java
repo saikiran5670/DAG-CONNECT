@@ -15,6 +15,7 @@ import org.apache.flink.util.Collector;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.constant.DAFCT2Constant;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.Message;
@@ -132,5 +133,69 @@ public class MessageProcessing<U, T> {
     // singleOutputStreamOperator.print();
 
   }
-  	  
+  
+  public void contiMessageForHistorical(
+	      DataStream<KafkaRecord<String>> messageDataStream,
+	      Properties properties,
+		  BroadcastStream<KafkaRecord<U>> broadcastStream) {
+
+		messageDataStream.connect(broadcastStream)
+				.process(new BroadcastProcessFunction<KafkaRecord<String>, KafkaRecord<U>, KafkaRecord<String>>() {
+
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+					private final MapStateDescriptor<Message<U>, KafkaRecord<U>> broadcastStateDescriptor = new BroadcastState<U>()
+							.stateInitialization(properties.getProperty(DAFCT2Constant.BROADCAST_NAME));
+
+					@Override
+					public void processElement(KafkaRecord<String> value, ReadOnlyContext ctx,
+							Collector<KafkaRecord<String>> out) {
+
+						try {
+							JsonNode jsonNodeRec = JsonMapper.configuring().readTree((String) value.getValue());
+							String vid = jsonNodeRec.get("VID").asText();
+							System.out.println("History Record VID: " + vid);
+							String vin = DAFCT2Constant.UNKNOWN;
+
+							for (Map.Entry<Message<U>, KafkaRecord<U>> map : ctx
+									.getBroadcastState(broadcastStateDescriptor).immutableEntries()) {
+								String key = map.getKey().get().toString();
+								System.out.println("Map: " + map);
+								System.out.println("History Key: " + key);
+
+								if (key.equalsIgnoreCase(vid)) {
+									vin = map.getValue().getValue().toString();
+									System.out.println("Broadcats Values: " + vid);
+									break;
+								}
+							}
+							value.setKey(jsonNodeRec.get("TransID").asText() + "_" + vin + "_"
+									+ TimeFormatter.getInstance().getCurrentUTCTime());
+
+						} catch (Exception e) {
+							value.setKey("UnknownMessage" + "_" + TimeFormatter.getInstance().getCurrentUTCTime());
+						}
+
+						out.collect(value);
+					}
+
+					@Override
+					public void processBroadcastElement(KafkaRecord<U> value, Context ctx,
+							Collector<KafkaRecord<String>> out) throws Exception {
+						System.out.println("Broadcast:" + value);
+						ctx.getBroadcastState(broadcastStateDescriptor).put(new Message<U>((U) value.getKey()), value);
+					}
+				})
+				.addSink(new StoreHistoricalData(properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_QUORUM),
+						properties.getProperty(DAFCT2Constant.HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT),
+						properties.getProperty(DAFCT2Constant.ZOOKEEPER_ZNODE_PARENT),
+						properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER),
+						properties.getProperty(DAFCT2Constant.HBASE_MASTER),
+						properties.getProperty(DAFCT2Constant.HBASE_REGIONSERVER_PORT),
+						properties.getProperty(DAFCT2Constant.HBASE_CONTI_HISTORICAL_TABLE_NAME),
+						properties.getProperty(DAFCT2Constant.HBASE_CONTI_HISTORICAL_TABLE_CF)));
+	}
+	  
 }

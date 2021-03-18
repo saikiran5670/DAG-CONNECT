@@ -16,7 +16,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         public string Make { get; set; }
         public Series Series { get; set; }
         public Model Model { get; set; }
-        public int ModelYear{ get; set;}
+        public string ModelYear{ get; set;}
         public Type Type { get; set; }
     }
 
@@ -50,12 +50,12 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         public FuelTanks FuelTanks { get; set; }
         public string SideSkirts { get; set; }
         public string SideCollars { get; set; }
-        public int RearOverhang { get; set; }
+        public string RearOverhang { get; set; }
     }
     public class Tank
     {
-        public int nr { get; set; }
-        public int Volume { get; set; }
+        public string nr { get; set; }
+        public string Volume { get; set; }
     }
 
     public class FuelTanks
@@ -67,7 +67,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     {
         public string ID { get; set; }
         public string Type { get; set; }
-        public int Power { get; set; }
+        public string Power { get; set; }
         public string Coolant { get; set; }
         public string EmissionLevel { get; set; }
     }
@@ -95,7 +95,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
 
     public class FrontAxle
     {
-        public int position { get; set; }
+        public string position { get; set; }
         public string Type { get; set; }
         public string Springs {get; set;}        
         public AxleSpecificWheels AxleSpecificWheels {get; set;}
@@ -103,9 +103,9 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
 
     public class RearAxle
     {
-        public int position { get; set; }
-        public int Load { get; set; }
-        public decimal? Ratio { get; set; }
+        public string position { get; set; }
+        public string Load { get; set; }
+        public string Ratio { get; set; }
         public string Springs {get; set;}
         public AxleSpecificWheels AxleSpecificWheels {get; set;}
     }
@@ -118,7 +118,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     public class DriveLine
     {
         public string AxleConfiguration { get; set; }
-        public decimal WheelBase { get; set; }
+        public string WheelBase { get; set; }
         public Wheels Wheels { get; set; }
         public FrontAxle[] FrontAxle { get; set; }
         public RearAxle[] RearAxle { get; set; }
@@ -145,9 +145,9 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
 
     public class Size
     {
-        public int Length { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public string Length { get; set; }
+        public string Width { get; set; }
+        public string Height { get; set; }
     }
 
     public class Weights
@@ -157,7 +157,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     public class Weight
     {
         public string type { get; set; }
-        public int value { get; set; }
+        public string value { get; set; }
     }
 
     public class VehicleDimensions

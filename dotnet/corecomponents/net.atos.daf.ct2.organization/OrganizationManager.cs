@@ -39,7 +39,7 @@ namespace net.atos.daf.ct2.organization
             return await organizationRepository.GetPreference(organizationId);
         }
 
-       public async Task<Customer> UpdateCustomer(Customer customer)
+       public async Task<CustomerRequest> UpdateCustomer(CustomerRequest customer)
         {
             return await organizationRepository.UpdateCustomer(customer);
         }
@@ -48,10 +48,10 @@ namespace net.atos.daf.ct2.organization
             return await organizationRepository.KeyHandOverEvent(keyHandOver);
         }
 
-        public async Task<int> CreateVehicleParty(List<Customer> customers)
-        {
-            return await organizationRepository.CreateVehicleParty(customers);
-        }
+        // public async Task<int> CreateVehicleParty(List<Customer> customers)
+        // {
+        //     return await organizationRepository.CreateVehicleParty(customers);
+        // }
        public async Task<int> CreateOwnerRelationship(RelationshipMapping relationshipMapping)
         {
             return await organizationRepository.CreateOwnerRelationship(relationshipMapping);
