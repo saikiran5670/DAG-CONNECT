@@ -41,7 +41,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                 if (string.IsNullOrEmpty(token))
                 {
                     logger.LogInformation($"Subscription function called with empty token, with Package Id - {objsubscriptionActivation.packageId}");
-                    return StatusCode(400, "Bad Request:");
+                    return BadRequest();
                 }
                 else
                 {
@@ -51,11 +51,11 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     {
                         if (string.IsNullOrEmpty(objsubscriptionActivation.OrganizationId))
                         {
-                            return StatusCode(400, "Please provide organization ID:");
+                            return BadRequest();
                         }
                         else if (string.IsNullOrEmpty(objsubscriptionActivation.packageId))
                         {
-                            return StatusCode(400, "Please provide packageId ");
+                            return BadRequest();
                         }
 
 
@@ -66,7 +66,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     else
                     {
                         logger.LogInformation($"Subscription function called with invalid Token, with Package Id - {objsubscriptionActivation.packageId}");
-                        return StatusCode(401, "Forbidden:");
+                        return StatusCode(500, string.Empty);
                     }
                 }
             }
@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
             {
                 valid = false;
                 logger.LogError(ex.Message + " " + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500, string.Empty);
             }
         }
 
@@ -89,7 +89,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                 if (string.IsNullOrEmpty(token))
                 {
                     logger.LogInformation($"UnSubscription function called with empty token, with Package Id - {objUnSubscription.OrderID}");
-                    return StatusCode(400, "Bad Request:");
+                    return BadRequest();
                 }
                 else
                 {
@@ -99,14 +99,12 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     {
                         if (string.IsNullOrEmpty(objUnSubscription.OrganizationID))
                         {
-                            return StatusCode(400, "Please provide organization ID:");
+                            return BadRequest();
                         }
                         else if (string.IsNullOrEmpty(objUnSubscription.PackageId))
                         {
-                            return StatusCode(400, "Please provide packageId ");
+                            return BadRequest();
                         }
-
-
                         var orderId = await subscriptionManager.Unsubscribe(objUnSubscription);
                         logger.LogInformation($"Subscription data has been Inserted, order ID - {orderId}");
                         return Ok(orderId);
@@ -114,7 +112,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     else
                     {
                         logger.LogInformation($"Subscription function called with invalid Token, with Package Id - {objUnSubscription.OrderID}");
-                        return StatusCode(401, "Forbidden:");
+                        return Unauthorized();
                     }
                 }
             }
@@ -122,7 +120,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
             {
                 valid = false;
                 logger.LogError(ex.Message + " " + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500,string.Empty);
             }
         }
     }
