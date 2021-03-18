@@ -58,7 +58,17 @@ namespace net.atos.daf.ct2.subscription.repository
             return data;
         }
 
-
+        //To check if Organization is already inserted
+        async Task<string> OrganizationExits(int orgId)
+        {
+            var parameterToGetSubscribeId = new DynamicParameters();
+            parameterToGetSubscribeId.Add("@organization_Id", orgId);
+            parameterToGetSubscribeId.Add("@is_active", true);
+            string data = await dataAccess.ExecuteScalarAsync<string>
+                             (@"select subscription_id from master.subscription where organization_Id =@organization_Id and is_active =@is_active",
+                            parameterToGetSubscribeId);
+            return data;
+        }
         public async Task<SubscriptionResponse> Subscribe(SubscriptionActivation objSubscription)
         {
             log.Info("Subscribe Subscription method called in repository");
@@ -409,8 +419,15 @@ namespace net.atos.daf.ct2.subscription.repository
         {
             try
             {
-                //int orgid = await GetOrganizationIdByCode(orgId);
-                string SubscriptionId = Guid.NewGuid().ToString();
+                SubscriptionResponse objSubscriptionResponse = new SubscriptionResponse();
+                string SubscriptionId = string.Empty;
+                SubscriptionId = await OrganizationExits(orgId);
+                if (!string.IsNullOrEmpty(SubscriptionId))
+                {
+                    objSubscriptionResponse.orderId = SubscriptionId;
+                    return objSubscriptionResponse;
+                }
+                SubscriptionId = Guid.NewGuid().ToString();
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", orgId);
                 parameter.Add("@subscription_id", SubscriptionId);
@@ -428,7 +445,7 @@ namespace net.atos.daf.ct2.subscription.repository
 
                 int subid = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
 
-                SubscriptionResponse objSubscriptionResponse = new SubscriptionResponse();
+                
                 objSubscriptionResponse.orderId = SubscriptionId;
                 return objSubscriptionResponse;
 

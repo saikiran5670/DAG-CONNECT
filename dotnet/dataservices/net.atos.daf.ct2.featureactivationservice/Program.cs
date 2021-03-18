@@ -17,10 +17,14 @@ namespace net.atos.daf.ct2.featureactivationservice
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+         Host.CreateDefaultBuilder(args)
+         .ConfigureWebHostDefaults(webBuilder =>
+         {
+             webBuilder.ConfigureKestrel(serverOptions =>
+             {
+                 serverOptions.AddServerHeader = false;
+             })
+            .UseStartup<Startup>();
+         });
     }
 }
