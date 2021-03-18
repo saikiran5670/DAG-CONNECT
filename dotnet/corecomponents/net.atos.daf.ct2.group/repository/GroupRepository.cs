@@ -22,22 +22,22 @@ namespace net.atos.daf.ct2.group
         {
             try
             {
+
                 // check for exists
-                bool result = await Exists(group);
-                if (result)
+                var result = await Exists(group);
+                if (group.Exists)
                 {
-                    group.Exists = true;
                     return group;
                 }
                 var parameter = new DynamicParameters();
                 parameter.Add("@object_type", (char)group.ObjectType);
                 parameter.Add("@group_type", (char)group.GroupType);
-                parameter.Add("@argument", string.IsNullOrEmpty(group.Argument) ? null : group.Argument) ;
+                parameter.Add("@argument", string.IsNullOrEmpty(group.Argument) ? null : group.Argument);
                 if (group.FunctionEnum == FunctionEnum.None) parameter.Add("@function_enum", null);
-                else parameter.Add("@function_enum", (char) group.FunctionEnum);
+                else parameter.Add("@function_enum", (char)group.FunctionEnum);
                 parameter.Add("@organization_id", group.OrganizationId);
                 // if the group type is single
-                if(group.GroupType == GroupType.Single && group.RefId> 0) parameter.Add("@ref_id", group.RefId);
+                if (group.GroupType == GroupType.Single && group.RefId > 0) parameter.Add("@ref_id", group.RefId);
                 else parameter.Add("@ref_id", null);
                 parameter.Add("@name", group.Name);
                 parameter.Add("@description", group.Description);
@@ -60,10 +60,10 @@ namespace net.atos.daf.ct2.group
             try
             {
                 // check for exists
-                bool result = await Exists(group);
-                if (result)
+                // check for exists
+                var result = await Exists(group);
+                if (group.Exists)
                 {
-                    group.Exists = true;
                     return group;
                 }
                 var parameter = new DynamicParameters();
@@ -108,7 +108,7 @@ namespace net.atos.daf.ct2.group
                     else query = @"delete from master.accessrelationship where vehicle_group_id = @id";
                     await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
-                    
+
                     // delete group ref
                     query = @"delete from master.groupref where group_id = @id";
                     await dataAccess.ExecuteScalarAsync<int>(query, parameter);
@@ -165,7 +165,7 @@ namespace net.atos.daf.ct2.group
                         parameter.Add("@group_type_group", (char)GroupType.Group, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         parameter.Add("@group_type_dynamic", (char)GroupType.Dynamic, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and (group_type=@group_type_group or group_type=@group_type_dynamic) ";
-                    }                    
+                    }
 
                     //// function functional enum filter
                     //if (((char)groupFilter.FunctionEnum) != ((char)FunctionEnum.None))
@@ -195,7 +195,7 @@ namespace net.atos.daf.ct2.group
                 {
                     group = Map(record);
                     // single group type.
-                    if(group.GroupType == GroupType.Single)
+                    if (group.GroupType == GroupType.Single)
                     {
 
                     }
@@ -291,7 +291,7 @@ namespace net.atos.daf.ct2.group
         #endregion
 
         #region private methods
-        private async Task<bool> Exists(Group groupRequest)
+        private async Task<Group> Exists(Group groupRequest)
         {
             try
             {
@@ -326,10 +326,15 @@ namespace net.atos.daf.ct2.group
                         parameter.Add("@object_type", (char)groupRequest.ObjectType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and object_type=@object_type ";
                     }
+
                 }
                 var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                if (groupid > 0) return true;
-                return false;
+                if (groupid > 0)
+                {
+                    groupRequest.Exists = true;
+                    groupRequest.Id = groupid;
+                }
+                return groupRequest;
             }
             catch (Exception ex)
             {
@@ -462,7 +467,7 @@ namespace net.atos.daf.ct2.group
                 throw ex;
             }
         }
-        
+
         public async Task<bool> RemoveRef(int groupid)
         {
             try
@@ -493,7 +498,7 @@ namespace net.atos.daf.ct2.group
             {
                 throw ex;
             }
-        }         
+        }
 
         #endregion
     }
