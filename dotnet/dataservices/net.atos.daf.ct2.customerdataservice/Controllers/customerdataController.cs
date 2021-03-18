@@ -74,6 +74,8 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
          customerRequest.CountryCode=customer.CompanyUpdatedEvent.Company.Address.CountryCode;
          customerRequest.ReferenceDateTime=customer.CompanyUpdatedEvent.Company.ReferenceDateTime;
          string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
+        // string token ="TestToken";
+        // bool valid=true;  for testing only
          bool valid=false;
             try 
             {               
@@ -88,13 +90,13 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                      valid = await accountIdentityManager.ValidateToken(token);
                      if(valid)
                      {
-                          if (
+                          if (!(
                                  (string.IsNullOrEmpty(customerRequest.CompanyType) || (customerRequest.CompanyType.Trim().Length<1))
                                  || ((string.IsNullOrEmpty(customerRequest.CustomerID) || (customerRequest.CustomerID.Trim().Length<1)))
                                  || ((string.IsNullOrEmpty(customerRequest.CustomerName) || (customerRequest.CustomerName.Trim().Length<1)))
                                  || ((string.IsNullOrEmpty( customerRequest.AddressType) || ( customerRequest.AddressType.Trim().Length<1)))
                                  || ((Convert.ToDateTime(customerRequest.ReferenceDateTime).ToUniversalTime()>System.DateTime.Now.ToUniversalTime()))
-                              )
+                              ))
                                 {
                                    return StatusCode(400);
                                  }
@@ -142,8 +144,11 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                objHandOver.OrgCreationPackage=Configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value; 
                objHandOver.DAFPACCAR=Configuration.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value; 
                
-            string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
-            bool valid=false;
+               string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
+             
+              // bool valid=true; for testing only
+              // string token="testToken"; for testing only
+              bool valid=false;
             try 
             {
                 if(string.IsNullOrEmpty(token))
@@ -153,17 +158,17 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 }
                 else
                 {
-                     valid = await accountIdentityManager.ValidateToken(token);
-                     if(valid)
+                  valid = await accountIdentityManager.ValidateToken(token);
+                   if(valid)
                      {
-                        if (
+                        if (!(
                             (string.IsNullOrEmpty(objHandOver.VIN) || (objHandOver.VIN.Trim().Length<1))
                            || ((string.IsNullOrEmpty(objHandOver.TCUID) || (objHandOver.TCUID.Trim().Length<1)))
                            || ((string.IsNullOrEmpty(objHandOver.CustomerName) || (objHandOver.CustomerName.Trim().Length<1)))
                            || ((string.IsNullOrEmpty(objHandOver.ReferenceDateTime) || (objHandOver.ReferenceDateTime.Trim().Length<1)))
                            || ((Convert.ToDateTime(objHandOver.ReferenceDateTime).ToUniversalTime()>System.DateTime.Now.ToUniversalTime()))
                            || (!((objHandOver.TCUActivation.ToUpper()=="YES") || (objHandOver.TCUActivation.ToUpper()=="NO")))
-                        )
+                        ))
                         {
                          return StatusCode(400);
                         }                                              
