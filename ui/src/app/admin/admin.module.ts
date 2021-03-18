@@ -42,7 +42,8 @@ import { CreateViewEditRelationshipComponent } from './relationship-management/c
 import { SubscriptionManagementComponent } from './subscription-management/subscription-management.component';
 import { OrganisationRelationshipComponent } from './organisation-relationship/organisation-relationship.component';
 import { CreateEditViewOrganisationRelationshipComponent } from './organisation-relationship/create-edit-view-organisation-relationship/create-edit-view-organisation-relationship.component';
-import { LinkOrgPopupComponent } from './user-management/new-user-step/link-org-popup/link-org-popup.component'
+import { LinkOrgPopupComponent } from './user-management/new-user-step/link-org-popup/link-org-popup.component';
+import { LanguageSelectionComponent } from './translation-data-upload/language-selection/language-selection.component'
 
 @NgModule({
   declarations: [
@@ -79,7 +80,8 @@ import { LinkOrgPopupComponent } from './user-management/new-user-step/link-org-
     SubscriptionManagementComponent,
     OrganisationRelationshipComponent,
     CreateEditViewOrganisationRelationshipComponent,
-    LinkOrgPopupComponent
+    LinkOrgPopupComponent,
+    LanguageSelectionComponent
   ],
   imports: [
       CommonModule,

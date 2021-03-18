@@ -184,9 +184,9 @@ export class CustomValidators {
 
   static validateImageFile(inputFile): string{
     let imageError= '';
-    const max_size = 1024*1024;
+    const max_size = 1024*200;
     if (inputFile.size > max_size) {
-      imageError = 'Maximum size allowed is ' + max_size / (1024*1024) + 'Mb';
+      imageError = 'Maximum size allowed is ' + max_size / (1024) + 'Kb';
 
     }
 
