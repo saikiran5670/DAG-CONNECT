@@ -36,10 +36,10 @@ namespace net.atos.daf.ct2.subscription
             return await subscriptionRepository.Update(subscription);
         }
 
-        public async Task<Subscription> Get(int subscriptionId)
-        {
-            return await subscriptionRepository.Get(subscriptionId);
-        }
+        //public async Task<Subscription> Get(int subscriptionId)
+        //{
+        //    return await subscriptionRepository.Get(subscriptionId);
+        //}
 
         public async Task<Subscription> Get(int organizationId, int vehicleId, char status, DateTime StartDate, DateTime EndDate)
         {
@@ -51,13 +51,13 @@ namespace net.atos.daf.ct2.subscription
             return await subscriptionRepository.Get(status, vehicleGroupID, vehicleId, StartDate, EndDate);
         }
 
-        public async Task<SubscriptionResponse> Create(int orgId)
+        public async Task<SubscriptionResponse> Create(int orgId, int packageId)
         {
-            return await subscriptionRepository.Create(orgId);
+            return await subscriptionRepository.Create(orgId, packageId);
         }
-        public async Task<IEnumerable<SubscriptionDetails>> Get()
+        public async Task<IEnumerable<SubscriptionDetails>> Get(SubscriptionDetails objSubscriptionDetails)
         {
-            return await subscriptionRepository.Get();
+            return await subscriptionRepository.Get(objSubscriptionDetails);
         }
         
     }

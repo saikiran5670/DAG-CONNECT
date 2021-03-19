@@ -68,10 +68,10 @@ namespace net.atos.daf.ct2.vehicledataservice
             services.AddTransient<AccountComponent.IAccountRepository,AccountComponent.AccountRepository>();
             services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();
 
-            services.AddMvc(options =>
-            {
-                options.Filters.Add(new ProducesAttribute("application/json"));
-            });
+            //services.AddMvc(options =>
+            //{
+            //    options.Filters.Add(new ProducesAttribute("application/json"));
+            //});
 
             services.AddSwaggerGen(c =>
             {

@@ -210,7 +210,7 @@ export class UserGroupManagementComponent implements OnInit {
   onUpdateDataSource(tableData: any) {
     this.initData = tableData;
     if(this.initData.length > 0){
-      //this.initData = this.getNewTagData(this.initData);
+      this.initData = this.getNewTagData(this.initData);
     }
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(() => {
@@ -332,20 +332,24 @@ export class UserGroupManagementComponent implements OnInit {
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     data.forEach(row => {
-      let createdDate = new Date(row.createdAt).getTime(); 
-      let nextDate = createdDate + 86400000;
-
-      if(currentDate > createdDate && currentDate < nextDate){
-        row.newTag = true;
+      if(row.createdAt){
+        let createdDate = parseInt(row.createdAt); 
+        let nextDate = createdDate + 86400000;
+        if(currentDate > createdDate && currentDate < nextDate){
+          row.newTag = true;
+        }
+        else{
+          row.newTag = false;
+        }
       }
       else{
         row.newTag = false;
       }
     });
     let newTrueData = data.filter(item => item.newTag == true);
-    newTrueData.sort((userobj1,userobj2) => userobj2.createdAt - userobj1.createdAt);
+    newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
     let newFalseData = data.filter(item => item.newTag == false);
-    Array.prototype.push.apply(newTrueData,newFalseData); 
+    Array.prototype.push.apply(newTrueData, newFalseData); 
     return newTrueData;
   }
 

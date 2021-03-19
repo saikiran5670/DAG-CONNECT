@@ -43,12 +43,12 @@ namespace net.atos.daf.ct2.customerdataservice
         public void ConfigureServices(IServiceCollection services)
         {
              services.AddControllers();
-           var connectionString = Configuration.GetConnectionString("ConnectionString");
-            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
+        //    var connectionString = Configuration.GetConnectionString("ConnectionString");
+        //     IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             
             //services.AddControllers();
-           // var connectionString="Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
-           // IDataAccess dataAccess = new PgSQLDataAccess(connectionString);           
+           var connectionString="Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+           IDataAccess dataAccess = new PgSQLDataAccess(connectionString);           
            services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration")); 
            
             services.AddSingleton(dataAccess); 
@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.customerdataservice
             services.AddTransient<IGroupRepository, GroupRepository>();          
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             
-            services.AddMvc(options => { options.Filters.Add(new ProducesAttribute("application/json")); });
+            //services.AddMvc(options => { options.Filters.Add(new ProducesAttribute("application/json")); });
             services.AddSwaggerGen(c =>
             {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Customer Data Service", Version = "v1" });

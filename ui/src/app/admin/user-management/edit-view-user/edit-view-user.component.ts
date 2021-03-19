@@ -36,16 +36,7 @@ export class EditViewUserComponent implements OnInit {
       name: 'Ms'
     }
   ];
-  UserTypeList: any = [
-    {
-      name: 'System User',
-      value: 'S'
-    },
-    {
-      name: 'Portal User',
-      value: 'P'
-    }
-  ];
+  userTypeList: any = [];
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   @Input() selectedRoleData: any;
@@ -115,6 +106,16 @@ export class EditViewUserComponent implements OnInit {
     });
     this.accountInfoData.organization = localStorage.getItem("organizationName");
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.userTypeList = [
+      {
+        name: this.translationData.lblPortalUser || 'Portal User',
+        value: 'P'
+      },
+      {
+        name: this.translationData.lblSystemUser || 'System User',
+        value: 'S'
+      }
+    ];
     this.setDefaultAccountInfo();
     this.setDefaultGeneralSetting(this.selectedPreference);
     this.loadRoleTable();
@@ -160,7 +161,7 @@ export class EditViewUserComponent implements OnInit {
       this.accountInfoForm.get('firstName').setValue(this.accountInfoData.firstName ? this.accountInfoData.firstName : '--');
       this.accountInfoForm.get('lastName').setValue(this.accountInfoData.lastName ? this.accountInfoData.lastName : '--');
       this.accountInfoForm.get('loginEmail').setValue(this.accountInfoData.emailId ? this.accountInfoData.emailId : '--');
-      this.accountInfoForm.get('userType').setValue(this.accountInfoData.type ? this.accountInfoData.type : 'P');
+      this.accountInfoForm.get('userType').setValue(this.accountInfoData.type ? this.accountInfoData.type : this.userTypeList[0].value);
       this.accountInfoForm.get('organization').setValue(this.accountInfoData.organization ? this.accountInfoData.organization : localStorage.getItem("organizationName"));
       this.blobId = this.accountInfoData.blobId ? this.accountInfoData.blobId : 0;
       if(this.blobId != 0){
@@ -289,7 +290,7 @@ export class EditViewUserComponent implements OnInit {
         salutation: this.accountInfoForm.controls.salutation.value,
         firstName: this.accountInfoForm.controls.firstName.value,
         lastName: this.accountInfoForm.controls.lastName.value,
-        type: (this.privilegeAccess) ? this.accountInfoForm.controls.userType.value : 'P', //-- privilege check
+        type: (this.privilegeAccess) ? this.accountInfoForm.controls.userType.value : this.userTypeList[0].value, //-- privilege check
         organizationId: this.accountInfoData.organizationId,
         driverId: "",
         password: ""

@@ -79,8 +79,8 @@ namespace net.atos.daf.ct2.subscription.test
         public async Task UnT_subscribe_SubscriptionManager_CreatebyOrgIdSubscriptionSet()
         {
             long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-            int orgId = 60;
-            var results = await _SubscriptionManager.Create(orgId);
+            int orgId = 101;int packageId = 4;
+            var results = await _SubscriptionManager.Create(orgId, packageId);
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);
         }
@@ -90,8 +90,10 @@ namespace net.atos.daf.ct2.subscription.test
         [TestMethod]
         public async Task UnT_subscribe_SubscriptionManager_GetSubscriptionSet()
         {
+            SubscriptionDetails objSubscriptionDetails = new SubscriptionDetails();
+            objSubscriptionDetails.subscription_id = "2a1cf534-8ed2-439e-a99c-847b775ae937";
             long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-            var results = await _SubscriptionManager.Get();
+            var results = await _SubscriptionManager.Get(objSubscriptionDetails);
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);
         }
