@@ -323,8 +323,7 @@ namespace net.atos.daf.ct2.organization.repository
                     await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameterUpdate);
 
                     // Assign base package at ORG lavel if not exist
-                    await subscriptionManager.Create(iscustomerexist);
-
+                    await subscriptionManager.Create(iscustomerexist,Convert.ToInt32(customer.OrgCreationPackage));
                 }
                 else
                 {
@@ -356,12 +355,12 @@ namespace net.atos.daf.ct2.organization.repository
                                   "values(@org_id, @Name,@Type ,@AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@reference_date,@vehicle_default_opt_in,@driver_default_opt_in) RETURNING id";
 
                    int organizationId= await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameterInsert);
-                                     
-                   // CraeteOrganizationRelationship
-                   // need to discuss here
-                   
-                   // Assign base package at ORG lavel
-                    await subscriptionManager.Create(organizationId);
+
+                    // CraeteOrganizationRelationship
+                    // need to discuss here
+
+                    // Assign base package at ORG lavel
+                  await subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
                 }
             }
             catch (Exception ex)

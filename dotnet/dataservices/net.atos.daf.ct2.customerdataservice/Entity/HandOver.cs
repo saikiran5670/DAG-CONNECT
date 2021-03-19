@@ -35,6 +35,10 @@ namespace net.atos.daf.ct2.customerdataservice.Entity
         public string PostalCode { get; set; } 
         public string City { get; set; } 
         public string CountryCode { get; set; } 
-        public DateTime ReferenceDateTime { get; set; } 
+        public DateTime ReferenceDateTime { get; set; }
+        public string OwnerRelationship { get; set; }
+        public string OEMRelationship { get; set; }
+        public string OrgCreationPackage { get; set; }
+        public string DAFPACCAR { get; set; }
     }
 }
