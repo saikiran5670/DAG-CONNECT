@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,7 +27,10 @@ namespace net.atos.daf.ct2.vehicledataservice.Common
 
         public static bool IsValidDate(string dateTime)
         {
-            bool validDate = DateTime.TryParse(dateTime, out DateTime ValidDateTime);
+
+            string dateformat = "yyyy-mm-dd";
+            DateTime parsedatetime;            
+                bool validDate = (DateTime.TryParseExact(Convert.ToString(dateTime), dateformat, CultureInfo.InvariantCulture,DateTimeStyles.None, out parsedatetime));
             if (validDate)
                 return true;
             else
