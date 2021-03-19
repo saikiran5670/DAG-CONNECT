@@ -205,7 +205,7 @@ namespace net.atos.daf.ct2.portalservice
             //This need to be change to orgin specific on UAT and prod
             app.UseCors(builder =>
             {
-                builder.WithOrigins("*");
+                builder.WithOrigins("http://localhost:4200");
                 builder.AllowAnyMethod();
                 builder.AllowAnyHeader();
             });
