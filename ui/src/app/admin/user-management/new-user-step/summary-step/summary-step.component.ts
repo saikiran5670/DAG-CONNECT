@@ -42,11 +42,11 @@ export class SummaryStepComponent implements OnInit {
   ngOnInit() { 
     this.userTypeList = [
       {
-        name: this.translationData.lblPortalUser || 'PortalUser',
+        name: this.translationData.lblPortalUser || 'Portal User',
         value: 'P'
       },
       {
-        name: this.translationData.lblSystemUser || 'SystemUser',
+        name: this.translationData.lblSystemUser || 'System User',
         value: 'S'
       }
     ];
