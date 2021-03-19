@@ -61,5 +61,10 @@ namespace net.atos.daf.ct2.organization
         {
             return await organizationRepository.GetAll(organizationId);
         }
+
+        public async Task<List<OrganizationNameandID>> Get(OrganizationNameandID request)
+        {
+            return await organizationRepository.Get(request);
+        }
     }
 }
