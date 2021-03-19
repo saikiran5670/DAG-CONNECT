@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "customer-data/swagger",
+      "launchUrl": "subscription/swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -20,7 +20,7 @@
     "net.atos.daf.ct2.customerdataservice": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "customer-data/swagger",
+      "launchUrl": "subscription/swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
