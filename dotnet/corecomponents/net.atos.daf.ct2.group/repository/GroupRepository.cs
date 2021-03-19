@@ -24,7 +24,16 @@ namespace net.atos.daf.ct2.group
             {
 
                 // check for exists
-                var result = await Exists(group);
+                // group type single
+                if (group.GroupType == GroupType.Single)
+                {
+                    group = await CheckSingleGroup(group); 
+                }
+                else
+                {
+                    group = await Exists(group);
+                }
+                // duplicate group
                 if (group.Exists)
                 {
                     return group;
@@ -326,7 +335,50 @@ namespace net.atos.daf.ct2.group
                         parameter.Add("@object_type", (char)groupRequest.ObjectType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and object_type=@object_type ";
                     }
+                }
+                var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                if (groupid > 0)
+                {
+                    groupRequest.Exists = true;
+                    groupRequest.Id = groupid;
+                }
+                return groupRequest;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        private async Task<Group> CheckSingleGroup(Group groupRequest)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                List<Group> groupList = new List<Group>();
+                var query = @"select id from master.group where 1=1 ";
+                if (groupRequest != null)
+                {
 
+                    // organization id filter
+                    if (groupRequest.OrganizationId > 0)
+                    {
+                        parameter.Add("@organization_id", groupRequest.OrganizationId);
+                        query = query + " and organization_id=@organization_id ";
+                    }
+                    // object type filter
+                    if (((char)groupRequest.ObjectType) != ((char)ObjectType.None))
+                    {
+
+                        parameter.Add("@object_type", (char)groupRequest.ObjectType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                        query = query + " and object_type=@object_type ";
+                    }
+                    // organization id filter
+                    if (groupRequest.RefId > 0)
+                    {
+                        parameter.Add("@ref_id", groupRequest.RefId);
+                        query = query + " and ref_id=@ref_id and group_type='S'";
+
+                    }
                 }
                 var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (groupid > 0)

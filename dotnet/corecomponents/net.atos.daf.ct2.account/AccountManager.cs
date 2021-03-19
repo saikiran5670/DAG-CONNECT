@@ -257,9 +257,13 @@ namespace net.atos.daf.ct2.account
         {
             return await repository.GetAccountVehicleAccessRelationship(filter, is_vehicle);
         }
-        public async Task<List<AccountVehicleEntity>> GetAccountVehicle(AccountVehicleAccessRelationshipFilter filter, bool is_vehicle)
+        public async Task<List<AccountVehicleEntity>> GetVehicle(AccountVehicleAccessRelationshipFilter filter, bool isVvehicle)
         {
-            return await repository.GetAccountVehicle(filter, is_vehicle);
+            return await repository.GetVehicle(filter, isVvehicle);
+        }
+        public async Task<List<AccountVehicleEntity>> GetAccount(AccountVehicleAccessRelationshipFilter filter, bool isAccount)
+        {
+            return await repository.GetAccount(filter, isAccount);
         }
         public async Task<bool> DeleteVehicleAccessRelationship(int organizationId, int groupId, bool isVehicle)
         {
