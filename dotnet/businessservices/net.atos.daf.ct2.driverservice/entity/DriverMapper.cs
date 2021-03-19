@@ -87,12 +87,18 @@ namespace net.atos.daf.ct2.driverservice.entity
         public DriverReturns ToDriverImportResponse(driver.entity.DriverImportResponse request)
         {
             DriverReturns driver = new DriverReturns();
-            driver.DriverID = request.DriverID;
-            driver.Email = request.Email;
-            driver.FirstName = request.FirstName;
-            driver.LastName = request.LastName;
-            driver.ReturnMassage = request.ReturnMessage;
-            driver.Status = request.Status;
+            if(!string.IsNullOrEmpty(request.DriverID))
+                driver.DriverID = request.DriverID;
+            if (!string.IsNullOrEmpty(request.Email))
+                driver.Email = request.Email;
+            if (!string.IsNullOrEmpty(request.FirstName))
+                driver.FirstName = request.FirstName;
+            if (!string.IsNullOrEmpty(request.LastName))
+                driver.LastName = request.LastName;
+            if (!string.IsNullOrEmpty(request.ReturnMessage))
+                driver.ReturnMassage = request.ReturnMessage;
+            if (!string.IsNullOrEmpty(request.Status))
+                driver.Status = request.Status;
             return driver;
         }
     }
