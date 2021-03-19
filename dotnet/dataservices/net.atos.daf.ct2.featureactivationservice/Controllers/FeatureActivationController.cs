@@ -51,27 +51,27 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     {
                         if (string.IsNullOrEmpty(objsubscriptionActivation.OrganizationId))
                         {
-                            return BadRequest();
+                            return StatusCode(400, string.Empty);
                         }
                         else if (string.IsNullOrEmpty(objsubscriptionActivation.packageId))
                         {
-                            return BadRequest();
+                            return StatusCode(400, string.Empty);
                         }
 
 
-                        var orderId = await subscriptionManager.Subscribe(objsubscriptionActivation);
-                        if (orderId == null)
+                        var order = await subscriptionManager.Subscribe(objsubscriptionActivation);
+                        if (order == null)
                         {
                             logger.LogInformation($"No Data found for Subscription, payload - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation)}");
-                            return NotFound();
+                            return StatusCode(400, string.Empty);
                         }
-                        logger.LogInformation($"Subscription data has been Inserted, order ID - {orderId}");
-                        return Ok(orderId);
+                        logger.LogInformation($"Subscription data has been Inserted, order ID - {order.orderId}");
+                        return Ok(order);
                     }
                     else
                     {
                         logger.LogInformation($"Subscription function called with invalid Token, with Package Id - {objsubscriptionActivation.packageId}");
-                        return StatusCode(500, string.Empty);
+                        return StatusCode(401, string.Empty);
                     }
                 }
             }
@@ -104,17 +104,17 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     {
                         if (string.IsNullOrEmpty(objUnSubscription.OrganizationID))
                         {
-                            return BadRequest();
+                            return StatusCode(400, string.Empty);
                         }
                         else if (string.IsNullOrEmpty(objUnSubscription.PackageId))
                         {
-                            return BadRequest();
+                            return StatusCode(400, string.Empty);
                         }
                         var orderId = await subscriptionManager.Unsubscribe(objUnSubscription);
                         if (orderId == null)
                         {
                             logger.LogInformation($"No Data found for UnSubscription, payload - {Newtonsoft.Json.JsonConvert.SerializeObject(objUnSubscription)}");
-                            return NotFound();
+                            return StatusCode(400, string.Empty);
                         }
                         logger.LogInformation($"Subscription data has been UnSubscribed, order ID - {orderId}");
                         return Ok(orderId);
@@ -122,7 +122,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     else
                     {
                         logger.LogInformation($"Subscription function called with invalid Token, with Package Id - {objUnSubscription.OrderID}");
-                        return Unauthorized();
+                        return StatusCode(401, string.Empty);
                     }
                 }
             }
