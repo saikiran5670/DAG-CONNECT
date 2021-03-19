@@ -243,7 +243,7 @@ export class DriverManagementComponent implements OnInit {
   }
 
   updateGridData(tableData: any){
-    //tableData = this.getNewTagData(tableData);
+    tableData = this.getNewTagData(tableData);
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
@@ -253,8 +253,8 @@ export class DriverManagementComponent implements OnInit {
 
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
-    data.forEach((row: any) => {
-      let createdDate = new Date(row.createdAt).getTime();
+    data.forEach(row => {
+      let createdDate = parseInt(row.createdAt); 
       let nextDate = createdDate + 86400000;
       if(currentDate > createdDate && currentDate < nextDate){
         row.newTag = true;
@@ -264,6 +264,7 @@ export class DriverManagementComponent implements OnInit {
       }
     });
     let newTrueData = data.filter(item => item.newTag == true);
+    newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
     let newFalseData = data.filter(item => item.newTag == false);
     Array.prototype.push.apply(newTrueData, newFalseData); 
     return newTrueData;

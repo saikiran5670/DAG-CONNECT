@@ -940,13 +940,14 @@ namespace net.atos.daf.ct2.accountservice
 
         #region VehicleAccount AccessRelationship
         
-        public override async Task<VehicleAccessRelationship> CreateVehicleAccessRelationship(VehicleAccessRelationship request, ServerCallContext context)
+        public override async Task<ServiceResponse> CreateVehicleAccessRelationship(VehicleAccessRelationship request, ServerCallContext context)
         {
             string validationMessage = string.Empty;
             int vehicleGroupId = 0;
             int accountGroupId = 0;
             string groupName = string.Empty;
             Group.Group group = null;
+            ServiceResponse response = new ServiceResponse();
             try
             {
                 
@@ -958,7 +959,7 @@ namespace net.atos.daf.ct2.accountservice
                     if (groupName.Length > 50) groupName = groupName.Substring(0, 49);                    
                     group = new Group.Group(Group.GroupType.Single, Group.ObjectType.VehicleGroup, null,
                                                     Group.FunctionEnum.None, request.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
-                    group = await groupmanager.Create(group);
+                    group = await groupmanager.Create(group);                    
                     vehicleGroupId = group.Id;
                 }                
                 if (vehicleGroupId > 0)
@@ -986,14 +987,22 @@ namespace net.atos.daf.ct2.accountservice
                         }
                     }
                 }
-                return request;
+                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Vehicle Access Relationship Created", 1, 2, request.Id.ToString());
+                response.Code = Responcecode.Success;
+                response.Message = "Created";
+                return response;
             }
             catch (Exception ex)
             {
-                throw ex;
+                _logger.LogError("Error in create vehicle accessrelationship:CreateVehicleAccessRelationship with exception - " + ex.Message);
+                return await Task.FromResult(new ServiceResponse
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
             }
         }
-        public override async Task<VehicleAccessRelationship> UpdateVehicleAccessRelationship(VehicleAccessRelationship request, ServerCallContext context)
+        public override async Task<ServiceResponse> UpdateVehicleAccessRelationship(VehicleAccessRelationship request, ServerCallContext context)
         {
             string validationMessage = string.Empty;
             int vehicleGroupId = 0;
@@ -1001,14 +1010,26 @@ namespace net.atos.daf.ct2.accountservice
             string groupName = string.Empty;
             bool result = true;
             Group.Group group = null;
+            var response = new ServiceResponse();
             try
             {
 
+                // check for vehicle group
                 vehicleGroupId = request.Id;
-                // delete access relatioship for vehicle or vehicle group
+                if (!request.IsGroup)
+                {
+                    // create vehicle group with vehicle                    
+                    groupName = string.Format("VehicleGroup_{0}_{1}", request.OrganizationId.ToString(), request.Id.ToString());
+                    if (groupName.Length > 50) groupName = groupName.Substring(0, 49);
+                    group = new Group.Group(Group.GroupType.Single, Group.ObjectType.VehicleGroup, null,
+                                                    Group.FunctionEnum.None, request.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
+                    group = await groupmanager.Create(group);
+                    vehicleGroupId = group.Id;
+                }
+                 // delete access relatioship for vehicle or vehicle group
                 if (request.OrganizationId > 0 && request.Id > 0)
                 {
-                    result = await accountmanager.DeleteVehicleAccessRelationship(request.OrganizationId, request.Id, true);
+                    result = await accountmanager.DeleteVehicleAccessRelationship(request.OrganizationId, vehicleGroupId, true);
                 }
                 if (result)
                 {
@@ -1035,20 +1056,29 @@ namespace net.atos.daf.ct2.accountservice
                         }
                     }
                 }
-                return request;
+                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Vehicle Access Relationship Updated", 1, 2, request.Id.ToString());
+                response.Code = Responcecode.Success;
+                response.Message = "Created";
+                return response;
             }
             catch (Exception ex)
             {
-                throw ex;
+                _logger.LogError("Error in update vehicle accessrelationship:UpdateVehicleAccessRelationship with exception - " + ex.Message);
+                return await Task.FromResult(new ServiceResponse
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
             }
         }
-        public override async Task<AccountAccessRelationship> CreateAccountAccessRelationship(AccountAccessRelationship request, ServerCallContext context)
+        public override async Task<ServiceResponse> CreateAccountAccessRelationship(AccountAccessRelationship request, ServerCallContext context)
         {
             string validationMessage = string.Empty;
             int vehicleGroupId = 0;
             int accountGroupId = 0;
             string groupName = string.Empty;
             Group.Group group = null;
+            var response = new ServiceResponse();
             try
             {
 
@@ -1090,14 +1120,22 @@ namespace net.atos.daf.ct2.accountservice
                         }
                     }
                 }
-                return request;
+                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Account Access Relationship Created", 1, 2, request.Id.ToString());
+                response.Code = Responcecode.Success;
+                response.Message = "Created";
+                return response;
             }
             catch (Exception ex)
             {
-                throw ex;
+                _logger.LogError("Error in create account accessrelationship:CreateAccountAccessRelationship with exception - " + ex.Message);
+                return await Task.FromResult(new ServiceResponse
+                {
+                    Message = "Exception :-" + ex.Message + ex.StackTrace,
+                    Code = Responcecode.Failed
+                });
             }
         }
-        public override async Task<AccountAccessRelationship> UpdateAccountAccessRelationship(AccountAccessRelationship request, ServerCallContext context)
+        public override async Task<ServiceResponse> UpdateAccountAccessRelationship(AccountAccessRelationship request, ServerCallContext context)
         {
             string validationMessage = string.Empty;
             int vehicleGroupId = 0;
@@ -1105,16 +1143,27 @@ namespace net.atos.daf.ct2.accountservice
             string groupName = string.Empty;
             Group.Group group = null;
             bool result = true;
+            var response = new ServiceResponse();
             try
             {
 
-                accountGroupId = request.Id;
                 // delete access relatioship for account or account group
+                accountGroupId = request.Id;
+                if (!request.IsGroup)
+                {
+                    // create vehicle group with vehicle                    
+                    groupName = string.Format("AccountGroup_{0}_{1}", request.OrganizationId.ToString(), request.Id.ToString());
+                    if (groupName.Length > 50) groupName = groupName.Substring(0, 49);
+                    group = new Group.Group(Group.GroupType.Single, Group.ObjectType.AccountGroup, null,
+                                                    Group.FunctionEnum.None, request.Id, groupName, groupName, _mapper.TimeStamp(), request.OrganizationId);
+                    group = await groupmanager.Create(group);
+                    accountGroupId = group.Id;
+                }
+                // delete access relatioship for vehicle or vehicle group
                 if (request.OrganizationId > 0 && request.Id > 0)
                 {
-                    result = await accountmanager.DeleteVehicleAccessRelationship(request.OrganizationId, request.Id, true);
-                }
-                
+                    result = await accountmanager.DeleteVehicleAccessRelationship(request.OrganizationId, accountGroupId,false);
+                }                
                 if (result)
                 {
                     foreach (var vehicle in request.VehiclesVehicleGroups)
@@ -1141,11 +1190,19 @@ namespace net.atos.daf.ct2.accountservice
                         }
                     }
                 }
-                return request;
+                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Account Access Relationship Updated", 1, 2, request.Id.ToString());
+                response.Code = Responcecode.Success;
+                response.Message = "Created";
+                return response;
             }
             catch (Exception ex)
             {
-                throw ex;
+                _logger.LogError("Error in update account accessrelationship:UpdateAccountAccessRelationship with exception - " + ex.Message);
+                return await Task.FromResult(new ServiceResponse
+                {
+                    Message = "Exception :-" + ex.Message + ex.StackTrace,
+                    Code = Responcecode.Failed
+                });
             }
         }
         public override async Task<AccessRelationshipResponse> GetAccessRelationship(AccessRelationshipFilter request, ServerCallContext context)
@@ -1163,6 +1220,7 @@ namespace net.atos.daf.ct2.accountservice
                     var accountAccessRelation = await accountmanager.GetAccountVehicleAccessRelationship(filter,false);
                     accessRelationship.VehicleAccessRelationship.AddRange(_mapper.ToVehicleAccessRelationShip(vehicleAccessRelation));
                     accessRelationship.AccountAccessRelationship.AddRange(_mapper.ToVehicleAccessRelationShip(accountAccessRelation));
+                    _logger.LogInformation("Get AccessRelationshipAccount." + request.OrganizationId.ToString());
                 }
                 accessRelationship.Code = Responcecode.Success;
                 return accessRelationship;
@@ -1182,11 +1240,23 @@ namespace net.atos.daf.ct2.accountservice
                 if (request.OrganizationId > 0)
                 {
                     AccountVehicleAccessRelationshipFilter filter = new AccountVehicleAccessRelationshipFilter();
+                    List<AccountVehicleEntity> vehicleList = new List<AccountVehicleEntity>();
+                    List<AccountVehicleEntity> accountList = new List<AccountVehicleEntity>();
                     filter.OrganizationId = request.OrganizationId;
-                    var vehiclesVehicleGroups = await accountmanager.GetAccountVehicle(filter, true);
-                    var accountAccountGroups = await accountmanager.GetAccountVehicle(filter, false);
-                    accountVehiclesResponse.VehiclesVehicleGroup.AddRange(_mapper.ToAccountVehicles(vehiclesVehicleGroups));
-                    accountVehiclesResponse.AccountsAccountGroups.AddRange(_mapper.ToAccountVehicles(accountAccountGroups));
+                    if (request.IsAccount)
+                    {
+                        accountList = await accountmanager.GetAccount(filter, true);
+                        vehicleList = await accountmanager.GetVehicle(filter, false);
+                    }
+                    else
+                    {
+                        accountList = await accountmanager.GetAccount(filter, false);
+                        vehicleList = await accountmanager.GetVehicle(filter, true);
+                    }
+                   
+                    accountVehiclesResponse.VehiclesVehicleGroup.AddRange(_mapper.ToAccountVehicles(vehicleList));
+                    accountVehiclesResponse.AccountsAccountGroups.AddRange(_mapper.ToAccountVehicles(accountList));
+                    _logger.LogInformation("Get AccessRelationshipAccount." + request.OrganizationId.ToString());
                 }
                 accountVehiclesResponse.Code = Responcecode.Success;
                 return accountVehiclesResponse;
@@ -1196,6 +1266,7 @@ namespace net.atos.daf.ct2.accountservice
                 throw ex;
             }
         }
+
 
         #endregion
 
@@ -1589,7 +1660,11 @@ namespace net.atos.daf.ct2.accountservice
                     accountDetail.AccountGroupName = group.Name;
                     accountDetail.AccountCount = group.GroupRefCount;
                     accountDetail.OrganizationId = group.OrganizationId;
+                    accountDetail.Type = Convert.ToString((char)group.GroupType);                     
+                    accountDetail.CreatedAt = group.CreatedAt.HasValue ? group.CreatedAt.Value : 0;
+
                     accessFilter.AccountGroupId = group.Id;
+
 
                     var accessList = accountmanager.GetAccessRelationship(accessFilter).Result;
                     List<Int32> groupId = new List<int>();

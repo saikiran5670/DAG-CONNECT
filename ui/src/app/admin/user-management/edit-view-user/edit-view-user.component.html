@@ -44,7 +44,7 @@
                 </div>
                 <div *ngIf='privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblUserType || 'User Type' }}</mat-label>
-                  <mat-label class='custom-font'>{{ accountInfoData.type ? accountInfoData.type : '--' }}</mat-label>
+                  <mat-label class='custom-font'>{{ accountInfoData.type ? (accountInfoData.type == 'P' ? (translationData.lblPortalUser || 'Portal User') : (translationData.lblSystemUser || 'System User')) : '--' }}</mat-label>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
@@ -163,7 +163,7 @@
                     <mat-label>{{ translationData.lblUserType || 'User Type' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                       <mat-select placeholder="{{ translationData.lblUserType || 'User Type' }}" formControlName="userType">
-                        <mat-option *ngFor="let rer of UserTypeList" [value]="rer.value">
+                        <mat-option *ngFor="let rer of userTypeList" [value]="rer.value">
                           {{ rer.name }}
                         </mat-option>
                       </mat-select>
