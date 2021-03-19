@@ -35,20 +35,21 @@ export class SummaryStepComponent implements OnInit {
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
-  UserTypeList: any = [
-    {
-      name: 'System User',
-      value: 'S'
-    },
-    {
-      name: 'Portal User',
-      value: 'P'
-    }
-  ];
+  userTypeList: any = [];
 
   constructor() { }
 
   ngOnInit() { 
+    this.userTypeList = [
+      {
+        name: this.translationData.lblPortalUser || 'Portal User',
+        value: 'P'
+      },
+      {
+        name: this.translationData.lblSystemUser || 'System User',
+        value: 'S'
+      }
+    ];
     if(this.profilePath == ''){
       this.profilePath='../../assets/images/Account_pic.png';    
     }
@@ -73,8 +74,18 @@ export class SummaryStepComponent implements OnInit {
   getDefaultSetting(accountPreferenceData: any){
     let respData: any = {};
     let userTypeVal: any = [];
+    this.userTypeList = [
+      {
+        name: this.translationData.lblPortalUser || 'Portal User',
+        value: 'P'
+      },
+      {
+        name: this.translationData.lblSystemUser || 'System User',
+        value: 'S'
+      }
+    ];
     if(accountPreferenceData.userType && accountPreferenceData.userType.value != ''){
-      userTypeVal = this.UserTypeList.filter(res => res.value.toLowerCase() === accountPreferenceData.userType.value.toLowerCase());
+      userTypeVal = this.userTypeList.filter(res => res.value.toLowerCase() === accountPreferenceData.userType.value.toLowerCase());
     }
     
     respData = {

@@ -79,8 +79,8 @@ namespace net.atos.daf.ct2.subscription.test
         public async Task UnT_subscribe_SubscriptionManager_CreatebyOrgIdSubscriptionSet()
         {
             long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-            int orgId = 60;
-            var results = await _SubscriptionManager.Create(orgId);
+            int orgId = 101;int packageId = 4;
+            var results = await _SubscriptionManager.Create(orgId, packageId);
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);
         }
