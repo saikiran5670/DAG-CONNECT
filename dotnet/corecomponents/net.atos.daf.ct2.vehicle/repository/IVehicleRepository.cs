@@ -37,6 +37,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             Task<Vehicle> GetVehicle(int Vehicle_Id);
             Task<Vehicle> UpdateOrgVehicleDetails(Vehicle vehicle);
             Task<int> IsVINExists(string VIN);
+        Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(string subscriptionId);
 
         // Task<bool> SetConnectionStatus(char Status);
 
