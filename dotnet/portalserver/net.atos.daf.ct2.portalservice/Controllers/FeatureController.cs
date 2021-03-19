@@ -213,17 +213,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // Set cache options.
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
                     // Keep in cache for this time, reset time if accessed.
-                    .SetSlidingExpiration(TimeSpan.FromSeconds(10));
+                    .SetSlidingExpiration(TimeSpan.FromSeconds(100));
                 
                 _cache.SetCache(LangaugeCode, responce.Responce, cacheEntryOptions);
 
                 return Ok(responce.Responce);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 //throw;
-                return StatusCode(500, "Internal Server Error.");
+                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error. Exception - " + ex.ToString());
             }
         }
 
@@ -266,7 +267,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message + " " + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error.");
+                return StatusCode(500, "Internal Server Error. Exception - " + ex.ToString());
             }
         }
 
