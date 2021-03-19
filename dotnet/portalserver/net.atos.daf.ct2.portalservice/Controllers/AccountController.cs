@@ -1478,14 +1478,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-        [HttpPost]
+        [HttpGet]
         [Route("authmethodget")]
         public async Task<OkObjectResult> AuthMethodGet()
         {
             return await Task.FromResult(Ok(new { Message = "You will need authentication" }));
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("withoutauthmethodget")]
         public async Task<OkObjectResult> WithoutAuthMethodGet()
         {
