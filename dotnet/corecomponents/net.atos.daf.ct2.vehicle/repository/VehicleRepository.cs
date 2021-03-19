@@ -279,6 +279,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                       ,tcu_version=@tcu_version
                                       ,is_tcu_register=@is_tcu_register
                                       ,reference_date=@reference_date
+                                      ,modified_at=@modified_at
                                        WHERE vin = @vin
                                        RETURNING vin;";
 
@@ -291,6 +292,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                     parameter.Add("@is_tcu_register", vehicle.Is_Tcu_Register);
                     parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : 0);
                     parameter.Add("@vin", vehicle.VIN);
+                    parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                     string VIN = await dataAccess.ExecuteScalarAsync<string>(QueryStatement, parameter);
                     transactionScope.Complete();
                 }
@@ -638,7 +640,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                     parameter.Add("@id", vehicleproperty.ID);
                 }
 
-                parameter.Add("@manufacture_date", vehicleproperty.ManufactureDate != null ? UTCHandling.GetUTCFromDateTime(vehicleproperty.ManufactureDate.ToString()) : 0);
+                parameter.Add("@manufacture_date", vehicleproperty.ManufactureDate != null && vehicleproperty.ManufactureDate != Convert.ToDateTime("01 - 01 - 0001 00:00:00")  ? UTCHandling.GetUTCFromDateTime(vehicleproperty.ManufactureDate.ToString()) : 0);
                 parameter.Add("@delivery_date", vehicleproperty.DeliveryDate != null && vehicleproperty.DeliveryDate != Convert.ToDateTime("01 - 01 - 0001 00:00:00") ? UTCHandling.GetUTCFromDateTime(vehicleproperty.DeliveryDate.ToString()) : 0);
                 parameter.Add("@make", vehicleproperty.Classification_Make);
                 parameter.Add("@length", vehicleproperty.Dimensions_Size_Length);
@@ -674,7 +676,8 @@ namespace net.atos.daf.ct2.vehicle.repository
 
                 if (VehiclePropertiesId > 0)
                 {
-                    await dataAccess.ExecuteAsync("UPDATE master.vehicle SET model_id = @model_id , license_plate_number = @license_plate_number WHERE vin = @vin", new { model_id = objVeh.ModelId, license_plate_number = objVeh.License_Plate_Number, vin = objVeh.VIN });
+                    await CheckUnknownOEM(objVeh.VIN);
+                    await dataAccess.ExecuteAsync("UPDATE master.vehicle SET model_id = @model_id , license_plate_number = @license_plate_number, modified_at=@modified_at WHERE vin = @vin", new { model_id = objVeh.ModelId, license_plate_number = objVeh.License_Plate_Number, vin = objVeh.VIN , modified_at = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) });
                     vehicleproperty.ID = await dataAccess.ExecuteScalarAsync<int>(UpdateQueryStatement, parameter);
                     objVeh.ID = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vehicle_property_id=@id), 0)", new { id = vehicleproperty.ID });
                     vehicleproperty.VehicleId = objVeh.ID;

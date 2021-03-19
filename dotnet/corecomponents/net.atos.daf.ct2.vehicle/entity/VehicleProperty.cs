@@ -16,8 +16,8 @@ namespace net.atos.daf.ct2.vehicle.entity
         public string Classification_ModelYear { get; set; }
         public string License_Plate_Number { get; set; }
         public string Chassis_Id { get; set; }
-        public bool Chassis_SideSkirts { get; set; }
-        public bool Chassis_SideCollars { get; set; }
+        public string Chassis_SideSkirts { get; set; }
+        public string Chassis_SideCollars { get; set; }
         public string Chassis_RearOverhang { get; set; }
         public string Engine_ID { get; set; }
         public string Engine_Type { get; set; }

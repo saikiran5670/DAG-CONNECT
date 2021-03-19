@@ -210,7 +210,7 @@ export class UserGroupManagementComponent implements OnInit {
   onUpdateDataSource(tableData: any) {
     this.initData = tableData;
     if(this.initData.length > 0){
-      //this.initData = this.getNewTagData(this.initData);
+      this.initData = this.getNewTagData(this.initData);
     }
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(() => {
@@ -332,10 +332,15 @@ export class UserGroupManagementComponent implements OnInit {
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     data.forEach(row => {
-      let createdDate = parseInt(row.createdAt); 
-      let nextDate = createdDate + 86400000;
-      if(currentDate > createdDate && currentDate < nextDate){
-        row.newTag = true;
+      if(row.createdAt){
+        let createdDate = parseInt(row.createdAt); 
+        let nextDate = createdDate + 86400000;
+        if(currentDate > createdDate && currentDate < nextDate){
+          row.newTag = true;
+        }
+        else{
+          row.newTag = false;
+        }
       }
       else{
         row.newTag = false;
