@@ -315,7 +315,7 @@ export class NewUserStepComponent implements OnInit {
 
     let roleObj = {
       accountId: this.linkFlag ? this.linkAccountId :  this.userData.id,
-      organizationId: this.linkFlag ? this.accountOrganizationId : this.userData.organization_Id,
+      organizationId: this.linkFlag ? this.accountOrganizationId : this.userData.organizationId,
       roles: mapRoleData
     }
 
