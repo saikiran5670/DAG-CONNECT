@@ -55,16 +55,7 @@ export class NewUserStepComponent implements OnInit {
       name: 'Ms'
     }
   ];
-  userTypeList: any = [
-    {
-      name: 'System User',
-      value: 'S'
-    },
-    {
-      name: 'Portal User',
-      value: 'P'
-    }
-  ];
+  userTypeList: any = [];
   changePictureFlag: boolean = false;
   isAccountPictureSelected: boolean = false;
   droppedImage:any = '';
@@ -133,9 +124,19 @@ export class NewUserStepComponent implements OnInit {
     this.thirdFormGroup = this._formBuilder.group({
       thirdCtrl: ['', Validators.required]
     });
+    this.userTypeList = [
+      {
+        name: this.translationData.lblPortalUser || 'PortalUser',
+        value: 'P'
+      },
+      {
+        name: this.translationData.lblSystemUser || 'SystemUser',
+        value: 'S'
+      }
+    ];
     this.roleDataSource = new MatTableDataSource(this.roleData);
     this.userGrpDataSource = new MatTableDataSource(this.userGrpData);
-    this.firstFormGroup.get('userType').setValue('P'); //-- default portal
+    this.firstFormGroup.get('userType').setValue(this.userTypeList[0].value); //-- default portal
     //call to organization/preference/get to get org default preferences and pass the res to below function
     this.setDefaultSetting();
   }
@@ -186,7 +187,7 @@ export class NewUserStepComponent implements OnInit {
       let objData = {
         id: 0,
         emailId: this.firstFormGroup.controls.loginEmail.value,
-        type: (this.privilegeAccess) ? this.firstFormGroup.controls.userType.value : 'P', // privilege check
+        type: (this.privilegeAccess) ? this.firstFormGroup.controls.userType.value : this.userTypeList[0].value, // privilege check
         salutation: this.firstFormGroup.controls.salutation.value,
         firstName: this.firstFormGroup.controls.firstName.value,
         lastName: this.firstFormGroup.controls.lastName.value,
@@ -288,7 +289,7 @@ export class NewUserStepComponent implements OnInit {
     this.firstFormGroup.get('salutation').setValue(accountInfo.salutation);
     this.firstFormGroup.get('firstName').setValue(accountInfo.firstName);
     this.firstFormGroup.get('lastName').setValue(accountInfo.lastName);
-    this.firstFormGroup.get('userType').setValue(accountInfo.type ? accountInfo.type : 'P');
+    this.firstFormGroup.get('userType').setValue(accountInfo.type ? accountInfo.type : this.userTypeList[0].value);
 
     let blobId = accountInfo.blobId;
       if(blobId != 0){
@@ -590,7 +591,7 @@ export class NewUserStepComponent implements OnInit {
         salutation: this.firstFormGroup.controls.salutation.value,
         firstName: this.firstFormGroup.controls.firstName.value,
         lastName: this.firstFormGroup.controls.lastName.value,
-        type: (this.privilegeAccess) ? this.firstFormGroup.controls.userType.value : 'P', // privilege check
+        type: (this.privilegeAccess) ? this.firstFormGroup.controls.userType.value : this.userTypeList[0].value, // privilege check
         organizationId: this.accountOrganizationId,
         driverId: "",
         password: "",
