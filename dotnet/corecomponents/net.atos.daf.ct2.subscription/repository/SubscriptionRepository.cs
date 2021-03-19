@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
@@ -459,23 +460,38 @@ namespace net.atos.daf.ct2.subscription.repository
             }
         }
 
-        public async Task<IEnumerable<SubscriptionDetails>> Get(SubscriptionDetails objSubscriptionDetails)
+        public async Task<List<SubscriptionDetails>> Get(SubscriptionDetails objSubscriptionDetails)
         {
             try
             {
                 string query = string.Empty;
-                IEnumerable<SubscriptionDetails> objsubscriptionDetails = null;
+                List<SubscriptionDetails> objsubscriptionDetails = new List<SubscriptionDetails>();
                 if (objSubscriptionDetails.subscription_id == null || string.IsNullOrEmpty(objSubscriptionDetails.subscription_id))
                 {
-                    query = string.Format("select sub.subscription_id,sub.type,pak.name,sub.package_code,sub.subscription_start_date,sub.subscription_end_date,sub.is_active from master.Subscription sub join master.package pak on sub.package_id = pak.id");
-                    objsubscriptionDetails = await dataAccess.QueryAsync<SubscriptionDetails>(query);
+                    query = @"SELECT sub.subscription_id,sub.package_code,pak.name,sub.type,COUNT(veh.name),
+                             sub.subscription_start_date, sub.subscription_end_date, sub.is_active
+                             FROM master.Subscription sub
+                             JOIN master.package pak on sub.package_id = pak.id
+                             LEFT JOIN master.vehicle veh on sub.vehicle_id = veh.id
+                             GROUP BY sub.subscription_id, sub.package_code, pak.name, sub.type,
+                             sub.subscription_start_date, sub.subscription_end_date, sub.is_active";
+                    var data = await dataAccess.QueryAsync<SubscriptionDetails>(query);
+                    objsubscriptionDetails = data.Cast<SubscriptionDetails>().ToList();
                 }
                 else
                 {
                     var parameter = new DynamicParameters();
                     parameter.Add("@subscription_id", objSubscriptionDetails.subscription_id);
-                    query = string.Format("select sub.subscription_id,sub.type,pak.name,sub.package_code,sub.subscription_start_date,sub.subscription_end_date,sub.is_active from master.Subscription sub join master.package pak on sub.package_id = pak.id where subscription_id=@subscription_id");
-                    objsubscriptionDetails = await dataAccess.QueryAsync<SubscriptionDetails>(query, parameter);
+                    query = @"SELECT sub.subscription_id,sub.package_code,pak.name,sub.type,COUNT(veh.name),
+                                     sub.subscription_start_date,sub.subscription_end_date,sub.is_active
+                                     FROM master.Subscription sub 
+                              JOIN master.package pak on sub.package_id = pak.id 
+                              LEFT JOIN master.vehicle veh on sub.vehicle_id = veh.id
+                              GROUP BY sub.subscription_id,sub.package_code,pak.name,sub.type,
+                                     sub.subscription_start_date,sub.subscription_end_date,sub.is_active
+                              HAVING subscription_id = @subscription_id";
+                    var data = await dataAccess.QueryAsync<SubscriptionDetails>(query, parameter);
+                    objsubscriptionDetails = data.Cast<SubscriptionDetails>().ToList();
                 }
                 return objsubscriptionDetails;
             }
