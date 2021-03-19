@@ -247,5 +247,37 @@ namespace net.atos.daf.ct2.relationship.repository
             return levelCode;
         }
 
+        public async Task<int> CreateRelationShipMapping(OrganizationRelationShip relationshipMapping)
+        {
+
+            var Inputparameter = new DynamicParameters();
+            var relationships = new List<Relationship>();
+            string query = string.Empty;
+            Inputparameter.Add("@relationship_id", relationshipMapping.relationship_id); 
+            //Inputparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
+            if (relationshipMapping.vehicle_group_id == 0)
+            {
+                Inputparameter.Add("@vehicle_group_id", null);
+            }
+            else
+            {
+                Inputparameter.Add("@vehicle_group_id", relationshipMapping.vehicle_group_id);
+            }
+            Inputparameter.Add("@owner_org_id", relationshipMapping.owner_org_id);    
+            Inputparameter.Add("@created_org_id", relationshipMapping.created_org_id); 
+            Inputparameter.Add("@target_org_id", relationshipMapping.target_org_id);  
+            Inputparameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+            Inputparameter.Add("@end_date", null);   
+            Inputparameter.Add("@allow_chain", relationshipMapping.allow_chain);   
+            Inputparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));   
+
+            var queryInsert = @"insert into master.orgrelationshipmapping(relationship_id,vehicle_group_id,
+                     owner_org_id,created_org_id,target_org_id,start_date,end_date,allow_chain,created_at)                     
+                     values(@relationship_id,@vehicle_group_id,@owner_org_id,@created_org_id,@target_org_id,@start_date,@end_date,@allow_chain,@created_at)";
+
+            var  OwnerRelationshipId = await _dataAccess.ExecuteScalarAsync<int>(queryInsert, Inputparameter);
+            return OwnerRelationshipId;
+        }
+
     }
 }

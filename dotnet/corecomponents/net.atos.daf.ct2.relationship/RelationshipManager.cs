@@ -40,5 +40,10 @@ namespace net.atos.daf.ct2.relationship
         {
             return await _relationshipRepository.GetRelationshipLevelCode();
         }
+
+        public async Task<int> CreateRelationShipMapping(OrganizationRelationShip relationshipMapping)
+        {
+            return await _relationshipRepository.CreateRelationShipMapping(relationshipMapping);
+        }
     }
 }
