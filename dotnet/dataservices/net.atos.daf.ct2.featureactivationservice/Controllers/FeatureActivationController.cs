@@ -60,6 +60,11 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
 
 
                         var orderId = await subscriptionManager.Subscribe(objsubscriptionActivation);
+                        if (orderId == null)
+                        {
+                            logger.LogInformation($"No Data found for Subscription, payload - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation)}");
+                            return NotFound();
+                        }
                         logger.LogInformation($"Subscription data has been Inserted, order ID - {orderId}");
                         return Ok(orderId);
                     }
@@ -106,7 +111,12 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                             return BadRequest();
                         }
                         var orderId = await subscriptionManager.Unsubscribe(objUnSubscription);
-                        logger.LogInformation($"Subscription data has been Inserted, order ID - {orderId}");
+                        if (orderId == null)
+                        {
+                            logger.LogInformation($"No Data found for UnSubscription, payload - {Newtonsoft.Json.JsonConvert.SerializeObject(objUnSubscription)}");
+                            return NotFound();
+                        }
+                        logger.LogInformation($"Subscription data has been UnSubscribed, order ID - {orderId}");
                         return Ok(orderId);
                     }
                     else
