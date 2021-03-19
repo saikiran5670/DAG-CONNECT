@@ -16,6 +16,9 @@ using IdentityComponent = net.atos.daf.ct2.identity;
 using IdentityEntity = net.atos.daf.ct2.identity.entity;
 using System.Configuration;
 using Microsoft.Extensions.Configuration;
+using System.Transactions;
+using net.atos.daf.ct2.vehicledataservice.Common;
+using System.Net;
 
 namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
@@ -51,11 +54,80 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                 {
                     logger.LogInformation("UpdateVehicle function called -" + vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN);
 
+                    // Length Validation
+
+                    if (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN) ||
+                        !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.LicensePlate) ||
+                        !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Make) ||
+                        !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.ID) ||
+                        !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange) ||
+                        !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.ModelYear) ||
+                        !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Type.ID) ||
+                        !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.ID) ||
+                        !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.SideSkirts) ||
+                        !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.SideCollars) ||
+                        !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.RearOverhang) ||
+                        !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.ID))
+                    {
+                        return StatusCode(400, string.Empty);
+                    }
+
+                    if ((!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Type)) ||
+                     (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Power)) ||
+                     (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Coolant)) ||
+                     (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.EmissionLevel)) ||
+                     (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Transmission.GearBox.ID)) ||
+                     (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Transmission.GearBox.Type)) ||
+                     (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.AxleConfiguration)) ||
+                     (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.Wheels.Tire.Size)) ||
+                     (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.WheelBase)) ||
+                     (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin.ID)))
+                    {
+                        return StatusCode(400, string.Empty);
+                    }
+
+                    if ((!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin.RoofSpoiler)) ||
+                     (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin.Type)))
+                    {
+                        return StatusCode(400, string.Empty);
+                    }
+
+                    if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit != null)
+                    {
+                        if ((!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit.type)) ||
+                            (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit.Name)))
+                        {
+                            return StatusCode(400, string.Empty);
+                        }
+                    }
+
+                    if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Size != null)
+                    {
+                        if ((!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Size.Length)) ||
+                         (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Size.Width)) ||
+                         (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Size.Height)))
+                        {
+                            return StatusCode(400, string.Empty);
+                        }
+                    }
+
+                    if ((!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.type)) ||
+                     (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.value)))
+                    {
+                        return StatusCode(400, string.Empty);
+                    }
+
+
+
+                    //Mandatory Validation
+
                     if (string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN))
                     {
-                        //return StatusCode(400);
-                        return BadRequest();
+                         return StatusCode(400,string.Empty);
+                        //return BadRequest();                        
                     }
+
+                 
 
                     net.atos.daf.ct2.vehicle.entity.VehicleProperty vehicleProperties = new net.atos.daf.ct2.vehicle.entity.VehicleProperty();
 
@@ -63,7 +135,17 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     vehicleProperties.VIN = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN;
                     vehicleProperties.License_Plate_Number = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.LicensePlate;
                     if (!string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.ManufactureDate))
-                        vehicleProperties.ManufactureDate = Convert.ToDateTime(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.ManufactureDate);
+                    {
+                        if (DateTime.TryParse(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.ManufactureDate, out DateTime datetime) == true)
+                        {
+                            vehicleProperties.ManufactureDate = Convert.ToDateTime(datetime);
+                        }
+                        else
+                        {
+                            return StatusCode(400, string.Empty);
+                        }
+                    }
+
 
                     //Vehicle Classification
                     vehicleProperties.Classification_Make = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Make;
@@ -108,22 +190,22 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     {
                         if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.SideSkirts == "Yes")
                         {
-                            vehicleProperties.Chassis_SideSkirts = true;
+                            vehicleProperties.Chassis_SideSkirts = "Yes";
                         }
                         else
                         {
-                            vehicleProperties.Chassis_SideSkirts = false;
+                            vehicleProperties.Chassis_SideSkirts = "No";
                         }
                     }
                     if (!string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.SideCollars))
                     {
                         if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.SideCollars == "Yes")
                         {
-                            vehicleProperties.Chassis_SideCollars = true;
+                            vehicleProperties.Chassis_SideCollars = "Yes";
                         }
                         else
                         {
-                            vehicleProperties.Chassis_SideCollars = false;
+                            vehicleProperties.Chassis_SideCollars = "No";
                         }
                     }
 
@@ -145,9 +227,9 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
 
                     //DriveLine
                     vehicleProperties.DriverLine_AxleConfiguration = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.AxleConfiguration;
-                
+
                     vehicleProperties.DriverLine_Tire_Size = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.Wheels.Tire.Size;
-                    
+
                     vehicleProperties.DriverLine_Wheelbase = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.WheelBase;
 
                     //Front Axel
@@ -161,8 +243,11 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                             vehiclefrontaxelInfo.Type = frontAxel.Type;
                             vehiclefrontaxelInfo.Position = frontAxel.position;
                             vehiclefrontaxelInfo.Springs = frontAxel.Springs;
-                            vehiclefrontaxelInfo.Size = frontAxel.AxleSpecificWheels.Tire.Size;
-                            vehiclefrontaxelInfo.Is_Wheel_Tire_Size_Replaced = true;
+                            if (frontAxel.AxleSpecificWheels != null)
+                            {
+                                vehiclefrontaxelInfo.Size = frontAxel.AxleSpecificWheels.Tire.Size;
+                                vehiclefrontaxelInfo.Is_Wheel_Tire_Size_Replaced = true;
+                            }
                             vehicleProperties.VehicleAxelInformation.Add(vehiclefrontaxelInfo);
                         }
                     }
@@ -178,8 +263,11 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                             vehiclefrontaxelInfo.Load = rearAxel.Load;
                             vehiclefrontaxelInfo.Position = rearAxel.position;
                             vehiclefrontaxelInfo.Springs = rearAxel.Springs;
-                            vehiclefrontaxelInfo.Size = rearAxel.AxleSpecificWheels.Tire.Size;
-                            vehiclefrontaxelInfo.Is_Wheel_Tire_Size_Replaced = true;
+                            if (rearAxel.AxleSpecificWheels != null)
+                            {
+                                vehiclefrontaxelInfo.Size = rearAxel.AxleSpecificWheels.Tire.Size;
+                                vehiclefrontaxelInfo.Is_Wheel_Tire_Size_Replaced = true;
+                            }
                             vehicleProperties.VehicleAxelInformation.Add(vehiclefrontaxelInfo);
                         }
                     }
@@ -214,27 +302,35 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     vehicleProperties.Dimensions_Size_Weight_Value = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.value;
 
                     //VehicleDelivery
-                    if(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDelivery != null)
-                        vehicleProperties.DeliveryDate = Convert.ToDateTime(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDelivery.DeliveryDate);
+                    if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDelivery != null && Common.Common.IsValidDate(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDelivery.DeliveryDate))
+                    {
+                        if (DateTime.TryParse(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDelivery.DeliveryDate, out DateTime datetime) == true)
+                        {
+                            vehicleProperties.DeliveryDate = datetime;
+                        }
+                    }
 
+                    using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                    {
+                        VehicleProperty vehiclePro = await vehicleManager.UpdateProperty(vehicleProperties);
 
-                    VehicleProperty vehiclePro = await vehicleManager.UpdateProperty(vehicleProperties);
+                        // Create owner realtionship
 
-                    // Create owner realtionship
+                        int OwnerRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value);
+                        int DAFPACCAR = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value);
 
-                    int OwnerRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value);
-                    int DAFPACCAR = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value);
-
-                    RelationshipMapping relationshipMapping = new RelationshipMapping();
-                    relationshipMapping.relationship_id = OwnerRelationship;
-                    relationshipMapping.vehicle_id =vehicleProperties.VehicleId;
-                    relationshipMapping.vehicle_group_id = 0;
-                    relationshipMapping.owner_org_id = DAFPACCAR;
-                    relationshipMapping.created_org_id = DAFPACCAR;
-                    relationshipMapping.target_org_id = DAFPACCAR;
-                    relationshipMapping.isFirstRelation = true;
-                    relationshipMapping.allow_chain = true;
-                    await organizationManager.CreateOwnerRelationship(relationshipMapping);   
+                        RelationshipMapping relationshipMapping = new RelationshipMapping();
+                        relationshipMapping.relationship_id = OwnerRelationship;
+                        relationshipMapping.vehicle_id = vehicleProperties.VehicleId;
+                        relationshipMapping.vehicle_group_id = 0;
+                        relationshipMapping.owner_org_id = DAFPACCAR;
+                        relationshipMapping.created_org_id = DAFPACCAR;
+                        relationshipMapping.target_org_id = DAFPACCAR;
+                        relationshipMapping.isFirstRelation = true;
+                        relationshipMapping.allow_chain = true;
+                        await organizationManager.CreateOwnerRelationship(relationshipMapping);
+                        transactionScope.Complete();
+                    }
 
                     logger.LogInformation("Vehicle Properties updated with VIN - " + vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN);
                     return Ok();
@@ -242,13 +338,14 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                 else
                 {
                     //return StatusCode(401, "Account is unauthenticated.");
-                    return Unauthorized();
+                    //return Unauthorized();
+                    return StatusCode(401, string.Empty);
                 }
             }
             catch (Exception ex)
             {
                 logger.LogError(ex.Message);
-                return StatusCode(500,string.Empty);
+                return StatusCode(500, string.Empty);
             }
         }
 
