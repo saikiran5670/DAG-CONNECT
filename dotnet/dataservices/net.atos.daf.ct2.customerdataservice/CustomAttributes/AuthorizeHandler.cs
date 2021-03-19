@@ -6,7 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace net.atos.daf.ct2.featureactivationservice.CustomAttributes
+namespace net.atos.daf.ct2.customerdataservice.CustomAttributes
 {
     public class AuthorizeHandler :
           AuthorizationHandler<AuthorizeRequirement>

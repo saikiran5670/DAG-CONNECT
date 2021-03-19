@@ -23,7 +23,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
-using net.atos.daf.ct2.featureactivationservice.Custom;
+using net.atos.daf.ct2.featureactivationservice.CustomAttributes;
 
 namespace net.atos.daf.ct2.featureactivationservice
 {

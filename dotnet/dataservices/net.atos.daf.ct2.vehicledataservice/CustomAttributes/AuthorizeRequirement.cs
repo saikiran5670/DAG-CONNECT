@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace net.atos.daf.ct2.featureactivationservice.CustomAttributes
+namespace net.atos.daf.ct2.vehicledataservice.CustomAttributes
 {
     public class AuthorizeRequirement : IAuthorizationRequirement
     {
