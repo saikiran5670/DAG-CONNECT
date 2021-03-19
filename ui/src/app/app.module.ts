@@ -19,6 +19,7 @@ import { RoleService } from './services/role.service';
 import { OrganizationService } from './services/organization.service';
 import { DriverService } from './services/driver.service';
 import { FeatureService } from './services/feature.service';
+import { PackageService } from './services/package.service';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
@@ -47,7 +48,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     PreferencesModule
     //RouterModule.forRoot(appRoute)
   ],
-  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}, DataInterchangeService, AccountService, RoleService, OrganizationService, DriverService, FeatureService],
+  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}, DataInterchangeService, AccountService, RoleService, OrganizationService, DriverService, FeatureService, PackageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

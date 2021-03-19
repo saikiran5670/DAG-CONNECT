@@ -5,6 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { CustomValidators } from '../../../shared/custom.validators';
+import { PackageService } from 'src/app/services/package.service';
 
 @Component({
   selector: 'app-create-edit-package-details',
@@ -15,22 +16,38 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   @Input() actionType: any;
   @Input() translationData: any;
   @Input() selectedElementData: any;
-  @Input() featureList: any;
+  @Input() createStatus: boolean;
+  @Input() duplicateFlag: boolean;
+  @Input() viewFlag: boolean;
   @Output() createViewEditPackageEmit = new EventEmitter<object>();
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   breadcumMsg: any = ''; 
-  displayedColumns: string[] = ['select', 'featureName'];
+  featureDisplayedColumns: string[] = ['name', 'select'];
   dataSource: any;
   packageFormGroup: FormGroup;
   initData: any = [];
+  featuresSelected = [];
   selectionForFeatures = new SelectionModel(true, []);
-  selectedType: any = 'org VIN';
+  selectedType: any = 'O';
   selectedStatus: any = 'active';
-  types= ['Org Pkg', 'Org VIN'];
+  featuresData = [];
+  organizationId: number;
+  userCreatedMsg: any = '';
+  userName: string = '';
+  TypeList: any = [
+    {
+      name: 'Organization',
+      value: 'Organization'
+    },
+    {
+      name: 'Vehicle',
+      value: 'Vehicle'
+    }
+  ];
   
  
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder, private packageService: PackageService,) { }
 
   getBreadcum(type: any){
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblPackageManagement ? this.translationData.lblPackageManagement : "Package Management"} / ${(type == 'view') ? (this.translationData.lblViewPackage ? this.translationData.lblViewPackage : 'View Package') : (this.translationData.lblPackageDetails ? this.translationData.lblPackageDetails : 'Package Details')}`;
@@ -38,10 +55,9 @@ export class CreateEditPackageDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.packageFormGroup = this._formBuilder.group({
-      packageCode: ['', [ CustomValidators.noWhitespaceValidator]],
+      code: ['', [ CustomValidators.noWhitespaceValidator]],
       description: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
-      startDate: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
-      endDate: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
+      status: ['', [CustomValidators.numberValidationForName]],
       type: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
       name: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
     });
@@ -49,27 +65,21 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     if(this.actionType == 'view' || this.actionType == 'edit' ){
       this.setDefaultValue();
     }
-    this.loadGridData(this.featureList);
-  }
-
-  loadGridData(tableData: any){
-    let selectedfeaturesList: any = [];
-    if(this.actionType == 'view'){
-      tableData.forEach((row: any) => {
-        let search = this.selectedElementData.featureName.filter((item: any) => item.id == row.id);
-        if (search.length > 0) {
-          selectedfeaturesList.push(row);
+    let objData = {
+      organization_Id: this.organizationId
+    }
+    this.packageService.getFeatures(objData).subscribe((data) => {
+      setTimeout(()=>{
+        this.dataSource = new MatTableDataSource(data);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        if(!this.createStatus || this.duplicateFlag || this.viewFlag){
+          this.onReset();
         }
       });
-      tableData = selectedfeaturesList;
-      this.displayedColumns = ['featureName'];
-    }
-    this.initData = tableData;
-    this.updateDataSource(tableData);
-    if(this.actionType == 'edit' ){
-      this.selectTableRows();
-    }
-  }
+      this.featuresData 
+  }, (error) => { });
+}
 
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
@@ -79,7 +89,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
 
   selectTableRows() {
     this.dataSource.data.forEach((row: any) => {
-      let search = this.selectedElementData.dataAttribute.filter((item: any) => item.id == row.id);
+      let search = this.selectedElementData.features.filter((item: any) => item.id == row.id);
       if (search.length > 0) {
         this.selectionForFeatures.select(row);
       }
@@ -95,15 +105,16 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   }
 
   setDefaultValue(){
-    this.packageFormGroup.get("packageCode").setValue(this.selectedElementData.packageCode);
+    this.packageFormGroup.get("code").setValue(this.selectedElementData.code);
     this.packageFormGroup.get("name").setValue(this.selectedElementData.name);
     this.packageFormGroup.get("type").setValue(this.selectedElementData.type);
-    // this.packageFormGroup.get("featureName").setValue(this.selectedElementData.featureName);
-    this.packageFormGroup.get("startDate").setValue(this.selectedElementData.startDate);
-    this.packageFormGroup.get("endDate").setValue(this.selectedElementData.endDate);
-    this.selectedType = this.selectedElementData.type.toLowerCase();
-    this.selectedStatus = this.selectedElementData.status.toLowerCase();
+    this.packageFormGroup.get("status").setValue(this.selectedElementData.status);
+    // this.packageFormGroup.get("features").setValue(this.selectedElementData.features);
+    // this.selectedType = this.selectedElementData.type.toLowerCase();
+    this.packageFormGroup.get("features");
     this.packageFormGroup.get("description").setValue(this.selectedElementData.description);
+    this.selectedStatus = this.selectedElementData.status;
+   
   }
 
   toBack(){
@@ -118,10 +129,6 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     this.selectedStatus = event.value;
   }
 
-  onDateChange(event: any){
-    this.selectedStatus = event.value;
-  }
-
   onCancel(){
     let emitObj = {
       stepFlag: false,
@@ -130,40 +137,153 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     this.createViewEditPackageEmit.emit(emitObj); 
   }
 
+  
   onCreate(){
+    let featureNames = [];
+        this.selectionForFeatures.selected.forEach(feature => {
+          featureNames.push(feature.name);
+        })
+    let createPackageParams = {
+      "id": 0,
+      "code": this.packageFormGroup.controls.code.value,
+      "featureSetID" : 24,
+      "features": featureNames,
+      "name": this.packageFormGroup.controls.name.value,
+      "type": this.packageFormGroup.controls.type.value === "Vehicle" ? "V" : "O",
+      "description": this.packageFormGroup.controls.description.value,
+      "status": this.packageFormGroup.controls.status.value === "Inactive" ? false : true
+    }
+    if(this.actionType == 'create'){
+      this.packageService.createPackage(createPackageParams).subscribe((data) => {
+    this.userCreatedMsg = this.getUserCreatedMessage();
     let emitObj = {
       stepFlag: false,
-      msg: ""
+      successMsg: this.userCreatedMsg,
+      tableData: data,
     }    
     this.createViewEditPackageEmit.emit(emitObj); 
+    })
+  }
+  else if(this.actionType == 'edit'){
+    let updatePackageParams = {
+      "id": this.selectedElementData.id,
+      "code": this.packageFormGroup.controls.code.value,
+      "featureSetID" : this.selectedElementData.featureSetID,
+      "features": featureNames,
+      "name": this.packageFormGroup.controls.name.value,
+      "type": this.packageFormGroup.controls.type.value === "Vehicle" ? "V" : "O",
+      "description": this.packageFormGroup.controls.description.value,
+      "status": this.packageFormGroup.controls.status.value === "Inactive" ? false : true
+    }
+    this.packageService.updatePackage(updatePackageParams).subscribe((data) => {
+      this.userCreatedMsg = this.getUserCreatedMessage();
+      let emitObj = {
+        stepFlag: false,
+        successMsg: this.userCreatedMsg,
+        tableData: data,
+        name: this.packageFormGroup.controls.name.value
+      }    
+      this.createViewEditPackageEmit.emit(emitObj); 
+      })
+
+  }
+}
+
+  getUserCreatedMessage() {
+    this.userName = `${this.packageFormGroup.controls.name.value}`;
+    if (this.actionType == 'create') {
+      if (this.translationData.lblUserAccountCreatedSuccessfully)
+        return this.translationData.lblUserAccountCreatedSuccessfully.replace('$', this.userName);
+      else
+        return ("New Package '$' Created Successfully").replace('$', this.userName);
+    } else {
+      if (this.translationData.lblUserAccountUpdatedSuccessfully)
+        return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', this.userName);
+      else
+        return ("New Details '$' Updated Successfully").replace('$', this.userName);
+    }
   }
 
   onReset(){
+    this.featuresSelected = this.selectedElementData.featureIds;
     this.selectionForFeatures.clear();
     this.setDefaultValue();
     this.selectTableRows();
+
+    this.dataSource.data.forEach(row => {
+      if(this.featuresSelected){
+        for(let selectedFeature of this.featuresSelected){
+          if(selectedFeature == row.id){
+            this.selectionForFeatures.select(row);
+            break;
+          }
+          else{
+            this.selectionForFeatures.deselect(row);
+          }
+        }
+      }
+    })
   }
 
-  masterToggleForFeatures() {
-    this.isAllSelectedForFeatures()
-      ? this.selectionForFeatures.clear()
-      : this.dataSource.data.forEach((row: any) =>
-        this.selectionForFeatures.select(row)
-      );
-  }
-
-  isAllSelectedForFeatures() {
+  isAllSelectedForFeatures(){
     const numSelected = this.selectionForFeatures.selected.length;
     const numRows = this.dataSource.data.length;
     return numSelected === numRows;
   }
 
-  checkboxLabelForFeatures(row?: any): string {
-    if (row)
-      return `${this.isAllSelectedForFeatures() ? 'select' : 'deselect'} all`;
-    else
-      return `${this.selectionForFeatures.isSelected(row) ? 'deselect' : 'select'
-        } row`;
+  masterToggleForFeatures(){
+    this.isAllSelectedForFeatures() ? 
+    this.selectionForFeatures.clear() : this.dataSource.data.forEach(row => {this.selectionForFeatures.select(row)});
+
   }
+
+  checkboxLabelForFeatures(row?: any): string{
+    if(row)
+      return `${this.isAllSelectedForFeatures() ? 'select' : 'deselect'} all`;
+    else  
+      return `${this.selectionForFeatures.isSelected(row) ? 'deselect' : 'select'} row`;
+  }
+
+  // onCheckboxChange(event: any, row: any){
+  //   if(event.checked){  
+  //     if(row.featureName.includes(" _fullAccess")){
+  //       this.dataSource.data.forEach(item => {
+  //         if(item.featureName.includes(row.featureName.split(" _")[0])){
+  //           this.selectionForFeatures.select(item);
+  //         }
+  //       })
+  //     }
+  //     else if(row.featureName.includes(" _create") || row.featureName.includes(" _edit") || row.featureName.includes(" _delete") ){
+  //       this.dataSource.data.forEach(item => {
+  //         if(item.featureName.includes(row.featureName.split(" _")[0]+" _view")){
+  //           this.selectionForFeatures.select(item);
+  //         }
+  //       })
+  //     }
+  //   }
+  //   else {
+  //     if(row.featureName.includes(" _fullAccess")){
+  //       this.dataSource.data.forEach(item => {
+  //         if(item.featureName.includes(row.featureName.split(" _")[0])){
+  //           this.selectionForFeatures.deselect(item);
+  //         }
+  //       })
+  //     }
+  //     else if(row.featureName.includes(" _view")){
+  //       this.dataSource.data.forEach(item => {
+  //         if(item.featureName.includes(row.featureName.split(" _")[0])){
+  //           this.selectionForFeatures.deselect(item);
+  //         }
+  //       })
+  //     }
+  //     else if(!row.featureName.includes(" _fullAccess")){
+  //       this.dataSource.data.forEach(item => {
+  //         if(item.featureName.includes(row.featureName.split(" _")[0]+" _fullAccess")){
+  //           this.selectionForFeatures.deselect(item);
+  //         }
+  //       })
+  //     }
+  //   }
+  // }
 }
   
