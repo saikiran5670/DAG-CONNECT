@@ -26,16 +26,16 @@
                     <mat-label class='custom-font'>{{ this.gridData[0].description ? this.gridData[0].description : '--' }}</mat-label>
                 </div>
             </div>
-            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+             <div *ngIf="organizationId == 1 || organizationId == 2" fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblLevelOnlyForDAFPlatformAdmin || 'Level(Only for DAF/platform admin)' }}</mat-label>
                   <mat-label class='custom-font'>{{ this.gridData[0].level  }}</mat-label>
                 </div>
-                <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left" >
                     <mat-label>{{ translationData.lblCodeOnlyForDAFPlatformAdmin || 'Code(Only for DAF/platform admin)' }}</mat-label>
                   <mat-label class='custom-font'>{{ this.gridData[0].code  }}</mat-label>
                 </div>
-            </div>  
+            </div>
         </mat-card-content>
     </mat-card> 
     <mat-card class='mat-elevation-z margin-bottom-xlg' *ngIf="!viewFlag">
@@ -78,7 +78,7 @@
                     </mat-error>
                 </div>
             </div><br>
-            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+            <div *ngIf="organizationId == 1 || organizationId == 2" fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>
                         {{ translationData.lblLevelOnlyForDAFPlatformAdmin || 'Level(Only for DAF/platform admin)' }}<span class='mandatoryColor'>*</span>
