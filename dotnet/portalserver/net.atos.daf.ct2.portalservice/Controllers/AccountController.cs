@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using net.atos.daf.ct2.portalservice.Account;
 using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.portalservice.Entity.Account;
 using net.atos.daf.ct2.utilities;
 using AccountBusinessService = net.atos.daf.ct2.accountservice;
 
@@ -723,163 +724,384 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         #endregion
 
-        #region AccessRelationship 
-        //TODO: Need to refactor this based on screen.
-        // Begin - AccessRelationship
+        #region Account Vehicle Relationship
+
+        // create vehicle access relationship
         [HttpPost]
-        [Route("accessrelationship/create")]
-        public async Task<IActionResult> CreateAccessRelationship(AccountBusinessService.AccessRelationship request)
+        [Route("account/accessrelationship/createvehicle")]
+        public async Task<IActionResult> CreateVehicleAccessRelationship(AccessRelationshipRequest request)
         {
+            //Task<AccountPreferenceResponse> CreatePreference(AccountPreference request, 
             try
             {
                 // Validation                 
-                if ((request.AccountGroupId <= 0) || (request.VehicleGroupId <= 0) || (string.IsNullOrEmpty(Convert.ToString(request.AccessRelationType))))
+                if ((request.Id <= 0) || (request.OrganizationId<= 0) || (request.AssociatedData == null))                    
                 {
-                    return StatusCode(400, "The AccountGroupId,VehicleGroupId and AccessRelationshipType is required");
+                    return BadRequest();
                 }
-                else if ((!request.AccessRelationType.Equals("R")) && (!request.AccessRelationType.Equals("W")))
+                var accessRelationship = _mapper.ToAccessRelationship(request);
+                var result = await _accountClient.CreateVehicleAccessRelationshipAsync(accessRelationship);
+                if (result != null && result.Code == AccountBusinessService.Responcecode.Success)
                 {
-                    return StatusCode(400, "The AccessRelationshipType should be ReadOnly and ReadWrite (R/W) only.");
-                }
-                AccountBusinessService.AccessRelationshipResponse accessRelationship = await _accountClient.CreateAccessRelationshipAsync(request);
-                if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Success)
-                {
-                    return Ok(accessRelationship.AccessRelationship);
-                }
-                else if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Failed
-                    && accessRelationship.Message == "The AccessType should be ReadOnly / ReadWrite.(R/W).")
-                {
-                    return StatusCode(400, "The AccessType should be ReadOnly / ReadWrite.(R/W).");
+                    return Ok(request);
                 }
                 else
                 {
-                    return StatusCode(500, "accessRelationship is null" + accessRelationship.Message);
+                    return StatusCode(500,string.Empty);
                 }
-
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
+                _logger.LogError("Error in account service:create vehicle access relationship with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
-                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                    return BadRequest("F01");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500,string.Empty);
             }
         }
+        // update vehicle access relationship
         [HttpPost]
-        [Route("accessrelationship/update")]
-        public async Task<IActionResult> UpdateAccessRelationship(AccountBusinessService.AccessRelationship request)
+        [Route("account/accessrelationship/updatevehicle")]
+        public async Task<IActionResult> UpdateVehicleAccessRelationship(AccessRelationshipRequest request)
         {
             try
             {
                 // Validation                 
-                if ((request.AccountGroupId <= 0) || (request.VehicleGroupId <= 0) || (string.IsNullOrEmpty(Convert.ToString(request.AccessRelationType))))
+                if ((request.Id <= 0) || (request.OrganizationId <= 0) || (request.AssociatedData == null))
                 {
-                    return StatusCode(400, "The AccountGroupId,VehicleGroupId and AccessRelationshipType is required");
+                    return BadRequest();
                 }
-                else if ((!request.AccessRelationType.Equals("R")) && (!request.AccessRelationType.Equals("W")))
+                var accessRelationship = _mapper.ToAccessRelationship(request);
+                var result = await _accountClient.UpdateVehicleAccessRelationshipAsync(accessRelationship);
+                if (result != null && result.Code == AccountBusinessService.Responcecode.Success)
                 {
-                    return StatusCode(400, "The AccessRelationshipType should be ReadOnly and ReadWrite (R/W) only.");
-                }
-                AccountBusinessService.AccessRelationshipResponse accessRelationship = await _accountClient.UpdateAccessRelationshipAsync(request);
-                if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Success)
-                {
-                    return Ok(accessRelationship.AccessRelationship);
-                }
-                else if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Failed
-                    && accessRelationship.Message == "The AccessType should be ReadOnly / ReadWrite.(R/W).")
-                {
-                    return StatusCode(400, "The AccessType should be ReadOnly / ReadWrite.(R/W).");
+                    return Ok(request);
                 }
                 else
                 {
-                    return StatusCode(500, "accessRelationship is null" + accessRelationship.Message);
+                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "01"));
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:update vehicle access relationship with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                {
+                    return StatusCode(400, PortalConstants.ResponseError.BadRequest);
+                }
+                return StatusCode(500, string.Empty);
+            }
+        }
 
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
-            }
-        }
+        // create account access relationship
         [HttpPost]
-        [Route("accessrelationship/delete")]
-        public async Task<IActionResult> DeleteAccessRelationship(AccountBusinessService.AccessRelationshipDeleteRequest request)
+        [Route("account/accessrelationship/createaccount")]
+        public async Task<IActionResult> CreateAccountAccessRelationshipAsync(AccessRelationshipRequest request)
         {
+            //Task<AccountPreferenceResponse> CreatePreference(AccountPreference request, 
             try
             {
                 // Validation                 
-                if (request.AccountGroupId <= 0 || request.VehicleGroupId <= 0)
+                if ((request.Id <= 0) || (request.OrganizationId <= 0) || (request.AssociatedData == null))
                 {
-                    return StatusCode(400, "The AccountGroupId,VehicleGroupId is required");
+                    return BadRequest();
                 }
-                AccountBusinessService.AccessRelationshipResponse accessRelationship = await _accountClient.DeleteAccessRelationshipAsync(request);
-                if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Success)
+                var accessRelationship = _mapper.ToAccountAccessRelationship(request);
+                var result = await _accountClient.CreateAccountAccessRelationshipAsync(accessRelationship);
+                if (result != null && result.Code == AccountBusinessService.Responcecode.Success)
                 {
-                    return Ok(accessRelationship.AccessRelationship);
-                }
-                else if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Failed
-                    && accessRelationship.Message == "The delete access group , Account Group Id and Vehicle Group Id is required.")
-                {
-                    return StatusCode(400, "The delete access group , Account Group Id and Vehicle Group Id is required.");
+                    return Ok(request);
                 }
                 else
                 {
-                    return StatusCode(500, "accessRelationship is null" + accessRelationship.Message);
+                    return StatusCode(500, string.Empty);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:create access relationship with exception - " + ex.Message);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.LogError("Error in account service:create account access relationship with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                {
+                    return StatusCode(400, PortalConstants.ResponseError.KeyConstraintError);
+                }
+                return StatusCode(500, string.Empty);
             }
         }
+        // update vehicle access relationship
+        [HttpPost]
+        [Route("account/accessrelationship/updateaccount")]
+        public async Task<IActionResult> UpdateAccountAccessRelationship(AccessRelationshipRequest request)
+        {
+            try
+            {
+                // Validation                 
+                if ((request.Id <= 0) || (request.OrganizationId <= 0) || (request.AssociatedData == null))
+                {
+                    return BadRequest();
+                }
+                var accessRelationship = _mapper.ToAccountAccessRelationship(request);
+                var result = await _accountClient.UpdateAccountAccessRelationshipAsync(accessRelationship);
+                if (result != null && result.Code == AccountBusinessService.Responcecode.Success)
+                {
+                    return Ok(request);
+                }
+                else
+                {
+                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "01"));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:update vehicle access relationship with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                {
+                    return StatusCode(400, PortalConstants.ResponseError.KeyConstraintError);
+                }
+                return StatusCode(500,string.Empty);
+            }
+        }
+
+        // update vehicle access relationship
         [HttpGet]
-        [Route("accessrelationship/get")]
-        public async Task<IActionResult> GetAccessRelationship(int AccountId, int AccountGroupId, int VehicleGroupId)
+        [Route("account/accessrelationship/get")]
+        public async Task<IActionResult> GetAccessRelationship(int organizationId)
         {
             try
             {
                 // Validation                 
-                if ((AccountId <= 0) && (AccountGroupId <= 0))
+                if (organizationId <= 0)
                 {
-                    return StatusCode(400, "The AccountId or AccountGroupId is required");
+                    return BadRequest();
                 }
-                AccountBusinessService.AccessRelationshipFilter request = new AccountBusinessService.AccessRelationshipFilter();
-                request.AccountId = AccountId;
-                request.AccountGroupId = AccountGroupId;
-                request.VehicleGroupId = VehicleGroupId;
-                AccountBusinessService.AccessRelationshipDataList accessRelationship = await _accountClient.GetAccessRelationshipAsync(request);
-                if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Success)
+                AccountBusinessService.AccessRelationshipFilter filter = new AccountBusinessService.AccessRelationshipFilter();
+                filter.OrganizationId = organizationId;
+                var vehicleAccessRelation = await _accountClient.GetAccessRelationshipAsync(filter);
+                AccessRelationshipResponseDetail response = new AccessRelationshipResponseDetail();
+                if (vehicleAccessRelation != null && vehicleAccessRelation.Code == AccountBusinessService.Responcecode.Success)
                 {
-                    if (accessRelationship.AccessRelationship != null && accessRelationship.AccessRelationship.Count > 0)
-                    {
-                        return Ok(accessRelationship.AccessRelationship);
-                    }
-                    else
-                    {
-                        return StatusCode(404, "access relationship details are found.");
-                    }
-                }
-                else if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Failed
-                    && accessRelationship.Message == "Please provide AccountId or AccountGroupId or VehicleGroupId to get AccessRelationship.")
-                {
-                    return StatusCode(400, "Please provide AccountId or AccountGroupId or VehicleGroupId to get AccessRelationship.");
+                    response = _mapper.ToAccessRelationshipData(vehicleAccessRelation);
+                    return Ok(response);
                 }
                 else
                 {
-                    return StatusCode(500, accessRelationship.Message);
+                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "01"));
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:get accessrelatioship with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                _logger.LogError("Error in account service:update vehicle access relationship with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                {
+                    return StatusCode(400, PortalConstants.ResponseError.KeyConstraintError);
+                }
+                return StatusCode(500, string.Empty);
             }
         }
+
+        [HttpGet]
+        [Route("account/accessrelationship/getdetails")]        
+        public async Task<IActionResult> GetAccountVehicleAccessRelationship(int organizationId,bool isAccount)
+        {
+            try
+            {
+                // Validation                 
+                if (organizationId <= 0)
+                {
+                    return BadRequest();
+                }
+                AccountBusinessService.AccessRelationshipFilter filter = new AccountBusinessService.AccessRelationshipFilter();
+                filter.IsAccount = isAccount;
+                filter.OrganizationId = organizationId;
+                var vehicleAccessRelation = await _accountClient.GetAccountsVehiclesAsync(filter);
+                AccessRelationshipResponseDetail response = new AccessRelationshipResponseDetail();
+                if (vehicleAccessRelation != null && vehicleAccessRelation.Code == AccountBusinessService.Responcecode.Success)
+                {
+                    response = _mapper.ToAccessRelationshipData(vehicleAccessRelation);
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "01"));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:update vehicle access relationship with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                {
+                    return StatusCode(400, PortalConstants.ResponseError.KeyConstraintError);
+                }
+                return StatusCode(500, string.Empty);
+            }
+        }
+
+        #endregion
+
+
+        #region OLD AccessRelationship  Need to be Deleted
+        //TODO: Need to refactor this based on screen.
+        // Begin - AccessRelationship
+        //[HttpPost]
+        //[Route("accessrelationship/create")]
+        //public async Task<IActionResult> CreateAccessRelationship(AccountBusinessService.AccessRelationship request)
+        //{
+        //    try
+        //    {
+        //        // Validation                 
+        //        if ((request.AccountGroupId <= 0) || (request.VehicleGroupId <= 0) || (string.IsNullOrEmpty(Convert.ToString(request.AccessRelationType))))
+        //        {
+        //            return StatusCode(400, "The AccountGroupId,VehicleGroupId and AccessRelationshipType is required");
+        //        }
+        //        else if ((!request.AccessRelationType.Equals("R")) && (!request.AccessRelationType.Equals("W")))
+        //        {
+        //            return StatusCode(400, "The AccessRelationshipType should be ReadOnly and ReadWrite (R/W) only.");
+        //        }
+        //        AccountBusinessService.AccessRelationshipResponse accessRelationship = await _accountClient.CreateAccessRelationshipAsync(request);
+        //        if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Success)
+        //        {
+        //            return Ok(accessRelationship.AccessRelationship);
+        //        }
+        //        else if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Failed
+        //            && accessRelationship.Message == "The AccessType should be ReadOnly / ReadWrite.(R/W).")
+        //        {
+        //            return StatusCode(400, "The AccessType should be ReadOnly / ReadWrite.(R/W).");
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(500, "accessRelationship is null" + accessRelationship.Message);
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
+        //        // check for fk violation
+        //        if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+        //        {
+        //            return StatusCode(400, "The foreign key violation in one of dependant data.");
+        //        }
+        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
+        //    }
+        //}
+        //[HttpPost]
+        //[Route("accessrelationship/update")]
+        //public async Task<IActionResult> UpdateAccessRelationship(AccountBusinessService.AccessRelationship request)
+        //{
+        //    try
+        //    {
+        //        // Validation                 
+        //        if ((request.AccountGroupId <= 0) || (request.VehicleGroupId <= 0) || (string.IsNullOrEmpty(Convert.ToString(request.AccessRelationType))))
+        //        {
+        //            return StatusCode(400, "The AccountGroupId,VehicleGroupId and AccessRelationshipType is required");
+        //        }
+        //        else if ((!request.AccessRelationType.Equals("R")) && (!request.AccessRelationType.Equals("W")))
+        //        {
+        //            return StatusCode(400, "The AccessRelationshipType should be ReadOnly and ReadWrite (R/W) only.");
+        //        }
+        //        AccountBusinessService.AccessRelationshipResponse accessRelationship = await _accountClient.UpdateAccessRelationshipAsync(request);
+        //        if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Success)
+        //        {
+        //            return Ok(accessRelationship.AccessRelationship);
+        //        }
+        //        else if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Failed
+        //            && accessRelationship.Message == "The AccessType should be ReadOnly / ReadWrite.(R/W).")
+        //        {
+        //            return StatusCode(400, "The AccessType should be ReadOnly / ReadWrite.(R/W).");
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(500, "accessRelationship is null" + accessRelationship.Message);
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
+        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
+        //    }
+        //}
+        //[HttpPost]
+        //[Route("accessrelationship/delete")]
+        //public async Task<IActionResult> DeleteAccessRelationship(AccountBusinessService.AccessRelationshipDeleteRequest request)
+        //{
+        //    try
+        //    {
+        //        // Validation                 
+        //        if (request.AccountGroupId <= 0 || request.VehicleGroupId <= 0)
+        //        {
+        //            return StatusCode(400, "The AccountGroupId,VehicleGroupId is required");
+        //        }
+        //        AccountBusinessService.AccessRelationshipResponse accessRelationship = await _accountClient.DeleteAccessRelationshipAsync(request);
+        //        if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Success)
+        //        {
+        //            return Ok(accessRelationship.AccessRelationship);
+        //        }
+        //        else if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Failed
+        //            && accessRelationship.Message == "The delete access group , Account Group Id and Vehicle Group Id is required.")
+        //        {
+        //            return StatusCode(400, "The delete access group , Account Group Id and Vehicle Group Id is required.");
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(500, "accessRelationship is null" + accessRelationship.Message);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError("Error in account service:create access relationship with exception - " + ex.Message);
+        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
+        //    }
+        //}
+        //[HttpGet]
+        //[Route("accessrelationship/get")]
+        //public async Task<IActionResult> GetAccessRelationship(int AccountId, int AccountGroupId, int VehicleGroupId)
+        //{
+        //    try
+        //    {
+        //        // Validation                 
+        //        if ((AccountId <= 0) && (AccountGroupId <= 0))
+        //        {
+        //            return StatusCode(400, "The AccountId or AccountGroupId is required");
+        //        }
+        //        AccountBusinessService.AccessRelationshipFilter request = new AccountBusinessService.AccessRelationshipFilter();
+        //        request.AccountId = AccountId;
+        //        request.AccountGroupId = AccountGroupId;
+        //        request.VehicleGroupId = VehicleGroupId;
+        //        AccountBusinessService.AccessRelationshipDataList accessRelationship = await _accountClient.GetAccessRelationshipAsync(request);
+        //        if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Success)
+        //        {
+        //            if (accessRelationship.AccessRelationship != null && accessRelationship.AccessRelationship.Count > 0)
+        //            {
+        //                return Ok(accessRelationship.AccessRelationship);
+        //            }
+        //            else
+        //            {
+        //                return StatusCode(404, "access relationship details are found.");
+        //            }
+        //        }
+        //        else if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Failed
+        //            && accessRelationship.Message == "Please provide AccountId or AccountGroupId or VehicleGroupId to get AccessRelationship.")
+        //        {
+        //            return StatusCode(400, "Please provide AccountId or AccountGroupId or VehicleGroupId to get AccessRelationship.");
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(500, accessRelationship.Message);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError("Error in account service:get accessrelatioship with exception - " + ex.Message + ex.StackTrace);
+        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
+        //    }
+        //}
         // End - AccessRelationshhip
         #endregion
 

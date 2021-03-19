@@ -278,9 +278,8 @@ namespace net.atos.daf.ct2.accountservice
             //request.Argument = entity.Argument;
             //request.FunctionEnum = (FunctionEnum)Enum.Parse(typeof(FunctionEnum), entity.FunctionEnum.ToString());
             //request.FunctionEnum = entity.FunctionEnum.ToString();
-            request.GroupType = entity.GroupType.ToString();            
-            //request.ObjectType = (ObjectType)Enum.Parse(typeof(ObjectType), entity.ObjectType.ToString());
-            //request.ObjectType = entity.ObjectType.ToString();
+            request.GroupType = Convert.ToString((char)entity.GroupType); 
+            //request.ObjectType = (ObjectType)Enum.Parse(typeof(ObjectType), entity.ObjectType.ToString());            
             request.OrganizationId = entity.OrganizationId;
             request.GroupRefCount = entity.GroupRefCount;
             request.CreatedAt = entity.CreatedAt.Value;

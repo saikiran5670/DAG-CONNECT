@@ -104,6 +104,7 @@ namespace net.atos.daf.ct2.translationservice.Entity
             }
 
             obj.AddedCount = translationupload.added_count;
+            obj.CreatedAt = translationupload.created_at;
             obj.UpdatedCount = translationupload.updated_count;
             return obj;
         }

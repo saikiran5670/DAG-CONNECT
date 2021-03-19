@@ -38,10 +38,10 @@ service AccountService
   //rpc DeleteAccessRelationship (AccessRelationshipDeleteRequest) returns (AccessRelationshipResponse);
   //rpc GetAccessRelationship (AccessRelationshipFilter) returns (AccessRelationshipDataList);
 
-  rpc CreateVehicleAccessRelationship (VehicleAccessRelationship) returns (VehicleAccessRelationship);
-  rpc UpdateVehicleAccessRelationship (VehicleAccessRelationship) returns (VehicleAccessRelationship);
-  rpc CreateAccountAccessRelationship (AccountAccessRelationship) returns (AccountAccessRelationship);
-  rpc UpdateAccountAccessRelationship (AccountAccessRelationship) returns (AccountAccessRelationship);
+  rpc CreateVehicleAccessRelationship (VehicleAccessRelationship) returns (ServiceResponse);
+  rpc UpdateVehicleAccessRelationship (VehicleAccessRelationship) returns (ServiceResponse);
+  rpc CreateAccountAccessRelationship (AccountAccessRelationship) returns (ServiceResponse);
+  rpc UpdateAccountAccessRelationship (AccountAccessRelationship) returns (ServiceResponse);
   rpc GetAccessRelationship (AccessRelationshipFilter) returns (AccessRelationshipResponse);
   rpc GetAccountsVehicles (AccessRelationshipFilter) returns (AccountVehiclesResponse);
   
@@ -296,6 +296,8 @@ message AccountGroupDetail {
   int32 VehicleCount = 3;
   int32 AccountCount = 4;
   int32 OrganizationId = 5;
+  int64 CreatedAt=6;
+  string Type=7;
 }
 message AccountGroupDetailsDataList {
   repeated AccountGroupDetail AccountGroupDetail= 1;  
@@ -406,13 +408,18 @@ message VehicleAccessRelationship
     string AccessType=2;
     bool IsGroup=3;
     repeated RelationshipData AccountsAccountGroup = 4;
-    int32 OrganizationId=5;
+    int32 OrganizationId=5;    
 }
 message AccessRelationshipResponse {
     Responcecode code=1;
     string Message=2;
     repeated VehicleAccountAccessData VehicleAccessRelationship = 3;
     repeated VehicleAccountAccessData AccountAccessRelationship = 4;
+}
+message ServiceResponse
+{
+    Responcecode code=1;
+    string Message=2;
 }
 message VehicleAccountAccessData
 {
@@ -426,6 +433,7 @@ message VehicleAccountAccessData
 
 message AccessRelationshipFilter{
 int32 OrganizationId=1;
+bool IsAccount=2;
 //int32 VehichleGroupId=2;
 //int32 VehicleId=3;
 //int32 AccountGroupId=4;

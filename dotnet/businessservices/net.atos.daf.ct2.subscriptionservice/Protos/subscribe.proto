@@ -1,17 +1,27 @@
 ﻿syntax = "proto3";
 
 
-
 option csharp_namespace = "net.atos.daf.ct2.subscriptionservice";
 
-package feature;
+package net.atos.daf.ct2.subscriptionservice;
 
 
-enum Responcecode{
-  Success = 0;
-  Failed = 1;
+service SubscribeGRPCService {  
+  rpc Get (SubscriptionDetails) returns (SubscribeListResponce);
 }
 
-service SubscribeService {  
-  rpc Get  returns(FeaturesListResponce);
+message SubscriptionDetails{
+ string subscription_id = 1;
+    string type =2;
+    string name=3;
+    string package_code = 4;
+    int64 subscription_start_date = 5;
+    int64 subscription_end_date = 6;
+    bool is_active = 7;
 }
+
+ 
+
+  message SubscribeListResponce  {
+  repeated SubscriptionDetails responce=1;
+  }

@@ -1,0 +1,40 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace net.atos.daf.ct2.portalservice.Entity.Account
+{
+
+      
+    public class AccessRelationshipResponseDetail
+    {
+        public List<VehicleAccount> Account { get; set; }
+        public List<VehicleAccount> Vehicle { get; set; }
+    }
+    public class AccessRelationshipRequest 
+    {
+        public int Id { get; set; }
+        public string AccessType { get; set; }
+        public bool IsGroup { get; set; }
+        public List<RelationshipData> AssociatedData { get; set; }
+        public int OrganizationId { get; set; }
+    }
+   
+    public class RelationshipData
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }        
+        public bool IsGroup { get; set; }        
+    }
+    public class VehicleAccount
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public bool IsGroup { get; set; }
+        public int Count { get; set; }
+    }
+
+
+}
+

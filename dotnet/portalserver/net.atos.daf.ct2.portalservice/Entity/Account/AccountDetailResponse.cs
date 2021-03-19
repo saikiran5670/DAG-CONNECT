@@ -9,6 +9,7 @@ namespace net.atos.daf.ct2.portalservice.Account
         public string Salutation { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string Type { get; set; }
         public int OrganizationId { get; set; }
         public string DriverId { get; set; }
         public int PreferenceId { get; set; }

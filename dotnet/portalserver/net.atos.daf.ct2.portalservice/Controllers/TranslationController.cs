@@ -330,7 +330,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         }
         [HttpGet]
-        [Route("UploadDetails")]
+        [Route("getUploadDetails")]
         public async Task<IActionResult> GetFileUploadDetails([FromQuery] FileUploadDetailsRequest request)
         {
             _logger.LogInformation("GetFileUploadDetails Method get");
@@ -344,7 +344,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
             {
-                if (request.FileID >= 0)
+                if (request.FileID > 0)
                 {
                     return Ok(ResponseList.Translationupload.FirstOrDefault().File);
                 }

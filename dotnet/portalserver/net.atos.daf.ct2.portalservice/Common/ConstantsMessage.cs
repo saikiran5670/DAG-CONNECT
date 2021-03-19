@@ -23,7 +23,11 @@ namespace net.atos.daf.ct2.portalservice.Common
         public static class ResponseError
         {
             public const string InternalServerError = "Internal Server Error.{0}";
-            
+            public const string KeyConstraintError = "The key constraint error.";
+            public const string BadRequest = "The Bad Request.";
+
+
+
         }
 
         public static class PackageValidation

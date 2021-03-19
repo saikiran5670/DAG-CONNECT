@@ -551,7 +551,7 @@ namespace net.atos.daf.ct2.account
                             order by vg.id desc ) vehiclegroup
                             union all
                             select id,name,access_type,count,false as is_group,group_id,group_name,is_ag_vg_group from (
-                            select vg.id,v.name,ar.access_type,0 as count,
+                            select v.id,v.name,ar.access_type,0 as count,
                             case when (a.id is NULL) then ag.id else a.id end as group_id,
                             case when (a.id is NULL) then ag.name else a.salutation || ' ' || a.first_name || ' ' || a.last_name  end as group_name,
                             case when (a.id is NULL) then true else false end as is_ag_vg_group
@@ -584,7 +584,7 @@ namespace net.atos.daf.ct2.account
                             -- accounts
                             union all
                             select id,name,access_type,count,true as is_group,group_id,group_name,is_ag_vg_group from (
-                            select ag.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name as name,
+                            select a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name as name,
                             ar.access_type,0 as count,
                             case when (v.id is NULL) then vg.id else v.id end as group_id,
                             case when (v.id is NULL) then ag.name else v.name end as group_name,
@@ -632,7 +632,8 @@ namespace net.atos.daf.ct2.account
             }
         }
 
-        public async Task<List<AccountVehicleEntity>> GetAccountVehicle(AccountVehicleAccessRelationshipFilter filter, bool is_vehicle)
+
+        public async Task<List<AccountVehicleEntity>> GetVehicle(AccountVehicleAccessRelationshipFilter filter, bool is_vehicle)
         {
             try
             {
@@ -662,6 +663,41 @@ namespace net.atos.daf.ct2.account
                     }
                     else
                     {
+                        query = @"select id,name,0 as count,true as is_group from (
+                                select vg.id,vg.name
+                                from master.group vg 
+                                where vg.organization_id=@organization_id and vg.object_type='V' and vg.group_type in ('G','D')
+                                ) vehicleGroup
+                                union all
+                                select id,name,count,false as is_group from (
+                                select v.id,v.name, 0 as count
+                                from master.vehicle v 
+                                where v.organization_id=@organization_id 
+                                ) vehicles";
+                    }
+                    parameter.Add("@organization_id", filter.OrganizationId);
+                    IEnumerable<AccountVehicleEntity> accessRelationship = await dataAccess.QueryAsync<AccountVehicleEntity>(query, parameter);
+                    response =  accessRelationship.ToList();
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<List<AccountVehicleEntity>> GetAccount(AccountVehicleAccessRelationshipFilter filter, bool is_account)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                List<AccountVehicleEntity> response = new List<AccountVehicleEntity>();
+                if (filter != null)
+                {
+                    // org filter
+                    if (filter.OrganizationId > 0 && is_account)
+                    {
                         query = @"-- account group
                                         select id,name,count,true as is_group from (
                                         select ag.id,ag.name,
@@ -679,9 +715,24 @@ namespace net.atos.daf.ct2.account
                                         where ar.organization_id=@organization_id
                                         ) accounts";
                     }
+                    else
+                    {
+                        query = @"-- account group
+                                        select id,name,0 as count,true as is_group from (
+                                        select ag.id,ag.name                                         
+                                        from master.group ag 
+                                        where ag.object_type='A' and ag.group_type in ('G','D') and ag.organization_id=@organization_id
+                                        ) accountGroup
+                                        union all
+                                        select id,name,count,false as is_group from (
+                                        select a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name  as name,0 as count
+                                        from master.account a inner join master.accountorg ar on ar.account_id=a.id 
+                                        where ar.organization_id=@organization_id
+                                        ) accounts";
+                    }
                     parameter.Add("@organization_id", filter.OrganizationId);
                     IEnumerable<AccountVehicleEntity> accessRelationship = await dataAccess.QueryAsync<AccountVehicleEntity>(query, parameter);
-                    response =  accessRelationship.ToList();
+                    response = accessRelationship.ToList();
                 }
                 return response;
             }

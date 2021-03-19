@@ -33,11 +33,18 @@ service AccountService
   rpc GetPreference (AccountPreferenceFilter) returns (AccountPreferenceResponse);
 
   // Access Relationship
-  rpc CreateAccessRelationship (AccessRelationship) returns (AccessRelationshipResponse);
-  rpc UpdateAccessRelationship (AccessRelationship) returns (AccessRelationshipResponse);
-  rpc DeleteAccessRelationship (AccessRelationshipDeleteRequest) returns (AccessRelationshipResponse);
-  rpc GetAccessRelationship (AccessRelationshipFilter) returns (AccessRelationshipDataList);
-  rpc CreateVehicleAccessRelationship (VehicleAccessRelationship) returns (VehicleAccessRelationship);
+  //rpc CreateAccessRelationship (AccessRelationship) returns (AccessRelationshipResponse);
+  //rpc UpdateAccessRelationship (AccessRelationship) returns (AccessRelationshipResponse);
+  //rpc DeleteAccessRelationship (AccessRelationshipDeleteRequest) returns (AccessRelationshipResponse);
+  //rpc GetAccessRelationship (AccessRelationshipFilter) returns (AccessRelationshipDataList);
+
+  rpc CreateVehicleAccessRelationship (VehicleAccessRelationship) returns (ServiceResponse);
+  rpc UpdateVehicleAccessRelationship (VehicleAccessRelationship) returns (ServiceResponse);
+  rpc CreateAccountAccessRelationship (AccountAccessRelationship) returns (ServiceResponse);
+  rpc UpdateAccountAccessRelationship (AccountAccessRelationship) returns (ServiceResponse);
+  rpc GetAccessRelationship (AccessRelationshipFilter) returns (AccessRelationshipResponse);
+  rpc GetAccountsVehicles (AccessRelationshipFilter) returns (AccountVehiclesResponse);
+  
   
   // Account Group Method
   rpc CreateGroup (AccountGroupRequest) returns (AccountGroupResponce);
@@ -289,6 +296,8 @@ message AccountGroupDetail {
   int32 VehicleCount = 3;
   int32 AccountCount = 4;
   int32 OrganizationId = 5;
+  int64 CreatedAt=6;
+  string Type=7;
 }
 message AccountGroupDetailsDataList {
   repeated AccountGroupDetail AccountGroupDetail= 1;  
@@ -346,43 +355,6 @@ message AccountRoleResponse{
 
 // End Account Role
 
-// Begin Account Relationship 
-
-message AccessRelationshipDeleteRequest
-{
-  int32 AccountGroupId =1;
-  int32 VehicleGroupId =2;        
-}
-
-message AccessRelationship
-{
-  int32 Id=1;
-  string AccessRelationType =2;
-  int32 AccountGroupId =3;
-  int32 VehicleGroupId =4;
-  //string StartDate=5;
-  //string EndDate=6;        
-}
-message AccessRelationshipFilter
-{
-  int32 AccountId =1;
-  int32 AccountGroupId =2; 
-  int32 VehicleGroupId =3;
-}
-message AccessRelationshipResponse
-{
-  Responcecode Code=1;
-  string Message = 2;
-  AccessRelationship AccessRelationship=3;
-}
-message AccessRelationshipDataList
-{
-  Responcecode Code=1;
-  string Message = 2;
-  repeated AccessRelationship AccessRelationship=3;
-}
-// End Account Relationship 
-
 // Begin - Profile picture
 
 message AccountBlobRequest
@@ -431,13 +403,42 @@ message AccountIdentityRole
 // begin - vehicle-account access relatioship
 message VehicleAccessRelationship
 {
-
     int32 Id=1;
+    //string Name =2;
+    string AccessType=2;
+    bool IsGroup=3;
+    repeated RelationshipData AccountsAccountGroup = 4;
+    int32 OrganizationId=5; 
+}
+message AccessRelationshipResponse {
+    Responcecode code=1;
+    string Message=2;
+    repeated VehicleAccountAccessData VehicleAccessRelationship = 3;
+    repeated VehicleAccountAccessData AccountAccessRelationship = 4;
+}
+message ServiceResponse
+{
+    Responcecode code=1;
+    string Message=2;
+}
+message VehicleAccountAccessData
+{
+    int32 Id=1;     
     string Name =2;
     string AccessType=3;
     bool IsGroup=4;
-    repeated RelationshipData AccountsAccountGroup = 5;
-    int32 OrganizationId=6;
+    int32 Count=5;
+    repeated RelationshipData AssociateData = 6;
+}
+
+message AccessRelationshipFilter{
+int32 OrganizationId=1;
+bool IsAccount=2;
+//int32 VehichleGroupId=2;
+//int32 VehicleId=3;
+//int32 AccountGroupId=4;
+//int32 AccountId=5;
+
 }
 message AccountAccessRelationship
 {
@@ -453,5 +454,18 @@ message RelationshipData
     int32 Id=1;
     string Name=2;
     bool IsGroup=3;
+}
+message AccountVehicles
+{
+    int32 Id=1;
+    string Name=2;
+    bool IsGroup=3;
+    int32 Count=4;
+}
+message AccountVehiclesResponse {
+    Responcecode code=1;
+    string Message=2;
+    repeated AccountVehicles VehiclesVehicleGroup = 3;
+    repeated AccountVehicles AccountsAccountGroups = 4;
 }
 // end - vehicle-account access relatioship
