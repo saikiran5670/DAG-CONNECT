@@ -59,13 +59,14 @@ namespace net.atos.daf.ct2.subscription.repository
         }
 
         //To check if Organization is already inserted
-        async Task<string> OrganizationExits(int orgId)
+        async Task<string> OrganizationExits(int orgId, int packageId)
         {
             var parameterToGetSubscribeId = new DynamicParameters();
             parameterToGetSubscribeId.Add("@organization_Id", orgId);
+            parameterToGetSubscribeId.Add("@package_id", packageId);
             parameterToGetSubscribeId.Add("@is_active", true);
             string data = await dataAccess.ExecuteScalarAsync<string>
-                             (@"select subscription_id from master.subscription where organization_Id =@organization_Id and is_active =@is_active",
+                             (@"select subscription_id from master.subscription where organization_Id =@organization_Id and package_id=@package_id and is_active =@is_active",
                             parameterToGetSubscribeId);
             return data;
         }
@@ -415,13 +416,13 @@ namespace net.atos.daf.ct2.subscription.repository
             return subscription;
         }
 
-       public async Task<SubscriptionResponse> Create(int orgId)
+       public async Task<SubscriptionResponse> Create(int orgId,int packageId)
         {
             try
             {
                 SubscriptionResponse objSubscriptionResponse = new SubscriptionResponse();
                 string SubscriptionId = string.Empty;
-                SubscriptionId = await OrganizationExits(orgId);
+                SubscriptionId = await OrganizationExits(orgId, packageId);
                 if (!string.IsNullOrEmpty(SubscriptionId))
                 {
                     objSubscriptionResponse.orderId = SubscriptionId;
@@ -433,7 +434,7 @@ namespace net.atos.daf.ct2.subscription.repository
                 parameter.Add("@subscription_id", SubscriptionId);
                 parameter.Add("@type", null);
                 parameter.Add("@package_code", null);
-                parameter.Add("@package_id", null);
+                parameter.Add("@package_id", packageId);
                 parameter.Add("@vehicle_id", null);
                 parameter.Add("@subscription_start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameter.Add("@subscription_end_date", null);
