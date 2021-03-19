@@ -12,6 +12,6 @@ namespace net.atos.daf.ct2.relationship.repository
         Task<bool> DeleteRelationship(int relationshipId);
         Task<List<Relationship>> GetRelationship(Relationship filter);
         Task<RelationshipLevelCode> GetRelationshipLevelCode();
-
+        Task<int> CreateRelationShipMapping(OrganizationRelationShip relationshipMapping);
     }
 }

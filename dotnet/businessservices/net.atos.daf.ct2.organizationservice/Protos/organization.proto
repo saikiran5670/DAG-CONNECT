@@ -25,12 +25,34 @@ service OrganizationService {
   rpc UpdateRelationship (RelationshipCreateRequest) returns (RelationshipCreateResponse);
   rpc DeleteRelationship (RelationshipDeleteRequest) returns (RelationshipDeleteResponse);
   rpc GetRelationship (RelationshipCreateRequest) returns (RelationshipGetResponse);
+
+  rpc CreateOrgRelationship (OrgRelationshipCreateRequest) returns (OrgRelationshipCreateResponse);
 }
 message GetAllOrgResponse{
   repeated OrgGetResponse OrganizationList=1;
   Responcecode Code=2;
   string Message = 3;
 }
+message OrgRelationshipCreateRequest
+{
+    int32 OrgRelationId =1;
+    int32 RelationShipId = 2;
+    int32 VehicleGroupID = 3;
+    int32 OwnerOrId = 4;
+    int32 CreatedOrgId = 5;
+    int32 TargetOrgId = 6;
+    int64 StartDate= 7;
+    int64 EndDate=8;
+    bool AllowChain = 9;
+    int64 createdAt=10;
+}
+message OrgRelationshipCreateResponse{
+  Responcecode Code=1;
+  string Message = 2;
+  OrgRelationshipCreateRequest relationship = 3;
+ 
+}
+
 message RelationshipGetRequest{
     int32 id = 1;
     int32 organizationId=2;
