@@ -29,15 +29,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private IMemoryCacheProvider _cache;
+        private readonly PortalCacheConfiguration _cachesettings;
+
         #endregion
 
         #region Constructor
-        public FeatureController(FeatuseBusinessService.FeatureService.FeatureServiceClient Featureclient, ILogger<AccountController> logger, IMemoryCacheProvider cache)
+        public FeatureController(FeatuseBusinessService.FeatureService.FeatureServiceClient Featureclient, ILogger<AccountController> logger, IMemoryCacheProvider cache, IOptions<PortalCacheConfiguration> cachesettings)
         {
             _featureclient = Featureclient;
             _logger = logger;
             _mapper = new Mapper();
             _cache = cache;
+            _cachesettings = cachesettings.Value;
         }
         #endregion
 
@@ -200,9 +203,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                Google.Protobuf.Collections.RepeatedField<DataAttributeResponce> cachedataAttributes = _cache.GetFromCache<Google.Protobuf.Collections.RepeatedField<DataAttributeResponce>>(LangaugeCode);
+                if (cachedataAttributes != null) return Ok(cachedataAttributes);
+                
                 DataAtributeRequest request = new DataAtributeRequest();
                 request.LangaugeCode = (LangaugeCode == null ||LangaugeCode == "") ? "EN-GB" : LangaugeCode ;
                 var responce = await _featureclient.GetDataAttributesAsync(request);
+
+                // Set cache options.
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    // Keep in cache for this time, reset time if accessed.
+                    .SetSlidingExpiration(TimeSpan.FromSeconds(10));
+                
+                _cache.SetCache(LangaugeCode, responce.Responce, cacheEntryOptions);
+
                 return Ok(responce.Responce);
             }
             catch (Exception)
@@ -220,8 +234,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                //var users = _cacheProvider.GetFromCache<IEnumerable<User>>(cacheKey);
-                //if (users != null) return users;
+
+                Google.Protobuf.Collections.RepeatedField<FeatureRequest> cachedfeature = _cache.GetFromCache<Google.Protobuf.Collections.RepeatedField<FeatureRequest>>(request.LangaugeCode);
+                if (cachedfeature != null) return Ok(cachedfeature);
 
                 request.LangaugeCode = (request.LangaugeCode == null || request.LangaugeCode == "") ? "EN-GB" : request.LangaugeCode;
 
