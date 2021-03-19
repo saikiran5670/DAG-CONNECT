@@ -327,23 +327,23 @@ namespace net.atos.daf.ct2.subscription.repository
         }
 
 
-        public async Task<Subscription> Get(int subscriptionId)
-        {
-            try
-            {
-                var parameter = new DynamicParameters();
-                parameter.Add("@id", subscriptionId);
+        //public async Task<Subscription> Get(int subscriptionId)
+        //{
+        //    try
+        //    {
+        //        var parameter = new DynamicParameters();
+        //        parameter.Add("@id", subscriptionId);
 
-                string query = string.Empty;
-                query = "select * from master.subscription where id=@id";
-                dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
-                return Map(result);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        //        string query = string.Empty;
+        //        query = "select * from master.subscription where id=@id";
+        //        dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+        //        return Map(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
 
         private Subscription Map(dynamic record)
         {
@@ -458,13 +458,24 @@ namespace net.atos.daf.ct2.subscription.repository
             }
         }
 
-        public async Task<IEnumerable<SubscriptionDetails>> Get()
+        public async Task<IEnumerable<SubscriptionDetails>> Get(SubscriptionDetails objSubscriptionDetails)
         {
             try
             {
                 string query = string.Empty;
-                query = string.Format("select sub.subscription_id,sub.type,pak.name,sub.package_code,sub.subscription_start_date,sub.subscription_end_date,sub.is_active from master.Subscription sub join master.package pak on sub.package_id = pak.id");
-                IEnumerable<SubscriptionDetails> objsubscriptionDetails = await dataAccess.QueryAsync<SubscriptionDetails>(query);
+                IEnumerable<SubscriptionDetails> objsubscriptionDetails = null;
+                if (objSubscriptionDetails.subscription_id == null || string.IsNullOrEmpty(objSubscriptionDetails.subscription_id))
+                {
+                    query = string.Format("select sub.subscription_id,sub.type,pak.name,sub.package_code,sub.subscription_start_date,sub.subscription_end_date,sub.is_active from master.Subscription sub join master.package pak on sub.package_id = pak.id");
+                    objsubscriptionDetails = await dataAccess.QueryAsync<SubscriptionDetails>(query);
+                }
+                else
+                {
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@subscription_id", objSubscriptionDetails.subscription_id);
+                    query = string.Format("select sub.subscription_id,sub.type,pak.name,sub.package_code,sub.subscription_start_date,sub.subscription_end_date,sub.is_active from master.Subscription sub join master.package pak on sub.package_id = pak.id where subscription_id=@subscription_id");
+                    objsubscriptionDetails = await dataAccess.QueryAsync<SubscriptionDetails>(query, parameter);
+                }
                 return objsubscriptionDetails;
             }
             catch (Exception ex)

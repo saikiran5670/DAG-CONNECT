@@ -66,6 +66,8 @@ namespace net.atos.daf.ct2.portalservice
             AppContext.SetSwitch(
                     "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
+            services.Configure<PortalCacheConfiguration>(Configuration.GetSection("PortalCacheConfiguration"));
+
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
                 {

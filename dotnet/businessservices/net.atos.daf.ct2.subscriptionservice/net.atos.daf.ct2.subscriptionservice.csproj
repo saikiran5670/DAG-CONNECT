@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Protos\subscribe.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.35.0" />
     <PackageReference Include="Grpc.AspNetCore.Web" Version="2.35.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="5.0.0" />
@@ -17,6 +21,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.subscription\net.atos.daf.ct2.subscription.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\subscribe.proto" GrpcServices="Server" />
   </ItemGroup>
 
 
