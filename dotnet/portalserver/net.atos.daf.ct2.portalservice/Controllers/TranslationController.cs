@@ -330,7 +330,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         }
         [HttpGet]
-        [Route("UploadDetails")]
+        [Route("getUploadDetails")]
         public async Task<IActionResult> GetFileUploadDetails([FromQuery] FileUploadDetailsRequest request)
         {
             _logger.LogInformation("GetFileUploadDetails Method get");
