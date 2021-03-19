@@ -66,7 +66,7 @@ namespace net.atos.daf.ct2.portalservice
             AppContext.SetSwitch(
                     "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
-            services.Configure<PortalCacheConfiguration>(Configuration.GetSection("PortalCacheConfiguration"));
+            //services.Configure<PortalCacheConfiguration>(Configuration.GetSection("PortalCacheConfiguration"));
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
@@ -92,14 +92,14 @@ namespace net.atos.daf.ct2.portalservice
                    options.HttpsPort = string.IsNullOrEmpty(httpsport)? 443 : Convert.ToInt32(httpsport);
                }); */
 
-            services.AddMemoryCache();
+            //services.AddMemoryCache();
 
             services.AddControllers();
 
             services.AddDistributedMemoryCache();
-            
+
             services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
-            services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();
+            //services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();
 
             services.AddGrpcClient<AccountService.AccountServiceClient>(o =>
             {
