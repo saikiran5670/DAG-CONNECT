@@ -198,7 +198,100 @@ namespace net.atos.daf.ct2.organizationservice
             }
         }
 
+        public override async Task<OrgRelationshipCreateResponse> CreateOrgRelationship(OrgRelationshipCreateRequest request, ServerCallContext context)
+        {
+            OrganizationRelationShip objRelationship = new OrganizationRelationShip();
+            try
+            {
+                OrgRelationshipCreateResponse responce = new OrgRelationshipCreateResponse();
 
+                foreach (var organization in request.TargetOrgId)
+                {
+                    foreach (var vehgroup in request.VehicleGroupID)
+                    {
+                        objRelationship.relationship_id = request.RelationShipId;
+                        objRelationship.vehicle_group_id = vehgroup;
+                        objRelationship.owner_org_id = request.OwnerOrId;
+                        objRelationship.created_org_id = request.CreatedOrgId;
+                        objRelationship.target_org_id = organization;
+                        objRelationship.allow_chain = true;
+                        var orgrelationid = await _relationshipManager.CreateRelationShipMapping(objRelationship);
+                        request.OrgRelationId = orgrelationid;
+                        
+                        responce.Code = Responcecode.Success;
+                        responce.Relationship.Add(orgrelationid);
+                       
+                    }
+                }
+                responce.Code = Responcecode.Success;
+                return await Task.FromResult(responce);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in create  relationship mapping service:  relationship  with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new OrgRelationshipCreateResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Relationship Create Faile due to - " + ex.Message,
+
+                });
+            }
+        }
+
+        public override async Task<EndOrgRelationshipResponse> EndOrgRelationShip(EndOrgRelationShipRequest request, ServerCallContext context)
+        {
+            try
+            {
+                EndOrgRelationshipResponse objresponce = new EndOrgRelationshipResponse();
+                foreach (var item in request.OrgRelationShipid)
+                {
+                    var orgrelationid = await _relationshipManager.EndRelationShipMapping(item);
+                    objresponce.OrgRelationShipid.Add(orgrelationid);
+                }
+
+
+                objresponce.Code = Responcecode.Success;
+                objresponce.Message = "Relationships Ended";
+                return await Task.FromResult(objresponce);
+
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(new EndOrgRelationshipResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Relationship Create Faile due to - " + ex.Message,
+
+                });
+                throw;
+            }
+        }
+        public override async Task<ChainingResponse> AllowChaining(ChainingRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var orgrelationid = await _relationshipManager.AllowChaining(request.OrgRelationID,request.AllowChaining);
+                return await Task.FromResult(new ChainingResponse
+                {
+                    Code = Responcecode.Success,
+                    Message = "Relationship Ended",
+                    OrgRelationShipid = orgrelationid
+
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Allow chaining failed due to - " + ex.Message);
+                return await Task.FromResult(new ChainingResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Allow chaining failed due to - " + ex.Message,
+
+                });
+                throw;
+            }
+        }
         //Organization
 
         public override async Task<OrganizationCreateData> Create(OrgCreateRequest request, ServerCallContext context)

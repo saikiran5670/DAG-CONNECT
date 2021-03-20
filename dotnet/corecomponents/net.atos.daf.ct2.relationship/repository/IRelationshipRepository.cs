@@ -13,5 +13,7 @@ namespace net.atos.daf.ct2.relationship.repository
         Task<List<Relationship>> GetRelationship(Relationship filter);
         Task<RelationshipLevelCode> GetRelationshipLevelCode();
         Task<int> CreateRelationShipMapping(OrganizationRelationShip relationshipMapping);
+        Task<int> EndRelationShipMapping(int OrgRelationId);
+        Task<int> AllowChaining(int OrgRelationId, bool AllowChaining);
     }
 }

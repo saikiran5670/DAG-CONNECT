@@ -547,6 +547,96 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         // End - Account Preference    
+
+
+        ////Organization relationships 
+        ///
+        [HttpPost]
+        [Route("OrgRelationShip/Create")]
+        public async Task<IActionResult> CreateOrgRelationShip(OrgRelationshipCreateRequest request)
+        {
+            try
+            {
+                var CreateResponce = await organizationClient.CreateOrgRelationshipAsync(request);
+                if (CreateResponce.Code == OrganizationBusinessService.Responcecode.Success)
+                {
+                    return Ok(CreateResponce);
+                }
+                else
+                {
+                    return StatusCode(500,"Error in creating relationships");
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Error in account service:create orgRelations with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpPost]
+        [Route("OrgRelationShip/EndRelation")]
+        public async Task<IActionResult> EndOrganizationRelationShip(EndOrgRelationShipRequest request)
+        {
+            try
+            {
+                var UpdateResponce = await organizationClient.EndOrgRelationShipAsync(request);
+                if (UpdateResponce.Code == OrganizationBusinessService.Responcecode.Success)
+                {
+                    return Ok(UpdateResponce);
+                }
+                else
+                {
+                    return StatusCode(500, "Error in creating relationships");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Error in account service:End relation with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpPost]
+        [Route("OrgRelationShip/AllowChain")]
+        public async Task<IActionResult> AllowChaining(ChainingRequest request)
+        {
+            try
+            {
+                var UpdateResponce = await organizationClient.AllowChainingAsync(request);
+                if (UpdateResponce.Code == OrganizationBusinessService.Responcecode.Success)
+                {
+                    return Ok(UpdateResponce);
+                }
+                else
+                {
+                    return StatusCode(500, "Error in creating relationships");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Error in account service:Allow chaining with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
     }
 }
 

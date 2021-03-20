@@ -23,6 +23,8 @@ using Identity = net.atos.daf.ct2.identity;
 using AccountPreference = net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.relationship.repository;
 using net.atos.daf.ct2.relationship;
+using net.atos.daf.ct2.subscription;
+using net.atos.daf.ct2.subscription.repository;
 //using Swashbuckle.AspNetCore.Swagger;
 //using Microsoft.OpenApi.Models;
 
@@ -47,16 +49,18 @@ namespace net.atos.daf.ct2.organizationservice
                .AllowAnyMethod()
                .AllowAnyHeader()
                .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
-                 }));         
-                    
+                 }));
+
             string connectionString = Configuration.GetConnectionString("ConnectionString");
-            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
+                        IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
           // var connectionString = Configuration.GetConnectionString("ConnectionString");
           // var connectionString="Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y\\97;Ssl Mode=Require;";
             //IDataAccess dataAccess = new PgSQLDataAccess(connectionString);           
             services.AddSingleton(dataAccess); 
             services.AddTransient<IAuditTraillib,AuditTraillib>(); 
-            services.AddTransient<IAuditLogRepository, AuditLogRepository>(); 
+            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
+            services.AddTransient<ISubscriptionManager, SubscriptionManager>();
+            services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
             services.AddTransient<IOrganizationManager,OrganizationManager>();
             services.AddTransient<IOrganizationRepository, OrganizationRepository>();
             services.AddTransient<IRelationshipRepository, RelationshipRepository>();
