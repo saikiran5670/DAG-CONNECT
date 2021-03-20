@@ -86,20 +86,23 @@ namespace net.atos.daf.ct2.identity
             {
                 if (!String.IsNullOrEmpty(assertion.Value))
                 {
-                    claimList.Add(new Claim(assertion.Key, assertion.Value));
-                 
+                    //claimList.Add(new Claim(assertion.Key, assertion.Value));
+
                     switch (assertion.Key.ToString())
                     {
                         case "session_state":
                             accountToken.SessionState  = assertion.Value.ToString();
+                            claimList.Add(new Claim("session_state", assertion.Value.ToString()));
                             break;
                         case "scope":
                             accountToken.Scope = assertion.Value.ToString();
+                            claimList.Add(new Claim("scope", assertion.Value.ToString()));
                             break;
                     }
                 }
-            }           
-            
+            }
+            claimList.Add(new Claim("email", customclaims.Email));
+
             var jwt = new JwtSecurityToken(
                 claims: claimList.ToArray(),
                 notBefore: now,

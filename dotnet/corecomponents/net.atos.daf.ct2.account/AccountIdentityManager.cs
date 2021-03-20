@@ -75,6 +75,7 @@ namespace net.atos.daf.ct2.account
                 IdentityEntity.IDPToken token = JsonConvert.DeserializeObject<IdentityEntity.IDPToken>(Convert.ToString(idpResponse.Result));
                 IdentityEntity.AccountIDPClaim accIDPclaims= tokenManager.DecodeToken(token.access_token);
                 accIDPclaims.TokenExpiresIn=token.expires_in;
+                accIDPclaims.Email = user.UserName;
                 accToken = tokenManager.CreateToken(accIDPclaims);
             }
             return await Task.FromResult(accToken);
