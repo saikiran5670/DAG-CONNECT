@@ -1,7 +1,6 @@
-﻿using Dapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using net.atos.daf.ct2.account;
-using net.atos.daf.ct2.data;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -25,17 +24,25 @@ namespace net.atos.daf.ct2.featureactivationservice.CustomAttributes
                 context.Fail();
                 return;
             }
-                
-            var emailClaim = context.User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
-            var emailAddress = emailClaim.Value;
 
-            var isExists = await accountManager.CheckForFeatureAccessByEmailId(emailAddress, requirement.FeatureName);
-            if (isExists)
-                context.Succeed(requirement);
-            else
+            try
+            {
+                var emailClaim = context.User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
+                var emailAddress = emailClaim.Value;
+
+                var isExists = await accountManager.CheckForFeatureAccessByEmailId(emailAddress, requirement.FeatureName);
+                if (isExists)
+                    context.Succeed(requirement);
+                else
+                    context.Fail();
+
+                return;
+            }
+            catch (Exception)
+            {
                 context.Fail();
-
-            return;
+                return;
+            }
         }
     }
 }
