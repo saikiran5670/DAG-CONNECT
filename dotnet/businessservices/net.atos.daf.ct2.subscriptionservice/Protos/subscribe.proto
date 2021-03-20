@@ -1,13 +1,11 @@
 ﻿syntax = "proto3";
 
-
 option csharp_namespace = "net.atos.daf.ct2.subscriptionservice";
 
 package net.atos.daf.ct2.subscriptionservice;
 
-
 service SubscribeGRPCService {  
-  rpc Get (SubscriptionDetails) returns (SubscribeListResponce);
+  rpc Get (SubscriptionDetailsRequest) returns (SubscribeListResponce);
 }
 
 message SubscriptionDetails{
@@ -18,10 +16,19 @@ message SubscriptionDetails{
     int64 subscription_start_date = 5;
     int64 subscription_end_date = 6;
     bool is_active = 7;
+    int32 count = 8;
+}
+message SubscribeListResponce  {
+  repeated SubscriptionDetails responce=1;
 }
 
- 
-
-  message SubscribeListResponce  {
-  repeated SubscriptionDetails responce=1;
-  }
+message SubscriptionDetailsRequest{
+    int32 organization_id =1;
+    string type = 2;
+    StatusType is_active = 3;
+}
+enum StatusType	{
+		None = 0;
+		True = 1;
+		False = 2;
+}
