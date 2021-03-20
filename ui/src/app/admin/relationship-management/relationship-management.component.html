@@ -48,7 +48,7 @@
                         </ng-container>
                         <ng-container matColumnDef="features">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatures || 'Features'}}</mat-header-cell>
-                            <mat-cell *matCellDef="let row">{{row.features}} </mat-cell>
+                            <mat-cell *matCellDef="let row">{{row.featureIds.length}} </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="level">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblLevel || 'Level'}}</mat-header-cell>

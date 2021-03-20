@@ -126,11 +126,11 @@ export class NewUserStepComponent implements OnInit {
     });
     this.userTypeList = [
       {
-        name: this.translationData.lblPortalUser || 'PortalUser',
+        name: this.translationData.lblPortalUser || 'Portal User',
         value: 'P'
       },
       {
-        name: this.translationData.lblSystemUser || 'SystemUser',
+        name: this.translationData.lblSystemUser || 'System User',
         value: 'S'
       }
     ];
@@ -315,7 +315,7 @@ export class NewUserStepComponent implements OnInit {
 
     let roleObj = {
       accountId: this.linkFlag ? this.linkAccountId :  this.userData.id,
-      organizationId: this.linkFlag ? this.accountOrganizationId : this.userData.organization_Id,
+      organizationId: this.linkFlag ? this.accountOrganizationId : this.userData.organizationId,
       roles: mapRoleData
     }
 

@@ -4,16 +4,19 @@ import {  catchError } from 'rxjs/internal/operators';
 import {
   HttpClient,
   HttpErrorResponse,
-  HttpHeaders
+  HttpHeaders,
+  HttpParams
 } from '@angular/common/http';
 import { ConfigService } from '@ngx-config/core';
 
 @Injectable()
 export class PackageService {
   PackageServiceUrl: string = '';
+  featureServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
     this.PackageServiceUrl = config.getSettings("foundationServices").packageRESTServiceURL;
+    this.featureServiceUrl = config.getSettings("foundationServices").featureRESTServiceURL;
   }
 
   generateHeader(){
@@ -34,6 +37,15 @@ export class PackageService {
     };
     return this.httpClient
       .get<any[]>(`${this.PackageServiceUrl}/get`,headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  getFeatures(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = new HttpHeaders({ headerObj });
+    const options =  { params: new HttpParams(data), headers: headers };
+    return this.httpClient
+      .get<any[]>(`${this.featureServiceUrl}/getfeatures`,options)
       .pipe(catchError(this.handleError));
   }
 

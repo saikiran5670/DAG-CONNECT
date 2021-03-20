@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
@@ -59,13 +60,14 @@ namespace net.atos.daf.ct2.subscription.repository
         }
 
         //To check if Organization is already inserted
-        async Task<string> OrganizationExits(int orgId)
+        async Task<string> OrganizationExits(int orgId, int packageId)
         {
             var parameterToGetSubscribeId = new DynamicParameters();
             parameterToGetSubscribeId.Add("@organization_Id", orgId);
+            parameterToGetSubscribeId.Add("@package_id", packageId);
             parameterToGetSubscribeId.Add("@is_active", true);
             string data = await dataAccess.ExecuteScalarAsync<string>
-                             (@"select subscription_id from master.subscription where organization_Id =@organization_Id and is_active =@is_active",
+                             (@"select subscription_id from master.subscription where organization_Id =@organization_Id and package_id=@package_id and is_active =@is_active",
                             parameterToGetSubscribeId);
             return data;
         }
@@ -415,13 +417,13 @@ namespace net.atos.daf.ct2.subscription.repository
             return subscription;
         }
 
-       public async Task<SubscriptionResponse> Create(int orgId)
+       public async Task<SubscriptionResponse> Create(int orgId,int packageId)
         {
             try
             {
                 SubscriptionResponse objSubscriptionResponse = new SubscriptionResponse();
                 string SubscriptionId = string.Empty;
-                SubscriptionId = await OrganizationExits(orgId);
+                SubscriptionId = await OrganizationExits(orgId, packageId);
                 if (!string.IsNullOrEmpty(SubscriptionId))
                 {
                     objSubscriptionResponse.orderId = SubscriptionId;
@@ -433,7 +435,7 @@ namespace net.atos.daf.ct2.subscription.repository
                 parameter.Add("@subscription_id", SubscriptionId);
                 parameter.Add("@type", null);
                 parameter.Add("@package_code", null);
-                parameter.Add("@package_id", null);
+                parameter.Add("@package_id", packageId);
                 parameter.Add("@vehicle_id", null);
                 parameter.Add("@subscription_start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameter.Add("@subscription_end_date", null);
@@ -458,24 +460,52 @@ namespace net.atos.daf.ct2.subscription.repository
             }
         }
 
-        public async Task<IEnumerable<SubscriptionDetails>> Get(SubscriptionDetails objSubscriptionDetails)
+        public async Task<List<SubscriptionDetails>> Get(SubscriptionDetailsRequest objSubscriptionDetailsRequest)
         {
             try
             {
                 string query = string.Empty;
-                IEnumerable<SubscriptionDetails> objsubscriptionDetails = null;
-                if (objSubscriptionDetails.subscription_id == null || string.IsNullOrEmpty(objSubscriptionDetails.subscription_id))
-                {
-                    query = string.Format("select sub.subscription_id,sub.type,pak.name,sub.package_code,sub.subscription_start_date,sub.subscription_end_date,sub.is_active from master.Subscription sub join master.package pak on sub.package_id = pak.id");
-                    objsubscriptionDetails = await dataAccess.QueryAsync<SubscriptionDetails>(query);
-                }
-                else
-                {
+                List<SubscriptionDetails> objsubscriptionDetails = new List<SubscriptionDetails>();
+               
+                    query = @"SELECT sub.subscription_id,sub.package_code,pak.name,sub.type,COUNT(veh.name),
+                                     sub.subscription_start_date,sub.subscription_end_date,sub.is_active,sub.organization_id
+                                     FROM master.Subscription sub 
+                              JOIN master.package pak on sub.package_id = pak.id 
+                              LEFT JOIN master.vehicle veh on sub.vehicle_id = veh.id
+                              GROUP BY sub.subscription_id,sub.package_code,pak.name,sub.type,
+                                     sub.subscription_start_date,sub.subscription_end_date,sub.is_active,sub.organization_id
+                              HAVING 1=1";
+
                     var parameter = new DynamicParameters();
-                    parameter.Add("@subscription_id", objSubscriptionDetails.subscription_id);
-                    query = string.Format("select sub.subscription_id,sub.type,pak.name,sub.package_code,sub.subscription_start_date,sub.subscription_end_date,sub.is_active from master.Subscription sub join master.package pak on sub.package_id = pak.id where subscription_id=@subscription_id");
-                    objsubscriptionDetails = await dataAccess.QueryAsync<SubscriptionDetails>(query, parameter);
+
+                    if (objSubscriptionDetailsRequest != null)
+                    {
+                        
+                        if (objSubscriptionDetailsRequest.organization_id > 0)
+                        {
+                            parameter.Add("@organization_id", objSubscriptionDetailsRequest.organization_id);
+                            query =   $"{query} and sub.organization_id=@organization_id ";
+                        }
+                        
+                        else if (!string.IsNullOrEmpty(objSubscriptionDetailsRequest.type))
+                        {
+                            parameter.Add("@type", objSubscriptionDetailsRequest.type.ToUpper());
+                            query = $"{query} and sub.type=@type";
+                        }
+                        
+                        else if(objSubscriptionDetailsRequest.is_active > 0)
+                        {
+                            parameter.Add("@is_active", objSubscriptionDetailsRequest.is_active == StatusType.True ? true : false);
+                            query = $"{query} and sub.is_active=@is_active";
+                        }
+                    }
+                    var data = await dataAccess.QueryAsync<SubscriptionDetails>(query, parameter);
+                if (data == null)
+                {
+                    return null;
                 }
+                    objsubscriptionDetails = data.Cast<SubscriptionDetails>().ToList();
+                
                 return objsubscriptionDetails;
             }
             catch (Exception ex)

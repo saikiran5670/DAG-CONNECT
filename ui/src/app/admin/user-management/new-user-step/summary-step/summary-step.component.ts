@@ -42,11 +42,11 @@ export class SummaryStepComponent implements OnInit {
   ngOnInit() { 
     this.userTypeList = [
       {
-        name: this.translationData.lblPortalUser || 'PortalUser',
+        name: this.translationData.lblPortalUser || 'Portal User',
         value: 'P'
       },
       {
-        name: this.translationData.lblSystemUser || 'SystemUser',
+        name: this.translationData.lblSystemUser || 'System User',
         value: 'S'
       }
     ];
@@ -74,6 +74,16 @@ export class SummaryStepComponent implements OnInit {
   getDefaultSetting(accountPreferenceData: any){
     let respData: any = {};
     let userTypeVal: any = [];
+    this.userTypeList = [
+      {
+        name: this.translationData.lblPortalUser || 'Portal User',
+        value: 'P'
+      },
+      {
+        name: this.translationData.lblSystemUser || 'System User',
+        value: 'S'
+      }
+    ];
     if(accountPreferenceData.userType && accountPreferenceData.userType.value != ''){
       userTypeVal = this.userTypeList.filter(res => res.value.toLowerCase() === accountPreferenceData.userType.value.toLowerCase());
     }

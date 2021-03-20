@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
         [StringLength(50, MinimumLength = 5)]
         public string Name { get; set; }
         public string Type { get; set; }
-        [StringLength(100)]
+        [StringLength(120)]
         public string Description { get; set; }        
         public bool Status { get; set; }
     }

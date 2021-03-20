@@ -728,7 +728,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         // create vehicle access relationship
         [HttpPost]
-        [Route("account/accessrelationship/createvehicle")]
+        [Route("accessrelationship/vehicle/create")]
         public async Task<IActionResult> CreateVehicleAccessRelationship(AccessRelationshipRequest request)
         {
             //Task<AccountPreferenceResponse> CreatePreference(AccountPreference request, 
@@ -763,7 +763,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         // update vehicle access relationship
         [HttpPost]
-        [Route("account/accessrelationship/updatevehicle")]
+        [Route("accessrelationship/vehicle/update")]
         public async Task<IActionResult> UpdateVehicleAccessRelationship(AccessRelationshipRequest request)
         {
             try
@@ -796,9 +796,42 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        // delete vehicle access relationship
+
+        [HttpDelete]
+        [Route("accessrelationship/vehicle/delete")]
+        public async Task<IActionResult> DeleteVehicleAccessRelationship(int organizationId,int Id, bool isGroup)
+        {
+            try
+            {
+                // Validation                 
+                if ((organizationId <= 0) || (Id <= 0))
+                {
+                    return BadRequest();
+                }
+                AccountBusinessService.DeleteAccessRelationRequest deleteRequest = new AccountBusinessService.DeleteAccessRelationRequest();
+                deleteRequest.OrganizationId = organizationId;
+                deleteRequest.Id = Id;
+                deleteRequest.IsGroup = isGroup;
+                var result = await _accountClient.DeleteVehicleAccessRelationshipAsync(deleteRequest);
+                if (result != null && result.Code == AccountBusinessService.Responcecode.Success)
+                {
+                    return Ok(true);
+                }
+                else
+                {
+                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "01"));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:delete vehicle access relationship with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, string.Empty);
+            }
+        }
         // create account access relationship
         [HttpPost]
-        [Route("account/accessrelationship/createaccount")]
+        [Route("accessrelationship/account/create")]
         public async Task<IActionResult> CreateAccountAccessRelationshipAsync(AccessRelationshipRequest request)
         {
             //Task<AccountPreferenceResponse> CreatePreference(AccountPreference request, 
@@ -833,7 +866,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         // update vehicle access relationship
         [HttpPost]
-        [Route("account/accessrelationship/updateaccount")]
+        [Route("accessrelationship/account/update")]
         public async Task<IActionResult> UpdateAccountAccessRelationship(AccessRelationshipRequest request)
         {
             try
@@ -866,9 +899,42 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        // delete account access relationship
+
+        [HttpDelete]
+        [Route("accessrelationship/account/delete")]
+        public async Task<IActionResult> DeleteAccountAccessRelationship(int organizationId, int Id, bool isGroup)
+        {
+            try
+            {
+                // Validation                 
+                if ((organizationId <= 0) || (Id <= 0))
+                {
+                    return BadRequest();
+                }
+                AccountBusinessService.DeleteAccessRelationRequest deleteRequest = new AccountBusinessService.DeleteAccessRelationRequest();
+                deleteRequest.OrganizationId = organizationId;
+                deleteRequest.Id = Id;
+                deleteRequest.IsGroup = isGroup;
+                var result = await _accountClient.DeleteAccountAccessRelationshipAsync(deleteRequest);
+                if (result != null && result.Code == AccountBusinessService.Responcecode.Success)
+                {
+                    return Ok(true);
+                }
+                else
+                {
+                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "01"));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:delete account access relationship with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "02"));
+            }
+        }
         // update vehicle access relationship
         [HttpGet]
-        [Route("account/accessrelationship/get")]
+        [Route("accessrelationship/get")]
         public async Task<IActionResult> GetAccessRelationship(int organizationId)
         {
             try
@@ -905,7 +971,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("account/accessrelationship/getdetails")]        
+        [Route("accessrelationship/getdetails")]        
         public async Task<IActionResult> GetAccountVehicleAccessRelationship(int organizationId,bool isAccount)
         {
             try
@@ -1124,7 +1190,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The group type is not valid.");
                 }
-
                 AccountBusinessService.AccountGroupRequest accountGroupRequest = new AccountBusinessService.AccountGroupRequest();
                 accountGroupRequest = _mapper.ToAccountGroup(request);
                 AccountBusinessService.AccountGroupResponce response = await _accountClient.CreateGroupAsync(accountGroupRequest);
@@ -1478,14 +1543,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-        [HttpPost]
+        [HttpGet]
         [Route("authmethodget")]
         public async Task<OkObjectResult> AuthMethodGet()
         {
             return await Task.FromResult(Ok(new { Message = "You will need authentication" }));
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("withoutauthmethodget")]
         public async Task<OkObjectResult> WithoutAuthMethodGet()
         {

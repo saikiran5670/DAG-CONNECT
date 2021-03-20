@@ -323,8 +323,7 @@ namespace net.atos.daf.ct2.organization.repository
                     await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameterUpdate);
 
                     // Assign base package at ORG lavel if not exist
-                    await subscriptionManager.Create(iscustomerexist);
-
+                    await subscriptionManager.Create(iscustomerexist,Convert.ToInt32(customer.OrgCreationPackage));
                 }
                 else
                 {
@@ -356,12 +355,12 @@ namespace net.atos.daf.ct2.organization.repository
                                   "values(@org_id, @Name,@Type ,@AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@reference_date,@vehicle_default_opt_in,@driver_default_opt_in) RETURNING id";
 
                    int organizationId= await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameterInsert);
-                                     
-                   // CraeteOrganizationRelationship
-                   // need to discuss here
-                   
-                   // Assign base package at ORG lavel
-                    await subscriptionManager.Create(organizationId);
+
+                    // CraeteOrganizationRelationship
+                    // need to discuss here
+
+                    // Assign base package at ORG lavel
+                  await subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
                 }
             }
             catch (Exception ex)
@@ -822,5 +821,25 @@ namespace net.atos.daf.ct2.organization.repository
         //     }
         //     return organizationRelationshipID;           
         // }
+
+        public async Task<List<OrganizationNameandID>> Get(OrganizationNameandID request)
+        {
+            log.Info("Get Organization method called in repository");
+            try
+            {
+                List<OrganizationNameandID> objOrganizationNameandID = new List<OrganizationNameandID>();
+                var parameter = new DynamicParameters();
+                parameter.Add("@is_active", true);
+                var query = @"SELECT id,name FROM master.organization where is_active=@is_active";
+                var data = await dataAccess.QueryAsync<OrganizationNameandID>(query, parameter);
+                return objOrganizationNameandID = data.Cast<OrganizationNameandID>().ToList();
+            }
+            catch (Exception ex)
+            {
+                log.Info("Get Organization method in repository failed :");
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }
     }
 }

@@ -42,25 +42,30 @@
                                             The total size must not exceed {{uploadTranslationDataFormGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{uploadTranslationDataFormGroup.get('uploadFile')?.getError('maxContentSize').actualSize
                                             | byteFormat}}).
                                         </mat-error>
+                                        <mat-error *ngIf="excelEmptyMsg">
+                                            {{ translationData.lblEmptyFile || 'Empty File' }}
+                                        </mat-error>
                                     </div>
                                     <div fxLayout="column" fxLayoutAlign="space-around" class='margin-bottom-sm'>
-                                        <button style='color: #fff;' [disabled]="!uploadTranslationDataFormGroup.valid" [ngStyle]="{'margin-top': uploadTranslationDataFormGroup.get('uploadFile').hasError('required') ? '9px' : '29px' }" mat-flat-button color="primary"
+                                        <button style='color: #fff;' [disabled]="!uploadTranslationDataFormGroup.valid || excelEmptyMsg" [ngStyle]="{'margin-top': uploadTranslationDataFormGroup.get('uploadFile').hasError('required') ? '9px' : '29px' }" mat-flat-button color="primary"
                                             (click)="uploadTranslationData()">
                                             <mat-icon>arrow_circle_up</mat-icon> {{ translationData.lblUploadFile || 'Upload File' }}
                                         </button>
                                     </div>
                                 </div>
-                                <div class="areaWidth full-width myform-wrappe" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
+                                <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
+                                    <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                                     <mat-label>
                                         {{ translationData.lblDescription || 'Description'}}
-                                        {{ translationData.lbl120CharMax || '120 characters max'}}
-                                    </mat-label><br>
+                                        <span>{{ translationData.lbl120CharMax || '120 characters max'}}</span>
+                                    </mat-label>
                                     <mat-form-field appearance="outline">
                                         <input maxlength="120" placeholder="{{ translationData.lblEnterFileDescription || 'Enter File Description' }}" matInput formControlName="fileDescription">
                                     </mat-form-field>
-                                    <mat-error *ngIf="  uploadTranslationDataFormGroup.get('fileDescription').hasError('whitespace')">
+                                    <mat-error *ngIf="uploadTranslationDataFormGroup.get('fileDescription').hasError('whitespace')">
                                         Description cannot contain only whitespace
                                     </mat-error>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -114,9 +119,9 @@
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFileName || 'File Name' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">{{ row.fileName }}</mat-cell>
                         </ng-container>
-                        <ng-container matColumnDef="uploadedDate">
+                        <ng-container matColumnDef="createdAt">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUploadedDate || 'Uploaded Date' }}</mat-header-cell>
-                            <mat-cell *matCellDef="let row">{{ row.uploadedDate }}</mat-cell>
+                            <mat-cell *matCellDef="let row">{{ row.createdAt }}</mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="fileSize">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFileSize || 'File Size' }}</mat-header-cell>

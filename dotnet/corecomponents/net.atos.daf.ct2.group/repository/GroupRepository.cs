@@ -203,23 +203,30 @@ namespace net.atos.daf.ct2.group
                 foreach (dynamic record in groups)
                 {
                     group = Map(record);
-                    // single group type.
-                    if (group.GroupType == GroupType.Single)
-                    {
 
-                    }
-                    if (groupFilter.GroupRef || groupFilter.GroupRefCount)
+                    if (group.GroupType == GroupType.Group)
                     {
-                        // group ref filter 
                         if (groupFilter.GroupRef)
                         {
-                            group.GroupRef = GetRef(group.Id).Result;
+                            // group ref filter 
+                            if (groupFilter.GroupRef)
+                            {
+                                group.GroupRef = GetRef(group.Id).Result;
+                            }
                         }
-                        // group ref filter 
                         if (groupFilter.GroupRefCount)
                         {
-                            group.GroupRefCount = GetRefCount(group.Id).Result;
+
+                            // group ref filter 
+                            if (groupFilter.GroupRefCount)
+                            {
+                                group.GroupRefCount = GetRefCount(group.Id).Result;
+                            }
                         }
+                    }
+                    if (group.GroupType == GroupType.Dynamic && group.ObjectType == ObjectType.AccountGroup)
+                    {
+                        group.GroupRefCount = await GetAccountCount(group.OrganizationId);
                     }
                     groupList.Add(group);
                 }
@@ -231,6 +238,8 @@ namespace net.atos.daf.ct2.group
                 throw ex;
             }
         }
+
+       
 
         public async Task<bool> AddRefToGroups(List<GroupRef> groupRef)
         {
@@ -519,7 +528,24 @@ namespace net.atos.daf.ct2.group
                 throw ex;
             }
         }
-
+        private async Task<int> GetAccountCount(int organization_id)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                int count = 0;
+                query = @"select count(1) from master.account a join master.accountorg ag on a.id = ag.account_id and a.is_active=true 
+                and ag.is_active=true where lower(a.type)='p' and ag.organization_id=@organization_id";
+                parameter.Add("@organization_id", organization_id);
+                count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                return count;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public async Task<bool> RemoveRef(int groupid)
         {
             try

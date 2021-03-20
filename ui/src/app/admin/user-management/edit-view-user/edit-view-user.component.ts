@@ -108,11 +108,11 @@ export class EditViewUserComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.userTypeList = [
       {
-        name: this.translationData.lblPortalUser || 'PortalUser',
+        name: this.translationData.lblPortalUser || 'Portal User',
         value: 'P'
       },
       {
-        name: this.translationData.lblSystemUser || 'SystemUser',
+        name: this.translationData.lblSystemUser || 'System User',
         value: 'S'
       }
     ];

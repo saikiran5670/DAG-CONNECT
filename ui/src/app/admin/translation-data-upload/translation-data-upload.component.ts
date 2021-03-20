@@ -24,7 +24,7 @@ export class TranslationDataUploadComponent implements OnInit {
   accountOrganizationId: any = 0;
   dataSource: any;
   initData: any = [];
-  displayedColumns: string[] = ['fileName','uploadedDate','fileSize','description','action'];
+  displayedColumns: string[] = ['fileName','createdAt','fileSize','description','action'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   uploadTranslationDataFormGroup: FormGroup;
@@ -39,6 +39,7 @@ export class TranslationDataUploadComponent implements OnInit {
   showLoadingIndicator: any;
   isTranslationDataUploaded: boolean = false;
   dialogRef: MatDialogRef<LanguageSelectionComponent>;
+  excelEmptyMsg: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) { 
       this.defaultTranslation();
@@ -80,6 +81,16 @@ export class TranslationDataUploadComponent implements OnInit {
   loadInitData(){
     this.translationService.getTranslationUploadDetails().subscribe(data => {
       if(data){
+        data["translationupload"].forEach(element => {
+          var date = new Date(element.createdAt);
+          var year = date.getFullYear();
+          var month = ("0" + (date.getMonth() + 1)).slice(-2);
+          var day = ("0" + date.getDate()).slice(-2);
+      
+         element.createdAt= `${day}/${month}/${year}`;   
+        });
+        
+
         this.initData = data["translationupload"];
         this.updateGridData(this.initData);
       }
@@ -102,16 +113,39 @@ export class TranslationDataUploadComponent implements OnInit {
   }
 
   uploadTranslationData(){ 
-    this.validateExcelFileField();
+    let languageData = [];
+    console.log("filelist:: ", this.filelist);
     //TODO : Read file, parse into JSON and send to API
+    this.filelist.forEach(element => {
+      let tempArr = this.manipulateObjectForXLSXToJSON(element);
+      if(tempArr.length > 0){
+        tempArr.forEach(element1 => {
+          languageData.push(element1)
+        });
+      }
+    });
 
+    let langObj = {
+      "file_name": this.uploadTranslationDataFormGroup.controls.uploadFile.value._fileNames,
+      "description": this.uploadTranslationDataFormGroup.controls.fileDescription.value? this.uploadTranslationDataFormGroup.controls.fileDescription.value : "",
+      "file_size": this.file.size,
+      "failure_count": 0,
+      "file": languageData,
+      "added_count": 0,
+      "updated_count": ""
+    }
+
+    this.translationService.importTranslationData(langObj).subscribe(data => {
+      if(data){
+        console.log(data);
+      }
+    }, (error) => {
+
+    });
+    
     let msg= this.translationData.lblTranslationFileSuccessfullyUploaded ? this.translationData.lblTranslationFileSuccessfullyUploaded : "Translation file successfully uploaded";
     this.successMsgBlink(msg);
     this.isTranslationDataUploaded = true;
-  }
-
-  validateExcelFileField(){
-    console.log("filelist:: ", JSON.stringify(this.filelist));
   }
 
   applyFilter(filterValue: string) {
@@ -130,10 +164,12 @@ export class TranslationDataUploadComponent implements OnInit {
 
   addfile(event)     
   {    
-    this.file = event.target.files[0];     
-    let fileReader = new FileReader();    
-    fileReader.readAsArrayBuffer(this.file);     
-    fileReader.onload = (e) => {    
+    if(event.target.files[0]){
+      this.excelEmptyMsg = false;
+      this.file = event.target.files[0];     
+      let fileReader = new FileReader();    
+      fileReader.readAsArrayBuffer(this.file);     
+      fileReader.onload = (e) => {    
         this.arrayBuffer = fileReader.result;    
         var data = new Uint8Array(this.arrayBuffer);    
         var arr = new Array();    
@@ -142,10 +178,17 @@ export class TranslationDataUploadComponent implements OnInit {
         var workbook = XLSX.read(bstr, {type:"binary"});    
         var first_sheet_name = workbook.SheetNames[0];    
         var worksheet = workbook.Sheets[first_sheet_name];    
-          var arraylist = XLSX.utils.sheet_to_json(worksheet,{raw:true});     
-              this.filelist = [];
-              this.filelist = arraylist;    
-   }    
+        var arraylist = XLSX.utils.sheet_to_json(worksheet,{raw:true});     
+        this.filelist = [];
+        this.filelist = arraylist;  
+        if(this.filelist.length > 0){
+          this.excelEmptyMsg = false;
+        } 
+        else{
+          this.excelEmptyMsg = true;
+        }        
+      }   
+    }
   }
 
   onClose(){
@@ -156,7 +199,7 @@ export class TranslationDataUploadComponent implements OnInit {
     let languageMap = new Map();
       this.translationService.getTranslationUploadDetails(row.id).subscribe(fileData => {
         if(fileData){
-          let count = 0;
+          let count = 1;
           fileData.forEach(element => {
               if(languageMap.get(element.name)){
                 let tempObj = languageMap.get(element.name);
@@ -164,7 +207,7 @@ export class TranslationDataUploadComponent implements OnInit {
                 languageMap.set(element.name, tempObj);
               }
               else{
-                languageMap.set(element.name, this.manipulateLanguageObject(element, count++));
+                languageMap.set(element.name, this.manipulateObjectForJSONToXLSX(element, count++, []));
               }
           });
           let jsonData = [];
@@ -178,7 +221,6 @@ export class TranslationDataUploadComponent implements OnInit {
 
   convertJSONtoXLSX(data: any, fileName: string){
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-    //console.log('worksheet',worksheet);
     const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     this.saveAsExcelFile(excelBuffer, fileName);
@@ -214,19 +256,23 @@ export class TranslationDataUploadComponent implements OnInit {
     this.dialogRef.afterClosed().subscribe(response => {
       let languageMap = new Map();
       if(response.languagesSelected){
-        console.log(response);
+        let enGBSearch = response.languagesSelected.filter(item => item == "EN-GB");
+        if(enGBSearch.length == 0)
+          response.languagesSelected.push("EN-GB");
         this.translationService.getTranslations().subscribe(translationsData => {
           if(translationsData){
-            let count = 0;
+            let count = 1;
             translationsData.forEach(element => {
-              if(response.languagesSelected.filter(item => item === element.code)){
+              let search = response.languagesSelected.filter(item => item == element.code);
+              if(search.length > 0){
                 if(languageMap.get(element.name)){
                   let tempObj = languageMap.get(element.name);
                   tempObj[element.code] = element.value;
                   languageMap.set(element.name, tempObj);
                 }
                 else{
-                  languageMap.set(element.name, this.manipulateLanguageObject(element, count++));
+                  
+                  languageMap.set(element.name, this.manipulateObjectForJSONToXLSX(element, count++, response.languagesSelected));
                 }
               }
             });
@@ -241,13 +287,47 @@ export class TranslationDataUploadComponent implements OnInit {
     });
   }
 
-  manipulateLanguageObject(langObj: any, count: number): any{
+  manipulateObjectForJSONToXLSX(langObj: any, count: number, languagesSelected: any): any{
+    let languages= [];
+    languagesSelected.forEach(element => {
+      languages.push(element);
+    });
     let tempObj = {};
     tempObj["Sr.No."] = count;
     tempObj["Labels"] = langObj.name;
-    tempObj[langObj.code] = langObj.value;
-    
+    if(langObj.code == "EN-GB"){
+      tempObj[langObj.code] = langObj.value;
+      languages.pop();
+      languages.forEach(element => {
+        tempObj[element]= "";
+      });
+    }
+    else{
+      languages.forEach(element => {
+        tempObj[element]= "";
+      });
+      tempObj[langObj.code] = langObj.value;
+    }
     return tempObj;
+  }
+
+  manipulateObjectForXLSXToJSON(langObj: any): any{
+    let tempArray = [];
+    
+    //TODO : manipulate object to convert in required format
+    for(let key in langObj){
+      if(key != "Labels" && key != "Sr.No."){
+        if(langObj[key] != ""){
+          let tempObj = {};
+          tempObj["code"]=key;
+          tempObj["type"]="L";
+          tempObj["name"]=langObj.Labels;
+          tempObj["value"]=langObj[key];
+          tempArray.push(tempObj);
+        }
+      }
+    }
+    return tempArray;
   }
 
   hideloader() {

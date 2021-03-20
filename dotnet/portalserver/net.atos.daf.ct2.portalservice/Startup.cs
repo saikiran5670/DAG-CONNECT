@@ -66,7 +66,7 @@ namespace net.atos.daf.ct2.portalservice
             AppContext.SetSwitch(
                     "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
-            services.Configure<PortalCacheConfiguration>(Configuration.GetSection("PortalCacheConfiguration"));
+            //services.Configure<PortalCacheConfiguration>(Configuration.GetSection("PortalCacheConfiguration"));
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
@@ -92,14 +92,14 @@ namespace net.atos.daf.ct2.portalservice
                    options.HttpsPort = string.IsNullOrEmpty(httpsport)? 443 : Convert.ToInt32(httpsport);
                }); */
 
-            services.AddMemoryCache();
+            //services.AddMemoryCache();
 
             services.AddControllers();
 
             services.AddDistributedMemoryCache();
-            
+
             services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
-            services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();
+            //services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();
 
             services.AddGrpcClient<AccountService.AccountServiceClient>(o =>
             {
@@ -186,6 +186,8 @@ namespace net.atos.daf.ct2.portalservice
                 //context.Response.Headers.Add("Content-Security-Policy", "script-src 'self' 'unsafe-eval' 'unsafe-inline'; navigate-to https://www.daf.com; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'");
                 context.Response.Headers.Add("Strict-Transport-Security", string.IsNullOrEmpty(headerstricttransportsecurity) ? "31536000" : headerstricttransportsecurity);
                 context.Response.Headers.Add("Access-Control-Allow-Origin", string.IsNullOrEmpty(headeraccesscontrolalloworigin) ? "*" : headeraccesscontrolalloworigin);
+                //context.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:4200");
+                context.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
                 context.Response.Headers.Add("Access-Control-Allow-Methods", string.IsNullOrEmpty(headeraccesscontrolallowmethods) ? "GET, POST, PUT, DELETE" : headeraccesscontrolallowmethods);
                 context.Response.Headers.Add("Access-Control-Allow-Headers", string.IsNullOrEmpty(headerAccesscontrolallowheaders) ? "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With" : headerAccesscontrolallowheaders);
                 
@@ -203,7 +205,7 @@ namespace net.atos.daf.ct2.portalservice
             //This need to be change to orgin specific on UAT and prod
             app.UseCors(builder =>
             {
-                builder.WithOrigins("*");
+                builder.WithOrigins(string.IsNullOrEmpty(headeraccesscontrolalloworigin) ? "*" : headeraccesscontrolalloworigin);
                 builder.AllowAnyMethod();
                 builder.AllowAnyHeader();
             });

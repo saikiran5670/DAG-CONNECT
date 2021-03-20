@@ -51,13 +51,13 @@ namespace net.atos.daf.ct2.subscription
             return await subscriptionRepository.Get(status, vehicleGroupID, vehicleId, StartDate, EndDate);
         }
 
-        public async Task<SubscriptionResponse> Create(int orgId)
+        public async Task<SubscriptionResponse> Create(int orgId, int packageId)
         {
-            return await subscriptionRepository.Create(orgId);
+            return await subscriptionRepository.Create(orgId, packageId);
         }
-        public async Task<IEnumerable<SubscriptionDetails>> Get(SubscriptionDetails objSubscriptionDetails)
+        public async Task<List<SubscriptionDetails>> Get(SubscriptionDetailsRequest objSubscriptionDetailsRequest)
         {
-            return await subscriptionRepository.Get(objSubscriptionDetails);
+            return await subscriptionRepository.Get(objSubscriptionDetailsRequest);
         }
         
     }

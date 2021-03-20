@@ -28,19 +28,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly Mapper _mapper;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-        private IMemoryCacheProvider _cache;
-        private readonly PortalCacheConfiguration _cachesettings;
+        //private IMemoryCacheProvider _cache;
+        //private readonly PortalCacheConfiguration _cachesettings;
 
         #endregion
 
         #region Constructor
-        public FeatureController(FeatuseBusinessService.FeatureService.FeatureServiceClient Featureclient, ILogger<AccountController> logger, IMemoryCacheProvider cache, IOptions<PortalCacheConfiguration> cachesettings)
+        public FeatureController(FeatuseBusinessService.FeatureService.FeatureServiceClient Featureclient, ILogger<AccountController> logger/*, IMemoryCacheProvider cache, IOptions<PortalCacheConfiguration> cachesettings*/)
         {
             _featureclient = Featureclient;
             _logger = logger;
             _mapper = new Mapper();
-            _cache = cache;
-            _cachesettings = cachesettings.Value;
+            //_cache = cache;
+            //_cachesettings = cachesettings.Value;
         }
         #endregion
 
