@@ -314,6 +314,7 @@ namespace net.atos.daf.ct2.organizationservice
                                          RelationShipId = x.relationship_id,
                                          TargetOrgId = x.target_org_id,
                                          CreatedOrgId = x.created_org_id,
+                                         StartDate=x.start_date,
                                          CreatedAt = x.created_at,
                                          EndDate = x.end_date,
                                          AllowChain = x.allow_chain,
