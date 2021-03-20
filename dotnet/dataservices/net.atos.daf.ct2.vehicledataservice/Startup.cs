@@ -47,6 +47,12 @@ namespace net.atos.daf.ct2.vehicledataservice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            .ConfigureApiBehaviorOptions(options => {
+                options.InvalidModelStateResponseFactory = actionContext => {
+                    return CustomErrorResponse(actionContext);
+                };
+            });
             var connectionString = Configuration.GetConnectionString("ConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);           
             services.AddSingleton(dataAccess); 
@@ -168,5 +174,13 @@ namespace net.atos.daf.ct2.vehicledataservice
             });
 
         }
+
+        private BadRequestObjectResult CustomErrorResponse(ActionContext actionContext)
+        {
+            return new BadRequestObjectResult(actionContext.ModelState
+            .Where(modelError => modelError.Value.Errors.Count > 0)
+            .Select(modelError => string.Empty).FirstOrDefault());
+        }
+
     }
 }

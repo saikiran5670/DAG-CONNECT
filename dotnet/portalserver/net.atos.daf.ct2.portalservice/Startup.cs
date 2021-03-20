@@ -78,6 +78,19 @@ namespace net.atos.daf.ct2.portalservice
                     options.Cookie.SameSite = SameSiteMode.Strict;
                     options.SlidingExpiration = true;
                     options.ExpireTimeSpan = TimeSpan.FromSeconds(string.IsNullOrEmpty(authcookiesexpireat)? 5184000 : Convert.ToDouble(authcookiesexpireat));
+                    options.Events = new CookieAuthenticationEvents
+                    {                          
+                        OnRedirectToLogin = redirectContext =>
+                        {
+                            redirectContext.HttpContext.Response.StatusCode = 401;
+                            return Task.CompletedTask;
+                        },
+                        OnRedirectToAccessDenied = context => 
+                        { 
+                            context.Response.StatusCode = 403; 
+                            return Task.CompletedTask; 
+                        }
+                    };                
             });
 
             /*   services.AddHsts(options =>
