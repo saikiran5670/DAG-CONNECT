@@ -19,6 +19,9 @@ namespace net.atos.daf.ct2.relationship.entity
         public bool allow_chain { get; set; }
         public bool isFirstRelation { get; set; }
         public long created_at { get; set; }
+        public string VehicleGroupName { get; set; }
+        public string OrganizationName { get; set; }
+        public string RelationshipName { get; set; }
 
     }
 }

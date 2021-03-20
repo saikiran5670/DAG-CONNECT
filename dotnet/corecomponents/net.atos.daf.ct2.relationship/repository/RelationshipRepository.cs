@@ -290,7 +290,7 @@ namespace net.atos.daf.ct2.relationship.repository
             return OwnerRelationshipId;
         }
 
-        public async Task<int> AllowChaining(int OrgRelationId,bool AllowChaining)
+        public async Task<int> AllowChaining(int OrgRelationId, bool AllowChaining)
         {
             var Inputparameter = new DynamicParameters();
             Inputparameter.Add("@orgrelationid", OrgRelationId);
@@ -301,6 +301,92 @@ namespace net.atos.daf.ct2.relationship.repository
             var OwnerRelationshipId = await _dataAccess.ExecuteScalarAsync<int>(query, Inputparameter);
             return OwnerRelationshipId;
         }
+
+
+        public async Task<List<OrganizationRelationShip>> GetRelationshipMapping(OrganizationRelationShip filter)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                var relationships = new List<OrganizationRelationShip>();
+                string query = string.Empty;
+
+                query = @"SELECT orgmap.id,org.name orgname, vg.name vehgroupName, r.name relationshipname,orgmap.relationship_id, 
+                        orgmap.vehicle_id,  orgmap.vehicle_group_id,  orgmap.owner_org_id,  orgmap.created_org_id,
+                        orgmap.target_org_id,  orgmap.start_date,  orgmap.end_date,  orgmap.allow_chain,  orgmap.created_at
+	                    FROM master.orgrelationshipmapping orgmap
+                    	inner join master.organization org on orgmap.target_org_id=org.id
+	                    inner join master.group vg on vg.id=orgmap.vehicle_group_id
+	                    inner join master.orgrelationship r on r.id= orgmap.relationship_id where 1 = 1 ";
+
+                if (filter != null)
+                {
+                    if (filter.Id > 0)
+                    {
+                        parameter.Add("@id", filter.Id);
+                        query = query + " and orgmap.id=@id ";
+                    }
+                    if (filter.target_org_id > 0)
+                    {
+                        parameter.Add("@target_org_id", filter.target_org_id);
+                        query = query + " and orgmap.target_org_id=@target_org_id ";
+                    }
+                    if (filter.created_org_id > 0)
+                    {
+                        parameter.Add("@created_org_id", filter.created_org_id);
+                        query = query + " and orgmap.created_org_id=@created_org_id ";
+                    }
+                    if (filter.relationship_id > 0)
+                    {
+                        parameter.Add("@relationship_id", filter.relationship_id);
+                        query = query + " and orgmap.relationship_id=@relationship_id ";
+                    }
+                    if (filter.vehicle_group_id > 0)
+                    {
+                        parameter.Add("@vehicle_group_id", filter.vehicle_group_id);
+                        query = query + " and orgmap.vehicle_group_id=@vehicle_group_id ";
+                    }
+
+
+                    query = query + "ORDER BY id ASC; ";
+                    dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
+
+                    foreach (dynamic record in result)
+                    {
+
+                         relationships.Add(MapOrgData(record));
+                    }
+                }
+                return relationships;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+
+        private OrganizationRelationShip MapOrgData(dynamic record)
+        {
+            var relationship = new OrganizationRelationShip();
+            relationship.Id = record.id != null ? record.id : 0;
+            relationship.relationship_id = record.relationship_id != null ? record.relationship_id : 0;
+            relationship.vehicle_group_id = record.vehicle_group_id != null ? record.vehicle_group_id : 0;
+            relationship.owner_org_id = record.owner_org_id != null ? record.owner_org_id : 0;
+            relationship.created_org_id = record.created_org_id != null ? record.created_org_id : 0;
+            relationship.target_org_id = record.target_org_id != null ? record.target_org_id : 0;
+            relationship.start_date = record.start_date != null ? record.start_date : 0;
+            relationship.end_date = record.end_date != null ? record.end_date : 0;
+            relationship.created_at = record.created_at != null ? record.created_at : 0;
+            relationship.allow_chain = record.allow_chain != null ? record.allow_chain : false;
+            relationship.OrganizationName = !string.IsNullOrEmpty(record.orgname) ? record.orgname : string.Empty;
+            relationship.RelationshipName = !string.IsNullOrEmpty(record.relationshipname) ? record.relationshipname : string.Empty;
+            relationship.VehicleGroupName = !string.IsNullOrEmpty(record.vehgroupName) ? record.vehgroupName : string.Empty;
+            return relationship;
+        }
+
+
 
     }
 }

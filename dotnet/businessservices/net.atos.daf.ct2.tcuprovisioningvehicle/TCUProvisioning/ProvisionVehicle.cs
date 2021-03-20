@@ -17,7 +17,6 @@ using net.atos.daf.ct2.subscription.repository;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehicle.repository;
-using net.atos.daf.ct2.identity;
 using net.atos.daf.ct2.identity.entity;
 using Newtonsoft.Json;
 using System;
@@ -36,26 +35,31 @@ namespace TCUProvisioning
     {
        
         private ILog log;
-        private string brokerList = ConfigurationManager.AppSetting["EH_FQDN"];
-        private string connStr = ConfigurationManager.AppSetting["EH_CONNECTION_STRING"];
-        private string consumergroup = ConfigurationManager.AppSetting["CONSUMER_GROUP"];
-        private string topic = ConfigurationManager.AppSetting["EH_NAME"];
-        private string psqlconnstring = ConfigurationManager.AppSetting["psqlconnstring"];
-        private string cacertlocation = ConfigurationManager.AppSetting["CA_CERT_LOCATION"];
-        string OwnerRelationship = ConfigurationManager.AppSetting["OwnerRelationship"];
-        string DAFPACCAR = ConfigurationManager.AppSetting["DAFPACCAR"];
+        private string brokerList;
+        private string connStr ;
+        private string consumergroup ;
+        private string topic ;
+        private string psqlconnstring ;
+        private string cacertlocation ;
+        IConfiguration config = null;
 
-        public ProvisionVehicle(ILog log)
+        public ProvisionVehicle(ILog log, IConfiguration config)
         {
-            this.log = log;
-          
+           this.log = log;
+           this.config = config;
+           brokerList = config.GetSection("EH_FQDN").Value;
+           connStr = config.GetSection("EH_CONNECTION_STRING").Value;
+           consumergroup = config.GetSection("CONSUMER_GROUP").Value;
+           topic = config.GetSection("EH_NAME").Value;
+           psqlconnstring = config.GetSection("psqlconnstring").Value;
+           cacertlocation = config.GetSection("CA_CERT_LOCATION").Value;
         }
 
         public async Task readTCUProvisioningData()
         {
-            ConsumerConfig config = getConsumer();
+            ConsumerConfig consumerConfig = getConsumer();
 
-            using (var consumer = new ConsumerBuilder<Null, string>(config).Build())
+            using (var consumer = new ConsumerBuilder<Null, string>(consumerConfig).Build())
             {
                
                 log.Info("Subscribing Topic");
@@ -156,8 +160,8 @@ namespace TCUProvisioning
                     log.Info("Creating Vehicle Object in database");
                     Vehicle veh = await vehicleManager.Create(receivedVehicle);
 
-                    int OwnerRelationship = Convert.ToInt32(this.OwnerRelationship);
-                    int DAFPACCAR = Convert.ToInt32(this.DAFPACCAR);
+                    int OwnerRelationship = Convert.ToInt32(this.config.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value);
+                    int DAFPACCAR = Convert.ToInt32(this.config.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value);
 
                     RelationshipMapping relationship = new RelationshipMapping();
                     relationship.relationship_id = OwnerRelationship;
@@ -223,56 +227,33 @@ namespace TCUProvisioning
             SubscriptionRepository subscriptionRepository = new SubscriptionRepository(dataacess);
             ISubscriptionManager subscriptionManager = new SubscriptionManager(subscriptionRepository);
 
-
-            IAccountIdentityManager accountIdentityManager;
-            IConfiguration _config = null;
-
-            
-                var idenityconfiguration = new IdentityJsonConfiguration()
-                {
-                    Realm = "DAFConnect",
-                    BaseUrl = "http://104.45.77.70:8080",
-                    AuthUrl = "/auth/realms/{{realm}}/protocol/openid-connect/token",
-                    UserMgmUrl = "/auth/admin/realms/{{realm}}/users",
-                    AuthClientId = "admin-cli",
-                    AuthClientSecret = "57149493-4055-45cc-abee-fd9f621fc34c",
-                    UserMgmClientId = "DAF-Admin",
-                    UserMgmClientSecret = "57149493-4055-45cc-abee-fd9f621fc34c",
+            var idenityconfiguration = new IdentityJsonConfiguration()
+            {
+                    Realm = this.config.GetSection("IdentityConfiguration").GetSection("realm").Value,
+                    BaseUrl = this.config.GetSection("IdentityConfiguration").GetSection("baseUrl").Value,
+                    AuthUrl = this.config.GetSection("IdentityConfiguration").GetSection("authUrl").Value,
+                    UserMgmUrl = this.config.GetSection("IdentityConfiguration").GetSection("userMgmUrl").Value,
+                    AuthClientId = this.config.GetSection("IdentityConfiguration").GetSection("AuthClientId").Value,
+                    AuthClientSecret = this.config.GetSection("IdentityConfiguration").GetSection("AuthClientSecret").Value,
+                    UserMgmClientId = this.config.GetSection("IdentityConfiguration").GetSection("UserMgmClientId").Value,
+                    UserMgmClientSecret = this.config.GetSection("IdentityConfiguration").GetSection("UserMgmClientSecret").Value,
                     // ReferralUrl="https://dafexternal",
-                    Issuer = "Me",
-                    Audience = "You",
+                    Issuer = this.config.GetSection("IdentityConfiguration").GetSection("Issuer").Value,
+                    Audience = this.config.GetSection("IdentityConfiguration").GetSection("Audience").Value,
                     // ReferralId="8c51b38a-f773-4810-8ac5-63b5fb9ca217",
-                    RsaPrivateKey = "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",
-                    RsaPublicKey = "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAqyFYwF13lXMGZV7/nDiaQ4oPDAH8y23yV0EfSa8Oc0eqnIZd/6GrvirhejmDl5tAJHZANfLbS5Pmj4nScu3SizhoEbb4yhXgp7uJpRGADRAFs9E1v08VBHFQSCaSo4vOXxgrG5UtQjNpSjJWqBIG2kvA6kz1ZDbtK5xaZS+K2vQ64/9o9gYd3Rof/0BqrfMcg0+vq7N7+gTwiDMqcu93EiLbDbIbEQpLohJdQ7DgnxvlcGoPY47mHucR9RALlq0C31U2NDwqErNJZ6BeiSCnRW+aA0mW5zfvD1TS5S9Fdi3Bhb4lEocP/qcfqZC9YYlFu0vhbAz3JJEHIiuVG0V39Rd+De+bi/3Hwj8617+IeuB/pXSBp2C2eTez+dmDewiqFXg5Pv2k3P4FnQU0cbTCj53zIyfwon3p8UF/7wYS1BPMQe2VqhfdjzgvnhLmSd3PXA4gul6gZdSnnUOE0exZ6af1ldqrxi3X3JVqK3S+/WLEpfpCw+nE3jxq/9h+qydcIWr+p0zYwTeh3xxHyGS9dU1SdjwfL4EkDJxxTjAshXOg+4w+IHHFGDpu+nQbm8vQfZTm+NQZFkCsVnueWPthqj3sCz7DL6oh41XCYBPkoFrFXa+e8O3ByMyMs4Uv/5BtIDjXYDHCxF1kY2nR0ySVLWXRAJHgZlt8+8qMbgWSoRsCAwEAAQ=="
-                };
+                    RsaPrivateKey = this.config.GetSection("IdentityConfiguration").GetSection("RsaPrivateKey").Value,
+                    RsaPublicKey = this.config.GetSection("IdentityConfiguration").GetSection("RsaPublicKey").Value
+            };
 
-
-            
             IOptions<IdentityJsonConfiguration> setting = Options.Create(idenityconfiguration);
+            net.atos.daf.ct2.identity.IAccountManager iaccountManager = new net.atos.daf.ct2.identity.AccountManager(setting);
+          
 
+            IAccountRepository accountrepo = new AccountRepository(dataacess);
+            net.atos.daf.ct2.account.IAccountManager accManager = new net.atos.daf.ct2.account.AccountManager(accountrepo, audit, iaccountManager, config);
+           
 
-            var connectionString = _config.GetConnectionString(psqlConnString);
-            //IDataAccess _dataAccess = new PgSQLDataAccess(connectionString);
-           // IAuditLogRepository _auditLogRepository = new AuditLogRepository(_dataAccess);
-           // IAuditTraillib _auditlog = new AuditTraillib(_auditLogRepository);
-            IAccountPreferenceRepository _repository = new AccountPreferenceRepository(dataacess);
-            IPreferenceManager _preferenceManager = new PreferenceManager(_repository, audit);
-            net.atos.daf.ct2.identity.ITokenManager _tokenManager = new net.atos.daf.ct2.identity.TokenManager(setting);
-            net.atos.daf.ct2.identity.IAccountManager _accountManager = new net.atos.daf.ct2.identity.AccountManager(setting);
-            net.atos.daf.ct2.identity.IAccountAuthenticator _autheticator = new net.atos.daf.ct2.identity.AccountAuthenticator(setting);
-            IAccountRepository _repo = new AccountRepository(dataacess);
-            net.atos.daf.ct2.account.IAccountManager _accManager = new net.atos.daf.ct2.account.AccountManager(_repo, audit, _accountManager, _config
-                );
-            accountIdentityManager = new AccountIdentityManager(_tokenManager, _autheticator, _preferenceManager, _accManager);
-
-
-           // IdentityJsonConfiguration iconfig = new IdentityJsonConfiguration();
-            //net.atos.daf.ct2.identity.IAccountManager identity = new net.atos.daf.ct2.identity.AccountManager(iconfig);
-           // IAccountManager accountManager = new AccountManager(accountRepository,audit,identity,);
-
-            OrganizationRepository orgRepo = new OrganizationRepository(dataacess, vehicleManager, groupManager, _accManager, subscriptionManager);
-            
-            
+            OrganizationRepository orgRepo = new OrganizationRepository(dataacess, vehicleManager, groupManager, accManager, subscriptionManager);
             OrganizationManager org = new OrganizationManager(orgRepo,audit);
             return org;
         }
