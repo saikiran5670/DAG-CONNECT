@@ -48,7 +48,29 @@ namespace net.atos.daf.ct2.organizationservice
             _relationshipManager = relationshipManager;
         }
 
+        public override async Task<OrganizationprimaryFieldsListResponse> GetAllOrganizations(OrganizationprimaryFieldsResponse request, ServerCallContext context)
+        {
+            try
+            {
+                OrganizationprimaryFieldsListResponse objOrganizationprimaryFieldsListResponse = new OrganizationprimaryFieldsListResponse();
 
+                net.atos.daf.ct2.organization.entity.OrganizationNameandID objOrganizationentity = new organization.entity.OrganizationNameandID();
+                var data = await organizationtmanager.Get(objOrganizationentity);
+                foreach (var item in data)
+                {
+                    OrganizationprimaryFieldsResponse objOrganizationprimaryFieldsResponse = new OrganizationprimaryFieldsResponse();
+                    objOrganizationprimaryFieldsResponse.OrganizationId = item.organizationId;
+                    objOrganizationprimaryFieldsResponse.OrganizationName = item.OrganizationName;
+                    objOrganizationprimaryFieldsListResponse.Response.Add(objOrganizationprimaryFieldsResponse);
+                }
+                return objOrganizationprimaryFieldsListResponse;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in OrganizationGrpcService Organization Service: " + ex.Message + " " + ex.StackTrace);
+                throw ex;
+            }
+        }
         //Relationship Management
 
         public override async Task<RelationshipCreateResponse> CreateRelationship(RelationshipCreateRequest request, ServerCallContext context)
