@@ -110,6 +110,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
             {
                 group.GroupType = request.GroupType;
             }
+            if (!string.IsNullOrEmpty(request.FunctionEnum))
+            {
+                group.FunctionEnum = request.FunctionEnum;
+            }
             if (request.Vehicles != null)
             {
                 //group.GroupRef = new List<AccountBusinessService.AccountGroupRef>();
@@ -136,6 +140,11 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
             if (!string.IsNullOrEmpty(request.VehicleGroup.GroupType))
             {
                 group.GroupType = request.VehicleGroup.GroupType;
+            }
+            
+            if (!string.IsNullOrEmpty(request.VehicleGroup.FunctionEnum))
+            {
+                group.FunctionEnum = request.VehicleGroup.FunctionEnum;
             }
 
             if (request.VehicleGroup.GroupRef != null)

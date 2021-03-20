@@ -12,6 +12,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
         public string Description { get; set; }
         public int OrganizationId { get; set; }
         public string GroupType { get; set; }
+        public string FunctionEnum { get; set; }
         public List<GroupRefRequest> Vehicles { get; set; }
 
     }
@@ -28,7 +29,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
         //public string ObjectType { get; set; }
         public string GroupType { get; set; }
         //public string Argument { get; set; }
-        //public string FunctionEnum { get; set; }
+        public string FunctionEnum { get; set; }
         public int OrganizationId { get; set; }
         public int? RefId { get; set; }
         public string Description { get; set; }

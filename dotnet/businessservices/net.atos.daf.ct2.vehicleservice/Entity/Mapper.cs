@@ -164,9 +164,13 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
                 {
                     entity.GroupType = Group.GroupType.Single;
                 }
-                else
+                else if (type == 'g' || type == 'G')
                 {
                     entity.GroupType = Group.GroupType.Group;
+                }
+                else if (type == 'n' || type == 'N')
+                {
+                    entity.GroupType = Group.GroupType.None;
                 }
             }
             else
@@ -183,6 +187,32 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             {
                 entity.CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
             }
+
+            if (!string.IsNullOrEmpty(request.FunctionEnum))
+            {
+                char type = Convert.ToChar(request.FunctionEnum);
+                if (type == 'a' || type == 'A')
+                {
+                    entity.FunctionEnum = Group.FunctionEnum.All;
+                }
+                else if (type == 'o' || type == 'O')
+                {
+                    entity.FunctionEnum = Group.FunctionEnum.OwnedVehicles;
+                }
+                else if (type == 'v' || type == 'V')
+                {
+                    entity.FunctionEnum = Group.FunctionEnum.VisibleVehicles;
+                }
+                else
+                {
+                    entity.FunctionEnum = Group.FunctionEnum.All;
+                }
+            }
+            else
+            {
+                entity.FunctionEnum = Group.FunctionEnum.All;
+            }
+
             entity.GroupRef = new List<Group.GroupRef>();
             return entity;
         }

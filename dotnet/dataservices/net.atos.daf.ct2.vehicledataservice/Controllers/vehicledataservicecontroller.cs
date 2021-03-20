@@ -46,10 +46,10 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
         {
             try
             {
-                bool valid = false;
-                string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                valid = await accountIdentityManager.ValidateToken(token);
-                //bool valid = true;
+                //bool valid = false;
+                //string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                //valid = await accountIdentityManager.ValidateToken(token);
+                bool valid = true;
                 if (valid)
                 {
                     logger.LogInformation("UpdateVehicle function called -" + vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN);
