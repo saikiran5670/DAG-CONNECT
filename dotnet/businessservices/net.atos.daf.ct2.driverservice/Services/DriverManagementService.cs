@@ -8,6 +8,7 @@ using net.atos.daf.ct2.driver.entity;
 using net.atos.daf.ct2.driver;
 using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.driverservice.entity;
+using System.Linq;
 
 namespace net.atos.daf.ct2.driverservice
 {
@@ -32,15 +33,23 @@ namespace net.atos.daf.ct2.driverservice
         public override async Task<DriverDataList> Get(IdRequest request, ServerCallContext context)
         {
              try{
-                _logger.LogInformation("Get Drivers ."); 
-                var result = await driverManager.GetDriver(request.OrgID,request.DriverID);  
+                _logger.LogInformation("Get Drivers .");
                 DriverDataList response = new DriverDataList();
-               foreach (net.atos.daf.ct2.driver.entity.Driver entity in result)
+                var result = await driverManager.GetDriver(request.OrgID,request.DriverID);
+                if (result.Count() > 0)
                 {
-                    response.Driver.Add(_mapper.ToDriverResponse(entity));                  
+                    foreach (net.atos.daf.ct2.driver.entity.Driver entity in result)
+                    {
+                        response.Driver.Add(_mapper.ToDriverResponse(entity));
+                    }
+                    response.Code = Responcecode.Success;
+                    response.Message = "Get";
                 }
-                response.Code = Responcecode.Success;
-                response.Message = "Get";
+                else
+                {
+                    response.Code = Responcecode.NotFound;
+                    response.Message = "Driver not found.";
+                }
                 return await Task.FromResult(response);   
              }
              catch (Exception ex)
