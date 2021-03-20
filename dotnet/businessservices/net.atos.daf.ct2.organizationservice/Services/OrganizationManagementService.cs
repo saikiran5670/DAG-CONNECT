@@ -236,7 +236,7 @@ namespace net.atos.daf.ct2.organizationservice
                         objRelationship.owner_org_id = request.OwnerOrId;
                         objRelationship.created_org_id = request.CreatedOrgId;
                         objRelationship.target_org_id = organization;
-                        objRelationship.allow_chain = true;
+                        objRelationship.allow_chain = request.AllowChain;
                         var orgrelationid = await _relationshipManager.CreateRelationShipMapping(objRelationship);
                         request.OrgRelationId = orgrelationid;
 
@@ -336,6 +336,7 @@ namespace net.atos.daf.ct2.organizationservice
                                          RelationShipId = x.relationship_id,
                                          TargetOrgId = x.target_org_id,
                                          CreatedOrgId = x.created_org_id,
+                                         StartDate=x.start_date,
                                          CreatedAt = x.created_at,
                                          EndDate = x.end_date,
                                          AllowChain = x.allow_chain,

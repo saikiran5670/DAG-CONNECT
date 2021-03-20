@@ -54,9 +54,10 @@ namespace net.atos.daf.ct2.customerdataservice
             var connectionString = Configuration.GetConnectionString("ConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
 
-            //services.AddControllers();
             //var connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             //IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
+
+
             services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration")); 
            
             services.AddSingleton(dataAccess); 
