@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.featureactivationservice.CustomAttributes
                 return;
             }
                 
-            var emailClaim = context.User.Claims.Where(x => x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
+            var emailClaim = context.User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
             var emailAddress = emailClaim.Value;
 
             var isExists = await accountManager.CheckForFeatureAccessByEmailId(emailAddress, requirement.FeatureName);
