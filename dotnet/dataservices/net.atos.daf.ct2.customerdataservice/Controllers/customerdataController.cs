@@ -13,121 +13,131 @@ using AccountComponent = net.atos.daf.ct2.account;
 using SubscriptionComponent = net.atos.daf.ct2.subscription;
 using System.Text.RegularExpressions;
 using System.Globalization;
-//using net.atos.daf.ct2.customerdataservice.Entity;
+using System.Linq;
 
 namespace net.atos.daf.ct2.customerdataservice.Controllers
 {
     [ApiController]
     [Route("customer-data")]
     public class customerdataController: ControllerBase
-    {
-        //private readonly ILogger _logger;       
-        private readonly ILogger<customerdataController> logger; 
-       // private readonly IAuditLogRepository _IAuditLogRepository;       
-        private readonly IAuditTraillib _AuditTrail;      
+    {       
+        private readonly ILogger<customerdataController> logger;              
+        private readonly IAuditTraillib AuditTrail;      
         private readonly IOrganizationManager organizationtmanager;
         private readonly IPreferenceManager preferencemanager;
         private readonly IVehicleManager vehicleManager;
-         AccountComponent.IAccountIdentityManager accountIdentityManager;
-         SubscriptionComponent.ISubscriptionManager subscriptionManager;
-
-        private IHttpContextAccessor _httpContextAccessor;
+        AccountComponent.IAccountIdentityManager accountIdentityManager;
+        SubscriptionComponent.ISubscriptionManager subscriptionManager;
+        private IHttpContextAccessor httpContextAccessor;
         public IConfiguration Configuration { get; }
-        public customerdataController(ILogger<customerdataController> _logger, IAuditTraillib AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager,IHttpContextAccessor httpContextAccessor,AccountComponent.IAccountIdentityManager _accountIdentityManager, SubscriptionComponent.ISubscriptionManager _subscriptionManager,IConfiguration configuration)
+        public customerdataController(ILogger<customerdataController> _logger, IAuditTraillib _AuditTrail, IOrganizationManager _organizationmanager,IPreferenceManager _preferencemanager,IVehicleManager _vehicleManager,IHttpContextAccessor _httpContextAccessor,AccountComponent.IAccountIdentityManager _accountIdentityManager, SubscriptionComponent.ISubscriptionManager _subscriptionManager,IConfiguration configuration)
         {
-            logger = _logger;
-           _AuditTrail = AuditTrail;
-            organizationtmanager = _organizationmanager;
-            preferencemanager=_preferencemanager;
-            vehicleManager=_vehicleManager;
-           _httpContextAccessor=httpContextAccessor;
-            accountIdentityManager=_accountIdentityManager;
-            subscriptionManager=_subscriptionManager;
-            Configuration=configuration;
-        } 
-        
-        [HttpPost]      
+           logger = _logger;
+           AuditTrail = _AuditTrail;
+           organizationtmanager = _organizationmanager;
+           preferencemanager=_preferencemanager;
+           vehicleManager=_vehicleManager;
+           httpContextAccessor=_httpContextAccessor;
+           accountIdentityManager=_accountIdentityManager;
+           subscriptionManager=_subscriptionManager;
+           Configuration=configuration;
+        }
+
+        [HttpPost]
         [Route("update")]
         public async Task<IActionResult> update(Customer customer)
-        {         
-         CustomerRequest customerRequest=new CustomerRequest();
-         customerRequest.CompanyType=customer.CompanyUpdatedEvent.Company.type;
-         customerRequest.CustomerID=customer.CompanyUpdatedEvent.Company.ID;
-         customerRequest.CustomerName=customer.CompanyUpdatedEvent.Company.Name;
-         customerRequest.AddressType=customer.CompanyUpdatedEvent.Company.Address.Type;
-         customerRequest.Street=customer.CompanyUpdatedEvent.Company.Address.Street;
-         customerRequest.StreetNumber=customer.CompanyUpdatedEvent.Company.Address.StreetNumber;
-         customerRequest.PostalCode=customer.CompanyUpdatedEvent.Company.Address.PostalCode;
-         customerRequest.City=customer.CompanyUpdatedEvent.Company.Address.City;
-         customerRequest.CountryCode=customer.CompanyUpdatedEvent.Company.Address.CountryCode;
-         customerRequest.ReferenceDateTime=customer.CompanyUpdatedEvent.Company.ReferenceDateTime;
-
-         customerRequest.OrgCreationPackage = Configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value;
-
-
-        string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", ""); 
-         //string token ="TestToken";
-        // bool valid=true;  //for testing only
-          bool valid=false;
-            try
+        {
+            if (ModelState.IsValid)
             {
-                if (string.IsNullOrEmpty(token))
+                CustomerRequest customerRequest = new CustomerRequest();
+                customerRequest.CompanyType = customer.CompanyUpdatedEvent.Company.type;
+                customerRequest.CustomerID = customer.CompanyUpdatedEvent.Company.ID;
+                customerRequest.CustomerName = customer.CompanyUpdatedEvent.Company.Name;
+                customerRequest.AddressType = customer.CompanyUpdatedEvent.Company.Address.Type;
+                customerRequest.Street = customer.CompanyUpdatedEvent.Company.Address.Street;
+                customerRequest.StreetNumber = customer.CompanyUpdatedEvent.Company.Address.StreetNumber;
+                customerRequest.PostalCode = customer.CompanyUpdatedEvent.Company.Address.PostalCode;
+                customerRequest.City = customer.CompanyUpdatedEvent.Company.Address.City;
+                customerRequest.CountryCode = customer.CompanyUpdatedEvent.Company.Address.CountryCode;
+                customerRequest.ReferenceDateTime = customer.CompanyUpdatedEvent.Company.ReferenceDateTime;
+                
+                // Configuarable values   
+                customerRequest.OrgCreationPackage = Configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value;
+
+                string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                //string token ="TestToken";
+                //bool valid=true;  //for testing only
+              
+                bool valid = false;
+               
+                try
                 {
-                    logger.LogInformation("UpdateCustomerData function called with empty token, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
-                    return StatusCode(400, string.Empty);
-                }
-                else
-                {
-                    logger.LogInformation("UpdateCustomerData function called , company ID -" + customer.CompanyUpdatedEvent.Company.ID);
-                    valid = await accountIdentityManager.ValidateToken(token);
-                    if (valid)
-                    {                                
-                        string dateformat = "yyyy-mm-ddThh:mm:ss";
-                        DateTime parsed;
-                        if (!(DateTime.TryParseExact(Convert.ToString(customerRequest.ReferenceDateTime), dateformat, CultureInfo.CurrentCulture,DateTimeStyles.None, out parsed)))
+                    if (string.IsNullOrEmpty(token))
+                    {
+                        logger.LogInformation("UpdateCustomerData function called with empty token, company ID -" + customer.CompanyUpdatedEvent.Company.ID);
+                        return StatusCode(400, string.Empty);
+                    }
+                    else
+                    {
+                        logger.LogInformation("UpdateCustomerData function called , company ID -" + customer.CompanyUpdatedEvent.Company.ID);
+                        valid = await accountIdentityManager.ValidateToken(token);
+                        
+                        if (valid)
                         {
-                            var regx = new Regex("[^a-zA-Z0-9_.]");
-                            if ((
-                                    (string.IsNullOrEmpty(customerRequest.CompanyType) || (customerRequest.CompanyType.Trim().Length < 1)) || (customerRequest.CompanyType.Trim().Length > 50)) || (regx.IsMatch(customerRequest.CompanyType))
-                                    || ((string.IsNullOrEmpty(customerRequest.CustomerID) || (customerRequest.CustomerID.Trim().Length < 1) || (customerRequest.CustomerID.Trim().Length > 100)) || (regx.IsMatch(customerRequest.CustomerID)))
-                                    || ((string.IsNullOrEmpty(customerRequest.CustomerName) || (customerRequest.CustomerName.Trim().Length < 1) || (customerRequest.CustomerName.Trim().Length > 100) || (regx.IsMatch(customerRequest.CustomerName))
-                                    || ((string.IsNullOrEmpty(customerRequest.AddressType) || (customerRequest.AddressType.Trim().Length < 1) || (customerRequest.AddressType.Trim().Length > 50) || (regx.IsMatch(customerRequest.AddressType))
-                                    // || ((Convert.ToDateTime(customerRequest.ReferenceDateTime).ToUniversalTime()>System.DateTime.Now.ToUniversalTime()))
-                                    || (string.IsNullOrEmpty(Convert.ToString(customerRequest.ReferenceDateTime).Trim())) || (Convert.ToString(customerRequest.ReferenceDateTime).Trim().Length < 1))
-                                    ))))
+                            string dateformat = "yyyy-mm-ddThh:mm:ss";
+                            DateTime parsed;
+                            if (!(DateTime.TryParseExact(Convert.ToString(customerRequest.ReferenceDateTime), dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed)))
                             {
-                                // return BadRequest();
-                                return StatusCode(400, string.Empty);
+                                var regx = new Regex("[^a-zA-Z0-9_.]");
+                                if ((
+                                        // Mandatory validation
+                                        (string.IsNullOrEmpty(customerRequest.CompanyType) || (customerRequest.CompanyType.Trim().Length < 1)) || (customerRequest.CompanyType.Trim().Length > 50)) //|| (regx.IsMatch(customerRequest.CompanyType))
+                                        || ((string.IsNullOrEmpty(customerRequest.CustomerID) || (customerRequest.CustomerID.Trim().Length < 1) || (customerRequest.CustomerID.Trim().Length > 100)) //|| (regx.IsMatch(customerRequest.CustomerID)))
+                                        || ((string.IsNullOrEmpty(customerRequest.CustomerName) || (customerRequest.CustomerName.Trim().Length < 1) || (customerRequest.CustomerName.Trim().Length > 100)) // || (regx.IsMatch(customerRequest.CustomerName))
+                                        || (string.IsNullOrEmpty(Convert.ToString(customerRequest.ReferenceDateTime).Trim())) || (Convert.ToString(customerRequest.ReferenceDateTime).Trim().Length < 1))
+
+                                        //Length validation
+                                        || ((customerRequest.AddressType.Trim().Length > 50))
+                                        || ((customerRequest.Street.Trim().Length > 50))
+                                        || ((customerRequest.StreetNumber.Trim().Length > 50))
+                                        || ((customerRequest.PostalCode.Trim().Length > 15))
+                                        || ((customerRequest.City.Trim().Length > 50))
+                                        || ((customerRequest.CountryCode.Trim().Length > 20))
+                                   ))
+                                {                                  
+                                    return StatusCode(400, string.Empty);
+                                }
+                                else
+                                {
+                                    await organizationtmanager.UpdateCustomer(customerRequest);
+                                    logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
+                                    return Ok();
+                                }
                             }
                             else
                             {
-
-                                await organizationtmanager.UpdateCustomer(customerRequest);
-                                logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
-                                return Ok();
+                              return StatusCode(400, string.Empty);
                             }
                         }
                         else
                         {
-                            // return BadRequest();
-                            return StatusCode(400, string.Empty);
+                            logger.LogInformation("Customer data not updated, company ID -" + customerRequest.CustomerID);
+                            return StatusCode(401, string.Empty);
                         }
                     }
-                    else
-                    {
-                        logger.LogInformation("Customer data not updated, company ID -" + customerRequest.CustomerID);
-                        //return Unauthorized();
-                        return StatusCode(401, string.Empty);
-                    }
-                }                
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex.Message + " " + ex.StackTrace);
+                    return StatusCode(500, string.Empty);
+                }
             }
-            catch (Exception ex)
-            {
-                logger.LogError(ex.Message + " " + ex.StackTrace);
-                return StatusCode(500, string.Empty);
-            }        
+            else
+            {               
+                var errors = ModelState.SelectMany(x => x.Value.Errors.Select(z => z.Exception));
+                return StatusCode(500, errors);                                  
+            }
         }
-
 
         [HttpPost]
         [Route("keyhandover")]
@@ -146,6 +156,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
             objHandOver.PostalCode = keyHandOver.KeyHandOverEvent.EndCustomer.Address.PostalCode;
             objHandOver.City = keyHandOver.KeyHandOverEvent.EndCustomer.Address.City;
             objHandOver.CountryCode = keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode;
+
             // Configuarable values                                       
             objHandOver.OwnerRelationship = Configuration.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value;
             objHandOver.OEMRelationship = Configuration.GetSection("DefaultSettings").GetSection("OEMRelationship").Value;
@@ -163,7 +174,6 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 if (string.IsNullOrEmpty(token))
                 {
                     logger.LogInformation("KeyHandOverEvent function called with empty token, company ID -" + objHandOver.CustomerID);
-                    //return BadRequest();
                     return StatusCode(400, string.Empty);
                 }
                 else
@@ -178,21 +188,25 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                         {
                             var regx = new Regex("[^a-zA-Z0-9_.]");
                             if ((
-                               (string.IsNullOrEmpty(objHandOver.VIN.Trim()) || (objHandOver.VIN.Trim().Length > 50)) || (objHandOver.VIN.Trim().Length < 0)) || (regx.IsMatch(objHandOver.VIN))
-                             || (string.IsNullOrEmpty(objHandOver.TCUID.Trim()) || (objHandOver.TCUID.Trim().Length > 50) || (objHandOver.TCUID.Trim().Length < 1) || (regx.IsMatch(objHandOver.TCUID))
-                             || (string.IsNullOrEmpty(objHandOver.CustomerName.Trim()) || (objHandOver.CustomerName.Trim().Length > 100) || (objHandOver.CustomerName.Trim().Length < 1) || (regx.IsMatch(objHandOver.CustomerName))
-                             || (string.IsNullOrEmpty(objHandOver.ReferenceDateTime.Trim()) || (objHandOver.ReferenceDateTime.Trim().Length < 1))
-                             //|| ((Convert.ToDateTime(objHandOver.ReferenceDateTime).ToUniversalTime()>System.DateTime.Now.ToUniversalTime())
-                             || (!((objHandOver.TCUActivation.ToUpper() == "YES") || (objHandOver.TCUActivation.ToUpper() == "NO")))
-                             || ((objHandOver.Type.Trim().Length > 50)) || (regx.IsMatch(objHandOver.Type))
-                             || ((objHandOver.Street.Trim().Length > 50)) || (regx.IsMatch(objHandOver.Street))
-                             || ((objHandOver.StreetNumber.Trim().Length > 50)) || (regx.IsMatch(objHandOver.StreetNumber))
-                             || ((objHandOver.PostalCode.Trim().Length > 15)) || (regx.IsMatch(objHandOver.PostalCode))
-                             || ((objHandOver.City.Trim().Length > 50)) || (regx.IsMatch(objHandOver.City))
-                             || ((objHandOver.CountryCode.Trim().Length > 20)) || (regx.IsMatch(objHandOver.CountryCode))
+
+                                 //Mandetory validation 
+                                 (string.IsNullOrEmpty(objHandOver.VIN.Trim()) || (objHandOver.VIN.Trim().Length > 50)) || (objHandOver.VIN.Trim().Length < 0)) || (regx.IsMatch(objHandOver.VIN))
+                                 || (string.IsNullOrEmpty(objHandOver.TCUID.Trim()) || (objHandOver.TCUID.Trim().Length > 50) || (objHandOver.TCUID.Trim().Length < 1)// || (regx.IsMatch(objHandOver.TCUID))
+                                 || (string.IsNullOrEmpty(objHandOver.CustomerName.Trim()) || (objHandOver.CustomerName.Trim().Length > 100) || (objHandOver.CustomerName.Trim().Length < 1)// || (regx.IsMatch(objHandOver.CustomerName))
+                                 || (string.IsNullOrEmpty(objHandOver.ReferenceDateTime.Trim()) || (objHandOver.ReferenceDateTime.Trim().Length < 1))
+                                 //|| ((Convert.ToDateTime(objHandOver.ReferenceDateTime).ToUniversalTime()>System.DateTime.Now.ToUniversalTime())
+                                 || (!((objHandOver.TCUActivation.ToUpper() == "YES") || (objHandOver.TCUActivation.ToUpper() == "NO")))
+
+                                 //Length validation
+                                 || ((objHandOver.Type.Trim().Length > 50))
+                                 || ((objHandOver.Street.Trim().Length > 50))
+                                 || ((objHandOver.StreetNumber.Trim().Length > 50))
+                                 || ((objHandOver.PostalCode.Trim().Length > 15)) 
+                                 || ((objHandOver.City.Trim().Length > 50))
+                                 || ((objHandOver.CountryCode.Trim().Length > 20)) 
+
                             )))
-                            {
-                                // return BadRequest();
+                            {                               
                                 return StatusCode(400, string.Empty);
                             }
                             else
@@ -202,15 +216,13 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                             }
                         }
                         else
-                        {
-                            // return BadRequest();
+                        {                          
                             return StatusCode(400, string.Empty);
                         }
                     }
                     else
                     {
                         logger.LogInformation("KeyHandOverEvent not executed successfully, company ID -" + keyHandOver.KeyHandOverEvent.EndCustomer.ID);
-                        //return Unauthorized();
                         return StatusCode(401, string.Empty);
                     }
                 }

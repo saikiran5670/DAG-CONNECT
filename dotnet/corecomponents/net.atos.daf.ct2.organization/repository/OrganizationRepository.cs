@@ -307,7 +307,7 @@ namespace net.atos.daf.ct2.organization.repository
                     parameterUpdate.Add("@CountryCode", customer.CountryCode);                     
                     if ((customer.ReferenceDateTime != null) && (DateTime.Compare(DateTime.MinValue, customer.ReferenceDateTime) < 0))
                     {
-                        referenceDateTime = UTCHandling.GetUTCFromDateTime(customer.ReferenceDateTime);
+                        referenceDateTime = UTCHandling.GetUTCFromDateTime(customer.ReferenceDateTime.ToString());
                     }
                     else
                     {
@@ -324,6 +324,7 @@ namespace net.atos.daf.ct2.organization.repository
 
                     // Assign base package at ORG lavel if not exist
                     await subscriptionManager.Create(iscustomerexist,Convert.ToInt32(customer.OrgCreationPackage));
+
                 }
                 else
                 {
@@ -342,7 +343,10 @@ namespace net.atos.daf.ct2.organization.repository
 
                     if ((customer.ReferenceDateTime != null) && (DateTime.Compare(DateTime.MinValue, customer.ReferenceDateTime) < 0))
                     {
-                        referenceDateTime = UTCHandling.GetUTCFromDateTime(customer.ReferenceDateTime);
+                        referenceDateTime = UTCHandling.GetUTCFromDateTime(customer.ReferenceDateTime.ToString());
+
+                      //  vehicle.Termination_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Termination_Date.ToString()) : (long?)null);
+
                     }
                     else
                     {
@@ -360,7 +364,7 @@ namespace net.atos.daf.ct2.organization.repository
                     // need to discuss here
 
                     // Assign base package at ORG lavel
-                  await subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
+                   await subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
                 }
             }
             catch (Exception ex)
