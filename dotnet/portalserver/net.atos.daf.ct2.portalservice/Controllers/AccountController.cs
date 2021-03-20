@@ -737,7 +737,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // Validation                 
                 if ((request.Id <= 0) || (request.OrganizationId<= 0) || (request.AssociatedData == null))                    
                 {
-                    return BadRequest();
+                    return StatusCode(400, "Invalid Payload");
+                }
+                // validate account type
+                char accessType = Convert.ToChar(request.AccessType);
+                if (!EnumValidator.ValidateAccessType(accessType))
+                {
+                    return StatusCode(400, "Invalid Payload");
                 }
                 var accessRelationship = _mapper.ToAccessRelationship(request);
                 var result = await _accountClient.CreateVehicleAccessRelationshipAsync(accessRelationship);
@@ -947,7 +953,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccessRelationshipFilter filter = new AccountBusinessService.AccessRelationshipFilter();
                 filter.OrganizationId = organizationId;
                 var vehicleAccessRelation = await _accountClient.GetAccessRelationshipAsync(filter);
-                AccessRelationshipResponseDetail response = new AccessRelationshipResponseDetail();
+                AccessRelationshipResponse response = new AccessRelationshipResponse();
                 if (vehicleAccessRelation != null && vehicleAccessRelation.Code == AccountBusinessService.Responcecode.Success)
                 {
                     response = _mapper.ToAccessRelationshipData(vehicleAccessRelation);
