@@ -67,41 +67,50 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 // Configuarable values   
                 customerRequest.OrgCreationPackage = Configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value;
 
-                string dateformat = "yyyy-mm-ddThh:mm:ss";
-                DateTime parsed;
-                if (!(DateTime.TryParseExact(Convert.ToString(customerRequest.ReferenceDateTime), dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed)))
+                if (customerRequest.ReferenceDateTime != null && customerRequest.CompanyType != null && customerRequest.CustomerID != null
+                    && customerRequest.CustomerName != null && customerRequest.AddressType != null && customerRequest.Street != null
+                    && customerRequest.StreetNumber != null && customerRequest.PostalCode != null
+                    && customerRequest.City != null && customerRequest.CountryCode != null)
                 {
-                    var regx = new Regex("[^a-zA-Z0-9_.]");
-                    if ((
-                            // Mandatory validation
-                            (string.IsNullOrEmpty(customerRequest.CompanyType) || (customerRequest.CompanyType.Trim().Length < 1)) || (customerRequest.CompanyType.Trim().Length > 50)) //|| (regx.IsMatch(customerRequest.CompanyType))
-                            || ((string.IsNullOrEmpty(customerRequest.CustomerID) || (customerRequest.CustomerID.Trim().Length < 1) || (customerRequest.CustomerID.Trim().Length > 100)) //|| (regx.IsMatch(customerRequest.CustomerID)))
-                            || ((string.IsNullOrEmpty(customerRequest.CustomerName) || (customerRequest.CustomerName.Trim().Length < 1) || (customerRequest.CustomerName.Trim().Length > 100)) // || (regx.IsMatch(customerRequest.CustomerName))
-                            || (string.IsNullOrEmpty(Convert.ToString(customerRequest.ReferenceDateTime).Trim())) || (Convert.ToString(customerRequest.ReferenceDateTime).Trim().Length < 1))
-
-                            //Length validation
-                            || ((customerRequest.AddressType.Trim().Length > 50))
-                            || ((customerRequest.Street.Trim().Length > 50))
-                            || ((customerRequest.StreetNumber.Trim().Length > 50))
-                            || ((customerRequest.PostalCode.Trim().Length > 15))
-                            || ((customerRequest.City.Trim().Length > 50))
-                            || ((customerRequest.CountryCode.Trim().Length > 20))
-                        ))
+                    string dateformat = "yyyy-mm-ddThh:mm:ss";
+                    DateTime parsed;
+                    if (!(DateTime.TryParseExact(Convert.ToString(customerRequest.ReferenceDateTime), dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed)))
                     {
-                        return StatusCode(400, string.Empty);
+                        var regx = new Regex("[^a-zA-Z0-9_.]");
+                        if ((
+                                // Mandatory validation
+                                (string.IsNullOrEmpty(customerRequest.CompanyType) || (customerRequest.CompanyType.Trim().Length < 1)) || (customerRequest.CompanyType.Trim().Length > 50)) //|| (regx.IsMatch(customerRequest.CompanyType))
+                                || ((string.IsNullOrEmpty(customerRequest.CustomerID) || (customerRequest.CustomerID.Trim().Length < 1) || (customerRequest.CustomerID.Trim().Length > 100)) //|| (regx.IsMatch(customerRequest.CustomerID)))
+                                || ((string.IsNullOrEmpty(customerRequest.CustomerName) || (customerRequest.CustomerName.Trim().Length < 1) || (customerRequest.CustomerName.Trim().Length > 100)) // || (regx.IsMatch(customerRequest.CustomerName))
+                                || (string.IsNullOrEmpty(Convert.ToString(customerRequest.ReferenceDateTime).Trim())) || (Convert.ToString(customerRequest.ReferenceDateTime).Trim().Length < 1))
+                                || ((customerRequest.ReferenceDateTime).ToUniversalTime() > System.DateTime.Now.ToUniversalTime()) || (customerRequest.ReferenceDateTime == new DateTime())
+                                //Length validation
+                                || ((customerRequest.AddressType.Trim().Length > 50))
+                                || ((customerRequest.Street.Trim().Length > 50))
+                                || ((customerRequest.StreetNumber.Trim().Length > 50))
+                                || ((customerRequest.PostalCode.Trim().Length > 15))
+                                || ((customerRequest.City.Trim().Length > 50))
+                                || ((customerRequest.CountryCode.Trim().Length > 20))
+                            ))
+                        {
+                            return StatusCode(400, string.Empty);
+                        }
+                        else
+                        {
+                            await organizationtmanager.UpdateCustomer(customerRequest);
+                            logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
+                            return Ok();
+                        }
                     }
                     else
                     {
-                        await organizationtmanager.UpdateCustomer(customerRequest);
-                        logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
-                        return Ok();
+                        return StatusCode(400, string.Empty);
                     }
                 }
                 else
                 {
                     return StatusCode(400, string.Empty);
                 }
-
             }
             catch (Exception ex)
             {
@@ -136,37 +145,46 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 objHandOver.OrgCreationPackage = Configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value;
                 objHandOver.DAFPACCAR = Configuration.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value;
 
-                string dateformat = "yyyy-mm-ddThh:mm:ss";
-                DateTime parsed;
-                if (!(DateTime.TryParseExact(objHandOver.ReferenceDateTime, dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed)))
+                if (objHandOver.ReferenceDateTime != null && objHandOver.VIN != null && objHandOver.TCUID != null && objHandOver.TCUActivation != null &&
+                    objHandOver.CustomerID != null && objHandOver.CustomerName != null && objHandOver.Type != null && objHandOver.Street != null 
+                    && objHandOver.StreetNumber != null && objHandOver.PostalCode != null && objHandOver.City != null && objHandOver.CountryCode != null)
                 {
-                    var regx = new Regex("[^a-zA-Z0-9_.]");
-                    if ((
-
-                            //Mandetory validation 
-                            (string.IsNullOrEmpty(objHandOver.VIN.Trim()) || (objHandOver.VIN.Trim().Length > 50)) || (objHandOver.VIN.Trim().Length < 0)) || (regx.IsMatch(objHandOver.VIN))
-                            || (string.IsNullOrEmpty(objHandOver.TCUID.Trim()) || (objHandOver.TCUID.Trim().Length > 50) || (objHandOver.TCUID.Trim().Length < 1)// || (regx.IsMatch(objHandOver.TCUID))
-                            || (string.IsNullOrEmpty(objHandOver.CustomerName.Trim()) || (objHandOver.CustomerName.Trim().Length > 100) || (objHandOver.CustomerName.Trim().Length < 1)// || (regx.IsMatch(objHandOver.CustomerName))
-                            || (string.IsNullOrEmpty(objHandOver.ReferenceDateTime.Trim()) || (objHandOver.ReferenceDateTime.Trim().Length < 1))
-                            //|| ((Convert.ToDateTime(objHandOver.ReferenceDateTime).ToUniversalTime()>System.DateTime.Now.ToUniversalTime())
-                            || (!((objHandOver.TCUActivation.ToUpper() == "YES") || (objHandOver.TCUActivation.ToUpper() == "NO")))
-
-                            //Length validation
-                            || ((objHandOver.Type.Trim().Length > 50))
-                            || ((objHandOver.Street.Trim().Length > 50))
-                            || ((objHandOver.StreetNumber.Trim().Length > 50))
-                            || ((objHandOver.PostalCode.Trim().Length > 15))
-                            || ((objHandOver.City.Trim().Length > 50))
-                            || ((objHandOver.CountryCode.Trim().Length > 20))
-
-                    )))
+                    string dateformat = "yyyy-mm-ddThh:mm:ss";
+                    DateTime parsed;
+                    if (!(DateTime.TryParseExact(objHandOver.ReferenceDateTime, dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed)))
                     {
-                        return StatusCode(400, string.Empty);
+                        var regx = new Regex("[^a-zA-Z0-9_.]");
+                        if ((
+
+                                //Mandetory validation 
+                                (string.IsNullOrEmpty(objHandOver.VIN.Trim()) || (objHandOver.VIN.Trim().Length > 50)) || (objHandOver.VIN.Trim().Length < 0)) || (regx.IsMatch(objHandOver.VIN))
+                                || (string.IsNullOrEmpty(objHandOver.TCUID.Trim()) || (objHandOver.TCUID.Trim().Length > 50) || (objHandOver.TCUID.Trim().Length < 1)// || (regx.IsMatch(objHandOver.TCUID))
+                                || (string.IsNullOrEmpty(objHandOver.CustomerName.Trim()) || (objHandOver.CustomerName.Trim().Length > 100) || (objHandOver.CustomerName.Trim().Length < 1)// || (regx.IsMatch(objHandOver.CustomerName))
+                                || (string.IsNullOrEmpty(objHandOver.ReferenceDateTime.Trim()) || (objHandOver.ReferenceDateTime.Trim().Length < 1))
+                                || ((Convert.ToDateTime(objHandOver.ReferenceDateTime).ToUniversalTime() > System.DateTime.Now.ToUniversalTime())) || (objHandOver.ReferenceDateTime == null)
+                                || (!((objHandOver.TCUActivation.ToUpper() == "YES") || (objHandOver.TCUActivation.ToUpper() == "NO")))
+
+                                //Length validation
+                                || ((objHandOver.Type.Trim().Length > 50))
+                                || ((objHandOver.Street.Trim().Length > 50))
+                                || ((objHandOver.StreetNumber.Trim().Length > 50))
+                                || ((objHandOver.PostalCode.Trim().Length > 15))
+                                || ((objHandOver.City.Trim().Length > 50))
+                                || ((objHandOver.CountryCode.Trim().Length > 20))
+
+                        )))
+                        {
+                            return StatusCode(400, string.Empty);
+                        }
+                        else
+                        {
+                            await organizationtmanager.KeyHandOverEvent(objHandOver);
+                            return Ok();
+                        }
                     }
                     else
                     {
-                        await organizationtmanager.KeyHandOverEvent(objHandOver);
-                        return Ok();
+                        return StatusCode(400, string.Empty);
                     }
                 }
                 else
