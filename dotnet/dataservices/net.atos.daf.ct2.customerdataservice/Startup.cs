@@ -26,6 +26,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography;
 using net.atos.daf.ct2.customerdataservice.CustomAttributes;
 using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
+using System;
 
 namespace net.atos.daf.ct2.customerdataservice
 {
