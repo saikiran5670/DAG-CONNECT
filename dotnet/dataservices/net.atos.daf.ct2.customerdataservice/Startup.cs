@@ -21,6 +21,13 @@ using Subscription = net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.repository;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
+using net.atos.daf.ct2.customerdataservice.CustomAttributes;
+using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
+using System;
 
 namespace net.atos.daf.ct2.customerdataservice
 {
@@ -74,7 +81,56 @@ namespace net.atos.daf.ct2.customerdataservice
             services.AddTransient<IGroupManager,GroupManager>();
             services.AddTransient<IGroupRepository, GroupRepository>();          
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = false;
+
+                RSA rsa = RSA.Create();
+                rsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(Configuration["IdentityConfiguration:RsaPublicKey"]), out _);
+                SecurityKey key = new RsaSecurityKey(rsa)
+                {
+                    CryptoProviderFactory = new CryptoProviderFactory()
+                    {
+                        CacheSignatureProviders = false
+                    }
+                };
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Configuration["IdentityConfiguration:Issuer"],
+                    IssuerSigningKey = key,
+                    CryptoProviderFactory = new CryptoProviderFactory()
+                    {
+                        CacheSignatureProviders = false
+                    }
+                };
+
+                x.Events = new JwtBearerEvents()
+                {
+                    OnTokenValidated = context =>
+                    {
+                        context.HttpContext.User = context.Principal;
+                        return Task.CompletedTask;
+                    }
+                };
+            });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(
+                    AccessPolicies.MainAccessPolicy,
+                    policy => policy.RequireAuthenticatedUser()
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MainAccessPolicy)));
+            });
+
+            services.AddSingleton<IAuthorizationHandler, AuthorizeHandler>();
+
             //services.AddMvc(options => { options.Filters.Add(new ProducesAttribute("application/json")); });
             services.AddSwaggerGen(c =>
             {
@@ -93,6 +149,8 @@ namespace net.atos.daf.ct2.customerdataservice
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

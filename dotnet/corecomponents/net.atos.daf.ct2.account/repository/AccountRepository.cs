@@ -924,6 +924,32 @@ namespace net.atos.daf.ct2.account
             }
             return Roles;
         }
+
+        public async Task<bool> CheckForFeatureAccessByEmailId(string emailId, string featureName)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@email", emailId);
+                parameter.Add("@feature", featureName);
+
+                var query =
+                    @"SELECT EXISTS 
+                (
+                    SELECT 1 FROM master.account acc
+                    INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.email = @email AND acc.is_active = True
+                    INNER JOIN master.Role r ON r.id = ar.role_id AND r.is_active = True
+                    INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.is_active = True
+                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True AND f.name = @feature
+                )";
+                return await dataAccess.ExecuteScalarAsync<bool>(query, parameter);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         // End Add Account to Role
         #endregion
 

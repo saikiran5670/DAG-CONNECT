@@ -28,7 +28,34 @@ service OrganizationService {
 
   rpc CreateOrgRelationship (OrgRelationshipCreateRequest) returns (OrgRelationshipCreateResponse);
   rpc EndOrgRelationShip (EndOrgRelationShipRequest) returns (EndOrgRelationshipResponse);
-  rpc AllowChaining (ChainingRequest) returns (ChainingResponse);
+  rpc AllowChaining (ChainingRequest) returns (ChainingResponse); 
+  rpc GetOrgRelationshipMapping (OrgRelationshipMappingGetRequest) returns (OrgRelationshipGetResponse);
+}
+
+message OrgRelationshipMappingGetRequest
+{
+    int32 id = 1;
+    int32 OrgRelationId =2;
+    int32 RelationShipId = 3;
+    int32 VehicleGroupID = 4;
+    int32 OwnerOrId = 5;
+    int32 CreatedOrgId = 6;
+    int32 TargetOrgId = 7;
+    int64 StartDate= 8;
+    int64 EndDate=9;
+    bool AllowChain = 10;
+    int64 createdAt=11;
+    string VehicleGroupName=12;
+    string RelationshipName=13;
+    string OrganizationName=14; 
+}
+
+message OrgRelationshipGetResponse
+{
+    
+    repeated OrgRelationshipMappingGetRequest OrgRelationshipMappingList=1;
+    Responcecode Code=2;
+    string Message =3;
 }
 
 message GetAllOrgResponse{

@@ -217,10 +217,10 @@ namespace net.atos.daf.ct2.organizationservice
                         objRelationship.allow_chain = request.AllowChain;
                         var orgrelationid = await _relationshipManager.CreateRelationShipMapping(objRelationship);
                         request.OrgRelationId = orgrelationid;
-                        
+
                         responce.Code = Responcecode.Success;
                         responce.Relationship.Add(orgrelationid);
-                       
+
                     }
                 }
                 responce.Code = Responcecode.Success;
@@ -271,7 +271,7 @@ namespace net.atos.daf.ct2.organizationservice
         {
             try
             {
-                var orgrelationid = await _relationshipManager.AllowChaining(request.OrgRelationID,request.AllowChaining);
+                var orgrelationid = await _relationshipManager.AllowChaining(request.OrgRelationID, request.AllowChaining);
                 return await Task.FromResult(new ChainingResponse
                 {
                     Code = Responcecode.Success,
@@ -290,6 +290,52 @@ namespace net.atos.daf.ct2.organizationservice
 
                 });
                 throw;
+            }
+        }
+        
+        public async override Task<OrgRelationshipGetResponse> GetOrgRelationshipMapping(OrgRelationshipMappingGetRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var response = new OrgRelationshipGetResponse();
+                var orgRelationshipFilter = new OrganizationRelationShip();
+                orgRelationshipFilter.Id = request.Id;
+                orgRelationshipFilter.relationship_id = request.RelationShipId;
+                orgRelationshipFilter.vehicle_group_id = request.VehicleGroupID;
+                orgRelationshipFilter.owner_org_id = request.OwnerOrId;
+                orgRelationshipFilter.created_org_id = request.CreatedOrgId;
+                orgRelationshipFilter.target_org_id = request.TargetOrgId;
+
+                var orgRelationships = _relationshipManager.GetRelationshipMapping(orgRelationshipFilter).Result;
+                response.OrgRelationshipMappingList.AddRange(orgRelationships
+                                     .Select(x => new OrgRelationshipMappingGetRequest()
+                                     {
+                                         Id = x.Id,
+                                         RelationShipId = x.relationship_id,
+                                         TargetOrgId = x.target_org_id,
+                                         CreatedOrgId = x.created_org_id,
+                                         CreatedAt = x.created_at,
+                                         EndDate = x.end_date,
+                                         AllowChain = x.allow_chain,
+                                         OrganizationName = x.OrganizationName,
+                                         VehicleGroupID = x.vehicle_group_id,
+                                         OrgRelationId = x.relationship_id,
+                                         RelationshipName = x.RelationshipName,
+                                         VehicleGroupName = x.VehicleGroupName
+                                         
+                                     }).ToList());
+                _logger.LogInformation("Get  relationship mapping details.");
+                response.Code = Responcecode.Success;
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in   relationship service:get  org relationship mapping  details with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new OrgRelationshipGetResponse
+                {
+                    Message = "Exception " + ex.Message,
+                    Code = Responcecode.Failed
+                });
             }
         }
         //Organization
@@ -421,7 +467,7 @@ namespace net.atos.daf.ct2.organizationservice
                                         Referenced = x.reference_date,
                                         VehicleOptIn = x.vehicle_default_opt_in,
                                         DriverOptIn = x.driver_default_opt_in,
-                                        IsActive=x.is_active
+                                        IsActive = x.is_active
                                     }).ToList());
 
 

@@ -17,6 +17,7 @@ namespace net.atos.daf.ct2.identity.entity
         public string AlgoType { get; set; }
         public string Sid { get; set; }
         public int TokenExpiresIn { get; set; }
+        public string Email { get; set; }
         public List<AccountAssertion> Assertions { get; set; }
         
         // validto:/*exp*/

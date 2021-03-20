@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace net.atos.daf.ct2.relationship.entity
+﻿namespace net.atos.daf.ct2.portalservice.Entity.Relationship
 {
     public class OrganizationRelationShip
     {
@@ -22,6 +18,5 @@ namespace net.atos.daf.ct2.relationship.entity
         public string VehicleGroupName { get; set; }
         public string OrganizationName { get; set; }
         public string RelationshipName { get; set; }
-
     }
 }
