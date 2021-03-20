@@ -13,6 +13,7 @@ namespace net.atos.daf.ct2.account
         Task<bool> Delete(int accountId, int organizationId);
         Task<Account> Duplicate(AccountFilter filter);
         Task<List<Account>> Get(AccountFilter filter);
+        Task<int> GetCount(int organization_id);
         Task<Account> AddAccountToOrg(Account account);
         Task<AccountBlob> CreateBlob(AccountBlob accountBlob);
         Task<AccountBlob> GetBlob(int blobId);

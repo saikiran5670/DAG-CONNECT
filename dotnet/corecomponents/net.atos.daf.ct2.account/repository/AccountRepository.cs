@@ -285,6 +285,24 @@ namespace net.atos.daf.ct2.account
             }
         }
 
+        public async Task<int> GetCount(int organization_id)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();                
+                string query = string.Empty;
+                int count = 0;
+                query = @"select count(1) from master.account a join master.accountorg ag on a.id = ag.account_id and a.is_active=true 
+                and ag.is_active=true where ag.organization_id=@organization_id";
+                parameter.Add("@organization_id", organization_id);
+                count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                return count;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public async Task<Account> AddAccountToOrg(Account account)
         {
             try
@@ -536,13 +554,15 @@ namespace net.atos.daf.ct2.account
                     {
                         query = @"select id,name,access_type,count,true as is_group,group_id,group_name,is_ag_vg_group from (
                             select vg.id,vg.name,ar.access_type,
-                            (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id ) as count,
+                            case when (vg.group_type ='D') then 
+                            (select count(gr.group_id) from master.groupref gr inner join master.group g on g.id=gr.group_id and g.organization_id=@organization_id)
+                            else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id ) end as count,
                             case when (a.id is NULL) then ag.id else a.id end as group_id,
                             case when (a.id is NULL) then ag.name else a.salutation || ' ' || a.first_name || ' ' || a.last_name  end as group_name,
                             case when (a.id is NULL) then true else false end as is_ag_vg_group
                             from master.group vg 
                             inner join master.accessrelationship ar on ar.vehicle_group_id=vg.id 
-                            and vg.object_type='V' and vg.group_type='G' 
+                            and vg.object_type='V' and vg.group_type in('G','D')
                             inner join master.group ag on ag.id = ar.account_group_id 
                             and ag.organization_id=@organization_id and ag.object_type='A' 
                             --and vg.group_type='G' 
@@ -560,7 +580,7 @@ namespace net.atos.daf.ct2.account
                             and vg.organization_id=@organization_id and vg.group_type='S' and vg.object_type='V'
                             inner join master.accessrelationship ar on ar.vehicle_group_id=vg.id 
                             inner join master.group ag on ag.id = ar.account_group_id 
-                            and ag.organization_id=@organization_id and ag.group_type='S' and ag.object_type='A'
+                            and ag.organization_id=@organization_id and ag.object_type='A'
                             left outer join master.account a on a.id = ag.ref_id where vg.ref_id > 0
                             order by v.id desc) vehicles";
                     }
@@ -568,14 +588,16 @@ namespace net.atos.daf.ct2.account
                     {
                         query = @"-- account group (account group)
                             select id,name,access_type,count,true as is_group,group_id,group_name,is_ag_vg_group  from (
-                            select ag.id,ag.name,ar.access_type,
-                            (select count(gr.group_id) from master.groupref gr where gr.group_id=ag.id ) as count,
+                            select ag.id,ag.name,ar.access_type,                            
+                            case when (ag.group_type ='D') then 
+                            (select count(gr.group_id) from master.groupref gr inner join master.group g on g.id=gr.group_id and g.organization_id=@organization_id)
+                            else (select count(gr.group_id) from master.groupref gr where gr.group_id=ag.id ) end as count,
                             case when (v.id is NULL) then vg.id else v.id end as group_id,
                             case when (v.id is NULL) then vg.name else v.name end as group_name,
                             case when (v.id is NULL) then true else false end as is_ag_vg_group
                             from master.group ag 
                             inner join master.accessrelationship ar on ar.account_group_id=ag.id 
-                            and ag.organization_id=@organization_id and ag.object_type='A' and ag.group_type='G' 
+                            and ag.organization_id=@organization_id and ag.object_type='A' and ag.group_type in('G','D')
                             inner join master.group vg on vg.id = ar.vehicle_group_id 
                             and vg.organization_id=@organization_id and vg.object_type='V' 
                             left outer join master.vehicle v on v.id = vg.ref_id 
@@ -583,7 +605,7 @@ namespace net.atos.daf.ct2.account
                             order by ag.id desc ) accountgroup
                             -- accounts
                             union all
-                            select id,name,access_type,count,true as is_group,group_id,group_name,is_ag_vg_group from (
+                            select id,name,access_type,count,false as is_group,group_id,group_name,is_ag_vg_group from (
                             select a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name as name,
                             ar.access_type,0 as count,
                             case when (v.id is NULL) then vg.id else v.id end as group_id,

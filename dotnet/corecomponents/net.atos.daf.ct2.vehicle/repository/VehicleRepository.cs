@@ -15,12 +15,37 @@ namespace net.atos.daf.ct2.vehicle.repository
     public class VehicleRepository : IVehicleRepository
     {
         private readonly IDataAccess dataAccess;
+        private static readonly log4net.ILog log =
+        log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public VehicleRepository(IDataAccess _dataAccess)
         {
             dataAccess = _dataAccess;
         }
 
         #region Vehicle component methods
+
+        public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(string subscriptionId)
+        {
+            log.Info("GetVehicleBySubscriptionId Vehicle method called in repository");
+            try
+            {
+                List<VehiclesBySubscriptionId> objVehiclesBySubscriptionId = new List<VehiclesBySubscriptionId>();
+                var parameter = new DynamicParameters();
+                parameter.Add("@subscription_id", subscriptionId);
+                var query = @"select veh.id, sub.subscription_id as orderId, veh.name, veh.vin, veh.license_plate_number
+                              from master.Subscription sub 
+                              join master.vehicle veh on sub.vehicle_id = veh.id
+                              where subscription_id = @subscription_id";
+                var data = await dataAccess.QueryAsync<VehiclesBySubscriptionId>(query, parameter);
+                return objVehiclesBySubscriptionId = data.Cast<VehiclesBySubscriptionId>().ToList();
+            }
+            catch (Exception ex)
+            {
+                log.Info("GetVehicleBySubscriptionId Vehicle method in repository failed.");
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }
 
         public async Task<Vehicle> Create(Vehicle vehicle)
         {

@@ -34,7 +34,5 @@ namespace net.atos.daf.ct2.portalservice.Entity.Account
         public bool IsGroup { get; set; }
         public int Count { get; set; }
     }
-
-
 }
 
