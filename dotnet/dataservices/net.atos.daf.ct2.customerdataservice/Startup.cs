@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,19 +8,17 @@ using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.organization.repository;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.organization;
-using net.atos.daf.ct2.audit.repository;  
+using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.repository;
-using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Http;
 using net.atos.daf.ct2.group;
 using AccountComponent = net.atos.daf.ct2.account;
 using Identity = net.atos.daf.ct2.identity;
 using AccountPreference = net.atos.daf.ct2.accountpreference;
-using Subscription=net.atos.daf.ct2.subscription;
+using Subscription = net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.repository;
-using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,14 +37,20 @@ namespace net.atos.daf.ct2.customerdataservice
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-             services.AddControllers();
-        //    var connectionString = Configuration.GetConnectionString("ConnectionString");
-        //     IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
-            
+            services.AddControllers();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                  .ConfigureApiBehaviorOptions(options => {                   
+                      options.InvalidModelStateResponseFactory = actionContext => {
+                       return CustomErrorResponse(actionContext);
+                      };
+                  });
+            var connectionString = Configuration.GetConnectionString("ConnectionString");
+            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
+
             //services.AddControllers();
-           var connectionString="Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
-           IDataAccess dataAccess = new PgSQLDataAccess(connectionString);           
-           services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration")); 
+            //var connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+            //IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
+            services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration")); 
            
             services.AddSingleton(dataAccess); 
             services.AddTransient<IAuditTraillib,AuditTraillib>(); 
@@ -111,5 +112,11 @@ namespace net.atos.daf.ct2.customerdataservice
                 c.RoutePrefix = $"{swaggerBasePath}/swagger";
             });
         }
-    }
+        private BadRequestObjectResult CustomErrorResponse(ActionContext actionContext)
+        {           
+            return new BadRequestObjectResult(actionContext.ModelState
+             .Where(modelError => modelError.Value.Errors.Count > 0)
+             .Select(modelError =>string.Empty).FirstOrDefault());
+        }
+    }   
 }
