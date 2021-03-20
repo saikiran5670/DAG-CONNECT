@@ -313,20 +313,24 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     VehicleProperty vehiclePro = await vehicleManager.UpdateProperty(vehicleProperties);
 
                     // Create owner realtionship
+                    int IsVehicleIdExist = await organizationManager.IsOwnerRelationshipExist(vehicleProperties.VehicleId);
+                    if (IsVehicleIdExist <= 0)
+                    {
+                        int OwnerRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value);
+                        int DAFPACCAR = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value);
 
-                    int OwnerRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value);
-                    int DAFPACCAR = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value);
+                        RelationshipMapping relationshipMapping = new RelationshipMapping();
+                        relationshipMapping.relationship_id = OwnerRelationship;
+                        relationshipMapping.vehicle_id = vehicleProperties.VehicleId;
+                        relationshipMapping.vehicle_group_id = 0;
+                        relationshipMapping.owner_org_id = DAFPACCAR;
+                        relationshipMapping.created_org_id = DAFPACCAR;
+                        relationshipMapping.target_org_id = DAFPACCAR;
+                        relationshipMapping.isFirstRelation = true;
+                        relationshipMapping.allow_chain = true;
+                        await organizationManager.CreateOwnerRelationship(relationshipMapping);
+                    }
 
-                    RelationshipMapping relationshipMapping = new RelationshipMapping();
-                    relationshipMapping.relationship_id = OwnerRelationship;
-                    relationshipMapping.vehicle_id = vehicleProperties.VehicleId;
-                    relationshipMapping.vehicle_group_id = 0;
-                    relationshipMapping.owner_org_id = DAFPACCAR;
-                    relationshipMapping.created_org_id = DAFPACCAR;
-                    relationshipMapping.target_org_id = DAFPACCAR;
-                    relationshipMapping.isFirstRelation = true;
-                    relationshipMapping.allow_chain = true;
-                    await organizationManager.CreateOwnerRelationship(relationshipMapping);
                     transactionScope.Complete();
                 }
 
