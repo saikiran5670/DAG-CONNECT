@@ -530,7 +530,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 var InsertQueryStatement = string.Empty;
                 var UpdateQueryStatement = string.Empty;
                 int VehiclePropertiesId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT vehicle_property_id FROM master.vehicle where vin=@vin), 0)", new { vin = vehicleproperty.VIN });
-                //int OrgId= await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.organization where org_id=@org_id), null)", new { org_id = vehicleproperty.Org_Id });
+                int vehicleId= await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = vehicleproperty.VIN });
                 int OrgId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.organization where lower(name)=@name), null)", new { name = "daf-paccar" });
 
                 vehicleproperty.ID = VehiclePropertiesId;
@@ -699,21 +699,29 @@ namespace net.atos.daf.ct2.vehicle.repository
                 //parameter.Add("@id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
 
 
-                if (VehiclePropertiesId > 0)
+                if (VehiclePropertiesId > 0 && vehicleId > 0)
                 {
                     await CheckUnknownOEM(objVeh.VIN);
-                    await dataAccess.ExecuteAsync("UPDATE master.vehicle SET model_id = @model_id , license_plate_number = @license_plate_number, modified_at=@modified_at WHERE vin = @vin", new { model_id = objVeh.ModelId, license_plate_number = objVeh.License_Plate_Number, vin = objVeh.VIN , modified_at = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) });
+                    await dataAccess.ExecuteAsync("UPDATE master.vehicle SET model_id = @model_id , license_plate_number = @license_plate_number, modified_at=@modified_at WHERE vin = @vin", new { model_id = objVeh.ModelId, license_plate_number = objVeh.License_Plate_Number, vin = objVeh.VIN, modified_at = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) });
                     vehicleproperty.ID = await dataAccess.ExecuteScalarAsync<int>(UpdateQueryStatement, parameter);
                     objVeh.ID = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vehicle_property_id=@id), 0)", new { id = vehicleproperty.ID });
                     vehicleproperty.VehicleId = objVeh.ID;
                 }
-                else
+                else if (vehicleId == 0)
                 {
                     vehicleproperty.ID = await dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, parameter);
                     objVeh.VehiclePropertiesId = vehicleproperty.ID;
                     objVeh = await Create(objVeh);
                     vehicleproperty.VehicleId = objVeh.ID;
                 }
+                else {
+                    objVeh.ID = vehicleId;
+                    vehicleproperty.VehicleId = vehicleId;
+                    vehicleproperty.ID = await dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, parameter);
+                    await dataAccess.ExecuteAsync("UPDATE master.vehicle SET vehicle_property_id = @vehicle_property_id, modified_at=@modified_at WHERE id = @id", new { vehicle_property_id = vehicleproperty.ID, id = objVeh.ID, modified_at = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) });
+
+                }
+
                 if (objVeh.ID > 0)
                 {
                     //Create axelproperties                

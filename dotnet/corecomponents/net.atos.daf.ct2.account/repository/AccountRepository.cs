@@ -1124,7 +1124,7 @@ namespace net.atos.daf.ct2.account
                     ) fsets
                     INNER JOIN master.FeatureSet fset ON fsets.feature_set_id = fset.id AND fset.is_active = True
                     INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
-                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True
+                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True AND f.type <> 'D' AND f.name not like 'api.%'
                     LEFT JOIN master.Menu mn ON mn.feature_id = f.id AND mn.is_active = True AND mn.id <> 0
                     LEFT JOIN master.Menu mn2 ON mn.parent_id = mn2.id AND mn2.is_active = True AND mn2.id <> 0
                     LEFT JOIN translation.translation tl ON tl.name = mn.key AND tl.code = @code

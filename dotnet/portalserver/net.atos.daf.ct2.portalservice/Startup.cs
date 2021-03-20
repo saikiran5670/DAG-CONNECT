@@ -66,7 +66,7 @@ namespace net.atos.daf.ct2.portalservice
             AppContext.SetSwitch(
                     "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
-            //services.Configure<PortalCacheConfiguration>(Configuration.GetSection("PortalCacheConfiguration"));
+            services.Configure<PortalCacheConfiguration>(Configuration.GetSection("PortalCacheConfiguration"));
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.portalservice
                     options.Cookie.HttpOnly = true;
                     //options.Cookie.Expiration = TimeSpan.FromMinutes(Convert.ToDouble(cookiesexpireat));
                     options.Cookie.SecurePolicy = string.IsNullOrEmpty(isdevelopmentenv)? CookieSecurePolicy.Always : Convert.ToBoolean(isdevelopmentenv) ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
-                    options.Cookie.SameSite = SameSiteMode.Strict;
+                    options.Cookie.SameSite = SameSiteMode.None;
                     options.SlidingExpiration = true;
                     options.ExpireTimeSpan = TimeSpan.FromSeconds(string.IsNullOrEmpty(authcookiesexpireat)? 5184000 : Convert.ToDouble(authcookiesexpireat));
                     options.Events = new CookieAuthenticationEvents
@@ -105,14 +105,14 @@ namespace net.atos.daf.ct2.portalservice
                    options.HttpsPort = string.IsNullOrEmpty(httpsport)? 443 : Convert.ToInt32(httpsport);
                }); */
 
-            //services.AddMemoryCache();
+            services.AddMemoryCache();
 
             services.AddControllers();
 
             services.AddDistributedMemoryCache();
 
             services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
-            //services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();
+            services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();
 
             services.AddGrpcClient<AccountService.AccountServiceClient>(o =>
             {

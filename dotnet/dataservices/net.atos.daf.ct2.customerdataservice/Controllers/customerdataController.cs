@@ -47,28 +47,31 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
         }
 
         [HttpPost]
-        [Route("update")]        
+        [Route("update")]
         public async Task<IActionResult> update(Customer customer)
         {
             try
             {
-                if (ModelState.IsValid)
+                CustomerRequest customerRequest = new CustomerRequest();
+                customerRequest.CompanyType = customer.CompanyUpdatedEvent.Company.type;
+                customerRequest.CustomerID = customer.CompanyUpdatedEvent.Company.ID;
+                customerRequest.CustomerName = customer.CompanyUpdatedEvent.Company.Name;
+                customerRequest.AddressType = customer.CompanyUpdatedEvent.Company.Address.Type;
+                customerRequest.Street = customer.CompanyUpdatedEvent.Company.Address.Street;
+                customerRequest.StreetNumber = customer.CompanyUpdatedEvent.Company.Address.StreetNumber;
+                customerRequest.PostalCode = customer.CompanyUpdatedEvent.Company.Address.PostalCode;
+                customerRequest.City = customer.CompanyUpdatedEvent.Company.Address.City;
+                customerRequest.CountryCode = customer.CompanyUpdatedEvent.Company.Address.CountryCode;
+                customerRequest.ReferenceDateTime = customer.CompanyUpdatedEvent.Company.ReferenceDateTime;
+
+                // Configuarable values   
+                customerRequest.OrgCreationPackage = Configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value;
+
+                if (customerRequest.ReferenceDateTime != null && customerRequest.CompanyType != null && customerRequest.CustomerID != null
+                    && customerRequest.CustomerName != null && customerRequest.AddressType != null && customerRequest.Street != null
+                    && customerRequest.StreetNumber != null && customerRequest.PostalCode != null
+                    && customerRequest.City != null && customerRequest.CountryCode != null)
                 {
-                    CustomerRequest customerRequest = new CustomerRequest();
-                    customerRequest.CompanyType = customer.CompanyUpdatedEvent.Company.type;
-                    customerRequest.CustomerID = customer.CompanyUpdatedEvent.Company.ID;
-                    customerRequest.CustomerName = customer.CompanyUpdatedEvent.Company.Name;
-                    customerRequest.AddressType = customer.CompanyUpdatedEvent.Company.Address.Type;
-                    customerRequest.Street = customer.CompanyUpdatedEvent.Company.Address.Street;
-                    customerRequest.StreetNumber = customer.CompanyUpdatedEvent.Company.Address.StreetNumber;
-                    customerRequest.PostalCode = customer.CompanyUpdatedEvent.Company.Address.PostalCode;
-                    customerRequest.City = customer.CompanyUpdatedEvent.Company.Address.City;
-                    customerRequest.CountryCode = customer.CompanyUpdatedEvent.Company.Address.CountryCode;
-                    customerRequest.ReferenceDateTime = customer.CompanyUpdatedEvent.Company.ReferenceDateTime;
-
-                    // Configuarable values   
-                    customerRequest.OrgCreationPackage = Configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value;
-
                     string dateformat = "yyyy-mm-ddThh:mm:ss";
                     DateTime parsed;
                     if (!(DateTime.TryParseExact(Convert.ToString(customerRequest.ReferenceDateTime), dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed)))
@@ -80,7 +83,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                                 || ((string.IsNullOrEmpty(customerRequest.CustomerID) || (customerRequest.CustomerID.Trim().Length < 1) || (customerRequest.CustomerID.Trim().Length > 100)) //|| (regx.IsMatch(customerRequest.CustomerID)))
                                 || ((string.IsNullOrEmpty(customerRequest.CustomerName) || (customerRequest.CustomerName.Trim().Length < 1) || (customerRequest.CustomerName.Trim().Length > 100)) // || (regx.IsMatch(customerRequest.CustomerName))
                                 || (string.IsNullOrEmpty(Convert.ToString(customerRequest.ReferenceDateTime).Trim())) || (Convert.ToString(customerRequest.ReferenceDateTime).Trim().Length < 1))
-
+                                || ((customerRequest.ReferenceDateTime).ToUniversalTime() > System.DateTime.Now.ToUniversalTime()) || (customerRequest.ReferenceDateTime == new DateTime())
                                 //Length validation
                                 || ((customerRequest.AddressType.Trim().Length > 50))
                                 || ((customerRequest.Street.Trim().Length > 50))
@@ -106,15 +109,14 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 }
                 else
                 {
-                    var errors = ModelState.SelectMany(x => x.Value.Errors.Select(z => z.Exception));
-                    return StatusCode(500, errors);
+                    return StatusCode(400, string.Empty);
                 }
             }
             catch (Exception ex)
             {
                 logger.LogError(ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, string.Empty);
-            }            
+            }
         }
 
         [HttpPost]
@@ -143,37 +145,46 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 objHandOver.OrgCreationPackage = Configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value;
                 objHandOver.DAFPACCAR = Configuration.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value;
 
-                string dateformat = "yyyy-mm-ddThh:mm:ss";
-                DateTime parsed;
-                if (!(DateTime.TryParseExact(objHandOver.ReferenceDateTime, dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed)))
+                if (objHandOver.ReferenceDateTime != null && objHandOver.VIN != null && objHandOver.TCUID != null && objHandOver.TCUActivation != null &&
+                    objHandOver.CustomerID != null && objHandOver.CustomerName != null && objHandOver.Type != null && objHandOver.Street != null 
+                    && objHandOver.StreetNumber != null && objHandOver.PostalCode != null && objHandOver.City != null && objHandOver.CountryCode != null)
                 {
-                    var regx = new Regex("[^a-zA-Z0-9_.]");
-                    if ((
-
-                            //Mandetory validation 
-                            (string.IsNullOrEmpty(objHandOver.VIN.Trim()) || (objHandOver.VIN.Trim().Length > 50)) || (objHandOver.VIN.Trim().Length < 0)) || (regx.IsMatch(objHandOver.VIN))
-                            || (string.IsNullOrEmpty(objHandOver.TCUID.Trim()) || (objHandOver.TCUID.Trim().Length > 50) || (objHandOver.TCUID.Trim().Length < 1)// || (regx.IsMatch(objHandOver.TCUID))
-                            || (string.IsNullOrEmpty(objHandOver.CustomerName.Trim()) || (objHandOver.CustomerName.Trim().Length > 100) || (objHandOver.CustomerName.Trim().Length < 1)// || (regx.IsMatch(objHandOver.CustomerName))
-                            || (string.IsNullOrEmpty(objHandOver.ReferenceDateTime.Trim()) || (objHandOver.ReferenceDateTime.Trim().Length < 1))
-                            //|| ((Convert.ToDateTime(objHandOver.ReferenceDateTime).ToUniversalTime()>System.DateTime.Now.ToUniversalTime())
-                            || (!((objHandOver.TCUActivation.ToUpper() == "YES") || (objHandOver.TCUActivation.ToUpper() == "NO")))
-
-                            //Length validation
-                            || ((objHandOver.Type.Trim().Length > 50))
-                            || ((objHandOver.Street.Trim().Length > 50))
-                            || ((objHandOver.StreetNumber.Trim().Length > 50))
-                            || ((objHandOver.PostalCode.Trim().Length > 15))
-                            || ((objHandOver.City.Trim().Length > 50))
-                            || ((objHandOver.CountryCode.Trim().Length > 20))
-
-                    )))
+                    string dateformat = "yyyy-mm-ddThh:mm:ss";
+                    DateTime parsed;
+                    if (!(DateTime.TryParseExact(objHandOver.ReferenceDateTime, dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed)))
                     {
-                        return StatusCode(400, string.Empty);
+                        var regx = new Regex("[^a-zA-Z0-9_.]");
+                        if ((
+
+                                //Mandetory validation 
+                                (string.IsNullOrEmpty(objHandOver.VIN.Trim()) || (objHandOver.VIN.Trim().Length > 50)) || (objHandOver.VIN.Trim().Length < 0)) || (regx.IsMatch(objHandOver.VIN))
+                                || (string.IsNullOrEmpty(objHandOver.TCUID.Trim()) || (objHandOver.TCUID.Trim().Length > 50) || (objHandOver.TCUID.Trim().Length < 1)// || (regx.IsMatch(objHandOver.TCUID))
+                                || (string.IsNullOrEmpty(objHandOver.CustomerName.Trim()) || (objHandOver.CustomerName.Trim().Length > 100) || (objHandOver.CustomerName.Trim().Length < 1)// || (regx.IsMatch(objHandOver.CustomerName))
+                                || (string.IsNullOrEmpty(objHandOver.ReferenceDateTime.Trim()) || (objHandOver.ReferenceDateTime.Trim().Length < 1))
+                                || ((Convert.ToDateTime(objHandOver.ReferenceDateTime).ToUniversalTime() > System.DateTime.Now.ToUniversalTime())) || (objHandOver.ReferenceDateTime == null)
+                                || (!((objHandOver.TCUActivation.ToUpper() == "YES") || (objHandOver.TCUActivation.ToUpper() == "NO")))
+
+                                //Length validation
+                                || ((objHandOver.Type.Trim().Length > 50))
+                                || ((objHandOver.Street.Trim().Length > 50))
+                                || ((objHandOver.StreetNumber.Trim().Length > 50))
+                                || ((objHandOver.PostalCode.Trim().Length > 15))
+                                || ((objHandOver.City.Trim().Length > 50))
+                                || ((objHandOver.CountryCode.Trim().Length > 20))
+
+                        )))
+                        {
+                            return StatusCode(400, string.Empty);
+                        }
+                        else
+                        {
+                            await organizationtmanager.KeyHandOverEvent(objHandOver);
+                            return Ok();
+                        }
                     }
                     else
                     {
-                        await organizationtmanager.KeyHandOverEvent(objHandOver);
-                        return Ok();
+                        return StatusCode(400, string.Empty);
                     }
                 }
                 else

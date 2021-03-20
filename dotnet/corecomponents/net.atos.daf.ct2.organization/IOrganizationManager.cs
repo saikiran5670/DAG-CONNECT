@@ -18,5 +18,6 @@ namespace net.atos.daf.ct2.organization
         Task<int> CreateOwnerRelationship(RelationshipMapping relationshipMapping);
 
         Task<List<OrganizationNameandID>> Get(OrganizationNameandID request);
+        Task<int> IsOwnerRelationshipExist(int VehicleID);
     }
 }
