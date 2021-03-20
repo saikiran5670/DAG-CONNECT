@@ -685,18 +685,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //}
 
                 //get vehicle group
-                VehicleBusinessService.OrgvehicleIdRequest orgvehicleIdRequest = new VehicleBusinessService.OrgvehicleIdRequest();
-                orgvehicleIdRequest.OrganizationId = Convert.ToInt32(OrganizationId);
-                orgvehicleIdRequest.VehicleId = Convert.ToInt32(0);
-                VehicleBusinessService.VehicleGroupDetailsResponse response = await _vehicleClient.GetVehicleGroupAsync(orgvehicleIdRequest);
+                //VehicleBusinessService.OrgvehicleIdRequest orgvehicleIdRequest = new VehicleBusinessService.OrgvehicleIdRequest();
+                //orgvehicleIdRequest.OrganizationId = Convert.ToInt32(OrganizationId);
+                //orgvehicleIdRequest.VehicleId = Convert.ToInt32(0);
+                //VehicleBusinessService.VehicleGroupDetailsResponse response = await _vehicleClient.GetVehicleGroupAsync(orgvehicleIdRequest);
 
                 VehicleBusinessService.OrganizationIdRequest OrganizationIdRequest = new VehicleBusinessService.OrganizationIdRequest();
                 OrganizationIdRequest.OrganizationId = Convert.ToInt32(OrganizationId);
                 VehicleBusinessService.OrgVehicleGroupListResponse Vehicleresponse = await _vehicleClient.GetOrganizationVehicleGroupdetailsAsync(OrganizationIdRequest);
+               
+                
                 //get Organizations List
                 var idRequest = new IdRequest();
-                idRequest.Id = OrganizationId;
+                idRequest.Id = 0;
                 var OrganizationList = await organizationClient.GetAllAsync(idRequest);
+               
+                
                 // Get Relations
                 RelationshipCreateRequest request = new RelationshipCreateRequest();
                 var RelationList = await organizationClient.GetRelationshipAsync(request);
