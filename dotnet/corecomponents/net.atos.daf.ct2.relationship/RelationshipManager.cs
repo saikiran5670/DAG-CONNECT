@@ -55,5 +55,10 @@ namespace net.atos.daf.ct2.relationship
         {
             return await _relationshipRepository.AllowChaining(OrgRelationId, AllowChaining);
         }
+
+        public async Task<List<OrganizationRelationShip>> GetRelationshipMapping(OrganizationRelationShip orgMapfilter)
+        {
+            return await _relationshipRepository.GetRelationshipMapping(orgMapfilter);
+        }
     }
 }
