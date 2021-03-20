@@ -862,11 +862,20 @@ namespace net.atos.daf.ct2.organization.repository
             }
         }
         public async Task<int> IsOwnerRelationshipExist(int VehicleID)
-        {          
-            var parameter = new DynamicParameters();
-            parameter.Add("@vehicle_id", VehicleID);
-            var query = @"Select id from master.orgrelationshipmapping where vehicle_id=@vehicle_id and end_date=null";
-            return await dataAccess.ExecuteScalarAsync<int>(query, parameter);  
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@vehicle_id", VehicleID);
+                var query = @"Select id from master.orgrelationshipmapping where vehicle_id=@vehicle_id and end_date is null";
+                return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+            }
+            catch(Exception ex)
+            {
+                log.Info("IsOwnerRelationshipExist method in repository failed :");
+                log.Error(ex.ToString());
+                throw ex;
+            }
         }
     }
 }
