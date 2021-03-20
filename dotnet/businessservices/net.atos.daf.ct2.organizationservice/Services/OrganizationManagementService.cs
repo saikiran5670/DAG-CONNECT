@@ -291,6 +291,7 @@ namespace net.atos.daf.ct2.organizationservice
                 });
                 throw;
             }
+        }
         
         public async override Task<OrgRelationshipGetResponse> GetOrgRelationshipMapping(OrgRelationshipMappingGetRequest request, ServerCallContext context)
         {
