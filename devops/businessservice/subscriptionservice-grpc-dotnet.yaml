@@ -65,10 +65,10 @@ steps:
     useLegacyPattern: false
     enableTelemetry: true
 
-- task: CmdLine@2
-  inputs:
-    script: |
-      cat dotnet/businessservices/net.atos.daf.ct2.subscriptionservice/log4net.config
+#- task: CmdLine@2
+#  inputs:
+#    script: |
+#      cat dotnet/businessservices/net.atos.daf.ct2.subscriptionservice/log4net.config
 
 - task: Docker@0
   displayName: 'Build an image'
