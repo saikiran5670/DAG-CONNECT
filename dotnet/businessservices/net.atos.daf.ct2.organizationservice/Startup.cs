@@ -58,10 +58,12 @@ namespace net.atos.daf.ct2.organizationservice
             // var connectionString = Configuration.GetConnectionString("ConnectionString");
             // var connectionString="Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y\\97;Ssl Mode=Require;";
             //IDataAccess dataAccess = new PgSQLDataAccess(connectionString);           
-            services.AddSingleton(dataAccess);
-            services.AddTransient<IAuditTraillib, AuditTraillib>();
-            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
-            services.AddTransient<IOrganizationManager, OrganizationManager>();
+            services.AddSingleton(dataAccess); 
+            services.AddTransient<IAuditTraillib,AuditTraillib>(); 
+            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
+            services.AddTransient<ISubscriptionManager, SubscriptionManager>();
+            services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
+            services.AddTransient<IOrganizationManager,OrganizationManager>();
             services.AddTransient<IOrganizationRepository, OrganizationRepository>();
             services.AddTransient<IRelationshipRepository, RelationshipRepository>();
             services.AddTransient<IRelationshipManager, RelationshipManager>();

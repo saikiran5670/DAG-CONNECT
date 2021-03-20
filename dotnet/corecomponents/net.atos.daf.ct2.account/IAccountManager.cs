@@ -14,6 +14,7 @@ namespace net.atos.daf.ct2.account
         Task<bool> Delete(Account account);
         Task<bool> ChangePassword(Account account);
         Task<IEnumerable<Account>> Get(AccountFilter filter);
+        Task<int> GetCount(int organization_id);
         Task<Account> AddAccountToOrg(Account account);
         Task<AccountBlob> CreateBlob(AccountBlob accountBlob);
         Task<AccountBlob> GetBlob(int blobId);
@@ -35,5 +36,6 @@ namespace net.atos.daf.ct2.account
         Task<bool> ResetPassword(Account account);
         Task<bool> ResetPasswordInvalidate(Guid ResetToken);
         Task<IEnumerable<MenuFeatureDto>> GetMenuFeatures(int accountId, int roleId, int organizationId, string languageCode);
+        Task<bool> CheckForFeatureAccessByEmailId(string emailId, string featureName);
     }
 }

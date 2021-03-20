@@ -55,9 +55,9 @@ namespace net.atos.daf.ct2.subscription
         {
             return await subscriptionRepository.Create(orgId, packageId);
         }
-        public async Task<IEnumerable<SubscriptionDetails>> Get(SubscriptionDetails objSubscriptionDetails)
+        public async Task<List<SubscriptionDetails>> Get(SubscriptionDetailsRequest objSubscriptionDetailsRequest)
         {
-            return await subscriptionRepository.Get(objSubscriptionDetails);
+            return await subscriptionRepository.Get(objSubscriptionDetailsRequest);
         }
         
     }

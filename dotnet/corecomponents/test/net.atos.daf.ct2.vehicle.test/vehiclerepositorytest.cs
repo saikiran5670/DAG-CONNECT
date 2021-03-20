@@ -7,6 +7,7 @@ using net.atos.daf.ct2.vehicle.repository;
 using System.Linq;
 using net.atos.daf.ct2.group;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.vehicle.test
 {
@@ -157,6 +158,17 @@ namespace net.atos.daf.ct2.vehicle.test
 
         }
 
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Get VehicleBySubscriptionSet ")]
+        [TestMethod]
+        public async Task UnT_vehicle_VehicleManager_GetVehicleBySubscriptionSet()
+        {
+            string subscriptionId = "2a1cf534-8ed2-439e-a99c-847b775ae937";
+            var results = await _vehicleRepository.GetVehicleBySubscriptionId(subscriptionId);
+            Assert.IsNotNull(results);
+            Assert.IsTrue(results != null);
+        }
+
         //[TestCategory("Unit-Test-Case")]
         //[Description("Test for create vehicle group and vehicle details")]
         //[TestMethod]
@@ -242,7 +254,7 @@ namespace net.atos.daf.ct2.vehicle.test
         //{
         //    VehicleProperty ObjVehicleProperty = new VehicleProperty();            
         //    ObjVehicleProperty.ManufactureDate = DateTime.Now;
-            
+
         //    ObjVehicleProperty.DeliveryDate = DateTime.Now;
         //    ObjVehicleProperty.Classification_Make = "Make 1";
         //    // ObjVehicleProperty.Classification_Model="Model 1";
