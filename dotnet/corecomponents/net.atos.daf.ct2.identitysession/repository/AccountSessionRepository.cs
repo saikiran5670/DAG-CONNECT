@@ -18,14 +18,13 @@ namespace net.atos.daf.ct2.identitysession.repository
         {
             dataAccess = _dataAccess;
         }
-         public async Task<string> InsertSession(AccountSession accountSession)
+         public async Task<int> InsertSession(AccountSession accountSession)
         {
             try
             {
                 var QueryStatement = @"INSERT INTO  master.accountsession 
                                         (
-                                        id
-                                        ,ip_address
+                                         ip_address
                                         ,last_session_refresh
                                         ,session_started_at
                                         ,sessoin_expired_at
@@ -34,8 +33,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         ,session_id
                                         ) 
                                     VALUES(
-                                        @id
-                                        ,@ip_address
+                                         @ip_address
                                         ,@last_session_refresh
                                         ,@session_started_at
                                         ,@sessoin_expired_at
@@ -45,7 +43,7 @@ namespace net.atos.daf.ct2.identitysession.repository
 
 
                 var parameter = new DynamicParameters();
-                parameter.Add("@id", accountSession.Id);
+                //parameter.Add("@id", accountSession.Id);
                 parameter.Add("@ip_address", accountSession.IpAddress);
                 parameter.Add("@last_session_refresh", accountSession.LastSessionRefresh);
                 parameter.Add("@session_started_at", accountSession.SessionStartedAt);
@@ -54,8 +52,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 parameter.Add("@created_at", accountSession.CreatedAt);
                 parameter.Add("@session_id", accountSession.Session_Id);
                 int sessionID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
-                accountSession.Id = sessionID;
-                return sessionID.ToString();
+                return sessionID;
             }
             catch(Exception ex)
             {
@@ -63,7 +60,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             
         }
-         public async Task<string> UpdateSession(AccountSession accountSession)
+         public async Task<int> UpdateSession(AccountSession accountSession)
         {
             try
             {
@@ -77,7 +74,6 @@ namespace net.atos.daf.ct2.identitysession.repository
                                       ,created_at = @created_at                                       
                                       WHERE id = @Id
                                       RETURNING Id;";
-
                 var parameter = new DynamicParameters();
                 parameter.Add("@Id", accountSession.Id);
                 parameter.Add("@ip_address", accountSession.IpAddress);
@@ -86,16 +82,15 @@ namespace net.atos.daf.ct2.identitysession.repository
                 parameter.Add("@sessoin_expired_at", accountSession.SessionExpiredAt);
                 parameter.Add("@account_id", accountSession.AccountId); 
                 parameter.Add("@created_at", accountSession.CreatedAt);
-                Guid  sessionID= await dataAccess.ExecuteScalarAsync<Guid>(QueryStatement, parameter);
-          
-                return sessionID.ToString();
+                int  sessionID= await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                return sessionID;
             }
             catch(Exception ex)
             {
                 throw ex;
             }
         }
-        public async Task<string> DeleteSession(string SessionId)
+        public async Task<int> DeleteSession(string SessionId)
         {
             try
             {
@@ -108,8 +103,8 @@ namespace net.atos.daf.ct2.identitysession.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", new Guid(SessionId));
                 parameter.Add("@sessoin_expired_at", currentUTCFormate);
-                Guid Id= await dataAccess.ExecuteScalarAsync<Guid>(QueryStatement, parameter);
-                return Id.ToString();
+                int Id= await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                return Id;
             }
             catch(Exception ex)
             {

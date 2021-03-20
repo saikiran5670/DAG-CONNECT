@@ -23,13 +23,13 @@ namespace net.atos.daf.ct2.identity
         }
         public AccountToken CreateToken(AccountIDPClaim customclaims)
         {
-            AccountToken accountToken=new AccountToken();
+            AccountToken accountToken = new AccountToken();
             accountToken.ExpiresIn = customclaims.TokenExpiresIn;
 
             var now = DateTime.Now;
             long unixTimeSecondsIssueAt = new DateTimeOffset(now).ToUnixTimeSeconds();
             long unixTimeSecondsExpiresAt = 0;
-            if(customclaims.TokenExpiresIn > 0)
+            if (customclaims.TokenExpiresIn > 0)
             {
                 unixTimeSecondsExpiresAt = new DateTimeOffset(now.AddSeconds(customclaims.TokenExpiresIn)).ToUnixTimeSeconds();
             }
@@ -40,9 +40,9 @@ namespace net.atos.daf.ct2.identity
             {
                 CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false }
             };
-            
+
             List<Claim> claimList = new List<Claim>();
-            if (unixTimeSecondsExpiresAt>0)
+            if (unixTimeSecondsExpiresAt > 0)
             {
                 //customclaims.ValidTo
                 claimList.Add(new Claim(JwtRegisteredClaimNames.Exp, unixTimeSecondsExpiresAt.ToString()));
@@ -81,7 +81,7 @@ namespace net.atos.daf.ct2.identity
             {
                 claimList.Add(new Claim(JwtRegisteredClaimNames.Azp, customclaims.AuthorizedParty));
             }
-            
+
             foreach (var assertion in customclaims.Assertions)
             {
                 if (!String.IsNullOrEmpty(assertion.Value))
@@ -91,7 +91,7 @@ namespace net.atos.daf.ct2.identity
                     switch (assertion.Key.ToString())
                     {
                         case "session_state":
-                            accountToken.SessionState  = assertion.Value.ToString();
+                            accountToken.SessionState = assertion.Value.ToString();
                             claimList.Add(new Claim("session_state", assertion.Value.ToString()));
                             break;
                         case "scope":
@@ -110,7 +110,7 @@ namespace net.atos.daf.ct2.identity
                 signingCredentials: signingCredentials
             );
             string token = new JwtSecurityTokenHandler().WriteToken(jwt);
-            accountToken.AccessToken = token;            
+            accountToken.AccessToken = token;
             return accountToken;
         }
         public bool ValidateToken(string token)
@@ -184,12 +184,12 @@ namespace net.atos.daf.ct2.identity
                 var claims = jwtToken.Claims;
                 foreach (Claim c in claims)
                 {
-                    if(!string.IsNullOrEmpty(c.Value))
+                    if (!string.IsNullOrEmpty(c.Value))
                     {
                         switch (c.Type)
-                        {                    
+                        {
                             /*Jwt Registered ClaimNames */
-                            case "exp":                           
+                            case "exp":
                                 customclaims.ValidTo = Convert.ToDouble(c.Value);
                                 break;
                             case "iat":
@@ -253,5 +253,5 @@ namespace net.atos.daf.ct2.identity
         public static byte[] ToByteArray(this string value) =>
          Convert.FromBase64String(value);
     }
-    
+
 }

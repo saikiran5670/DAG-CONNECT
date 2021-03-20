@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.identitysession
 {
     public interface IAccountTokenManager
     {
-         Task<string> InsertToken(AccountToken accountToken);
+         Task<int> InsertToken(AccountToken accountToken);
          Task<int> DeleteToken(List<string> token_Id);
          Task<int> DeleteTokenbySessionId(int sessionId);
          Task<IEnumerable<AccountToken>> GetTokenDetails(int AccountID);

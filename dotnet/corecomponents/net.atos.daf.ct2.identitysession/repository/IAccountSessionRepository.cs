@@ -10,9 +10,9 @@ namespace net.atos.daf.ct2.identitysession.repository
    public interface IAccountSessionRepository
     {
    
-        Task<string> InsertSession(AccountSession accountSession);
-        Task<string> UpdateSession(AccountSession accountSession);
-        Task<string> DeleteSession(string SessionId);
+        Task<int> InsertSession(AccountSession accountSession);
+        Task<int> UpdateSession(AccountSession accountSession);
+        Task<int> DeleteSession(string SessionId);
         Task<IEnumerable<AccountSession>> GetAccountSession(int AccountId);
         
     }

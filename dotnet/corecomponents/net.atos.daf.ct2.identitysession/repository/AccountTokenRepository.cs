@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.identitysession.repository
         {
             dataAccess = _dataAccess;
         }
-         public async Task<string> InsertToken(AccountToken accountToken)
+         public async Task<int> InsertToken(AccountToken accountToken)
         {
             try
             {
@@ -49,7 +49,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         ,@scope
                                         ,@idp_type
                                         ,@created_at
-                                        ,@token_id)RETURNING token_id";
+                                        ,@token_id)RETURNING id";
 
                 var parameter = new DynamicParameters();
                 
@@ -64,10 +64,10 @@ namespace net.atos.daf.ct2.identitysession.repository
                 parameter.Add("@scope", accountToken.Scope);
                 parameter.Add("@idp_type", accountToken.IdpType);
                 parameter.Add("@created_at", accountToken.CreatedAt);
-                parameter.Add("@token_id", Guid.NewGuid());
-                
-                Guid tokenId = await dataAccess.ExecuteScalarAsync<Guid>(QueryStatement, parameter);            
-                return tokenId.ToString();
+                parameter.Add("@token_id", accountToken.TokenId);
+
+                int tokenId=await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                return tokenId;
             }
             catch(Exception ex)
             {
