@@ -557,7 +557,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         ///
         [HttpPost]
         [Route("OrgRelationShip/Create")]
-        public async Task<IActionResult> CreateOrgRelationShip(OrganizationRelationShip request)
+        public async Task<IActionResult> CreateOrgRelationShip(OrganizationRelationShipCreate request)
         {
             try
             {

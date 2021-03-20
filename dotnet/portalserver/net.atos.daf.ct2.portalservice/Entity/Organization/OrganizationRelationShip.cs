@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace net.atos.daf.ct2.portalservice.Entity.Organization
 {
    
-        public class OrganizationRelationShip
+        public class OrganizationRelationShipCreate
         {
             public int Id { get; set; }
             public int RelationShipId { get; set; }
