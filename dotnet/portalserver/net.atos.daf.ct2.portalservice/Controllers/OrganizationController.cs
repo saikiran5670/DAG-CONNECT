@@ -556,7 +556,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         ////Organization relationships 
         ///
         [HttpPost]
-        [Route("OrgRelationShip/Create")]
+        [Route("orgrelationship/Create")]
         public async Task<IActionResult> CreateOrgRelationShip(OrganizationRelationShipCreate request)
         {
             try
@@ -605,7 +605,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
-        [Route("OrgRelationShip/EndRelation")]
+        [Route("orgrelationship/EndRelation")]
         public async Task<IActionResult> EndOrganizationRelationShip(int[] Relationshipid)
         {
             try
@@ -640,7 +640,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
-        [Route("OrgRelationShip/AllowChain")]
+        [Route("orgrelationship/AllowChain")]
         public async Task<IActionResult> AllowChaining(ChainingRequest request)
         {
             try
@@ -674,7 +674,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("OrgRelationShip/Getorgrelationdetails")]
+        [Route("orgrelationship/Getorgrelationdetails")]
         public async Task<IActionResult> GetOrganizationDetails(int OrganizationId)
         {
             try
@@ -747,7 +747,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         [HttpGet]
-        [Route("OrgRelationShip/get")]
+        [Route("orgrelationship/get")]
         public async Task<IActionResult> GetRelationshipMapping([FromQuery] OrganizationMappingFilter filterRequest)
         {
             try
