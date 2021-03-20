@@ -82,7 +82,7 @@ namespace net.atos.daf.ct2.vehicledataservice
             .AddJwtBearer(x =>
             {
                 x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
+                x.SaveToken = false;
 
                 RSA rsa = RSA.Create();
                 rsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(Configuration["IdentityConfiguration:RsaPublicKey"]), out _);
