@@ -154,6 +154,7 @@ export class CreateEditUserGroupComponent implements OnInit {
     this.selectedAccounts.clear();
     this.selectTableRows();
     this.setDefaultValue();
+    this.showHideUserList();
   }
 
   onCancel(){

@@ -15,7 +15,7 @@ export class RelationshipManagementComponent implements OnInit {
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  relationshipDisplayedColumns: string[]= ['name', 'features', 'level', 'code', 'description', 'action'];
+  relationshipDisplayedColumns: string[]= ['name', 'features', 'description', 'action'];
   editFlag: boolean = false;
   viewFlag: boolean = false;
   initData: any = [];
@@ -29,7 +29,6 @@ export class RelationshipManagementComponent implements OnInit {
   localStLanguage: any;
   showLoadingIndicator: any;
 
-
   constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private organizationService: OrganizationService) {
     this.defaultTranslation();
    }
@@ -37,6 +36,10 @@ export class RelationshipManagementComponent implements OnInit {
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    if(this.organizationId == 1 || this.organizationId == 2)
+    {
+      this.relationshipDisplayedColumns = ['name', 'features', 'level', 'code', 'description', 'action'];
+    }
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -80,53 +83,6 @@ export class RelationshipManagementComponent implements OnInit {
       });
     }
     }); 
-  }
-
-  mockData(){
-    this.initData = [
-      {
-        name: "Relationship 1",
-        features: 1,
-        level: 'Level 1',
-        code: 'Code 1',
-        description: 'Relationship 1 for relationship 1'
-      },
-      {
-        name: "Relationship 2",
-        features: 2,
-        level: 'Level 2',
-        code: 'Code 2',
-        description: 'Relationship 2 for relationship 1'
-      },
-      {
-        name: "Relationship 3",
-        features: 3,
-        level: 'Level 3',
-        code: 'Code 3',
-        description: 'Relationship 3 for relationship 3'
-      },
-      {
-        name: "Relationship 4",
-        features: 4,
-        level: 'Level 4',
-        code: 'Code 4',
-        description: 'Relationship 4 for relationship 1'
-      },
-      {
-        name: "Relationship 5",
-        features: 5,
-        level: 'Level 5',
-        code: 'Code 5',
-        description: 'Relationship 5 for relationship 5'
-      },
-      {
-        name: "Relationship 6",
-        features: 6,
-        level: 'Level 6',
-        code: 'Code 6',
-        description: 'Relationship 6 for relationship 6'
-      }
-    ]
   }
 
   getNewTagData(data: any){

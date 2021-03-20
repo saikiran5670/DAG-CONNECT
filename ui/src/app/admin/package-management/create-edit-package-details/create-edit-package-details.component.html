@@ -22,17 +22,17 @@
                     <mat-label>{{ translationData.lblPackageCode || 'Package Code' }}</mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
-                            <input  placeholder="{{ translationData.lblEnterPackageCode || 'Enter Package Code ' }}" matInput formControlName="packageCode" maxlength="50" >
+                            <input  placeholder="{{ translationData.lblEnterPackageCode || 'Enter Package Code ' }}" matInput formControlName="code" maxlength="50" >
                         </mat-form-field>
                         <!-- <mat-error *ngIf="packageFormGroup.get('packageCode').hasError('required')">
                             {{ translationData.lblPleaseenterfeaturename || 'Please enter Package code'}}
                         </mat-error> -->
-                        <!-- <mat-error *ngIf="packageFormGroup.get('packageCode').hasError('whitespace')">
+                        <mat-error *ngIf="packageFormGroup.get('code').hasError('whitespace')">
                             {{ translationData.lblPackageCodecannotcontainonlywhitespace || 'Package Code cannot contain only whitespace' }}
-                        </mat-error> -->
+                        </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
-                        <span style='font-weight: 500!important;'>{{ selectedElementData.packageCode }}</span>
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.code }}</span>
                     </div>
                 </div>
                 <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
@@ -72,67 +72,36 @@
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
-                <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                <div class='areaWidth min-width-10-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
                     <mat-label>
                         {{ translationData.lblType || 'Type' }}
-                    </mat-label>
-                    <div *ngIf="actionType != 'view'">
-                    <mat-form-field appearance="outline" class="full-width">
-                        <mat-select matInput formControlName="type" placeholder = "{{ translationData.lblSelectType || 'Select Type' }}">
-                            <mat-option *ngFor="let type of types" [value]="type">
-                                {{type}}
+                    </mat-label> 
+                    <div *ngIf="actionType != 'view'">            
+                        <mat-form-field appearance="outline" class="full-width">
+                          <mat-select placeholder="{{ translationData.lblType || 'Type' }}" formControlName="type">
+                            <mat-option *ngFor="let rer of TypeList" [value]="rer.value">
+                              {{ rer.name }}
                             </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div *ngIf="actionType == 'view'">
-                    <span style='font-weight: 500!important;'>{{ selectedElementData.type }}</span>
-                </div>
+                          </mat-select>
+                        </mat-form-field></div>
+                    <div *ngIf="actionType == 'view'">
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.type }}</span>
+                    </div>
                 </div> 
-                <div class='areaWidth min-width-10-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
-                    <span>{{ translationData.lblStatus || 'Status' }}</span>
+                <div class='areaWidth min-width-60-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
+                    <mat-label>
+                        {{ translationData.lblStatus|| 'Status' }}
+                    </mat-label>
                     <div *ngIf="actionType != 'view'" class='margin-top-5'>
                         <mat-radio-group (change)='onStatusChange($event)'>
-                            <mat-radio-button [checked]="selectedStatus ===  'active' ? true : false" style='margin-right: 20px;' value="active">{{ translationData.lblActive || 'Active' }}
+                            <mat-radio-button [checked]="selectedStatus ===  true ? true : false" style='margin-right: 20px;' value="true">{{ translationData.lblActive || 'Active' }}
                             </mat-radio-button>
-                            <mat-radio-button [checked]="selectedStatus ===  'inactive' ? true : false" style='margin-right: 20px;' value="inactive" >{{ translationData.lblInactive || 'Inactive' }}
+                            <mat-radio-button [checked]="selectedStatus ===  false ? true : false" style='margin-right: 20px;' value="false" >{{ translationData.lblInactive || 'Inactive' }}
                             </mat-radio-button>
                         </mat-radio-group>
                     </div>
                     <div *ngIf="actionType == 'view'">
-                        <span style='font-weight: 500!important;'>{{ selectedElementData.status }}</span>
-                    </div>
-                </div>
-                <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label style='display: flex; place-content: space-between;'>
-                        <span>{{ translationData.lblStartDate || 'Start Date' }}</span>
-                    </mat-label>
-                    <div *ngIf="actionType != 'view'">
-                        <mat-form-field appearance="outline" class="full-width">
-                            <input matInput [matDatepicker]="picker1" placeholder="{{ translationData.lblEnterDescription || 'mm/dd/yyyy' }}" 
-                             >
-                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-                                <mat-datepicker #picker1 disabled="false"></mat-datepicker>
-                        </mat-form-field>
-                    </div>
-                    <div *ngIf="actionType == 'view'">
-                        <span style='font-weight: 500!important;'>{{ selectedElementData.startDate }}</span>
-                    </div>
-                </div>
-                <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label style='display: flex; place-content: space-between;'>
-                        <span>{{ translationData.lblEndDate || 'End Date' }}</span>
-                    </mat-label>
-                    <div *ngIf="actionType != 'view'">
-                        <mat-form-field appearance="outline" class="full-width">
-                            <input matInput [matDatepicker]="picker2" placeholder="{{ translationData.lblEnterDescription || 'mm/dd/yyyy' }}" 
-                                  >
-                                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-                                <mat-datepicker #picker2 disabled="false"></mat-datepicker>
-                        </mat-form-field>
-                    </div>
-                    <div *ngIf="actionType == 'view'">
-                        <span style='font-weight: 500!important;'>{{ selectedElementData.endDate }}</span>
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.status === true ? "Active" : "Inactive" }}</span>
                     </div>
                 </div>
             </div>
@@ -170,37 +139,36 @@
                   </mat-form-field>
                 </div>
             </div>  
-             <div class='margin-bottom-xlg' >
-                <mat-table [dataSource]="dataSource" class="table-items" matSort>
-                  <ng-container matColumnDef="select">
-                    <div>
-                      <mat-header-cell *matHeaderCellDef>
-                        <mat-checkbox (change)='$event ? masterToggleForFeatures() : null'
-                          [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
-                          [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
-                          [aria-label]='checkboxLabelForFeatures()' [disabled]="actionType == 'view'">
-                        </mat-checkbox>
-                        <span style="margin: 5px 0px 0px 5px;" [ngClass]="{'opacity-0-5': actionType == 'view'}">{{ translationData.lblAll || 'All' }}</span>
-                      </mat-header-cell>
-                      <mat-cell *matCellDef="let row">
-                        <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectionForFeatures.toggle(row) : null'
-                          [checked]='selectionForFeatures.isSelected(row)' [aria-label]='checkboxLabelForFeatures(row)' [disabled]="actionType == 'view'">
-                        </mat-checkbox>
-                      </mat-cell>
-                    </div>
-                  </ng-container>
-                  <ng-container matColumnDef="featureName">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatureName || 'Feature Name' }}</mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      {{ row.featureName }}
-                    </mat-cell>
-                  </ng-container>
-                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                  <mat-row *matRowDef="let row; columns: displayedColumns;">
-                  </mat-row>
-                </mat-table>
-                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
-              </div> 
+              <div fxLayout="row" class='margin-top-xlg'>
+                <div fxLayout="column" class='full-width'>
+                    <mat-table [dataSource]="dataSource" matSort>      
+                        <ng-container matColumnDef="name">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatureName || 'Feature Name'}}</mat-header-cell>
+                            <mat-cell *matCellDef="let row; let index"> {{row.name}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="select">
+                            <mat-header-cell *matHeaderCellDef>{{ translationData.lblAccess || 'Access'}}
+                                <mat-slide-toggle color="primary" (change)='$event ? masterToggleForFeatures() : null;' [disabled]="viewFlag"
+                                  [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
+                                  [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
+                                  [aria-label]='checkboxLabelForFeatures()'>
+                                </mat-slide-toggle>
+                              </mat-header-cell>
+                              <mat-cell *matCellDef="let row">
+                                <mat-slide-toggle color="primary" (click)='$event.stopPropagation()' [disabled]="viewFlag"
+                                  (change)='$event ? selectionForFeatures.toggle(row) : null;'
+                                  [checked]='selectionForFeatures.isSelected(row)'
+                                  [aria-label]='checkboxLabelForFeatures(row)'>
+                                </mat-slide-toggle>
+                              </mat-cell>
+                        </ng-container> 
+                        <mat-header-row *matHeaderRowDef="featureDisplayedColumns"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: featureDisplayedColumns;">
+                        </mat-row>
+                    </mat-table>
+                    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+                </div>
+            </div>
         </mat-card-content>
     </mat-card>
 </form>

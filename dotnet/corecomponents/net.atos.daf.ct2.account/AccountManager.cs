@@ -162,6 +162,10 @@ namespace net.atos.daf.ct2.account
         {
             return await repository.Get(filter);
         }
+        public async Task<int> GetCount(int organization_id)
+        {
+            return await repository.GetCount(organization_id);
+        }        
         public async Task<Account> AddAccountToOrg(Account account)
         {
             return await repository.AddAccountToOrg(account);

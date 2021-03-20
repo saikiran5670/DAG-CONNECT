@@ -318,7 +318,7 @@ namespace net.atos.daf.ct2.portalservice.Account
             {
                 foreach (var account in request.AccountAccessRelationship)
                 {
-                    response.Vehicle.Add(ToAccessRelationship(account));
+                    response.Account.Add(ToAccessRelationship(account));
                 }
             }
             return response;

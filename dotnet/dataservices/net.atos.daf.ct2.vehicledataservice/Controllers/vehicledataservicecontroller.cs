@@ -150,7 +150,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     //Vehicle Classification
                     vehicleProperties.Classification_Make = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Make.Trim();
                     vehicleProperties.Classification_Series_Id = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.ID.Trim();
-                    if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange != "LF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange != "XF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange != "CF")
+                    if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange != "LF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange != "XF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange != "CF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange !=null )
                     {
                         //vehicleProperties.Classification_Series_VehicleRange = null;
                         return StatusCode(400, string.Empty);

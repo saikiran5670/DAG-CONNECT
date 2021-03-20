@@ -7,6 +7,7 @@ import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { PackageService } from 'src/app/services/package.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-package-management',
@@ -18,7 +19,7 @@ export class PackageManagementComponent implements OnInit {
   packageRestData: any = [];
   displayedColumns = ['code','name', 'type', 'status', 'action'];
   selectedElementData: any;
-  featureList: any = [];
+  features: any = [];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   titleVisible : boolean = false;
@@ -37,7 +38,8 @@ export class PackageManagementComponent implements OnInit {
       private translationService: TranslationService,
       private packageService: PackageService, 
       private dialogService: ConfirmDialogService, 
-      private dialog: MatDialog
+      private dialog: MatDialog,
+      private _snackBar: MatSnackBar
     ) { 
     this.defaultTranslation();
   }
@@ -112,15 +114,19 @@ export class PackageManagementComponent implements OnInit {
   }
 
   createNewPackage(){
+   
     this.actionType = 'create';
     this.createEditViewPackageFlag = true;
+
   }
 
-  editViewFeature(rowData: any, type: any){
+  editViewPackage(rowData: any, type: any){
     this.actionType = type;
     this.selectedElementData = rowData;
     this.createEditViewPackageFlag = true;
   }
+
+  
 
   changePackageStatus(rowData: any){
     const options = {
@@ -128,7 +134,7 @@ export class PackageManagementComponent implements OnInit {
       message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
       cancelText: this.translationData.lblNo || "No",
       confirmText: this.translationData.lblYes || "Yes",
-      status: rowData.status == '1' ? 'Inactive' : 'Active' ,
+      status: rowData.status == true ? 'Inactive' : 'Active' ,
       name: rowData.name
     };
     const dialogConfig = new MatDialogConfig();
@@ -143,7 +149,8 @@ export class PackageManagementComponent implements OnInit {
     });
   }
 
-  deleteFeature(rowData: any){
+  deletePackage(rowData: any){
+    let packageId = rowData.id;
     const options = {
       title: this.translationData.lblDelete || "Delete",
       message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
@@ -153,8 +160,22 @@ export class PackageManagementComponent implements OnInit {
     this.dialogService.DeleteModelOpen(options, rowData.name);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
+      this.packageService.deletePackage(packageId).subscribe((data) => {
+        this.openSnackBar('Item delete', 'dismiss');
+        this.loadPackageData();
+      })
         this.successMsgBlink(this.getDeletMsg(rowData.name));
       }
+    });
+  }
+
+  openSnackBar(message: string, action: string) {
+    let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
+    snackBarRef.afterDismissed().subscribe(() => {
+      console.log('The snackbar is dismissed');
+    });
+    snackBarRef.onAction().subscribe(() => {
+      console.log('The snackbar action was triggered!');
     });
   }
 

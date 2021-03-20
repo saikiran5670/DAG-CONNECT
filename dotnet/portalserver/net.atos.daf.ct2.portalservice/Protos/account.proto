@@ -40,8 +40,10 @@ service AccountService
 
   rpc CreateVehicleAccessRelationship (VehicleAccessRelationship) returns (ServiceResponse);
   rpc UpdateVehicleAccessRelationship (VehicleAccessRelationship) returns (ServiceResponse);
+  rpc DeleteVehicleAccessRelationship (DeleteAccessRelationRequest) returns (ServiceResponse);  
   rpc CreateAccountAccessRelationship (AccountAccessRelationship) returns (ServiceResponse);
   rpc UpdateAccountAccessRelationship (AccountAccessRelationship) returns (ServiceResponse);
+  rpc DeleteAccountAccessRelationship (DeleteAccessRelationRequest) returns (ServiceResponse);
   rpc GetAccessRelationship (AccessRelationshipFilter) returns (AccessRelationshipResponse);
   rpc GetAccountsVehicles (AccessRelationshipFilter) returns (AccountVehiclesResponse);
   
@@ -467,5 +469,11 @@ message AccountVehiclesResponse {
     string Message=2;
     repeated AccountVehicles VehiclesVehicleGroup = 3;
     repeated AccountVehicles AccountsAccountGroups = 4;
+}
+message DeleteAccessRelationRequest
+{
+    int32 Id=1;    
+    bool IsGroup=2;    
+    int32 OrganizationId=3;    
 }
 // end - vehicle-account access relatioship
