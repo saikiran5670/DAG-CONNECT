@@ -79,36 +79,38 @@ namespace net.atos.daf.ct2.portalservice.Account
     }
     public class ResetPasswordInitiateRequest
     {
-        [Required]
-        [RegularExpression(@"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", ErrorMessage = "The field EmailId must be in proper format.")]
+        [Required(ErrorMessage = "")]
+        [RegularExpression(@"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", ErrorMessage = "")]
+        [StringLength(50, MinimumLength = 1, ErrorMessage = "")]
         public string EmailId { get; set; }
     }
 
     public class ResetPasswordRequest
     {
-        [Required]
-        [StringLength(36, MinimumLength = 36, ErrorMessage = "The field ResetToken must be a string with a length of 36 characters.")]
+        [Required(ErrorMessage = "")]
+        [StringLength(36, MinimumLength = 36, ErrorMessage = "")]
         public string ProcessToken { get; set; }
-        [Required]
+        [Required(ErrorMessage = "")]
         public string Password { get; set; }
     }
 
     public class ResetPasswordInvalidateRequest
     {
-        [Required]
-        [StringLength(36, MinimumLength = 36, ErrorMessage = "The field ResetToken must be a string with a length of 36 characters.")]
+        [Required(ErrorMessage = "")]
+        [StringLength(36, MinimumLength = 36, ErrorMessage = "")]
         public string ResetToken { get; set; }
     }
 
     public class MenuFeatureRequest
     {
-        [Required]
+        [Required(ErrorMessage = "")]
         public int AccountId { get; set; }
-        [Required]
+        [Required(ErrorMessage = "")]
         public int RoleId { get; set; }
-        [Required]
+        [Required(ErrorMessage = "")]
         public int OrganizationId { get; set; }
-        [Required]
+        [Required(ErrorMessage = "")]
+        [StringLength(8, MinimumLength = 2, ErrorMessage = "")]
         public string LanguageCode { get; set; }
     }
 }
