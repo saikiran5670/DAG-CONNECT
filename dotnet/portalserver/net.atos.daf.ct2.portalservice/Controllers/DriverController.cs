@@ -51,6 +51,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "Please provide organization ID:");
                 }
                 DriverBusinessService.DriverDataList drvResponse = await driverClient.GetAsync(idRequest);
+                if (drvResponse.Code == DriverBusinessService.Responcecode.NotFound)
+                {
+                    return StatusCode(404, "Driver not found");
+                }
+
                 return Ok(drvResponse.Driver);
             }
             catch (Exception ex)

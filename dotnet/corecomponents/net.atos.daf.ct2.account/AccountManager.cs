@@ -422,6 +422,11 @@ namespace net.atos.daf.ct2.account
             return await repository.GetMenuFeaturesList(accountId, roleId, organizationId, languageCode);
         }
 
+        public async Task<bool> CheckForFeatureAccessByEmailId(string emailId, string featureName)
+        {
+            return await repository.CheckForFeatureAccessByEmailId(emailId, featureName);
+        }
+
         #region Private Helper Methods
 
         private async Task<bool> SetPasswordViaEmail(Account account)

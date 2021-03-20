@@ -156,6 +156,7 @@ message VehicleGroupRequest{
   repeated VehicleGroupRef GroupRef = 8;
   bool Exists=9;
   int64 CreatedAt=10;
+  string FunctionEnum = 11;
 }
 
 message VehicleGroupRef{

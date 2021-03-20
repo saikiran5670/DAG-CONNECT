@@ -25,6 +25,11 @@ using Microsoft.OpenApi.Models;
 using net.atos.daf.ct2.group;
 using Subscription = net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.repository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using net.atos.daf.ct2.vehicledataservice.CustomAttributes;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
 
 namespace net.atos.daf.ct2.vehicledataservice
 {
@@ -42,6 +47,12 @@ namespace net.atos.daf.ct2.vehicledataservice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            .ConfigureApiBehaviorOptions(options => {
+                options.InvalidModelStateResponseFactory = actionContext => {
+                    return CustomErrorResponse(actionContext);
+                };
+            });
             var connectionString = Configuration.GetConnectionString("ConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);           
             services.AddSingleton(dataAccess); 
@@ -73,6 +84,55 @@ namespace net.atos.daf.ct2.vehicledataservice
             //    options.Filters.Add(new ProducesAttribute("application/json"));
             //});
 
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = false;
+
+                RSA rsa = RSA.Create();
+                rsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(Configuration["IdentityConfiguration:RsaPublicKey"]), out _);
+                SecurityKey key = new RsaSecurityKey(rsa)
+                {
+                    CryptoProviderFactory = new CryptoProviderFactory()
+                    {
+                        CacheSignatureProviders = false
+                    }
+                };
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Configuration["IdentityConfiguration:Issuer"],
+                    IssuerSigningKey = key,
+                    CryptoProviderFactory = new CryptoProviderFactory()
+                    {
+                        CacheSignatureProviders = false
+                    }
+                };
+
+                x.Events = new JwtBearerEvents()
+                {
+                    OnTokenValidated = context =>
+                    {
+                        context.HttpContext.User = context.Principal;
+                        return Task.CompletedTask;
+                    }
+                };
+            });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(
+                    AccessPolicies.MainAccessPolicy,
+                    policy => policy.RequireAuthenticatedUser()
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MainAccessPolicy)));
+            });
+
+            services.AddSingleton<IAuthorizationHandler, AuthorizeHandler>();
+
             services.AddSwaggerGen(c =>
             {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Vehicle Data Service", Version = "v1" });
@@ -91,7 +151,9 @@ namespace net.atos.daf.ct2.vehicledataservice
 
             app.UseHttpsRedirection();
 
-            app.UseRouting();           
+            app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
@@ -112,5 +174,13 @@ namespace net.atos.daf.ct2.vehicledataservice
             });
 
         }
+
+        private BadRequestObjectResult CustomErrorResponse(ActionContext actionContext)
+        {
+            return new BadRequestObjectResult(actionContext.ModelState
+            .Where(modelError => modelError.Value.Errors.Count > 0)
+            .Select(modelError => string.Empty).FirstOrDefault());
+        }
+
     }
 }

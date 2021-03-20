@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.featureactivationservice.CustomAttributes;
 using net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.entity;
 using AccountComponent = net.atos.daf.ct2.account;
@@ -14,6 +16,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
 {
     [ApiController]
     [Route("subscription")]
+    [Authorize(Policy = AccessPolicies.MainAccessPolicy)]
     public class FeatureActivationController : ControllerBase
     {
         private readonly ILogger<FeatureActivationController> logger;
@@ -34,50 +37,28 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
         [Route("subscribe")]
         public async Task<IActionResult> Subscription(SubscriptionActivation objsubscriptionActivation)
         {
-            string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            bool valid = false;
             try
-            {
-                if (string.IsNullOrEmpty(token))
+            {                
+                if (string.IsNullOrEmpty(objsubscriptionActivation.OrganizationId))
                 {
-                    logger.LogInformation($"Subscription function called with empty token, with Package Id - {objsubscriptionActivation.packageId}");
-                    return BadRequest();
+                    return StatusCode(400, string.Empty);
                 }
-                else
+                else if (string.IsNullOrEmpty(objsubscriptionActivation.packageId))
                 {
-                    logger.LogInformation($"Subscription function called , with Package Id - {objsubscriptionActivation.packageId}");
-                    valid = await accountIdentityManager.ValidateToken(token);
-                    if (valid)
-                    {
-                        if (string.IsNullOrEmpty(objsubscriptionActivation.OrganizationId))
-                        {
-                            return StatusCode(400, string.Empty);
-                        }
-                        else if (string.IsNullOrEmpty(objsubscriptionActivation.packageId))
-                        {
-                            return StatusCode(400, string.Empty);
-                        }
-
-
-                        var order = await subscriptionManager.Subscribe(objsubscriptionActivation);
-                        if (order == null)
-                        {
-                            logger.LogInformation($"No Data found for Subscription, payload - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation)}");
-                            return StatusCode(400, string.Empty);
-                        }
-                        logger.LogInformation($"Subscription data has been Inserted, order ID - {order.orderId}");
-                        return Ok(order);
-                    }
-                    else
-                    {
-                        logger.LogInformation($"Subscription function called with invalid Token, with Package Id - {objsubscriptionActivation.packageId}");
-                        return StatusCode(401, string.Empty);
-                    }
+                    return StatusCode(400, string.Empty);
                 }
+
+                var order = await subscriptionManager.Subscribe(objsubscriptionActivation);
+                if (order == null)
+                {
+                    logger.LogInformation($"No Data found for Subscription, payload - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation)}");
+                    return StatusCode(400, string.Empty);
+                }
+                logger.LogInformation($"Subscription data has been Inserted, order ID - {order.orderId}");
+                return Ok(order);
             }
             catch (Exception ex)
             {
-                valid = false;
                 logger.LogError(ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, string.Empty);
             }
@@ -87,48 +68,27 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
         [Route("unsubscribe")]
         public async Task<IActionResult> UnSubscribe(UnSubscription objUnSubscription)
         {
-            string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            bool valid = false;
             try
             {
-                if (string.IsNullOrEmpty(token))
+                if (string.IsNullOrEmpty(objUnSubscription.OrganizationID))
                 {
-                    logger.LogInformation($"UnSubscription function called with empty token, with Package Id - {objUnSubscription.OrderID}");
-                    return BadRequest();
+                    return StatusCode(400, string.Empty);
                 }
-                else
+                else if (string.IsNullOrEmpty(objUnSubscription.PackageId))
                 {
-                    logger.LogInformation($"UnSubscription function called , with Package Id - {objUnSubscription.OrderID}");
-                    valid = await accountIdentityManager.ValidateToken(token);
-                    if (valid)
-                    {
-                        if (string.IsNullOrEmpty(objUnSubscription.OrganizationID))
-                        {
-                            return StatusCode(400, string.Empty);
-                        }
-                        else if (string.IsNullOrEmpty(objUnSubscription.PackageId))
-                        {
-                            return StatusCode(400, string.Empty);
-                        }
-                        var orderId = await subscriptionManager.Unsubscribe(objUnSubscription);
-                        if (orderId == null)
-                        {
-                            logger.LogInformation($"No Data found for UnSubscription, payload - {Newtonsoft.Json.JsonConvert.SerializeObject(objUnSubscription)}");
-                            return StatusCode(400, string.Empty);
-                        }
-                        logger.LogInformation($"Subscription data has been UnSubscribed, order ID - {orderId}");
-                        return Ok(orderId);
-                    }
-                    else
-                    {
-                        logger.LogInformation($"Subscription function called with invalid Token, with Package Id - {objUnSubscription.OrderID}");
-                        return StatusCode(401, string.Empty);
-                    }
+                    return StatusCode(400, string.Empty);
                 }
+                var orderId = await subscriptionManager.Unsubscribe(objUnSubscription);
+                if (orderId == null)
+                {
+                    logger.LogInformation($"No Data found for UnSubscription, payload - {Newtonsoft.Json.JsonConvert.SerializeObject(objUnSubscription)}");
+                    return StatusCode(400, string.Empty);
+                }
+                logger.LogInformation($"Subscription data has been UnSubscribed, order ID - {orderId}");
+                return Ok(orderId);                    
             }
             catch (Exception ex)
             {
-                valid = false;
                 logger.LogError(ex.Message + " " + ex.StackTrace);
                 return StatusCode(500,string.Empty);
             }
