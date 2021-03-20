@@ -47,74 +47,67 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
         }
 
         [HttpPost]
-        [Route("update")]        
+        [Route("update")]
         public async Task<IActionResult> update(Customer customer)
         {
             try
             {
-                if (ModelState.IsValid)
+                CustomerRequest customerRequest = new CustomerRequest();
+                customerRequest.CompanyType = customer.CompanyUpdatedEvent.Company.type;
+                customerRequest.CustomerID = customer.CompanyUpdatedEvent.Company.ID;
+                customerRequest.CustomerName = customer.CompanyUpdatedEvent.Company.Name;
+                customerRequest.AddressType = customer.CompanyUpdatedEvent.Company.Address.Type;
+                customerRequest.Street = customer.CompanyUpdatedEvent.Company.Address.Street;
+                customerRequest.StreetNumber = customer.CompanyUpdatedEvent.Company.Address.StreetNumber;
+                customerRequest.PostalCode = customer.CompanyUpdatedEvent.Company.Address.PostalCode;
+                customerRequest.City = customer.CompanyUpdatedEvent.Company.Address.City;
+                customerRequest.CountryCode = customer.CompanyUpdatedEvent.Company.Address.CountryCode;
+                customerRequest.ReferenceDateTime = customer.CompanyUpdatedEvent.Company.ReferenceDateTime;
+
+                // Configuarable values   
+                customerRequest.OrgCreationPackage = Configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value;
+
+                string dateformat = "yyyy-mm-ddThh:mm:ss";
+                DateTime parsed;
+                if (!(DateTime.TryParseExact(Convert.ToString(customerRequest.ReferenceDateTime), dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed)))
                 {
-                    CustomerRequest customerRequest = new CustomerRequest();
-                    customerRequest.CompanyType = customer.CompanyUpdatedEvent.Company.type;
-                    customerRequest.CustomerID = customer.CompanyUpdatedEvent.Company.ID;
-                    customerRequest.CustomerName = customer.CompanyUpdatedEvent.Company.Name;
-                    customerRequest.AddressType = customer.CompanyUpdatedEvent.Company.Address.Type;
-                    customerRequest.Street = customer.CompanyUpdatedEvent.Company.Address.Street;
-                    customerRequest.StreetNumber = customer.CompanyUpdatedEvent.Company.Address.StreetNumber;
-                    customerRequest.PostalCode = customer.CompanyUpdatedEvent.Company.Address.PostalCode;
-                    customerRequest.City = customer.CompanyUpdatedEvent.Company.Address.City;
-                    customerRequest.CountryCode = customer.CompanyUpdatedEvent.Company.Address.CountryCode;
-                    customerRequest.ReferenceDateTime = customer.CompanyUpdatedEvent.Company.ReferenceDateTime;
+                    var regx = new Regex("[^a-zA-Z0-9_.]");
+                    if ((
+                            // Mandatory validation
+                            (string.IsNullOrEmpty(customerRequest.CompanyType) || (customerRequest.CompanyType.Trim().Length < 1)) || (customerRequest.CompanyType.Trim().Length > 50)) //|| (regx.IsMatch(customerRequest.CompanyType))
+                            || ((string.IsNullOrEmpty(customerRequest.CustomerID) || (customerRequest.CustomerID.Trim().Length < 1) || (customerRequest.CustomerID.Trim().Length > 100)) //|| (regx.IsMatch(customerRequest.CustomerID)))
+                            || ((string.IsNullOrEmpty(customerRequest.CustomerName) || (customerRequest.CustomerName.Trim().Length < 1) || (customerRequest.CustomerName.Trim().Length > 100)) // || (regx.IsMatch(customerRequest.CustomerName))
+                            || (string.IsNullOrEmpty(Convert.ToString(customerRequest.ReferenceDateTime).Trim())) || (Convert.ToString(customerRequest.ReferenceDateTime).Trim().Length < 1))
 
-                    // Configuarable values   
-                    customerRequest.OrgCreationPackage = Configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value;
-
-                    string dateformat = "yyyy-mm-ddThh:mm:ss";
-                    DateTime parsed;
-                    if (!(DateTime.TryParseExact(Convert.ToString(customerRequest.ReferenceDateTime), dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed)))
+                            //Length validation
+                            || ((customerRequest.AddressType.Trim().Length > 50))
+                            || ((customerRequest.Street.Trim().Length > 50))
+                            || ((customerRequest.StreetNumber.Trim().Length > 50))
+                            || ((customerRequest.PostalCode.Trim().Length > 15))
+                            || ((customerRequest.City.Trim().Length > 50))
+                            || ((customerRequest.CountryCode.Trim().Length > 20))
+                        ))
                     {
-                        var regx = new Regex("[^a-zA-Z0-9_.]");
-                        if ((
-                                // Mandatory validation
-                                (string.IsNullOrEmpty(customerRequest.CompanyType) || (customerRequest.CompanyType.Trim().Length < 1)) || (customerRequest.CompanyType.Trim().Length > 50)) //|| (regx.IsMatch(customerRequest.CompanyType))
-                                || ((string.IsNullOrEmpty(customerRequest.CustomerID) || (customerRequest.CustomerID.Trim().Length < 1) || (customerRequest.CustomerID.Trim().Length > 100)) //|| (regx.IsMatch(customerRequest.CustomerID)))
-                                || ((string.IsNullOrEmpty(customerRequest.CustomerName) || (customerRequest.CustomerName.Trim().Length < 1) || (customerRequest.CustomerName.Trim().Length > 100)) // || (regx.IsMatch(customerRequest.CustomerName))
-                                || (string.IsNullOrEmpty(Convert.ToString(customerRequest.ReferenceDateTime).Trim())) || (Convert.ToString(customerRequest.ReferenceDateTime).Trim().Length < 1))
-
-                                //Length validation
-                                || ((customerRequest.AddressType.Trim().Length > 50))
-                                || ((customerRequest.Street.Trim().Length > 50))
-                                || ((customerRequest.StreetNumber.Trim().Length > 50))
-                                || ((customerRequest.PostalCode.Trim().Length > 15))
-                                || ((customerRequest.City.Trim().Length > 50))
-                                || ((customerRequest.CountryCode.Trim().Length > 20))
-                            ))
-                        {
-                            return StatusCode(400, string.Empty);
-                        }
-                        else
-                        {
-                            await organizationtmanager.UpdateCustomer(customerRequest);
-                            logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
-                            return Ok();
-                        }
+                        return StatusCode(400, string.Empty);
                     }
                     else
                     {
-                        return StatusCode(400, string.Empty);
+                        await organizationtmanager.UpdateCustomer(customerRequest);
+                        logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
+                        return Ok();
                     }
                 }
                 else
                 {
-                    var errors = ModelState.SelectMany(x => x.Value.Errors.Select(z => z.Exception));
-                    return StatusCode(500, errors);
+                    return StatusCode(400, string.Empty);
                 }
+
             }
             catch (Exception ex)
             {
                 logger.LogError(ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, string.Empty);
-            }            
+            }
         }
 
         [HttpPost]

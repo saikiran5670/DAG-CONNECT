@@ -66,5 +66,10 @@ namespace net.atos.daf.ct2.organization
         {
             return await organizationRepository.Get(request);
         }
+        public async Task<int> IsOwnerRelationshipExist(int VehicleID)
+        {
+            return await organizationRepository.IsOwnerRelationshipExist(VehicleID);
+        }
+       
     }
 }
