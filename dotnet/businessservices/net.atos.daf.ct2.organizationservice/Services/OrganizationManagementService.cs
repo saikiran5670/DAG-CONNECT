@@ -214,7 +214,7 @@ namespace net.atos.daf.ct2.organizationservice
                         objRelationship.owner_org_id = request.OwnerOrId;
                         objRelationship.created_org_id = request.CreatedOrgId;
                         objRelationship.target_org_id = organization;
-                        objRelationship.allow_chain = true;
+                        objRelationship.allow_chain = request.AllowChain;
                         var orgrelationid = await _relationshipManager.CreateRelationShipMapping(objRelationship);
                         request.OrgRelationId = orgrelationid;
 
