@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrganizationBusinessService = net.atos.daf.ct2.organizationservice;
+using VehicleBusinessService = net.atos.daf.ct2.vehicleservice;
 using net.atos.daf.ct2.portalservice.Entity.Organization;
 using AccountBusinessService = net.atos.daf.ct2.accountservice;
 using net.atos.daf.ct2.portalservice.Account;
@@ -26,13 +27,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly RelationshipMapper _relationshipMapper;
         private readonly AccountBusinessService.AccountService.AccountServiceClient _accountClient;
         private readonly OrganizationBusinessService.OrganizationService.OrganizationServiceClient organizationClient;
+        private readonly VehicleBusinessService.VehicleService.VehicleServiceClient _vehicleClient;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
 
         public OrganizationController(ILogger<OrganizationController> _logger,
                                       OrganizationService.OrganizationServiceClient _organizationClient,
                                       AccountBusinessService.AccountService.AccountServiceClient accountClient,
-                                      FeatureService.FeatureServiceClient featureclient)
+                                      FeatureService.FeatureServiceClient featureclient,
+                                      VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient)
         {
             logger = _logger;
             organizationClient = _organizationClient;
@@ -40,6 +43,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _mapper = new OrganizationMapper();
             _relationshipMapper = new RelationshipMapper();
             _featureSetMapper = new FeatureSetMapper(featureclient);
+            _vehicleClient = vehicleClient;
         }
 
 
@@ -553,11 +557,31 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         ///
         [HttpPost]
         [Route("OrgRelationShip/Create")]
-        public async Task<IActionResult> CreateOrgRelationShip(OrgRelationshipCreateRequest request)
+        public async Task<IActionResult> CreateOrgRelationShip(OrganizationRelationShip request)
         {
             try
             {
-                var CreateResponce = await organizationClient.CreateOrgRelationshipAsync(request);
+
+                if ((request.TargetOrgId.Count() <= 0))
+                {
+                    return StatusCode(400, "Select atleast 1 organization");
+                }
+                if (request.VehicleGroupId.Count() <= 0)
+                {
+                    return StatusCode(400, "Select atleast 1 Vehicle group");
+                }
+                if (request.RelationShipId == 0)
+                {
+                    return StatusCode(400, "RelationShip id required.");
+                }
+                OrgRelationshipCreateRequest objRelationship = new OrgRelationshipCreateRequest();
+                objRelationship.RelationShipId = request.RelationShipId;
+                objRelationship.VehicleGroupID.Add(request.VehicleGroupId);
+                objRelationship.OwnerOrId = request.OwnerOrgId;
+                objRelationship.CreatedOrgId = request.CreatedOrgId;
+                objRelationship.TargetOrgId.Add(request.TargetOrgId);
+                objRelationship.AllowChain = request.allow_chain;
+                var CreateResponce = await organizationClient.CreateOrgRelationshipAsync(objRelationship);
                 if (CreateResponce.Code == OrganizationBusinessService.Responcecode.Success)
                 {
                     return Ok(CreateResponce);
@@ -582,10 +606,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPost]
         [Route("OrgRelationShip/EndRelation")]
-        public async Task<IActionResult> EndOrganizationRelationShip(EndOrgRelationShipRequest request)
+        public async Task<IActionResult> EndOrganizationRelationShip(int[] Relationshipid)
         {
             try
             {
+                if (Relationshipid.Count() <= 0)
+                {
+                    return StatusCode(400, "Select atleast 1 relationship");
+                }
+                EndOrgRelationShipRequest request = new EndOrgRelationShipRequest();
+                request.OrgRelationShipid.Add(Relationshipid);
                 var UpdateResponce = await organizationClient.EndOrgRelationShipAsync(request);
                 if (UpdateResponce.Code == OrganizationBusinessService.Responcecode.Success)
                 {
@@ -615,6 +645,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                if (request.OrgRelationID == 0)
+                {
+                    return StatusCode(400, "Select atleast 1 organization");
+                }
+              
                 var UpdateResponce = await organizationClient.AllowChainingAsync(request);
                 if (UpdateResponce.Code == OrganizationBusinessService.Responcecode.Success)
                 {
@@ -624,6 +659,80 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Error in creating relationships");
                 }
+
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Error in account service:Allow chaining with exception - " + ex.Message + ex.StackTrace);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpGet]
+        [Route("OrgRelationShip/Getorgrelationdetails")]
+        public async Task<IActionResult> GetOrganizationDetails(int OrganizationId)
+        {
+            try
+            {
+                //if (OrganizationId == 0)
+                //{
+                //    return StatusCode(400, "Select atleast 1 organization");
+                //}
+
+                //get vehicle group
+                VehicleBusinessService.OrgvehicleIdRequest orgvehicleIdRequest = new VehicleBusinessService.OrgvehicleIdRequest();
+                orgvehicleIdRequest.OrganizationId = Convert.ToInt32(OrganizationId);
+                orgvehicleIdRequest.VehicleId = Convert.ToInt32(0);
+                VehicleBusinessService.VehicleGroupDetailsResponse response = await _vehicleClient.GetVehicleGroupAsync(orgvehicleIdRequest);
+
+                VehicleBusinessService.OrganizationIdRequest OrganizationIdRequest = new VehicleBusinessService.OrganizationIdRequest();
+                OrganizationIdRequest.OrganizationId = Convert.ToInt32(OrganizationId);
+                VehicleBusinessService.OrgVehicleGroupListResponse Vehicleresponse = await _vehicleClient.GetOrganizationVehicleGroupdetailsAsync(OrganizationIdRequest);
+                //get Organizations List
+                var idRequest = new IdRequest();
+                idRequest.Id = OrganizationId;
+                var OrganizationList = await organizationClient.GetAllAsync(idRequest);
+                // Get Relations
+                RelationshipCreateRequest request = new RelationshipCreateRequest();
+                var RelationList = await organizationClient.GetRelationshipAsync(request);
+
+                //var result = _relationshipMapper.MaprelationData(RelationList.RelationshipList, response, OrganizationList.OrganizationList);
+
+                RelationShipMappingDetails details = new RelationShipMappingDetails();
+                details.VehicleGroup = new List<VehileGroupData>();
+                details.OrganizationData = new List<OrganizationData>();
+                details.RelationShipData = new List<RelationshipData>();
+                foreach (var item in Vehicleresponse.OrgVehicleGroupList.Where(I=> I.IsGroup == true))
+                {
+                    
+                    details.VehicleGroup.Add(new VehileGroupData
+                        { VehiclegroupID = Convert.ToInt32(item.VehicleGroupId == null ? 0 : item.VehicleGroupId),
+                            GroupName=item.VehicleGroupName});
+                }
+                foreach (var item in OrganizationList.OrganizationList)
+                {
+                    
+                    details.OrganizationData.Add(new OrganizationData
+                    {
+                        OrganizationId = Convert.ToInt32(item.Id),
+                        OrganizationName = item.Name
+                    });
+                }
+                foreach (var item in RelationList.RelationshipList)
+                {
+                    
+                    details.RelationShipData.Add(new RelationshipData
+                    {
+                        RelationId = Convert.ToInt32(item.Id),
+                        RelationName = item.Name
+                    });
+                }
+                return Ok(details);
 
             }
             catch (Exception ex)

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using VehicleBusinessService = net.atos.daf.ct2.vehicleservice;
 namespace net.atos.daf.ct2.portalservice.Entity.Organization
 {
     public class RelationshipMapper
@@ -28,5 +28,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
         {
             throw new NotImplementedException();
         }
+        
+        //public dynamic MaprelationData(List<RelationshipPortalRequest> request, VehicleBusinessService.VehicleGroupDetailsResponse VehicleResponce, List<OrgGetResponse> Organizations)
+        //{
+            
+        //}
     }
 }
