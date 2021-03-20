@@ -394,7 +394,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> GetAll(int organizationId)
         {
             try
-            {               
+            {
                 var idRequest = new IdRequest();
                 idRequest.Id = organizationId;
                 logger.LogInformation("Organization get all function called ");
@@ -403,7 +403,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.Message + " " + ex.StackTrace);             
+                logger.LogError(ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -564,9 +564,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500,"Error in creating relationships");
+                    return StatusCode(500, "Error in creating relationships");
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -634,6 +634,33 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        [HttpGet]
+        [Route("OrgRelationShip/get")]
+        public async Task<IActionResult> GetRelationshipMapping([FromQuery] OrganizationMappingFilter filterRequest)
+        {
+            try
+            {
+                var request = new OrgRelationshipMappingGetRequest()
+                {
+                    Id = filterRequest.Id,
+                    TargetOrgId = filterRequest.target_org_id,
+                    CreatedOrgId = filterRequest.created_org_id,
+                    RelationShipId = filterRequest.relationship_id,
+                    VehicleGroupID = filterRequest.vehicle_group_id
+                };
+                logger.LogInformation("Organization relationship mapping get function called ");
+                var orgResponse = await organizationClient.GetOrgRelationshipMappingAsync(request);
+                //orgResponse.RelationshipList.Where(S => S.Featuresetid > 0)
+                //                               .Select(S => { S.FeatureIds.AddRange(_featureSetMapper.GetFeatureIds(S.Featuresetid).Result); return S; }).ToList();
+                return Ok(orgResponse);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message + " " + ex.StackTrace);
+
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }

@@ -382,7 +382,7 @@ namespace net.atos.daf.ct2.relationship.repository
             relationship.allow_chain = record.allow_chain != null ? record.allow_chain : false;
             relationship.OrganizationName = !string.IsNullOrEmpty(record.orgname) ? record.orgname : string.Empty;
             relationship.RelationshipName = !string.IsNullOrEmpty(record.relationshipname) ? record.relationshipname : string.Empty;
-            relationship.VehicleGroupName = !string.IsNullOrEmpty(record.vehgroupName) ? record.vehgroupName : string.Empty;
+            relationship.VehicleGroupName = !string.IsNullOrEmpty(record.vehgroupname) ? record.vehgroupname : string.Empty;
             return relationship;
         }
 
