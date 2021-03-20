@@ -79,38 +79,38 @@ namespace net.atos.daf.ct2.portalservice.Account
     }
     public class ResetPasswordInitiateRequest
     {
-        [Required(ErrorMessage = "")]
-        [RegularExpression(@"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", ErrorMessage = "")]
-        [StringLength(50, MinimumLength = 1, ErrorMessage = "")]
+        [Required]
+        [RegularExpression(@"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", ErrorMessage = "The field EmailId must be in proper format.")]
+        [StringLength(50, MinimumLength = 1, ErrorMessage = "Minimum length of {0} field is {2} and maximum length is {1} characters.")]
         public string EmailId { get; set; }
     }
 
     public class ResetPasswordRequest
     {
-        [Required(ErrorMessage = "")]
-        [StringLength(36, MinimumLength = 36, ErrorMessage = "")]
+        [Required]
+        [StringLength(36, MinimumLength = 36, ErrorMessage = "The field {0} must be a string with a length of {1} characters.")]
         public string ProcessToken { get; set; }
-        [Required(ErrorMessage = "")]
+        [Required]
         public string Password { get; set; }
     }
 
     public class ResetPasswordInvalidateRequest
     {
-        [Required(ErrorMessage = "")]
-        [StringLength(36, MinimumLength = 36, ErrorMessage = "")]
+        [Required]
+        [StringLength(36, MinimumLength = 36, ErrorMessage = "The field {0} must be a string with a length of {1} characters.")]
         public string ResetToken { get; set; }
     }
 
     public class MenuFeatureRequest
     {
-        [Required(ErrorMessage = "")]
+        [Required]
         public int AccountId { get; set; }
-        [Required(ErrorMessage = "")]
+        [Required]
         public int RoleId { get; set; }
-        [Required(ErrorMessage = "")]
+        [Required]
         public int OrganizationId { get; set; }
-        [Required(ErrorMessage = "")]
-        [StringLength(8, MinimumLength = 2, ErrorMessage = "")]
+        [Required]
+        [StringLength(8, MinimumLength = 2, ErrorMessage = "Minimum length of {0} field is {2} and maximum length is {1} characters.")]
         public string LanguageCode { get; set; }
     }
 }
