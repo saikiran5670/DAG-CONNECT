@@ -16,6 +16,6 @@ namespace net.atos.daf.ct2.subscription
         Task<Subscription> Get(int organizationId, int vehicleId, char status, DateTime StartDate, DateTime EndDate);
         Task<Subscription> Get(char status, int vehicleGroupID, int vehicleId,  DateTime StartDate, DateTime EndDate);
         Task<SubscriptionResponse> Create(int orgId, int packageId);
-        Task<List<SubscriptionDetails>> Get(SubscriptionDetails objSubscriptionDetails);
+        Task<List<SubscriptionDetails>> Get(SubscriptionDetailsRequest objSubscriptionDetailsRequest);
     }
 }
