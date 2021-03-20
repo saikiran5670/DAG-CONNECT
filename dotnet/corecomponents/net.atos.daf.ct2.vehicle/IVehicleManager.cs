@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.vehicle
             Task<Vehicle> GetVehicle(int Vehicle_Id);
             Task<Vehicle> UpdateOrgVehicleDetails(Vehicle vehicle);
             Task<int> IsVINExists(string VIN);
-        //Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(string subscriptionId);
+            Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(string subscriptionId);
         //  Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime);
         // Task<int> Create(int orgID, string vin,string tcuId,string tcuactivation,string referenceDateTime);
 

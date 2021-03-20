@@ -539,25 +539,27 @@ namespace net.atos.daf.ct2.organization.repository
 
          public async Task<int> OwnerRelationship(HandOver keyHandOver,int VehicleID)
          {
-               try{
-                   RelationshipMapping relationshipMapping=new RelationshipMapping();
-                   relationshipMapping.relationship_id=Convert.ToInt32(keyHandOver.OwnerRelationship);
-                   relationshipMapping.owner_org_id=Convert.ToInt32(keyHandOver.OwnerRelationship);
-                   relationshipMapping.target_org_id=Convert.ToInt32(keyHandOver.OwnerRelationship);
-                   relationshipMapping.created_org_id=Convert.ToInt32(keyHandOver.OwnerRelationship);
-                   relationshipMapping.vehicle_id=VehicleID;                 
-                   relationshipMapping.start_date=UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
-                   relationshipMapping.created_at=UTCHandling.GetUTCFromDateTime(System.DateTime.Now);                   
-                   relationshipMapping.allow_chain=true;  
-                   relationshipMapping.isFirstRelation=true;                 
-                   await CreateOwnerRelationship(relationshipMapping);              
-               }
-               catch(Exception ex )
-                {
-                 log.Info("UpdatetVehicle method called in repository failed :");
-                 log.Error(ex.ToString());
-                 throw ex;
-                }    
+            try
+            {
+                RelationshipMapping relationshipMapping = new RelationshipMapping();
+                relationshipMapping.relationship_id = Convert.ToInt32(keyHandOver.OwnerRelationship);
+                relationshipMapping.owner_org_id = Convert.ToInt32(keyHandOver.OwnerRelationship);
+                relationshipMapping.target_org_id = Convert.ToInt32(keyHandOver.OwnerRelationship);
+                relationshipMapping.created_org_id = Convert.ToInt32(keyHandOver.OwnerRelationship);
+                relationshipMapping.vehicle_id = VehicleID;
+                relationshipMapping.start_date = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
+                relationshipMapping.created_at = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
+                relationshipMapping.allow_chain = true;
+                //relationshipMapping.isFirstRelation=true;  
+                relationshipMapping.isFirstRelation = false;
+                await CreateOwnerRelationship(relationshipMapping);
+            }
+            catch (Exception ex)
+            {
+                log.Info("UpdatetVehicle method called in repository failed :");
+                log.Error(ex.ToString());
+                throw ex;
+            }    
                return 1;          
          }       
         public async Task<HandOver> KeyHandOverEvent(HandOver keyHandOver)
@@ -708,9 +710,10 @@ namespace net.atos.daf.ct2.organization.repository
                     // update previuse relationship end date and insert new relationship              
                     var Updateparameter = new DynamicParameters();
                     Updateparameter.Add("@relationship_id", relationshipMapping.relationship_id);
-                    Updateparameter.Add("@end_date", null);
+                    Updateparameter.Add("@end_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    Updateparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
                     var queryUpdate = @"update master.orgrelationshipmapping 
-                    set end_date=@end_date where relationship_id=@relationship_id";
+                    set end_date=@end_date where relationship_id=@relationship_id and vehicle_id=@vehicle_id";
                     await dataAccess.ExecuteScalarAsync<int>(queryUpdate, Updateparameter);
 
                     // Insert new relationship              
@@ -734,9 +737,9 @@ namespace net.atos.daf.ct2.organization.repository
                     Inputparameter.Add("@allow_chain", relationshipMapping.allow_chain);
                     Inputparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
 
-                    var queryInsert = @"insert into master.orgrelationshipmapping (vehicle_id,vehicle_group_id,owner_org_id,created_org_id,
+                    var queryInsert = @"insert into master.orgrelationshipmapping (relationship_id,vehicle_id,vehicle_group_id,owner_org_id,created_org_id,
                     target_org_id,start_date,end_date,allow_chain,created_at)
-                    values(@vehicle_id,@vehicle_group_id,@owner_org_id,@created_org_id,@target_org_id,@start_date,@end_date,@allow_chain,@created_at)";
+                    values(@relationship_id,@vehicle_id,@vehicle_group_id,@owner_org_id,@created_org_id,@target_org_id,@start_date,@end_date,@allow_chain,@created_at)";
                     OwnerRelationshipId = await dataAccess.ExecuteScalarAsync<int>(queryInsert, Inputparameter);
                     return OwnerRelationshipId;
                 }
@@ -862,11 +865,20 @@ namespace net.atos.daf.ct2.organization.repository
             }
         }
         public async Task<int> IsOwnerRelationshipExist(int VehicleID)
-        {          
-            var parameter = new DynamicParameters();
-            parameter.Add("@vehicle_id", VehicleID);
-            var query = @"Select id from master.orgrelationshipmapping where vehicle_id=@vehicle_id and end_date=null";
-            return await dataAccess.ExecuteScalarAsync<int>(query, parameter);  
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@vehicle_id", VehicleID);
+                var query = @"Select id from master.orgrelationshipmapping where vehicle_id=@vehicle_id and end_date is null";
+                return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+            }
+            catch(Exception ex)
+            {
+                log.Info("IsOwnerRelationshipExist method in repository failed :");
+                log.Error(ex.ToString());
+                throw ex;
+            }
         }
     }
 }
