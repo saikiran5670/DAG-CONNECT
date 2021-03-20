@@ -110,7 +110,7 @@ namespace net.atos.daf.ct2.portalservice.Account
         [Required(ErrorMessage = "")]
         public int OrganizationId { get; set; }
         [Required(ErrorMessage = "")]
-        [StringLength(8, MinimumLength = 5, ErrorMessage = "")]
+        [StringLength(8, MinimumLength = 2, ErrorMessage = "")]
         public string LanguageCode { get; set; }
     }
 }
