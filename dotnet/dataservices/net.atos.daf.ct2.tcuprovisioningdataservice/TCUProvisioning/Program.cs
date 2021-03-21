@@ -4,6 +4,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using log4net;
 using log4net.Config;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.repository;
+using net.atos.daf.ct2.data;
 
 namespace TCUProvisioning
 {
@@ -18,7 +21,13 @@ namespace TCUProvisioning
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
 
-            TCUProvisioningDataProcess provisionVehicle = new TCUProvisioningDataProcess(log);
+            string psqlConnString = ConfigurationManager.AppSetting["psqlconnstring"];
+
+            IDataAccess dataacess = new PgSQLDataAccess(psqlConnString);
+            IAuditLogRepository auditrepo = new AuditLogRepository(dataacess);
+            IAuditTraillib audit = new AuditTraillib(auditrepo);
+
+            TCUProvisioningDataProcess provisionVehicle = new TCUProvisioningDataProcess(log,audit);
             await provisionVehicle.readTCUProvisioningDataAsync();
 
         }

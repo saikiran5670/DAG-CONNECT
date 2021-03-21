@@ -12,6 +12,8 @@ using TCUSend;
 using System.Net.Http.Headers;
 using System.Net;
 using System.Text;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.Enum;
 
 namespace TCUProvisioning
 {
@@ -24,10 +26,12 @@ namespace TCUProvisioning
         private string topic = ConfigurationManager.AppSetting["EH_NAME"];
         private string cacertlocation = ConfigurationManager.AppSetting["CA_CERT_LOCATION"];
         private string dafurl = ConfigurationManager.AppSetting["DAFURL"];
+        private IAuditTraillib _auditlog;
 
-        public TCUProvisioningDataProcess(ILog log)
+        public TCUProvisioningDataProcess(ILog log, IAuditTraillib auditlog)
         {
             this.log = log;
+            this._auditlog = auditlog;
         }
 
         public async Task readTCUProvisioningDataAsync()
@@ -48,9 +52,7 @@ namespace TCUProvisioning
                         ConsumeResult<Null, string> msg = consumer.Consume();
                         String TCUDataFromTopic = msg.Message.Value;
                         TCUDataReceive TCUDataReceive = JsonConvert.DeserializeObject<TCUDataReceive>(TCUDataFromTopic);
-                        String DAFData = createTCUDataInDAFFormat(TCUDataReceive);
-
-                        Console.WriteLine(DAFData);
+                        var DAFData = createTCUDataInDAFFormat(TCUDataReceive);
 
                         await postTCUProvisioningMesssageToDAF(DAFData);
 
@@ -77,7 +79,7 @@ namespace TCUProvisioning
         }
 
 
-        private String createTCUDataInDAFFormat(TCUDataReceive TCUDataReceive)
+        private TCUDataSend createTCUDataInDAFFormat(TCUDataReceive TCUDataReceive)
         {
             log.Info("Coverting message to DAF required format");
 
@@ -87,8 +89,7 @@ namespace TCUProvisioning
             TCURegistrationEvents.Add(TCURegistrationEvent);
             TCUDataSend send = new TCUDataSend(new TCURegistrationEvents(TCURegistrationEvents));
 
-            String TCUDataSendJson = JsonConvert.SerializeObject(send);
-            return TCUDataSendJson;
+            return send;
         }
 
 
@@ -122,28 +123,44 @@ namespace TCUProvisioning
 
         }
 
-        private async Task postTCUProvisioningMesssageToDAF(string TCUDataSendJson)
+        private async Task postTCUProvisioningMesssageToDAF(TCUDataSend TCUDataSend)
         {
+            int i = 0;
+            string result = null;
+            string TCUDataSendJson = JsonConvert.SerializeObject(TCUDataSend);
             try
             {
                 var client = GetHttpClient();
                 var data = new StringContent(TCUDataSendJson, Encoding.UTF8, "application/json");
                 HttpResponseMessage response = new HttpResponseMessage();
                 response.StatusCode = HttpStatusCode.BadRequest;
-                //log.Info(response.StatusCode);
 
-                while (!(response.StatusCode == HttpStatusCode.OK))
+                while (!(response.StatusCode == HttpStatusCode.OK) && i<5)
                 {
                     log.Info("Calling DAF rest API for sending data");
                     response = await client.PostAsync(dafurl, data);
 
                     log.Info("DAF Api respone is " +response.StatusCode);
-                    string result = response.Content.ReadAsStringAsync().Result;
-                    //log.Info(result);
+                    result = response.Content.ReadAsStringAsync().Result;
+                    
+                    i++;
                 }
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                     log.Info(result );
+                    _auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data Service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(TCUDataSend));
+                }
+                else {
+
+                    log.Error(result);
+                    _auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(TCUDataSend));
+                }
+
             }
             catch (Exception ex)
             {
+                _auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(TCUDataSend));
                 log.Error(ex.Message);
                 
             }
