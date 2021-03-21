@@ -18,6 +18,7 @@ using net.atos.daf.ct2.audit.repository;
 using AccountComponent = net.atos.daf.ct2.account;
 using Identity = net.atos.daf.ct2.identity;
 using AccountPreference = net.atos.daf.ct2.accountpreference;
+using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 
 namespace net.atos.daf.ct2.authenticationservicerest
 {
@@ -34,6 +35,12 @@ namespace net.atos.daf.ct2.authenticationservicerest
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            .ConfigureApiBehaviorOptions(options => {
+                options.InvalidModelStateResponseFactory = actionContext => {
+                    return CustomErrorResponse(actionContext);
+                };
+            });
 
             var connectionString = Configuration.GetConnectionString("ConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
@@ -44,20 +51,26 @@ namespace net.atos.daf.ct2.authenticationservicerest
             services.AddTransient<IAuditLogRepository,AuditLogRepository>();
             services.AddTransient<IAuditTraillib,AuditTraillib>();
 
+            services.AddTransient<IdentitySessionComponent.IAccountSessionManager, IdentitySessionComponent.AccountSessionManager>();
+            services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
+
             services.AddTransient<Identity.IAccountManager,Identity.AccountManager>();
             services.AddTransient<Identity.ITokenManager,Identity.TokenManager>();
             services.AddTransient<Identity.IAccountAuthenticator,Identity.AccountAuthenticator>();
             
             services.AddTransient<AccountComponent.IAccountIdentityManager,AccountComponent.AccountIdentityManager>();
             
-            services.AddTransient<AccountPreference.IPreferenceManager,AccountPreference.PreferenceManager>();
-            services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();
+            //services.AddTransient<AccountPreference.IPreferenceManager,AccountPreference.PreferenceManager>();
+            //services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();
             
             // services.AddTransient<IGroupManager, GroupManager>();
             // services.AddTransient<IGroupRepository, GroupRepository>();
             
             services.AddTransient<AccountComponent.IAccountRepository,AccountComponent.AccountRepository>();
-            services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();            
+            services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();
+                     
 
             services.AddCors(c =>  
             {  
@@ -119,6 +132,12 @@ namespace net.atos.daf.ct2.authenticationservicerest
             {
                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Authentication Service");
             });
+        }
+        private BadRequestObjectResult CustomErrorResponse(ActionContext actionContext)
+        {
+            return new BadRequestObjectResult(actionContext.ModelState
+            .Where(modelError => modelError.Value.Errors.Count > 0)
+            .Select(modelError => string.Empty).FirstOrDefault());
         }
     }
 }
