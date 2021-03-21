@@ -8,6 +8,7 @@ using net.atos.daf.ct2.identitysession.entity;
 using net.atos.daf.ct2.data;
 using Dapper;
 using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.identitysession.ENUM;
 
 namespace net.atos.daf.ct2.identitysession.repository
 {
@@ -54,9 +55,9 @@ namespace net.atos.daf.ct2.identitysession.repository
                 parameter.Add("@access_token", accountToken.AccessToken);
                 parameter.Add("@expire_in", accountToken.ExpireIn);
                 parameter.Add("@account_id", accountToken.AccountId);
-                parameter.Add("@type", accountToken.TokenType);
+                parameter.Add("@type", (char)accountToken.TokenType);
                 parameter.Add("@scope", accountToken.Scope);
-                parameter.Add("@idp_type", accountToken.IdpType);
+                parameter.Add("@idp_type", (char)accountToken.IdpType);
                 parameter.Add("@created_at", accountToken.CreatedAt);
                 parameter.Add("@token_id", new Guid(accountToken.TokenId));
                 parameter.Add("@session_id", accountToken.Session_Id);
@@ -223,9 +224,9 @@ namespace net.atos.daf.ct2.identitysession.repository
             entity.AccessToken=record.access_token;
             entity.ExpireIn=record.expire_in;
             entity.AccountId=record.account_id;
-            entity.TokenType=record.type;
+            entity.TokenType = (TokenType)Convert.ToChar(record.type);
             entity.Scope=record.scope;
-            entity.IdpType=record.idp_type;
+            entity.IdpType = (IDPType)Convert.ToChar(record.idp_type);
             entity.CreatedAt=record.created_at;
             entity.TokenId = Convert.ToString(record.token_id);
             entity.Session_Id = record.session_id;

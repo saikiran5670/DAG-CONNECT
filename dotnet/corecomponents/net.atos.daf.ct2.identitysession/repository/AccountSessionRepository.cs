@@ -67,7 +67,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             {
                 var QueryStatement = @" UPDATE master.accountsession
                                         SET                                       
-                                      ,ip_address=@ip_address
+                                       ip_address=@ip_address
                                       ,last_session_refresh= @last_session_refresh
                                       ,session_started_at= @session_started_at
                                       ,sessoin_expired_at = @sessoin_expired_at
