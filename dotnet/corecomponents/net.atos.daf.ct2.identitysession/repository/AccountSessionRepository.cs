@@ -24,33 +24,34 @@ namespace net.atos.daf.ct2.identitysession.repository
             {
                 var QueryStatement = @"INSERT INTO  master.accountsession 
                                         (
-                                         ip_address
+                                         session_id
+                                        ,ip_address
                                         ,last_session_refresh
                                         ,session_started_at
                                         ,sessoin_expired_at
                                         ,account_id
                                         ,created_at
-                                        ,session_id
                                         ) 
                                     VALUES(
-                                         @ip_address
+                                         @session_id 
+                                        ,@ip_address
                                         ,@last_session_refresh
                                         ,@session_started_at
                                         ,@sessoin_expired_at
                                         ,@account_id
                                         ,@created_at
-                                        ,@session_id) RETURNING id";
+                                        ) RETURNING id";
 
 
                 var parameter = new DynamicParameters();
                 //parameter.Add("@id", accountSession.Id);
+                parameter.Add("@session_id", accountSession.Session_Id);
                 parameter.Add("@ip_address", accountSession.IpAddress);
                 parameter.Add("@last_session_refresh", accountSession.LastSessionRefresh);
                 parameter.Add("@session_started_at", accountSession.SessionStartedAt);
                 parameter.Add("@sessoin_expired_at", accountSession.SessionExpiredAt);
                 parameter.Add("@account_id", accountSession.AccountId); 
                 parameter.Add("@created_at", accountSession.CreatedAt);
-                parameter.Add("@session_id", accountSession.Session_Id);
                 int sessionID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return sessionID;
             }
@@ -65,8 +66,8 @@ namespace net.atos.daf.ct2.identitysession.repository
             try
             {
                 var QueryStatement = @" UPDATE master.accountsession
-                                        SET 
-                                       ip_address=@ip_address
+                                        SET                                       
+                                      ,ip_address=@ip_address
                                       ,last_session_refresh= @last_session_refresh
                                       ,session_started_at= @session_started_at
                                       ,sessoin_expired_at = @sessoin_expired_at
@@ -76,6 +77,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                                       RETURNING Id;";
                 var parameter = new DynamicParameters();
                 parameter.Add("@Id", accountSession.Id);
+                //parameter.Add("@session_id", accountSession.Session_Id);
                 parameter.Add("@ip_address", accountSession.IpAddress);
                 parameter.Add("@last_session_refresh", accountSession.LastSessionRefresh);
                 parameter.Add("@session_started_at", accountSession.SessionStartedAt);
@@ -115,7 +117,9 @@ namespace net.atos.daf.ct2.identitysession.repository
         {
             try
             {
-                var QueryStatement = @"select id
+                var QueryStatement = @"select 
+                                         id
+                                        ,session_id
                                         ,ip_address
                                         ,last_session_refresh
                                         ,session_started_at
@@ -147,13 +151,13 @@ namespace net.atos.daf.ct2.identitysession.repository
         {
             AccountSession entity = new AccountSession();
             entity.Id = record.id;
+            entity.Session_Id = record.session_id;
             entity.IpAddress = record.ip_address;
             entity.LastSessionRefresh = record.last_session_refresh;
             entity.SessionStartedAt = record.session_started_at;
             entity.SessionExpiredAt = record.sessoin_expired_at;
             entity.AccountId=record.account_id;
             entity.CreatedAt = record.created_at;  
-            entity.Session_Id=record.session_id;         
             return entity;
         }
         

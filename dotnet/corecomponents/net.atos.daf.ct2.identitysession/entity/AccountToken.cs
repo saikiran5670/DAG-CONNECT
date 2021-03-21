@@ -9,8 +9,6 @@ namespace net.atos.daf.ct2.identitysession.entity
         public string UserName { get; set; }  
         public string AccessToken { get; set; }
         public int ExpireIn { get; set; }  
-        public string RefreshToken { get; set; }  
-        public int RefreshExpireIn { get; set; }
         public int UserId { get; set; }  
         public int AccountId { get; set; }  
         public string TokenType { get; set; }    
