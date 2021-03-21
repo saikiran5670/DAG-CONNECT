@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Confluent.Kafka" Version="1.6.2" />
     <PackageReference Include="log4net" Version="2.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
@@ -22,6 +23,9 @@
 
 	
   <ItemGroup>
+		<None Update="appsettingsDevelopment.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>

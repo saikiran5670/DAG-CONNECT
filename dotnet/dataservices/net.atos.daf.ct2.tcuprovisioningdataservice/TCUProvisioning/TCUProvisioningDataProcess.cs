@@ -14,24 +14,33 @@ using System.Net;
 using System.Text;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
+using Microsoft.Extensions.Configuration;
 
 namespace TCUProvisioning
 {
     class TCUProvisioningDataProcess
     {
         private ILog log;
-        private string brokerList = ConfigurationManager.AppSetting["EH_FQDN"];
-        private string connStr = ConfigurationManager.AppSetting["EH_CONNECTION_STRING"];
-        private string consumergroup = ConfigurationManager.AppSetting["CONSUMER_GROUP"];
-        private string topic = ConfigurationManager.AppSetting["EH_NAME"];
-        private string cacertlocation = ConfigurationManager.AppSetting["CA_CERT_LOCATION"];
-        private string dafurl = ConfigurationManager.AppSetting["DAFURL"];
-        private IAuditTraillib _auditlog;
+        private string brokerList;
+        private string connStr;
+        private string consumergroup;
+        private string topic;
+        private string cacertlocation;
+        private string dafurl;
+        private  IAuditTraillib _auditlog;
+        private  IConfiguration config = null;
 
-        public TCUProvisioningDataProcess(ILog log, IAuditTraillib auditlog)
+        public TCUProvisioningDataProcess(ILog log, IAuditTraillib auditlog, IConfiguration config)
         {
             this.log = log;
             this._auditlog = auditlog;
+            this.config = config;
+            brokerList = config.GetSection("EH_FQDN").Value;
+            connStr = config.GetSection("EH_CONNECTION_STRING").Value;
+            consumergroup = config.GetSection("CONSUMER_GROUP").Value;
+            topic = config.GetSection("EH_NAME").Value;
+            cacertlocation = config.GetSection("CA_CERT_LOCATION").Value;
+            dafurl = config.GetSection("DAFURL").Value;
         }
 
         public async Task readTCUProvisioningDataAsync()
