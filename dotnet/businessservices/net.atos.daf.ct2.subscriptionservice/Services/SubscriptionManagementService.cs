@@ -30,14 +30,15 @@ namespace net.atos.daf.ct2.subscriptionservice
                 objentityRequest.is_active = (net.atos.daf.ct2.subscription.entity.StatusType)objSubscriptionDetailsRequest.IsActive;
 
                 SubscribeListResponce objSubscribeListResponce = new SubscribeListResponce();
-                SubscriptionDetails objSubscriptionDetails = new SubscriptionDetails();
+                
                 var listsubscription = await _SubscriptionManager.Get(objentityRequest);
                 foreach (var item in listsubscription)
                 {
+                    SubscriptionDetails objSubscriptionDetails = new SubscriptionDetails();
                     objSubscriptionDetails.SubscriptionId = item.subscription_id;
-                    objSubscriptionDetails.Type = item.type;
-                    objSubscriptionDetails.Name = item.name;
-                    objSubscriptionDetails.PackageCode = item.package_code;
+                    objSubscriptionDetails.Type = item.type == null? string.Empty: item.type;
+                    objSubscriptionDetails.Name = item.name == null ? string.Empty : item.name;
+                    objSubscriptionDetails.PackageCode = item.package_code == null ? string.Empty : item.package_code;
                     objSubscriptionDetails.SubscriptionStartDate = item.subscription_start_date;
                     objSubscriptionDetails.SubscriptionEndDate = item.subscription_end_date;
                     objSubscriptionDetails.IsActive = item.is_active;

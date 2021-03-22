@@ -30,7 +30,7 @@ kind: Service
 metadata:
   name: auditservice
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
   - protocol: TCP
     port: 80

@@ -55,12 +55,14 @@ namespace net.atos.daf.ct2.organizationservice
                 OrganizationprimaryFieldsListResponse objOrganizationprimaryFieldsListResponse = new OrganizationprimaryFieldsListResponse();
 
                 net.atos.daf.ct2.organization.entity.OrganizationNameandID objOrganizationentity = new organization.entity.OrganizationNameandID();
+                objOrganizationentity.id = request.Id;
+                objOrganizationentity.name = request.Name;
                 var data = await organizationtmanager.Get(objOrganizationentity);
                 foreach (var item in data)
                 {
                     OrganizationprimaryFieldsResponse objOrganizationprimaryFieldsResponse = new OrganizationprimaryFieldsResponse();
-                    objOrganizationprimaryFieldsResponse.OrganizationId = item.organizationId;
-                    objOrganizationprimaryFieldsResponse.OrganizationName = item.OrganizationName;
+                    objOrganizationprimaryFieldsResponse.Id = item.id;
+                    objOrganizationprimaryFieldsResponse.Name = item.name;
                     objOrganizationprimaryFieldsListResponse.Response.Add(objOrganizationprimaryFieldsResponse);
                 }
                 return objOrganizationprimaryFieldsListResponse;

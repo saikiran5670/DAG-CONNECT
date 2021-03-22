@@ -285,6 +285,94 @@ export class AccountService {
       .pipe(catchError(this.handleError));
   }
 
+  getAccessRelationship(orgId: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.accountServiceUrl}/accessrelationship/get?organizationId=${orgId}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  getAccessRelationshipDetails(orgId: any, accountStatus: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.accountServiceUrl}/accessrelationship/getdetails?organizationId=${orgId}&isAccount=${accountStatus}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  createVehicleAccessRelationship(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.accountServiceUrl}/accessrelationship/vehicle/create`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  createAccountAccessRelationship(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.accountServiceUrl}/accessrelationship/account/create`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  updateVehicleAccessRelationship(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.accountServiceUrl}/accessrelationship/vehicle/update`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  updateAccountAccessRelationship(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.accountServiceUrl}/accessrelationship/account/update`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteVehicleAccessRelationship(orgId: any, id: any, groupStatus: any): Observable<void> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .delete<void>(`${this.accountServiceUrl}/accessrelationship/vehicle/delete?organizationId=${orgId}&Id=${id}&isGroup=${groupStatus}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteAccountAccessRelationship(orgId: any, id: any, groupStatus: any): Observable<void> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .delete<void>(`${this.accountServiceUrl}/accessrelationship/account/delete?organizationId=${orgId}&Id=${id}&isGroup=${groupStatus}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);
       return throwError(

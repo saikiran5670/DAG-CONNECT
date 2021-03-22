@@ -28,6 +28,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Caching.Distributed;
 using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.subscriptionservice;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -54,7 +55,8 @@ namespace net.atos.daf.ct2.portalservice
             var roleservice = Configuration["ServiceConfiguration:roleservice"];
             var organizationservice = Configuration["ServiceConfiguration:organizationservice"];
             var driverservice = Configuration["ServiceConfiguration:driverservice"];
-            
+            var subscriptionservice = Configuration["ServiceConfiguration:subscriptionservice"];
+
             //Web Server Configuration
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
             var cookiesexpireat = Configuration["WebServerConfiguration:cookiesexpireat"];
@@ -154,6 +156,10 @@ namespace net.atos.daf.ct2.portalservice
              services.AddGrpcClient<DriverService.DriverServiceClient>(o =>
             {
                 o.Address = new Uri(driverservice);
+            });
+            services.AddGrpcClient<SubscribeGRPCService.SubscribeGRPCServiceClient>(o =>
+            {
+                o.Address = new Uri(subscriptionservice);
             });
             services.AddSwaggerGen(c =>
             {

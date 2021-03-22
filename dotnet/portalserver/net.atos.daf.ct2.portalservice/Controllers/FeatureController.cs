@@ -203,11 +203,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                Google.Protobuf.Collections.RepeatedField<DataAttributeResponce> cachedataAttributes = _cache.GetFromCache<Google.Protobuf.Collections.RepeatedField<DataAttributeResponce>>(LangaugeCode);
+                DataAtributeRequest request = new DataAtributeRequest();
+                request.LangaugeCode = (LangaugeCode == null || LangaugeCode == "") ? "EN-GB" : LangaugeCode;
+                Google.Protobuf.Collections.RepeatedField<DataAttributeResponce> cachedataAttributes = _cache.GetFromCache<Google.Protobuf.Collections.RepeatedField<DataAttributeResponce>>(request.LangaugeCode);
                 if (cachedataAttributes != null && cachedataAttributes.Count>0) return Ok(cachedataAttributes);
 
-                DataAtributeRequest request = new DataAtributeRequest();
-                request.LangaugeCode = (LangaugeCode == null ||LangaugeCode == "") ? "EN-GB" : LangaugeCode ;
+                
                 var responce = await _featureclient.GetDataAttributesAsync(request);
 
                 // Set cache options.
@@ -215,7 +216,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     // Keep in cache for this time, reset time if accessed.
                     .SetSlidingExpiration(TimeSpan.FromMinutes(_cachesettings.ExpiryInMinutes));
 
-                _cache.SetCache(LangaugeCode, responce.Responce, cacheEntryOptions);
+                _cache.SetCache(request.LangaugeCode, responce.Responce, cacheEntryOptions);
 
                 return Ok(responce.Responce);
             }

@@ -1,5 +1,5 @@
 ﻿
-namespace net.atos.daf.ct2.organization.entity
+namespace net.atos.daf.ct2.portalservice.Entity.Organization
 {
    public class OrganizationNameandID
     {
