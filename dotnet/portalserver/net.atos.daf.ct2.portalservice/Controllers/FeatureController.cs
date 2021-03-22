@@ -225,7 +225,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 //throw;
                 _logger.LogError(ex.Message + " " + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error. Exception - " + ex.Message);
+                return StatusCode(500, "Internal Server Error. Exception - " + ex.ToString());
             }
         }
 
