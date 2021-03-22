@@ -80,5 +80,27 @@ namespace net.atos.daf.ct2.identitysession
                 throw ex;
             }
         }
+        public async Task<int> DeleteTokenByTokenId(Guid tokenID)
+        {
+            try
+            {
+                return await tokenRepository.DeleteTokenByTokenId(tokenID);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<int> GetTokenCount(int AccountID)
+        {
+            try
+            {
+                return await tokenRepository.GetTokenCount(AccountID);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }
