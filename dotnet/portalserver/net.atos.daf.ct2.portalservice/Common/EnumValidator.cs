@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.portalservice.Common
         }
         public static bool ValidateGroupType(char groupType)
         {
-            string enumList = "sSgGdD";
+            string enumList = "gGdD";
             if (enumList.Contains(groupType))
             {
                 return true;
