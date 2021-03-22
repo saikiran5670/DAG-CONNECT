@@ -38,8 +38,8 @@ message OrganizationprimaryFieldsListResponse{
 }
 
 message OrganizationprimaryFieldsResponse{
- int32 organizationId = 1;
- string OrganizationName = 2;
+ int32 id = 1;
+ string name = 2;
 }
 
 message OrgRelationshipMappingGetRequest
