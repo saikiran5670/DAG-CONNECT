@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             sessionRepository =_sessionRepository;
         }
-       public async Task<string> InsertSession(AccountSession accountSession)
+       public async Task<int> InsertSession(AccountSession accountSession)
         {
             try
             {
@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.identitysession
                 throw ex;
             }
         }
-        public async Task<string> UpdateSession(AccountSession accountSession)
+        public async Task<int> UpdateSession(AccountSession accountSession)
         {
             try
             {
@@ -35,7 +35,7 @@ namespace net.atos.daf.ct2.identitysession
                 throw ex;
             }
         }
-         public async Task<string> DeleteSession(string SessionId)
+         public async Task<int> DeleteSession(string SessionId)
         {
             try
             {

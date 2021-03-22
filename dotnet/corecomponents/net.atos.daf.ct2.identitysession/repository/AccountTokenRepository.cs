@@ -8,6 +8,7 @@ using net.atos.daf.ct2.identitysession.entity;
 using net.atos.daf.ct2.data;
 using Dapper;
 using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.identitysession.ENUM;
 
 namespace net.atos.daf.ct2.identitysession.repository
 {
@@ -18,56 +19,51 @@ namespace net.atos.daf.ct2.identitysession.repository
         {
             dataAccess = _dataAccess;
         }
-         public async Task<string> InsertToken(AccountToken accountToken)
+         public async Task<int> InsertToken(AccountToken accountToken)
         {
             try
             {
                 var QueryStatement = @"INSERT INTO  master.accounttoken 
                                         (
-                                        user_name
+                                         user_name
                                         ,access_token
-                                        ,expire_in
-                                        ,refresh_token
-                                        ,refresh_expire_in
+                                        ,expire_in                                        
                                         ,account_id
-                                        ,type
-                                        ,session_id
+                                        ,type                                        
                                         ,scope
                                         ,idp_type
                                         ,created_at
                                         ,token_id
+                                        ,session_id
                                         ) 
                                     VALUES(
                                         @user_name
                                         ,@access_token
                                         ,@expire_in
-                                        ,@refresh_token
-                                        ,@refresh_expire_in
                                         ,@account_id
-                                        ,@type
-                                        ,@session_id
+                                        ,@type                                        
                                         ,@scope
                                         ,@idp_type
                                         ,@created_at
-                                        ,@token_id)RETURNING token_id";
+                                        ,@token_id
+                                        ,@session_id
+                                        )RETURNING id";
 
                 var parameter = new DynamicParameters();
                 
                 parameter.Add("@user_name", accountToken.UserName);
                 parameter.Add("@access_token", accountToken.AccessToken);
                 parameter.Add("@expire_in", accountToken.ExpireIn);
-                parameter.Add("@refresh_token", accountToken.RefreshToken);
-                parameter.Add("@refresh_expire_in", accountToken.RefreshExpireIn); 
                 parameter.Add("@account_id", accountToken.AccountId);
-                parameter.Add("@type", accountToken.TokenType);
-                parameter.Add("@session_id", accountToken.Session_Id);
+                parameter.Add("@type", (char)accountToken.TokenType);
                 parameter.Add("@scope", accountToken.Scope);
-                parameter.Add("@idp_type", accountToken.IdpType);
+                parameter.Add("@idp_type", (char)accountToken.IdpType);
                 parameter.Add("@created_at", accountToken.CreatedAt);
-                parameter.Add("@token_id", Guid.NewGuid());
-                
-                Guid tokenId = await dataAccess.ExecuteScalarAsync<Guid>(QueryStatement, parameter);            
-                return tokenId.ToString();
+                parameter.Add("@token_id", new Guid(accountToken.TokenId));
+                parameter.Add("@session_id", accountToken.Session_Id);
+
+                int tokenId =await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                return tokenId;
             }
             catch(Exception ex)
             {
@@ -82,7 +78,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 int accountID=0;
                 foreach(string item in token_Id)
                 {
-                   accountID=await DeleteTokenByTokenId( new Guid(item));
+                   accountID=await DeleteTokenByTokenId(new Guid(item));
                 }
               
                 return accountID;
@@ -127,18 +123,18 @@ namespace net.atos.daf.ct2.identitysession.repository
         {
             try
             {
-                var QueryStatement = @"select token_id
+                var QueryStatement = @"select 
                                         ,user_name
                                         ,access_token
                                         ,expire_in
-                                        ,refresh_token
-                                        ,refresh_expire_in
                                         ,account_id
                                         ,type
                                         ,session_id
                                         ,scope
                                         ,idp_type
                                         ,created_at
+                                        ,token_id
+                                        ,session_id
                                         from master.accounttoken 
                                         where account_id=@AccountID";
                 var parameter = new DynamicParameters();
@@ -164,18 +160,18 @@ namespace net.atos.daf.ct2.identitysession.repository
         {
             try 
             {
-                var QueryStatement = @"select token_id
+                var QueryStatement = @"select 
                                         ,user_name
                                         ,access_token
                                         ,expire_in
-                                        ,refresh_token
-                                        ,refresh_expire_in
                                         ,account_id
                                         ,type
                                         ,session_id
                                         ,scope
                                         ,idp_type
                                         ,created_at
+                                        ,token_id
+                                        ,session_id
                                         from master.accounttoken 
                                         where token_id=@token_id";
                 var parameter = new DynamicParameters();
@@ -202,7 +198,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             {
                 long currentUTCFormate=UTCHandling.GetUTCFromDateTime(DateTime.Now);
                 var QueryStatement = @"select
-                                       count(*)
+                                       count(id)
                                        from master.accounttoken 
                                        where token_id=@token_id
                                        AND expire_in < @expire_in;";//DONE (testing pending)utc time with grether than datetime.now() with expireat
@@ -224,18 +220,16 @@ namespace net.atos.daf.ct2.identitysession.repository
         private AccountToken Map(dynamic record)
         {
             AccountToken entity = new AccountToken();
-            entity.TokenId=Convert.ToString(record.token_id);
             entity.UserName=record.user_name;
             entity.AccessToken=record.access_token;
             entity.ExpireIn=record.expire_in;
-            entity.RefreshToken=record.refresh_token;
-            entity.RefreshExpireIn=record.refresh_expire_in;
             entity.AccountId=record.account_id;
-            entity.TokenType=record.type;
-            entity.Session_Id=record.session_id;
+            entity.TokenType = (TokenType)Convert.ToChar(record.type);
             entity.Scope=record.scope;
-            entity.IdpType=record.idp_type;
-            entity.CreatedAt=record.created_at; 
+            entity.IdpType = (IDPType)Convert.ToChar(record.idp_type);
+            entity.CreatedAt=record.created_at;
+            entity.TokenId = Convert.ToString(record.token_id);
+            entity.Session_Id = record.session_id;
             return entity;
         }
 

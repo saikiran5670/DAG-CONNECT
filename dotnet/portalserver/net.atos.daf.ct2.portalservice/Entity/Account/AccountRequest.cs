@@ -81,13 +81,14 @@ namespace net.atos.daf.ct2.portalservice.Account
     {
         [Required]
         [RegularExpression(@"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", ErrorMessage = "The field EmailId must be in proper format.")]
+        [StringLength(50, MinimumLength = 1, ErrorMessage = "Minimum length of {0} field is {2} and maximum length is {1} characters.")]
         public string EmailId { get; set; }
     }
 
     public class ResetPasswordRequest
     {
         [Required]
-        [StringLength(36, MinimumLength = 36, ErrorMessage = "The field ResetToken must be a string with a length of 36 characters.")]
+        [StringLength(36, MinimumLength = 36, ErrorMessage = "The field {0} must be a string with a length of {1} characters.")]
         public string ProcessToken { get; set; }
         [Required]
         public string Password { get; set; }
@@ -96,7 +97,7 @@ namespace net.atos.daf.ct2.portalservice.Account
     public class ResetPasswordInvalidateRequest
     {
         [Required]
-        [StringLength(36, MinimumLength = 36, ErrorMessage = "The field ResetToken must be a string with a length of 36 characters.")]
+        [StringLength(36, MinimumLength = 36, ErrorMessage = "The field {0} must be a string with a length of {1} characters.")]
         public string ResetToken { get; set; }
     }
 
@@ -109,6 +110,7 @@ namespace net.atos.daf.ct2.portalservice.Account
         [Required]
         public int OrganizationId { get; set; }
         [Required]
+        [StringLength(8, MinimumLength = 2, ErrorMessage = "Minimum length of {0} field is {2} and maximum length is {1} characters.")]
         public string LanguageCode { get; set; }
     }
 }

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subscriptionservice-grpc
+spec:
+  selector:
+    matchLabels:
+      run: subscriptionservice-grpc
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: subscriptionservice-grpc
+    spec:
+      containers:
+      - name: subscriptionservice-grpc
+        image: dafdev017756.azurecr.io/subscriptionservice-grpc
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: subscriptionservice
+spec:
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    run: subscriptionservice-grpc

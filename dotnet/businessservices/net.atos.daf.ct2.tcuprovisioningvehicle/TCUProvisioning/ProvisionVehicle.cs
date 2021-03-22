@@ -1,10 +1,8 @@
 ﻿using Confluent.Kafka;
-using Dapper;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using net.atos.daf.ct2.account;
-using net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
@@ -17,14 +15,14 @@ using net.atos.daf.ct2.subscription.repository;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehicle.repository;
-using net.atos.daf.ct2.identity.entity;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using TCUReceive;
 using net.atos.daf.ct2.organization.entity;
+using net.atos.daf.ct2.audit.Enum;
+
 
 namespace TCUProvisioning
 {
@@ -42,11 +40,13 @@ namespace TCUProvisioning
         private string psqlconnstring ;
         private string cacertlocation ;
         IConfiguration config = null;
+        IAuditTraillib _auditlog;
 
-        public ProvisionVehicle(ILog log, IConfiguration config)
+        public ProvisionVehicle(ILog log, IConfiguration config, IAuditTraillib auditlog)
         {
            this.log = log;
            this.config = config;
+           _auditlog = auditlog; 
            brokerList = config.GetSection("EH_FQDN").Value;
            connStr = config.GetSection("EH_CONNECTION_STRING").Value;
            consumergroup = config.GetSection("CONSUMER_GROUP").Value;
@@ -120,52 +120,96 @@ namespace TCUProvisioning
         async Task updateVehicleDetails(TCUDataReceive TCUDataReceive, string psqlConnString)
         {
 
-            log.Info("Fetching Vehicle object from database");
-            VehicleManager vehicleManager = getVehicleManager(psqlConnString);
-            //VehicleFilter vehicleFilter = getFilteredVehicle(TCUDataReceive);
-            IDataAccess dataacess = new PgSQLDataAccess(psqlConnString);
-            Vehicle receivedVehicle = null;
-            OrganizationManager org = getOrgnisationManager(psqlConnString,vehicleManager);
-
             try
-
             {
 
+                log.Info("Fetching Vehicle object from database");
+
+                IDataAccess dataacess = new PgSQLDataAccess(psqlConnString);
+                VehicleManager vehicleManager = getVehicleManager(psqlConnString);
+
+                Vehicle receivedVehicle = null;
                 receivedVehicle = await getVehicle(TCUDataReceive, psqlConnString, vehicleManager);
 
                 if (receivedVehicle == null)
                 {
+                    receivedVehicle = await createVehicle(receivedVehicle, TCUDataReceive, dataacess, psqlConnString, vehicleManager);
+                    await createOrgRelationship(vehicleManager, psqlConnString, receivedVehicle.ID, (int)receivedVehicle.Organization_Id);
+                }
+                else
+                {
+                    receivedVehicle = await updateVehicle(receivedVehicle, TCUDataReceive, vehicleManager);
+                    await createOrgRelationship(vehicleManager, psqlConnString, receivedVehicle.ID, (int)receivedVehicle.Organization_Id);
+                }
+            }
+            catch(Exception ex) {
+                
+                throw ex;
+            
+            } 
 
-                    log.Info("Vehicle is not present in database proceeding to create vehicle");
+        }
 
-                    receivedVehicle = new Vehicle();
+        private async Task<Vehicle> createVehicle(Vehicle receivedVehicle, TCUDataReceive TCUDataReceive, IDataAccess dataacess, string psqlConnString, VehicleManager vehicleManager)
+        {
+            int OrgId =0;
+            Vehicle veh;
+            try
+            {
+                log.Info("Vehicle is not present in database proceeding to create vehicle");
 
-                    receivedVehicle.VIN = TCUDataReceive.Vin;
-                    receivedVehicle.Vid = TCUDataReceive.Correlations.VehicleId;
-                    receivedVehicle.Tcu_Id = TCUDataReceive.DeviceIdentifier;
-                    receivedVehicle.Tcu_Serial_Number = TCUDataReceive.DeviceSerialNumber;
-                    receivedVehicle.Is_Tcu_Register = true;
-                    receivedVehicle.Tcu_Brand = "Bosch";
-                    receivedVehicle.Tcu_Version = "1.0";
-                    receivedVehicle.Reference_Date = TCUDataReceive.ReferenceDate;
+                receivedVehicle = new Vehicle();
+
+                receivedVehicle.VIN = TCUDataReceive.Vin;
+                receivedVehicle.Vid = TCUDataReceive.Correlations.VehicleId;
+                receivedVehicle.Tcu_Id = TCUDataReceive.DeviceIdentifier;
+                receivedVehicle.Tcu_Serial_Number = TCUDataReceive.DeviceSerialNumber;
+                receivedVehicle.Is_Tcu_Register = true;
+                receivedVehicle.Tcu_Brand = "Bosch";
+                receivedVehicle.Tcu_Version = "1.0";
+                receivedVehicle.Reference_Date = TCUDataReceive.ReferenceDate;
 
 
-                    receivedVehicle.VehiclePropertiesId = 0;
-                    receivedVehicle.Opt_In = VehicleStatusType.Inherit;
-                    receivedVehicle.Is_Ota = false;
+                receivedVehicle.VehiclePropertiesId = 0;
+                receivedVehicle.Opt_In = VehicleStatusType.Inherit;
+                receivedVehicle.Is_Ota = false;
 
-                    int OrgId = await dataacess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.organization where lower(name)=@name), null)", new { name = "daf-paccar" });
-                    receivedVehicle.Organization_Id = OrgId;
-                   
-                    log.Info("Creating Vehicle Object in database");
-                    Vehicle veh = await vehicleManager.Create(receivedVehicle);
+                OrgId = await dataacess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.organization where lower(name)=@name), null)", new { name = "daf-paccar" });
+                receivedVehicle.Organization_Id = OrgId;
+
+                log.Info("Creating Vehicle Object in database");
+                veh = await vehicleManager.Create(receivedVehicle);
+                
+                _auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create method in TCU Vehicle Component", 0, veh.ID, JsonConvert.SerializeObject(receivedVehicle));
+
+            }
+            catch (Exception ex)
+            {
+                _auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Create vehicle in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(receivedVehicle));
+                throw ex;
+            }
+
+            return veh;
+        }
+
+        private async Task createOrgRelationship(VehicleManager vehicleManager, string psqlConnString,int vehId, int OrgId) 
+        {
+            RelationshipMapping relationship = null;
+            OrganizationManager org = getOrgnisationManager(psqlConnString, vehicleManager);
+
+            try
+            {
+                int IsVehicleIdExist = await org.IsOwnerRelationshipExist(vehId);
+                if (IsVehicleIdExist <= 0)
+                {
+                    log.Info("Organisation relationship is not present in database proceeding to create relationship");
 
                     int OwnerRelationship = Convert.ToInt32(this.config.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value);
                     int DAFPACCAR = Convert.ToInt32(this.config.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value);
 
-                    RelationshipMapping relationship = new RelationshipMapping();
+                    relationship = new RelationshipMapping();
                     relationship.relationship_id = OwnerRelationship;
-                    relationship.vehicle_id = veh.ID;
+                    relationship.vehicle_id = vehId;
                     relationship.vehicle_group_id = 0;
                     relationship.owner_org_id = DAFPACCAR;
                     relationship.created_org_id = DAFPACCAR;
@@ -173,27 +217,45 @@ namespace TCUProvisioning
                     relationship.isFirstRelation = true;
                     relationship.allow_chain = true;
                     await org.CreateOwnerRelationship(relationship);
+                    _auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create org relationship in TCU Vehicle Component", 0, vehId, JsonConvert.SerializeObject(relationship));
                 }
-                else
-                {
+            }
+            catch (Exception ex)
+            {
 
-                    receivedVehicle.Tcu_Id = TCUDataReceive.DeviceIdentifier;
-                    receivedVehicle.Tcu_Serial_Number = TCUDataReceive.DeviceSerialNumber;
-                    receivedVehicle.Is_Tcu_Register = true;
-                    receivedVehicle.Reference_Date = TCUDataReceive.ReferenceDate;
-                    receivedVehicle.Tcu_Brand = "Bosch";
-                    receivedVehicle.Tcu_Version = "1.0";
+                _auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Create org relationship in TCU Vehicle Component", 0, vehId, JsonConvert.SerializeObject(relationship));
+                throw ex;
+            }
+        }
 
-                    log.Info("Updating Vehicle details in database");
-                    await vehicleManager.Update(receivedVehicle);
 
-                }
+        private async Task<Vehicle> updateVehicle(Vehicle receivedVehicle, TCUDataReceive TCUDataReceive, VehicleManager vehicleManager) 
+        {
+            log.Info("Vehicle is  present in database proceeding to update vehicle");
+
+            Vehicle veh = null;
+            try
+            {
+
+                receivedVehicle.Tcu_Id = TCUDataReceive.DeviceIdentifier;
+                receivedVehicle.Tcu_Serial_Number = TCUDataReceive.DeviceSerialNumber;
+                receivedVehicle.Is_Tcu_Register = true;
+                receivedVehicle.Reference_Date = TCUDataReceive.ReferenceDate;
+                receivedVehicle.Tcu_Brand = "Bosch";
+                receivedVehicle.Tcu_Version = "1.0";
+
+                log.Info("Updating Vehicle details in database");
+                veh = await vehicleManager.Update(receivedVehicle);
+                _auditlog.AddLogs(DateTime.Now, DateTime.Now, (int)veh.Organization_Id, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "update vehicle in TCU Vehicle Component", 0, veh.ID, JsonConvert.SerializeObject(receivedVehicle));
+
 
             }
             catch (Exception ex)
             {
+                _auditlog.AddLogs(DateTime.Now, DateTime.Now, (int)veh.Organization_Id, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "update vehicle in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(receivedVehicle));
                 throw ex;
             }
+            return veh;
         }
 
 
