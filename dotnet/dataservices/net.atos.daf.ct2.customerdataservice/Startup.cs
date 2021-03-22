@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography;
 using net.atos.daf.ct2.customerdataservice.CustomAttributes;
+using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using System;
@@ -82,6 +83,11 @@ namespace net.atos.daf.ct2.customerdataservice
             services.AddTransient<IGroupManager,GroupManager>();
             services.AddTransient<IGroupRepository, GroupRepository>();          
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IdentitySessionComponent.IAccountSessionManager, IdentitySessionComponent.AccountSessionManager>();
+            services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
+
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(x =>

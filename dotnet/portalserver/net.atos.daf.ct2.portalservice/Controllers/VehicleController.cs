@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using VehicleBusinessService = net.atos.daf.ct2.vehicleservice;
 using net.atos.daf.ct2.portalservice.Entity.Vehicle;
 using System.Text;
+using net.atos.daf.ct2.portalservice.Common;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -186,13 +187,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (string.IsNullOrEmpty(group.Name) || group.Name == "string")
                 {
-                    return StatusCode(401, "invalid vehicle group name: The vehicle group name is Empty.");
+                    return StatusCode(401, PortalConstants.VehicleValidation.CreateRequired);
                 }
 
                 // Length validation
                 if ((group.Name.Length > 50) || (group.Description.Length > 100))
                 {
-                    return StatusCode(400, "The vehicle group name and vehicle group description should be valid.");
+                    return StatusCode(400, PortalConstants.VehicleValidation.InvalidData);
+                }
+
+                char groupType = Convert.ToChar(group.GroupType);
+                if (!EnumValidator.ValidateGroupType(groupType))
+                {
+                    return StatusCode(400, PortalConstants.VehicleValidation.InvalidGroupType);
                 }
 
 
@@ -236,14 +243,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (string.IsNullOrEmpty(group.Name) || group.Name == "string")
                 {
-                    return StatusCode(401, "invalid vehicle group name: The vehicle group name is Empty.");
+                    return StatusCode(401, PortalConstants.VehicleValidation.CreateRequired);
                 }
 
                 // Length validation
                 if ((group.Name.Length > 50) || (group.Description.Length > 100))
                 {
-                    return StatusCode(400, "The vehicle group name and vehicle group description should be valid.");
+                    return StatusCode(400, PortalConstants.VehicleValidation.InvalidData);
                 }
+
+                char groupType = Convert.ToChar(group.GroupType);
+                if (!EnumValidator.ValidateGroupType(groupType))
+                {
+                    return StatusCode(400, PortalConstants.VehicleValidation.InvalidGroupType);
+                }
+
 
                 VehicleBusinessService.VehicleGroupRequest vehicleGroupRequest = new VehicleBusinessService.VehicleGroupRequest();
                 vehicleGroupRequest = _mapper.ToVehicleGroup(group);
