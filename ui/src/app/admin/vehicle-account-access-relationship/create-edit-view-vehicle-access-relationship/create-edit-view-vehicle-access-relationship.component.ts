@@ -6,6 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { UserDetailTableComponent } from '../../user-management/new-user-step/user-detail-table/user-detail-table.component';
 import { MatTableDataSource } from '@angular/material/table';
+import { AccountService } from '../../../services/account.service';
 
 @Component({
   selector: 'app-create-edit-view-vehicle-access-relationship',
@@ -22,7 +23,7 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
   breadcumMsg: any = '';  
   @Output() vehicleAccessRelationCreate = new EventEmitter<object>();
   vehicleAccessRelationshipFormGroup: FormGroup;
-  accessTypeList: any = [{name: 'Full Access', id: 1}, {name: 'View Only', id: 2}]; 
+  accessTypeList: any = []; 
   dataSource: any = new MatTableDataSource([]);
   displayedColumns: string[] = ['select', 'name'];
   selectionForAccountGrp = new SelectionModel(true, []);
@@ -31,14 +32,26 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
   selectedViewType: any = '';
   initData: any = [];
   dialogRef: MatDialogRef<UserDetailTableComponent>;
+  accountOrganizationId: any;
 
-  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog) { }
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService) { }
 
   ngOnInit() {
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.vehicleAccessRelationshipFormGroup = this._formBuilder.group({
       vehicleGroup: ['', [Validators.required]],
       accessType: ['', [Validators.required]]
     });
+    this.accessTypeList = [
+      {
+        type: 'F',
+        name: this.translationData.lblFullAccess || 'Full Access'
+      },
+      {
+        type: 'V',
+        name: this.translationData.lblViewOnly || 'View Only'
+      }
+    ];
     this.breadcumMsg = this.getBreadcum(this.actionType);
     if(this.actionType == 'view' || this.actionType == 'edit' ){
       this.setDropdownValue();
@@ -49,14 +62,14 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
 
   setDropdownValue(){
     this.vehicleAccessRelationshipFormGroup.get('vehicleGroup').setValue(this.selectedElementData.id);
-    this.vehicleAccessRelationshipFormGroup.get('accessType').setValue(this.selectedElementData.accessType.id);
+    this.vehicleAccessRelationshipFormGroup.get('accessType').setValue(this.selectedElementData.accessType);
   }
 
   loadGridData(tableData: any){
     let selectedAccountList: any = [];
     if(this.actionType == 'view'){
       tableData.forEach((row: any) => {
-        let search = this.selectedElementData.associatedAccount.filter((item: any) => item.id == row.id);
+        let search = this.selectedElementData.associatedData.filter((item: any) => item.id == row.id);
         if (search.length > 0) {
           selectedAccountList.push(row);
         }
@@ -81,7 +94,7 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
 
   selectTableRows() {
     this.dataSource.data.forEach((row: any) => {
-      let search = this.selectedElementData.associatedAccount.filter((item: any) => item.id == row.id);
+      let search = this.selectedElementData.associatedData.filter((item: any) => item.id == row.id);
       if (search.length > 0) {
         this.selectionForAccountGrp.select(row);
       }
@@ -132,11 +145,11 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
     let data: any = [];
     switch(event.value){
       case "group":{
-        data = this.initData.filter((item: any) => item.isAccountGroup == true);
+        data = this.initData.filter((item: any) => item.isGroup == true);
         break;
       }
       case "account":{
-        data = this.initData.filter((item: any) => item.isAccountGroup == false);
+        data = this.initData.filter((item: any) => item.isGroup == false);
         break;
       }
       case "both":{
@@ -156,11 +169,62 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
   }
 
   onConfirm(){
-    let emitObj = {
-      stepFlag: false,
-      msg: ""
-    }    
-    this.vehicleAccessRelationCreate.emit(emitObj); 
+    let curObj: any = this.vehicleGrpList.filter(item => item.id == parseInt(this.vehicleAccessRelationshipFormGroup.controls.vehicleGroup.value));
+    let accountList = [];
+    this.selectionForAccountGrp.selected.forEach(element => {
+      accountList.push({ id: element.id, name: element.name, isGroup: element.isGroup });
+    });
+    let payloadObj = {
+      id: this.vehicleAccessRelationshipFormGroup.controls.vehicleGroup.value,
+      accessType: this.vehicleAccessRelationshipFormGroup.controls.accessType.value,
+      isGroup: curObj.length > 0 ? curObj[0].isGroup : false, // default -> false
+      associatedData: accountList,
+      organizationId: this.accountOrganizationId
+    }
+    if(this.actionType == 'create'){ //-- create
+      this.accountService.createVehicleAccessRelationship(payloadObj).subscribe((createResp) => {
+        this.getAccessRelationList(curObj);
+      }, (error) => {
+        console.log("error:: ", error);
+      });
+    }
+    else{ //-- update
+      this.accountService.updateVehicleAccessRelationship(payloadObj).subscribe((updateResp) => {
+        this.getAccessRelationList(curObj);
+      }, (error) => {
+        console.log("error:: ", error);
+      });
+    }
+  }
+
+  getAccessRelationList(curObj: any){
+    this.accountService.getAccessRelationship(this.accountOrganizationId).subscribe((relData) => {
+      let emitObj = {
+        stepFlag: false,
+        msg: this.getSuccessMessage(curObj),
+        tableData: relData
+      }    
+      this.vehicleAccessRelationCreate.emit(emitObj); 
+    });
+  }
+
+  getSuccessMessage(curObj: any){
+    let msg: any = '';
+    if(this.actionType == 'create'){ //-- create
+      if(this.translationData.lblAccessRelationshipcreatedsuccessfully){
+        msg = this.translationData.lblAccessRelationshipcreatedsuccessfully.replace('$', curObj.name ? curObj.name : '');
+      }
+      else{
+        msg = ("'$' Access Relationship created successfully").replace('$', curObj.name ? curObj.name : '');
+      }
+    }else{ //-- update
+      if(this.translationData.lblAccessRelationshipupdatedsuccessfully){
+        msg = this.translationData.lblAccessRelationshipupdatedsuccessfully.replace('$', curObj.name ? curObj.name : '');
+      }
+      else{
+        msg = ("'$' Access Relationship updated successfully").replace('$', curObj.name ? curObj.name : '');
+      }
+    }
   }
 
   onReset(){
@@ -173,7 +237,9 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
     const colsList = ['firstName','emailId','roles'];
     const colsName = [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'];
     const tableTitle = `${row.name} - ${this.translationData.lblUsers || 'Users'}`;
-    let data = row.accounts;
+    // let data = row.accounts;
+    //-- TODO: call api to get all accounts --//
+    let data = [];
     this.callToCommonTable(data, colsList, colsName, tableTitle);
   }
 
