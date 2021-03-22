@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
     {
         public int Id { get; set; }
         [Required]
-        [StringLength(20)]
+        [StringLength(20, MinimumLength = 7)]
         public string Code { get; set; }
         public int FeatureSetID { get; set; }
         [Required]
@@ -16,7 +16,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
         [Required]
         [StringLength(50, MinimumLength = 5)]
         public string Name { get; set; }
-        [Required]
         public string Type { get; set; }
         [StringLength(120)]
         public string Description { get; set; }        
