@@ -28,19 +28,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly Mapper _mapper;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-        //private IMemoryCacheProvider _cache;
-        //private readonly PortalCacheConfiguration _cachesettings;
+        private IMemoryCacheProvider _cache;
+        private readonly PortalCacheConfiguration _cachesettings;
 
         #endregion
 
         #region Constructor
-        public FeatureController(FeatuseBusinessService.FeatureService.FeatureServiceClient Featureclient, ILogger<AccountController> logger/*, IMemoryCacheProvider cache, IOptions<PortalCacheConfiguration> cachesettings*/)
+        public FeatureController(FeatuseBusinessService.FeatureService.FeatureServiceClient Featureclient, ILogger<AccountController> logger, IMemoryCacheProvider cache, IOptions<PortalCacheConfiguration> cachesettings)
         {
             _featureclient = Featureclient;
             _logger = logger;
             _mapper = new Mapper();
-            //_cache = cache;
-            //_cachesettings = cachesettings.Value;
+            _cache = cache;
+            _cachesettings = cachesettings.Value;
         }
         #endregion
 
@@ -203,19 +203,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                //Google.Protobuf.Collections.RepeatedField<DataAttributeResponce> cachedataAttributes = _cache.GetFromCache<Google.Protobuf.Collections.RepeatedField<DataAttributeResponce>>(LangaugeCode);
-                //if (cachedataAttributes != null) return Ok(cachedataAttributes);
-                
                 DataAtributeRequest request = new DataAtributeRequest();
-                request.LangaugeCode = (LangaugeCode == null ||LangaugeCode == "") ? "EN-GB" : LangaugeCode ;
+                request.LangaugeCode = (LangaugeCode == null || LangaugeCode == "") ? "EN-GB" : LangaugeCode;
+                Google.Protobuf.Collections.RepeatedField<DataAttributeResponce> cachedataAttributes = _cache.GetFromCache<Google.Protobuf.Collections.RepeatedField<DataAttributeResponce>>(request.LangaugeCode);
+                if (cachedataAttributes != null && cachedataAttributes.Count>0) return Ok(cachedataAttributes);
+
+                
                 var responce = await _featureclient.GetDataAttributesAsync(request);
 
-                //// Set cache options.
-                //var cacheEntryOptions = new MemoryCacheEntryOptions()
-                //    // Keep in cache for this time, reset time if accessed.
-                //    .SetSlidingExpiration(TimeSpan.FromSeconds(100));
-                
-                //_cache.SetCache(LangaugeCode, responce.Responce, cacheEntryOptions);
+                // Set cache options.
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    // Keep in cache for this time, reset time if accessed.
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(_cachesettings.ExpiryInMinutes));
+
+                _cache.SetCache(LangaugeCode, responce.Responce, cacheEntryOptions);
 
                 return Ok(responce.Responce);
             }
@@ -224,7 +225,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 //throw;
                 _logger.LogError(ex.Message + " " + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error. Exception - " + ex.ToString());
+                return StatusCode(500, "Internal Server Error. Exception - " + ex.Message);
             }
         }
 
@@ -259,7 +260,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // Set cache options.
                 //var cacheEntryOptions = new MemoryCacheEntryOptions()
                 //    // Keep in cache for this time, reset time if accessed.
-                //    .SetSlidingExpiration(TimeSpan.FromSeconds(10));
+                //    .SetSlidingExpiration(TimeSpan.FromMinutes(_cachesettings.ExpiryInMinutes));
 
                 //_cache.SetCache(request.LangaugeCode, feature.Features, cacheEntryOptions);
                 return Ok(feature.Features);
@@ -267,7 +268,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message + " " + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error. Exception - " + ex.ToString());
+                return StatusCode(500, "Internal Server Error. Exception - " + ex.Message);
             }
         }
 

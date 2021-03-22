@@ -26,9 +26,18 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
             return false;
         }
+        public static bool ValidateAccessType(char accountType)
+        {
+            string enumList = "vVfF";
+            if (enumList.Contains(accountType))
+            {
+                return true;
+            }
+            return false;
+        }
         public static bool ValidateGroupType(char groupType)
         {
-            string enumList = "sSgGdD";
+            string enumList = "gGdD";
             if (enumList.Contains(groupType))
             {
                 return true;

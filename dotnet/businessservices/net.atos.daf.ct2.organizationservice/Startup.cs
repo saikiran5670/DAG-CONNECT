@@ -25,6 +25,7 @@ using net.atos.daf.ct2.relationship.repository;
 using net.atos.daf.ct2.relationship;
 using net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.repository;
+using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 //using Swashbuckle.AspNetCore.Swagger;
 //using Microsoft.OpenApi.Models;
 
@@ -52,7 +53,7 @@ namespace net.atos.daf.ct2.organizationservice
                 }));
 
             string connectionString = Configuration.GetConnectionString("ConnectionString");
-           // var connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+            //var connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
 
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             // var connectionString = Configuration.GetConnectionString("ConnectionString");
@@ -74,6 +75,11 @@ namespace net.atos.daf.ct2.organizationservice
             services.AddTransient<ISubscriptionManager, SubscriptionManager>();
             services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
 
+            services.AddTransient<IdentitySessionComponent.IAccountSessionManager, IdentitySessionComponent.AccountSessionManager>();
+            services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
+
             //services.AddTransient<IVehicleManagerRepository, VehicleManagerRepository>();
 
             services.AddTransient<Identity.IAccountManager, Identity.AccountManager>();
@@ -86,8 +92,11 @@ namespace net.atos.daf.ct2.organizationservice
             services.AddTransient<AccountComponent.IAccountManager, AccountComponent.AccountManager>();
             services.AddTransient<IGroupManager, GroupManager>();
             services.AddTransient<IGroupRepository, GroupRepository>();
-
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IdentitySessionComponent.IAccountSessionManager, IdentitySessionComponent.AccountSessionManager>();
+            services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

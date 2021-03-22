@@ -20,6 +20,8 @@ using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.account.entity;
 using AccountComponent = net.atos.daf.ct2.account;
 using SubscriptionComponent = net.atos.daf.ct2.subscription;
+using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
+
 namespace net.atos.daf.ct2.organization.repository
 {
     public class OrganizationRepository : IOrganizationRepository
@@ -29,15 +31,20 @@ namespace net.atos.daf.ct2.organization.repository
         private readonly IGroupManager groupManager;
         private readonly IAccountManager accountManager;
         SubscriptionComponent.ISubscriptionManager subscriptionManager;
+        IdentitySessionComponent.IAccountSessionManager accountSessionManager;
+        IdentitySessionComponent.IAccountTokenManager accountTokenManager;
+
         private static readonly log4net.ILog log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        public OrganizationRepository(IDataAccess _dataAccess, IVehicleManager _vehicleManager, IGroupManager _groupManager, IAccountManager _accountManager,SubscriptionComponent.ISubscriptionManager _subscriptionManager)
+        public OrganizationRepository(IDataAccess _dataAccess, IVehicleManager _vehicleManager, IGroupManager _groupManager, IAccountManager _accountManager,SubscriptionComponent.ISubscriptionManager _subscriptionManager, IdentitySessionComponent.IAccountSessionManager _accountSessionManager, IdentitySessionComponent.IAccountTokenManager _accountTokenManager)
         {
             dataAccess = _dataAccess;
             vehicelManager = _vehicleManager;
             groupManager = _groupManager;
             accountManager = _accountManager;
             subscriptionManager=_subscriptionManager;
+            accountSessionManager = _accountSessionManager;
+            accountTokenManager = _accountTokenManager;
         }
         public async Task<Organization> Create(Organization organization)
         {

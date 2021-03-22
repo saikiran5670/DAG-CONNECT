@@ -17,6 +17,9 @@ parameters:
   - DEV02
   - TEST01
   - TEST02
+  - ACC03
+
+pool: $(PRIVATEAGENT)
 
 variables:
 - ${{ if eq(parameters.ENV, 'DEV0') }}:
@@ -29,13 +32,13 @@ variables:
   - group: TEST01-Build-Variables
 - ${{ if eq(parameters.ENV, 'TEST02') }}:
   - group: TEST02-Build-Variables
-
-pool: $(PRIVATEAGENT)
+- ${{ if eq(parameters.ENV, 'ACC03') }}:
+  - group: ACC03-Build-Variables  
 
 steps:
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/dataservices/net.atos.daf.ct2.vehicledataservice/appsettings.json'
+    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.subscriptionservice/appsettings.json'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -48,12 +51,11 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/dataservices/net.atos.daf.ct2.vehicledataservice/appsettings.json
-
+      cat dotnet/businessservices/net.atos.daf.ct2.subscriptionservice/appsettings.json
 
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/dataservices/net.atos.daf.ct2.vehicledataservice/log4net.config'
+    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.subscriptionservice/log4net.config'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -63,19 +65,18 @@ steps:
     useLegacyPattern: false
     enableTelemetry: true
 
-- task: CmdLine@2
-  inputs:
-    script: |
-      cat dotnet/dataservices/net.atos.daf.ct2.vehicledataservice/log4net.config
-
+#- task: CmdLine@2
+#  inputs:
+#    script: |
+#      cat dotnet/businessservices/net.atos.daf.ct2.subscriptionservice/log4net.config
 
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
     azureSubscription:  $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
-    dockerFile: dotnet/VehicleDataService_Dockerfile
-    imageName: vehicledataservice
+    dockerFile: dotnet/Subscription_DockerFile
+    imageName: subscriptionservice-grpc
 
 - task: Docker@0
   displayName: 'Push an image'
@@ -83,5 +84,5 @@ steps:
     azureSubscription: $(Subscription)
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
-    imageName: vehicledataservice
+    imageName: subscriptionservice-grpc
 

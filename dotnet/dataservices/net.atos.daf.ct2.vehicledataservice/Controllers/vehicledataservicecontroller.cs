@@ -108,10 +108,13 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     }
                 }
 
-                if ((!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.type)) ||
-                    (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.value)))
+                if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights != null)
                 {
-                    return StatusCode(400, string.Empty);
+                    if ((!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.type)) ||
+                        (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.value)))
+                    {
+                        return StatusCode(400, string.Empty);
+                    }
                 }
 
 
@@ -170,16 +173,19 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
 
                 //Fuel Tank
                 vehicleProperties.VehicleFuelTankProperties = new List<VehicleFuelTankProperties>();
-                if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.FuelTanks.Tank != null)
+                if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.FuelTanks != null)
                 {
-                    foreach (var tank in vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.FuelTanks.Tank)
+                    if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.FuelTanks.Tank != null)
                     {
-                        if (tank != null)
+                        foreach (var tank in vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.FuelTanks.Tank)
                         {
-                            VehicleFuelTankProperties tankProperties = new VehicleFuelTankProperties();
-                            tankProperties.Chassis_Tank_Nr = tank.nr;
-                            tankProperties.Chassis_Tank_Volume = tank.Volume;
-                            vehicleProperties.VehicleFuelTankProperties.Add(tankProperties);
+                            if (tank != null)
+                            {
+                                VehicleFuelTankProperties tankProperties = new VehicleFuelTankProperties();
+                                tankProperties.Chassis_Tank_Nr = tank.nr;
+                                tankProperties.Chassis_Tank_Volume = tank.Volume;
+                                vehicleProperties.VehicleFuelTankProperties.Add(tankProperties);
+                            }
                         }
                     }
                 }
@@ -293,12 +299,15 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     //if (!string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Size.Height))
                     vehicleProperties.Dimensions_Size_Height = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Size.Height;
                 }
-                if (!string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.type))
-                    vehicleProperties.Dimensions_Size_Weight_Type = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.type;
 
-                //if (!string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.value))
-                vehicleProperties.Dimensions_Size_Weight_Value = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.value;
+                if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights != null)
+                {
+                    if (!string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.type))
+                        vehicleProperties.Dimensions_Size_Weight_Type = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.type;
 
+                    //if (!string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.value))
+                    vehicleProperties.Dimensions_Size_Weight_Value = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.value;
+                }
                 //VehicleDelivery
                 if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDelivery != null)
                 {

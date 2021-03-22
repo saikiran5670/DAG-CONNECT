@@ -56,12 +56,6 @@ namespace net.atos.daf.ct2.subscriptionservice
             app.UseGrpcWeb();
             app.UseCors();
 
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<SubscriptionManagementService>().EnableGrpcWeb()

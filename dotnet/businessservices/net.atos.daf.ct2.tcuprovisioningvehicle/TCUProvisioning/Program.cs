@@ -1,9 +1,11 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using log4net;
 using log4net.Config;
+using net.atos.daf.ct2.data;
 using Microsoft.Extensions.Configuration;
+using net.atos.daf.ct2.audit.repository;
+using net.atos.daf.ct2.audit;
 
 namespace TCUProvisioning
 {
@@ -21,7 +23,13 @@ namespace TCUProvisioning
 
             IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build();
 
-            ProvisionVehicle provisionVehicle = new ProvisionVehicle(log,config);
+
+            string psqlConnString = config.GetSection("psqlconnstring").Value;
+            IDataAccess dataacess = new PgSQLDataAccess(psqlConnString);
+            IAuditLogRepository auditrepo = new AuditLogRepository(dataacess);
+            IAuditTraillib audit = new AuditTraillib(auditrepo);
+
+            ProvisionVehicle provisionVehicle = new ProvisionVehicle(log,config,audit);
             await provisionVehicle.readTCUProvisioningData();
 
         }
