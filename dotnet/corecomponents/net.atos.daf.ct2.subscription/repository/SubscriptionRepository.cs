@@ -504,7 +504,7 @@ namespace net.atos.daf.ct2.subscription.repository
                 {
                     return null;
                 }
-                    objsubscriptionDetails = data.Cast<SubscriptionDetails>().ToList();
+                    objsubscriptionDetails = data.ToList();
                 
                 return objsubscriptionDetails;
             }
