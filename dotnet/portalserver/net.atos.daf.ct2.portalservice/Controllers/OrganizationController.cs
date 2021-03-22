@@ -773,6 +773,25 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+        [HttpGet]
+        [Route("getallorganizations")]
+        public async Task<IActionResult> GetAllOrganizations(OrganizationNameandID objOrganizationNameandID)
+        {
+            try
+            {
+                OrganizationBusinessService.OrganizationprimaryFieldsResponse objOrganizationprimaryFieldsResponse = new OrganizationprimaryFieldsResponse();
+                objOrganizationprimaryFieldsResponse.Id = objOrganizationNameandID.id;
+                logger.LogInformation("Organization GetAllOrganizations function called ");
+                var data = await organizationClient.GetAllOrganizationsAsync(objOrganizationprimaryFieldsResponse);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Exception in Organization GetAllOrganizations {ex.Message} {ex.StackTrace}");
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
     }
 }
 
