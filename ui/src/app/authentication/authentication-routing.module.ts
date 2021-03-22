@@ -9,8 +9,8 @@ const routes: Routes = [
   {
     path: "", component: AuthenticationComponent, children:[
         { path: "login", component: LoginComponent },
-        { path: "createpassword", component: SetPasswordComponent, children: [{path: "**", redirectTo: "/auth/createpassword" }]},
-        { path: "resetpassword", component: SetPasswordComponent, children: [{path: "**", redirectTo: "/auth/resetpassword" }]},
+        { path: "createpassword/:token", component: SetPasswordComponent/*, children: [{path: "**", redirectTo: "/auth/createpassword" }]*/},
+        { path: "resetpassword/:token", component: SetPasswordComponent/*, children: [{path: "**", redirectTo: "/auth/resetpassword" }]*/},
   ]
   }];
 

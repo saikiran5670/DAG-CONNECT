@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from 'src/app/services/account.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 
@@ -17,8 +17,10 @@ export class SetPasswordComponent implements OnInit {
   translationData: any = [];  
   buttonName: string;
   currentRoute: string= '';
+  token: string= '';
+  isChangePwdSuccess: boolean = false;
 
-  constructor(public router: Router, public fb: FormBuilder, private accountService: AccountService) {
+  constructor(public router: Router, private route: ActivatedRoute, public fb: FormBuilder, private accountService: AccountService) {
     this.setPasswordForm = this.fb.group({
       'newPassword': [null, Validators.compose([Validators.required, Validators.minLength(8)])],
       'confirmPassword': [null, Validators.compose([Validators.required])],
@@ -39,25 +41,29 @@ export class SetPasswordComponent implements OnInit {
     else if(this.currentRoute.includes("resetpassword")){
       this.buttonName = "Reset";
     }
+    this.token=  this.route.snapshot.paramMap.get('token');
   }
 
   public onCreatePassword(formValue) {
     if (this.setPasswordForm.valid) {
-      let routeArray = this.currentRoute.split("/");
       let objData: any = {
-        processToken: routeArray.pop(),
+        processToken: this.token,
         password: formValue.newPassword
       }
       if(this.buttonName == "Create"){
-        this.accountService.createpassword(objData).subscribe(()=>{
-          
+        this.accountService.createpassword(objData).subscribe((data)=>{
+          if(data){
+            this.isChangePwdSuccess= true;
+          }
         }, (error) => {
 
         });
       }
       else if(this.buttonName == "Reset"){
-        this.accountService.resetPassword(objData).subscribe(()=>{
-          
+        this.accountService.resetPassword(objData).subscribe((data)=>{
+          if(data){
+            this.isChangePwdSuccess= true;
+          }
         }, (error) => {
           
         });
@@ -66,6 +72,7 @@ export class SetPasswordComponent implements OnInit {
   }
 
   public cancel() {
+    this.isChangePwdSuccess= false;
     this.router.navigate(['/auth/login']);
   }
   
