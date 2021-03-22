@@ -8,9 +8,10 @@ import { ChartsModule } from 'ng2-charts';
 import { LoginComponent } from './login/login.component';
 import { ConfirmDialogService } from '../shared/confirm-dialog/confirm-dialog.service';
 import { LoginDialogComponent } from './login/login-dialog/login-dialog.component';
+import { SetPasswordComponent } from './set-password/set-password.component';
 
 @NgModule({
-  declarations: [AuthenticationComponent, LoginComponent, LoginDialogComponent],
+  declarations: [AuthenticationComponent, LoginComponent, LoginDialogComponent, SetPasswordComponent],
   imports: [
     CommonModule,
     AuthenticationRoutingModule,
