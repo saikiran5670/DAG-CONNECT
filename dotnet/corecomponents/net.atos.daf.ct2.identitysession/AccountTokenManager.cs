@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             tokenRepository =_tokenRepository;
         }
-       public async Task<string> InsertToken(AccountToken accountToken)
+       public async Task<int> InsertToken(AccountToken accountToken)
         {
             try
             {

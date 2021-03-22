@@ -274,6 +274,7 @@ namespace net.atos.daf.ct2.portalservice.Account
             }
             return vehicleAccessRelationship;
         }
+
         public AccountBusinessService.AccountAccessRelationship ToAccountAccessRelationship(AccessRelationshipRequest request)
         {
             AccountBusinessService.AccountAccessRelationship accountAccessRelationship  = new AccountBusinessService.AccountAccessRelationship();
@@ -300,17 +301,17 @@ namespace net.atos.daf.ct2.portalservice.Account
             response.IsGroup = request.IsGroup;
             return response;
         }
-        public AccessRelationshipResponseDetail ToAccessRelationshipData(AccountBusinessService.AccessRelationshipResponse request)
+        public AccessRelationshipResponse ToAccessRelationshipData(AccountBusinessService.AccessRelationshipResponse request)
         {
-            var response = new AccessRelationshipResponseDetail();
-            response.Vehicle = new List<VehicleAccount>();
-            response.Account = new List<VehicleAccount>();
+            var response = new AccessRelationshipResponse();
+            response.Vehicle = new List<AccessRelationshipDetail>();
+            response.Account = new List<AccessRelationshipDetail>();
             // vehicles
-            if (request.VehicleAccessRelationship!= null)
+            if (request.VehicleAccessRelationship != null)
             {
-                foreach(var vehicle in request.VehicleAccessRelationship)
+                foreach (var vehicle in request.VehicleAccessRelationship)
                 {
-                    response.Vehicle.Add(ToAccessRelationship(vehicle));
+                    response.Vehicle.Add(ToAccessRelationshipDetail(vehicle));
                 }
             }
             // accounts
@@ -318,10 +319,53 @@ namespace net.atos.daf.ct2.portalservice.Account
             {
                 foreach (var account in request.AccountAccessRelationship)
                 {
-                    response.Account.Add(ToAccessRelationship(account));
+                    response.Account.Add(ToAccessRelationshipDetail(account));
                 }
             }
             return response;
+        }
+        private AccessRelationshipDetail ToAccessRelationshipDetail(AccountBusinessService.VehicleAccountAccessData request)
+        {
+            var accessRelationship = new AccessRelationshipDetail();
+            if (request != null)
+            {
+                accessRelationship.Id = request.Id;
+                accessRelationship.Name = request.Name;
+                accessRelationship.IsGroup = request.IsGroup;
+                accessRelationship.Count = request.Count;
+            }
+            if (request.AssociateData != null)
+            {
+                accessRelationship.AssociatedData = new List<RelationshipData>();
+                foreach (var associateData in request.AssociateData)
+                {
+                    accessRelationship.AssociatedData.Add(ToAccessRelationshipData(associateData));
+                }
+            }
+            return accessRelationship;
+        }
+        private RelationshipData ToAccessRelationshipData(AccountBusinessService.RelationshipData request)
+        {
+            var accessRelationship = new RelationshipData();
+            if (request != null)
+            {
+                accessRelationship.Id = request.Id;
+                accessRelationship.Name = request.Name;
+                accessRelationship.IsGroup = request.IsGroup;                
+            }
+            return accessRelationship;
+        }
+        private VehicleAccount ToAccessRelationship(AccountBusinessService.VehicleAccountAccessData request)
+        {
+            var accessRelationship = new VehicleAccount();
+            if (request != null)
+            {
+                accessRelationship.Id = request.Id;
+                accessRelationship.Name = request.Name;
+                accessRelationship.IsGroup = request.IsGroup;
+                accessRelationship.Count = request.Count;
+            }
+            return accessRelationship;
         }
         public AccessRelationshipResponseDetail ToAccessRelationshipData(AccountBusinessService.AccountVehiclesResponse request)
         {
@@ -341,24 +385,24 @@ namespace net.atos.daf.ct2.portalservice.Account
             {
                 foreach (var account in request.AccountsAccountGroups)
                 {
-                    response.Vehicle.Add(ToAccessRelationship(account));
+                    response.Account.Add(ToAccessRelationship(account));
                 }
             }
             return response;
         }
-        private VehicleAccount ToAccessRelationship(AccountBusinessService.VehicleAccountAccessData request)
-        {
-            var accessRelationship = new VehicleAccount();
-            if (request !=null)
-            {
-                accessRelationship.Id = request.Id;
-                accessRelationship.Name = request.Name;
-                accessRelationship.IsGroup = request.IsGroup;
-                accessRelationship.Count = request.Count;
-            }            
-            
-            return accessRelationship;
-        }
+        
+        //private VehicleAccount ToAccessRelationship(AccountBusinessService.VehicleAccountAccessData request)
+        //{
+        //    var accessRelationship = new VehicleAccount();
+        //    if (request != null)
+        //    {
+        //        accessRelationship.Id = request.Id;
+        //        accessRelationship.Name = request.Name;
+        //        accessRelationship.IsGroup = request.IsGroup;
+        //        accessRelationship.Count = request.Count;
+        //    }
+        //    return accessRelationship;
+        //}
         private VehicleAccount ToAccessRelationship(AccountBusinessService.AccountVehicles request)
         {
             var accessRelationship = new VehicleAccount();
@@ -372,9 +416,22 @@ namespace net.atos.daf.ct2.portalservice.Account
 
             return accessRelationship;
         }
+            private VehicleAccount ToAccessRelationshipData(AccountBusinessService.AccountVehicles request)
+            {
+                var accessRelationship = new VehicleAccount();
+                if (request != null)
+                {
+                    accessRelationship.Id = request.Id;
+                    accessRelationship.Name = request.Name;
+                    accessRelationship.IsGroup = request.IsGroup;
+                    accessRelationship.Count = request.Count;
+                }
+
+                return accessRelationship;
+            }
 
 
-        #endregion
+            #endregion
 
-    }
+        }
 }

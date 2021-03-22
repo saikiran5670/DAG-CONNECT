@@ -30,15 +30,5 @@ namespace net.atos.daf.ct2.authenticationservicerest
                     builder.SetMinimumLevel(LogLevel.Trace);
                     builder.AddLog4Net("log4net.config");
                 });
-        public static IHostBuilder CreateHostBuilderOld(string[] args) =>
-                    Host.CreateDefaultBuilder(args)
-                        .ConfigureWebHostDefaults(webBuilder =>
-                        {
-                            webBuilder.UseStartup<Startup>();
-                        }).ConfigureLogging(builder =>
-                        {
-                            builder.SetMinimumLevel(LogLevel.Trace);
-                            builder.AddLog4Net("log4net.config");
-                        });
     }
 }

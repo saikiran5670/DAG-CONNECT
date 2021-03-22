@@ -15,6 +15,7 @@ using net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using Identity = net.atos.daf.ct2.identity;
+using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.repository;
 
@@ -62,6 +63,10 @@ namespace net.atos.daf.ct2.accountservice
             services.AddTransient<IAccountPreferenceRepository, AccountPreferenceRepository>();
             services.AddTransient<IPreferenceManager, PreferenceManager>();
             services.AddTransient<IAccountIdentityManager, AccountIdentityManager>();
+            services.AddTransient<IdentitySessionComponent.IAccountSessionManager, IdentitySessionComponent.AccountSessionManager>();
+            services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

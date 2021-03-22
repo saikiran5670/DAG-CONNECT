@@ -184,16 +184,7 @@ namespace net.atos.daf.ct2.accountservice
             return entity;
         }
         #region AccessRelationship
-        //public AccessRelationship ToAccessRelationShip(AccountComponent.entity.AccessRelationship entity)
-        //{
-        //    AccessRelationship request = new AccessRelationship();
-        //    request.Id = entity.Id;
-        //    request.AccessRelationType = entity.AccessRelationType.ToString();
-        //    request.AccountGroupId = entity.AccountGroupId;
-        //    request.VehicleGroupId = entity.VehicleGroupId;
-        //    return request;
-        //}
-
+       
         public List<AccountVehicles> ToAccountVehicles(List<AccountComponent.entity.AccountVehicleEntity> entity)
         {
             List<AccountVehicles> response = new List<AccountVehicles>();
@@ -220,6 +211,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             return response;
         }
+        
         public VehicleAccountAccessData ToAccessRelationShipData(AccountComponent.entity.AccountVehicleAccessRelationship entity)
         {
             VehicleAccountAccessData response = new VehicleAccountAccessData();
