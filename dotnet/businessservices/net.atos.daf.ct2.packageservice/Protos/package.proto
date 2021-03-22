@@ -58,7 +58,7 @@ message PackageCreateRequest {
     int32 Id=1;
     string Code= 2;
     int32 FeatureSetID =3;    
-    repeated string Features =4;
+    repeated int32 Features =4;
     string Name=5;
     string Type =6;
     string Description=7; 

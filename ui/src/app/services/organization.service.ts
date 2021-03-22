@@ -100,5 +100,15 @@ export class OrganizationService {
       .pipe(catchError(this.handleError));
   }
 
+  // getOrgRelationship(data): Observable<any[]> {
+  //   let headerObj = this.generateHeader();
+  //   const headers = {
+  //    headers: new HttpHeaders({ headerObj }),
+  //  };
+  //    const options =  { params: new HttpParams(data), headers: headers };
+  //    return this.httpClient
+  //      .get<any[]>(`${this.relationServiceUrl}/organization/orgrelationship/get?Organizationid=${data.Organizationid}`,headers)
+  //      .pipe(catchError(this.handleError));
+  //  }
    
 }

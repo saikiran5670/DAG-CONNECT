@@ -28,9 +28,10 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   selectedType: any = '';
   organizationId: number;
   localStLanguage: any;
-  vehicleGroupDisplayColumn: string[]= ['all', 'vehicleGroupName'];
-  organisationNameDisplayColumn: string[]= ['all', 'organisationName'];
+  vehicleGroupDisplayColumn: string[]= ['select', 'vehicleGroupName'];
+  organisationNameDisplayColumn: string[]= ['select', 'organisationName'];
   initData: any;
+  selectedOrgRelations = new SelectionModel(true, []);
 
   relationshipList: any = [
     {
@@ -113,5 +114,27 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   }
   onCreate(){
 
+  }
+
+  masterToggleForOrgRelationship() {
+    this.isAllSelectedForOrgRelationship()
+      ? this.selectedOrgRelations.clear()
+      : this.dataSource.data.forEach((row) =>
+        this.selectedOrgRelations.select(row)
+      );
+  }
+
+  isAllSelectedForOrgRelationship() {
+    const numSelected = this.selectedOrgRelations.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForOrgRelationship(row?: any): string {
+    if (row)
+      return `${this.isAllSelectedForOrgRelationship() ? 'select' : 'deselect'} all`;
+    else
+      return `${this.selectedOrgRelations.isSelected(row) ? 'deselect' : 'select'
+        } row`;
   }
 }

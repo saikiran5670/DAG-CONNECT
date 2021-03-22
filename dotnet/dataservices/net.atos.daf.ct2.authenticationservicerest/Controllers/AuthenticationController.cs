@@ -55,11 +55,11 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                         if (response != null && response.statusCode==System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(response.AccessToken))
                         {
                             AuthToken authToken = new AuthToken();
-                            authToken.AccessToken = response.AccessToken;
-                            authToken.ExpiresIn = response.ExpiresIn;
-                            authToken.TokenType = response.TokenType;
-                            authToken.SessionState = response.SessionState;
-                            authToken.Scope = response.Scope;
+                            authToken.access_token = response.AccessToken;
+                            authToken.expires_in = response.ExpiresIn;
+                            authToken.token_type = response.TokenType;
+                            authToken.session_state = response.SessionState;
+                            authToken.scope = response.Scope;
                             return Ok(authToken);
                         }
                         else

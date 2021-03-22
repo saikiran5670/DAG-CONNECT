@@ -178,7 +178,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 var response = await _packageClient.GetAsync(request);
                 response.PacakageList.Where(S => S.FeatureSetID > 0)
-                                                .Select(S => { S.Features.AddRange(_featureSetMapper.GetFeatures(S.FeatureSetID).Result); return S; }).ToList();
+                                                .Select(S => { S.Features.AddRange(_featureSetMapper.GetFeatureIds(S.FeatureSetID).Result); return S; }).ToList();
+
+                 
+
                 if (response != null && response.Code == Responsecode.Success)
                 {
                     if (response.PacakageList != null && response.PacakageList.Count > 0)
