@@ -31,6 +31,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Account
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string AccessType { get; set; }
         public bool IsGroup { get; set; }
         public int Count { get; set; }
         public List<RelationshipData> AssociatedData { get; set; }

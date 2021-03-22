@@ -30,6 +30,7 @@ using net.atos.daf.ct2.vehicledataservice.CustomAttributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography;
+using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 
 namespace net.atos.daf.ct2.vehicledataservice
 {
@@ -78,6 +79,11 @@ namespace net.atos.daf.ct2.vehicledataservice
             
             services.AddTransient<AccountComponent.IAccountRepository,AccountComponent.AccountRepository>();
             services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();
+            services.AddTransient<IdentitySessionComponent.IAccountSessionManager, IdentitySessionComponent.AccountSessionManager>();
+            services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
+
 
             //services.AddMvc(options =>
             //{
