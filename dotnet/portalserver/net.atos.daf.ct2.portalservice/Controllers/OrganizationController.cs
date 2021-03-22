@@ -780,7 +780,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("getallorganizations")]
-        public async Task<IActionResult> GetAllOrganizations(OrganizationNameandID objOrganizationNameandID)
+        public async Task<IActionResult> GetAllOrganizations([FromQuery] OrganizationNameandID objOrganizationNameandID)
         {
             try
             {

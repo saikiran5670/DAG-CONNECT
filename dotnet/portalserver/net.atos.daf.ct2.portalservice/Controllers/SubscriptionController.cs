@@ -24,31 +24,25 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     {
 
         #region Private Variable
-        private readonly ILogger<AccountController> _logger;
+        private readonly ILogger<SubscriptionController> _logger;
         private readonly SubscriptionBusinessService.SubscribeGRPCService.SubscribeGRPCServiceClient  _subscribeClient;
-        private readonly Mapper _mapper;
-        private string FK_Constraint = "violates foreign key constraint";
-        private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-        //private IMemoryCacheProvider _cache;
-        //private readonly PortalCacheConfiguration _cachesettings;
+       
+       
 
         #endregion
 
         #region Constructor
-        public SubscriptionController(SubscriptionBusinessService.SubscribeGRPCService.SubscribeGRPCServiceClient subscribeClient, ILogger<AccountController> logger/*, IMemoryCacheProvider cache, IOptions<PortalCacheConfiguration> cachesettings*/)
+        public SubscriptionController(SubscriptionBusinessService.SubscribeGRPCService.SubscribeGRPCServiceClient subscribeClient, ILogger<SubscriptionController> logger)
         {
             _subscribeClient = subscribeClient;
             _logger = logger;
-            _mapper = new Mapper();
-            //_cache = cache;
-            //_cachesettings = cachesettings.Value;
         }
         #endregion
 
 
         [HttpGet]
         [Route("getsubscriptiondetails")]
-        public async Task<IActionResult> GetSubscriptionDetails(SubscriptionDetailsRequest objSubscriptionDetailsRequest)
+        public async Task<IActionResult> GetSubscriptionDetails([FromQuery] SubscriptionDetailsRequest objSubscriptionDetailsRequest)
         {
             try
             {
@@ -56,22 +50,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 SubscriptionBusinessService.SubscriptionDetailsRequest objBusinessEntity = new SubscriptionBusinessService.SubscriptionDetailsRequest();
                 objBusinessEntity.OrganizationId = objSubscriptionDetailsRequest.organization_id;
                 objBusinessEntity.Type = objSubscriptionDetailsRequest.type == null ? string.Empty : objSubscriptionDetailsRequest.type;
-                objBusinessEntity.IsActive = (SubscriptionBusinessService.StatusType) objSubscriptionDetailsRequest.is_active;
-                var responce = await _subscribeClient.GetAsync(objBusinessEntity);
+                objBusinessEntity.IsActive = (SubscriptionBusinessService.StatusType)objSubscriptionDetailsRequest.is_active;
+                var data = await _subscribeClient.GetAsync(objBusinessEntity);
 
-                return Ok(responce);
+                return Ok(data);
             }
             catch (Exception ex)
             {
-                _logger.LogError("{ Service:Create : " + ex.Message + " " + ex.StackTrace);
-
-                if (ex.Message.Contains(FK_Constraint))
-                {
-                    return StatusCode(400, "The foreign key violation in one of dependant data.");
-                }
-                return StatusCode(500, "Internal Server Error.");
+                _logger.LogError("{ Exception in Subscription GetSubscriptionDetails {ex.Message} {ex.StackTrace}}");
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-
     }
 }
