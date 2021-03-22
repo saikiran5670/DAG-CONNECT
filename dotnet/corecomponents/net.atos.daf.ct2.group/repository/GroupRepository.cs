@@ -579,5 +579,141 @@ namespace net.atos.daf.ct2.group
         }
 
         #endregion
+
+
+        #region vehicle Group
+
+
+        public async Task<IEnumerable<Group>> GetVehicleGroupWithVehCount(GroupFilter groupFilter)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                List<Group> groupList = new List<Group>();
+                var query = @"select id,object_type,group_type,argument,function_enum,organization_id,ref_id,name,description,created_at from master.group where 1=1 ";
+
+                if (groupFilter != null)
+                {
+                    // group id filter
+                    if (groupFilter.Id > 0)
+                    {
+                        parameter.Add("@id", groupFilter.Id);
+                        query = query + " and id=@id ";
+                    }
+                    // ref id filter
+                    if (groupFilter.RefId > 0)
+                    {
+                        return await GetByRefId(groupFilter);
+                    }
+                    // organization id filter
+                    if (groupFilter.OrganizationId > 0)
+                    {
+                        parameter.Add("@organization_id", groupFilter.OrganizationId);
+                        query = query + " and organization_id=@organization_id ";
+                    }
+                    // group type filter
+                    if (((char)groupFilter.GroupType) != ((char)GroupType.None))
+                    {
+                        parameter.Add("@group_type", (char)groupFilter.GroupType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                        query = query + " and group_type=@group_type";
+                    }
+                    else
+                    {
+                        parameter.Add("@group_type_group", (char)GroupType.Group, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                        parameter.Add("@group_type_dynamic", (char)GroupType.Dynamic, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                        query = query + " and (group_type=@group_type_group or group_type=@group_type_dynamic) ";
+                    }
+
+                    //// function functional enum filter
+                    //if (((char)groupFilter.FunctionEnum) != ((char)FunctionEnum.None))
+                    //{
+                    //    parameter.Add("@function_enum", (char)groupFilter.FunctionEnum, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                    //    query = query + " and function_enum=@function_enum";
+                    //}
+                    // object type filter
+                    if (((char)groupFilter.ObjectType) != ((char)ObjectType.None))
+                    {
+
+                        parameter.Add("@object_type", (char)groupFilter.ObjectType, DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
+                        query = query + " and object_type=@object_type ";
+                    }
+
+                    // Account Id list Filter                       
+                    if (groupFilter.GroupIds != null && groupFilter.GroupIds.Count() > 0)
+                    {
+                        parameter.Add("@groupids", groupFilter.GroupIds);
+                        query = query + " and id=ANY(@groupids)";
+                    }
+                }
+                IEnumerable<dynamic> groups = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                Group group = new Group();
+
+                foreach (dynamic record in groups)
+                {
+                    group = Map(record);
+
+                    if (group.GroupType == GroupType.Group)
+                    {
+                        //if (groupFilter.GroupRef)
+                        //{
+                        //    // group ref filter 
+                        //    if (groupFilter.GroupRef)
+                        //    {
+                        //        group.GroupRef = GetRef(group.Id).Result;
+                        //    }
+                        //}
+                        //if (groupFilter.GroupRefCount)
+                        //{
+
+                            // group ref filter 
+                            //if (groupFilter.GroupRefCount)
+                            //{
+                                group.GroupRefCount = GetRefCount(group.Id).Result;
+                            //}
+                        //}
+                    }
+                    if (group.GroupType == GroupType.Dynamic && group.FunctionEnum==FunctionEnum.All)
+                    {
+                        group.GroupRefCount = GetDynamicAllRefCount(group.OrganizationId).Result;
+                        
+                    }
+                        //if (group.GroupType == GroupType.Dynamic && group.ObjectType == ObjectType.AccountGroup)
+                        //{
+                        //    group.GroupRefCount = await GetAccountCount(group.OrganizationId);
+                        //}
+                        groupList.Add(group);
+                }
+
+                return groupList;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private async Task<int> GetDynamicAllRefCount(int orgId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                var query = @"select count(distinct veh.id)
+                                        from master.vehicle veh
+                                        Inner join master.orgrelationshipmapping orm
+                                        on veh.id=orm.vehicle_id  
+                                        where veh.organization_id=@organization_id and(orm.owner_org_id=@organization_id or orm.target_org_id=@organization_id)
+                                        and case when COALESCE(orm.end_date,0) !=0 then to_timestamp(COALESCE(orm.end_date)/1000)::date>=now()::date 
+		                                else COALESCE(orm.end_date,0) =0 end";
+                parameter.Add("@organization_id", orgId);
+                var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                return count;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
     }
 }
