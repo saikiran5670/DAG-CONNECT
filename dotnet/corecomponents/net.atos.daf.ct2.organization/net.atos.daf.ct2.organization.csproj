@@ -1,8 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.data\net.atos.daf.ct2.data.csproj" />
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.audit\net.atos.daf.ct2.audit.csproj" />
+    <ProjectReference Include="..\net.atos.daf.ct2.identitysession\net.atos.daf.ct2.identitysession.csproj" />
     <ProjectReference Include="..\net.atos.daf.ct2.vehicle\net.atos.daf.ct2.vehicle.csproj" />
     <ProjectReference Include="..\net.atos.daf.ct2.accountpreference\net.atos.daf.ct2.accountpreference.csproj" />
     <ProjectReference Include="..\net.atos.daf.ct2.group\net.atos.daf.ct2.group.csproj" />
@@ -12,6 +13,12 @@
 
   <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="net.atos.daf.ct2.identitysession">
+      <HintPath>..\net.atos.daf.ct2.identitysession\bin\Debug\netcoreapp3.1\net.atos.daf.ct2.identitysession.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <PropertyGroup>
