@@ -105,11 +105,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         }
                         return Ok(accIdentity); 
                     }
-                    else 
+                    else if (response != null && response.Code == AccountBusinessService.Responcecode.Failed)
                     {
-                        return StatusCode(500,"Please contact system administrator 123");
+                        return StatusCode(500, response.Message);
                     }
-                }
+                    else if (response != null && response.Code == AccountBusinessService.Responcecode.Failed)
+                    {
+                        return StatusCode(500, response.Message);
+                    }
+                    else if (response == null )
+                    {
+                        return StatusCode(500, "Please contact system administrator.");
+                    }
+                    }
             }
             else 
             {
