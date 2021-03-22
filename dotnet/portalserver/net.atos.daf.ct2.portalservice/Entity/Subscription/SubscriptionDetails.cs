@@ -18,10 +18,10 @@ namespace net.atos.daf.ct2.subscription.entity
 	{
 		public int organization_id { get; set; }
 		public string type { get; set; }
-		public StatusType is_active { get; set; }
+		public ActiveState is_active { get; set; }
 		
 	}
-	public enum StatusType
+	public enum ActiveState
 	{
 		None = 0,
 		True = 1,

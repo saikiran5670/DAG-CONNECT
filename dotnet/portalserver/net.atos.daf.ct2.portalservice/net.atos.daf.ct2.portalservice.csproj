@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <None Remove="Protos\package.proto" />
-    <None Remove="Protos\subscribe.proto" />
   </ItemGroup>
 
   <ItemGroup>
