@@ -22,7 +22,7 @@
                     <mat-label style='display: flex;'>
                         <span>{{ translationData.lblDataAttributeSetName || 'Data Attribute Set Name' }}</span>
                         <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
-                        <span *ngIf="actionType != 'view'"><mat-icon style="margin-left: 15px;" >info</mat-icon></span>
+                        <span *ngIf="actionType != 'view'"><mat-icon style="padding-left: 7px; font-size: 15px; padding-top: 3px;">info</mat-icon></span>
                     </mat-label>
                     <div *ngIf="actionType != 'view'">
                         
@@ -44,7 +44,7 @@
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
                         <span>{{ translationData.lblDataAttributeDescription || 'Data Attribute Description' }}
-                            <mat-icon *ngIf="actionType != 'view'" style="margin-left: 15px; vertical-align: bottom;">info</mat-icon>
+                            <mat-icon *ngIf="actionType != 'view'" style="padding-left: 7px; font-size: 15px; padding-top: 4px; vertical-align: middle;">info</mat-icon>
                         </span>
                         <span *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax || '120 characters max' }}</span>
                     </mat-label>
