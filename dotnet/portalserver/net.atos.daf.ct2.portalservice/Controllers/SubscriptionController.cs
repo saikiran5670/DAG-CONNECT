@@ -47,8 +47,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.LogInformation("GetSubscriptionDetails method in Subscription API called.");
+                if (objSubscriptionDetailsRequest.organization_id == 0)
+                {
+                    return StatusCode(400, string.Empty);
+                }
                 SubscriptionBusinessService.SubscriptionDetailsRequest objBusinessEntity = new SubscriptionBusinessService.SubscriptionDetailsRequest();
-                objBusinessEntity.OrganizationId = objSubscriptionDetailsRequest.organization_id;
+                objBusinessEntity.OrganizationId = objSubscriptionDetailsRequest.organization_id; 
                 objBusinessEntity.Type = objSubscriptionDetailsRequest.type == null ? string.Empty : objSubscriptionDetailsRequest.type;
                 objBusinessEntity.IsActive = (SubscriptionBusinessService.StatusType)objSubscriptionDetailsRequest.is_active;
                 var data = await _subscribeClient.GetAsync(objBusinessEntity);
