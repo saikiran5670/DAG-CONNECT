@@ -21,15 +21,15 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 
 	/** SQL statement for insert. */
 	private static final String READ_CURRENT_TRIP = "SELECT * FROM livefleet.livefleet_current_trip_statistics WHERE trip_id = ? ORDER BY created_at_m2m ASC limit 1";
-	private static final String INSERT_CURRENT_TRIP = "INSERT INTO livefleet.livefleet_current_trip_statistics ( trip_id   , vin        ,start_time_stamp          ,end_time_stamp                ,driver1_id          ,start_position_lattitude              ,start_position_longitude             ,start_position                ,last_received_position_lattitude             , last_received_position_longitude  ,last_known_position                ,vehicle_status ,driver1_status ,vehicle_health_status  ,last_odometer_val ,distance_until_next_service ,last_processed_message_time_stamp ,driver2_id ,driver2_status ,created_at_m2m ,created_at_kafka ,created_at_dm_ ,modified_at ) VALUES (? ,?         ,?            ,?            ,?            ,?            ,?            ,?            ,?            ,?            ,?                ,?            ,?            ,? ,? ,?   ,?            ,?            ,?            ,?            ,?            ,?            ,?            )";
+	private static final String INSERT_CURRENT_TRIP = "INSERT INTO livefleet.livefleet_current_trip_statistics ( trip_id   , vin        ,start_time_stamp          ,end_time_stamp                ,driver1_id          ,start_position_lattitude              ,start_position_longitude             ,start_position                ,last_received_position_lattitude             , last_received_position_longitude  ,last_known_position                ,vehicle_status ,driver1_status ,vehicle_health_status  ,last_odometer_val ,distance_until_next_service ,last_processed_message_time_stamp ,driver2_id ,driver2_status ,created_at_m2m ,created_at_kafka ,created_at_dm_ ,modified_at, fuel_consumption) VALUES (? ,?         ,?            ,?            ,?            ,?            ,?            ,?            ,?            ,?            ,?                ,?            ,?            ,? ,? ,?   ,?            ,?            ,?            ,?            ,?            ,?            ,?     ,?       )";
 
-	public void insert(Index row, int distance_until_next_service) throws TechnicalException, SQLException {
+	public void insert(Index row, Integer distance_until_next_service) throws TechnicalException, SQLException {
 		PreparedStatement stmt_insert_current_trip = null;
 		try {
 
 			if (null != row && null != (connection = getConnection())) {
 				stmt_insert_current_trip = connection.prepareStatement(INSERT_CURRENT_TRIP);
-				stmt_insert_current_trip = fillStatement(stmt_insert_current_trip, row);
+				stmt_insert_current_trip = fillStatement(stmt_insert_current_trip, row ,distance_until_next_service);
 				stmt_insert_current_trip.addBatch();
 				System.out.println("before current trip execute batch ");
 				stmt_insert_current_trip.executeBatch();
@@ -41,14 +41,14 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 		}
 	}
 
-	private PreparedStatement fillStatement(PreparedStatement stmt_insert_current_trip, Index row)
+	private PreparedStatement fillStatement(PreparedStatement stmt_insert_current_trip, Index row,Integer distance_until_next_service)
 			throws SQLException {
 
 		long start_time_stamp = 0;
 		// long end_time_stamp = 0;
 		double start_position_lattitude = 0;
 		double start_position_longitude = 0;
-		int distance_until_next_service = 0;
+		
 		String varTripID = row.getDocument().getTripID();
 		int varVEvtid = row.getVEvtID();
 
@@ -153,7 +153,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 			stmt_insert_current_trip.setInt(15, odometer_val);
 		}
 
-		stmt_insert_current_trip.setInt(16, distance_until_next_service); // distance_until_next_service
+		stmt_insert_current_trip.setInt(16, distance_until_next_service.intValue()); // distance_until_next_service
 
 		stmt_insert_current_trip.setLong(17, row.getReceivedTimestamp()); // 17
 																			// last_processed_message_time
@@ -177,6 +177,9 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 
 		stmt_insert_current_trip.setLong(23, row.getReceivedTimestamp()); // 23
 																			// modified_at
+		
+		stmt_insert_current_trip.setLong(24, row.getVUsedFuel()); // 24 vusedFuel
+
 		return stmt_insert_current_trip;
 
 	}
