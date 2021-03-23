@@ -53,10 +53,13 @@ public class MonitorDataProcess {
 
 			log.info("after addsink");
 			try {
+				//System.out.println("inside try of monitoring auditing");
 				auditing = new AuditETLJobClient(envParams.get(DafConstants.GRPC_SERVER),
 						Integer.valueOf(envParams.get(DafConstants.GRPC_PORT)));
+				//System.out.println("before calling audit map");
 				auditMap = createAuditMap(DafConstants.AUDIT_EVENT_STATUS_START,
 						"Realtime Data Monitoring processing Job Started");
+				//System.out.println("before calling auditTRail");
 				auditing.auditTrialGrpcCall(auditMap);
 				auditing.closeChannel();
 			} catch (Exception e) {
@@ -86,7 +89,7 @@ public class MonitorDataProcess {
 
 	private static Map<String, String> createAuditMap(String jobStatus, String message) {
 		Map<String, String> auditMap = new HashMap<>();
-
+		//System.out.println("before calling audit mapinside createAudit map meesage="+ message);
 		auditMap.put(DafConstants.JOB_EXEC_TIME, String.valueOf(TimeFormatter.getInstance().getCurrentUTCTimeInSec()));
 		auditMap.put(DafConstants.AUDIT_PERFORMED_BY, DafConstants.TRIP_JOB_NAME);
 		auditMap.put(DafConstants.AUDIT_COMPONENT_NAME, DafConstants.TRIP_JOB_NAME);

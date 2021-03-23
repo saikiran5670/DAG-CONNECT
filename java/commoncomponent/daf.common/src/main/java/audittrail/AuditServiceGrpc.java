@@ -59,6 +59,38 @@ public final class AuditServiceGrpc {
      return getAddlogsMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<audittrail.Audittrail.AuditLogRequest,
+      audittrail.Audittrail.AuditLogResponse> getGetAuditLogsMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "GetAuditLogs",
+      requestType = audittrail.Audittrail.AuditLogRequest.class,
+      responseType = audittrail.Audittrail.AuditLogResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<audittrail.Audittrail.AuditLogRequest,
+      audittrail.Audittrail.AuditLogResponse> getGetAuditLogsMethod() {
+    io.grpc.MethodDescriptor<audittrail.Audittrail.AuditLogRequest, audittrail.Audittrail.AuditLogResponse> getGetAuditLogsMethod;
+    if ((getGetAuditLogsMethod = AuditServiceGrpc.getGetAuditLogsMethod) == null) {
+      synchronized (AuditServiceGrpc.class) {
+        if ((getGetAuditLogsMethod = AuditServiceGrpc.getGetAuditLogsMethod) == null) {
+          AuditServiceGrpc.getGetAuditLogsMethod = getGetAuditLogsMethod = 
+              io.grpc.MethodDescriptor.<audittrail.Audittrail.AuditLogRequest, audittrail.Audittrail.AuditLogResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(
+                  "audittrail.AuditService", "GetAuditLogs"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  audittrail.Audittrail.AuditLogRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  audittrail.Audittrail.AuditLogResponse.getDefaultInstance()))
+                  .setSchemaDescriptor(new AuditServiceMethodDescriptorSupplier("GetAuditLogs"))
+                  .build();
+          }
+        }
+     }
+     return getGetAuditLogsMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -93,6 +125,13 @@ public final class AuditServiceGrpc {
       asyncUnimplementedUnaryCall(getAddlogsMethod(), responseObserver);
     }
 
+    /**
+     */
+    public void getAuditLogs(audittrail.Audittrail.AuditLogRequest request,
+        io.grpc.stub.StreamObserver<audittrail.Audittrail.AuditLogResponse> responseObserver) {
+      asyncUnimplementedUnaryCall(getGetAuditLogsMethod(), responseObserver);
+    }
+
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -102,6 +141,13 @@ public final class AuditServiceGrpc {
                 audittrail.Audittrail.AuditRecord,
                 audittrail.Audittrail.AuditResponce>(
                   this, METHODID_ADDLOGS)))
+          .addMethod(
+            getGetAuditLogsMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                audittrail.Audittrail.AuditLogRequest,
+                audittrail.Audittrail.AuditLogResponse>(
+                  this, METHODID_GET_AUDIT_LOGS)))
           .build();
     }
   }
@@ -131,6 +177,14 @@ public final class AuditServiceGrpc {
       asyncUnaryCall(
           getChannel().newCall(getAddlogsMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     */
+    public void getAuditLogs(audittrail.Audittrail.AuditLogRequest request,
+        io.grpc.stub.StreamObserver<audittrail.Audittrail.AuditLogResponse> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getGetAuditLogsMethod(), getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -156,6 +210,13 @@ public final class AuditServiceGrpc {
     public audittrail.Audittrail.AuditResponce addlogs(audittrail.Audittrail.AuditRecord request) {
       return blockingUnaryCall(
           getChannel(), getAddlogsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public audittrail.Audittrail.AuditLogResponse getAuditLogs(audittrail.Audittrail.AuditLogRequest request) {
+      return blockingUnaryCall(
+          getChannel(), getGetAuditLogsMethod(), getCallOptions(), request);
     }
   }
 
@@ -184,9 +245,18 @@ public final class AuditServiceGrpc {
       return futureUnaryCall(
           getChannel().newCall(getAddlogsMethod(), getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<audittrail.Audittrail.AuditLogResponse> getAuditLogs(
+        audittrail.Audittrail.AuditLogRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(getGetAuditLogsMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_ADDLOGS = 0;
+  private static final int METHODID_GET_AUDIT_LOGS = 1;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -208,6 +278,10 @@ public final class AuditServiceGrpc {
         case METHODID_ADDLOGS:
           serviceImpl.addlogs((audittrail.Audittrail.AuditRecord) request,
               (io.grpc.stub.StreamObserver<audittrail.Audittrail.AuditResponce>) responseObserver);
+          break;
+        case METHODID_GET_AUDIT_LOGS:
+          serviceImpl.getAuditLogs((audittrail.Audittrail.AuditLogRequest) request,
+              (io.grpc.stub.StreamObserver<audittrail.Audittrail.AuditLogResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -271,6 +345,7 @@ public final class AuditServiceGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new AuditServiceFileDescriptorSupplier())
               .addMethod(getAddlogsMethod())
+              .addMethod(getGetAuditLogsMethod())
               .build();
         }
       }

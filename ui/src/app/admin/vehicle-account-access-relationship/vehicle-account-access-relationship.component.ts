@@ -43,6 +43,8 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   actionType: any = '';
   selectedElementData: any = [];
   dialogRef: MatDialogRef<UserDetailTableComponent>;
+  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  userType: any = localStorage.getItem("userType");
 
   constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private dialog: MatDialog) { 
     this.defaultTranslation();

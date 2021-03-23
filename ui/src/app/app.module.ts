@@ -20,7 +20,7 @@ import { OrganizationService } from './services/organization.service';
 import { DriverService } from './services/driver.service';
 import { FeatureService } from './services/feature.service';
 import { PackageService } from './services/package.service';
-import { AppInterceptor } from './interceptor/App.interceptor';
+import { AppInterceptor } from './interceptor/app.interceptor';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');

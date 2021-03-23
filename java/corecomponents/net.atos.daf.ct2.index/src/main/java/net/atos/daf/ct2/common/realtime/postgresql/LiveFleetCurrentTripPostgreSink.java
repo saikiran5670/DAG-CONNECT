@@ -131,7 +131,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 							indexValue.setGpsLatitude(current_trip_start_var.getStart_position_lattitude());
 
 						}
-
+						//make it Integer
 						int distance_until_next_service = positionDAO.read(index.getValue().getVin());
 
 						currentTripDAO.insert(indexValue, distance_until_next_service);

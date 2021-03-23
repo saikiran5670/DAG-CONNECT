@@ -59,7 +59,7 @@
             </mat-radio-button>
           </mat-radio-group>
         </div>
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+        <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
           <button mat-flat-button color="primary" (click)="createNewAssociation()">
             <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewAssociation || 'New Association' }}
           </button>
@@ -104,10 +104,10 @@
               <button class='actionBtn' mat-flat-button (click)="editViewAccessRelationship(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
                 <mat-icon>visibility</mat-icon>
               </button>
-              <button class='actionBtn' mat-flat-button (click)="editViewAccessRelationship(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+              <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="editViewAccessRelationship(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
                 <mat-icon>create</mat-icon>
               </button>
-              <button class='actionBtn' mat-flat-button (click)="deleteAccessRelationship(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+              <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deleteAccessRelationship(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
                 <mat-icon class="deleteIcon">delete_outline</mat-icon>
               </button>
             </mat-cell>

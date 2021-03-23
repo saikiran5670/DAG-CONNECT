@@ -65,14 +65,15 @@ public class AuditETLJobClient {
 			jobExecTime = Long.valueOf(jobDetail.get("jobExecTime"));
 		else
 			jobExecTime = TimeFormatter.getInstance().getCurrentUTCTime();
+		//System.out.println("Inside auditTrialGrpcCall");
 
 		AuditResponce auditResponce = stub.addlogs(AuditRecord.newBuilder()
 				.setPerformedAt(com.google.protobuf.Timestamp.newBuilder().setSeconds(jobExecTime).build())
 				.setPerformedBy(conversionInt(jobDetail.get("0"))).setComponentName(jobDetail.get("componentName"))
 				.setServiceName(jobDetail.get("serviceName"))
-				.setType(audittrail.Audittrail.AuditRecord.Event_type
+				.setType(audittrail.Audittrail.Event_type
 						.forNumber(conversionInt(jobDetail.get("eventType"))))
-				.setStatus(audittrail.Audittrail.AuditRecord.Event_status
+				.setStatus(audittrail.Audittrail.Event_status
 						.forNumber(conversionInt(jobDetail.get("eventstatus"))))
 				.setMessage(jobDetail.get("message")).setSourceobjectId(conversionInt(jobDetail.get("sourceObjectId")))
 				.setTargetobjectId(conversionInt(jobDetail.get("targetObjectId"))).setUpdatedData("").build());

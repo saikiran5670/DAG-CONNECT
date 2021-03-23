@@ -107,7 +107,7 @@
                 </ng-container>
                 <ng-container matColumnDef="vehicleGroupName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group Name'}}</mat-header-cell>
-                    <mat-cell *matCellDef="let row">{{row.vehicleGroupName}} </mat-cell>
+                    <mat-cell *matCellDef="let row">{{row.groupName}} </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="vehicleGroupDisplayColumn"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: vehicleGroupDisplayColumn;">
