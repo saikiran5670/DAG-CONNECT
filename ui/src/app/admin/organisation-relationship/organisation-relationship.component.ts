@@ -18,7 +18,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   dataSource: any;
-  orgrelationshipDisplayedColumns: string[]= ['select', 'relationshipName', 'vehicleGroup', 'targetOrg', 'startDate', 'endDate','chainRelationship', 'endRelationship'];
+  orgrelationshipDisplayedColumns: string[]= ['select', 'relationshipName', 'vehicleGroup', 'targetOrg', 'startDate', 'endDate','allowChain', 'endRelationship'];
   editFlag: boolean = false;
   viewFlag: boolean = false;
   initData: any = [];
@@ -58,26 +58,22 @@ export class OrganisationRelationshipComponent implements OnInit {
   }
 
   loadInitData() {
-    //this.showLoadingIndicator = true;
-     this.mockData(); 
-        this.dataSource = new MatTableDataSource(this.initData);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-        
-      //   let objData = { 
-      //     Organizationid : this.organizationId,
-      //  };
-
-      //   this.organizationService.getOrgRelationship(objData).subscribe((data) => {
-      //     if(data){
-      //      this.initData = data["relationshipList"];
-      //      setTimeout(()=>{
-      //       this.dataSource = new MatTableDataSource(this.initData);
-      //       this.dataSource.paginator = this.paginator;
-      //       this.dataSource.sort = this.sort;
-      //     });
-      //   }
-      //   }); 
+    this.showLoadingIndicator = true;
+    //  this.mockData(); 
+    //     this.dataSource = new MatTableDataSource(this.initData);
+    //     this.dataSource.paginator = this.paginator;
+    //     this.dataSource.sort = this.sort;
+  
+        this.organizationService.getOrgRelationshipDetailsLandingPage().subscribe((data) => {
+          if(data)
+           this.initData = data["orgRelationshipMappingList"];
+           setTimeout(()=>{
+            this.dataSource = new MatTableDataSource(this.initData);
+            this.dataSource.paginator = this.paginator;
+            this.dataSource.sort = this.sort;
+          });
+        }
+        ); 
     
   }
 

@@ -21,7 +21,10 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   @Input() editFlag: boolean;
   @Input() viewFlag: boolean;
   @Input() translationData:any;
-  @Input() applyFilter:any;
+  // @Input() applyFilter:any;
+  @Input() gridData: any;
+  @Input() OrgRelationshipData:any;
+  @Output() backToPage = new EventEmitter<any>();
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   dataSource: any = new MatTableDataSource([]);
@@ -35,6 +38,14 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   selectedOrgRelations = new SelectionModel(true, []);
   organisationData = [];
   doneFlag = false;
+  organizationSelected = [];
+  organisationFormGroup: FormGroup;
+  selectionForOrganisations = new SelectionModel(true, []);
+  breadcumMsg: any = '';
+  data: any;
+  organisationName: any;
+  vehicleName: any;
+  isRelationshipExist: boolean = false;
 
   relationshipList: any = [
     {
@@ -74,29 +85,57 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
         // this.dataSource.sort = this.sort;
 
         let objData = {
-          createdOrgId : 1,
+          Organization_Id: this.organizationId
         }
 
         this.organizationService.GetOrgRelationdetails(objData).subscribe((data) => {
           if(data)
-       this.initData = data["relationShipData"];
+       this.initData = data["vehicleGroup"];
+      // this.organisationName =data["organizationData"];
+      // this.vehicleName = data["vehicleGroup"];
+      // this.initData = data [this.vehicleName, this.organisationName];
           setTimeout(()=>{
-            this.dataSource = new MatTableDataSource(data);
+            this.dataSource = new MatTableDataSource(this.initData);
             this.dataSource.paginator = this.paginator;
             this.dataSource.sort = this.sort;
             if(!this.createStatus || this.viewFlag){
-              // this.onReset();
+              this.onReset();
             }
           });
-          // this.featuresData = data;
+          this.organisationData = data;
         }, (error) => { });
         this.doneFlag = this.createStatus ? false : true;
-    
-      
-    
-    
-    
+        this.breadcumMsg = this.getBreadcum();
   }
+
+  getBreadcum(){
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblRelationshipManagement ? this.translationData.lblRelationshipManagement : "Relationship Management"} / ${this.translationData.lblRelationshipDetails ? this.translationData.lblRelationshipDetails : 'Relationship Details'}`;
+  }
+  
+  onReset(){
+    // this.organizationSelected = this.gridData[0].featureIds;
+    //   this.organisationFormGroup.patchValue({
+    //     relationshipName: this.gridData[0].name,
+    //     relationshipDescription: this.gridData[0].description,
+    //     level: this.gridData[0].level,
+    //     code: this.gridData[0].code
+    //   })
+      
+      this.dataSource.data.forEach(row => {
+        if(this.organizationSelected){
+          for(let selectedFeature of this.organizationSelected){
+            if(selectedFeature == row.id){
+              this.selectionForOrganisations.select(row);
+              break;
+            }
+            else{
+              this.selectionForOrganisations.deselect(row);
+            }
+          }
+        }
+      })
+  }
+
   mockData(){
     this.initData = [
       {
@@ -139,7 +178,61 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
 
   }
   onCreate(){
+    console.log(this.OrganisationRelationshipFormGroup);
+      const relationshipnameInput = this.OrganisationRelationshipFormGroup.controls.relationship.value;
+      if(this.createStatus){
+        this.createRelationship(relationshipnameInput);
+      }
+  }
 
+  createRelationship(enteredRelationshipValue: any) 
+  {
+    let existingRelationship = this.OrgRelationshipData.filter(response => (response.name).toLowerCase() == enteredRelationshipValue.trim().toLowerCase());
+    if (existingRelationship.length > 0) {
+      this.isRelationshipExist = true;
+      this.doneFlag = false;
+    }
+    else {
+        this.isRelationshipExist = false;
+        this.doneFlag = true;
+        let featureIds = [];
+        this.selectionForOrganisations.selected.forEach(feature => {
+          featureIds.push(feature.id);
+        })
+        
+        let objData = {
+          // organizationId: this.organizationId,
+          // featureIds: featureIds,
+          // featuresetId: 0,
+          // name : this.organisationFormGroup.controls.relationshipName.value,
+          // description:this.organisationFormGroup.controls.relationshipDescription.value,
+          // level: this.organisationFormGroup.controls.level.value,
+          // code: this.organisationFormGroup.controls.code.value,
+          // id: 0,
+          // isActive: true
+          id:0,
+          relationShipId:this.OrganisationRelationshipFormGroup.controls.relationShipId,
+          vehicleGroupId:this.OrganisationRelationshipFormGroup.controls.vehicleGroupId,
+          ownerOrgId:this.OrganisationRelationshipFormGroup.controls.ownerOrgId,
+          createdOrgId:this.OrganisationRelationshipFormGroup.controls.createdOrgId,
+          targetOrgId:this.OrganisationRelationshipFormGroup.controls.targetOrgId,
+          allow_chain:true
+        }
+
+        this.organizationService.createOrgRelationship(objData).subscribe((res) => {
+          this.backToPage.emit({ editFlag: false, editText: 'create',  name: this.organisationFormGroup.controls.relationshipName.value });
+        }, (error) => { 
+          if(error.status == 409){
+            this.isRelationshipExist = true;
+          }
+        });
+      }
+  }
+
+  applyFilter(filterValue: string) {
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
+    this.dataSource.filter = filterValue;
   }
 
   masterToggleForOrgRelationship() {
