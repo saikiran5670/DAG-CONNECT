@@ -41,7 +41,7 @@ namespace net.atos.daf.ct2.subscription.repository
             parameterToGetPackageId.Add("@id", packageId);
             parameterToGetPackageId.Add("@is_active", true);
             var data = await dataAccess.QueryFirstOrDefaultAsync<Package>
-                             (@"select id, type from master.package where id =@id and is_active =@is_active",
+                             (@"select id, type,packagecode from master.package where id =@id and is_active =@is_active",
                             parameterToGetPackageId);
             return data;
         }
@@ -441,13 +441,13 @@ namespace net.atos.daf.ct2.subscription.repository
                     objSubscriptionResponse.orderId = SubscriptionId;
                     return objSubscriptionResponse;
                 }
-                   var packageType = await GetPackageTypeById(packageId);
+                Package objPackage = await GetPackageTypeById(packageId);
                 SubscriptionId = Guid.NewGuid().ToString();
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", orgId);
                 parameter.Add("@subscription_id", SubscriptionId);
-                parameter.Add("@type", packageType.type == null ? null : packageType.type);
-                parameter.Add("@package_code", null);
+                parameter.Add("@type", objPackage.type == null ? null : objPackage.type);
+                parameter.Add("@package_code", objPackage.packagecode);
                 parameter.Add("@package_id", packageId);
                 parameter.Add("@vehicle_id", null);
                 parameter.Add("@subscription_start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
