@@ -43,6 +43,8 @@ export class UserGroupManagementComponent implements OnInit {
   showLoadingIndicator: any;
   createViewEditStatus: boolean = false;
   actionType: any = '';
+  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  userType: any = localStorage.getItem("userType");
 
   constructor(
     private dialogService: ConfirmDialogService,

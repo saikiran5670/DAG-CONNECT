@@ -52,6 +52,8 @@ export class VehicleManagementComponent implements OnInit {
   grpTitleVisible: boolean = false;
   showLoadingIndicator = true;
   localStLanguage: any;
+  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  userType: any = localStorage.getItem("userType");
 
   constructor(private vehService: VehicleService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar, private translationService: TranslationService) {
     this.defaultTranslation();

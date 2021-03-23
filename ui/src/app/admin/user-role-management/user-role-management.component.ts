@@ -32,6 +32,8 @@ export class UserRoleManagementComponent implements OnInit {
   isGlobal: boolean;
   localStLanguage: any;
   showLoadingIndicator: any;
+  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  userType: any = localStorage.getItem("userType");
 
   constructor(private translationService: TranslationService, private roleService: RoleService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar) {
     this.defaultTranslation();
