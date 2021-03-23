@@ -13,6 +13,7 @@ import { CommonTableComponent } from '../.././shared/common-table/common-table.c
 import * as FileSaver from 'file-saver';
 import { Workbook } from 'exceljs';
 import { DriverService } from '../../services/driver.service';
+import { OrganizationService } from '../../services/organization.service';
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 
@@ -70,8 +71,9 @@ export class DriverManagementComponent implements OnInit {
   newDriverCount: any = 0;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
+  organizationData: any;
 
-  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService, private translationService: TranslationService, private driverService: DriverService) { 
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private dialogService: ConfirmDialogService, private translationService: TranslationService, private driverService: DriverService, private organizationService: OrganizationService) { 
       this.defaultTranslation();
   }
 
@@ -196,7 +198,14 @@ export class DriverManagementComponent implements OnInit {
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
       this.loadDriverData();
+      this.getOrganizationDetail();
       this.setConsentDropdown();
+    });
+  }
+
+  getOrganizationDetail(){
+    this.organizationService.getOrganizationDetails(this.accountOrganizationId).subscribe((orgData: any) => {
+      this.organizationData = orgData;
     });
   }
 
