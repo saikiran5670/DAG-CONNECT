@@ -2,6 +2,7 @@ package net.atos.daf.ct2.common.util;
 
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,20 @@ public class FlinkUtil {
 		 * restart attempts 20000 //time in milliseconds between restarts ));
 		 */
 
+		/*env.getCheckpointConfig().setMinPauseBetweenCheckpoints(10000);
+
+	      env.getCheckpointConfig().setCheckpointTimeout(10000);
+
+	      env.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
+
+
+
+	      env.getCheckpointConfig().enableExternalizedCheckpoints(
+
+	              CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION
+
+	      );*/
+		
 		log.info("envParams:: " + envParams);
 		env.setParallelism(Integer.parseInt(envParams.get(DafConstants.PARALLELISM)));
 
