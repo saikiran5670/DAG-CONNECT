@@ -115,45 +115,68 @@
         </div>
         <div style="clear: both"></div>
         <ul>
-            <li #menuName *ngFor='let menu of menuPages; index as i' class="menuItem"
-                [ngClass]="{'active': pageName === menu.mainRoute}" [attr.menuName]="menu.mainRoute">
-                <span *ngIf="!menu.subMenuFlag; else elseBlock">
+            <li #menuName *ngFor='let menu of menuPages.menus; index as i' class="menuItem"
+                [ngClass]="{'active': pageName === menu.url}" [attr.menuName]="menu.url">
+                <span *ngIf="menu.subMenus.length == 0; else elseBlock">
                     <a class='selectedManu'
-                        *ngIf="menu.mainMenu=='Dashboard'" [routerLink]="[ '/'+ menu.mainRoute]"
-                        (click)='navigateToPage(menu.mainRoute)'>
+                        *ngIf="!menu.externalLink" [routerLink]="[ '/'+ menu.url]"
+                        (click)='navigateToPage(menu.url)'>
                         <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
-                        <span class="menuLabel">{{menu.mainMenu | titlecase}}</span>
+                        <span class="menuLabel">{{menu.name | titlecase}}</span>
                     </a>
-                    <a target="_blank" href="{{menu.mainRoute}}" 
-                        class='selectedManu' *ngIf="menu.mainMenu!='Dashboard'"
-                        (click)='navigateToPage(menu.mainRoute)'>
+                    <a target="_blank" href="{{menu.url}}" 
+                        class='selectedManu' *ngIf="menu.externalLink"
+                        (click)='navigateToPage(menu.url)'>
                         <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
-                        <span class="menuLabel">{{menu.mainMenu | titlecase}}</span>
+                        <span class="menuLabel">{{menu.name | titlecase}}</span>
                     </a>
                 </span>
                 <ng-template #elseBlock>
                     <a class='selectedManu'
-                        (click)="menuSelected(menu.mainRoute)">
+                        (click)="menuSelected(menu.url)">
                         <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
-                        <span class="menuLabel">{{menu.mainMenu | titlecase}}</span>
-                        <span *ngIf="!menuCollapsed && menu.mainMenu === 'Live Fleet'"
-                            [ngClass]="{'fleetCount': menu.mainMenu === 'Live Fleet' }">0</span>
+                        <span class="menuLabel">{{menu.name | titlecase}}</span>
+                        <!-- <span *ngIf="!menuCollapsed && menu.mainMenu === 'Live Fleet'"
+                            [ngClass]="{'fleetCount': menu.mainMenu === 'Live Fleet' }">0</span> -->
                         <mat-icon class="navigationArrow">
-                            {{ menuStatus[menu.mainRoute].open ? 'keyboard_arrow_down' : 'keyboard_arrow_right' }}
+                            {{ menuStatus[menu.url].open ? 'keyboard_arrow_down' : 'keyboard_arrow_right' }}
                         </mat-icon>
                     </a>
-                    <ul class="subMenuItems slider" [ngClass]="{'closed' : !menuStatus[menu.mainRoute].open}">
+                    <ul class="subMenuItems slider" [ngClass]="{'closed' : !menuStatus[menu.url].open}">
                         <!-- <li *ngFor='let subMenuItem of menu.subMenu; index as j' [ngClass]="{'active': subpage === subMenuItem.subRoute}"> -->
-                        <li *ngFor='let subMenuItem of menu.subMenu; index as j'
-                            [ngClass]="{'linkActive': subpage === subMenuItem.subRoute}">
+                        <li *ngFor='let subMenuItems of menu.subMenus; index as j'
+                            [ngClass]="{'linkActive': subpage === subMenuItems.url}">
                             <a 
-                                [routerLink]="[ '/'+menu.mainRoute+'/'+subMenuItem.subRoute ]"
-                                (click)="navigateToPage(subMenuItem.subRoute)">
+                                [routerLink]="[ '/'+menu.url+'/'+subMenuItems.url ]"
+                                (click)="navigateToPage(subMenuItems.url)">
                                 <mat-icon class='box-svg-css' style='margin-right: 0px;'>stop_circle</mat-icon>
-                                <span class='font-size-0-9'>{{ subMenuItem.name }}</span>
+                                <span class='font-size-0-9'>{{ subMenuItems.name }}</span>
                             </a>
                         </li>
                     </ul>
+
+
+                    <!-- <ul>
+                        <li #menuName *ngFor='let menu of menuPages.menus' class="menuItem"
+                        [ngClass]="{'active': pageName === menu.url} " >
+                        <span>
+                            <a class='selectedManu'>
+                                <mat-icon class="box-svg-css ">{{menu.icon}}</mat-icon>
+                                <span class="menuLabel">{{menu.name | titlecase}}</span>
+                            </a>
+                        </span>
+                       
+                            <ul class="subMenuItems slider" >
+                                <li *ngFor='let subMenuItems of menu.subMenus'>
+                                    <a>
+                                        <mat-icon class='box-svg-css' style='margin-right: 0px;'>stop_circle</mat-icon>
+                                        <span class='font-size-0-9'>{{ subMenuItems.name }}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul> -->
+
                 </ng-template>
             </li>
         </ul>

@@ -59,7 +59,7 @@
             </mat-radio-button>
           </mat-radio-group>
         </div>
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+        <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
           <button mat-flat-button color="primary" (click)="createNewAssociation()">
             <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewAssociation || 'New Association' }}
           </button>
@@ -72,27 +72,31 @@
           <div *ngIf="disCol != 'action' && disCol != 'accessType' && disCol != 'associatedAccount' && disCol != 'associatedVehicle'">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames[colIndex] }}</mat-header-cell>
             <mat-cell *matCellDef="let element">{{ element[disCol] }} 
-              <div [ngClass]="{'cursor-pointer': (element.isVehicleGroup == true && element.vehicleCount > 0)}" (click)="(element.isVehicleGroup == true && element.vehicleCount > 0) ? showVehiclePopup(element) : ''" *ngIf="element.isVehicleGroup == true">
+              <!-- <div [ngClass]="{'cursor-pointer': (element.isVehicleGroup == true && element.vehicleCount > 0)}" (click)="(element.isVehicleGroup == true && element.vehicleCount > 0) ? showVehiclePopup(element) : ''" *ngIf="element.isVehicleGroup == true">
                 <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
                 <span class='iconTxt'>{{ (element.vehicleCount < 10) ? '0' : '' }}{{ element.vehicleCount }}</span>
               </div>
               <div [ngClass]="{'cursor-pointer': (element.isAccountGroup == true && element.accountCount > 0)}" (click)="(element.isAccountGroup == true && element.accountCount > 0) ? showAccountPopup(element) : ''" *ngIf="element.isAccountGroup == true">
                 <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
                 <span class='iconTxt'>{{ (element.accountCount < 10) ? '0' : '' }}{{ element.accountCount }}</span>
+              </div> -->
+              <div [ngClass]="{'cursor-pointer': (element.isGroup == true && element.count > 0)}" (click)="(element.isGroup == true && element.count > 0) ? showPopup(element) : ''" *ngIf="element.isGroup == true">
+                <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
+                <span class='iconTxt'>{{ (element.count < 10) ? '0' : '' }}{{ element.count }}</span>
               </div>
             </mat-cell>
           </div>
           <div *ngIf="disCol == 'accessType'">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames[colIndex] }}</mat-header-cell>
-            <mat-cell *matCellDef="let element">{{ element[disCol].name }} </mat-cell>
+            <mat-cell *matCellDef="let element">{{ (element[disCol].accessType == 'F') ? (translationData.lblFullAccess || 'Full Access') : (translationData.lblViewOnly || 'View Only') }} </mat-cell>
           </div>
           <div *ngIf="disCol == 'associatedAccount'">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames[colIndex] }}</mat-header-cell>
-            <mat-cell *matCellDef="let element" matTooltip="{{ element.associatedAccountList }}"><span class="text-truncate">{{ element[disCol].length > 0 ? element.associatedAccountList : '&nbsp; &nbsp; -' }}</span></mat-cell>
+            <mat-cell *matCellDef="let element" matTooltip="{{ element.associatedAccountList }}"><span class="text-truncate">{{ element.associatedData.length > 0 ? element.associatedAccountList : '&nbsp; &nbsp; -' }}</span></mat-cell>
           </div>
           <div *ngIf="disCol == 'associatedVehicle'">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames[colIndex] }}</mat-header-cell>
-            <mat-cell *matCellDef="let element" matTooltip="{{ element.associatedVehicleList }}"><span class="text-truncate">{{ element[disCol].length > 0 ? element.associatedVehicleList : '&nbsp; &nbsp; -' }}</span></mat-cell>
+            <mat-cell *matCellDef="let element" matTooltip="{{ element.associatedVehicleList }}"><span class="text-truncate">{{ element.associatedData.length > 0 ? element.associatedVehicleList : '&nbsp; &nbsp; -' }}</span></mat-cell>
           </div>
           <div *ngIf="disCol == 'action'">
             <mat-header-cell *matHeaderCellDef>{{ columnNames[colIndex] }}</mat-header-cell>
@@ -100,10 +104,10 @@
               <button class='actionBtn' mat-flat-button (click)="editViewAccessRelationship(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
                 <mat-icon>visibility</mat-icon>
               </button>
-              <button class='actionBtn' mat-flat-button (click)="editViewAccessRelationship(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+              <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="editViewAccessRelationship(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
                 <mat-icon>create</mat-icon>
               </button>
-              <button class='actionBtn' mat-flat-button (click)="deleteAccessRelationship(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+              <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deleteAccessRelationship(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
                 <mat-icon class="deleteIcon">delete_outline</mat-icon>
               </button>
             </mat-cell>

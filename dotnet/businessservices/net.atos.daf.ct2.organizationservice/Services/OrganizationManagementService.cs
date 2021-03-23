@@ -48,16 +48,15 @@ namespace net.atos.daf.ct2.organizationservice
             _relationshipManager = relationshipManager;
         }
 
-        public override async Task<OrganizationprimaryFieldsListResponse> GetAllOrganizations(OrganizationprimaryFieldsResponse request, ServerCallContext context)
+        public override async Task<OrganizationprimaryFieldsListResponse> GetAllOrganizations(OrganizationByID request, ServerCallContext context)
         {
             try
             {
                 OrganizationprimaryFieldsListResponse objOrganizationprimaryFieldsListResponse = new OrganizationprimaryFieldsListResponse();
 
-                net.atos.daf.ct2.organization.entity.OrganizationNameandID objOrganizationentity = new organization.entity.OrganizationNameandID();
-                objOrganizationentity.id = request.Id;
-                objOrganizationentity.name = request.Name;
-                var data = await organizationtmanager.Get(objOrganizationentity);
+                net.atos.daf.ct2.organization.entity.OrganizationByID objOrganizationEntity = new organization.entity.OrganizationByID();
+                objOrganizationEntity.id = request.Id;
+                var data = await organizationtmanager.Get(objOrganizationEntity);
                 foreach (var item in data)
                 {
                     OrganizationprimaryFieldsResponse objOrganizationprimaryFieldsResponse = new OrganizationprimaryFieldsResponse();

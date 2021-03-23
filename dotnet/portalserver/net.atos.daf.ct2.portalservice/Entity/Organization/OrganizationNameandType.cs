@@ -6,4 +6,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
         public int id { get; set; }
         public string name { get; set; }
     }
+
+    public class OrganizationByID
+    {
+        public int id { get; set; }
+    }
 }

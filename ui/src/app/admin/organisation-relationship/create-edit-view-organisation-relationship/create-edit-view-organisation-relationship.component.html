@@ -6,6 +6,16 @@
             <mat-label style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
               translationData.lblAddNewRelationsip || 'Add New Relationship' }} 
             </mat-label>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+              translationData.lblRelationsip || 'Relationship' }} 
+            </mat-label>
+          </div>
+        </div>
+        <div fxLayout="row" class="full-width" fxLayoutGap="10px">
             <div class='areaWidth'>
                 <mat-form-field appearance="outline" class='margin-right-xxlg'>
                     <mat-select formControlName="relationship" (selectionChange)="onRelationshipSelection()" placeholder="{{ translationData.lblSelectCRelationship || 'Select Relationship' }}">
@@ -15,13 +25,12 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-          </div>
-          <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label style='display: flex; place-content: space-between;'>
+          <!-- </div> -->
+          <!-- <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left"> -->
+            <mat-label style='display: flex;'>
               <span
-                style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{translationData.lblChainRelationship
-                || 'Chain Relationship' }}</span>
-              
+                style='font: 300 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{translationData.lblChainRelationship
+                || 'Chain Relationship:' }}</span>
             </mat-label>
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
                 <!-- <span>{{ translationData.lblViewby || 'View by' }}:</span> -->
@@ -34,7 +43,7 @@
                   </mat-radio-button>
                 </mat-radio-group>
               </div>
-          </div>
+          <!-- </div> -->
         </div>
       </mat-card-content>
       <mat-card-actions class='no-margin no-padding'>
@@ -77,13 +86,28 @@
           <div fxLayout="row" >
             <div fxLayout="column" class='full-width'>
               <mat-table [dataSource]="dataSource" matSort>
-                <ng-container matColumnDef="all">
+                <!-- <ng-container matColumnDef="all">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAll || 'All' }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" style="word-break: 'break-word'">{{row.all}}</mat-cell>
+                </ng-container> -->
+                <ng-container matColumnDef="select">
+                  <mat-header-cell *matHeaderCellDef>
+                    <mat-checkbox (change)='$event ? masterToggleForOrgRelationship() : null'
+                      [checked]='selectedOrgRelations.hasValue() && isAllSelectedForOrgRelationship()'
+                      [indeterminate]='selectedOrgRelations.hasValue() && !isAllSelectedForOrgRelationship()'
+                      [aria-label]='checkboxLabelForOrgRelationship()'>
+                    </mat-checkbox>
+                    <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">
+                    <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedOrgRelations.toggle(row) : null'
+                      [checked]='selectedOrgRelations.isSelected(row)' [aria-label]='checkboxLabelForOrgRelationship(row)'>
+                    </mat-checkbox>
+                  </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="vehicleGroupName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group Name'}}</mat-header-cell>
-                    <mat-cell *matCellDef="let row">{{row.vehicleGroupName}} </mat-cell>
+                    <mat-cell *matCellDef="let row">{{row.groupName}} </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="vehicleGroupDisplayColumn"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: vehicleGroupDisplayColumn;">
@@ -109,9 +133,24 @@
         <div fxLayout="row" >
           <div fxLayout="column" class='full-width'>
             <mat-table [dataSource]="dataSource" matSort>
-              <ng-container matColumnDef="all">
+              <!-- <ng-container matColumnDef="all">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAll || 'All' }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" style="word-break: 'break-word'">{{row.all}}</mat-cell>
+              </ng-container> -->
+              <ng-container matColumnDef="select">
+                <mat-header-cell *matHeaderCellDef>
+                  <mat-checkbox (change)='$event ? masterToggleForOrgRelationship() : null'
+                    [checked]='selectedOrgRelations.hasValue() && isAllSelectedForOrgRelationship()'
+                    [indeterminate]='selectedOrgRelations.hasValue() && !isAllSelectedForOrgRelationship()'
+                    [aria-label]='checkboxLabelForOrgRelationship()'>
+                  </mat-checkbox>
+                  <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedOrgRelations.toggle(row) : null'
+                    [checked]='selectedOrgRelations.isSelected(row)' [aria-label]='checkboxLabelForOrgRelationship(row)'>
+                  </mat-checkbox>
+                </mat-cell>
               </ng-container>
               <ng-container matColumnDef="organisationName">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOrganisationName || 'Organisation Name'}}</mat-header-cell>

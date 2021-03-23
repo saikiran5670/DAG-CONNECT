@@ -308,7 +308,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> InsertTranslationFileDetails(FileUploadRequest request)
         {
             _logger.LogInformation("InsertTranslationFileDetails Method post");
-
+            if (request.file_name == "" || request.file_name == "" || request.file_size <= 0)
+            {
+                return StatusCode(400, "File name and valid file size is required.");
+            }
+            if (request.file.Count()<=0)
+            {
+                return StatusCode(400, "File translations data is required.");
+            }
             TranslationUploadRequest transupload = new TranslationUploadRequest();
             transupload = _mapper.MapFileDetailRequest(request);
 

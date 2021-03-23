@@ -89,7 +89,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
         }
 
-        private async Task<int> DeleteTokenByTokenId(Guid tokenID)
+        public async Task<int> DeleteTokenByTokenId(Guid tokenID)
         {
             var QueryStatement = @"DELETE FROM
                                         master.accounttoken 
@@ -216,7 +216,23 @@ namespace net.atos.daf.ct2.identitysession.repository
                 throw ex;
             }
         }
-
+        public async Task<int> GetTokenCount(int AccountID)
+        {
+            try
+            {
+                var QueryStatement = @"select 
+                                        count(id)
+`                                       from master.accounttoken 
+                                        where account_id=@AccountID";
+                var parameter = new DynamicParameters();
+                parameter.Add("@AccountID", AccountID);
+                return await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
         private AccountToken Map(dynamic record)
         {
             AccountToken entity = new AccountToken();

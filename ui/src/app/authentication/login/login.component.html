@@ -25,7 +25,7 @@
                         <span *ngIf='invalidUserMsg && !forgotPwdFlag'>Invalid user name/ password. Try again</span>
                     </div>
                 </div>
-                <div *ngIf='!forgotPwdFlag' fxLayout="row" fxLayoutAlign="start" class='fieldContainer'>
+                <div *ngIf='!forgotPwdFlag && !resetPwdFlag' fxLayout="row" fxLayoutAlign="start" class='fieldContainer'>
                     <div fxLayout="column" fxLayoutAlign="start" class='full-width'>
                         <form [formGroup]="loginForm" (ngSubmit)="onLogin(loginForm.value)">
         
@@ -89,11 +89,11 @@
                                     <div fxLayout="column" fxLayoutAlign="start" class='full-width emailField'>
                                         <mat-label><span>Registered Email Id</span><span class='asterick'>*</span></mat-label>
                                         <mat-form-field appearance="fill">
-                                            <input matInput placeholder="Enter your registered Email Id" formControlName="email" required>
-                                            <mat-error *ngIf="forgotPasswordForm.get('email').hasError('required')">
+                                            <input matInput placeholder="Enter your registered Email Id" formControlName="emailId" required>
+                                            <mat-error *ngIf="forgotPasswordForm.get('emailId').hasError('required')">
                                               Email id is required
                                             </mat-error>
-                                            <mat-error *ngIf="forgotPasswordForm.get('email').hasError('email')">
+                                            <mat-error *ngIf="forgotPasswordForm.get('emailId').hasError('email')">
                                                 Please enter valid email id
                                             </mat-error>
                                         </mat-form-field>
@@ -105,6 +105,25 @@
                                 <button [disabled]="!forgotPasswordForm.valid" mat-raised-button color="primary" class="margin-top-20 mat-elevation-z box-button" type="submit">Reset Password</button>
                             </div>
                         </form> 
+                    </div>
+                </div>
+                <div *ngIf='resetPwdFlag' fxLayout="row" fxLayoutAlign="start" class='fieldContainer'>
+                    <div fxLayout="column" fxLayoutAlign="start" class='full-width'>
+                        <div fxLayout="column" fxLayoutAlign="start" fxLayoutGap="15" class='loginField'>
+                        <div fxLayout="row" fxLayoutAlign="start">
+                            <div fxLayout="column" fxLayoutAlign="center">
+                                <span class='resetText'>Reset your DAF Connect Password</span>
+                            </div>
+                        </div> 
+                        <div fxLayout="row" fxLayoutAlign="start" class='margin-top-10'>
+                            <div fxLayout="column" fxLayoutAlign="center">
+                                <span style="color: green;">We have sent password details on your email id. Please check your mail inbox and set a new password.</span>
+                            </div>
+                        </div>
+                        <div class="text-right linkBtn">
+                            <a (click)="onBackToLogin()">Back to Login</a>
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>

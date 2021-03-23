@@ -327,10 +327,10 @@ namespace net.atos.daf.ct2.organization.repository
                   postal_code=@PostalCode, city=@City,country_code=@CountryCode,reference_date=@reference_date                               
 	                                 WHERE org_id = @org_id RETURNING id;";
 
-                    await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameterUpdate);
+                   await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameterUpdate);
 
-                    // Assign base package at ORG lavel if not exist
-                    await subscriptionManager.Create(iscustomerexist,Convert.ToInt32(customer.OrgCreationPackage));
+                    // Assign base package at ORG lavel if not exist                   
+                    await subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
 
                 }
                 else
@@ -371,7 +371,7 @@ namespace net.atos.daf.ct2.organization.repository
                     // need to discuss here
 
                     // Assign base package at ORG lavel
-                   await subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
+                    await subscriptionManager.Create(organizationId, Convert.ToInt32(customer.OrgCreationPackage));
                 }
             }
             catch (Exception ex)
@@ -852,7 +852,7 @@ namespace net.atos.daf.ct2.organization.repository
         //     return organizationRelationshipID;           
         // }
 
-        public async Task<List<OrganizationNameandID>> Get(OrganizationNameandID request)
+        public async Task<List<OrganizationNameandID>> Get(OrganizationByID objOrganizationByID)
         {
             log.Info("Get Organization method called in repository");
             try
@@ -861,8 +861,14 @@ namespace net.atos.daf.ct2.organization.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@is_active", true);
                 var query = @"SELECT id,name FROM master.organization where is_active=@is_active";
+                if (objOrganizationByID.id > 0)
+                {
+                    parameter.Add("@id", objOrganizationByID.id);
+                    query = $"{query} and id=@id";
+                }
+                
                 var data = await dataAccess.QueryAsync<OrganizationNameandID>(query, parameter);
-                return objOrganizationNameandID = data.Cast<OrganizationNameandID>().ToList();
+                return data.ToList();
             }
             catch (Exception ex)
             {

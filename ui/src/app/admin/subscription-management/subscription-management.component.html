@@ -93,7 +93,7 @@
                   <!-- <button mat-stroked-button color="primary" class='actionBtn' *ngIf="row.status == 'Expired' ? true : false ">
                      shop
                   </button>  -->
-                  <button type="button" class="btn btn-outline-primary btn-sm" *ngIf="row.status == 'Expired' ? true : false ">Shop</button>           
+                  <button type="button" class="btn btn-outline-primary btn-sm" *ngIf="row.status == 'Expired' ? true : false " [disabled]="!adminAccessType.adminReadOnlyAccess">Shop</button>           
                </mat-cell>
               </ng-container>
               <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

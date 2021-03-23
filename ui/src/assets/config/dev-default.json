@@ -8,9 +8,8 @@
       "featureRESTServiceURL": "https://api.dev1.ct2.atos.net/feature",
       "accountRESTServiceURL": "https://api.dev1.ct2.atos.net/account",
       "translationRESTServiceURL": "https://api.dev1.ct2.atos.net/translation",
-      "organizationRESTServiceURL": "https://api.dev1.ct2.atos.net/vehicle",
       "driverRESTServiceURL": "https://api.dev1.ct2.atos.net/driver",
       "packageRESTServiceURL": "https://api.dev1.ct2.atos.net/package",
-      "relationRESTServiceURL": "https://api.dev1.ct2.atos.net/organization"
+      "organizationRESTServiceURL": "https://api.dev1.ct2.atos.net/organization"
     }
 }

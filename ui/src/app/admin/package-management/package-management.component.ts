@@ -33,6 +33,8 @@ export class PackageManagementComponent implements OnInit {
   localStLanguage: any;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   showLoadingIndicator: any;
+  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  userType: any = localStorage.getItem("userType");
 
   constructor(
       private translationService: TranslationService,
