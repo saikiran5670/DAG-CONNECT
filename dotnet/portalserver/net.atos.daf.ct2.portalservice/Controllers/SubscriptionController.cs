@@ -19,7 +19,7 @@ using SubscriptionBusinessService = net.atos.daf.ct2.subscriptionservice;
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
-    [Route("subscription")]
+    [Route("subscribe")]
     public class SubscriptionController : Controller
     {
 
