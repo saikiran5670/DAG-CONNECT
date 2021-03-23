@@ -12,71 +12,11 @@
             "externalLink": false
         },
         {
-            "menuId": 2,
-            "name": "Live Fleet",
-            "translatedName": "Live Fleet",
-            "url": "livefleet",
-            "icon": "info",
-            "key": "lblLiveFleet",
-            "featureId": 250,
-            "externalLink": false,
-            "subMenus": [
-                {
-                    "menuId": 3,
-                    "name": "Live Fleet",
-                    "translatedName": "Live Fleet",
-                    "url": "livefleet",
-                    "key": "lblLiveFleet",
-                    "featureId": 250,
-                    "externalLink": false
-                },
-                {
-                    "menuId": 4,
-                    "name": "Log Book",
-                    "translatedName": "Log Book",
-                    "url": "logbook",
-                    "key": "lblLogBook",
-                    "featureId": 258,
-                    "externalLink": false
-                }
-            ]
-        },
-        {
-            "menuId": 5,
-            "name": "Report",
-            "translatedName": "Report",
-            "url": "report",
-            "icon": "info",
-            "key": "lblReport",
-            "featureId": 300,
-            "externalLink": false,
-            "subMenus": [
-                {
-                    "menuId": 6,
-                    "name": "Trip Report",
-                    "translatedName": "Trip Report",
-                    "url": "tripreport",
-                    "key": "lblTripReport",
-                    "featureId": 301,
-                    "externalLink": false
-                },
-                {
-                    "menuId": 7,
-                    "name": "Trip Tracing",
-                    "translatedName": "Trip Tracing",
-                    "url": "triptracing",
-                    "key": "lblTripTracing",
-                    "featureId": 302,
-                    "externalLink": false
-                } 
-            ]
-        },
-        {
             "menuId": 16,
             "name": "Configuration",
             "translatedName": "Configuration",
             "url": "configuration",
-            "icon": "info",
+            "icon": "settings",
             "key": "lblConfiguration",
             "featureId": 350,
             "externalLink": false,
@@ -230,39 +170,6 @@
                     "externalLink": false
                 }
             ]
-        },
-        {
-            "menuId": 35,
-            "name": "Tachograph",
-            "translatedName": "Tachograph",
-            "url": "tachograph",
-            "icon": "info",
-            "key": "lblTachograph",
-            "featureId": 550,
-            "subMenus": [],
-            "externalLink": false
-        },
-        {
-            "menuId": 36,
-            "name": "Mobile Portal",
-            "translatedName": "Mobile Portal",
-            "url": "mobileportal",
-            "icon": "info",
-            "key": "lblMobilePortal",
-            "featureId": 600,
-            "subMenus": [],
-            "externalLink": false
-        },
-        {
-            "menuId": 37,
-            "name": "Shop",
-            "translatedName": "Shop",
-            "url": "shop",
-            "icon": "info",
-            "key": "lblShop",
-            "featureId": 650,
-            "subMenus": [],
-            "externalLink": false
         },
         {
             "menuId": 38,
