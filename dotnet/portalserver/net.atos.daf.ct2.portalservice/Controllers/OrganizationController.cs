@@ -780,14 +780,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("getallorganizations")]
-        public async Task<IActionResult> GetAllOrganizations([FromQuery] OrganizationNameandID objOrganizationNameandID)
+        public async Task<IActionResult> GetAllOrganizations([FromQuery] OrganizationBusinessService.OrganizationByID objOrganizationByID)
         {
             try
             {
-                OrganizationBusinessService.OrganizationprimaryFieldsResponse objOrganizationprimaryFieldsResponse = new OrganizationprimaryFieldsResponse();
-                objOrganizationprimaryFieldsResponse.Id = objOrganizationNameandID.id;
                 logger.LogInformation("Organization GetAllOrganizations function called ");
-                var data = await organizationClient.GetAllOrganizationsAsync(objOrganizationprimaryFieldsResponse);
+                
+                var data = await organizationClient.GetAllOrganizationsAsync(objOrganizationByID);
                 return Ok(data);
             }
             catch (Exception ex)

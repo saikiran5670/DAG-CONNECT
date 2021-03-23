@@ -852,7 +852,7 @@ namespace net.atos.daf.ct2.organization.repository
         //     return organizationRelationshipID;           
         // }
 
-        public async Task<List<OrganizationNameandID>> Get(OrganizationNameandID request)
+        public async Task<List<OrganizationNameandID>> Get(OrganizationByID objOrganizationByID)
         {
             log.Info("Get Organization method called in repository");
             try
@@ -861,8 +861,14 @@ namespace net.atos.daf.ct2.organization.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@is_active", true);
                 var query = @"SELECT id,name FROM master.organization where is_active=@is_active";
+                if (objOrganizationByID.id > 0)
+                {
+                    parameter.Add("@id", objOrganizationByID.id);
+                    query = $"{query} and id=@id";
+                }
+                
                 var data = await dataAccess.QueryAsync<OrganizationNameandID>(query, parameter);
-                return objOrganizationNameandID = data.Cast<OrganizationNameandID>().ToList();
+                return data.ToList();
             }
             catch (Exception ex)
             {

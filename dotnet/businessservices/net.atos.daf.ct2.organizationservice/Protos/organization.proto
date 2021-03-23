@@ -1,6 +1,7 @@
 syntax ="proto3";
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/Empty.proto";
 option csharp_namespace = "net.atos.daf.ct2.organizationservice";
 package net.atos.daf.ct2.organizationservice;
 
@@ -30,11 +31,15 @@ service OrganizationService {
   rpc EndOrgRelationShip (EndOrgRelationShipRequest) returns (EndOrgRelationshipResponse);
   rpc AllowChaining (ChainingRequest) returns (ChainingResponse); 
   rpc GetOrgRelationshipMapping (OrgRelationshipMappingGetRequest) returns (OrgRelationshipGetResponse);
-  rpc GetAllOrganizations (OrganizationprimaryFieldsResponse) returns (OrganizationprimaryFieldsListResponse);
+  rpc GetAllOrganizations (OrganizationByID) returns (OrganizationprimaryFieldsListResponse);
 }
 
 message OrganizationprimaryFieldsListResponse{
  repeated OrganizationprimaryFieldsResponse Response = 1;
+}
+
+message OrganizationByID{
+ int32 id = 1;
 }
 
 message OrganizationprimaryFieldsResponse{
