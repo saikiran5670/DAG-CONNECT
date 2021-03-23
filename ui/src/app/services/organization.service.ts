@@ -13,11 +13,9 @@ import { ConfigService } from '@ngx-config/core';
 @Injectable()
 export class OrganizationService {
     organizationServiceUrl: string = '';
-    relationServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
     this.organizationServiceUrl = config.getSettings("foundationServices").organizationRESTServiceURL;
-    this.relationServiceUrl = config.getSettings("foundationServices").relationRESTServiceURL;
   }
 
   private handleError(errResponse: HttpErrorResponse) {
@@ -38,44 +36,34 @@ export class OrganizationService {
     return getHeaderObj;
   }
   
-  getOrganizationDetails(id): Observable<any[]> {
+  getOrganizationDetails(id: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.organizationServiceUrl}/organization/get?OrganizationId=${id}`,headers)
+      .get<any[]>(`${this.organizationServiceUrl}/get?organizationId=${id}`,headers)
       .pipe(catchError(this.handleError));
   }
 
-  getVehicleList(id): Observable<any[]> {
-    let headerObj = this.generateHeader();
-    const headers = {
-      headers: new HttpHeaders({ headerObj }),
-    };
-    return this.httpClient
-      .get<any[]>(`${this.organizationServiceUrl}/group/getvehiclelist?GroupId=${id}`,headers)
-      .pipe(catchError(this.handleError));
-  }
-
-  getRelationship(data): Observable<any[]> {
+  getRelationship(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
      headers: new HttpHeaders({ headerObj }),
    };
      const options =  { params: new HttpParams(data), headers: headers };
      return this.httpClient
-       .get<any[]>(`${this.relationServiceUrl}/relationship/get?Organizationid=${data.Organizationid}`,headers)
+       .get<any[]>(`${this.organizationServiceUrl}/relationship/get?Organizationid=${data.Organizationid}`,headers)
        .pipe(catchError(this.handleError));
    }
 
-   createRelationship(data): Observable<any> {
+   createRelationship(data: any): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .post<any>(`${this.relationServiceUrl}/relationship/create`, data, headers)
+      .post<any>(`${this.organizationServiceUrl}/relationship/create`, data, headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -86,17 +74,17 @@ export class OrganizationService {
     };
     let data = { id: id };
    return this.httpClient
-      .delete<any>(`${this.relationServiceUrl}/relationship/delete?relationshipId=${id}`, headers)
+      .delete<any>(`${this.organizationServiceUrl}/relationship/delete?relationshipId=${id}`, headers)
       .pipe(catchError(this.handleError));
   }
 
-  updateRelationship(data): Observable<any> {
+  updateRelationship(data: any): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .put<any>(`${this.relationServiceUrl}/relationship/update`, data, headers)
+      .put<any>(`${this.organizationServiceUrl}/relationship/update`, data, headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -107,28 +95,28 @@ export class OrganizationService {
    };
      const options =  { params: new HttpParams(), headers: headers };
      return this.httpClient
-       .get<any[]>(`${this.relationServiceUrl}/orgrelationship/get`,headers)
+       .get<any[]>(`${this.organizationServiceUrl}/orgrelationship/get`,headers)
        .pipe(catchError(this.handleError));
    }
    
-  GetOrgRelationdetails(data): Observable<any[]> {
+  GetOrgRelationdetails(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
      headers: new HttpHeaders({ headerObj }),
    };
      const options =  { params: new HttpParams(data), headers: headers };
      return this.httpClient
-       .get<any[]>(`${this.relationServiceUrl}/orgrelationship/Getorgrelationdetails?OrganizationId=${data.Organization_Id}`,headers)
+       .get<any[]>(`${this.organizationServiceUrl}/orgrelationship/Getorgrelationdetails?OrganizationId=${data.Organization_Id}`,headers)
        .pipe(catchError(this.handleError));
    }
 
-   createOrgRelationship(data): Observable<any> {
+   createOrgRelationship(data: any): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .post<any>(`${this.relationServiceUrl}/orgrelationship/create`, data, headers)
+      .post<any>(`${this.organizationServiceUrl}/orgrelationship/create`, data, headers)
       .pipe(catchError(this.handleError));
   }
 
