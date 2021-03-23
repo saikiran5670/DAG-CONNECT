@@ -7,6 +7,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { UserDetailTableComponent } from '../../user-management/new-user-step/user-detail-table/user-detail-table.component';
 import { AccountService } from '../../../services/account.service';
+import { VehicleService } from '../../../services/vehicle.service';
 
 @Component({
   selector: 'app-create-edit-view-account-access-relationship',
@@ -34,7 +35,7 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
   dialogRef: MatDialogRef<UserDetailTableComponent>;
   accountOrganizationId: any;
 
-  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService) { }
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService, private vehicleService: VehicleService) { }
 
   ngOnInit() {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -237,10 +238,11 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
     const colsList = ['name','vin','license_Plate_Number'];
     const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
     const tableTitle =`${row.name} - ${this.translationData.lblVehicles || 'Vehicles'}`;
-    //let data = row.vehicles;
-    //-- TODO: call api to get all vehicles --//
-    let data = [];
-    this.callToCommonTable(data, colsList, colsName, tableTitle);
+    this.vehicleService.getVehicleListById(row.id).subscribe((vehData: any) => {
+      let data: any = [];
+      data = vehData;
+      this.callToCommonTable(data, colsList, colsName, tableTitle);
+    });
   }
 
   callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any){
