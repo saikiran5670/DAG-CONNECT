@@ -184,7 +184,7 @@ export class AppComponent {
         this.pageName = PageName;
         this.subpage = val.url.split('/')[2];
 
-        if(val.url == "/auth/login") {
+        if(val.url == "/auth/login" || val.url.includes("/auth/createpassword/") || val.url.includes("/auth/resetpassword/")) {
           this.isLogedIn = false;
         } else if (val.url == "/") {
           this.isLogedIn = false;

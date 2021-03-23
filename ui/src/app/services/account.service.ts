@@ -373,6 +373,42 @@ export class AccountService {
       .pipe(catchError(this.handleError));
   }
 
+  createpassword(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.accountServiceUrl}/createpassword`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  resetPassword(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.accountServiceUrl}/resetpassword`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  resetPasswordInitiate(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.accountServiceUrl}/resetpasswordinitiate`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);
       return throwError(

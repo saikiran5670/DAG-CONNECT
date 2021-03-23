@@ -216,7 +216,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     // Keep in cache for this time, reset time if accessed.
                     .SetSlidingExpiration(TimeSpan.FromMinutes(_cachesettings.ExpiryInMinutes));
 
-                _cache.SetCache(LangaugeCode, responce.Responce, cacheEntryOptions);
+                _cache.SetCache(request.LangaugeCode, responce.Responce, cacheEntryOptions);
 
                 return Ok(responce.Responce);
             }
@@ -225,7 +225,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 //throw;
                 _logger.LogError(ex.Message + " " + ex.StackTrace);
-                return StatusCode(500, "Internal Server Error. Exception - " + ex.Message);
+                return StatusCode(500, "Internal Server Error. Exception - " + ex.ToString());
             }
         }
 
