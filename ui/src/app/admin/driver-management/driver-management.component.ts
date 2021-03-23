@@ -619,7 +619,8 @@ export class DriverManagementComponent implements OnInit {
       translationData: this.translationData,
       driverData: driverData,
       actionType: actionType,
-      consentType: consentType
+      consentType: consentType,
+      organizationData: this.organizationData
     }
     this.dialogRef = this.dialog.open(ConsentOptComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe(res => {
