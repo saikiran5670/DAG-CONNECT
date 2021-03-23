@@ -32,6 +32,8 @@ export class SubscriptionManagementComponent implements OnInit {
   actionType: any;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   selectionForSubscription = new SelectionModel(true, []);
+  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  userType: any = localStorage.getItem("userType");
 
   constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog) { 
     this.defaultTranslation();
