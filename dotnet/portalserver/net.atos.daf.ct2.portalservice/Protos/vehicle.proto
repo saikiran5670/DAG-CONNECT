@@ -26,6 +26,12 @@ service VehicleService {
   rpc Terminate (VehicleTerminateRequest) returns (VehicleGroupDeleteResponce);
   rpc SetOptInStatus (VehicleOptInRequest) returns (VehicleGroupDeleteResponce);
   rpc GetVehicle (VehicleIdRequest) returns (VehicleDetailsResponce);
+  rpc GetVehicleGroupWithVehCount (VehicleGroupLandingRequest) returns (VehicleGroupLandingResponse);
+
+  rpc GetDynamicAllVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
+  rpc GetDynamicVisibleVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
+  rpc GetDynamicOwnedVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
+  rpc GetRelationshipVehicles (OrgvehicleIdRequest) returns (VehicleListResponce);
 }
 
 enum VehicleStatusType{
@@ -123,7 +129,8 @@ int32 Oem_Id=18;
 int32 Oem_Organisation_id=19;
 string Opt_In=20;
 bool Is_Ota=21;
-
+google.protobuf.StringValue RelationShip=22;
+google.protobuf.StringValue AssociatedGroups=23;
 }
 
 message VehicleListResponce {
@@ -278,4 +285,35 @@ message VehicleDetailsResponce {
   Responcecode code=1;
   string message = 2;
   VehicleDetails vehicle=3;
+}
+
+
+message VehicleGroupLandingRequest{
+  int32 Id=1;
+  int32 OrganizationId = 2;
+  string GroupType = 3;
+  string FunctionEnum = 4;
+}
+
+message VehicleGroupLandingDetails{
+  int32 GroupId=1;
+  string GroupName= 2; 
+  string FunctionEnum= 3; 
+  string GroupType= 4;
+  int32 VehicleCount= 5;
+  google.protobuf.Int32Value OrganizationId=6;
+  string Description=7;
+  int64 CreatedAt=8;
+}
+
+message VehicleGroupLandingResponse{
+  repeated VehicleGroupLandingDetails vehicleGroupLandingDetails = 1;
+  Responcecode code=2;
+  string message = 3;
+}
+
+message DynamicGroupFilterRequest{
+  int32 OrganizationId = 1;
+  int32 VehicleGroupId = 2;
+  int32 RelationShipId = 3;
 }

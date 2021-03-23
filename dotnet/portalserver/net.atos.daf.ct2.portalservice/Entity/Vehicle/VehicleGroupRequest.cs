@@ -37,4 +37,13 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
         public int GroupRefCount { get; set; }
     }
 
+    public class DynamicVehicleGroupRequest
+    {
+        public int GroupId { get; set; }
+        public string GroupType { get; set; }
+        public string FunctionEnum { get; set; }
+        public int OrganizationId { get; set; }
+        public int RelationShipId { get; set; }
+    }
+
 }

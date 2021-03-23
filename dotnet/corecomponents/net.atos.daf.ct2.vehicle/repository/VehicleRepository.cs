@@ -264,6 +264,8 @@ namespace net.atos.daf.ct2.vehicle.repository
             if (record.created_at != null)
                 // vehicle.CreatedAt = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.created_at, "Africa/Mbabane", "yyyy-MM-ddTHH:mm:ss"));
                 vehicle.CreatedAt = record.created_at;
+            if (record.relationship != null)
+                vehicle.RelationShip = record.relationship;
             return vehicle;
         }
 
@@ -515,6 +517,320 @@ namespace net.atos.daf.ct2.vehicle.repository
             return VehicleId;
         }
 
+        public async Task<IEnumerable<Vehicle>> GetDynamicAllVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId)
+        {
+
+            var QueryStatement = @"select distinct orm.relationship_id
+	                               ,veh.id
+	                               ,orm.target_org_id
+                                   ,veh.organization_id
+	                               ,veh.vin
+	                               ,veh.license_plate_number
+	                               ,veh.name	                               
+                                   ,veh.status 
+                                   ,veh.status_changed_date 
+                                   ,veh.termination_date 
+                                   ,veh.vid 
+                                   ,veh.type 
+                                   ,veh.tcu_id 
+                                   ,veh.tcu_serial_number 
+                                   ,veh.tcu_brand 
+                                   ,veh.tcu_version 
+                                   ,veh.is_tcu_register 
+                                   ,veh.reference_date 
+                                   ,veh.vehicle_property_id                                   
+                                   ,veh.created_at 
+                                   ,veh.model_id
+                                   ,veh.opt_in
+                                   ,veh.is_ota
+                                   ,veh.oem_id
+                                   ,veh.oem_organisation_id
+	                               from master.vehicle veh
+                            Inner join master.orgrelationshipmapping  orm
+                            on orm.vehicle_id=veh.id
+                            Inner join master.orgrelationship ors
+                            on ors.id=orm.relationship_id
+                            where  1=1
+                            and ors.is_active=true
+                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+                            else COALESCE(end_date,0) =0 end ";
+            var parameter = new DynamicParameters();
+
+      
+            // organization id filter
+            if (OrganizationId > 0)
+            {
+                parameter.Add("@organization_id", OrganizationId);
+                QueryStatement = QueryStatement + " and (orm.created_org_id=@organization_id or orm.owner_org_id=@organization_id or orm.target_org_id=@organization_id)";
+
+            }
+
+            // RelationShip Id Filter
+            if (RelationShipId > 0)
+            {
+                parameter.Add("@id", RelationShipId);
+                QueryStatement = QueryStatement + " and ors.id=@id";
+
+            }
+
+            List<Vehicle> vehicles = new List<Vehicle>();
+            dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            foreach (dynamic record in result)
+            {
+                vehicles.Add(Map(record));
+            }
+            return vehicles.AsEnumerable();
+        }
+
+
+        public async Task<IEnumerable<Vehicle>> GetDynamicVisibleVehicle(int OrganizationId,int VehicleGroupId,int RelationShipId)
+        {
+
+            var QueryStatement = @"select distinct 
+	                               orm.relationship_id
+	                               ,veh.id
+	                               ,orm.target_org_id
+                                   ,veh.organization_id
+	                               ,veh.vin
+	                               ,veh.license_plate_number
+	                               ,veh.name	                               
+                                   ,veh.status 
+                                   ,veh.status_changed_date 
+                                   ,veh.termination_date 
+                                   ,veh.vid 
+                                   ,veh.type 
+                                   ,veh.tcu_id 
+                                   ,veh.tcu_serial_number 
+                                   ,veh.tcu_brand 
+                                   ,veh.tcu_version 
+                                   ,veh.is_tcu_register 
+                                   ,veh.reference_date 
+                                   ,veh.vehicle_property_id                                   
+                                   ,veh.created_at 
+                                   ,veh.model_id
+                                   ,veh.opt_in
+                                   ,veh.is_ota
+                                   ,veh.oem_id
+                                   ,veh.oem_organisation_id
+	                               from master.vehicle veh
+                            Inner join master.orgrelationshipmapping  orm
+                            on orm.vehicle_id=veh.id
+                            Inner join master.orgrelationship ors
+                            on ors.id=orm.relationship_id
+                            where 1=1
+                            and ors.is_active=true
+                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+                            else COALESCE(end_date,0) =0 end ";
+            var parameter = new DynamicParameters();
+
+              // Organization Id filter
+            if (OrganizationId > 0)
+            {
+                parameter.Add("@organization_id", OrganizationId);
+                QueryStatement = QueryStatement + " and orm.target_org_id=@organization_id";
+
+            }
+
+            // RelationShip Id Filter
+            if (RelationShipId > 0)
+            {
+                parameter.Add("@id", RelationShipId);
+                QueryStatement = QueryStatement + " and ors.id=@id";
+
+            }   
+
+            List<Vehicle> vehicles = new List<Vehicle>();
+            dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            foreach (dynamic record in result)
+            {
+                vehicles.Add(Map(record));
+            }
+            return vehicles.AsEnumerable();
+        }
+
+        public async Task<IEnumerable<Vehicle>> GetDynamicOwnedVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId)
+        {
+
+            var QueryStatement = @"select distinct 
+	                               orm.relationship_id
+	                               ,veh.id
+	                               ,orm.target_org_id
+                                   ,veh.organization_id
+	                               ,veh.vin
+	                               ,veh.license_plate_number
+	                               ,veh.name	                               
+                                   ,veh.status 
+                                   ,veh.status_changed_date 
+                                   ,veh.termination_date 
+                                   ,veh.vid 
+                                   ,veh.type 
+                                   ,veh.tcu_id 
+                                   ,veh.tcu_serial_number 
+                                   ,veh.tcu_brand 
+                                   ,veh.tcu_version 
+                                   ,veh.is_tcu_register 
+                                   ,veh.reference_date 
+                                   ,veh.vehicle_property_id                                   
+                                   ,veh.created_at 
+                                   ,veh.model_id
+                                   ,veh.opt_in
+                                   ,veh.is_ota
+                                   ,veh.oem_id
+                                   ,veh.oem_organisation_id
+	                               from master.vehicle veh
+                            Left join master.orgrelationshipmapping  orm
+                            on orm.vehicle_id=veh.id
+                            Inner join master.orgrelationship ors
+                            on ors.id=orm.relationship_id
+                             where 1=1  
+                            and ors.is_active=true
+                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+                            else COALESCE(end_date,0) =0 end ";
+            
+            
+                var parameter = new DynamicParameters();
+
+            // Organization Id filter
+            if (OrganizationId > 0)
+            {
+                parameter.Add("@organization_id", OrganizationId);
+                QueryStatement = QueryStatement + " and (orm.created_org_id=@organization_id or veh.organization_id=@organization_id)";
+
+            }
+
+            // RelationShip Id Filter
+            if (RelationShipId > 0)
+            {
+                parameter.Add("@id", RelationShipId);
+                QueryStatement = QueryStatement + " and ors.id=@id";
+
+            }
+
+            List<Vehicle> vehicles = new List<Vehicle>();
+            dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            foreach (dynamic record in result)
+            {
+                vehicles.Add(Map(record));
+            }
+            return vehicles.AsEnumerable();
+        }
+
+
+        public async Task<IEnumerable<Vehicle>> GetRelationshipVehicles(VehicleFilter vehiclefilter)
+        {
+
+            var QueryStatement = @"select v.id
+                                   ,v.organization_id 
+                                   ,v.name 
+                                   ,v.vin 
+                                   ,v.license_plate_number 
+                                   ,v.status 
+                                   ,v.status_changed_date 
+                                   ,v.termination_date 
+                                   ,v.vid 
+                                   ,v.type 
+                                   ,v.tcu_id 
+                                   ,v.tcu_serial_number 
+                                   ,v.tcu_brand 
+                                   ,v.tcu_version 
+                                   ,v.is_tcu_register 
+                                   ,v.reference_date 
+                                   ,v.vehicle_property_id                                   
+                                   ,v.created_at 
+                                   ,v.model_id
+                                   ,v.opt_in
+                                   ,v.is_ota
+                                   ,v.oem_id
+                                   ,v.oem_organisation_id
+                                   ,os.name as relationship
+                                   from master.vehicle v
+                                   left join master.orgrelationshipmapping as om on v.id = om.vehicle_id
+                                   inner join master.orgrelationship as os on om.relationship_id=os.id 
+                                   where 1=1";
+            var parameter = new DynamicParameters();
+
+            // Vehicle Id Filter
+            if (vehiclefilter.VehicleId > 0)
+            {
+                parameter.Add("@id", vehiclefilter.VehicleId);
+                QueryStatement = QueryStatement + " and v.id=@id";
+
+            }
+            // organization id filter
+            if (vehiclefilter.OrganizationId > 0)
+            {
+                parameter.Add("@organization_id", vehiclefilter.OrganizationId);
+                QueryStatement = QueryStatement + " and (v.organization_id=@organization_id or (om.created_org_id=@organization_id or om.target_org_id=@organization_id))";
+
+            }
+
+            // VIN Id Filter
+            if (vehiclefilter.VIN != null && Convert.ToInt32(vehiclefilter.VIN.Length) > 0)
+            {
+                parameter.Add("@vin", "%" + vehiclefilter.VIN + "%");
+                QueryStatement = QueryStatement + " and v.vin LIKE @vin";
+
+            }
+
+            // Vehicle Id list Filter
+            if (vehiclefilter.VehicleIdList != null && Convert.ToInt32(vehiclefilter.VehicleIdList.Length) > 0)
+            {
+                List<int> VehicleIds = vehiclefilter.VehicleIdList.Split(',').Select(int.Parse).ToList();
+                QueryStatement = QueryStatement + " and v.id  = ANY(@VehicleIds)";
+                parameter.Add("@VehicleIds", VehicleIds);
+            }
+
+            if (vehiclefilter.Status != VehicleStatusType.None && vehiclefilter.Status != 0)
+            {
+                parameter.Add("@status", (char)vehiclefilter.Status);
+                QueryStatement = QueryStatement + " and v.status=@status";
+
+            }
+
+            List<Vehicle> vehicles = new List<Vehicle>();
+            Vehicle vehicle = new Vehicle();
+            dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            foreach (dynamic record in result)
+            {
+                vehicle = Map(record);
+                vehicle.AssociatedGroups = GetVehicleAssociatedGroup(vehicle.ID, Convert.ToInt32(vehicle.Organization_Id)).Result;
+                vehicles.Add(vehicle);
+            }
+
+            return vehicles.AsEnumerable();
+        }
+
+        private async Task<string> GetVehicleAssociatedGroup(int vehicleId, int organizationId)
+        {
+            try
+            {
+               var QueryStatement = @"select string_agg(grp.name::text, ',')
+                                    from master.vehicle veh left join
+                                    master.groupref gref on veh.id= gref.ref_id Left join 
+                                    master.group grp on grp.id= gref.group_id
+                                    where 1=1 ";
+                var parameter = new DynamicParameters();
+
+                // Vehicle Id Filter
+                if (vehicleId > 0)
+                {
+                    parameter.Add("@id", vehicleId);
+                    QueryStatement = QueryStatement + " and veh.id  = @id";
+                }
+                // organization id filter
+                if (organizationId > 0)
+                {
+                    parameter.Add("@organization_id", organizationId);
+                    QueryStatement = QueryStatement + " and veh.organization_id = @organization_id";
+                }
+                string result = await dataAccess.ExecuteScalarAsync<string>(QueryStatement, parameter);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
         #endregion
 
