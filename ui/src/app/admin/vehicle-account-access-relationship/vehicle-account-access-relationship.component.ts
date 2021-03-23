@@ -79,8 +79,10 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     this.accountService.getAccessRelationship(this.accountOrganizationId).subscribe((relData: any) => {
       this.vehicleGrpVehicleAssociationDetails = relData.vehicle;
       this.accountGrpAccountAssociationDetails = relData.account;
-      this.selectedVehicleViewType = this.selectedVehicleViewType == '' ? 'both' : this.selectedVehicleViewType;
-      this.selectedAccountViewType = this.selectedAccountViewType == '' ? 'both' : this.selectedAccountViewType;
+      // this.selectedVehicleViewType = this.selectedVehicleViewType == '' ? 'both' : this.selectedVehicleViewType;
+      // this.selectedAccountViewType = this.selectedAccountViewType == '' ? 'both' : this.selectedAccountViewType;
+      this.selectedVehicleViewType = 'both';
+      this.selectedAccountViewType = 'both';
       this.selectedColumnType = this.selectedColumnType == '' ? 'vehicle' : this.selectedColumnType;
       if(this.selectedColumnType == 'account'){ //-- account
         this.isViewListDisabled = true;
@@ -755,11 +757,13 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     if(event.value == 'account'){
       this.isViewListDisabled = true;
       this.selectedAccountViewType = 'both';
+      this.selectedColumnType = 'account';
       this.changeGridOnAccountList(this.selectedAccountViewType);
     }
     else{
       this.isViewListDisabled = false;
       this.selectedVehicleViewType = 'both';
+      this.selectedColumnType = 'vehicle';
       this.changeGridOnVehicleList(this.selectedVehicleViewType);
     }
   }
@@ -835,9 +839,34 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     }
     this.accountService.getAccountDetails(accountObj).subscribe((accountData: any)=>{
       let data: any = [];
-      data = accountData;
+      data = this.makeRoleAccountGrpList(accountData);
       this.callToCommonTable(data, colsList, colsName, tableTitle);
     });
+  }
+
+  makeRoleAccountGrpList(initdata: any) {
+    initdata.forEach((element, index) => {
+      let roleTxt: any = '';
+      let accGrpTxt: any = '';
+      element.roles.forEach(resp => {
+        roleTxt += resp.name + ', ';
+      });
+      element.accountGroups.forEach(resp => {
+        accGrpTxt += resp.name + ', ';
+      });
+
+      if (roleTxt != '') {
+        roleTxt = roleTxt.slice(0, -2);
+      }
+      if (accGrpTxt != '') {
+        accGrpTxt = accGrpTxt.slice(0, -2);
+      }
+
+      initdata[index].roleList = roleTxt;
+      initdata[index].accountGroupList = accGrpTxt;
+    });
+
+    return initdata;
   }
 
   showVehiclePopup(row: any){

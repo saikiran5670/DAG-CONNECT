@@ -237,12 +237,46 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
     const colsList = ['firstName','emailId','roles'];
     const colsName = [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'];
     const tableTitle = `${row.name} - ${this.translationData.lblUsers || 'Users'}`;
-    // let data = row.accounts;
-    //-- TODO: call api to get all accounts --//
-    let data = [];
-    this.callToCommonTable(data, colsList, colsName, tableTitle);
+    let accountObj = {
+      accountId: 0,
+      organizationId: this.accountOrganizationId,
+      accountGroupId: row.id,
+      vehicleGroupId: 0,
+      roleId: 0,
+      name: ""
+    }
+    this.accountService.getAccountDetails(accountObj).subscribe((accountData: any)=>{
+      let data: any = [];
+      data = this.makeRoleAccountGrpList(accountData);
+      this.callToCommonTable(data, colsList, colsName, tableTitle);
+    });
   }
 
+  makeRoleAccountGrpList(initdata: any) {
+    initdata.forEach((element, index) => {
+      let roleTxt: any = '';
+      let accGrpTxt: any = '';
+      element.roles.forEach(resp => {
+        roleTxt += resp.name + ', ';
+      });
+      element.accountGroups.forEach(resp => {
+        accGrpTxt += resp.name + ', ';
+      });
+
+      if (roleTxt != '') {
+        roleTxt = roleTxt.slice(0, -2);
+      }
+      if (accGrpTxt != '') {
+        accGrpTxt = accGrpTxt.slice(0, -2);
+      }
+
+      initdata[index].roleList = roleTxt;
+      initdata[index].accountGroupList = accGrpTxt;
+    });
+
+    return initdata;
+  }
+  
   callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any){
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
