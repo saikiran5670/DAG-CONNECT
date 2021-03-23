@@ -34,6 +34,18 @@ namespace net.atos.daf.ct2.subscription.repository
             return data;
         }
 
+        //forgeting package type By id
+        async Task<Package> GetPackageTypeById(int packageId)
+        {
+            var parameterToGetPackageId = new DynamicParameters();
+            parameterToGetPackageId.Add("@id", packageId);
+            parameterToGetPackageId.Add("@is_active", true);
+            var data = await dataAccess.QueryFirstOrDefaultAsync<Package>
+                             (@"select id, type from master.package where id =@id and is_active =@is_active",
+                            parameterToGetPackageId);
+            return data;
+        }
+
         //forgeting package type and id
         async Task<int> GetOrganizationIdByCode(string OrganizationCode)
         {
@@ -429,11 +441,12 @@ namespace net.atos.daf.ct2.subscription.repository
                     objSubscriptionResponse.orderId = SubscriptionId;
                     return objSubscriptionResponse;
                 }
+                   var packageType = await GetPackageTypeById(packageId);
                 SubscriptionId = Guid.NewGuid().ToString();
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", orgId);
                 parameter.Add("@subscription_id", SubscriptionId);
-                parameter.Add("@type", null);
+                parameter.Add("@type", packageType.type == null ? null : packageType.type);
                 parameter.Add("@package_code", null);
                 parameter.Add("@package_id", packageId);
                 parameter.Add("@vehicle_id", null);
@@ -504,7 +517,7 @@ namespace net.atos.daf.ct2.subscription.repository
                 {
                     return null;
                 }
-                    objsubscriptionDetails = data.Cast<SubscriptionDetails>().ToList();
+                    objsubscriptionDetails = data.ToList();
                 
                 return objsubscriptionDetails;
             }

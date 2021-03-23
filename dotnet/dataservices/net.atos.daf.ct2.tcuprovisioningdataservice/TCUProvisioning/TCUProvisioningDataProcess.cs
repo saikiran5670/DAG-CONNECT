@@ -48,8 +48,7 @@ namespace TCUProvisioning
             ConsumerConfig config = getConsumer();
 
             using (var consumer = new ConsumerBuilder<Null, string>(config).Build())
-            {
-             
+            {             
                 log.Info("Subscribing Topic");
                 consumer.Subscribe(topic);
 
@@ -100,7 +99,6 @@ namespace TCUProvisioning
 
             return send;
         }
-
 
         private ConsumerConfig getConsumer()
         {
@@ -158,18 +156,18 @@ namespace TCUProvisioning
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                      log.Info(result );
-                    _auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data Service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(TCUDataSend));
+                    await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data Service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(TCUDataSend));
                 }
                 else {
 
                     log.Error(result);
-                    _auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(TCUDataSend));
+                    await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(TCUDataSend));
                 }
 
             }
             catch (Exception ex)
             {
-                _auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(TCUDataSend));
+                await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(TCUDataSend));
                 log.Error(ex.Message);
                 
             }

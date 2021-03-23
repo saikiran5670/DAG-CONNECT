@@ -138,14 +138,15 @@ export class TranslationDataUploadComponent implements OnInit {
     this.translationService.importTranslationData(langObj).subscribe(data => {
       if(data){
         console.log(data);
+        let msg= this.translationData.lblTranslationFileSuccessfullyUploaded ? this.translationData.lblTranslationFileSuccessfullyUploaded : "Translation file successfully uploaded";
+        this.successMsgBlink(msg);
+        this.isTranslationDataUploaded = true;
       }
     }, (error) => {
-
+      
     });
     
-    let msg= this.translationData.lblTranslationFileSuccessfullyUploaded ? this.translationData.lblTranslationFileSuccessfullyUploaded : "Translation file successfully uploaded";
-    this.successMsgBlink(msg);
-    this.isTranslationDataUploaded = true;
+    
   }
 
   applyFilter(filterValue: string) {

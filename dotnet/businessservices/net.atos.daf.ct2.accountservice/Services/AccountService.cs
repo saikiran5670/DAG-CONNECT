@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.accountservice
 {
     public class AccountManagementService : AccountService.AccountServiceBase
     {
-        private readonly ILogger<GreeterService> _logger;
+        private readonly ILogger<AccountManagementService> _logger;
         private readonly AccountComponent.IAccountManager accountmanager;
         private readonly Preference.IPreferenceManager preferencemanager;
         private readonly Group.IGroupManager groupmanager;
@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.accountservice
         private readonly AccountComponent.IAccountIdentityManager accountIdentityManager;
 
         #region Constructor
-        public AccountManagementService(ILogger<GreeterService> logger, AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, AccountComponent.IAccountIdentityManager _accountIdentityManager,IAuditTraillib _auditlog)
+        public AccountManagementService(ILogger<AccountManagementService> logger, AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, AccountComponent.IAccountIdentityManager _accountIdentityManager,IAuditTraillib _auditlog)
         {
             _logger = logger;
             accountmanager = _accountmanager;
@@ -54,6 +54,7 @@ namespace net.atos.daf.ct2.accountservice
                 AccountComponent.entity.AccountIdentity accIdentity = accountIdentityManager.Login(account).Result;
                 if (accIdentity != null && accIdentity.Authenticated)
                 {
+                    _logger.LogInformation("account is Authenticated", accIdentity);
                     response.Authenticated = accIdentity.Authenticated;
                     if (accIdentity.accountInfo != null)
                     {
@@ -86,31 +87,35 @@ namespace net.atos.daf.ct2.accountservice
                 }
                 if (accIdentity != null && !accIdentity.Authenticated)
                 {
+                    _logger.LogInformation("account is not authenticated", accIdentity);
+                    _logger.LogError("account is not authenticated",accIdentity);
                     return Task.FromResult(new AccountIdentityResponse
                     {
                         //Account not present  in IDP or IDP related error
                         Code = Responcecode.Failed,
                         Message = "Account is not configured.",
-                    });
+                });
                 }
                 else
                 {
+                    _logger.LogError("account is not authenticated", accIdentity);
+                    _logger.LogError("account is not authenticated", accIdentity);
                     return Task.FromResult(new AccountIdentityResponse
                     {
                         //Account not present  in IDP or IDP related error
                         Code = Responcecode.Failed,
                         Message = "Account is not configured.",
                         Authenticated=false,
-
                     });
                 }
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.ToString());
                 return Task.FromResult(new AccountIdentityResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = " Authentication is failed due to - " + ex.Message,
+                    Message = " Authentication is failed due to - " + ex.ToString(),
                     Authenticated = false,
                 });
             }

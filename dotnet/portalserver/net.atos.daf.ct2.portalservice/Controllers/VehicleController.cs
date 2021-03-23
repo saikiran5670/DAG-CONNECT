@@ -711,6 +711,36 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("getvehiclebysubscriptionid/{subscriptionId}")]
+        public async Task<IActionResult> GetVehicleBySubscriptionId([FromRoute] string subscriptionId)
+        {
+            try
+            {
+                _logger.LogInformation("GetVehicleBySubscriptionId method in vehicle API called.");
+
+                VehicleBusinessService.subscriptionIdRequest Vid = new VehicleBusinessService.subscriptionIdRequest();
+                Vid.SubscriptionId = subscriptionId;
+                var response = await _vehicleClient.GetVehicleBySubscriptionIdAsync(Vid);
+
+                if (response != null)
+                {
+                        return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(500, string.Empty);
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in vehicle service:GetVehicleBySubscriptionId with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
     }
 
 }

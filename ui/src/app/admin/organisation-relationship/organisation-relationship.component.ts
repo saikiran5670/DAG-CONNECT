@@ -4,6 +4,10 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { TranslationService } from 'src/app/services/translation.service';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
+import { SelectionModel } from '@angular/cdk/collections';
+import { OrganizationService } from 'src/app/services/organization.service';
 
 @Component({
   selector: 'app-organisation-relationship',
@@ -14,7 +18,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   dataSource: any;
-  orgrelationshipDisplayedColumns: string[]= ['relationshipName', 'vehicleGroup', 'targetOrg', 'chainRelationship', 'actions'];
+  orgrelationshipDisplayedColumns: string[]= ['select', 'relationshipName', 'vehicleGroup', 'targetOrg', 'startDate', 'endDate','chainRelationship', 'endRelationship'];
   editFlag: boolean = false;
   viewFlag: boolean = false;
   initData: any = [];
@@ -27,8 +31,10 @@ export class OrganisationRelationshipComponent implements OnInit {
   displayMessage: any;
   organizationId: number;
   localStLanguage: any;
+  dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
+  selectedOrgRelations = new SelectionModel(true, []);
 
-  constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService) { 
+  constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService) { 
     this.defaultTranslation();
   }
   ngOnInit(): void {
@@ -53,11 +59,25 @@ export class OrganisationRelationshipComponent implements OnInit {
 
   loadInitData() {
     //this.showLoadingIndicator = true;
-     this.mockData(); //temporary
-    //api call to get relationship data
+     this.mockData(); 
         this.dataSource = new MatTableDataSource(this.initData);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
+        
+      //   let objData = { 
+      //     Organizationid : this.organizationId,
+      //  };
+
+      //   this.organizationService.getOrgRelationship(objData).subscribe((data) => {
+      //     if(data){
+      //      this.initData = data["relationshipList"];
+      //      setTimeout(()=>{
+      //       this.dataSource = new MatTableDataSource(this.initData);
+      //       this.dataSource.paginator = this.paginator;
+      //       this.dataSource.sort = this.sort;
+      //     });
+      //   }
+      //   }); 
     
   }
 
@@ -98,36 +118,48 @@ export class OrganisationRelationshipComponent implements OnInit {
         vehicleGroup: 'Vehicle Group Name 1',
         code: 'Code 1',
         targetOrg: 'Organisation 1',
+        startDate:'02/02/2021',
+        endDate:'22/03/2021',
         chainRelationship: 'Active'
       },
       {
         relationshipName: "Relation 2",
         vehicleGroup: 'Vehicle Group Name 2',
         targetOrg: 'Organisation 2',
+        startDate:'02/02/2021',
+        endDate:'22/03/2021',
         chainRelationship: 'Inactive'
       },
       {
         relationshipName: "Relation 3",
         vehicleGroup: 'Vehicle Group Name 3',
         targetOrg: 'Organisation 3',
+        startDate:'02/02/2021',
+        endDate:'22/03/2021',
         chainRelationship: 'Active'
       },
       {
         relationshipName: "Relation 4",
         vehicleGroup: 'Vehicle Group Name 4',
         targetOrg: 'Organisation 4',
+        startDate:'02/02/2021',
+        endDate:'22/03/2021',
         chainRelationship: 'Active'
       },
       {
         relationshipName: "Relation 5",
         vehicleGroup: 'Vehicle Group Name 5',
         targetOrg: 'Organisation 5',
+        startDate:'02/02/2021',
+        endDate:'22/03/2021',
         chainRelationship: 'Inactive'
       },
       {
         relationshipName: "Relation 6",
         vehicleGroup: 'Vehicle Group Name 6',
         targetOrg: 'Organisation 6',
+        startDate:'02/02/2021',
+        endDate:'22/03/2021',
         chainRelationship: 'Active'
       }
     ]
@@ -149,4 +181,48 @@ export class OrganisationRelationshipComponent implements OnInit {
     // Setting display of spinner
       this.showLoadingIndicator=false;
   }
+
+  changeOrgRelationStatus(rowData: any){
+    const options = {
+      title: this.translationData.lblAlert || "Alert",
+      message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
+      cancelText: this.translationData.lblNo || "No",
+      confirmText: this.translationData.lblYes || "Yes",
+      status: rowData.status == 'Active' ? 'Inactive' : 'Active' ,
+      name: rowData.name
+    };
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = options;
+    this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
+    this.dialogRef.afterClosed().subscribe((res: any) => {
+      if(res){ 
+        //TODO: change status with latest grid data
+      }
+    });
+  }
+
+  masterToggleForOrgRelationship() {
+    this.isAllSelectedForOrgRelationship()
+      ? this.selectedOrgRelations.clear()
+      : this.dataSource.data.forEach((row) =>
+        this.selectedOrgRelations.select(row)
+      );
+  }
+
+  isAllSelectedForOrgRelationship() {
+    const numSelected = this.selectedOrgRelations.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForOrgRelationship(row?: any): string {
+    if (row)
+      return `${this.isAllSelectedForOrgRelationship() ? 'select' : 'deselect'} all`;
+    else
+      return `${this.selectedOrgRelations.isSelected(row) ? 'deselect' : 'select'
+        } row`;
+  }
+
 }

@@ -28,6 +28,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Caching.Distributed;
 using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.subscriptionservice;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -54,7 +55,8 @@ namespace net.atos.daf.ct2.portalservice
             var roleservice = Configuration["ServiceConfiguration:roleservice"];
             var organizationservice = Configuration["ServiceConfiguration:organizationservice"];
             var driverservice = Configuration["ServiceConfiguration:driverservice"];
-            
+            var subscriptionservice = Configuration["ServiceConfiguration:subscriptionservice"];
+
             //Web Server Configuration
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
             var cookiesexpireat = Configuration["WebServerConfiguration:cookiesexpireat"];
@@ -72,12 +74,12 @@ namespace net.atos.daf.ct2.portalservice
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
                 {
                     options.Cookie.Name = "Account";
-                    options.Cookie.HttpOnly = true;
+                    //options.Cookie.HttpOnly = true;
                     //options.Cookie.Expiration = TimeSpan.FromMinutes(Convert.ToDouble(cookiesexpireat));
                     options.Cookie.SecurePolicy = string.IsNullOrEmpty(isdevelopmentenv)? CookieSecurePolicy.Always : Convert.ToBoolean(isdevelopmentenv) ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
-                    options.Cookie.SameSite = SameSiteMode.None;
+                    options.Cookie.SameSite = SameSiteMode.Lax;
                     options.SlidingExpiration = true;
-                    options.ExpireTimeSpan = TimeSpan.FromSeconds(string.IsNullOrEmpty(authcookiesexpireat)? 5184000 : Convert.ToDouble(authcookiesexpireat));
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat)? 5184000 : Convert.ToDouble(authcookiesexpireat));
                     options.Events = new CookieAuthenticationEvents
                     {                          
                         OnRedirectToLogin = redirectContext =>
@@ -155,6 +157,10 @@ namespace net.atos.daf.ct2.portalservice
             {
                 o.Address = new Uri(driverservice);
             });
+            services.AddGrpcClient<SubscribeGRPCService.SubscribeGRPCServiceClient>(o =>
+            {
+                o.Address = new Uri(subscriptionservice);
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portal Service", Version = "v1" });
@@ -192,7 +198,7 @@ namespace net.atos.daf.ct2.portalservice
             app.Use(async (context, next) =>
             {
                 context.Response.Headers["Cache-Control"] = string.IsNullOrEmpty(headercachecontrol)? "no-cache, no-store, must-revalidate" : headercachecontrol;
-                context.Response.Headers["Expires"] = string.IsNullOrEmpty(headerexpires) ? "-1" : headerexpires;
+                //context.Response.Headers["Expires"] = string.IsNullOrEmpty(headerexpires) ? "-1" : headerexpires;
                 context.Response.Headers["Pragma"] = string.IsNullOrEmpty(headerpragma) ? "no-cache" : headerpragma;                
                 context.Response.Headers.Add("X-Frame-Options", string.IsNullOrEmpty(headerxframeoptions) ? "DENY" : headerxframeoptions);
                 context.Response.Headers.Add("X-Xss-Protection", string.IsNullOrEmpty(headerxxssprotection) ? "1" : headerxxssprotection);
