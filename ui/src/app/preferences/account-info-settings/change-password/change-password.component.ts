@@ -15,13 +15,16 @@ export class ChangePasswordComponent implements OnInit {
   public changePasswordForm : FormGroup
   password: string;
   minCharacterTxt: any;
+  errorMsg: string= '';
+  errorCode: number= 0;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     translationData: any,
     accountInfo: any
   }, private mdDialogRef: MatDialogRef<ChangePasswordComponent>, public router: Router, public fb: FormBuilder, private accountService: AccountService) {
     this.changePasswordForm = this.fb.group({
-      'newPassword': [null, Validators.compose([Validators.required, Validators.minLength(8)])],
+      'currentPassword': [null, Validators.compose([Validators.required])],
+      'newPassword': [null, Validators.compose([Validators.required, Validators.minLength(10), Validators.maxLength(256)])],
       'confirmPassword': [null, Validators.compose([Validators.required])],
     },{
       validator : [
@@ -30,9 +33,9 @@ export class ChangePasswordComponent implements OnInit {
     });
     
     if(data.translationData.lblcharactersmin)
-      this.minCharacterTxt = data.translationData.lblcharactersmin.replace('$', '8');
+      this.minCharacterTxt = data.translationData.lblcharactersmin.replace('$', '10');
     else
-      this.minCharacterTxt =  ("'$' characters min").replace('$', '8');
+      this.minCharacterTxt =  ("'$' characters min").replace('$', '10');
   }
 
   ngOnInit() { }
@@ -51,9 +54,22 @@ export class ChangePasswordComponent implements OnInit {
         emailId: this.data.accountInfo.emailId,
         password: formValue.newPassword
       }
-      this.accountService.changeAccountPassword(objData).subscribe(()=>{
-        this.close(false);  
-        this.mdDialogRef.close({editText : 'Password'}); 
+      this.accountService.changeAccountPassword(objData).subscribe((data)=>{
+        if(data){
+          this.close(false);  
+          this.mdDialogRef.close({editText : 'Password'}); 
+        }
+      },(error)=> {
+        this.errorCode = error.status;
+        if(error.status == 400){
+          this.errorMsg= "Password must not be equal to any of last 6 passwords."
+        }
+        else if(error.status == 404){
+          this.errorMsg= "Wrong email id."
+        }
+        else if(error.status == 500){
+          this.errorMsg= "Something went wrong! Please try again."
+        }
       });
     }
   }
