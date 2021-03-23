@@ -383,7 +383,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 OrganizationBusinessService.OrganizationGetData orgResponse = await organizationClient.GetAsync(idRequest);
 
-                return Ok(orgResponse);
+                return Ok(orgResponse.Organization);
             }
             catch (Exception ex)
             {
