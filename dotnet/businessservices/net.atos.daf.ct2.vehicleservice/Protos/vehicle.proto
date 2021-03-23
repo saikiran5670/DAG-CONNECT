@@ -30,7 +30,7 @@ service VehicleService {
 }
 
 message VehiclesBySubscriptionDetailsResponse{
- repeated VehiclesBySubscriptionDetails response =1;
+ repeated VehiclesBySubscriptionDetails vehicles =1;
 }
 message VehiclesBySubscriptionDetails{
  string orderId  = 1;

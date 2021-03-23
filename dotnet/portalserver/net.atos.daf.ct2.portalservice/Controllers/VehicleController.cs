@@ -718,7 +718,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.LogInformation("GetVehicleBySubscriptionId method in vehicle API called.");
-
+                if (string.IsNullOrEmpty(subscriptionId))
+                {
+                    return StatusCode(400, string.Empty);
+                }
                 VehicleBusinessService.subscriptionIdRequest Vid = new VehicleBusinessService.subscriptionIdRequest();
                 Vid.SubscriptionId = subscriptionId;
                 var response = await _vehicleClient.GetVehicleBySubscriptionIdAsync(Vid);
