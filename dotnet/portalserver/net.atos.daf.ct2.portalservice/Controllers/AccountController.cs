@@ -229,10 +229,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 changePasswordRequest.EmailId = request.EmailId;
                 changePasswordRequest.Password = request.Password;
                 AccountBusinessService.AccountResponse response = await _accountClient.ChangePasswordAsync(changePasswordRequest);
-                if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
+                if (response.Code == AccountBusinessService.Responcecode.Success)
                     return Ok("Password has been changed.");
+                else if (response.Code == AccountBusinessService.Responcecode.BadRequest)
+                    return BadRequest(response.Message);
+                else if (response.Code == AccountBusinessService.Responcecode.NotFound)
+                    return NotFound(response.Message);
                 else
-                    return StatusCode(404, "Account not configured.");
+                    return StatusCode(500, "Account not configured or failed to change password.");
             }
             catch (Exception ex)
             {
@@ -373,8 +377,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var response = await _accountClient.ResetPasswordInitiateAsync(resetPasswordInitiateRequest);
                 if (response.Code == AccountBusinessService.Responcecode.Success)
                     return Ok(response.Message);
+                else if (response.Code == AccountBusinessService.Responcecode.NotFound)
+                    return NotFound(response.Message);
                 else
-                    return StatusCode(500, "Password reset process failed to initiate or Error while sending email");
+                    return StatusCode(500, "Password reset process failed to initiate or Error while sending email.");
             }
             catch (Exception ex)
             {
@@ -389,6 +395,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                if(!Guid.TryParse(request.ProcessToken, out _))
+                {
+                    return BadRequest($"{nameof(request.ProcessToken)} field is tampered or has invalid value.");
+                }
                 var resetPasswordRequest = new AccountBusinessService.ResetPasswordRequest();
                 resetPasswordRequest.ProcessToken = request.ProcessToken;
                 resetPasswordRequest.Password = request.Password;
@@ -396,8 +406,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var response = await _accountClient.ResetPasswordAsync(resetPasswordRequest);
                 if (response.Code == AccountBusinessService.Responcecode.Success)
                     return Ok("Reset password process is successfully completed.");
+                else if (response.Code == AccountBusinessService.Responcecode.BadRequest)
+                    return BadRequest(response.Message);
                 else if (response.Code == AccountBusinessService.Responcecode.NotFound)
-                    return NotFound("Failed to reset password or Activation link is expired or invalidated.");
+                    return NotFound(response.Message);
                 else
                     return StatusCode(500, "Reset password process failed.");
             }
@@ -414,12 +426,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                if (!Guid.TryParse(request.ResetToken, out _))
+                {
+                    return BadRequest($"{nameof(request.ResetToken)} field is tampered or has invalid value.");
+                }
                 var resetPasswordInvalidateRequest = new AccountBusinessService.ResetPasswordInvalidateRequest();
                 resetPasswordInvalidateRequest.ResetToken = request.ResetToken;
 
                 var response = await _accountClient.ResetPasswordInvalidateAsync(resetPasswordInvalidateRequest);
 
-                return Ok(response.Message);
+                if (response.Code == AccountBusinessService.Responcecode.Success)
+                    return Ok(response.Message);
+                else if (response.Code == AccountBusinessService.Responcecode.NotFound)
+                    return NotFound(response.Message);
+                else
+                    return StatusCode(500, "Reset password invalidate process failed.");
             }
             catch (Exception ex)
             {
