@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.portalservice
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
                 {
                     options.Cookie.Name = "Account";
-                    options.Cookie.HttpOnly = false;
+                    options.Cookie.HttpOnly = true;
                     //options.Cookie.Expiration = TimeSpan.FromMinutes(Convert.ToDouble(cookiesexpireat));
                     //options.Cookie.SecurePolicy = string.IsNullOrEmpty(isdevelopmentenv)? CookieSecurePolicy.Always : Convert.ToBoolean(isdevelopmentenv) ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
                     options.Cookie.SameSite = SameSiteMode.Lax;
