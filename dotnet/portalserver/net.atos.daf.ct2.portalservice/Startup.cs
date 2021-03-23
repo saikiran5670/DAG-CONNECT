@@ -204,7 +204,7 @@ namespace net.atos.daf.ct2.portalservice
                 ////context.Response.Headers.Add("X-Xss-Protection", string.IsNullOrEmpty(headerxxssprotection) ? "1" : headerxxssprotection);
                 /////////context.Response.Headers.Add("Content-Security-Policy", "script-src 'self' 'unsafe-eval' 'unsafe-inline'; navigate-to https://www.daf.com; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'");
                 //context.Response.Headers.Add("Strict-Transport-Security", string.IsNullOrEmpty(headerstricttransportsecurity) ? "31536000" : headerstricttransportsecurity);
-                //context.Response.Headers.Add("Access-Control-Allow-Origin", string.IsNullOrEmpty(headeraccesscontrolalloworigin) ? "*" : headeraccesscontrolalloworigin);
+                context.Response.Headers.Add("Access-Control-Allow-Origin", string.IsNullOrEmpty(headeraccesscontrolalloworigin) ? "*" : headeraccesscontrolalloworigin);
                 //////context.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:4200");
                 context.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
                 context.Response.Headers.Add("Access-Control-Allow-Methods", string.IsNullOrEmpty(headeraccesscontrolallowmethods) ? "GET, POST, PUT, DELETE" : headeraccesscontrolallowmethods);
