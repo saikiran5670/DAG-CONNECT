@@ -102,7 +102,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (string.IsNullOrEmpty(featureRequest.Name))
                 {
-                    return StatusCode(401, "invalid featureSet Name: The featureSet Name is Empty.");
+                    return StatusCode(400, "invalid Feature Name: The feature Name is Empty.");
+                }
+                if (string.IsNullOrEmpty(featureRequest.Name))
+                {
+                    return StatusCode(400, "invalid Feature Name: The feature Name is Empty.");
+                }
+                if (featureRequest.DataAttributeIds.Count()<=0)
+                {
+                    return StatusCode(400, "Data attribute Id's required.");
                 }
                 //if (string.IsNullOrEmpty(featureRequest.Key))
                 //{
