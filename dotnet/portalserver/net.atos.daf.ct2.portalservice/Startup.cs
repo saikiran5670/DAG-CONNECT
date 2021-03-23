@@ -197,13 +197,13 @@ namespace net.atos.daf.ct2.portalservice
 
            app.Use(async (context, next) =>
             {
-                context.Response.Headers["Cache-Control"] = string.IsNullOrEmpty(headercachecontrol) ? "no-cache, no-store, must-revalidate" : headercachecontrol;
-                context.Response.Headers["Expires"] = string.IsNullOrEmpty(headerexpires) ? "-1" : headerexpires;
-                context.Response.Headers["Pragma"] = string.IsNullOrEmpty(headerpragma) ? "no-cache" : headerpragma;
-                context.Response.Headers.Add("X-Frame-Options", string.IsNullOrEmpty(headerxframeoptions) ? "DENY" : headerxframeoptions);
-                //context.Response.Headers.Add("X-Xss-Protection", string.IsNullOrEmpty(headerxxssprotection) ? "1" : headerxxssprotection);
-                ///////context.Response.Headers.Add("Content-Security-Policy", "script-src 'self' 'unsafe-eval' 'unsafe-inline'; navigate-to https://www.daf.com; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'");
-                context.Response.Headers.Add("Strict-Transport-Security", string.IsNullOrEmpty(headerstricttransportsecurity) ? "31536000" : headerstricttransportsecurity);
+                //context.Response.Headers["Cache-Control"] = string.IsNullOrEmpty(headercachecontrol) ? "no-cache, no-store, must-revalidate" : headercachecontrol;
+                //context.Response.Headers["Expires"] = string.IsNullOrEmpty(headerexpires) ? "-1" : headerexpires;
+                //context.Response.Headers["Pragma"] = string.IsNullOrEmpty(headerpragma) ? "no-cache" : headerpragma;
+                //context.Response.Headers.Add("X-Frame-Options", string.IsNullOrEmpty(headerxframeoptions) ? "DENY" : headerxframeoptions);
+                ////context.Response.Headers.Add("X-Xss-Protection", string.IsNullOrEmpty(headerxxssprotection) ? "1" : headerxxssprotection);
+                /////////context.Response.Headers.Add("Content-Security-Policy", "script-src 'self' 'unsafe-eval' 'unsafe-inline'; navigate-to https://www.daf.com; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'");
+                //context.Response.Headers.Add("Strict-Transport-Security", string.IsNullOrEmpty(headerstricttransportsecurity) ? "31536000" : headerstricttransportsecurity);
                 //context.Response.Headers.Add("Access-Control-Allow-Origin", string.IsNullOrEmpty(headeraccesscontrolalloworigin) ? "*" : headeraccesscontrolalloworigin);
                 //////context.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:4200");
                 context.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
