@@ -195,8 +195,9 @@ export class FeatureManagementComponent implements OnInit {
       this.successMsgBlink(item.successMsg);
     }
     if(item.tableData) {
-      this.updatedTableData(item.tableData)
+      this.initData = item.tableData;
     }
+    this.updatedTableData(this.initData);
   }
 
   updatedTableData(tableData : any) {
