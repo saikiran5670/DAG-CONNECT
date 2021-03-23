@@ -1111,16 +1111,11 @@ namespace net.atos.daf.ct2.account
 	                    FROM master.Account acc
 	                    INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.id = @account_id AND ar.organization_id = @organization_id AND ar.role_id = @role_id AND acc.is_active = True
 	                    INNER JOIN master.Role r ON ar.role_id = r.id AND r.is_active = True
-	                    UNION
+	                    INTERSECT
 	                    --Subscription Route
 	                    SELECT pkg.feature_set_id
 	                    FROM master.Subscription s
 	                    INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @organization_id AND s.is_active = True AND pkg.is_active = True
-	                    UNION
-	                    --Org Relationship Route
-	                    SELECT orel.feature_set_id
-	                    FROM master.OrgRelationship orel
-	                    WHERE orel.organization_id = @organization_id
                     ) fsets
                     INNER JOIN master.FeatureSet fset ON fsets.feature_set_id = fset.id AND fset.is_active = True
                     INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
