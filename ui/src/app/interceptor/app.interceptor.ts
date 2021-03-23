@@ -2,6 +2,7 @@ import {
   HttpErrorResponse,
   HttpEvent,
   HttpHandler,
+  HttpHeaders,
   HttpInterceptor,
   HttpRequest,
   HttpResponse,
@@ -21,9 +22,11 @@ export class AppInterceptor implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     req = req.clone({
-      setHeaders: {
-        abc: '1234',
-      },
+      // headers: new HttpHeaders({
+
+      //   'myHeader': '1234'
+      // }),
+      withCredentials: true
     });
 
     //console.log('Intercepted request' + req.url);
