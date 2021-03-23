@@ -126,111 +126,112 @@ namespace net.atos.daf.ct2.account
         private async Task<IdentityEntity.AccountToken> PrepareSaveToken(IdentityEntity.Identity user, Account account)
         {
             IdentityEntity.AccountToken accToken = new IdentityEntity.AccountToken();
-            //generate idp token 
-            IdentityEntity.Response idpResponse = await autheticator.AccessToken(user);
-            if (idpResponse.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                IdentityEntity.IDPToken token = JsonConvert.DeserializeObject<IdentityEntity.IDPToken>(Convert.ToString(idpResponse.Result));
-                IdentityEntity.AccountIDPClaim accIDPclaims = tokenManager.DecodeToken(token.access_token);
-                var now = DateTime.Now;
-                long unixTimeSecondsIssueAt = new DateTimeOffset(now).ToUnixTimeSeconds();
-                long unixTimeSecondsExpiresAt = 0;
-                if (token.expires_in > 0)
+
+                //generate idp token 
+                IdentityEntity.Response idpResponse = await autheticator.AccessToken(user);
+                if (idpResponse.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    unixTimeSecondsExpiresAt = new DateTimeOffset(now.AddSeconds(token.expires_in)).ToUnixTimeSeconds();
-                }
-                int session_Id = 0;
-                Guid sessionGuid = Guid.NewGuid();
-                Guid tokenidentifier = Guid.NewGuid();
-                IdentitySessionComponent.entity.AccountSession accSessionEntity = new IdentitySessionComponent.entity.AccountSession();
-                IdentitySessionComponent.entity.AccountToken accTokenEntity = new IdentitySessionComponent.entity.AccountToken();
-                //check if session is present for this account.
-                IEnumerable<IdentitySessionComponent.entity.AccountSession> sessionlist = await accountSessionManager.GetAccountSession(account.Id);
-                foreach (var item in sessionlist)
-                {
-                    //session for this account is already present.
-                    session_Id = item.Id;
-                    sessionGuid = item.Session_Id;
-                    accSessionEntity = item;
-                    break;
-                }
-                if (session_Id == 0)
-                {
-                    //create a new session entry as there is no session active for this account.                        
-                    accSessionEntity.IpAddress = "0.0.0.0";//need to be discuss and implement 
-                    accSessionEntity.AccountId = account.Id;
-                    accSessionEntity.UserName = account.EmailId;
-                    accSessionEntity.Session_Id = System.Guid.NewGuid();
-                    accSessionEntity.SessionStartedAt = unixTimeSecondsIssueAt;
-                    accSessionEntity.CreatedAt = unixTimeSecondsIssueAt;
-                    session_Id = await accountSessionManager.InsertSession(accSessionEntity);
-                }
-                //account has a session now.
-                if (session_Id > 0)
-                {
-                    foreach (var assertion in accIDPclaims.Assertions)
+                    IdentityEntity.IDPToken token = JsonConvert.DeserializeObject<IdentityEntity.IDPToken>(Convert.ToString(idpResponse.Result));
+                    IdentityEntity.AccountIDPClaim accIDPclaims = tokenManager.DecodeToken(token.access_token);
+                    var now = DateTime.Now;
+                    long unixTimeSecondsIssueAt = new DateTimeOffset(now).ToUnixTimeSeconds();
+                    long unixTimeSecondsExpiresAt = 0;
+                    if (token.expires_in > 0)
                     {
-                        if (!String.IsNullOrEmpty(assertion.Value))
+                        unixTimeSecondsExpiresAt = new DateTimeOffset(now.AddSeconds(token.expires_in)).ToUnixTimeSeconds();
+                    }
+                    int session_Id = 0;
+                    Guid sessionGuid = Guid.NewGuid();
+                    Guid tokenidentifier = Guid.NewGuid();
+                    IdentitySessionComponent.entity.AccountSession accSessionEntity = new IdentitySessionComponent.entity.AccountSession();
+                    IdentitySessionComponent.entity.AccountToken accTokenEntity = new IdentitySessionComponent.entity.AccountToken();
+                    //check if session is present for this account.
+                    IEnumerable<IdentitySessionComponent.entity.AccountSession> sessionlist = await accountSessionManager.GetAccountSession(account.Id);
+                    foreach (var item in sessionlist)
+                    {
+                        //session for this account is already present.
+                        session_Id = item.Id;
+                        sessionGuid = item.Session_Id;
+                        accSessionEntity = item;
+                        break;
+                    }
+                    if (session_Id == 0)
+                    {
+                        //create a new session entry as there is no session active for this account.                        
+                        accSessionEntity.IpAddress = "0.0.0.0";//need to be discuss and implement 
+                        accSessionEntity.AccountId = account.Id;
+                        accSessionEntity.UserName = account.EmailId;
+                        accSessionEntity.Session_Id = System.Guid.NewGuid();
+                        accSessionEntity.SessionStartedAt = unixTimeSecondsIssueAt;
+                        accSessionEntity.CreatedAt = unixTimeSecondsIssueAt;
+                        session_Id = await accountSessionManager.InsertSession(accSessionEntity);
+                    }
+                    //account has a session now.
+                    if (session_Id > 0)
+                    {
+                        foreach (var assertion in accIDPclaims.Assertions)
                         {
-                            switch (assertion.Key.ToString())
+                            if (!String.IsNullOrEmpty(assertion.Value))
                             {
-                                //add session guid into account token response as session_state
-                                case "session_state":
-                                    accIDPclaims.Sessionstate = sessionGuid.ToString();
-                                    break;
+                                switch (assertion.Key.ToString())
+                                {
+                                    //add session guid into account token response as session_state
+                                    case "session_state":
+                                        accIDPclaims.Sessionstate = sessionGuid.ToString();
+                                        break;
+                                }
                             }
                         }
-                    }
-                    //set session guid to token for response value session_state
-                    accIDPclaims.Sessionstate = sessionGuid.ToString();
-                    accIDPclaims.TokenExpiresIn = token.expires_in;
-                    accIDPclaims.IssuedAt = unixTimeSecondsIssueAt;
-                    accIDPclaims.ValidTo = unixTimeSecondsExpiresAt;
-                    accIDPclaims.Email = account.EmailId;
-                    //set token identifier to account token
-                    accIDPclaims.Id = tokenidentifier.ToString();
-                    accToken = tokenManager.CreateToken(accIDPclaims);
-                    if (accToken != null && !string.IsNullOrEmpty(accToken.AccessToken))
-                    {
-                        accTokenEntity = new IdentitySessionComponent.entity.AccountToken();
-                        accTokenEntity.AccessToken = accToken.AccessToken;
-                        accTokenEntity.AccountId = account.Id;
-                        accTokenEntity.CreatedAt = unixTimeSecondsIssueAt;
-                        accTokenEntity.ExpireIn = token.expires_in;
-                        accTokenEntity.IdpType = IdentitySessionComponent.ENUM.IDPType.Keycloak;
-                        accTokenEntity.TokenType = IdentitySessionComponent.ENUM.TokenType.Bearer;
-                        accTokenEntity.Scope = accToken.Scope;
-                        accTokenEntity.SessionState = accToken.SessionState;
-                        accTokenEntity.Session_Id = session_Id;
-                        accTokenEntity.TokenId = tokenidentifier.ToString();
-                        accTokenEntity.UserId = account.Id;
-                        accTokenEntity.UserName = account.EmailId;
-                        int tokenkey = await accountTokenManager.InsertToken(accTokenEntity);
-                        //token generated successfully hence adding token info & updating session info
-                        accSessionEntity.LastSessionRefresh = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-                        accSessionEntity.SessionExpiredAt = unixTimeSecondsExpiresAt;
-                        session_Id = await accountSessionManager.UpdateSession(accSessionEntity);
+                        //set session guid to token for response value session_state
+                        accIDPclaims.Sessionstate = sessionGuid.ToString();
+                        accIDPclaims.TokenExpiresIn = token.expires_in;
+                        accIDPclaims.IssuedAt = unixTimeSecondsIssueAt;
+                        accIDPclaims.ValidTo = unixTimeSecondsExpiresAt;
+                        accIDPclaims.Email = account.EmailId;
+                        //set token identifier to account token
+                        accIDPclaims.Id = tokenidentifier.ToString();
+                        accToken = tokenManager.CreateToken(accIDPclaims);
+                        if (accToken != null && !string.IsNullOrEmpty(accToken.AccessToken))
+                        {
+                            accTokenEntity = new IdentitySessionComponent.entity.AccountToken();
+                            accTokenEntity.AccessToken = accToken.AccessToken;
+                            accTokenEntity.AccountId = account.Id;
+                            accTokenEntity.CreatedAt = unixTimeSecondsIssueAt;
+                            accTokenEntity.ExpireIn = token.expires_in;
+                            accTokenEntity.IdpType = IdentitySessionComponent.ENUM.IDPType.Keycloak;
+                            accTokenEntity.TokenType = IdentitySessionComponent.ENUM.TokenType.Bearer;
+                            accTokenEntity.Scope = accToken.Scope;
+                            accTokenEntity.SessionState = accToken.SessionState;
+                            accTokenEntity.Session_Id = session_Id;
+                            accTokenEntity.TokenId = tokenidentifier.ToString();
+                            accTokenEntity.UserId = account.Id;
+                            accTokenEntity.UserName = account.EmailId;
+                            int tokenkey = await accountTokenManager.InsertToken(accTokenEntity);
+                            //token generated successfully hence adding token info & updating session info
+                            accSessionEntity.LastSessionRefresh = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                            accSessionEntity.SessionExpiredAt = unixTimeSecondsExpiresAt;
+                            session_Id = await accountSessionManager.UpdateSession(accSessionEntity);
 
-                        accToken.statusCode = System.Net.HttpStatusCode.OK;
-                        accToken.message = "Token is created and saved to databse.";
+                            accToken.statusCode = System.Net.HttpStatusCode.OK;
+                            accToken.message = "Token is created and saved to databse.";
+                        }
+                        else
+                        {
+                            accToken.statusCode = System.Net.HttpStatusCode.Unauthorized;
+                            accToken.message = "Custom token is not created";
+                        }
                     }
                     else
                     {
-                        accToken.statusCode = System.Net.HttpStatusCode.Unauthorized;
-                        accToken.message = "Custom token is not created";
+                        accToken.statusCode = System.Net.HttpStatusCode.InternalServerError;
+                        accToken.message = "database session is not created";
                     }
                 }
                 else
                 {
-                    accToken.statusCode = System.Net.HttpStatusCode.InternalServerError;
-                    accToken.message = "database session is not created";
+                    accToken.statusCode = idpResponse.StatusCode;
+                    accToken.message = Convert.ToString(idpResponse.Result);
                 }
-            }
-            else
-            {
-                accToken.statusCode = idpResponse.StatusCode;
-                accToken.message = Convert.ToString(idpResponse.Result);
-            }
             
             return await Task.FromResult(accToken);
         }
@@ -249,43 +250,6 @@ namespace net.atos.daf.ct2.account
                 break;//get only first account id
             }
             return account;
-        }
-        public async Task<bool> LogOut(string token)
-        {
-            bool isLogout = false;
-            bool tokenValid = await ValidateToken(token);
-            if (tokenValid)
-            {
-                IdentityEntity.AccountIDPClaim accIDPclaims = tokenManager.DecodeToken(token);
-                if (accIDPclaims != null && !string.IsNullOrEmpty(accIDPclaims.Id))
-                {
-                    int accountid = await accountTokenManager.DeleteTokenByTokenId(new Guid(accIDPclaims.Id));
-                    int tokencount = await accountTokenManager.GetTokenCount(accountid);
-                    if (tokencount == 1)
-                    {
-                      int sessionid = await accountSessionManager.DeleteSession(accIDPclaims.Sessionstate);
-                      
-                    }
-                    isLogout = true;
-                }
-            }
-            return await Task.FromResult(isLogout);
-        }
-        public async Task<bool> LogOut(int accountId)
-        {
-            bool isLogout = false;
-            if (accountId>0)
-            {
-                string sessionstate = string.Empty;
-                IEnumerable<IdentitySessionComponent.entity.AccountToken> tokens = await accountTokenManager.GetTokenDetails(accountId);
-                foreach (var token in tokens)
-                {
-                    sessionstate = token.SessionState;
-                }
-                int sessionid = await accountSessionManager.DeleteSession("");
-                isLogout = true;
-            }
-            return await Task.FromResult(isLogout);
         }
     }
 }

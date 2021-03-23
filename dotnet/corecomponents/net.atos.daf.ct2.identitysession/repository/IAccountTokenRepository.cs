@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.identitysession.repository
         Task<IEnumerable<AccountToken>> GetTokenDetails(int AccountID);
         Task<IEnumerable<AccountToken>> GetTokenDetails(string AccessToken);
         Task<bool> ValidateToken(string TokenId);
-        Task<int> DeleteTokenByTokenId(Guid tokenID);
+        //Task<int> DeleteTokenByTokenId(Guid tokenID);
         Task<int> GetTokenCount(int AccountID);
     }
 }

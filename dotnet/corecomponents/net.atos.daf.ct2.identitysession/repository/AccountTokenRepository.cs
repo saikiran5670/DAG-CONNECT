@@ -89,7 +89,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
         }
 
-        public async Task<int> DeleteTokenByTokenId(Guid tokenID)
+        private async Task<int> DeleteTokenByTokenId(Guid tokenID)
         {
             var QueryStatement = @"DELETE FROM
                                         master.accounttoken 
