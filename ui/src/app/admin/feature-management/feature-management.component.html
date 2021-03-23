@@ -25,7 +25,7 @@
           </span>
         </mat-form-field>
       </div>
-      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+      <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
         <button mat-flat-button color="primary" (click)="createNewFeature()">
           <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewFeature || 'New Feature' }}
         </button>
@@ -68,11 +68,11 @@
               matTooltip="{{ translationData.lblView || 'View' }}">
               <mat-icon>visibility</mat-icon>
             </button>
-            <button class='actionBtn' mat-flat-button (click)="editViewFeature(row, 'edit')"
+            <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="editViewFeature(row, 'edit')"
               matTooltip="{{ translationData.lblEdit || 'Edit' }}">
               <mat-icon>create</mat-icon>
             </button>
-            <button class='actionBtn' mat-flat-button (click)="deleteFeature(row)"
+            <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deleteFeature(row)"
               matTooltip="{{ translationData.lblDelete || 'Delete' }}">
               <mat-icon class="deleteIcon">delete_outline</mat-icon>
             </button>

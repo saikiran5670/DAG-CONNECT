@@ -27,6 +27,7 @@ export class FeatureManagementComponent implements OnInit {
   initData: any = [];
   accountOrganizationId: any = 0;
   localStLanguage: any;
+  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   dataSource: any;
   translationData: any;
   createEditViewFeatureFlag: boolean = false;

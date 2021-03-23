@@ -22,6 +22,7 @@ export class UserManagementComponent implements OnInit {
   viewFlag: boolean = false;
   dataSource: any;
   roleData: any;
+  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userGrpData: any;
   defaultSetting: any;
   selectedRoleData: any;
