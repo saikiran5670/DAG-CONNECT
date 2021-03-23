@@ -5,6 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
+import { OrganizationService } from 'src/app/services/organization.service';
 
 @Component({
   selector: 'app-create-edit-view-organisation-relationship',
@@ -12,7 +13,7 @@ import { SelectionModel } from '@angular/cdk/collections';
   styleUrls: ['./create-edit-view-organisation-relationship.component.css']
 })
 export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
-  constructor(private _formBuilder: FormBuilder, private _snackBar: MatSnackBar) { 
+  constructor(private _formBuilder: FormBuilder, private _snackBar: MatSnackBar, private organizationService: OrganizationService) { 
   }
   OrgId: number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
   // createStatus: boolean = false;
@@ -32,6 +33,8 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   organisationNameDisplayColumn: string[]= ['select', 'organisationName'];
   initData: any;
   selectedOrgRelations = new SelectionModel(true, []);
+  organisationData = [];
+  doneFlag = false;
 
   relationshipList: any = [
     {
@@ -64,11 +67,34 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
 
   loadInitData() {
     //this.showLoadingIndicator = true;
-     this.mockData(); //temporary
+    //  this.mockData(); //temporary
     //api call to get relationship data
-        this.dataSource = new MatTableDataSource(this.initData);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        // this.dataSource = new MatTableDataSource(this.initData);
+        // this.dataSource.paginator = this.paginator;
+        // this.dataSource.sort = this.sort;
+
+        let objData = {
+          createdOrgId : 1,
+        }
+
+        this.organizationService.GetOrgRelationdetails(objData).subscribe((data) => {
+          if(data)
+       this.initData = data["relationShipData"];
+          setTimeout(()=>{
+            this.dataSource = new MatTableDataSource(data);
+            this.dataSource.paginator = this.paginator;
+            this.dataSource.sort = this.sort;
+            if(!this.createStatus || this.viewFlag){
+              // this.onReset();
+            }
+          });
+          // this.featuresData = data;
+        }, (error) => { });
+        this.doneFlag = this.createStatus ? false : true;
+    
+      
+    
+    
     
   }
   mockData(){

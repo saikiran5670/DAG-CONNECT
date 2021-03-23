@@ -40,7 +40,7 @@
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
               <mat-select placeholder="{{ translationData.lblSelectAccessType || 'Select Access Type' }}" formControlName="accessType" required>
-                <mat-option *ngFor="let rer of accessTypeList" [value]="rer.id">
+                <mat-option *ngFor="let rer of accessTypeList" [value]="rer.type">
                   {{ rer.name }}
                 </mat-option>
               </mat-select>
@@ -50,7 +50,7 @@
             </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedElementData.accessType.name }}</span>
+            <span style='font-weight: 500!important;'>{{ selectedElementData.accessType == 'F' ? (translationData.lblFullAccess || 'Full Access') : (translationData.lblViewOnly || 'View Only') }}</span>
           </div>
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
@@ -117,9 +117,9 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroupVehicle || 'Vehicle Group/Vehicle' }}</mat-header-cell>
             <mat-cell *matCellDef="let row">
               {{ row.name }}
-              <div [ngClass]="{'cursor-pointer': (row.isVehicleGroup == true && row.vehicles.length > 0)}" (click)="(row.isVehicleGroup == true && row.vehicles.length > 0) ? showVehiclePopup(row) : ''" *ngIf="row.isVehicleGroup == true">
+              <div [ngClass]="{'cursor-pointer': (row.isGroup == true && row.count > 0)}" (click)="(row.isGroup == true && row.count > 0) ? showVehiclePopup(row) : ''" *ngIf="row.isGroup == true">
                 <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
-                <span class='iconTxt'>{{ (row.vehicles.length < 10) ? '0' : '' }}{{ row.vehicles.length }}</span>
+                <span class='iconTxt'>{{ (row.count < 10) ? '0' : '' }}{{ row.count }}</span>
               </div>
             </mat-cell>
           </ng-container>

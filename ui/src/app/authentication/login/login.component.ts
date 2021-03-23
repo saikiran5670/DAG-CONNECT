@@ -31,6 +31,7 @@ export class LoginComponent implements OnInit {
   invalidUserMsg: boolean = false;
   cookiesFlag: boolean = true;
   forgotPwdFlag: boolean = false;
+  resetPwdFlag: boolean = false;
   dialogRefLogin: MatDialogRef<LoginDialogComponent>;
   maintenancePopupFlag: boolean = false;
   loginClicks = 0;
@@ -43,7 +44,7 @@ export class LoginComponent implements OnInit {
       'password': [null, Validators.compose([Validators.required])]
     });
     this.forgotPasswordForm = this.fb.group({
-      'email': [null, Validators.compose([Validators.required, Validators.email])]
+      'emailId': [null, Validators.compose([Validators.required, Validators.email])]
     });
     
     this.cookiesFlag = this.cookieService.get('cookiePolicy') ? false : true;
@@ -102,7 +103,14 @@ export class LoginComponent implements OnInit {
   public onResetPassword(values: object): void {
     console.log("values:: ", values)
     if (this.forgotPasswordForm.valid) {
+      this.accountService.resetPasswordInitiate(values).subscribe(data => {
+        if(data){
+          this.forgotPwdFlag = false;
+          this.resetPwdFlag = true;
+        }
+      },(error)=> {
 
+      })
     }
   }
 
@@ -191,11 +199,13 @@ export class LoginComponent implements OnInit {
   }
 
   onForgetPassword() {
-    //this.forgotPwdFlag = true;
+    this.forgotPwdFlag = true;
   }
 
   onBackToLogin() {
+    this.forgotPasswordForm.controls.emailId.setValue("");
     this.forgotPwdFlag = false;
+    this.resetPwdFlag = false;
   }
 
   onCancel(){

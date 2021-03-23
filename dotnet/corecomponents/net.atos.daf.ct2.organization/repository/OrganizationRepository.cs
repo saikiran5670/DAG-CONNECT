@@ -327,10 +327,10 @@ namespace net.atos.daf.ct2.organization.repository
                   postal_code=@PostalCode, city=@City,country_code=@CountryCode,reference_date=@reference_date                               
 	                                 WHERE org_id = @org_id RETURNING id;";
 
-                    await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameterUpdate);
+                   await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameterUpdate);
 
-                    // Assign base package at ORG lavel if not exist
-                    await subscriptionManager.Create(iscustomerexist,Convert.ToInt32(customer.OrgCreationPackage));
+                    // Assign base package at ORG lavel if not exist                   
+                    await subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
 
                 }
                 else
@@ -371,7 +371,7 @@ namespace net.atos.daf.ct2.organization.repository
                     // need to discuss here
 
                     // Assign base package at ORG lavel
-                   await subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
+                    await subscriptionManager.Create(organizationId, Convert.ToInt32(customer.OrgCreationPackage));
                 }
             }
             catch (Exception ex)

@@ -916,7 +916,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // Validation                 
                 if ((organizationId <= 0) || (Id <= 0))
                 {
-                    return BadRequest();
+                    return StatusCode(400,string.Empty);
                 }
                 AccountBusinessService.DeleteAccessRelationRequest deleteRequest = new AccountBusinessService.DeleteAccessRelationRequest();
                 deleteRequest.OrganizationId = organizationId;
