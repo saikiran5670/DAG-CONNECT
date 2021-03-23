@@ -1,4 +1,3 @@
-using net.atos.daf.ct2.package.ENUM;
 using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.package.entity
@@ -7,16 +6,18 @@ namespace net.atos.daf.ct2.package.entity
     {
         public int Id{get;set;}
         public string Code{get;set;}
-        public int FeatureSetID { get; set; }
-        public List<string> Features { get; set; }
+        public int FeatureSetID { get; set; }      
+        public List<int> FeatureIds { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
-        public string Description { get; set; }     
-        public bool Status { get; set; }
+        public string Description { get; set; }
+        public bool IsActive { get; set; }
+        public string Status { get; set; }
+        public long CreatedAt { get; set; }
     }  
     public class PackageMaster
     {
-        public List<Package> packages { get; set; }     
-
+        public List<Package> packages { get; set; }  
     }
+  
 }
