@@ -2,15 +2,16 @@ import {
   HttpErrorResponse,
   HttpEvent,
   HttpHandler,
+  HttpHeaders,
   HttpInterceptor,
   HttpRequest,
   HttpResponse,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-//import { do } from "rxjs/operators";
+
 import { tap, catchError } from 'rxjs/operators';
-import { AuthService } from '../services/auth.service';
+//import { AuthService } from '../services/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class AppInterceptor implements HttpInterceptor {
@@ -21,9 +22,11 @@ export class AppInterceptor implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     req = req.clone({
-      setHeaders: {
-        abc: '1234',
-      },
+      // headers: new HttpHeaders({
+
+      //   'myHeader': '1234'
+      // }),
+      withCredentials: true
     });
 
     //console.log('Intercepted request' + req.url);

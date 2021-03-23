@@ -7,7 +7,7 @@ import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { ChartsModule } from 'ng2-charts';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AlertsComponent } from './configuration/alerts/alerts.component';
 import { ConfigLoader, ConfigModule } from '@ngx-config/core';
 import { ConfigHttpLoader } from '@ngx-config/http-loader';
@@ -20,6 +20,7 @@ import { OrganizationService } from './services/organization.service';
 import { DriverService } from './services/driver.service';
 import { FeatureService } from './services/feature.service';
 import { PackageService } from './services/package.service';
+import { AppInterceptor } from './interceptor/app.interceptor';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
@@ -48,7 +49,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     PreferencesModule
     //RouterModule.forRoot(appRoute)
   ],
-  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}, DataInterchangeService, AccountService, RoleService, OrganizationService, DriverService, FeatureService, PackageService],
+  providers: [{provide: HTTP_INTERCEPTORS,useClass: AppInterceptor,multi:true},{provide: LocationStrategy, useClass: HashLocationStrategy}, DataInterchangeService, AccountService, RoleService, OrganizationService, DriverService, FeatureService, PackageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
