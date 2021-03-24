@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.account.ENUM;
 using net.atos.daf.ct2.account.entity;
+using net.atos.daf.ct2.identity.entity;
 
 namespace net.atos.daf.ct2.account
 {
@@ -12,7 +13,7 @@ namespace net.atos.daf.ct2.account
         Task<Account> Create(Account account);
         Task<Account> Update(Account account);
         Task<bool> Delete(Account account);
-        Task<bool> ChangePassword(Account account);
+        Task<Response> ChangePassword(Account account);
         Task<IEnumerable<Account>> Get(AccountFilter filter);
         Task<int> GetCount(int organization_id);
         Task<Account> AddAccountToOrg(Account account);
@@ -32,9 +33,9 @@ namespace net.atos.daf.ct2.account
         Task<List<int>> GetRoleAccounts(int roleId);
         Task<List<KeyValue>> GetAccountOrg(int accountId);
         Task<List<AccountOrgRole>> GetAccountRole(int accountId);
-        Task<Guid?> ResetPasswordInitiate(string emailId, bool canSendEmail = true);
-        Task<bool> ResetPassword(Account account);
-        Task<bool> ResetPasswordInvalidate(Guid ResetToken);
+        Task<Response> ResetPasswordInitiate(string emailId, bool canSendEmail = true);
+        Task<Response> ResetPassword(Account account);
+        Task<Response> ResetPasswordInvalidate(Guid ResetToken);
         Task<IEnumerable<MenuFeatureDto>> GetMenuFeatures(int accountId, int roleId, int organizationId, string languageCode);
         Task<bool> CheckForFeatureAccessByEmailId(string emailId, string featureName);
     }

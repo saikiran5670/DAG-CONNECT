@@ -54,6 +54,16 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
             return false;
         }
+
+        public static bool ValidateFunctionEnumType(char enumType)
+        {
+            string enumList = "aAoOvV";
+            if (enumList.Contains(enumType))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }
 

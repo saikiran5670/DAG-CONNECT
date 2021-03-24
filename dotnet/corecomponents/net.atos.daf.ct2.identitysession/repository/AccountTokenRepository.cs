@@ -119,6 +119,24 @@ namespace net.atos.daf.ct2.identitysession.repository
                 throw ex;
             }
         }
+        public async Task<int> DeleteTokenbyAccountId(int sessionId)
+        {
+            try
+            {
+                var QueryStatement = @"DELETE FROM
+                                        master.accounttoken 
+                                        where account_id=@account_id
+                                        RETURNING account_id";
+                var parameter = new DynamicParameters();
+                parameter.Add("@account_id", sessionId);
+                int account_Id= await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                return account_Id;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public async Task<IEnumerable<AccountToken>> GetTokenDetails(int AccountID)
         {
             try
