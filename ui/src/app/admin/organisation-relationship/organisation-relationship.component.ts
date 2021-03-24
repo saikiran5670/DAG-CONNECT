@@ -33,6 +33,18 @@ export class OrganisationRelationshipComponent implements OnInit {
   localStLanguage: any;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   selectedOrgRelations = new SelectionModel(true, []);
+  relationshipList: any = [];
+  vehicleList: any = [];
+  organizationList: any = [];
+  startDateList: any = [];
+  allTypes: any = [
+    {
+      name: 'Active'
+    },
+    {
+      name: 'Terminated'
+    }
+  ];
 
   constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService) { 
     this.defaultTranslation();
@@ -64,7 +76,8 @@ export class OrganisationRelationshipComponent implements OnInit {
     //     this.dataSource.paginator = this.paginator;
     //     this.dataSource.sort = this.sort;
   
-        this.organizationService.getOrgRelationshipDetailsLandingPage().subscribe((data) => {
+        this.organizationService.getOrgRelationshipDetailsLandingPage().subscribe((data: any) => {
+          this.hideloader();
           if(data)
            this.initData = data["orgRelationshipMappingList"];
            setTimeout(()=>{
@@ -72,10 +85,38 @@ export class OrganisationRelationshipComponent implements OnInit {
             this.dataSource.paginator = this.paginator;
             this.dataSource.sort = this.sort;
           });
+          // this.relationshipList = this.initData;
         }
         ); 
+
+        let objData = {
+          Organization_Id: this.organizationId
+        }
+
+        this.organizationService.GetOrgRelationdetails(objData).subscribe((data: any) => {
+          if(data)
+          {
+            this.initData = data["relationShipData"];
+            this.relationshipList = this.initData;
+            this.vehicleList = data["vehicleGroup"];
+            this.organizationList = data["organizationData"];
+          }
+        });
     
   }
+
+  setDate(date : any){​​​​​​​​
+    if (date === 0) {​​​​​​​​
+        return 0;
+        }​​​​​​​​
+    else {​​​​​​​​
+      var newdate = new Date(date);
+      var day = newdate.getDate();
+      var month = newdate.getMonth();
+      var year = newdate.getFullYear();
+      return (`${​​​​​​​​day}​​​​​​​​/${​​​​​​​​month + 1}​​​​​​​​/${​​​​​​​​year}​​​​​​​​`);
+        }​​​​​​​​
+      }​​​​​​​​
 
   defaultTranslation () {
     this.translationData = {
@@ -107,6 +148,19 @@ export class OrganisationRelationshipComponent implements OnInit {
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
   }
+
+  applyFilterOnRelationship(filterValue: string){
+
+    console.log(filterValue)
+    this.dataSource.filterPredicate = function(data, filter: string): boolean {
+      console.log(data);
+      console.log(filter);
+      return data.relationShipId === filter;
+    };  
+    this.dataSource.filter = filterValue;
+  }
+
+  
   mockData(){
     this.initData = [
       {
@@ -197,6 +251,46 @@ export class OrganisationRelationshipComponent implements OnInit {
         //TODO: change status with latest grid data
       }
     });
+  }
+
+  deleteOrgRelationship(){
+    let selectedOptions = this.selectedOrgRelations.selected.map(item=>item.id);
+    console.log(selectedOptions);
+    const options = {
+      title: this.translationData.lblDeleteAccount || 'Delete Account',
+      message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Are you sure you want to delete '$' relationship?",
+      cancelText: this.translationData.lblNo || 'No',
+      confirmText: this.translationData.lblYes || 'Yes'
+    };
+    let name = this.selectedOrgRelations.selected[0].relationshipName;
+    this.dialogService.DeleteModelOpen(options, name);
+    this.dialogService.confirmedDel().subscribe((res) => {
+    if (res) {
+       {
+        this.organizationService
+        .deleteOrgRelationship(selectedOptions) //need to change
+        .subscribe((d) => {
+          this.successMsgBlink(this.getDeletMsg(name));
+          this.loadInitData();
+        });
+        }
+    }
+  });
+}
+
+  getDeletMsg(relationshipName: any){
+    if(this.translationData.lblRelationshipwassuccessfullydeleted)
+      return this.translationData.lblRelationshipDelete.replace('$', relationshipName);
+    else
+      return ("Relationship '$' was successfully deleted").replace('$', relationshipName);
+  }
+
+  successMsgBlink(msg: any){
+    this.grpTitleVisible = true;
+    this.displayMessage = msg;
+    setTimeout(() => {  
+      this.grpTitleVisible = false;
+    }, 5000);
   }
 
   masterToggleForOrgRelationship() {

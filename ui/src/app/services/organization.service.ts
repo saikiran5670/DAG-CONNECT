@@ -120,5 +120,14 @@ export class OrganizationService {
       .pipe(catchError(this.handleError));
   }
 
+  deleteOrgRelationship(data:any): Observable<void> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+   return this.httpClient
+      .post<any>(`${this.organizationServiceUrl}/orgrelationship/EndRelation`, data,headers)
+      .pipe(catchError(this.handleError));
+  }
 
 }

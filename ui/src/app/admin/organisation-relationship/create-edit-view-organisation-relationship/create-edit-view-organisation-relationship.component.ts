@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
@@ -25,9 +25,9 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   @Input() gridData: any;
   @Input() OrgRelationshipData:any;
   @Output() backToPage = new EventEmitter<any>();
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
-  dataSource: any = new MatTableDataSource([]);
+  dataSourceVehicle: any;
+  dataSourceOrg: any;
+  dataSourceRelation: any;
   OrganisationRelationshipFormGroup: FormGroup;
   selectedType: any = '';
   organizationId: number;
@@ -36,6 +36,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   organisationNameDisplayColumn: string[]= ['select', 'organisationName'];
   initData: any;
   selectedOrgRelations = new SelectionModel(true, []);
+  selectedOrganisation = new SelectionModel(true, []);
   organisationData = [];
   doneFlag = false;
   organizationSelected = [];
@@ -43,22 +44,13 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   selectionForOrganisations = new SelectionModel(true, []);
   breadcumMsg: any = '';
   data: any;
-  organisationName: any;
-  vehicleName: any;
   isRelationshipExist: boolean = false;
-
-  relationshipList: any = [
-    {
-      name: 'Relationship 1'
-    },
-    {
-      name: 'Relationship 2'
-    },
-    {
-      name: 'Relationship 21'
-    }
-  ];
-
+  relationshipList: any = [];
+  @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
+  @ViewChildren(MatSort) sort = new QueryList<MatSort>();
+  selectionForRelations = new SelectionModel(true, []);
+  selectionForVehicle = new SelectionModel(true, []);
+  
   ngOnInit(): void {
     console.log("--createStatus--",this.createStatus)
     this.OrganisationRelationshipFormGroup = this._formBuilder.group({
@@ -77,36 +69,42 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   }
 
   loadInitData() {
-    //this.showLoadingIndicator = true;
-    //  this.mockData(); //temporary
-    //api call to get relationship data
-        // this.dataSource = new MatTableDataSource(this.initData);
-        // this.dataSource.paginator = this.paginator;
-        // this.dataSource.sort = this.sort;
-
         let objData = {
           Organization_Id: this.organizationId
         }
 
-        this.organizationService.GetOrgRelationdetails(objData).subscribe((data) => {
+        this.organizationService.GetOrgRelationdetails(objData).subscribe((data: any) => {
           if(data)
-       this.initData = data["vehicleGroup"];
-      // this.organisationName =data["organizationData"];
-      // this.vehicleName = data["vehicleGroup"];
-      // this.initData = data [this.vehicleName, this.organisationName];
-          setTimeout(()=>{
-            this.dataSource = new MatTableDataSource(this.initData);
-            this.dataSource.paginator = this.paginator;
-            this.dataSource.sort = this.sort;
-            if(!this.createStatus || this.viewFlag){
-              this.onReset();
-            }
-          });
-          this.organisationData = data;
-        }, (error) => { });
-        this.doneFlag = this.createStatus ? false : true;
-        this.breadcumMsg = this.getBreadcum();
+          {
+            let vehicleData = data.vehicleGroup;
+            this.loadVehicleGridData(vehicleData);
+            let orgData = data.organizationData;
+            this.loadOrgGridData(orgData);
+            this.relationshipList = data.relationShipData;
+          }
+          // this.organisationData = data;
+        });
+        // (error) => { });
+        // this.doneFlag = this.createStatus ? false : true;
+        // this.breadcumMsg = this.getBreadcum();
   }
+
+  loadVehicleGridData(tableData: any){
+    this.dataSourceVehicle = new MatTableDataSource(tableData);
+           setTimeout(()=>{
+            this.dataSourceVehicle.paginator = this.paginator.toArray()[0];
+           this.dataSourceVehicle.sort = this.sort.toArray()[0];
+          });
+  }
+
+  loadOrgGridData(orgData: any){
+    this.dataSourceOrg = new MatTableDataSource(orgData);
+           setTimeout(()=>{
+            this.dataSourceOrg.paginator = this.paginator.toArray()[1];
+           this.dataSourceOrg.sort = this.sort.toArray()[1];
+          });
+  }
+
 
   getBreadcum(){
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblRelationshipManagement ? this.translationData.lblRelationshipManagement : "Relationship Management"} / ${this.translationData.lblRelationshipDetails ? this.translationData.lblRelationshipDetails : 'Relationship Details'}`;
@@ -121,7 +119,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
     //     code: this.gridData[0].code
     //   })
       
-      this.dataSource.data.forEach(row => {
+      this.dataSourceVehicle.data.forEach(row => {
         if(this.organizationSelected){
           for(let selectedFeature of this.organizationSelected){
             if(selectedFeature == row.id){
@@ -177,75 +175,56 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   onCancel(){
 
   }
-  onCreate(){
-    console.log(this.OrganisationRelationshipFormGroup);
-      const relationshipnameInput = this.OrganisationRelationshipFormGroup.controls.relationship.value;
-      if(this.createStatus){
-        this.createRelationship(relationshipnameInput);
-      }
+
+  selectionIDsVehicle(){
+    return this.selectedOrgRelations.selected.map(item => item.vehiclegroupID)
   }
 
-  createRelationship(enteredRelationshipValue: any) 
-  {
-    let existingRelationship = this.OrgRelationshipData.filter(response => (response.name).toLowerCase() == enteredRelationshipValue.trim().toLowerCase());
-    if (existingRelationship.length > 0) {
-      this.isRelationshipExist = true;
-      this.doneFlag = false;
-    }
-    else {
-        this.isRelationshipExist = false;
-        this.doneFlag = true;
-        let featureIds = [];
-        this.selectionForOrganisations.selected.forEach(feature => {
-          featureIds.push(feature.id);
-        })
-        
-        let objData = {
-          // organizationId: this.organizationId,
-          // featureIds: featureIds,
-          // featuresetId: 0,
-          // name : this.organisationFormGroup.controls.relationshipName.value,
-          // description:this.organisationFormGroup.controls.relationshipDescription.value,
-          // level: this.organisationFormGroup.controls.level.value,
-          // code: this.organisationFormGroup.controls.code.value,
-          // id: 0,
-          // isActive: true
-          id:0,
-          relationShipId:this.OrganisationRelationshipFormGroup.controls.relationShipId,
-          vehicleGroupId:this.OrganisationRelationshipFormGroup.controls.vehicleGroupId,
-          ownerOrgId:this.OrganisationRelationshipFormGroup.controls.ownerOrgId,
-          createdOrgId:this.OrganisationRelationshipFormGroup.controls.createdOrgId,
-          targetOrgId:this.OrganisationRelationshipFormGroup.controls.targetOrgId,
-          allow_chain:true
-        }
+  selectionIDsOrg(){
+    return this.selectedOrganisation.selected.map(item => item.organizationId)
+  }
 
-        this.organizationService.createOrgRelationship(objData).subscribe((res) => {
-          this.backToPage.emit({ editFlag: false, editText: 'create',  name: this.organisationFormGroup.controls.relationshipName.value });
-        }, (error) => { 
-          if(error.status == 409){
-            this.isRelationshipExist = true;
-          }
-        });
+  onCreate(){
+    let selectedId = this.selectionIDsVehicle();
+    let selectedIdOrg = this.selectionIDsOrg();
+    console.log(this.OrganisationRelationshipFormGroup)
+    let objData = {
+      id:0,
+      relationShipId:this.OrganisationRelationshipFormGroup.controls.relationship.value,
+      vehicleGroupId:selectedId,
+      ownerOrgId:this.organizationId,
+      createdOrgId:this.organizationId,
+      targetOrgId:selectedIdOrg,
+      allow_chain:true
+    }
+
+    this.organizationService.createOrgRelationship(objData).subscribe((res) => {
+      this.backToPage.emit({ editFlag: false, editText: 'create',  name: this.organisationFormGroup.controls.relationshipName.value });
+    }, (error) => { 
+      if(error.status == 409){
+        this.isRelationshipExist = true;
       }
+    });
+      
   }
 
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    this.dataSource.filter = filterValue;
+    this.dataSourceVehicle.filter = filterValue;
   }
-
+  
   masterToggleForOrgRelationship() {
     this.isAllSelectedForOrgRelationship()
       ? this.selectedOrgRelations.clear()
-      : this.dataSource.data.forEach((row) =>
+      : this.dataSourceVehicle.data.forEach((row) =>
         this.selectedOrgRelations.select(row)
       );
   }
 
   isAllSelectedForOrgRelationship() {
     const numSelected = this.selectedOrgRelations.selected.length;
-    const numRows = this.dataSource.data.length;
+    const numRows = this.dataSourceVehicle.data.length;
     return numSelected === numRows;
   }
 
@@ -256,4 +235,30 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
       return `${this.selectedOrgRelations.isSelected(row) ? 'deselect' : 'select'
         } row`;
   }
+
+  
+  //for organisation table
+  masterToggleForOrganisation() {
+    this.isAllSelectedForOrganisation()
+      ? this.selectedOrganisation.clear()
+      : this.dataSourceOrg.data.forEach((row) =>
+        this.selectedOrganisation.select(row)
+      );
+  }
+
+  isAllSelectedForOrganisation() {
+    const numSelected = this.selectedOrganisation.selected.length;
+    const numRows = this.dataSourceOrg.data.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForOrganisation(row?: any): string {
+    if (row)
+      return `${this.isAllSelectedForOrganisation() ? 'select' : 'deselect'} all`;
+    else
+      return `${this.selectedOrganisation.isSelected(row) ? 'deselect' : 'select'
+        } row`;
+  }
+
+
 }

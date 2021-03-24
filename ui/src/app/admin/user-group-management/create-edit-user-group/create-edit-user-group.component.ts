@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -28,16 +27,7 @@ export class CreateEditUserGroupComponent implements OnInit {
   duplicateEmailMsg: boolean = false;
   breadcumMsg: any = '';
   userGroupForm: FormGroup;
-  groupTypeList: any = [
-    {
-      name: 'Group',
-      value: 'G'
-    },
-    {
-      name: 'Dynamic',
-      value: 'D'
-    }
-  ];
+  groupTypeList: any = [];
   showUserList: boolean = true;
 
   constructor(private _formBuilder: FormBuilder, private accountService: AccountService) { }
@@ -49,6 +39,16 @@ export class CreateEditUserGroupComponent implements OnInit {
       groupType: ['', [Validators.required]],
       userGroupDescription: []
     });
+    this.groupTypeList = [
+      {
+        name: this.translationData.lblGroup || 'Group',
+        value: 'G'
+      },
+      {
+        name: this.translationData.lblDynamic || 'Dynamic',
+        value: 'D'
+      }
+    ];
     if(this.actionType == 'edit' ){
       this.setDefaultValue();
     }
