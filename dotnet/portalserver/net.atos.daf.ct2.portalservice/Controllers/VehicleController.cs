@@ -758,8 +758,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.LogInformation("Get vehicle list by group id method in vehicle API called.");
 
-                char groupType = Convert.ToChar(dynamicVehicleGroupRequest.GroupType);
-                if (EnumValidator.ValidateGroupType(groupType))
+                if (dynamicVehicleGroupRequest.GroupType != null ? EnumValidator.ValidateGroupType(Convert.ToChar(dynamicVehicleGroupRequest.GroupType)) : false)
                 {
 
                     if (Convert.ToInt32(dynamicVehicleGroupRequest.GroupId) <= 0 && Convert.ToChar(dynamicVehicleGroupRequest.GroupType.ToLower().Trim()) == 'g')
@@ -932,7 +931,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (response != null)
                 {
-                        return Ok(response);
+                    return Ok(response);
                 }
                 else
                 {
