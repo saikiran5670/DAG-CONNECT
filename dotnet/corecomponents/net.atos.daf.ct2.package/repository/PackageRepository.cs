@@ -66,8 +66,9 @@ namespace net.atos.daf.ct2.package.repository
         {
             try
             {
-                var isPackageCodeExist = IsPackageCodeExists(package.Code);
-                if (!isPackageCodeExist)
+                var isPackageUpdate = CheckPackageCodeForUpdate(package.Code);
+
+                if (isPackageUpdate)
                 {
                     var parameter = new DynamicParameters();
                     parameter.Add("@Id", package.Id);
@@ -167,6 +168,14 @@ namespace net.atos.daf.ct2.package.repository
             var codeExists = packages.Result.Any(t => t.Code == packageCode);
             return codeExists;
         }
+        private bool CheckPackageCodeForUpdate(string packageCode)
+        {
+            var packageFilter = new PackageFilter();
+            var packages = Get(packageFilter);
+            var codeExists = packages.Result.Where(t => t.Code == packageCode).Count();
+            return codeExists > 1 ? false : true;
+        }
+
         public Task<FeatureSet> Create(FeatureSet featureSet)
         {
             try
@@ -209,7 +218,7 @@ namespace net.atos.daf.ct2.package.repository
                     // package name filter
                     if (!string.IsNullOrEmpty(filter.Name))
                     {
-                        parameter.Add("@name", "%"+filter.Name + "%");
+                        parameter.Add("@name", "%" + filter.Name + "%");
                         query = query + " and LOWER(pkg.name) like @name ";
                     }
                     // feature set id filter
@@ -220,7 +229,7 @@ namespace net.atos.daf.ct2.package.repository
                     }
                     // package type filter
                     if (!string.IsNullOrEmpty(filter.Type) && filter.Type.Length == 1)
-                    {                      
+                    {
                         parameter.Add("@type", (char)_packageCoreMapper.ToPackageType(filter.Type), DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and pkg.type=@type ";
                     }
@@ -228,7 +237,7 @@ namespace net.atos.daf.ct2.package.repository
 
                     // package status filter 
                     if (!string.IsNullOrEmpty(filter.Status) && filter.Status.Length == 1)
-                    {                        
+                    {
                         parameter.Add("@status", (char)_packageCoreMapper.ToPackageStatus(filter.Status), DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and pkg.status=@status";
                     }
@@ -248,7 +257,7 @@ namespace net.atos.daf.ct2.package.repository
             {
                 throw ex;
             }
-        }      
+        }
 
         public async Task<bool> Delete(int packageId)
         {

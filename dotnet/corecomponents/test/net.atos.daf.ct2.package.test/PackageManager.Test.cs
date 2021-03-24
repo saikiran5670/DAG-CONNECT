@@ -68,14 +68,15 @@ namespace net.atos.daf.ct2.package.test
 
             var ObjPackage = new Package()
             {
-                Id = 3,
-                Code = "PKG011",
+                Id = 76,
+                Code = "PKG008",
                 FeatureSetID = 4,
                 Status = "I",
                 IsActive = true,
                 Name = "Standard Update",
                 Type = "V",
                 Description = "Package with default featureset",
+                 
             };
             var resultPackage = _packageManager.Update(ObjPackage).Result;
             Assert.IsNotNull(resultPackage);
