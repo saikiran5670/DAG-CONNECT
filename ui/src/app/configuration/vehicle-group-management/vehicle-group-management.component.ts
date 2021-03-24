@@ -44,7 +44,8 @@ export class VehicleGroupManagementComponent implements OnInit {
       lblVehicleGroupManagement: "Vehicle Group Management",
       lblSearch: "Search",
       lblNewVehicleGroup: "New Vehicle Group",
-      lblNoRecordFound: "No Record Found"
+      lblNoRecordFound: "No Record Found",
+      lblOptional: "(Optional)"
     }
   }
 
@@ -141,8 +142,9 @@ export class VehicleGroupManagementComponent implements OnInit {
     this.vehicleService.getVehicle(this.accountOrganizationId).subscribe((vehList: any) => {
       this.vehicleListData = vehList;
       if(this.actionType != 'create'){
+        this.selectedRowData = rowData;
         this.vehicleService.getVehicleListById(rowData.groupId).subscribe((selectedVehList: any) => {
-          this.selectedRowData = selectedVehList;
+          this.selectedRowData.selectedVehicleList = selectedVehList;
           this.createViewEditStatus = true;
         });
       }

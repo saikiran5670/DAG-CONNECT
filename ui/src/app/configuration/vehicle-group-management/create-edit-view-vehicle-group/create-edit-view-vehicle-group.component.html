@@ -8,3 +8,168 @@
         <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
     </div>
 </div>
+<form [formGroup]="vehicleGroupForm">
+  <mat-card class='mat-elevation-z'>
+    <mat-card-content>
+      <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblNewVehicleGroup || 'New Vehicle Group') : actionType == 'edit' ? (translationData.lblEditVehicleGroup || 'Edit Vehicle Group') : (translationData.lblViewVehicleGroup || 'View Vehicle Group') }}</span>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+        <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblGroupName || 'Group Name' }} <span class='mandatoryColor'>*</span>
+          </mat-label>
+            <div *ngIf="actionType != 'view'">
+              <mat-form-field appearance="outline" class="full-width">
+                <input maxlength="50" placeholder="{{ translationData.lblEnterVehicleGroupName || 'Enter Vehicle Group Name' }}" matInput
+                  formControlName="vehicleGroupName" required>
+              </mat-form-field>
+              <mat-error *ngIf="vehicleGroupForm.get('vehicleGroupName').hasError('required')">
+                {{translationData.lblPleaseEnterVehicleGroupName || 'Please Enter Vehicle Group Name' }}
+              </mat-error>
+              <mat-error *ngIf="duplicateVehicleGroupMsg">
+                {{translationData.lblDuplicateVehicleGroupName || 'Duplicate Vehicle Group Name' }}
+              </mat-error>
+            </div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedRowData.groupName ? selectedRowData.groupName : '--' }}</span>
+            </div>
+          </div>
+        <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblGroupType || 'Group Type' }}<span class='mandatoryColor'>*</span></mat-label>
+          <div *ngIf="actionType != 'view'">  
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-select (selectionChange)="vehGroupTypeChange($event)" placeholder="{{ translationData.lblGroupType || 'Group Type' }}" formControlName="vehicleGroupType" required>
+                <mat-option *ngFor="let rer of vehGroupTypeList" [value]="rer.value">
+                  {{ rer.name }}
+                </mat-option>
+              </mat-select>
+              </mat-form-field>
+              <mat-error *ngIf="vehicleGroupForm.get('vehicleGroupType').hasError('required')">
+                {{ translationData.lblPleasechoosegrouptype || 'Please choose group type' }}
+              </mat-error>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedRowData.groupType ? (selectedRowData.groupType == 'G' ? 'Group' : 'Dynamic') : '--' }}</span>
+          </div>
+        </div>
+        <div *ngIf='!showVehicleList' class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblMethod || 'Method' }}<span class='mandatoryColor'>*</span></mat-label>
+          <div *ngIf="actionType != 'view'">  
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-select (selectionChange)="methodTypeChange($event)" placeholder="{{ translationData.lblMethod || 'Method' }}" formControlName="methodType">
+                <mat-option *ngFor="let rer of methodTypeList" [value]="rer.value">
+                  {{ rer.name }}
+                </mat-option>
+              </mat-select>
+              </mat-form-field>
+              <!-- <mat-error *ngIf="vehicleGroupForm.get('methodType').hasError('required')">
+                {{ translationData.lblPleasechoosemethod || 'Please choose method' }}
+              </mat-error> -->
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedRowData.functionEnum ? (selectedRowData.functionEnum == 'A' ? 'All' : (selectedRowData.functionEnum == 'O') ? 'Owned Vehicles' : 'Visible Vehicles') : '--' }}</span>
+          </div>
+        </div>
+        <div [ngClass]="showVehicleList ? 'min-width-50-per' : 'min-width-40-per'" class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+          <mat-label style='display: flex; place-content: space-between;'>
+            <span><span>{{ translationData.lblGroupDescription || 'Group Description' }}</span>&nbsp;<span *ngIf="actionType != 'view'">{{ translationData.lblOptional || '(Optional)' }}</span></span>
+            <span *ngIf="actionType != 'view'">{{ translationData.lbl100CharMax || '100 characters max' }}</span>
+          </mat-label>
+          <div *ngIf="actionType != 'view'">
+            <mat-form-field appearance="outline" class="full-width">
+              <input maxlength="100"
+                placeholder="{{translationData.lblEnteraboutgroupdetails || 'Enter about group details' }}" matInput
+                formControlName="vehicleGroupDescription">
+            </mat-form-field>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedRowData.description ? selectedRowData.description : '--' }}</span>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions class='no-margin no-padding'>
+      <div fxLayout="row" fxLayoutAlign="space-between center">
+        <div fxLayout="column" fxLayoutAlign="left">
+          <div *ngIf='showVehicleList' fxLayout="row" fxLayoutAlign='center center'>
+            <mat-icon class='margin-right-10'>info</mat-icon>
+            <span>{{translationData.lblVehicleGroupManagementInfo || 'You can select vehicles from below list to add in this group' }}</span>
+          </div>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="end" *ngIf="actionType != 'view'">
+          <div fxLayout="row">
+            <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+            <button *ngIf="actionType == 'edit'" class='margin-right-10' mat-raised-button color="primary"
+              (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
+            <button class='no-margin' [disabled]="!vehicleGroupForm.valid" mat-raised-button color="primary"
+              (click)='onCreateUpdateVehicleGroup()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
+              (translationData.lblConfirm || 'Confirm') }}</button>
+          </div>
+        </div>
+      </div>
+    </mat-card-actions> 
+    <div *ngIf='showVehicleList'>
+      <div style='padding: 20px; position: relative;'>
+        <mat-divider></mat-divider>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectedVehicleList || 'Selected Vehicle List' }}</span>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
+        <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+          <mat-form-field appearance="outline">
+              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+              <span matPrefix><mat-icon>search</mat-icon></span>
+          </mat-form-field>
+        </div>
+      </div>
+      <div>
+        <mat-table [dataSource]="dataSource" class="table-items" matSort>
+          <ng-container matColumnDef="select">
+            <mat-header-cell *matHeaderCellDef>
+              <mat-checkbox (change)='$event ? masterToggleForVehicle() : null'
+                [checked]='selectedVehicles.hasValue() && isAllSelectedForVehicle()'
+                [indeterminate]='selectedVehicles.hasValue() && !isAllSelectedForVehicle()'
+                [aria-label]='checkboxLabelForVehicle()'>
+              </mat-checkbox>
+              <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedVehicles.toggle(row) : null'
+                [checked]='selectedVehicles.isSelected(row)' [aria-label]='checkboxLabelForVehicle(row)'>
+              </mat-checkbox>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              {{ row.name }}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="vin">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.vin }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="licensePlateNumber">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRegistrationNumber || 'Registration Number' }}</mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.licensePlateNumber }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="modelId">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblModel || 'Model' }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.modelId ? row.modelId : '-' }}</mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;">
+          </mat-row>
+        </mat-table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+      </div>
+    </div>
+  </mat-card> 
+</form>
