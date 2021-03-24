@@ -35,6 +35,10 @@ namespace net.atos.daf.ct2.portalservice.Common
             public const string CreateRequired = "The packageId , package code and featureset id  are required.";           
             public const string InvalidPackageType = "The pakage type is not valid. It should be of single character";
             public const string ErrorMessage = "There is an error creating package.";
+            public const string PackageStatusRequired = "The packageId and status are required.";
+            public const string InvalidPackageStatus = "The pakage status is not valid. It should be of single character";
+
+
         }
         public static class OrgRelationshipValidation
         {
