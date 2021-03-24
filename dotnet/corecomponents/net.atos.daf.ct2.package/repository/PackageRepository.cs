@@ -79,15 +79,14 @@ namespace net.atos.daf.ct2.package.repository
                     parameter.Add("@description", package.Description);
                     parameter.Add("@is_active", package.IsActive);
                     parameter.Add("@status", Convert.ToChar(package.Status));
-                    parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                 //   parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                     string query = @"update master.package set packagecode=@packagecode, 
                                                            feature_set_id=@feature_set_id,
                                                            name=@name,
                                                            type=@type,
                                                            description=@description,                                
                                                            is_active=@is_active,
-                                                           status=@status,
-                                                           created_at=@created_at
+                                                           status=@status                                                          
                                                            where id = @Id RETURNING id";
                     package.Id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
