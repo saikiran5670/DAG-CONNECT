@@ -1,15 +1,16 @@
 {
-    "authentication": {
-      "authRESTServiceURL": "https://api.dev1.ct2.atos.net"
-    },
-    "foundationServices": {
-      "vehicleGroupRESTServiceUrl": "https://api.dev1.ct2.atos.net/vehicle",
-      "roleRESTServiceURL": "https://api.dev1.ct2.atos.net/role",
-      "featureRESTServiceURL": "https://api.dev1.ct2.atos.net/feature",
-      "accountRESTServiceURL": "https://api.dev1.ct2.atos.net/account",
-      "translationRESTServiceURL": "https://api.dev1.ct2.atos.net/translation",
-      "driverRESTServiceURL": "https://api.dev1.ct2.atos.net/driver",
-      "packageRESTServiceURL": "https://api.dev1.ct2.atos.net/package",
-      "organizationRESTServiceURL": "https://api.dev1.ct2.atos.net/organization"
-    }
+  "authentication": {
+    "authRESTServiceURL": "http://20.50.148.166"
+  },
+  "foundationServices": {
+    "vehicleGroupRESTServiceUrl": "http://20.50.148.166/vehicle",
+    "roleRESTServiceURL": "http://20.50.148.166/role",
+    "featureRESTServiceURL": "http://20.50.148.166/feature",
+    "accountRESTServiceURL": "http://20.50.148.166/account",
+    "translationRESTServiceURL": "http://20.50.148.166/translation",
+    "driverRESTServiceURL": "http://20.50.148.166/driver",
+    "packageRESTServiceURL": "http://20.50.148.166/package",
+    "organizationRESTServiceURL": "http://20.50.148.166/organization",
+    "subscriptionRESTServiceURL": "http://20.50.148.166/subscribe"
+  }
 }

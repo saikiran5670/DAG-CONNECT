@@ -7,6 +7,7 @@ import { TranslationService } from '../../services/translation.service';
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { SelectionModel } from '@angular/cdk/collections';
+import { SubscriptionService } from 'src/app/services/subscription.service';
 
 @Component({
   selector: 'app-subscription-management',
@@ -17,7 +18,7 @@ export class SubscriptionManagementComponent implements OnInit {
 
   options=['Select Status','All','Active','Expired'];
   subscriptionRestData: any = [];
-  displayedColumns = ['orderId','packageCode', 'packageName', 'type', 'vehicle', 'startDate', 'endDate', 'status', 'action'];
+  displayedColumns = ['subscriptionId','packageCode', 'name', 'type', 'count', 'subscriptionStartDate', 'subscriptionEndDate', 'isActive', 'action'];
   selectedElementData: any;
   subscriptionCreatedMsg : any = '';
   titleVisible : boolean = false;
@@ -35,7 +36,11 @@ export class SubscriptionManagementComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
 
-  constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog) { 
+  constructor(
+    private translationService: TranslationService,
+    private dialogService: ConfirmDialogService,
+    private subscriptionService: SubscriptionService,
+    private dialog: MatDialog) { 
     this.defaultTranslation();
   }
 
@@ -45,9 +50,6 @@ export class SubscriptionManagementComponent implements OnInit {
       lblSubscriptionManagement: "Subscription Management",
       lblSubscriptionRelationshipDetails: "Subscription Relationship Details",
       lblNoRecordFound: "No Record Found",
-      lblView: "View",
-      lblEdit: "Edit",
-      lblDelete: "Delete"
     }
   }
 
@@ -64,86 +66,91 @@ export class SubscriptionManagementComponent implements OnInit {
       menuId: 3 //-- for user mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
-      this.processTranslation(data);
-      this.loadRestData();
+        this.processTranslation(data);
+        this.loadSubscriptionData();
+      });
       this.loadSubscriptionData();
-    });
   }
 
   loadSubscriptionData(){
-    this.initData = this.subscriptionRestData;
+    this.subscriptionService.getSubscriptions().subscribe((data : any) => {
+      this.initData = data["responce"]
+      this.updatedTableData(this.initData);
+    });
+  }
+
+  updatedTableData(tableData : any) {
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
   }
-
-  loadRestData(){
-    this.subscriptionRestData = [
-      {
-        orderId: "#12345678",
-        packageCode: "Code 1",
-        packageName: "Package 1",
-        type: "Type 1",
-        vehicle: "Vehicle 1",
-        startDate: "02/02/2021",
-        endDate: "-",
-        status: "Active"
-      },
-      {
-        orderId: "#12345678",
-        packageCode: "Code 2",
-        packageName: "Package 2",
-        type: "Type 2",
-        vehicle: "Vehicle 2",
-        startDate: "02/02/2021",
-        endDate: "02/03/2021",
-        status: "Expired"
-      },
-      {
-        orderId: "#12345678",
-        packageCode: "Code 3",
-        packageName: "Package 3",
-        type: "Type 3",
-        vehicle: "Vehicle 3",
-        startDate: "03/02/2021",
-        endDate: "-",
-        status: "Active"
-      },
-      {
-        orderId: "#12345678",
-        packageCode: "Code 4",
-        packageName: "Package 4",
-        type: "Type 4",
-        vehicle: "Vehicle 4",
-        startDate: "02/02/2021",
-        endDate: "-",
-        status: "Active"
-      },
-      {
-        orderId: "#12345678",
-        packageCode: "Code 5",
-        packageName: "Package 5",
-        type: "Type 4",
-        vehicle: "Vehicle 5",
-        startDate: "02/02/2021",
-        endDate: "02/04/2021",
-        status: "Expired"
-      },
-      {
-        orderId: "#12345678",
-        packageCode: "Code 6",
-        packageName: "Package 6",
-        type: "Type 6",
-        vehicle: "Vehicle 6",
-        startDate: "02/02/2021",
-        endDate: "-",
-        status: "Active"
-      },
-    ];
+  // loadRestData(){
+  //   this.subscriptionRestData = [
+  //     {
+  //       orderId: "#12345678",
+  //       packageCode: "Code 1",
+  //       packageName: "Package 1",
+  //       type: "Type 1",
+  //       vehicle: "Vehicle 1",
+  //       startDate: "02/02/2021",
+  //       endDate: "-",
+  //       status: "Active"
+  //     },
+  //     {
+  //       orderId: "#12345678",
+  //       packageCode: "Code 2",
+  //       packageName: "Package 2",
+  //       type: "Type 2",
+  //       vehicle: "Vehicle 2",
+  //       startDate: "02/02/2021",
+  //       endDate: "02/03/2021",
+  //       status: "Expired"
+  //     },
+  //     {
+  //       orderId: "#12345678",
+  //       packageCode: "Code 3",
+  //       packageName: "Package 3",
+  //       type: "Type 3",
+  //       vehicle: "Vehicle 3",
+  //       startDate: "03/02/2021",
+  //       endDate: "-",
+  //       status: "Active"
+  //     },
+  //     {
+  //       orderId: "#12345678",
+  //       packageCode: "Code 4",
+  //       packageName: "Package 4",
+  //       type: "Type 4",
+  //       vehicle: "Vehicle 4",
+  //       startDate: "02/02/2021",
+  //       endDate: "-",
+  //       status: "Active"
+  //     },
+  //     {
+  //       orderId: "#12345678",
+  //       packageCode: "Code 5",
+  //       packageName: "Package 5",
+  //       type: "Type 4",
+  //       vehicle: "Vehicle 5",
+  //       startDate: "02/02/2021",
+  //       endDate: "02/04/2021",
+  //       status: "Expired"
+  //     },
+  //     {
+  //       orderId: "#12345678",
+  //       packageCode: "Code 6",
+  //       packageName: "Package 6",
+  //       type: "Type 6",
+  //       vehicle: "Vehicle 6",
+  //       startDate: "02/02/2021",
+  //       endDate: "-",
+  //       status: "Active"
+  //     },
+  //   ];
     
-  }
+  // }
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});

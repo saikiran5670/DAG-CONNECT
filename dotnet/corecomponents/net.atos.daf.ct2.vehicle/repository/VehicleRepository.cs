@@ -719,7 +719,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         public async Task<IEnumerable<Vehicle>> GetRelationshipVehicles(VehicleFilter vehiclefilter)
         {
 
-            var QueryStatement = @"select v.id
+            var QueryStatement = @"select distinct v.id
                                    ,v.organization_id 
                                    ,v.name 
                                    ,v.vin 

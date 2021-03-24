@@ -5,21 +5,17 @@
             "name": "Dashboard",
             "translatedName": "Dashboard",
             "url": "dashboard",
-            "icon": "speed",
             "key": "lblDashboard",
             "featureId": 1,
-            "subMenus": [],
-            "externalLink": false
+            "subMenus": []
         },
         {
             "menuId": 16,
             "name": "Configuration",
             "translatedName": "Configuration",
             "url": "configuration",
-            "icon": "settings",
             "key": "lblConfiguration",
             "featureId": 350,
-            "externalLink": false,
             "subMenus": [
                 {
                     "menuId": 17,
@@ -27,8 +23,7 @@
                     "translatedName": "Alerts",
                     "url": "alerts",
                     "key": "lblAlerts",
-                    "featureId": 351,
-                    "externalLink": false
+                    "featureId": 351
                 },
                 {
                     "menuId": 18,
@@ -36,66 +31,7 @@
                     "translatedName": "Landmarks",
                     "url": "landmarks",
                     "key": "lblLandmarks",
-                    "featureId": 450,
-                    "externalLink": false
-                }
-
-            ]
-        },
-        {
-            "menuId": 106,
-            "name": "Admin",
-            "translatedName": "Admin",
-            "url": "admin",
-            "icon": "person",
-            "key": "lblAdmin",
-            "featureId": 450,
-            "externalLink": false,
-            "subMenus": [
-                {
-                    "menuId": 187,
-                    "name": "Organisation Details",
-                    "translatedName": "Organisation Details",
-                    "url": "organisationdetails",
-                    "key": "lblOrganisationDetails",
-                    "featureId": 461,
-                    "externalLink": false
-                },
-                {
-                    "menuId": 188,
-                    "name": "User Group Management",
-                    "translatedName": "User Group Management",
-                    "url": "usergroupmanagement",
-                    "key": "lblUserGroupManagement",
-                    "featureId": 462,
-                    "externalLink": false
-                },
-                {
-                    "menuId": 107,
-                    "name": "User Management",
-                    "translatedName": "User Management",
-                    "url": "usermanagement",
-                    "key": "lblUserManagement",
-                    "featureId": 451,
-                    "externalLink": false
-                },
-                {
-                    "menuId": 108,
-                    "name": "User Role Management",
-                    "translatedName": "Landmarks",
-                    "url": "userrolemanagement",
-                    "key": "lblRoleManagement",
-                    "featureId": 450,
-                    "externalLink": false
-                },
-                {
-                    "menuId": 200,
-                    "name": "Driver Management",
-                    "translatedName": "Driver Management",
-                    "url": "drivermanagement",
-                    "key": "lblDriverManagement",
-                    "featureId": 554,
-                    "externalLink": false
+                    "featureId": 450
                 },
                 {
                     "menuId": 201,
@@ -103,8 +39,65 @@
                     "translatedName": "Vehicle Management",
                     "url": "vehiclemanagement",
                     "key": "lblVehicleManagement",
-                    "featureId": 551,
-                    "externalLink": false
+                    "featureId": 551
+                },
+                {
+                    "menuId": 999,
+                    "name": "Vehicle Group Management",
+                    "translatedName": "Vehicle Group Management",
+                    "url": "vehiclegroupmanagement",
+                    "key": "lblVehicleGroupManagement",
+                    "featureId": 551
+                }
+            ]
+        },
+        {
+            "menuId": 106,
+            "name": "Admin",
+            "translatedName": "Admin",
+            "url": "admin",
+            "key": "lblAdmin",
+            "featureId": 450,
+            "subMenus": [
+                {
+                    "menuId": 187,
+                    "name": "Organisation Details",
+                    "translatedName": "Organisation Details",
+                    "url": "organisationdetails",
+                    "key": "lblOrganisationDetails",
+                    "featureId": 461
+                },
+                {
+                    "menuId": 188,
+                    "name": "User Group Management",
+                    "translatedName": "User Group Management",
+                    "url": "usergroupmanagement",
+                    "key": "lblUserGroupManagement",
+                    "featureId": 462
+                },
+                {
+                    "menuId": 107,
+                    "name": "User Management",
+                    "translatedName": "User Management",
+                    "url": "usermanagement",
+                    "key": "lblUserManagement",
+                    "featureId": 451
+                },
+                {
+                    "menuId": 108,
+                    "name": "User Role Management",
+                    "translatedName": "Landmarks",
+                    "url": "userrolemanagement",
+                    "key": "lblRoleManagement",
+                    "featureId": 450
+                },
+                {
+                    "menuId": 200,
+                    "name": "Driver Management",
+                    "translatedName": "Driver Management",
+                    "url": "drivermanagement",
+                    "key": "lblDriverManagement",
+                    "featureId": 554
                 },
                 {
                     "menuId": 800,
@@ -112,8 +105,7 @@
                     "translatedName": "Vehicle/Account Access-Relationship",
                     "url": "vehicleaccountaccessrelationship",
                     "key": "lblVehicle/AccountAccess-Relationship",
-                    "featureId": 564,
-                    "externalLink": false
+                    "featureId": 564
                 },
                 {
                     "menuId": 801,
@@ -121,8 +113,7 @@
                     "translatedName": "Translation Data Upload",
                     "url": "translationdataupload",
                     "key": "lblTranslationDataUpload",
-                    "featureId": 565,
-                    "externalLink": false
+                    "featureId": 565
                 },
                 {
                     "menuId": 802,
@@ -130,8 +121,7 @@
                     "translatedName": "Feature Management",
                     "url": "featuremanagement",
                     "key": "lblFeature Management",
-                    "featureId": 566,
-                    "externalLink": false
+                    "featureId": 566
                 },
                 {
                     "menuId": 803,
@@ -139,8 +129,7 @@
                     "translatedName": "Package Management",
                     "url": "packagemanagement",
                     "key": "lblPackageManagement",
-                    "featureId": 567,
-                    "externalLink": false
+                    "featureId": 567
                 },
                 {
                     "menuId": 804,
@@ -148,8 +137,7 @@
                     "translatedName": "Subscription Management",
                     "url": "subscriptionmanagement",
                     "key": "lblSubscriptionManagement",
-                    "featureId": 568,
-                    "externalLink": false
+                    "featureId": 568
                 },
                 {
                     "menuId": 805,
@@ -157,8 +145,7 @@
                     "translatedName": "Relationship Management",
                     "url": "relationshipmanagement",
                     "key": "lblRelationshipManagement",
-                    "featureId": 569,
-                    "externalLink": false
+                    "featureId": 569
                 },
                 {
                     "menuId": 806,
@@ -166,8 +153,7 @@
                     "translatedName": "Organisation Relationship",
                     "url": "organisationrelationship",
                     "key": "lblOrganisationRelationship",
-                    "featureId": 570,
-                    "externalLink": false
+                    "featureId": 570
                 }
             ]
         },
@@ -175,23 +161,19 @@
             "menuId": 38,
             "name": "Information",
             "translatedName": "Information",
-            "url": "https://www.daf.com/en/sites-landing",
-            "icon": "info",
+            "url": "information",
             "key": "lblInformation",
             "featureId": 700,
-            "subMenus": [],
-            "externalLink": true
+            "subMenus": []
         },
         {
             "menuId": 39,
             "name": "Legal Notices",
             "translatedName": "Legal Notices",
-            "url": "https://www.daf.com/en/legal/legal-notice",
-            "icon": "gavel",
+            "url": "legalnotices",
             "key": "lblLegalNotices",
             "featureId": 750,
-            "subMenus": [],
-            "externalLink": true
+            "subMenus": []
         }
     ],
     "features": [

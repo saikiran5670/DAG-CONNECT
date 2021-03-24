@@ -10,6 +10,7 @@
       "translationRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/translation",
       "driverRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/driver",
       "packageRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/package",
-      "organizationRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/organization"
+      "organizationRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/organization",
+      "subscriptionRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/subscribe"
     }
 }

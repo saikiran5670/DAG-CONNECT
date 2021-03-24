@@ -49,19 +49,16 @@
   <ng-container matColumnDef="status">
     <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
     <mat-cell *matCellDef="let row">
-      <button class='actionBtn' mat-flat-button (click)="changePackageStatus(row)" matTooltip="{{ row.status == true ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Inactive' }}">
-        <mat-slide-toggle color="primary" [checked]='row.status == true ? true : false' >
+      <button class='actionBtn' mat-flat-button (click)="changePackageStatus(row)" matTooltip="{{ row.status == 'Active' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Inactive' }}">
+        <mat-slide-toggle color="primary" [checked]='row.status == "Active" ? true : false' >
       </mat-slide-toggle>&nbsp;
-      <span>{{ row.status == true ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Inactive' }}</span>
+      <span>{{ row.status == "Active" ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Inactive' }}</span>
       </button>
     </mat-cell>
   </ng-container>
   <ng-container matColumnDef="action">
     <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
     <mat-cell *matCellDef="let row">
-      <!-- <button class='actionBtn' mat-flat-button (click)="changePackageStatus(row)" matTooltip="{{ row.status == '1' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}">
-          <mat-icon>{{ row.status == '1' ? 'sync' : 'sync_disabled' }}</mat-icon>
-      </button> -->
       <button class='actionBtn' mat-flat-button (click)="editViewPackage(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
         <mat-icon>visibility</mat-icon>
       </button>
@@ -80,5 +77,5 @@
   <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
 </div>
 </mat-card>
-<app-create-edit-package-details *ngIf='createEditViewPackageFlag' [translationData]='translationData' [actionType]='actionType' [packageData]='initData' [selectedElementData]='selectedElementData' (createViewEditPackageEmit)='checkCreationForPackage($event)'></app-create-edit-package-details>
+<app-create-edit-package-details *ngIf='createEditViewPackageFlag' [translationData]='translationData' [actionType]='actionType' [selectedElementData]='selectedElementData' (createViewEditPackageEmit)='checkCreationForPackage($event)'></app-create-edit-package-details>
 </div>

@@ -6,6 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { CustomValidators } from '../../../shared/custom.validators';
 import { PackageService } from 'src/app/services/package.service';
+import { features } from 'process';
 
 @Component({
   selector: 'app-create-edit-package-details',
@@ -41,8 +42,8 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       value: 'Organization'
     },
     {
-      name: 'Vehicle',
-      value: 'Vehicle'
+      name: 'VIN',
+      value: 'VIN'
     }
   ];
   
@@ -89,7 +90,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
 
   selectTableRows() {
     this.dataSource.data.forEach((row: any) => {
-      let search = this.selectedElementData.features.filter((item: any) => item.id == row.id);
+      let search = this.selectedElementData.featureIds.filter((item: any) => item.id == row.id);
       if (search.length > 0) {
         this.selectionForFeatures.select(row);
       }
@@ -111,7 +112,6 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     this.packageFormGroup.get("status").setValue(this.selectedElementData.status);
     // this.packageFormGroup.get("features").setValue(this.selectedElementData.features);
     // this.selectedType = this.selectedElementData.type.toLowerCase();
-    this.packageFormGroup.get("features");
     this.packageFormGroup.get("description").setValue(this.selectedElementData.description);
     this.selectedStatus = this.selectedElementData.status;
    
@@ -139,53 +139,57 @@ export class CreateEditPackageDetailsComponent implements OnInit {
 
   
   onCreate(){
-    let featureNames = [];
+    let featureIds = [];
         this.selectionForFeatures.selected.forEach(feature => {
-          featureNames.push(feature.name);
+          featureIds.push(feature.id);
         })
     let createPackageParams = {
       "id": 0,
       "code": this.packageFormGroup.controls.code.value,
       "featureSetID" : 24,
-      "features": featureNames,
+      "featureIds": featureIds,
       "name": this.packageFormGroup.controls.name.value,
-      "type": this.packageFormGroup.controls.type.value === "Vehicle" ? "V" : "O",
+      "type": this.packageFormGroup.controls.type.value === "VIN" ? "V" : "O",
       "description": this.packageFormGroup.controls.description.value,
-      "status": this.packageFormGroup.controls.status.value === "Inactive" ? false : true
+      "isActive": true,
+      "status": this.packageFormGroup.controls.status.value === "I" ? "I" : "A"
     }
     if(this.actionType == 'create'){
-      this.packageService.createPackage(createPackageParams).subscribe((data) => {
-    this.userCreatedMsg = this.getUserCreatedMessage();
-    let emitObj = {
-      stepFlag: false,
-      successMsg: this.userCreatedMsg,
-      tableData: data,
-    }    
-    this.createViewEditPackageEmit.emit(emitObj); 
-    })
+      this.packageService.createPackage(createPackageParams).subscribe((res) => {
+        this.packageService.getPackages().subscribe((getData) => {
+        this.userCreatedMsg = this.getUserCreatedMessage();
+        let emitObj = {
+          stepFlag: false,
+          successMsg: this.userCreatedMsg,
+          tableData: getData,
+        }    
+        this.createViewEditPackageEmit.emit(emitObj); 
+    });
+  })
   }
   else if(this.actionType == 'edit'){
     let updatePackageParams = {
       "id": this.selectedElementData.id,
       "code": this.packageFormGroup.controls.code.value,
       "featureSetID" : this.selectedElementData.featureSetID,
-      "features": featureNames,
+      "featureIds": featureIds,
       "name": this.packageFormGroup.controls.name.value,
-      "type": this.packageFormGroup.controls.type.value === "Vehicle" ? "V" : "O",
+      "type": this.packageFormGroup.controls.type.value === "VIN" ? "V" : "O",
       "description": this.packageFormGroup.controls.description.value,
-      "status": this.packageFormGroup.controls.status.value === "Inactive" ? false : true
+      "status": this.packageFormGroup.controls.status.value === "I" ? "I" : "A",
+      "isActive": true
     }
     this.packageService.updatePackage(updatePackageParams).subscribe((data) => {
+      this.packageService.getPackages().subscribe((getData) => {
       this.userCreatedMsg = this.getUserCreatedMessage();
       let emitObj = {
         stepFlag: false,
         successMsg: this.userCreatedMsg,
-        tableData: data,
-        name: this.packageFormGroup.controls.name.value
+        tableData: getData,
       }    
       this.createViewEditPackageEmit.emit(emitObj); 
-      })
-
+      });
+    })
   }
 }
 

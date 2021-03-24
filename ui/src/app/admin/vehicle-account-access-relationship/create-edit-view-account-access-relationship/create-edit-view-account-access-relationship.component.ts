@@ -235,7 +235,7 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
   }
 
   showVehiclePopup(row: any){
-    const colsList = ['name','vin','license_Plate_Number'];
+    const colsList = ['name','vin','licensePlateNumber'];
     const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
     const tableTitle =`${row.name} - ${this.translationData.lblVehicles || 'Vehicles'}`;
     this.vehicleService.getVehicleListById(row.id).subscribe((vehData: any) => {
