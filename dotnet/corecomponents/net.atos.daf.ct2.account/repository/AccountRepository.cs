@@ -285,6 +285,42 @@ namespace net.atos.daf.ct2.account
             }
         }
 
+        public async Task<Account> GetAccountByEmailId(string emailId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@email", emailId);
+                var query = @"select id, email, salutation, first_name, last_name from master.account where email = @email and is_active=true";
+
+                dynamic result = await dataAccess.QuerySingleAsync<dynamic>(query, parameter);
+
+                return MapAccount(result);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<Account> GetAccountByAccountId(int accountId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@accountId", accountId);
+                var query = @"select id, email, salutation, first_name, last_name from master.account where id = @accountId and is_active=true";
+
+                dynamic result = await dataAccess.QuerySingleAsync<dynamic>(query, parameter);
+
+                return MapAccount(result);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public async Task<int> GetCount(int organization_id)
         {
             try
@@ -1145,7 +1181,18 @@ namespace net.atos.daf.ct2.account
             return accountBlob;
 
         }
-        private Account Map(dynamic record)
+
+        private Account MapAccount(dynamic record)
+        {
+            Account account = new Account();
+            account.Id = record.id;
+            account.EmailId = record.email;
+            account.Salutation = record.salutation;
+            account.FirstName = record.first_name;
+            account.LastName = record.last_name;
+            return account;
+        }
+            private Account Map(dynamic record)
         {
             Account account = new Account();
             account.Id = record.id;
