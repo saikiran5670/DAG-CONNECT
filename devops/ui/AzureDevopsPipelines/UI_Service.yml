@@ -12,6 +12,7 @@ parameters:
   - DEV02
   - TEST01
   - TEST02
+  - ACC03
 
 variables:
 - ${{ if eq(parameters.ENV, 'DEV0') }}:
@@ -24,6 +25,8 @@ variables:
   - group: TEST01-Build-Variables
 - ${{ if eq(parameters.ENV, 'TEST02') }}:
   - group: TEST02-Build-Variables
+- ${{ if eq(parameters.ENV, 'ACC03') }}:
+  - group: ACC03-Build-Variables
   
 pool: $(PRIVATEAGENT)
 
