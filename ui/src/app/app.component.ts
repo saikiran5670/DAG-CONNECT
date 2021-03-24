@@ -10,6 +10,8 @@ import { DOCUMENT } from '@angular/common';
 import { AccountService } from './services/account.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Variable } from '@angular/compiler/src/render3/r3_ast';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { TermsConditionsPopupComponent } from './shared/terms-conditions-popup/terms-conditions-popup.component';
 
 @Component({
   selector: 'app-root',
@@ -53,6 +55,7 @@ export class AppComponent {
   isFullScreen= false;
   public userPreferencesFlag : boolean = false;
   appForm: FormGroup;
+  dialogRefTerms: MatDialogRef<TermsConditionsPopupComponent>;
   private pagetTitles = {
     livefleet: 'live fleet',
     logbook: 'log book',
@@ -179,7 +182,7 @@ export class AppComponent {
     }
   }
 
-  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService) {
+  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -190,6 +193,7 @@ export class AppComponent {
       this.isLogedIn = data;
       this.getTranslationLabels();
       this.getAccountInfo();
+      this.openTermsConditionsPopup();
     });
 
     this.dataInterchangeService.userNameInterface$.subscribe(data => {
@@ -251,6 +255,19 @@ export class AppComponent {
     // this.isMobile();
     // this.isTablet();
     // this.isDesktop();
+  }
+
+  openTermsConditionsPopup(){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      translationData: this.translationData
+    }
+    this.dialogRefTerms = this.dialog.open(TermsConditionsPopupComponent, dialogConfig);
+    // this.dialogRefTerms.afterClosed().subscribe(res => {
+      
+    // });
   }
 
   getAccountInfo(){
