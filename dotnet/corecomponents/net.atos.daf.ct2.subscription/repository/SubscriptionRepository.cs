@@ -154,7 +154,7 @@ namespace net.atos.daf.ct2.subscription.repository
                         parameter.Add("@type", data.type);
                         parameter.Add("@package_code", objSubscription.packageId);
                         parameter.Add("@package_id", data.id);
-                        parameter.Add("@subscription_start_date", objSubscription.StartDateTime);
+                        parameter.Add("@subscription_start_date",objSubscription.StartDateTime);
                         parameter.Add("@subscription_end_date", null);
                         parameter.Add("@is_active", true);
                         parameter.Add("@is_zuora_package", true);

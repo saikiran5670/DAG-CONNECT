@@ -46,15 +46,12 @@ namespace net.atos.daf.ct2.package.test
             var ObjPackage = new Package()
             {
                 Code = "PKG008",
-               // Default = PackageDefault.True,
                 FeatureSetID = 1,
-                Status = PackageStatus.Active,
+                Status = "I",
                 Name = "Standard",
                 Type = "O",
                 Description = "Package with default featureset",
-             //   StartDate = Convert.ToDateTime("2019-02-02T12:34:56"),
-              //  EndDate = Convert.ToDateTime("2019-02-02T12:34:56")
-
+                IsActive = false
             };
             var resultPackage = _packageManager.Create(ObjPackage).Result;
             Assert.IsNotNull(resultPackage);
@@ -71,20 +68,14 @@ namespace net.atos.daf.ct2.package.test
 
             var ObjPackage = new Package()
             {
-                Id =3,
+                Id = 3,
                 Code = "PKG011",
-                //Default = PackageDefault.True,
-                //  FeatureSet = new features.entity.FeatureSet() { FeatureSetID = 5},
-
                 FeatureSetID = 4,
-                Status = PackageStatus.Active,
-                // Is_Active = true,
-                Name = "Standard",
-                Type = "Organization",
+                Status = "I",
+                IsActive = true,
+                Name = "Standard Update",
+                Type = "V",
                 Description = "Package with default featureset",
-              //  StartDate = Convert.ToDateTime("2019-02-02T12:34:56"),
-              //  EndDate = Convert.ToDateTime("2019-02-02T12:34:56")
-
             };
             var resultPackage = _packageManager.Update(ObjPackage).Result;
             Assert.IsNotNull(resultPackage);
