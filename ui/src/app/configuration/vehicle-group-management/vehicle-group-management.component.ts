@@ -166,7 +166,42 @@ export class VehicleGroupManagementComponent implements OnInit {
   }
 
   deleteVehicleGroup(rowData: any){
+    const options = {
+      title: this.translationData.lblDelete || "Delete",
+      message: this.translationData.lblAreyousureyouwanttodeleteVehicleGroup || "Are you sure you want to delete '$' Vehicle Group?",
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: this.translationData.lblDelete || "Delete"
+    };
+    this.openDeleteDialog(options, rowData);
+  }
 
+  openDeleteDialog(options: any, item: any) {
+    // Model for delete
+    let name = item.groupName;
+    this.dialogService.DeleteModelOpen(options, name);
+    this.dialogService.confirmedDel().subscribe((res) => {
+      if (res) {
+        this.vehicleService.deleteVehicleGroup(item.groupId).subscribe((d: any) => {
+          this.showSuccessMessage(this.getDeleteMsg(name));
+          this.loadVehicleGroupData();
+        });
+      }
+    });
+  }
+
+  showSuccessMessage(msg: any){
+    this.vehicleGrpCreatedMsg = msg;
+    this.grpTitleVisible = true;
+    setTimeout(() => {
+      this.grpTitleVisible = false;
+    }, 5000);
+  }
+
+  getDeleteMsg(vehGrpName: any){
+    if(this.translationData.lblVehicleGroupDelete)
+      return this.translationData.lblVehicleGroupDelete.replace('$', vehGrpName);
+    else
+      return ("Vehicle Group '$' was successfully deleted").replace('$', vehGrpName);
   }
 
 }

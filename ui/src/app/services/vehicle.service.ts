@@ -115,7 +115,6 @@ export class VehicleService {
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
-    let data = { GroupId: groupId };
    return this.httpClient
       .delete<any>(`${this.vehicleServiceUrl}/group/delete?GroupId=${groupId}`,headers)
       .pipe(catchError(this.handleError));
