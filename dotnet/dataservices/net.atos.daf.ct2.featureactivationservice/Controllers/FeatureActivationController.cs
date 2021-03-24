@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
             //preferencemanager = _preferencemanager;
             accountIdentityManager = _accountIdentityManager;
         }
-        [AllowAnonymous]
+        
         [HttpPost]
         [Route("update")]
         public async Task<IActionResult> Subscription(SubsCriptionEntity objsubscriptionActivation)
