@@ -12,6 +12,8 @@ parameters:
   - DEV01
   - DEV02
   - TEST01
+  - TEST02
+  - ACC3
 
 pool: $(PRIVATEAGENT)
 
@@ -24,6 +26,10 @@ variables:
   - group: DEV02-Build-Variables
 - ${{ if eq(parameters.ENV, 'TEST01') }}:
   - group: TEST01-Build-Variables
+- ${{ if eq(parameters.ENV, 'TEST02') }}:
+  - group: TEST02-Build-Variables
+- ${{ if eq(parameters.ENV, 'ACC3') }}:
+  - group: ACC3-Build-Variables
 
 jobs:
 - job: Build
