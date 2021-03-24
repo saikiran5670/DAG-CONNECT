@@ -1149,10 +1149,14 @@ namespace net.atos.daf.ct2.account
         {
             Account account = new Account();
             account.Id = record.id;
+            if((object)record.email !=null)
             account.EmailId = record.email;
-            account.Salutation = record.salutation;
-            account.FirstName = record.first_name;
-            account.LastName = record.last_name;
+            if ((object)record.salutation != null)
+                account.Salutation = record.salutation;
+            if ((object)record.first_name != null)
+                account.FirstName = record.first_name;
+            if ((object)record.last_name != null)
+                account.LastName = record.last_name;
             account.Organization_Id = record.organization_id;
             account.AccountType = (AccountType)Convert.ToChar(record.accounttype);
             if ((object)record.preference_id != null)

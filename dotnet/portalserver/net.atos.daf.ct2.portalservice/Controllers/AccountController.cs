@@ -113,6 +113,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
+                    if (accountResponse.Account == null) return Ok(accountResponse.Account);
                     return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "01"));
                 }
             }
@@ -267,7 +268,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(404, "Accounts details are found.");
+                        return StatusCode(404, "Account not configured.");
                     }
                 }
                 else
@@ -304,7 +305,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(404, "Accounts details are found.");
+                        return StatusCode(404, "Account not configured.");
                     }
                 }
                 else
