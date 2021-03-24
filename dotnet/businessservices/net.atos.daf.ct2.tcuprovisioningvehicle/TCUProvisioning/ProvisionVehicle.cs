@@ -193,10 +193,9 @@ namespace TCUProvisioning
             OrganizationManager org = getOrgnisationManager(psqlConnString, vehicleManager);
 
             try
-            {
-                log.Info("IsOwnerRelationshipExist() method started");
+            {            
                 int IsVehicleIdExist = await org.IsOwnerRelationshipExist(vehId);
-                log.Info("IsOwnerRelationshipExist() method completed");
+             
                 if (IsVehicleIdExist <= 0)
                 {
                     log.Info("Organisation relationship is not present in database proceeding to create relationship");
@@ -213,9 +212,8 @@ namespace TCUProvisioning
                     relationship.target_org_id = DAFPACCAR;
                     relationship.isFirstRelation = true;
                     relationship.allow_chain = true;
-                    log.Info("CreateOwnerRelationship() method started");
-                    await org.CreateOwnerRelationship(relationship);
-                    log.Info("CreateOwnerRelationship() method completed");
+                
+                    await org.CreateOwnerRelationship(relationship);              
                     await _auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create org relationship in TCU Vehicle Component", 0, vehId, JsonConvert.SerializeObject(relationship));
                 }
             }
