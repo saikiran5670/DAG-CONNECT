@@ -10,13 +10,13 @@ import {
 import { ConfigService } from '@ngx-config/core';
 
 @Injectable()
-export class PackageService {
-  PackageServiceUrl: string = '';
-  featureServiceUrl: string = '';
+export class SubscriptionService {
+    SubscriptionServiceUrl: string = '';
+    vehicleServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.PackageServiceUrl = config.getSettings("foundationServices").packageRESTServiceURL;
-    this.featureServiceUrl = config.getSettings("foundationServices").featureRESTServiceURL;
+    this.SubscriptionServiceUrl = config.getSettings("foundationServices").subscriptionRESTServiceURL;
+    this.vehicleServiceUrl = config.getSettings("foundationServices").vehicleGroupRESTServiceUrl;
   }
 
   generateHeader(){
@@ -30,55 +30,27 @@ export class PackageService {
     return getHeaderObj;
   }
 
-  getPackages(): Observable<any[]> {
+  getSubscriptions(): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.PackageServiceUrl}/get`,headers)
+      .get<any[]>(`${this.SubscriptionServiceUrl}/getsubscriptiondetails`,headers)
       .pipe(catchError(this.handleError));
   }
 
-  getFeatures(data): Observable<any[]> {
+  getVehicleBySubscriptionId(data): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = new HttpHeaders({ headerObj });
+    
     const options =  { params: new HttpParams(data), headers: headers };
     return this.httpClient
-      .get<any[]>(`${this.featureServiceUrl}/getfeatures`,options)
+      .get<any[]>(`${this.vehicleServiceUrl}/getvehiclebysubscriptionid?orderId=${data.orderId}`,options)
       .pipe(catchError(this.handleError));
   }
 
-  createPackage(data): Observable<any> {
-    let headerObj = this.generateHeader();
-    const headers = {
-      headers: new HttpHeaders({ headerObj }),
-    };
-    return this.httpClient
-      .post<any>(`${this.PackageServiceUrl}/create`, data, headers)
-      .pipe(catchError(this.handleError));
-  }
 
-  updatePackage(data): Observable<any> {
-    let headerObj = this.generateHeader();
-    const headers = {
-      headers: new HttpHeaders({ headerObj }),
-    };
-    return this.httpClient
-      .put<any>(`${this.PackageServiceUrl}/update`, data, headers)
-      .pipe(catchError(this.handleError));
-  }
-
-  deletePackage(packageId: number): Observable<void> {
-    let headerObj = this.generateHeader();
-    const headers = {
-      headers: new HttpHeaders({ headerObj }),
-    };
-    let data = { packageId: packageId };
-   return this.httpClient
-      .delete<any>(`${this.PackageServiceUrl}/delete?packageId=${packageId}`, headers)
-      .pipe(catchError(this.handleError));
-  }
 
 
   private handleError(errResponse: HttpErrorResponse) {
