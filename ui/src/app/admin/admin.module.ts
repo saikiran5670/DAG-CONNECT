@@ -27,7 +27,7 @@ import { UserDetailTableComponent } from './user-management/new-user-step/user-d
 import { CreateEditVehicleDetailsComponent } from '../admin/vehicle-management/create-edit-vehicle-details/create-edit-vehicle-details.component';
 import { EditVINSettingComponent } from '../admin/vehicle-management/edit-vin-setting/edit-vin-setting.component';
 import { VehicleService } from '../services/vehicle.service';
-import { VehicleManagementComponent } from '../admin/vehicle-management/vehicle-management.component';
+// import { VehicleManagementComponent } from '../admin/vehicle-management/vehicle-management.component';
 import { VehicleAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/vehicle-account-access-relationship.component';
 import { CreateEditViewVehicleAccessRelationshipComponent } from './vehicle-account-access-relationship/create-edit-view-vehicle-access-relationship/create-edit-view-vehicle-access-relationship.component';
 import { CreateEditViewAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/create-edit-view-account-access-relationship/create-edit-view-account-access-relationship.component';
@@ -63,7 +63,7 @@ import { LanguageSelectionComponent } from './translation-data-upload/language-s
     EditViewUserComponent,
     EditCommonTableComponent,
     UserDetailTableComponent,
-    VehicleManagementComponent,
+    // VehicleManagementComponent,
     CreateEditVehicleDetailsComponent,
     EditVINSettingComponent,
     VehicleAccountAccessRelationshipComponent,

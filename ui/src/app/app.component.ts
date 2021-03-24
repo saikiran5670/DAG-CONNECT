@@ -67,6 +67,7 @@ export class AppComponent {
     usergroupmanagement: 'User Group Management',
     usermanagement: 'User Management',
     vehiclemanagement: 'Vehicle Management',
+    vehiclegroupmanagement: 'Vehicle Group Management',
     drivermanagement: 'Driver Management',
     userrolemanagement: 'User Role Management',
     vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship',
@@ -113,6 +114,8 @@ export class AppComponent {
       pageTitles: {
         alerts: 'Alerts',
         landmarks: 'Landmarks',
+        vehiclemanagement: 'Vehicle Management',
+        vehiclegroupmanagement: 'Vehicle Group Management'
       }
     },
     admin : {
@@ -125,7 +128,7 @@ export class AppComponent {
         usermanagement: 'User Management',
         drivermanagement: 'Driver Management',
         userrolemanagement: 'User Role Management',
-        vehiclemanagement: 'Vehicle Management',
+        // vehiclemanagement: 'Vehicle Management',
         vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship',
         translationdataupload: 'Translation Data Upload',
         featuremanagement: 'Feature Management',
@@ -166,7 +169,7 @@ export class AppComponent {
       pageTitles: {
         information: 'Information'
       },
-      link : "https://www.daf.com/en/sites-landing"
+      link: "https://www.daf.com/en/sites-landing"
     },
     legalnotices : {
       open: false,
@@ -175,8 +178,8 @@ export class AppComponent {
       pageTitles: {
         legalnotices: 'Legal Notices'
       },
-      link : "https://www.daf.com/en/legal/legal-notice"
-  }
+      link: "https://www.daf.com/en/legal/legal-notice"
+    }
   }
 
   constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog) {
