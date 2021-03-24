@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
             //preferencemanager = _preferencemanager;
             accountIdentityManager = _accountIdentityManager;
         }
-        
+        [AllowAnonymous]
         [HttpPost]
         [Route("update")]
         public async Task<IActionResult> Subscription(SubsCriptionEntity objsubscriptionActivation)
@@ -56,10 +56,11 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     SubscriptionActivation Objsubs = new SubscriptionActivation();
                     Objsubs.OrganizationId = objsubscriptionActivation.SubscribeEvent.OrganizationId;
                     Objsubs.packageId = objsubscriptionActivation.SubscribeEvent.packageId;
+                    Objsubs.VINs = new List<string>();
                     Objsubs.VINs.AddRange(objsubscriptionActivation.SubscribeEvent.VINs);
                     try
                     {
-                        if (objsubscriptionActivation.SubscribeEvent.StartDateTime != null || objsubscriptionActivation.SubscribeEvent.StartDateTime != string.Empty)
+                        if (objsubscriptionActivation.SubscribeEvent.StartDateTime != string.Empty)
                         {
                             Objsubs.StartDateTime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(objsubscriptionActivation.SubscribeEvent.StartDateTime));
                         }
@@ -99,10 +100,12 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     UnSubscription Objunsubs = new UnSubscription();
                     Objunsubs.OrganizationID = objsubscriptionActivation.UnsubscribeEvent.OrganizationID;
                     Objunsubs.OrderID = objsubscriptionActivation.UnsubscribeEvent.OrderID;
+                    Objunsubs.VINs = new List<string>();
                     Objunsubs.VINs.AddRange(objsubscriptionActivation.UnsubscribeEvent.VINs);
+                    
                     try
                     {
-                        if (objsubscriptionActivation.UnsubscribeEvent.EndDateTime != null || objsubscriptionActivation.UnsubscribeEvent.EndDateTime != string.Empty)
+                        if (objsubscriptionActivation.UnsubscribeEvent.EndDateTime != string.Empty)
                         {
                             Objunsubs.EndDateTime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(objsubscriptionActivation.UnsubscribeEvent.EndDateTime));
                         }
