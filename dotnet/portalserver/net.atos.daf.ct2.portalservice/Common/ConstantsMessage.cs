@@ -48,6 +48,10 @@ namespace net.atos.daf.ct2.portalservice.Common
             public const string InvalidData = "The vehicle group name, vehicle group description should be valid.";
             public const string InvalidGroupType = "The vehicle group type is not valid";
             public const string ErrorMessage = "There is an error creating vehicle group.";
+            public const string GroupIdRequired = "The group Id is required.";
+            public const string OrganizationIdRequired = "The organization Id is required.";
+            public const string InvalidFunctionEnumType = "The function enum type is not valid";
+            public const string FunctionTypeRequired = "The function type is required.";
         }
 
     }

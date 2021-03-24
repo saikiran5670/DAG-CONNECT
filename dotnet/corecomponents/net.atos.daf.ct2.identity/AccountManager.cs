@@ -139,8 +139,8 @@ namespace net.atos.daf.ct2.identity
                             }
                             if(httpResponse.IsSuccessStatusCode && httpResponse.StatusCode == System.Net.HttpStatusCode.NoContent)
                             {
-                                objResponse.StatusCode=httpResponse .StatusCode;
-                                if(actionType=="UPDATE")
+                                objResponse.StatusCode = httpResponse.StatusCode;
+                                if (actionType=="UPDATE")
                                 {
                                  objResponse.Result=JsonConvert.SerializeObject("User has been updated.");
                                 }
@@ -159,7 +159,7 @@ namespace net.atos.daf.ct2.identity
                             }
                             else
                             {
-                                objResponse.StatusCode=httpResponse .StatusCode;
+                                objResponse.StatusCode = httpResponse.StatusCode;
                                 objResponse.Result=httpResponse.Content.ReadAsStringAsync().Result;
                             }
                         }
@@ -171,7 +171,7 @@ namespace net.atos.daf.ct2.identity
                     }
                     else 
                     {
-                        objResponse.StatusCode=httpResponseSAT.StatusCode;
+                        objResponse.StatusCode= httpResponseUser.StatusCode;
                         objResponse.Result=resultSAT;
                     }
                 }

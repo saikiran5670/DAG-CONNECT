@@ -57,6 +57,17 @@ namespace net.atos.daf.ct2.identitysession
                 throw ex;
             }
         }
+        public async Task<int> DeleteSessionByAccountId(int SessionId)
+        {
+            try
+            {
+                return await sessionRepository.DeleteSessionByAccountId(SessionId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
     }
 }

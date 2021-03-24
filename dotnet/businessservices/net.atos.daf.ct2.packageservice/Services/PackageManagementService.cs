@@ -25,7 +25,7 @@ namespace net.atos.daf.ct2.packageservice
         }
 
 
-        public  override Task<PackageResponse> Create(PackageCreateRequest request, ServerCallContext context)
+        public override Task<PackageResponse> Create(PackageCreateRequest request, ServerCallContext context)
         {
             try
             {
@@ -36,18 +36,31 @@ namespace net.atos.daf.ct2.packageservice
                 package.Name = request.Name;
                 package.Type = request.Type;
                 package.Description = request.Description;
+                package.IsActive = request.IsActive;
                 package = _packageManager.Create(package).Result;
-                return Task.FromResult(new PackageResponse
+                if (package.Id == -1)
                 {
-                    Message = "Package Created " + package.Id
-                });
+                    return Task.FromResult(new PackageResponse
+                    {
+                        Message = "Package Code is "+package.Code+" already exists ",
+                        PackageId = package.Id
+                    });
+                }
+                else
+                {
+                    return Task.FromResult(new PackageResponse
+                    {
+                        Message = "Package Created " + package.Id,
+                        PackageId = package.Id
+                    });
+                }
             }
             catch (Exception ex)
             {
                 return Task.FromResult(new PackageResponse
                 {
                     Message = "Exception " + ex.Message,
-                    Code=Responsecode.Failed
+                    Code = Responsecode.Failed
                 });
             }
         }
@@ -62,15 +75,30 @@ namespace net.atos.daf.ct2.packageservice
                 package.Id = request.Id;
                 package.Code = request.Code;
                 package.FeatureSetID = request.FeatureSetID;
-                package.Status =request.Status;
+                package.Status = request.Status;
                 package.Name = request.Name;
-                package.Type =request.Type;
+                package.Type = request.Type;
                 package.Description = request.Description;
+                package.IsActive = request.IsActive;
+
                 package = _packageManager.Update(package).Result;
-                return Task.FromResult(new PackageResponse
+
+                if (package.Id == -1)
                 {
-                    Message = "Package Updated " + package.Id
-                });
+                    return Task.FromResult(new PackageResponse
+                    {
+                        Message = "Package Code is " + package.Code + " already exists ",
+                        PackageId = package.Id
+                    });
+                }
+                else
+                {
+                    return Task.FromResult(new PackageResponse
+                    {
+                        Message = "Package Updated " ,
+                        PackageId = package.Id
+                    });
+                }               
             }
             catch (Exception ex)
             {
@@ -91,7 +119,7 @@ namespace net.atos.daf.ct2.packageservice
                 if (result)
                 {
                     response.Code = Responsecode.Success;
-                    response.Message = "Package Deleted." ;
+                    response.Message = "Package Deleted.";
                 }
                 else
                 {
@@ -108,7 +136,7 @@ namespace net.atos.daf.ct2.packageservice
                 {
                     Code = Responsecode.Failed,
                     Message = "Package Deletion Faile due to - " + ex.Message,
-                     
+
                 });
             }
         }
@@ -130,13 +158,17 @@ namespace net.atos.daf.ct2.packageservice
                 var packages = _packageManager.Get(packageFilter).Result;
                 response.PacakageList.AddRange(packages
                                      .Select(x => new GetPackageRequest()
-                                     { Id = x.Id,
+                                     {
+                                         Id = x.Id,
                                          Code = x.Code,
                                          Description = x.Description,
                                          Name = x.Name,
-                                         FeatureSetID=x.FeatureSetID,                                          
-                                         Status =  x.Status,
-                                         Type = x.Type }).ToList()); 
+                                         FeatureSetID = x.FeatureSetID,
+                                         Status = x.Status,
+                                         IsActive = x.IsActive,
+                                         CreatedAt = x.CreatedAt,
+                                         Type = x.Type
+                                     }).ToList());
                 _logger.LogInformation("Get package details.");
                 return await Task.FromResult(response);
             }
@@ -161,25 +193,29 @@ namespace net.atos.daf.ct2.packageservice
 
 
                 packages.AddRange(request.Packages.Select(x => new Package()
-                {                    
+                {
                     Code = x.Code,
                     Description = x.Description,
-                    FeatureSetID=x.FeatureSetID,
+                    FeatureSetID = x.FeatureSetID,
                     Name = x.Name,
                     Status = x.Status,
-                    Type = x.Type
+                    Type = x.Type,
+                    IsActive = x.IsActive
                 }).ToList());
-                
-                var packageImported =await _packageManager.Import(packages);
+
+                var packageImported = await _packageManager.Import(packages);
                 response.PackageList.AddRange(packageImported
-                                     .Select(x=>new GetPackageRequest() {
+                                     .Select(x => new GetPackageRequest()
+                                     {
                                          Id = x.Id,
                                          Code = x.Code,
                                          Description = x.Description,
                                          Name = x.Name,
-                                         FeatureSetID=x.FeatureSetID,
+                                         FeatureSetID = x.FeatureSetID,
                                          Status = x.Status,
-                                         Type = x.Type
+                                         Type = x.Type,
+                                         IsActive = x.IsActive,
+                                         CreatedAt = x.CreatedAt
                                      }).ToList());
 
 
@@ -190,7 +226,7 @@ namespace net.atos.daf.ct2.packageservice
                 _logger.LogError("Error in package service:Import package with exception - " + ex.Message + ex.StackTrace);
                 return await Task.FromResult(new ImportPackageResponce
                 {
-                    Message = "Exception " + ex.Message, 
+                    Message = "Exception " + ex.Message,
                     Code = Responsecode.Failed
                 });
             }

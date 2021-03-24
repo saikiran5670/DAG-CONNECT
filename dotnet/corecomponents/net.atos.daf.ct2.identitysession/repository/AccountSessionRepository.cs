@@ -146,7 +146,24 @@ namespace net.atos.daf.ct2.identitysession.repository
             }          
            
         }
-
+        public async Task<int> DeleteSessionByAccountId(int AccountId)
+        {
+            try
+            {
+                var QueryStatement = @"DELETE FROM
+                                        master.accountsession 
+                                        where account_id=@account_id
+                                        RETURNING Id;";
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", AccountId);
+                int Id = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                return Id;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         private AccountSession Map(dynamic record)
         {
             AccountSession entity = new AccountSession();

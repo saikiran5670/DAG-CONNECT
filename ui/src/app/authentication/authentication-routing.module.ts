@@ -11,6 +11,7 @@ const routes: Routes = [
         { path: "login", component: LoginComponent },
         { path: "createpassword/:token", component: SetPasswordComponent/*, children: [{path: "**", redirectTo: "/auth/createpassword" }]*/},
         { path: "resetpassword/:token", component: SetPasswordComponent/*, children: [{path: "**", redirectTo: "/auth/resetpassword" }]*/},
+        { path: "resetpasswordinvalidate/:token", component: SetPasswordComponent/*, children: [{path: "**", redirectTo: "/auth/resetpassword" }]*/},
   ]
   }];
 

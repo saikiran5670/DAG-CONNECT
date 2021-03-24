@@ -40,6 +40,8 @@ export class TranslationDataUploadComponent implements OnInit {
   isTranslationDataUploaded: boolean = false;
   dialogRef: MatDialogRef<LanguageSelectionComponent>;
   excelEmptyMsg: boolean = false;
+  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  userType: any = localStorage.getItem("userType");
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) { 
       this.defaultTranslation();

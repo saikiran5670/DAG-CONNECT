@@ -7,6 +7,7 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { OrganizationService } from '../../services/organization.service';
 import { AccountService } from '../../services/account.service';
 import { UserDetailTableComponent } from '../user-management/new-user-step/user-detail-table/user-detail-table.component';
+import { VehicleService } from '../../services/vehicle.service';
 
 @Component({
   selector: 'app-organisation-details',
@@ -30,6 +31,7 @@ export class OrganisationDetailsComponent implements OnInit {
     private translationService: TranslationService,
     private orgService: OrganizationService,
     private accountService: AccountService,
+    private vehicleService: VehicleService,
     private dialog: MatDialog
   ) {
     this.defaultTranslation();
@@ -116,10 +118,10 @@ export class OrganisationDetailsComponent implements OnInit {
   }
 
   onVehClick(row:any){
-    const colsList = ['name','vin','license_Plate_Number'];
+    const colsList = ['name','vin','licensePlateNumber'];
     const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
     const tableTitle =`${row.vehicleGroupName} - ${this.translationData.lblVehicles || 'Vehicles'}`;
-    this.orgService.getVehicleList(row.vehicleGroupId).subscribe((data)=>{
+    this.vehicleService.getVehicleListById(row.vehicleGroupId).subscribe((data)=>{
       this.callToCommonTable(data, colsList, colsName, tableTitle);
     });
   }

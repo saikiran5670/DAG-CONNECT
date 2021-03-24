@@ -600,11 +600,11 @@ namespace net.atos.daf.ct2.group
                         parameter.Add("@id", groupFilter.Id);
                         query = query + " and id=@id ";
                     }
-                    // ref id filter
-                    if (groupFilter.RefId > 0)
-                    {
-                        return await GetByRefId(groupFilter);
-                    }
+                    //// ref id filter
+                    //if (groupFilter.RefId > 0)
+                    //{
+                    //    return await GetByRefId(groupFilter);
+                    //}
                     // organization id filter
                     if (groupFilter.OrganizationId > 0)
                     {
@@ -638,12 +638,12 @@ namespace net.atos.daf.ct2.group
                         query = query + " and object_type=@object_type ";
                     }
 
-                    // Account Id list Filter                       
-                    if (groupFilter.GroupIds != null && groupFilter.GroupIds.Count() > 0)
-                    {
-                        parameter.Add("@groupids", groupFilter.GroupIds);
-                        query = query + " and id=ANY(@groupids)";
-                    }
+                    //// Account Id list Filter                       
+                    //if (groupFilter.GroupIds != null && groupFilter.GroupIds.Count() > 0)
+                    //{
+                    //    parameter.Add("@groupids", groupFilter.GroupIds);
+                    //    query = query + " and id=ANY(@groupids)";
+                    //}
                 }
                 IEnumerable<dynamic> groups = await dataAccess.QueryAsync<dynamic>(query, parameter);
                 Group group = new Group();
@@ -677,11 +677,16 @@ namespace net.atos.daf.ct2.group
                         group.GroupRefCount = GetDynamicAllRefCount(group.OrganizationId).Result;
                         
                     }
-                        //if (group.GroupType == GroupType.Dynamic && group.ObjectType == ObjectType.AccountGroup)
-                        //{
-                        //    group.GroupRefCount = await GetAccountCount(group.OrganizationId);
-                        //}
-                        groupList.Add(group);
+                    else if (group.GroupType == GroupType.Dynamic && group.FunctionEnum==FunctionEnum.OwnedVehicles)
+                    {
+                        group.GroupRefCount = GetDynamicOwnedRefCount(group.OrganizationId).Result;
+                    }
+                    else if (group.GroupType == GroupType.Dynamic && group.FunctionEnum == FunctionEnum.VisibleVehicles)
+                    {
+                        group.GroupRefCount = GetDynamicVisibleRefCount(group.OrganizationId).Result;
+                    }
+
+                    groupList.Add(group);
                 }
 
                 return groupList;
@@ -698,12 +703,16 @@ namespace net.atos.daf.ct2.group
             {
                 var parameter = new DynamicParameters();
                 var query = @"select count(distinct veh.id)
-                                        from master.vehicle veh
-                                        Inner join master.orgrelationshipmapping orm
-                                        on veh.id=orm.vehicle_id  
-                                        where veh.organization_id=@organization_id and(orm.owner_org_id=@organization_id or orm.target_org_id=@organization_id)
-                                        and case when COALESCE(orm.end_date,0) !=0 then to_timestamp(COALESCE(orm.end_date)/1000)::date>=now()::date 
-		                                else COALESCE(orm.end_date,0) =0 end";
+	                               from master.vehicle veh
+                            Inner join master.orgrelationshipmapping  orm
+                            on orm.vehicle_id=veh.id
+                            Inner join master.orgrelationship ors
+                            on ors.id=orm.relationship_id
+                            where  1=1
+                            and ors.is_active=true
+                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+                            else COALESCE(end_date,0) =0 end
+							and (orm.created_org_id=@organization_id or orm.owner_org_id=@organization_id or orm.target_org_id=@organization_id)";
                 parameter.Add("@organization_id", orgId);
                 var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
@@ -713,6 +722,60 @@ namespace net.atos.daf.ct2.group
                 throw ex;
             }
         }
+
+        private async Task<int> GetDynamicOwnedRefCount(int orgId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                var query = @"select Count(distinct veh.id)
+	                                   from master.vehicle veh
+                                Left join master.orgrelationshipmapping  orm
+                                on orm.vehicle_id=veh.id
+                                Inner join master.orgrelationship ors
+                                on ors.id=orm.relationship_id
+                                 where ors.is_active=true
+                                and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+                                else COALESCE(end_date,0) =0 end
+							    and (orm.created_org_id=@organization_id or veh.organization_id=@organization_id)";
+                parameter.Add("@organization_id", orgId);
+                var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                return count;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private async Task<int> GetDynamicVisibleRefCount(int orgId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                var query = @"select count(distinct veh.id)
+	                               from master.vehicle veh
+                            Inner join master.orgrelationshipmapping  orm
+                            on orm.vehicle_id=veh.id
+                            Inner join master.orgrelationship ors
+                            on ors.id=orm.relationship_id
+                            where ors.is_active=true
+                            and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+                            else COALESCE(end_date,0) =0 end
+							and orm.target_org_id=@organization_id";
+                parameter.Add("@organization_id", orgId);
+                var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                return count;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+
+
 
         #endregion
     }

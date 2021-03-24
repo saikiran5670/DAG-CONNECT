@@ -28,7 +28,8 @@ export class VehicleService {
     let getHeaderObj = JSON.stringify(genericHeader)
     return getHeaderObj;
   }
-  getVehicleGroup(data): Observable<any[]> {
+
+  getVehicleGroup(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
@@ -37,27 +38,28 @@ export class VehicleService {
       .post<any[]>(`${this.vehicleServiceUrl}/group/getgroupdetails`,data,headers)
       .pipe(catchError(this.handleError));
   }
-  getVehicleListById(groupId): Observable<any[]> {
+  
+  getVehicleListById(groupId: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.vehicleServiceUrl}/group/getvehiclelist?GroupId=${groupId}`,headers)
+      .get<any[]>(`${this.vehicleServiceUrl}/group/getvehiclelist?GroupId=${groupId}`, headers)
       .pipe(catchError(this.handleError));
   }
 
-  getVehiclesDataByAccGrpID(AccGrpId, OrgId): Observable<any[]> {
+  getVehiclesDataByAccGrpID(accGrpId: any, orgId: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.vehicleServiceUrl}/group/getvehicles?AccountGroupId=${AccGrpId}&Organization_Id=${OrgId}`,headers)
+      .get<any[]>(`${this.vehicleServiceUrl}/group/getvehicles?AccountGroupId=${accGrpId}&Organization_Id=${orgId}`, headers)
       .pipe(catchError(this.handleError));
   }
 
-  getVehicle(data): Observable<any[]> {
+  getVehicle(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
@@ -66,7 +68,8 @@ export class VehicleService {
       .post<any[]>(`${this.vehicleServiceUrl}/get`,data,headers)
       .pipe(catchError(this.handleError));
   }
-  getAssociatedVehicleGroup(orgId:number,vehId:number): Observable<any[]> {
+
+  getAssociatedVehicleGroup(orgId:number, vehId:number): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
@@ -77,7 +80,7 @@ export class VehicleService {
   }
 
 
-  createVehicleGroup(data): Observable<any> {
+  createVehicleGroup(data: any): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
@@ -86,7 +89,8 @@ export class VehicleService {
       .post<any>(`${this.vehicleServiceUrl}/group/create`, data, headers)
       .pipe(catchError(this.handleError));
   }
-  updateVehicleGroup(data): Observable<any> {
+
+  updateVehicleGroup(data: any): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
@@ -96,7 +100,7 @@ export class VehicleService {
       .pipe(catchError(this.handleError));
   }
 
-  updateVehicleSettings(data): Observable<any> {
+  updateVehicleSettings(data: any): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
@@ -105,6 +109,7 @@ export class VehicleService {
      .put<any>(`${this.vehicleServiceUrl}/update`, data, headers)
       .pipe(catchError(this.handleError));
   }
+
   deleteVehicleGroup(groupId: number): Observable<void> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -115,6 +120,7 @@ export class VehicleService {
       .delete<any>(`${this.vehicleServiceUrl}/group/delete?GroupId=${groupId}`,headers)
       .pipe(catchError(this.handleError));
   }
+
   deleteVehicle(roleId: number): Observable<void> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -125,12 +131,12 @@ export class VehicleService {
       .post<any>(`${this.vehicleServiceUrl}/delete?roleId=${roleId}`, data,headers)
       .pipe(catchError(this.handleError));
   }
+
   private handleError(errResponse: HttpErrorResponse) {
     console.error('Error : ', errResponse.error);
     return throwError(
       errResponse
     );
-}
-
-
+  }
+  
 }

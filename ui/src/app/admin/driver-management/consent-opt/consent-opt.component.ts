@@ -18,17 +18,19 @@ export class ConsentOptComponent implements OnInit {
   closePopup: boolean = true;
   accountOrganizationId: any = 0;
   accountId: any = 0;
-  orgInheritMode: any = 'I'; // TODO: check current organisation opt-out/opt-in status 
+  orgInheritMode: any;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     translationData: any,
     driverData: any,
     actionType: any,
-    consentType: any
+    consentType: any,
+    organizationData: any
   }, private mdDialogRef: MatDialogRef<ConsentOptComponent>, private driverService: DriverService) {
     this.organizationName = localStorage.getItem('organizationName');
     this.totalDrivers = data.driverData.length;
     this.showOptOutMsg = data.consentType === 'U' ? true : false;
+    this.orgInheritMode = data.organizationData ? data.organizationData.driverOptIn : 'I'; //-- org driver dafult
     this.getConsentMsg(data.consentType); 
   }
 
@@ -82,10 +84,10 @@ export class ConsentOptComponent implements OnInit {
         } 
 
         if(this.data.translationData.lblSinceyourorganisationconsentis){
-          this.inheritMsgExtra = this.data.translationData.lblSinceyourorganisationconsentis.replace('$', (this.orgInheritMode == 'U' ? 'Opt-Out' : 'Opt-In' ));
+          this.inheritMsgExtra = this.data.translationData.lblSinceyourorganisationconsentis.replace('$', (this.orgInheritMode == 'U') ? (this.data.translationData.lblOptOut || 'Opt-Out') : (this.data.translationData.lblOptIn || 'Opt-In'));
         }
         else{
-          this.inheritMsgExtra = ("Since your organisation’s consent is '$'.").replace('$', (this.orgInheritMode == 'U' ? 'Opt-Out' : 'Opt-In' ));
+          this.inheritMsgExtra = ("Since your organisation’s consent is '$'.").replace('$', (this.orgInheritMode == 'U') ? (this.data.translationData.lblOptOut || 'Opt-Out') : (this.data.translationData.lblOptIn || 'Opt-In'));
         }
         
         if(this.orgInheritMode == 'U'){ //-- opt-out mode
@@ -154,10 +156,10 @@ export class ConsentOptComponent implements OnInit {
         case 'I' : {
           if(this.data.actionType){ //-- All
             if(this.data.translationData.lblAlldriverswassuccessfully){
-              returnMsg = this.data.translationData.lblAlldriverswassuccessfully.replace('$', 'Opted-in');
+              returnMsg = this.data.translationData.lblAlldriverswassuccessfully.replace('$', (this.data.translationData.lblOptedin || 'Opted-in'));
             }
             else{
-              returnMsg = ("All drivers was '$' successfully").replace('$', 'Opted-in');
+              returnMsg = ("All drivers was '$' successfully").replace('$', (this.data.translationData.lblOptedin || 'Opted-in'));
             }
           }else{ //-- single
             if(this.data.translationData.lblThedrivewasOptedinsuccessfully){
@@ -172,10 +174,10 @@ export class ConsentOptComponent implements OnInit {
         case 'U' : {
           if(this.data.actionType){ //-- All
             if(this.data.translationData.lblAlldriverswassuccessfully){
-              returnMsg = this.data.translationData.lblAlldriverswassuccessfully.replace('$', 'Opted-out');
+              returnMsg = this.data.translationData.lblAlldriverswassuccessfully.replace('$', (this.data.translationData.lblOptedout || 'Opted-out'));
             }
             else{
-              returnMsg = ("All drivers was '$' successfully").replace('$', 'Opted-out');
+              returnMsg = ("All drivers was '$' successfully").replace('$', (this.data.translationData.lblOptedout || 'Opted-out'));
             }
           }else{ //-- single
             if(this.data.translationData.lblThedrivewasOptedoutsuccessfully){
@@ -190,10 +192,10 @@ export class ConsentOptComponent implements OnInit {
         case 'H' : {
           if(this.data.actionType){ //-- All
             if(this.data.translationData.lblAlldriverswassuccessfully){
-              returnMsg = this.data.translationData.lblAlldriverswassuccessfully.replace('$', (this.orgInheritMode == 'U') ? 'Opted-out' : 'Opted-in');
+              returnMsg = this.data.translationData.lblAlldriverswassuccessfully.replace('$', (this.orgInheritMode == 'U') ? (this.data.translationData.lblOptedout || 'Opted-out') : (this.data.translationData.lblOptedin || 'Opted-in'));
             }
             else{
-              returnMsg = ("All drivers was '$' successfully").replace('$', (this.orgInheritMode == 'U') ? 'Opted-out' : 'Opted-in');
+              returnMsg = ("All drivers was '$' successfully").replace('$', (this.orgInheritMode == 'U') ? (this.data.translationData.lblOptedout || 'Opted-out') : (this.data.translationData.lblOptedin || 'Opted-in'));
             }
           }else{ //-- single
             if(this.data.translationData.lblThedrivewassuccessfully){
@@ -203,9 +205,9 @@ export class ConsentOptComponent implements OnInit {
               returnMsg = ("The driver '$' was successfully '#'").replace('$', driverName);
             }
             if(this.orgInheritMode == 'I'){ //-- opt-in
-              returnMsg = returnMsg.replace('#', 'Opted-in');
+              returnMsg = returnMsg.replace('#', (this.data.translationData.lblOptedin || 'Opted-in'));
             }else{ //-- opt-out
-              returnMsg = returnMsg.replace('#', 'Opted-out');
+              returnMsg = returnMsg.replace('#', (this.data.translationData.lblOptedout || 'Opted-out'));
             }
           }
           break;

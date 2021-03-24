@@ -160,7 +160,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(404, "vehicle details are found.");
+                        return StatusCode(404, "vehicle details are not found.");
                     }
                 }
                 else
@@ -711,6 +711,213 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+
+
+        [HttpGet]
+        [Route("group/getvehiclegrouplist")]
+        public async Task<IActionResult> GetGroupDetailsWithVehicleCount([FromQuery] int OrganizationId)
+        {
+            try
+            {
+                _logger.LogInformation("Get Group detais method in vehicle API called.");
+
+                VehicleBusinessService.VehicleGroupLandingRequest VehicleGroupRequest = new VehicleBusinessService.VehicleGroupLandingRequest();
+                VehicleGroupRequest = _mapper.ToVehicleGroupLandingFilter(OrganizationId);
+                VehicleBusinessService.VehicleGroupLandingResponse response = await _vehicleClient.GetVehicleGroupWithVehCountAsync(VehicleGroupRequest);
+
+                if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
+                {
+                    if (response.VehicleGroupLandingDetails != null && response.VehicleGroupLandingDetails.Count > 0)
+                    {
+                        return Ok(response.VehicleGroupLandingDetails);
+                    }
+                    else
+                    {
+                        return StatusCode(404, "vehicle details are found.");
+                    }
+                }
+                else
+                {
+                    return StatusCode(500, response.Message);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Vehicle Service:Get group details : " + ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+
+        [HttpGet]
+        [Route("group/getvehiclesDetails")]
+        public async Task<IActionResult> GetVehiclesByGroup([FromQuery] DynamicVehicleGroupRequest dynamicVehicleGroupRequest)
+        {
+            try
+            {
+                _logger.LogInformation("Get vehicle list by group id method in vehicle API called.");
+
+                char groupType = Convert.ToChar(dynamicVehicleGroupRequest.GroupType);
+                if (EnumValidator.ValidateGroupType(groupType))
+                {
+
+                    if (Convert.ToInt32(dynamicVehicleGroupRequest.GroupId) <= 0 && Convert.ToChar(dynamicVehicleGroupRequest.GroupType.ToLower().Trim()) == 'g')
+                    {
+                        return StatusCode(401, PortalConstants.VehicleValidation.GroupIdRequired);
+                    }
+                    else
+                    {
+                        if (Convert.ToChar(dynamicVehicleGroupRequest.GroupType.ToLower().Trim()) == 'g')
+                        {
+
+                            VehicleBusinessService.VehicleGroupIdRequest VehicleGroupIdRequest = new VehicleBusinessService.VehicleGroupIdRequest();
+                            VehicleGroupIdRequest.GroupId = dynamicVehicleGroupRequest.GroupId;
+                            VehicleBusinessService.VehicleGroupRefResponce response = await _vehicleClient.GetVehiclesByVehicleGroupAsync(VehicleGroupIdRequest);
+
+                            if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
+                            {
+                                if (response.GroupRefDetails != null && response.GroupRefDetails.Count > 0)
+                                {
+                                    return Ok(response.GroupRefDetails);
+                                }
+                                else
+                                {
+                                    return StatusCode(404, "vehicle details are not found.");
+                                }
+                            }
+                            else
+                            {
+                                return StatusCode(500, response.Message);
+                            }
+                        }
+                    }
+
+                    if (Convert.ToInt32(dynamicVehicleGroupRequest.OrganizationId) <= 0 && Convert.ToChar(dynamicVehicleGroupRequest.GroupType.ToLower().Trim()) == 'd')
+                    {
+                        return StatusCode(401, PortalConstants.VehicleValidation.OrganizationIdRequired);
+                    }
+                    else
+                    {
+                        char functionenumType;
+                        if (!string.IsNullOrEmpty(dynamicVehicleGroupRequest.FunctionEnum))
+                        {
+                            functionenumType = Convert.ToChar(dynamicVehicleGroupRequest.FunctionEnum);
+                        }
+                        else
+                        {
+                            return StatusCode(401, PortalConstants.VehicleValidation.FunctionTypeRequired);
+                        }
+
+                        if (EnumValidator.ValidateFunctionEnumType(functionenumType))
+                        {
+                            VehicleBusinessService.VehicleListResponce response = null;
+
+                            if (Convert.ToChar(dynamicVehicleGroupRequest.GroupType.ToLower().Trim()) == 'd' && Convert.ToChar(dynamicVehicleGroupRequest.FunctionEnum.ToLower().Trim()) == 'v')
+                            {
+                                VehicleBusinessService.DynamicGroupFilterRequest DynamicVehicleGroupIdRequest = new VehicleBusinessService.DynamicGroupFilterRequest();
+                                DynamicVehicleGroupIdRequest.OrganizationId = dynamicVehicleGroupRequest.OrganizationId;
+                                DynamicVehicleGroupIdRequest.VehicleGroupId = dynamicVehicleGroupRequest.GroupId;
+                                DynamicVehicleGroupIdRequest.RelationShipId = dynamicVehicleGroupRequest.RelationShipId;
+
+                                response = await _vehicleClient.GetDynamicVisibleVehicleAsync(DynamicVehicleGroupIdRequest);
+                            }
+                            else if (Convert.ToChar(dynamicVehicleGroupRequest.GroupType.ToLower().Trim()) == 'd' && Convert.ToChar(dynamicVehicleGroupRequest.FunctionEnum.ToLower().Trim()) == 'o')
+                            {
+                                VehicleBusinessService.DynamicGroupFilterRequest DynamicVehicleGroupIdRequest = new VehicleBusinessService.DynamicGroupFilterRequest();
+                                DynamicVehicleGroupIdRequest.OrganizationId = dynamicVehicleGroupRequest.OrganizationId;
+                                DynamicVehicleGroupIdRequest.VehicleGroupId = dynamicVehicleGroupRequest.GroupId;
+                                DynamicVehicleGroupIdRequest.RelationShipId = dynamicVehicleGroupRequest.RelationShipId;
+
+                                response = await _vehicleClient.GetDynamicOwnedVehicleAsync(DynamicVehicleGroupIdRequest);
+                            }
+                            else
+                            {
+                                VehicleBusinessService.DynamicGroupFilterRequest DynamicVehicleGroupIdRequest = new VehicleBusinessService.DynamicGroupFilterRequest();
+                                DynamicVehicleGroupIdRequest.OrganizationId = dynamicVehicleGroupRequest.OrganizationId;
+                                DynamicVehicleGroupIdRequest.VehicleGroupId = dynamicVehicleGroupRequest.GroupId;
+                                DynamicVehicleGroupIdRequest.RelationShipId = dynamicVehicleGroupRequest.RelationShipId;
+
+                                response = await _vehicleClient.GetDynamicAllVehicleAsync(DynamicVehicleGroupIdRequest);
+                            }
+
+                            if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
+                            {
+                                if (response.Vehicles != null && response.Vehicles.Count > 0)
+                                {
+                                    return Ok(response.Vehicles);
+                                }
+                                else
+                                {
+                                    return StatusCode(404, "vehicle details are not found.");
+                                }
+                            }
+                            else
+                            {
+                                return StatusCode(500, response.Message);
+                            }
+                        }
+                        else
+                        {
+                            return StatusCode(401, PortalConstants.VehicleValidation.InvalidFunctionEnumType);
+                        }
+                    }
+                }
+                else
+                {
+                    return StatusCode(401, PortalConstants.VehicleValidation.InvalidGroupType);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Vehicle Service:Get vehicle list by group ID  : " + ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+
+
+
+        [HttpGet]
+        [Route("GetRelationshipVehicles")]
+        public async Task<IActionResult> GetRelationshipVehicles([FromQuery] int OrganizationId, int VehicleId)
+        {
+            try
+            {
+                _logger.LogInformation("GetRelationshipVehicles method in vehicle API called.");
+                VehicleBusinessService.OrgvehicleIdRequest orgvehicleIdRequest = new VehicleBusinessService.OrgvehicleIdRequest();
+                orgvehicleIdRequest.OrganizationId = OrganizationId;
+                orgvehicleIdRequest.VehicleId = VehicleId;
+
+                VehicleBusinessService.VehicleListResponce vehicleListResponse = await _vehicleClient.GetRelationshipVehiclesAsync(orgvehicleIdRequest);
+                List<VehicleResponse> response = new List<VehicleResponse>();
+                response = _mapper.ToVehicles(vehicleListResponse);
+
+                if (vehicleListResponse != null && vehicleListResponse.Code == VehicleBusinessService.Responcecode.Success)
+                {
+                    if (vehicleListResponse.Vehicles != null && vehicleListResponse.Vehicles.Count > 0)
+                    {
+                        return Ok(vehicleListResponse.Vehicles);
+                    }
+                    else
+                    {
+                        return StatusCode(404, "vehicle details are not found.");
+                    }
+                }
+                else
+                {
+                    return StatusCode(500, vehicleListResponse.Message);
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
         [HttpGet]
         [Route("getvehiclebysubscriptionid/{subscriptionId}")]
         public async Task<IActionResult> GetVehicleBySubscriptionId([FromRoute] string subscriptionId)
@@ -743,6 +950,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
 
     }
 
