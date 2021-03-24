@@ -101,20 +101,20 @@
                             </mat-option>
                             </mat-select>
                         </mat-form-field>
-                        <div *ngIf="!adminAccessType.adminReadOnlyAccess">
-                        <button mat-flat-button color="primary" [disabled]="initData.length == 0"
-                            (click)="onConsentClick('H')" style='margin-right: 10px;'>
-                            <mat-icon style="font-size: 18px; padding-top: 2px;">refresh</mat-icon> {{ translationData.lblResetAll || 'Reset All'}}
-                        </button>
-                        <button mat-flat-button color="primary" [disabled]="initData.length == 0"
-                            (click)="onConsentClick('I')" style='margin-right: 10px;'>
-                            <mat-icon style="font-size: 18px; padding-top: 2px;">done</mat-icon> {{ translationData.lblOptInAll || 'Opt-In All'}}
-                        </button>
-                        <button style='background-color: #d62a29 !important;' mat-flat-button color="primary" [disabled]="initData.length == 0"
-                            (click)="onConsentClick('U')">
-                            <mat-icon style="font-size: 18px; padding-top: 2px;">close</mat-icon>{{ translationData.lblOptOutAll || 'Opt-Out All'}}
-                        </button>
-                    </div>
+                        <div style='display: inline;' *ngIf="!adminAccessType.adminReadOnlyAccess">
+                            <button mat-flat-button color="primary" [disabled]="initData.length == 0"
+                                (click)="onConsentClick('H')" style='margin-right: 10px;'>
+                                <mat-icon style="font-size: 18px; padding-top: 2px;">refresh</mat-icon> {{ translationData.lblResetAll || 'Reset All'}}
+                            </button>
+                            <button mat-flat-button color="primary" [disabled]="initData.length == 0"
+                                (click)="onConsentClick('I')" style='margin-right: 10px;'>
+                                <mat-icon style="font-size: 18px; padding-top: 2px;">done</mat-icon> {{ translationData.lblOptInAll || 'Opt-In All'}}
+                            </button>
+                            <button style='background-color: #d62a29 !important;' mat-flat-button color="primary" [disabled]="initData.length == 0"
+                                (click)="onConsentClick('U')">
+                                <mat-icon style="font-size: 18px; padding-top: 2px;">close</mat-icon>{{ translationData.lblOptOutAll || 'Opt-Out All'}}
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
