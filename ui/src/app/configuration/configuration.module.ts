@@ -6,17 +6,20 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { ChartsModule } from 'ng2-charts';
 import { LandmarksComponent } from './landmarks/landmarks.component';
-// import { VehicleManagementComponent } from './vehicle-management/vehicle-management.component';
 import { ConfirmDialogService } from '../shared/confirm-dialog/confirm-dialog.service';
 import { CommonTableComponent } from '../shared/common-table/common-table.component';
-// import { CreateEditVehicleDetailsComponent } from './vehicle-management/create-edit-vehicle-details/create-edit-vehicle-details.component';
-// import { EditVINSettingComponent } from './vehicle-management/edit-vin-setting/edit-vin-setting.component';
-// import { VehicleService } from '../services/vehicle.service';
+import { VehicleManagementComponent } from './vehicle-management/vehicle-management.component';
+import { VehicleGroupManagementComponent } from './vehicle-group-management/vehicle-group-management.component';
+import { VehicleService } from '../services/vehicle.service';
 
 @NgModule({
-  declarations: [ConfigurationComponent,  LandmarksComponent,
-    // VehicleManagementComponent,CommonTableComponent, CreateEditVehicleDetailsComponent, EditVINSettingComponent],
-    CommonTableComponent],
+  declarations: [
+    ConfigurationComponent,
+    LandmarksComponent,
+    CommonTableComponent,
+    VehicleManagementComponent,
+    VehicleGroupManagementComponent
+  ],
   imports: [
     CommonModule,
     ConfigurationRoutingModule,
@@ -25,10 +28,9 @@ import { CommonTableComponent } from '../shared/common-table/common-table.compon
     SharedModule,
     ChartsModule
     ],
-    // providers: [ConfirmDialogService, VehicleService],
-    providers: [ConfirmDialogService],
+    providers: [ConfirmDialogService,VehicleService],
     schemas: [
       CUSTOM_ELEMENTS_SCHEMA
-    ],
+    ]
 })
 export class ConfigurationModule { }

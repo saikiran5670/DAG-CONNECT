@@ -32,8 +32,23 @@
                     "url": "landmarks",
                     "key": "lblLandmarks",
                     "featureId": 450
+                },
+                {
+                    "menuId": 201,
+                    "name": "Vehicle Management",
+                    "translatedName": "Vehicle Management",
+                    "url": "vehiclemanagement",
+                    "key": "lblVehicleManagement",
+                    "featureId": 551
+                },
+                {
+                    "menuId": 999,
+                    "name": "Vehicle Group Management",
+                    "translatedName": "Vehicle Group Management",
+                    "url": "vehiclegroupmanagement",
+                    "key": "lblVehicleGroupManagement",
+                    "featureId": 551
                 }
-
             ]
         },
         {
@@ -83,14 +98,6 @@
                     "url": "drivermanagement",
                     "key": "lblDriverManagement",
                     "featureId": 554
-                },
-                {
-                    "menuId": 201,
-                    "name": "Vehicle Management",
-                    "translatedName": "Vehicle Management",
-                    "url": "vehiclemanagement",
-                    "key": "lblVehicleManagement",
-                    "featureId": 551
                 },
                 {
                     "menuId": 800,
