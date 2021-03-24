@@ -9,9 +9,19 @@ service PackageService{
     rpc Update (PackageCreateRequest) returns (PackageResponse);
     rpc Delete (PackageDeleteRequest) returns (PackageResponse);
     rpc Get (GetPackageRequest) returns (GetPackageResponce);   
-    rpc Import (ImportPackageRequest) returns (ImportPackageResponce);    
+    rpc Import (ImportPackageRequest) returns (ImportPackageResponce);     
+    rpc UpdatePackageStatus(UpdatePackageStatusRequest) returns (UpdatePackageStatusResponse);
+}
+message UpdatePackageStatusRequest{
+int32 PackageId=1;
+string Status=2;
 }
 
+message UpdatePackageStatusResponse{
+  Responsecode Code=1;
+  string Message = 2;
+  UpdatePackageStatusRequest PackageStatusResponse=3;
+}
 message PackageResponse {
   Responsecode Code=1;
   string Message = 2;

@@ -10,6 +10,8 @@ import { DOCUMENT } from '@angular/common';
 import { AccountService } from './services/account.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Variable } from '@angular/compiler/src/render3/r3_ast';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { TermsConditionsPopupComponent } from './shared/terms-conditions-popup/terms-conditions-popup.component';
 
 @Component({
   selector: 'app-root',
@@ -32,7 +34,7 @@ export class AppComponent {
   public fileUploadedPath: SafeUrl;
   isLogedIn: boolean = false;
   menuPages: any = (data as any).default;
-  newData: any;
+  // newData: any = {};
   languages= [];
   openUserRoleDialog= false;
   organizationDropdown: any = [];
@@ -53,6 +55,7 @@ export class AppComponent {
   isFullScreen= false;
   public userPreferencesFlag : boolean = false;
   appForm: FormGroup;
+  dialogRefTerms: MatDialogRef<TermsConditionsPopupComponent>;
   private pagetTitles = {
     livefleet: 'live fleet',
     logbook: 'log book',
@@ -64,6 +67,7 @@ export class AppComponent {
     usergroupmanagement: 'User Group Management',
     usermanagement: 'User Management',
     vehiclemanagement: 'Vehicle Management',
+    vehiclegroupmanagement: 'Vehicle Group Management',
     drivermanagement: 'Driver Management',
     userrolemanagement: 'User Role Management',
     vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship',
@@ -74,828 +78,6 @@ export class AppComponent {
     relationshipmanagement: 'Relationship management',
     organisationrelationship: 'Organisation Relationship'
   }
-
-// public menuStatus = {
-//   "menus": [
-//       {
-//           "menuId": 1,
-//           "name": "Dashboard",
-//           "translatedName": "Dashboard",
-//           "url": "",
-//           "key": "lblDashboard",
-//           "featureId": 1,
-//           "subMenus": []
-//       },
-//       {
-//           "menuId": 2,
-//           "name": "Live Fleet",
-//           "translatedName": "Live Fleet",
-//           "url": "",
-//           "key": "lblLiveFleet",
-//           "featureId": 250,
-//           "subMenus": [
-//               {
-//                   "menuId": 3,
-//                   "name": "Live Fleet",
-//                   "translatedName": "Live Fleet",
-//                   "url": "",
-//                   "key": "lblLiveFleet",
-//                   "featureId": 250
-//               },
-//               {
-//                   "menuId": 4,
-//                   "name": "Log Book",
-//                   "translatedName": "Log Book",
-//                   "url": "",
-//                   "key": "lblLogBook",
-//                   "featureId": 258
-//               }
-//           ]
-//       },
-//       {
-//           "menuId": 5,
-//           "name": "Report",
-//           "translatedName": "Report",
-//           "url": "",
-//           "key": "lblReport",
-//           "featureId": 300,
-//           "subMenus": [
-//               {
-//                   "menuId": 6,
-//                   "name": "Trip Report",
-//                   "translatedName": "Trip Report",
-//                   "url": "",
-//                   "key": "lblTripReport",
-//                   "featureId": 301
-//               },
-//               {
-//                   "menuId": 7,
-//                   "name": "Trip Tracing",
-//                   "translatedName": "Trip Tracing",
-//                   "url": "",
-//                   "key": "lblTripTracing",
-//                   "featureId": 302
-//               },
-//               {
-//                   "menuId": 8,
-//                   "name": "Advanced Fleet Fuel Report",
-//                   "translatedName": "Advanced Fleet Fuel Report",
-//                   "url": "",
-//                   "key": "lblAdvancedFleetFuelReport",
-//                   "featureId": 303
-//               },
-//               {
-//                   "menuId": 9,
-//                   "name": "Fleet Fuel Report",
-//                   "translatedName": "Fleet Fuel Report",
-//                   "url": "",
-//                   "key": "lblFleetFuelReport",
-//                   "featureId": 304
-//               },
-//               {
-//                   "menuId": 10,
-//                   "name": "Fleet Utilisation",
-//                   "translatedName": "Fleet Utilisation",
-//                   "url": "",
-//                   "key": "lblFleetUtilisation",
-//                   "featureId": 305
-//               },
-//               {
-//                   "menuId": 11,
-//                   "name": "Fuel Benchmarking",
-//                   "translatedName": "Fuel Benchmarking",
-//                   "url": "",
-//                   "key": "lblFuelBenchmarking",
-//                   "featureId": 306
-//               },
-//               {
-//                   "menuId": 12,
-//                   "name": "Fuel Deviation Report",
-//                   "translatedName": "Fuel Deviation Report",
-//                   "url": "",
-//                   "key": "lblFuelDeviationReport",
-//                   "featureId": 307
-//               },
-//               {
-//                   "menuId": 13,
-//                   "name": "Vehicle Performance Report",
-//                   "translatedName": "Vehicle Performance Report",
-//                   "url": "",
-//                   "key": "lblVehiclePerformanceReport",
-//                   "featureId": 308
-//               },
-//               {
-//                   "menuId": 14,
-//                   "name": "Drive Time Management",
-//                   "translatedName": "Drive Time Management",
-//                   "url": "",
-//                   "key": "lblDriveTimeManagement",
-//                   "featureId": 309
-//               },
-//               {
-//                   "menuId": 15,
-//                   "name": "ECO Score Report",
-//                   "translatedName": "ECO Score Report",
-//                   "url": "",
-//                   "key": "lblECOScoreReport",
-//                   "featureId": 310
-//               }
-//           ]
-//       },
-//       {
-//           "menuId": 16,
-//           "name": "Configuration",
-//           "translatedName": "Configuration",
-//           "url": "",
-//           "key": "lblConfiguration",
-//           "featureId": 350,
-//           "subMenus": [
-//               {
-//                   "menuId": 17,
-//                   "name": "Alerts",
-//                   "translatedName": "Alerts",
-//                   "url": "",
-//                   "key": "lblAlerts",
-//                   "featureId": 351
-//               },
-//               {
-//                   "menuId": 18,
-//                   "name": "Landmarks",
-//                   "translatedName": "Landmarks",
-//                   "url": "",
-//                   "key": "lblLandmarks",
-//                   "featureId": 450
-//               },
-//               {
-//                   "menuId": 19,
-//                   "name": "Report Scheduler",
-//                   "translatedName": "Report Scheduler",
-//                   "url": "",
-//                   "key": "lblReportScheduler",
-//                   "featureId": 453
-//               },
-//               {
-//                   "menuId": 20,
-//                   "name": "Driver Management",
-//                   "translatedName": "Driver Management",
-//                   "url": "",
-//                   "key": "lblDriverManagement",
-//                   "featureId": 454
-//               },
-//               {
-//                   "menuId": 21,
-//                   "name": "Vehicle Management",
-//                   "translatedName": "Vehicle Management",
-//                   "url": "",
-//                   "key": "lblVehicleManagement",
-//                   "featureId": 451
-//               }
-//           ]
-//       },
-//       {
-//           "menuId": 35,
-//           "name": "Tachograph",
-//           "translatedName": "Tachograph",
-//           "url": "",
-//           "key": "lblTachograph",
-//           "featureId": 550,
-//           "subMenus": []
-//       },
-//       {
-//           "menuId": 36,
-//           "name": "Mobile Portal",
-//           "translatedName": "Mobile Portal",
-//           "url": "",
-//           "key": "lblMobilePortal",
-//           "featureId": 600,
-//           "subMenus": []
-//       },
-//       {
-//           "menuId": 37,
-//           "name": "Shop",
-//           "translatedName": "Shop",
-//           "url": "",
-//           "key": "lblShop",
-//           "featureId": 650,
-//           "subMenus": []
-//       },
-//       {
-//           "menuId": 38,
-//           "name": "Information",
-//           "translatedName": "Information",
-//           "url": "",
-//           "key": "lblInformation",
-//           "featureId": 700,
-//           "subMenus": []
-//       },
-//       {
-//           "menuId": 39,
-//           "name": "Legal Notices",
-//           "translatedName": "Legal Notices",
-//           "url": "",
-//           "key": "lblLegalNotices",
-//           "featureId": 750,
-//           "subMenus": []
-//       }
-//   ],
-//   "features": [
-//       {
-//           "featureId": 1,
-//           "name": "Dashboard",
-//           "type": "G",
-//           "key": "feat_dashboard",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 250,
-//           "name": "LiveFleet",
-//           "type": "G",
-//           "key": "feat_livefleet",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 250,
-//           "name": "LiveFleet",
-//           "type": "G",
-//           "key": "feat_livefleet",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 258,
-//           "name": "LiveFleet.LogBook",
-//           "type": "F",
-//           "key": "feat_livefleet_logbook",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 300,
-//           "name": "Report",
-//           "type": "G",
-//           "key": "feat_report",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 301,
-//           "name": "Report.TripReport",
-//           "type": "F",
-//           "key": "feat_report_tripreport",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 302,
-//           "name": "Report.TripTracing",
-//           "type": "F",
-//           "key": "feat_report_triptracing",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 303,
-//           "name": "Report.AdvancedFleetFuelReport",
-//           "type": "F",
-//           "key": "feat_report_advancedfleetfuelreport",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 304,
-//           "name": "Report.FleetFuelReport",
-//           "type": "F",
-//           "key": "feat_report_fleetfuelreport",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 305,
-//           "name": "Report.FleetUtilisation",
-//           "type": "F",
-//           "key": "feat_report_fleetutilisation",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 306,
-//           "name": "Report.FuelBenchmarking",
-//           "type": "F",
-//           "key": "feat_report_fuelbenchmarking",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 307,
-//           "name": "Report.FuelDeviationReport",
-//           "type": "F",
-//           "key": "feat_report_fueldeviationreport",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 308,
-//           "name": "Report.VehiclePerformanceReport",
-//           "type": "F",
-//           "key": "feat_report_vehicleperformancereport",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 309,
-//           "name": "Report.DriveTimeManagement",
-//           "type": "F",
-//           "key": "feat_report_drivetimemanagement",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 310,
-//           "name": "Report.ECOScoreReport",
-//           "type": "F",
-//           "key": "feat_report_ecoscorereport",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 350,
-//           "name": "Configuration",
-//           "type": "G",
-//           "key": "feat_configuration",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 351,
-//           "name": "Configuration.Alerts",
-//           "type": "F",
-//           "key": "feat_configuration_alerts",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 450,
-//           "name": "Configuration.Landmarks",
-//           "type": "F",
-//           "key": "feat_configuration_landmarks",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 453,
-//           "name": "Configuration.ReportScheduler",
-//           "type": "F",
-//           "key": "feat_configuration_reportscheduler",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 454,
-//           "name": "Configuration.DriverManagement",
-//           "type": "F",
-//           "key": "feat_configuration_drivermanagement",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 451,
-//           "name": "Configuration.VehicleManagement",
-//           "type": "F",
-//           "key": "feat_configuration_vehiclemanagement",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 550,
-//           "name": "Tachograph",
-//           "type": "F",
-//           "key": "feat_tachograph",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 600,
-//           "name": "MobilePortal",
-//           "type": "F",
-//           "key": "feat_mobileportal",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 650,
-//           "name": "Shop",
-//           "type": "F",
-//           "key": "feat_shop",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 700,
-//           "name": "Information",
-//           "type": "F",
-//           "key": "feat_information",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 750,
-//           "name": "LegalNotices",
-//           "type": "F",
-//           "key": "feat_LegalNotices",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 205,
-//           "name": "Dashboard.AlertLast24Hours.RepairAndMaintenance",
-//           "type": "F",
-//           "key": "feat_dashboard_alertlast24hours_repairandmaintenance",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 206,
-//           "name": "Dashboard.AlertLast24Hours.FuelAndDriver",
-//           "type": "F",
-//           "key": "feat_dashboard_alertlast24hours_fuelanddriver",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 207,
-//           "name": "Dashboard.AlertLast24Hours.TimeAndMove",
-//           "type": "F",
-//           "key": "feat_dashboard_alertlast24hours_timeandmove",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 251,
-//           "name": "LiveFleet.ViewAlerts",
-//           "type": "F",
-//           "key": "feat_livefleet_viewalerts",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 252,
-//           "name": "LiveFleet.VehicleHealth",
-//           "type": "F",
-//           "key": "feat_livefleet_vehiclehealth",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 253,
-//           "name": "LiveFleet.CurrentMileage",
-//           "type": "F",
-//           "key": "feat_livefleet_currentmileage",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 254,
-//           "name": "LiveFleet.NextServiceIn",
-//           "type": "F",
-//           "key": "feat_livefleet_nextservicein",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 255,
-//           "name": "LiveFleet.Status",
-//           "type": "F",
-//           "key": "feat_livefleet_status",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 256,
-//           "name": "LiveFleet.CurrentWarning",
-//           "type": "F",
-//           "key": "feat_livefleet_currentwarning",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 257,
-//           "name": "LiveFleet.HistoryWarning",
-//           "type": "F",
-//           "key": "feat_livefleet_historywarning",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 400,
-//           "name": "Alert",
-//           "type": "G",
-//           "key": "feat_alert",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 401,
-//           "name": "Alert.ExcessiveDistanceDone",
-//           "type": "F",
-//           "key": "feat_alert_excessivedistancedone",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 402,
-//           "name": "Alert.ExcessiveDrivingDuration",
-//           "type": "F",
-//           "key": "feat_alert_excessivedrivingduration",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 403,
-//           "name": "Alert.ExcessiveGlobalMileage",
-//           "type": "F",
-//           "key": "feat_alert_excessiveglobalmileage",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 404,
-//           "name": "Alert.Excessiveidles",
-//           "type": "F",
-//           "key": "feat_alert_excessiveidles",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 405,
-//           "name": "Alert.ExcessiveAverageSpeed",
-//           "type": "F",
-//           "key": "feat_alert_excessiveaveragespeed",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 406,
-//           "name": "Alert.HoursofService",
-//           "type": "F",
-//           "key": "feat_alert_hoursofservice",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 407,
-//           "name": "Alert.EnteringPOIZone",
-//           "type": "F",
-//           "key": "feat_alert_enteringpoizone",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 408,
-//           "name": "Alert.ExitingPOIZone",
-//           "type": "F",
-//           "key": "feat_alert_exitingpoizone",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 409,
-//           "name": "Alert.OutofCorridor",
-//           "type": "F",
-//           "key": "feat_alert_outofcorridor",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 410,
-//           "name": "Alert.Excessiveimmobilisationindays",
-//           "type": "F",
-//           "key": "feat_alert_excessiveimmobilisationindays",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 411,
-//           "name": "Alert.Excessiveimmobilisationinhours",
-//           "type": "F",
-//           "key": "feat_alert_excessiveimmobilisationinhours",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 412,
-//           "name": "Alert.Fuellossduringtrip",
-//           "type": "F",
-//           "key": "feat_alert_fuellossduringtrip",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 413,
-//           "name": "Alert.Fuellossduringstop",
-//           "type": "F",
-//           "key": "feat_alert_fuellossduringstop",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 414,
-//           "name": "Alert.Fuelincreaseduringtrip",
-//           "type": "F",
-//           "key": "feat_alert_fuelincreaseduringtrip",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 415,
-//           "name": "Alert.Fuelincreaseduringstop",
-//           "type": "F",
-//           "key": "feat_alert_fuelincreaseduringstop",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 452,
-//           "name": "Configuration#VehicleManagement#MessageFrequency",
-//           "type": "B",
-//           "key": "feat_vehicle_messagefrequency",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 856,
-//           "name": "Admin#Account",
-//           "type": "B",
-//           "key": "feat_admin#account",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 10001,
-//           "name": "rFMSv1",
-//           "type": "D",
-//           "key": "feat_rfmsv1",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 10002,
-//           "name": "rFMSv2",
-//           "type": "D",
-//           "key": "feat_rfmsv2",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 10003,
-//           "name": "Vehicle.GDPR",
-//           "type": "D",
-//           "key": "feat_vehicle_gdpr",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 10004,
-//           "name": "Driver.GDPR",
-//           "type": "D",
-//           "key": "feat_driver_gdpr",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 10005,
-//           "name": "Org.GDPR",
-//           "type": "D",
-//           "key": "feat_org_gdpr",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 50,
-//           "name": "Dashboard.FleetKPI",
-//           "type": "G",
-//           "key": "feat_dashboard_fleetkpi",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 51,
-//           "name": "Dashboard.FleetKPI.CO2EmissionChart",
-//           "type": "F",
-//           "key": "feat_dashboard_fleetkpi_co2emissionchart",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 52,
-//           "name": "Dashboard.FleetKPI.DistanceChart",
-//           "type": "F",
-//           "key": "feat_dashboard_fleetkpi_distancechart",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 53,
-//           "name": "Dashboard.FleetKPI.DrivingTimeChart",
-//           "type": "F",
-//           "key": "feat_dashboard_fleetkpi_drivingtimechart",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 54,
-//           "name": "Dashboard.FleetKPI.IdlingTimeChart",
-//           "type": "F",
-//           "key": "feat_dashboard_fleetkpi_idlingtimechart",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 55,
-//           "name": "Dashboard.FleetKPI.FuelConsumedChart",
-//           "type": "F",
-//           "key": "feat_dashboard_fleetkpi_fuelconsumedchart",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 56,
-//           "name": "Dashboard.FleetKPI.FuelWastedByIdlingChart",
-//           "type": "F",
-//           "key": "feat_dashboard_fleetkpi_fuelwastedbyidlingchart",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 57,
-//           "name": "Dashboard.FleetKPI.OverSpeedChart",
-//           "type": "F",
-//           "key": "feat_dashboard_fleetkpi_overspeedchart",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 100,
-//           "name": "Dashboard.TodayLiveVehicles",
-//           "type": "G",
-//           "key": "feat_dashboard_todaylivevehicles",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 101,
-//           "name": "Dashboard.TodayLiveVehicles.Distance",
-//           "type": "F",
-//           "key": "feat_dashboard_todaylivevehicles_distance",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 102,
-//           "name": "Dashboard.TodayLiveVehicles.DrivingTime",
-//           "type": "F",
-//           "key": "feat_dashboard_todaylivevehicles_drivingtime",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 103,
-//           "name": "Dashboard.TodayLiveVehicles.Drivers",
-//           "type": "F",
-//           "key": "feat_dashboard_todaylivevehicles_drivers",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 104,
-//           "name": "Dashboard.TodayLiveVehicles.CriticalAlerts",
-//           "type": "F",
-//           "key": "feat_dashboard_todaylivevehicles_criticalalerts",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 105,
-//           "name": "Dashboard.TodayLiveVehicles.UtilisationChart",
-//           "type": "F",
-//           "key": "feat_dashboard_todaylivevehicles_utilisationchart",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 106,
-//           "name": "Dashboard.TodayLiveVehicles.FleetUtilisationRateChart",
-//           "type": "F",
-//           "key": "feat_dashboard_todaylivevehicles_fleetutilisationratechart",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 107,
-//           "name": "Dashboard.TodayLiveVehicles.FleetMileageRateChart",
-//           "type": "F",
-//           "key": "feat_dashboard_todaylivevehicles_fleetmileageratechart",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 150,
-//           "name": "Dashboard.VehiclesUtilisation",
-//           "type": "G",
-//           "key": "feat_dashboard_vehiclesutilisation",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 151,
-//           "name": "Dashboard.VehiclesUtilisation.DistancePerDay",
-//           "type": "F",
-//           "key": "feat_dashboard_vehiclesutilisation_distanceperday",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 152,
-//           "name": "Dashboard.VehiclesUtilisation.ActiveVehiclesPerDay",
-//           "type": "F",
-//           "key": "feat_dashboard_vehiclesutilisation_activevehiclesperday",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 153,
-//           "name": "Dashboard.VehiclesUtilisation.TimeBasedUtilization",
-//           "type": "F",
-//           "key": "feat_dashboard_vehiclesutilisation_timebasedutilization",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 154,
-//           "name": "Dashboard.VehiclesUtilisation.MileageBasedUtilization",
-//           "type": "F",
-//           "key": "feat_dashboard_vehiclesutilisation_mileagebasedutilization",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 200,
-//           "name": "Dashboard.AlertLast24Hours",
-//           "type": "G",
-//           "key": "feat_dashboard_alertlast24hours",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 201,
-//           "name": "Dashboard.AlertLast24Hours.TotalAlertsTriggered",
-//           "type": "F",
-//           "key": "feat_dashboard_alertlast24hours_totalalertstriggered",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 202,
-//           "name": "Dashboard.AlertLast24Hours.LevelOfAlertsTriggered",
-//           "type": "F",
-//           "key": "feat_dashboard_alertlast24hours_levelofalertstriggered",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 203,
-//           "name": "Dashboard.AlertLast24Hours.Trip",
-//           "type": "F",
-//           "key": "feat_dashboard_alertlast24hours_trip",
-//           "level": 40
-//       },
-//       {
-//           "featureId": 204,
-//           "name": "Dashboard.AlertLast24Hours.Geofence",
-//           "type": "F",
-//           "key": "feat_dashboard_alertlast24hours_geofence",
-//           "level": 40
-//       }
-//   ]
-// }  
 
 
   public menuStatus = {
@@ -927,16 +109,18 @@ export class AppComponent {
     },
     configuration : {
       open: false,
-      icon: "info",
+      icon: "settings",
       externalLink: false,
       pageTitles: {
         alerts: 'Alerts',
         landmarks: 'Landmarks',
+        vehiclemanagement: 'Vehicle Management',
+        vehiclegroupmanagement: 'Vehicle Group Management'
       }
     },
     admin : {
       open: false,
-      icon: "info",
+      icon: "person",
       externalLink: false,
       pageTitles: {
         organisationdetails: 'Organisation Details',
@@ -944,7 +128,7 @@ export class AppComponent {
         usermanagement: 'User Management',
         drivermanagement: 'Driver Management',
         userrolemanagement: 'User Role Management',
-        vehiclemanagement: 'Vehicle Management',
+        // vehiclemanagement: 'Vehicle Management',
         vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship',
         translationdataupload: 'Translation Data Upload',
         featuremanagement: 'Feature Management',
@@ -984,11 +168,21 @@ export class AppComponent {
       externalLink: true,
       pageTitles: {
         information: 'Information'
-      }
+      },
+      link: "https://www.daf.com/en/sites-landing"
+    },
+    legalnotices : {
+      open: false,
+      icon: "gavel",
+      externalLink: true,
+      pageTitles: {
+        legalnotices: 'Legal Notices'
+      },
+      link: "https://www.daf.com/en/legal/legal-notice"
     }
   }
 
-  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService) {
+  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -999,6 +193,7 @@ export class AppComponent {
       this.isLogedIn = data;
       this.getTranslationLabels();
       this.getAccountInfo();
+      this.openTermsConditionsPopup();
     });
 
     this.dataInterchangeService.userNameInterface$.subscribe(data => {
@@ -1034,7 +229,7 @@ export class AppComponent {
         this.pageName = PageName;
         this.subpage = val.url.split('/')[2];
 
-        if(val.url == "/auth/login" || val.url.includes("/auth/createpassword/") || val.url.includes("/auth/resetpassword/")) {
+        if(val.url == "/auth/login" || val.url.includes("/auth/createpassword/") || val.url.includes("/auth/resetpassword/") || val.url.includes("/auth/resetpasswordinvalidate/")) {
           this.isLogedIn = false;
         } else if (val.url == "/") {
           this.isLogedIn = false;
@@ -1060,6 +255,19 @@ export class AppComponent {
     // this.isMobile();
     // this.isTablet();
     // this.isDesktop();
+  }
+
+  openTermsConditionsPopup(){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      translationData: this.translationData
+    }
+    this.dialogRefTerms = this.dialog.open(TermsConditionsPopupComponent, dialogConfig);
+    // this.dialogRefTerms.afterClosed().subscribe(res => {
+      
+    // });
   }
 
   getAccountInfo(){
@@ -1242,16 +450,18 @@ export class AppComponent {
         this.userType = "Admin#Account";
       }
       localStorage.setItem("userType", this.userType);
-    // console.log("----adminLevelAccess---",this.adminFullAccess, this.adminContributorAccess,
-    // this.adminNormalUserAccess,this.adminReadOnlyAccess)
-    //   this.newData = this.menuPages
-    // this.menuPages.menus.map((result : any) => 
-    //  this.newData = result
-    //  );
-    // console.log("---this.menuPages.features---",this.menuPages.features)
-    //  this.menuPages.features.map((result : any) => 
-    //  this.newData = result
-    //  );
+    
+
+      // This will handle externalLink and Icons for Navigation Menu
+    this.menuPages.menus.forEach(elem => {
+      elem.externalLink = this.menuStatus[elem.url].externalLink ;
+      elem.icon = this.menuStatus[elem.url].icon;
+      if(elem.externalLink){
+        elem.link = this.menuStatus[elem.url].link;
+      }
+      })
+
+  
     if (this.router.url) {
       //this.isLogedIn = true;
     }

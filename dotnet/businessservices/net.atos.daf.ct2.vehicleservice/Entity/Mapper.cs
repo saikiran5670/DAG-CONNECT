@@ -139,6 +139,9 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             {
                 vehicledetails.OptIn = "H";
             }
+            vehicledetails.RelationShip = vehicle.RelationShip;
+            vehicledetails.AssociatedGroups = vehicle.AssociatedGroups;
+
             return vehicledetails;
         }
 
@@ -224,7 +227,7 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             GroupFilter.OrganizationId = request.OrganizationId;
             GroupFilter.FunctionEnum = Group.FunctionEnum.None;
             GroupFilter.ObjectType = Group.ObjectType.VehicleGroup;
-            GroupFilter.GroupType = Group.GroupType.Group;
+            GroupFilter.GroupType = Group.GroupType.None;
             GroupFilter.GroupRef = request.Vehicles;
             GroupFilter.GroupRefCount =true;
             GroupFilter.GroupIds = new List<int>();
@@ -255,8 +258,25 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             vehicleGroupResonse.Name = request.Name;
             return vehicleGroupResonse;
         }
-    
-    
-    
+
+        public Group.GroupFilter ToVehicleGroupLandingFilterEntity(VehicleGroupLandingRequest request)
+        {
+            Group.GroupFilter GroupFilter = new Group.GroupFilter();
+            GroupFilter.Id = request.Id;
+            GroupFilter.OrganizationId = request.OrganizationId;
+         //   GroupFilter.FunctionEnum = Group.FunctionEnum.None;
+            GroupFilter.ObjectType = Group.ObjectType.VehicleGroup;
+            GroupFilter.GroupType = Group.GroupType.None;
+         //   GroupFilter.GroupRef = request.Vehicles;
+         //   GroupFilter.GroupRefCount = true;
+            //GroupFilter.GroupIds = new List<int>();
+            //foreach (int item in request.GroupIds)
+            //{
+            //    if (item > 0)
+            //        GroupFilter.GroupIds.Add(item);
+            //}
+            return GroupFilter;
+        }
+
     }
 }

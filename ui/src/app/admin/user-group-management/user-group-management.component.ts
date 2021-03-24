@@ -280,10 +280,10 @@ export class UserGroupManagementComponent implements OnInit {
   }
 
   onVehicleClick(data: any) {
-    const colsList = ['name', 'vin', 'license_Plate_Number'];
+    const colsList = ['name', 'vin', 'licensePlateNumber'];
     const colsName = [this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
-    const tableTitle = `${data.name} - ${this.translationData.lblVehicles || 'Vehicles'}`;
-    this.vehicleService.getVehiclesDataByAccGrpID(data.id, data.organizationId).subscribe((data) => {
+    const tableTitle = `${data.accountGroupName} - ${this.translationData.lblVehicles || 'Vehicles'}`;
+    this.vehicleService.getVehiclesDataByAccGrpID(data.groupId, data.organizationId).subscribe((data) => {
       this.callToCommonTable(data, colsList, colsName, tableTitle);
     });
   }

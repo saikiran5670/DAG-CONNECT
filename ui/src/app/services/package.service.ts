@@ -65,7 +65,7 @@ export class PackageService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .post<any>(`${this.PackageServiceUrl}/update`, data, headers)
+      .put<any>(`${this.PackageServiceUrl}/update`, data, headers)
       .pipe(catchError(this.handleError));
   }
 

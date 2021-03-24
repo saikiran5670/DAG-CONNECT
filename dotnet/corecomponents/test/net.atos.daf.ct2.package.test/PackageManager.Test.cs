@@ -68,14 +68,15 @@ namespace net.atos.daf.ct2.package.test
 
             var ObjPackage = new Package()
             {
-                Id = 3,
-                Code = "PKG011",
+                Id = 76,
+                Code = "PKG008",
                 FeatureSetID = 4,
                 Status = "I",
                 IsActive = true,
                 Name = "Standard Update",
                 Type = "V",
                 Description = "Package with default featureset",
+                 
             };
             var resultPackage = _packageManager.Update(ObjPackage).Result;
             Assert.IsNotNull(resultPackage);
@@ -87,7 +88,7 @@ namespace net.atos.daf.ct2.package.test
         [TestMethod]
         public void GetPackage_Manager()
         {
-            var packageFilter = new PackageFilter() /*{ Id = 2 }*/;
+            var packageFilter = new PackageFilter() {  Status = "I" };
             var result = _packageManager.Get(packageFilter).Result;
             Console.WriteLine(result);
             Assert.IsTrue(result != null);
@@ -110,6 +111,19 @@ namespace net.atos.daf.ct2.package.test
             Console.WriteLine(result);
             Assert.IsTrue(result);
         }
+
+
+        [TestMethod]
+        public void UpdatePackageStatus()
+
+        {
+            var package = new Package() {Id=75, Status = "I" };
+            var result = _packageManager.UpdatePackageStatus(package).Result;
+            Console.WriteLine(result);
+            Assert.IsTrue(result != null);
+        }
+
+
 
     }
 }

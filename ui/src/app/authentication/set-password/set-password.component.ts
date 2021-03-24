@@ -19,10 +19,13 @@ export class SetPasswordComponent implements OnInit {
   currentRoute: string= '';
   token: string= '';
   isChangePwdSuccess: boolean = false;
+  isResetPwdInvalidate: boolean= false;
+  errorMsg: string= '';
+  errorCode: number= 0;
 
   constructor(public router: Router, private route: ActivatedRoute, public fb: FormBuilder, private accountService: AccountService) {
     this.setPasswordForm = this.fb.group({
-      'newPassword': [null, Validators.compose([Validators.required, Validators.minLength(8)])],
+      'newPassword': [null, Validators.compose([Validators.required, Validators.minLength(10), Validators.maxLength(256)])],
       'confirmPassword': [null, Validators.compose([Validators.required])],
     },{
       validator : [
@@ -30,18 +33,29 @@ export class SetPasswordComponent implements OnInit {
       ]
     });
 
-    this.minCharacterTxt =  ("'$' characters min").replace('$', '8');
+    this.minCharacterTxt =  ("'$' characters min").replace('$', '10');
   }
 
   ngOnInit() { 
+    this.token=  this.route.snapshot.paramMap.get('token');
     this.currentRoute = this.router.url;
-    if(this.currentRoute.includes("createpassword")){
+    if(this.currentRoute.includes("/createpassword/")){
       this.buttonName = "Create";
     }
-    else if(this.currentRoute.includes("resetpassword")){
+    else if(this.currentRoute.includes("/resetpassword/")){
       this.buttonName = "Reset";
     }
-    this.token=  this.route.snapshot.paramMap.get('token');
+    else if(this.currentRoute.includes("/resetpasswordinvalidate/")){
+      let objData= {
+        resetToken: this.token
+      }
+      this.accountService.resetPasswordInvalidate(objData).subscribe(data => {
+        this.isResetPwdInvalidate= true;
+      },(error)=> {
+        this.isResetPwdInvalidate= true;
+        this.errorMsg= 'InvalidateFailed'
+      })
+    }
   }
 
   public onCreatePassword(formValue) {
@@ -56,7 +70,16 @@ export class SetPasswordComponent implements OnInit {
             this.isChangePwdSuccess= true;
           }
         }, (error) => {
-
+            this.errorCode = error.status;
+            if(error.status == 400 && error.error.includes("last 6 passwords")){
+              this.errorMsg= "Password must not be equal to any of last 6 passwords."
+            }
+            else if(error.status == 404){
+              this.errorMsg= "Activation link is expired or invalidated. Please try again"
+            }
+            else{
+              this.errorMsg= "Something went wrong! Please try again."
+            }
         });
       }
       else if(this.buttonName == "Reset"){
@@ -65,7 +88,16 @@ export class SetPasswordComponent implements OnInit {
             this.isChangePwdSuccess= true;
           }
         }, (error) => {
-          
+            this.errorCode = error.status;
+            if(error.status == 400 && error.error.includes("last 6 passwords")){
+              this.errorMsg= "Password must not be equal to any of last 6 passwords."
+            }
+            else if(error.status == 404){
+              this.errorMsg= "Activation link is expired or invalidated. Please try again!"
+            }
+            else{
+              this.errorMsg= "Something went wrong! Please try again."
+            }
         });
       }
     }
@@ -73,6 +105,7 @@ export class SetPasswordComponent implements OnInit {
 
   public cancel() {
     this.isChangePwdSuccess= false;
+    this.isResetPwdInvalidate= false;
     this.router.navigate(['/auth/login']);
   }
   

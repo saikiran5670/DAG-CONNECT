@@ -233,5 +233,29 @@ namespace net.atos.daf.ct2.packageservice
         }
 
 
+
+        //Update Package Status
+        public override Task<UpdatePackageStatusResponse> UpdatePackageStatus(UpdatePackageStatusRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var package = new Package();
+                package.Id = request.PackageId;              
+                package.Status = request.Status;
+                package = _packageManager.UpdatePackageStatus(package).Result;
+                    return Task.FromResult(new UpdatePackageStatusResponse
+                    {
+                        Message = "Package status Updated ",
+                        PackageStatusResponse = request
+                    });               
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(new UpdatePackageStatusResponse
+                {
+                    Message = "Exception " + ex.Message
+                });
+            }
+        }
     }
 }

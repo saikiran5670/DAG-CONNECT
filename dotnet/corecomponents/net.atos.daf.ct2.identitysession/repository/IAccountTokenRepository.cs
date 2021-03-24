@@ -16,5 +16,6 @@ namespace net.atos.daf.ct2.identitysession.repository
         Task<bool> ValidateToken(string TokenId);
         Task<int> DeleteTokenByTokenId(Guid tokenID);
         Task<int> GetTokenCount(int AccountID);
+        Task<int> DeleteTokenbyAccountId(int sessionId);
     }
 }

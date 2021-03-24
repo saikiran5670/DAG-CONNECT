@@ -19,14 +19,14 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                 <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblPackageCode || 'Package Code' }}</mat-label>
+                    <mat-label><span>{{ translationData.lblPackageCode || 'Package Code' }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
                             <input  placeholder="{{ translationData.lblEnterPackageCode || 'Enter Package Code ' }}" matInput formControlName="code" maxlength="50" >
                         </mat-form-field>
-                        <!-- <mat-error *ngIf="packageFormGroup.get('packageCode').hasError('required')">
+                        <mat-error *ngIf="packageFormGroup.get('code').hasError('required')">
                             {{ translationData.lblPleaseenterfeaturename || 'Please enter Package code'}}
-                        </mat-error> -->
+                        </mat-error>
                         <mat-error *ngIf="packageFormGroup.get('code').hasError('whitespace')">
                             {{ translationData.lblPackageCodecannotcontainonlywhitespace || 'Package Code cannot contain only whitespace' }}
                         </mat-error>
@@ -36,14 +36,17 @@
                     </div>
                 </div>
                 <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label style='display: flex; place-content: space-between;'>
-                        <span>{{ translationData.lblPackageName || 'Package Name' }}</span>
+                    <mat-label style='display: flex;'>
+                        <span>{{ translationData.lblPackageName || 'Package Name' }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
                     </mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
                             <input maxlength="100" placeholder="{{ translationData.lblEnterPackageName || 'Enter Package Name' }}" matInput
                                 formControlName="name">
                         </mat-form-field>
+                        <mat-error *ngIf="packageFormGroup.get('name').hasError('required')">
+                            {{ translationData.lblPleaseenterfeaturename || 'Please enter Package Name'}}
+                        </mat-error>
                         <mat-error *ngIf="packageFormGroup.get('name').hasError('whitespace')">
                             {{ translationData.lblNAmecannotcontainonlywhitespace || 'Name cannot contain only whitespace' }}
                         </mat-error>
@@ -74,8 +77,8 @@
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
                 <div class='areaWidth min-width-10-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
                     <mat-label>
-                        {{ translationData.lblType || 'Type' }}
-                    </mat-label> 
+                        <span>{{ translationData.lblType || 'Type' }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+                    </mat-label>                    
                     <div *ngIf="actionType != 'view'">            
                         <mat-form-field appearance="outline" class="full-width">
                           <mat-select placeholder="{{ translationData.lblType || 'Type' }}" formControlName="type">
@@ -94,9 +97,9 @@
                     </mat-label>
                     <div *ngIf="actionType != 'view'" class='margin-top-5'>
                         <mat-radio-group (change)='onStatusChange($event)'>
-                            <mat-radio-button [checked]="selectedStatus ===  true ? true : false" style='margin-right: 20px;' value="true">{{ translationData.lblActive || 'Active' }}
+                            <mat-radio-button [checked]="selectedStatus ===  'Active' ? true : false" style='margin-right: 20px;' value="A">{{ translationData.lblActive || 'Active' }}
                             </mat-radio-button>
-                            <mat-radio-button [checked]="selectedStatus ===  false ? true : false" style='margin-right: 20px;' value="false" >{{ translationData.lblInactive || 'Inactive' }}
+                            <mat-radio-button [checked]="selectedStatus ===  'Inactive' ? true : false" style='margin-right: 20px;' value="I" >{{ translationData.lblInactive || 'Inactive' }}
                             </mat-radio-button>
                         </mat-radio-group>
                     </div>
@@ -128,7 +131,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectFeatures || 'Select Features' }}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectFeatures || 'Select Features' }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
                 </div>
             </div>
            <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>

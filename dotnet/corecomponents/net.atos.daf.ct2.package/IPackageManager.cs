@@ -14,9 +14,8 @@ namespace net.atos.daf.ct2.package
         Task<IEnumerable<Package>> Get(PackageFilter packageFilter);
         Task<List<Package>> Import(List<Package> packageList);
         Task<bool> Delete(int packageId);
-        Task<List<Package>> Export();
 
-        // Task<Feature> GetFeature(int featureId);
+        Task<Package> UpdatePackageStatus(Package package);
 
 
         Task<int> Create(FeatureSet featureSet);// required clarification on return type

@@ -154,7 +154,7 @@ namespace net.atos.daf.ct2.subscription.repository
                         parameter.Add("@type", data.type);
                         parameter.Add("@package_code", objSubscription.packageId);
                         parameter.Add("@package_id", data.id);
-                        parameter.Add("@subscription_start_date", objSubscription.StartDateTime);
+                        parameter.Add("@subscription_start_date",objSubscription.StartDateTime);
                         parameter.Add("@subscription_end_date", null);
                         parameter.Add("@is_active", true);
                         parameter.Add("@is_zuora_package", true);
@@ -480,12 +480,13 @@ namespace net.atos.daf.ct2.subscription.repository
                 string query = string.Empty;
                 List<SubscriptionDetails> objsubscriptionDetails = new List<SubscriptionDetails>();
                
-                    query = @"SELECT sub.subscription_id,sub.package_code,pak.name,sub.type,COUNT(veh.name),
+                    query = @"SELECT sub.subscription_id,org.name as orgname,sub.package_code,pak.name,sub.type,COUNT(veh.name),
                                      sub.subscription_start_date,sub.subscription_end_date,sub.is_active,sub.organization_id
                                      FROM master.Subscription sub 
                               JOIN master.package pak on sub.package_id = pak.id 
                               LEFT JOIN master.vehicle veh on sub.vehicle_id = veh.id
-                              GROUP BY sub.subscription_id,sub.package_code,pak.name,sub.type,
+                              LEFT JOIN master.organization org on sub.organization_id = org.id
+                              GROUP BY sub.subscription_id,org.name,sub.package_code,pak.name,sub.type,
                                      sub.subscription_start_date,sub.subscription_end_date,sub.is_active,sub.organization_id
                               HAVING 1=1";
 
@@ -498,19 +499,21 @@ namespace net.atos.daf.ct2.subscription.repository
                         {
                             parameter.Add("@organization_id", objSubscriptionDetailsRequest.organization_id);
                             query =   $"{query} and sub.organization_id=@organization_id ";
-                        }
-                        
-                        else if (!string.IsNullOrEmpty(objSubscriptionDetailsRequest.type))
+
+                        if (!string.IsNullOrEmpty(objSubscriptionDetailsRequest.type))
                         {
                             parameter.Add("@type", objSubscriptionDetailsRequest.type.ToUpper());
                             query = $"{query} and sub.type=@type";
                         }
-                        
-                        else if(objSubscriptionDetailsRequest.is_active > 0)
+
+                        else if (objSubscriptionDetailsRequest.is_active > 0)
                         {
                             parameter.Add("@is_active", objSubscriptionDetailsRequest.is_active == StatusType.True ? true : false);
                             query = $"{query} and sub.is_active=@is_active";
                         }
+                    }
+                        
+                        
                     }
                     var data = await dataAccess.QueryAsync<SubscriptionDetails>(query, parameter);
                 if (data == null)

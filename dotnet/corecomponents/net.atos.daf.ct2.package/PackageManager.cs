@@ -37,11 +37,7 @@ namespace net.atos.daf.ct2.package
         {
             return await _packageRepository.Update(package);
         }
-        public async Task<List<Package>> Export()
-        {
-            return await _packageRepository.Export();
-        }
-
+       
         public async Task<IEnumerable<Package>> Get(PackageFilter packageFilter )
         {
             return await _packageRepository.Get(packageFilter);
@@ -50,23 +46,15 @@ namespace net.atos.daf.ct2.package
         {
             return await _featureManager.AddFeatureSet(featureSet);
         }
-        //public async Task<Feature> GetFeature(int featureId)
-        //{
-        //    return await _featureManager.GetFeatures(featureId,1);
-        //}
-
+       
         public async Task<IEnumerable<FeatureSet>> GetFeatureSet(int featureSetId, bool is_active) // required is_active parameter
         {
             return await _featureManager.GetFeatureSet(featureSetId, is_active);
         }
 
-      
-
-       
-
-        //public async Task<int> Update(FeatureSet featureSet)
-        //{
-        //    return await _featureManager.UpdateFeatureSet(featureSet);
-        //}
+        public async Task<Package> UpdatePackageStatus(Package package)
+        {
+            return await _packageRepository.UpdatePackageStatus(package);
+        }
     }
 }

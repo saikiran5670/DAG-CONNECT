@@ -386,27 +386,58 @@ export class AccountService {
   }
 
   resetPassword(data: any): Observable<any[]> {
-    let headerObj = this.generateHeader();
-    const headers = {
-      headers: new HttpHeaders({ headerObj }),
-    };
-    return this.httpClient
-      .post<any[]>(
-        `${this.accountServiceUrl}/resetpassword`, data, headers
-      )
-      .pipe(catchError(this.handleError));
+    const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
+    // let headerObj = this.generateHeader();
+    // const headers = {
+    //   headers: new HttpHeaders({ headerObj }),
+    // // };
+    // return this.httpClient
+    //   .post<any[]>(
+    //     `${this.accountServiceUrl}/resetpassword`, data, headers
+    //   )
+    //   .pipe(catchError(this.handleError));
+    return this.httpClient.post<any[]>(
+      `${this.accountServiceUrl}/resetpassword`, 
+       data , 
+      { headers, responseType: 'text' as 'json'}
+    ).pipe(catchError(this.handleError));
   }
 
   resetPasswordInitiate(data: any): Observable<any[]> {
-    let headerObj = this.generateHeader();
-    const headers = {
-      headers: new HttpHeaders({ headerObj }),
-    };
-    return this.httpClient
-      .post<any[]>(
-        `${this.accountServiceUrl}/resetpasswordinitiate`, data, headers
-      )
-      .pipe(catchError(this.handleError));
+    const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
+
+    // let headerObj = this.generateHeader();
+    // const headers = {
+    //   headers: new HttpHeaders({ headerObj }),
+    // };
+    // return this.httpClient
+    //   .post<any[]>(
+    //     `${this.accountServiceUrl}/resetpasswordinitiate`, data, { headers, responseType: 'text'}
+    //   )
+    //   .pipe(catchError(this.handleError));
+    return this.httpClient.post<any[]>(
+      `${this.accountServiceUrl}/resetpasswordinitiate`, 
+       data , 
+      { headers, responseType: 'text' as 'json'}
+    ).pipe(catchError(this.handleError));
+  }
+
+  resetPasswordInvalidate(data: any): Observable<any[]> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
+    // let headerObj = this.generateHeader();
+    // const headers = {
+    //   headers: new HttpHeaders({ headerObj }),
+    // };
+    // return this.httpClient
+    //   .post<any[]>(
+    //     `${this.accountServiceUrl}/resetpasswordinvalidate`, data, headers
+    //   )
+    //   .pipe(catchError(this.handleError));
+    return this.httpClient.post<any[]>(
+      `${this.accountServiceUrl}/resetpasswordinvalidate`, 
+       data , 
+      { headers, responseType: 'text' as 'json'}
+    ).pipe(catchError(this.handleError));
   }
 
   private handleError(errResponse: HttpErrorResponse) {

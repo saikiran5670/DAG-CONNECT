@@ -5,7 +5,7 @@ namespace net.atos.daf.ct2.package.ENUM
 
     public enum PackageType
     {
-        Vehicle = 'V',
+        VIN = 'V',
         Organization = 'O',
         ORGVIN='R',
         ReadWrite = 'W'
