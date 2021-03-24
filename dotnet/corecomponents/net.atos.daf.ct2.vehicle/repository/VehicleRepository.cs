@@ -55,15 +55,13 @@ namespace net.atos.daf.ct2.vehicle.repository
                 vehicle.Opt_In = VehicleStatusType.Inherit;
                 vehicle.Is_Ota = false;
                 vehicle.Status = (VehicleCalculatedStatus)await GetCalculatedVehicleStatus(org_status, vehicle.Is_Ota);
-                //dynamic oiedetail = await GetOEM_Id(vehicle.VIN);
-                // if (oiedetail != null)
-                //  {
-                //vehicle.Oem_id = oiedetail[0].id;
-                //  vehicle.Oem_Organisation_id = oiedetail[0].oem_organisation_id;
-                //   }
+                dynamic oiedetail = await GetOEM_Id(vehicle.VIN);
+                if (oiedetail != null)
+                {
+                    vehicle.Oem_id = oiedetail[0].id;
+                    vehicle.Oem_Organisation_id = oiedetail[0].oem_organisation_id;
+                }
 
-                vehicle.Oem_id = 2;
-                vehicle.Oem_Organisation_id = 3;
                 var QueryStatement = @"INSERT INTO master.vehicle
                                       (
                                        organization_id
