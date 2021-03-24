@@ -11,6 +11,7 @@ import { CommonTableComponent } from '../shared/common-table/common-table.compon
 import { VehicleManagementComponent } from './vehicle-management/vehicle-management.component';
 import { VehicleGroupManagementComponent } from './vehicle-group-management/vehicle-group-management.component';
 import { VehicleService } from '../services/vehicle.service';
+import { CreateEditViewVehicleGroupComponent } from './vehicle-group-management/create-edit-view-vehicle-group/create-edit-view-vehicle-group.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { VehicleService } from '../services/vehicle.service';
     LandmarksComponent,
     CommonTableComponent,
     VehicleManagementComponent,
-    VehicleGroupManagementComponent
+    VehicleGroupManagementComponent,
+    CreateEditViewVehicleGroupComponent
   ],
   imports: [
     CommonModule,

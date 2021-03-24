@@ -73,4 +73,6 @@
             <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
         </div>
     </mat-card>
+    <app-create-edit-user-group *ngIf='createViewEditStatus' [actionType]='actionType' [translationData]="translationData"
+    [selectedRowData]="selectedRowData" [vehicleListData]='vehicleListData' (backToPage)='onVehicleGroupCreation($event)'></app-create-edit-user-group>
 </div>

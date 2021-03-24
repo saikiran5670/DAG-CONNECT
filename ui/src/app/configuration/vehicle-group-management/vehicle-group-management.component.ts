@@ -28,6 +28,9 @@ export class VehicleGroupManagementComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   dialogRef: MatDialogRef<UserDetailTableComponent>;
+  actionType: any = '';
+  selectedRowData: any = [];
+  vehicleListData: any = [];
 
   constructor(private dialogService: ConfirmDialogService,
     private translationService: TranslationService,
@@ -130,7 +133,23 @@ export class VehicleGroupManagementComponent implements OnInit {
   }
 
   onNewVehicleGroup(){
+    this.actionType = 'create';
+    this.getVehicleList();
+  }
 
+  getVehicleList(rowData?: any){
+    this.vehicleService.getVehicle(this.accountOrganizationId).subscribe((vehList: any) => {
+      this.vehicleListData = vehList;
+      if(this.actionType != 'create'){
+        this.vehicleService.getVehicleListById(rowData.groupId).subscribe((selectedVehList: any) => {
+          this.selectedRowData = selectedVehList;
+          this.createViewEditStatus = true;
+        });
+      }
+      else{
+        this.createViewEditStatus = true;
+      }
+    });
   }
 
   onVehicleClick(rowData: any){
@@ -162,7 +181,8 @@ export class VehicleGroupManagementComponent implements OnInit {
   }
 
   editViewVehicleGroup(rowData: any, type: any){
-
+    this.actionType = type;
+    this.getVehicleList(rowData);
   }
 
   deleteVehicleGroup(rowData: any){
@@ -202,6 +222,18 @@ export class VehicleGroupManagementComponent implements OnInit {
       return this.translationData.lblVehicleGroupDelete.replace('$', vehGrpName);
     else
       return ("Vehicle Group '$' was successfully deleted").replace('$', vehGrpName);
+  }
+
+  onVehicleGroupCreation(item: any){
+    //this.createViewEditStatus = !this.createViewEditStatus;
+    this.createViewEditStatus = item.stepFlag;
+    if(item.successMsg && item.successMsg != ''){
+      this.showSuccessMessage(item.successMsg);
+    }
+    if(item.tableData){
+     this.initData = item.tableData; 
+    }
+    this.updateDataSource(this.initData);
   }
 
 }

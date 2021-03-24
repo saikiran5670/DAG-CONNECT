@@ -59,13 +59,13 @@ export class VehicleService {
       .pipe(catchError(this.handleError));
   }
 
-  getVehicle(data: any): Observable<any[]> {
+  getVehicle(orgId: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .post<any[]>(`${this.vehicleServiceUrl}/get`,data,headers)
+      .get<any[]>(`${this.vehicleServiceUrl}/get?OrganizationId=${orgId}`, headers)
       .pipe(catchError(this.handleError));
   }
 
