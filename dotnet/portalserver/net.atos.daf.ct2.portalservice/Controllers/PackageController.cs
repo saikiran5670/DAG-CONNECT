@@ -40,9 +40,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (request.Features.Count >= 1)
+                
+                if (request.FeatureIds.Count >= 1)
                 {
-                    var featureSetId = await _featureSetMapper.RetrieveFeatureSetIdByName(request.Features);
+                    var featureSetId = await _featureSetMapper.RetrieveFeatureSetIdById(request.FeatureIds);
                     request.FeatureSetID = featureSetId;
                 }
                 else
@@ -113,9 +114,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 if (request.FeatureSetID > 0)
                 {
-                    if (request.Features.Count >= 1)
+                    
+                    if (request.FeatureIds.Count >= 1)
                     {
-                        var featureSetId = await _featureSetMapper.UpdateFeatureSetIdByName(request.Features, request.FeatureSetID);
+                        var featureSetId = await _featureSetMapper.UpdateFeatureSetIdById(request.FeatureIds, request.FeatureSetID);
                         request.FeatureSetID = featureSetId;
                     }
                     else
@@ -164,23 +166,30 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         //Get/Export Packages
         [HttpGet]
         [Route("get")]
-        public async Task<IActionResult> Get([FromQuery] GetPackageRequest request)
+        public async Task<IActionResult> Get([FromQuery] PackageFilter filterRequest)
         {
             try
             {
 
                 // The package type should be single character
-                if (request.Type.Length > 1)
+                if (!string.IsNullOrEmpty(filterRequest.Type) && filterRequest.Type.Length > 1)
                 {
                     return StatusCode(400, "The pakage type is not valid. It should be of single character");
                 }
-
-
+                var request = new GetPackageRequest()
+                {
+                    Id = filterRequest.Id,
+                    Status = filterRequest.Status ==null?string.Empty: filterRequest.Status,
+                    Code = filterRequest.Code == null ? string.Empty : filterRequest.Code,
+                    Name = filterRequest.Name == null ? string.Empty : filterRequest.Name,
+                    Type = filterRequest.Type == null ? string.Empty : filterRequest.Type,
+                    FeatureSetID = filterRequest.FeatureSetId
+                };
                 var response = await _packageClient.GetAsync(request);
                 response.PacakageList.Where(S => S.FeatureSetID > 0)
-                                                .Select(S => { S.Features.AddRange(_featureSetMapper.GetFeatureIds(S.FeatureSetID).Result); return S; }).ToList();
+                                                .Select(S => { S.FeatureIds.AddRange(_featureSetMapper.GetFeatureIds(S.FeatureSetID).Result); return S; }).ToList();
 
-                 
+
 
                 if (response != null && response.Code == Responsecode.Success)
                 {
@@ -205,7 +214,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
-       
+
 
         //Delete package
         [HttpDelete]
@@ -245,7 +254,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 //Validation
-                if (request.packages.Count <= 0)
+                if (request.packagesToImport.Count <= 0)
                 {
                     return StatusCode(400, "Package data is required.");
                 }

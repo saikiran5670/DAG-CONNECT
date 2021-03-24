@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             _featureclient = featureclient;
 
         }
-       
+
         public async Task<int> RetrieveFeatureSetIdByName(List<string> features)
         {
             var featureSetId = new List<int>();
@@ -101,7 +101,7 @@ namespace net.atos.daf.ct2.portalservice.Common
 
         public async Task<int> UpdateFeatureSetIdById(List<int> features, int featureSetId)
         {
-          
+
             var featureSetRequest = new FetureSetRequest();
             featureSetRequest.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds();
             featureSetRequest.Features.Add(features.Select(x => x).Distinct().ToArray());
@@ -131,7 +131,6 @@ namespace net.atos.daf.ct2.portalservice.Common
             features.AddRange(featureList.Features.Select(x => x.Name).ToList());
             return features;
         }
-
-
+       
     }
 }
