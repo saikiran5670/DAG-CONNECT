@@ -182,6 +182,56 @@ namespace net.atos.daf.ct2.vehicle
             }
         }
 
+
+        public async Task<IEnumerable<Vehicle>> GetDynamicVisibleVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId)
+        {
+            try
+            {
+                return await vehicleRepository.GetDynamicVisibleVehicle(OrganizationId,VehicleGroupId, RelationShipId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<Vehicle>> GetDynamicOwnedVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId)
+        {
+            try
+            {
+                return await vehicleRepository.GetDynamicOwnedVehicle(OrganizationId, VehicleGroupId, RelationShipId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<Vehicle>> GetDynamicAllVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId)
+        {
+            try
+            {
+                return await vehicleRepository.GetDynamicAllVehicle(OrganizationId, VehicleGroupId, RelationShipId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<Vehicle>> GetRelationshipVehicles(VehicleFilter vehiclefilter)
+        {
+            try
+            {
+                return await vehicleRepository.GetRelationshipVehicles(vehiclefilter);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
         //   public async Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime)
         // {
         //     try
