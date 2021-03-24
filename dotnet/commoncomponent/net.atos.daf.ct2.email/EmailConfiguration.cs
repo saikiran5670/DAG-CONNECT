@@ -7,7 +7,7 @@ namespace net.atos.daf.ct2.email
 {
     public class EmailConfiguration
     {
-        public string PortalServiceBaseUrl { get; set; }
+        public string PortalUIBaseUrl { get; set; }
         public string ApiKey { get; set; }
         public string FromAddress { get; set; }
         public string FromName { get; set; }

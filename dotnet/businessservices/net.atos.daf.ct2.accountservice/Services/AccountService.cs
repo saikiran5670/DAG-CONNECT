@@ -15,6 +15,8 @@ using net.atos.daf.ct2.account.entity;
 using Google.Protobuf.Collections;
 using net.atos.daf.ct2.accountservice.Entity;
 using net.atos.daf.ct2.utilities;
+using Newtonsoft.Json;
+using net.atos.daf.ct2.identity.entity;
 
 namespace net.atos.daf.ct2.accountservice
 {
@@ -246,19 +248,36 @@ namespace net.atos.daf.ct2.accountservice
                 account.EmailId = request.EmailId;
                 account.Password = request.Password;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
-                var result = await accountmanager.ChangePassword(account);
+                var identityResult = await accountmanager.ChangePassword(account);
                 // response 
                 AccountResponse response = new AccountResponse();
-                if (result)
+                if (identityResult.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
                     await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Password Change", 1, 2, account.Id.ToString());
                     response.Code = Responcecode.Success;
                     response.Message = "Password has been changed.";
                 }
+                else if (identityResult.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    var responseContent = JsonConvert.DeserializeObject<IdentityResponse>(identityResult.Result.ToString());
+                    if (responseContent != null && responseContent.Error.Equals("invalidPasswordHistoryMessage"))
+                    {
+                        response.Code = Responcecode.BadRequest;
+                        response.Message = "Password must not be equal to any of last 6 passwords.";
+                    }
+                    else
+                    {
+                        response.Code = Responcecode.Failed;
+                    }
+                }
+                else if (identityResult.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    response.Code = Responcecode.NotFound;
+                    response.Message = "Account not configured.";
+                }
                 else
                 {
                     response.Code = Responcecode.Failed;
-                    response.Message = "Account not configured or failed to change password.";
                 }
                 return await Task.FromResult(response);
             }
@@ -570,29 +589,25 @@ namespace net.atos.daf.ct2.accountservice
         {
             try
             {
-                var result = await accountmanager.ResetPasswordInitiate(request.EmailId);
+                var identityResult = await accountmanager.ResetPasswordInitiate(request.EmailId);
 
                 ResetPasswordResponse response = new ResetPasswordResponse();
-                if (!result.HasValue)
+                if (identityResult.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    response.Code = Responcecode.Failed;
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Initiate", 1, 2, request.EmailId);
-                    response.Message = "Password reset process failed to initiate or Error while sending email";
+                    response.Code = Responcecode.Success;
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Password Reset Initiate", 1, 2, request.EmailId);
+                    response.Message = "Reset password process is initiated.";
+                }
+                else if (identityResult.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    response.Code = Responcecode.NotFound;
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Initiate: Account not configured", 1, 2, request.EmailId);
+                    response.Message = "Account not configured";
                 }
                 else
                 {
-                    if (result.HasValue && result.Value == Guid.Empty)
-                    {
-                        response.Code = Responcecode.Success;
-                        await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Password Reset - Account not configured Or Email sending failed", 1, 2, request.EmailId);
-                        response.Message = "Password Reset - Account not found";
-                    }
-                    else
-                    {
-                        response.Code = Responcecode.Success;
-                        await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Password Reset Initiate", 1, 2, request.EmailId);
-                        response.Message = "Reset password process is initiated.";
-                    }
+                    response.Code = Responcecode.Failed;
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Initiate Failed", 1, 2, request.EmailId);
                 }
 
                 return await Task.FromResult(response);
@@ -615,20 +630,40 @@ namespace net.atos.daf.ct2.accountservice
                 account.ProcessToken = new Guid(request.ProcessToken);
                 account.Password = request.Password;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
-                var result = await accountmanager.ResetPassword(account);
+                var identityResult = await accountmanager.ResetPassword(account);
 
                 ResetPasswordResponse response = new ResetPasswordResponse();
-                if (result)
+                if (identityResult.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
                     await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Password Reset with Token", 1, 2, request.ProcessToken);
                     response.Code = Responcecode.Success;
                     response.Message = "Password has been reset successfully.";
                 }
+                else if (identityResult.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    var responseContent = JsonConvert.DeserializeObject<IdentityResponse>(identityResult.Result.ToString());
+                    if (responseContent != null && responseContent.Error.Equals("invalidPasswordHistoryMessage"))
+                    {
+                        await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset: Invalid Password History", 1, 2, request.ProcessToken);
+                        response.Code = Responcecode.BadRequest;
+                        response.Message = "Password must not be equal to any of last 6 passwords.";
+                    }
+                    else
+                    {
+                        await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Failed", 1, 2, request.ProcessToken);
+                        response.Code = Responcecode.Failed;
+                    }
+                }
+                else if (identityResult.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset: Token Expired/Invalidated", 1, 2, request.ProcessToken);
+                    response.Code = Responcecode.NotFound;
+                    response.Message = "Email activation link is either Expired or Invalidated.";
+                }
                 else
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset with Token", 1, 2, request.ProcessToken);
-                    response.Code = Responcecode.NotFound;
-                    response.Message = "Failed to reset password or Activation link is expired or invalidated.";
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Failed", 1, 2, request.ProcessToken);
+                    response.Code = Responcecode.Failed;
                 }
                 return await Task.FromResult(response);
             }
@@ -646,20 +681,25 @@ namespace net.atos.daf.ct2.accountservice
         {
             try
             {
-                var result = await accountmanager.ResetPasswordInvalidate(new Guid(request.ResetToken));
+                var identityResult = await accountmanager.ResetPasswordInvalidate(new Guid(request.ResetToken));
 
                 ResetPasswordResponse response = new ResetPasswordResponse();
-                if (result)
+                if (identityResult.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Password Reset Invalidate with Token", 1, 2, request.ResetToken);
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Password Reset Invalidate", 1, 2, request.ResetToken);
                     response.Code = Responcecode.Success;
                     response.Message = "Reset token has been invalidated.";
                 }
+                else if (identityResult.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Invalidate: Token Expired/Invalidated", 1, 2, request.ResetToken);
+                    response.Code = Responcecode.NotFound;
+                    response.Message = "Email activation link is either Expired or already Invalidated.";
+                }
                 else
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Invalidate with Token", 1, 2, request.ResetToken);
+                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Invalidate Failed", 1, 2, request.ResetToken);
                     response.Code = Responcecode.Failed;
-                    response.Message = "Failed to invalidate the token. Either token is not issued or already invalidated.";
                 }
                 return await Task.FromResult(response);
             }

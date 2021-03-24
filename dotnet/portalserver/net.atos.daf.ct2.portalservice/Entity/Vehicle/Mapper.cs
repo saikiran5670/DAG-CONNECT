@@ -177,5 +177,17 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
             }
             return group;
         }
+
+        public VehicleBusinessService.VehicleGroupLandingRequest ToVehicleGroupLandingFilter(int OrganizationId)
+        {
+
+            VehicleBusinessService.VehicleGroupLandingRequest group = new VehicleBusinessService.VehicleGroupLandingRequest();
+
+            group.Id = 0;
+            group.OrganizationId = OrganizationId;
+            group.FunctionEnum = "N";
+            group.GroupType = "G";
+            return group;
+        }
     }
 }

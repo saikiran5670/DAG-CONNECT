@@ -75,6 +75,7 @@ enum AccountType
       Failed = 1;
       Conflict = 2;
       NotFound = 3;
+      BadRequest = 4;
     }
 // common response 
 message AccountResponse {

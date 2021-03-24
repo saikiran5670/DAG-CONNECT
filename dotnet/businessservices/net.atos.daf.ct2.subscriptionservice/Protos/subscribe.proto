@@ -17,9 +17,10 @@ message SubscriptionDetails{
     int64 subscription_end_date = 6;
     bool is_active = 7;
     int32 count = 8;
+    string orgName = 9;
 }
 message SubscribeListResponce  {
-  repeated SubscriptionDetails responce=1;
+  repeated SubscriptionDetails subscriptionList = 1;
 }
 
 message SubscriptionDetailsRequest{

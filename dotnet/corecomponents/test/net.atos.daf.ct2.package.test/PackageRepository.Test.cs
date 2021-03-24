@@ -48,7 +48,7 @@ namespace net.atos.daf.ct2.package.test
                 Status = "A",
                // FeatureSet = new features.entity.FeatureSet() { FeatureSetID = 5 },
                 FeatureSetID = 1,
-                Is_Active = true,
+                IsActive = true,
                 Name = "Standard",
                 Type ="V",
                 Description = "Package with default featureset",

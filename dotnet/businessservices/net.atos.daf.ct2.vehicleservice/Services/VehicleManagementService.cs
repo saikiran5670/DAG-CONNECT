@@ -53,7 +53,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     objVehiclesBySubscriptionId.Name = item.name;
                     objVehiclesBySubscriptionId.Vin = item.vin;
                     objVehiclesBySubscriptionId.LicensePlateNumber = item.license_plate_number;
-                    objVehiclesBySubscriptionDetailsResponse.Response.Add(objVehiclesBySubscriptionId);
+                    objVehiclesBySubscriptionDetailsResponse.Vehicles.Add(objVehiclesBySubscriptionId);
                 }
                 return objVehiclesBySubscriptionDetailsResponse;
             }
@@ -731,8 +731,203 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     Message = "Get faile due to with reason : " + ex.Message
                 });
             }
+        }
+
+        public override async Task<VehicleGroupLandingResponse> GetVehicleGroupWithVehCount(VehicleGroupLandingRequest request, ServerCallContext context)
+        {
+            try
+            {
+                Group.GroupFilter ObjGroupFilter = new Group.GroupFilter();
+                ObjGroupFilter = _mapper.ToVehicleGroupLandingFilterEntity(request);
+                IEnumerable<Group.Group> ObjRetrieveGroupList = null;
+                ObjRetrieveGroupList = await _groupManager.GetVehicleGroupWithVehCount(ObjGroupFilter);
+                VehicleGroupLandingResponse ObjVehicleGroupRes = new VehicleGroupLandingResponse();
+                if (ObjRetrieveGroupList != null)
+                {
+                    foreach (var item in ObjRetrieveGroupList)
+                    {
+                        VehicleGroupLandingDetails ObjGroupRef = new VehicleGroupLandingDetails();
+
+                        ObjGroupRef.GroupId = item.Id;
+                        ObjGroupRef.GroupName = item.Name;
+                        ObjGroupRef.VehicleCount = item.GroupRefCount;                       
+                        ObjGroupRef.OrganizationId = item.OrganizationId;
+                        ObjGroupRef.Description = item.Description;
+                        if (item.CreatedAt != null)
+                            ObjGroupRef.CreatedAt = Convert.ToInt64(item.CreatedAt);
+                        if (Group.GroupType.Dynamic.ToString() == item.GroupType.ToString())
+                        {
+                            ObjGroupRef.GroupType = "D";
+                        }
+                        else if (Group.GroupType.Group.ToString() == item.GroupType.ToString())
+                        {
+                            ObjGroupRef.GroupType = "G";
+                        }
+
+                        if (Group.FunctionEnum.All.ToString() == item.FunctionEnum.ToString())
+                        {
+                            ObjGroupRef.FunctionEnum = "A";
+                        }
+                        else if (Group.FunctionEnum.OwnedVehicles.ToString() == item.FunctionEnum.ToString())
+                        {
+                            ObjGroupRef.FunctionEnum = "O";
+                        }
+                        else if (Group.FunctionEnum.VisibleVehicles.ToString() == item.FunctionEnum.ToString())
+                        {
+                            ObjGroupRef.FunctionEnum = "V";
+                        }
+                        else
+                        {
+                            ObjGroupRef.FunctionEnum = "A";
+                        }
+
+                        ObjVehicleGroupRes.VehicleGroupLandingDetails.Add(ObjGroupRef);
+                    }
+                }
+                ObjVehicleGroupRes.Message = "Vehicles data retrieved";
+                ObjVehicleGroupRes.Code = Responcecode.Success;
+                _logger.LogInformation("Get method in vehicle service called.");
+                return await Task.FromResult(ObjVehicleGroupRes);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new VehicleGroupLandingResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Get faile due to with reason : " + ex.Message
+                });
+            }
 
 
         }
+
+
+        public override async Task<VehicleListResponce> GetDynamicAllVehicle(DynamicGroupFilterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                int OrganizationId = request.OrganizationId;
+                int VehicleGroupId = request.VehicleGroupId;
+                int RelationShipId = request.RelationShipId;
+
+                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.GetDynamicAllVehicle(OrganizationId,VehicleGroupId,RelationShipId);
+                VehicleListResponce responce = new VehicleListResponce();
+                foreach (var item in ObjRetrieveVehicleList)
+                {
+                    responce.Vehicles.Add(_mapper.ToVehicle(item));
+                }
+                responce.Message = "Vehicles data retrieved";
+                responce.Code = Responcecode.Success;
+                _logger.LogInformation("Get method in vehicle service called.");
+                return await Task.FromResult(responce);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new VehicleListResponce
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Get faile due to with reason : " + ex.Message
+                });
+            }
+        }
+
+        public override async Task<VehicleListResponce> GetDynamicVisibleVehicle(DynamicGroupFilterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                int OrganizationId = request.OrganizationId;
+                int VehicleGroupId = request.VehicleGroupId;
+                int RelationShipId = request.RelationShipId;
+
+                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.GetDynamicVisibleVehicle(OrganizationId, VehicleGroupId, RelationShipId);
+                VehicleListResponce responce = new VehicleListResponce();
+                foreach (var item in ObjRetrieveVehicleList)
+                {
+                    responce.Vehicles.Add(_mapper.ToVehicle(item));
+                }
+                responce.Message = "Vehicles data retrieved";
+                responce.Code = Responcecode.Success;
+                _logger.LogInformation("Get method in vehicle service called.");
+                return await Task.FromResult(responce);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new VehicleListResponce
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Get faile due to with reason : " + ex.Message
+                });
+            }
+        }
+
+
+        public override async Task<VehicleListResponce> GetDynamicOwnedVehicle(DynamicGroupFilterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                int OrganizationId = request.OrganizationId;
+                int VehicleGroupId = request.VehicleGroupId;
+                int RelationShipId = request.RelationShipId;
+
+                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.GetDynamicOwnedVehicle(OrganizationId, VehicleGroupId, RelationShipId);
+                VehicleListResponce responce = new VehicleListResponce();
+                foreach (var item in ObjRetrieveVehicleList)
+                {
+                    responce.Vehicles.Add(_mapper.ToVehicle(item));
+                }
+                responce.Message = "Vehicles data retrieved";
+                responce.Code = Responcecode.Success;
+                _logger.LogInformation("Get method in vehicle service called.");
+                return await Task.FromResult(responce);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new VehicleListResponce
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Get faile due to with reason : " + ex.Message
+                });
+            }
+        }
+
+
+
+        public override async Task<VehicleListResponce> GetRelationshipVehicles(OrgvehicleIdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                VehicleFilter ObjVehicleFilter = new VehicleFilter();
+                ObjVehicleFilter.VIN = null;
+                ObjVehicleFilter.VehicleIdList = null;
+                ObjVehicleFilter.OrganizationId = request.OrganizationId;
+                ObjVehicleFilter.VehicleId = request.VehicleId;
+                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.GetRelationshipVehicles(ObjVehicleFilter);
+                VehicleListResponce responce = new VehicleListResponce();
+                foreach (var item in ObjRetrieveVehicleList)
+                {
+                    responce.Vehicles.Add(_mapper.ToVehicle(item));
+                }
+                responce.Message = "Vehicles data retrieved";
+                responce.Code = Responcecode.Success;
+                _logger.LogInformation("Get method in vehicle service called.");
+                return await Task.FromResult(responce);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new VehicleListResponce
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Get faile due to with reason : " + ex.Message
+                });
+            }
+
+
+        }
+
     }
 }
