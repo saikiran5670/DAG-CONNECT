@@ -16,7 +16,7 @@ using net.atos.daf.ct2.subscription.repository;
 using net.atos.daf.ct2.subscription;
 using AccountComponent = net.atos.daf.ct2.account;
 using Identity = net.atos.daf.ct2.identity;
-using AccountPreference = net.atos.daf.ct2.accountpreference;
+//using AccountPreference = net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -24,7 +24,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using net.atos.daf.ct2.featureactivationservice.CustomAttributes;
-
+using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 namespace net.atos.daf.ct2.featureactivationservice
 {
     public class Startup
@@ -50,6 +50,10 @@ namespace net.atos.daf.ct2.featureactivationservice
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
             services.AddTransient<ISubscriptionManager, SubscriptionManager>();
+            services.AddTransient<IdentitySessionComponent.IAccountSessionManager, IdentitySessionComponent.AccountSessionManager>();
+            services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(x =>
@@ -104,8 +108,8 @@ namespace net.atos.daf.ct2.featureactivationservice
             services.AddTransient<Identity.ITokenManager, Identity.TokenManager>();
             services.AddTransient<Identity.IAccountAuthenticator, Identity.AccountAuthenticator>();
             services.AddTransient<AccountComponent.IAccountIdentityManager, AccountComponent.AccountIdentityManager>();
-            services.AddTransient<AccountPreference.IPreferenceManager, AccountPreference.PreferenceManager>();
-            services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();
+            //services.AddTransient<AccountPreference.IPreferenceManager, AccountPreference.PreferenceManager>();
+            //services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();
             services.AddTransient<AccountComponent.IAccountRepository, AccountComponent.AccountRepository>();
             services.AddTransient<AccountComponent.IAccountManager, AccountComponent.AccountManager>();
 
