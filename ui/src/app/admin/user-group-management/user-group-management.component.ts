@@ -4,7 +4,6 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog, MatDialogRef, MatDialogConfig } from '@angular/material/dialog';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslationService } from '../../services/translation.service';
 import { AccountService } from '../../services/account.service';
 import { VehicleService } from '../../services/vehicle.service';
@@ -48,7 +47,6 @@ export class UserGroupManagementComponent implements OnInit {
 
   constructor(
     private dialogService: ConfirmDialogService,
-    private _snackBar: MatSnackBar,
     private translationService: TranslationService,
     private accountService: AccountService,
     private vehicleService: VehicleService,

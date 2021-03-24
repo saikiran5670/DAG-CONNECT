@@ -132,6 +132,34 @@ export class VehicleService {
       .pipe(catchError(this.handleError));
   }
 
+  getVehicleGroupList(orgId: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.vehicleServiceUrl}/group/getvehiclegrouplist?OrganizationId=${orgId}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  getVehiclesDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    if(data.groupType.toUpperCase() == 'G'){ //-- Group
+      return this.httpClient
+      .get<any[]>(`${this.vehicleServiceUrl}/group/getvehiclesDetails?GroupId=${data.groupId}&GroupType=${data.groupType}`, headers)
+      .pipe(catchError(this.handleError));
+    }
+    else{ //-- Dynamic Group
+      return this.httpClient
+      .get<any[]>(`${this.vehicleServiceUrl}/group/getvehiclesDetails??GroupId=${data.groupId}&GroupType=${data.groupType}&FunctionEnum=${data.functionEnum}&OrganizationId=${data.organizationId}`, headers)
+      .pipe(catchError(this.handleError));
+    }
+    
+  }
+
   private handleError(errResponse: HttpErrorResponse) {
     console.error('Error : ', errResponse.error);
     return throwError(
