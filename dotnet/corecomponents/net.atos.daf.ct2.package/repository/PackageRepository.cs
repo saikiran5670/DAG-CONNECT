@@ -175,20 +175,6 @@ namespace net.atos.daf.ct2.package.repository
             return codeExists > 1 ? false : true;
         }
 
-        public Task<FeatureSet> Create(FeatureSet featureSet)
-        {
-            try
-            {
-                throw new NotImplementedException();
-
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
-        }
-
         public async Task<List<Package>> Get(PackageFilter filter)
         {
             try
@@ -276,9 +262,26 @@ namespace net.atos.daf.ct2.package.repository
                 throw ex;
             }
         }
-        public Task<List<Package>> Export()
+        public async Task<Package> UpdatePackageStatus(Package package)
         {
-            throw new NotImplementedException();
+            
+            try
+            {
+               
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@Id", package.Id);                   
+                    parameter.Add("@status", Convert.ToChar(package.Status));  
+                
+                    string query = @"update master.package set  status=@status                                                          
+                                                           where id = @Id RETURNING id";
+                    package.Id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+               
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return package;
         }
     }
 }
