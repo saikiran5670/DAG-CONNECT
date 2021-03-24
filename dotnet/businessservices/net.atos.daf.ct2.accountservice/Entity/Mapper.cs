@@ -15,10 +15,14 @@ namespace net.atos.daf.ct2.accountservice
             AccountRequest request = new AccountRequest();
 
             request.Id = account.Id;
+            if(!string.IsNullOrEmpty(account.EmailId))
             request.EmailId = account.EmailId;
-            request.Salutation = account.Salutation;
-            request.FirstName = account.FirstName;
-            request.LastName = account.LastName;
+            if (!string.IsNullOrEmpty(account.Salutation))
+                request.Salutation = account.Salutation;
+            if (!string.IsNullOrEmpty(account.FirstName))
+                request.FirstName = account.FirstName;
+            if (!string.IsNullOrEmpty(account.LastName))
+                request.LastName = account.LastName;
             request.OrganizationId = account.Organization_Id;
             if (account.PreferenceId.HasValue)
                 request.PreferenceId = account.PreferenceId.Value;

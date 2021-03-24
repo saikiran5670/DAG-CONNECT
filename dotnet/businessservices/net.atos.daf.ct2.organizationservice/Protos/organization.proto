@@ -34,7 +34,7 @@ service OrganizationService {
 }
 
 message OrganizationprimaryFieldsListResponse{
- repeated OrganizationprimaryFieldsResponse Response = 1;
+ repeated OrganizationprimaryFieldsResponse organizationList = 1;
 }
 
 message OrganizationByID{

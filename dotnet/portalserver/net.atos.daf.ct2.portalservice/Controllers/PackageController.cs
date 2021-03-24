@@ -40,7 +40,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                
+
                 if (request.FeatureIds.Count >= 1)
                 {
                     var featureSetId = await _featureSetMapper.RetrieveFeatureSetIdById(request.FeatureIds);
@@ -114,7 +114,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 if (request.FeatureSetID > 0)
                 {
-                    
+
                     if (request.FeatureIds.Count >= 1)
                     {
                         var featureSetId = await _featureSetMapper.UpdateFeatureSetIdById(request.FeatureIds, request.FeatureSetID);
@@ -132,7 +132,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     if (packageResponse != null && packageResponse.Code == Responsecode.Failed
                          && packageResponse.Message == "There is an error updating package.")
                     {
-                        return StatusCode(500, "There is an error updating account.");
+                        return StatusCode(500, "There is an error updating package.");
                     }
                     else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
                     {
@@ -179,7 +179,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var request = new GetPackageRequest()
                 {
                     Id = filterRequest.Id,
-                    Status = filterRequest.Status ==null?string.Empty: filterRequest.Status,
+                    Status = filterRequest.Status == null ? string.Empty : filterRequest.Status,
                     Code = filterRequest.Code == null ? string.Empty : filterRequest.Code,
                     Name = filterRequest.Name == null ? string.Empty : filterRequest.Name,
                     Type = filterRequest.Type == null ? string.Empty : filterRequest.Type,
@@ -293,7 +293,49 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        [HttpPut]
+        [Route("updatestatus")]
+        public async Task<IActionResult> UpdatePackageStatus(UpdatePackageStatusRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("Update package status method in package API called.");
 
+                // Validation 
+                if (request.PackageId <= 0 || (string.IsNullOrEmpty(request.Status)))
+                {
+                    return StatusCode(400, PortalConstants.PackageValidation.PackageStatusRequired);
+                }
+                // The package status should be single character
+                if (request.Status.Length > 1)
+                {
+                    return StatusCode(400, PortalConstants.PackageValidation.InvalidPackageStatus);
+                }
+
+
+                var packageResponse = await _packageClient.UpdatePackageStatusAsync(request);
+
+
+                if (packageResponse != null && packageResponse.Code == Responsecode.Failed
+                     && packageResponse.Message == "There is an error in updating package status.")
+                {
+                    return StatusCode(500, "There is an error  in updating package status.");
+                }
+                else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
+                {
+                    return Ok(packageResponse);
+                }
+                else
+                {
+                    return StatusCode(500, "packageResponse is null");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Package Service:Update : " + ex.Message + " " + ex.StackTrace);               
+                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
+            }
+        }
 
     }
 }

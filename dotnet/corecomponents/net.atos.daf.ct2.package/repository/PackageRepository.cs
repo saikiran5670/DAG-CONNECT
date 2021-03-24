@@ -66,8 +66,9 @@ namespace net.atos.daf.ct2.package.repository
         {
             try
             {
-                var isPackageCodeExist = IsPackageCodeExists(package.Code);
-                if (!isPackageCodeExist)
+                var isPackageUpdate = CheckPackageCodeForUpdate(package.Code);
+
+                if (isPackageUpdate)
                 {
                     var parameter = new DynamicParameters();
                     parameter.Add("@Id", package.Id);
@@ -78,15 +79,14 @@ namespace net.atos.daf.ct2.package.repository
                     parameter.Add("@description", package.Description);
                     parameter.Add("@is_active", package.IsActive);
                     parameter.Add("@status", Convert.ToChar(package.Status));
-                    parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                 //   parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                     string query = @"update master.package set packagecode=@packagecode, 
                                                            feature_set_id=@feature_set_id,
                                                            name=@name,
                                                            type=@type,
                                                            description=@description,                                
                                                            is_active=@is_active,
-                                                           status=@status,
-                                                           created_at=@created_at
+                                                           status=@status                                                          
                                                            where id = @Id RETURNING id";
                     package.Id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
@@ -167,18 +167,12 @@ namespace net.atos.daf.ct2.package.repository
             var codeExists = packages.Result.Any(t => t.Code == packageCode);
             return codeExists;
         }
-        public Task<FeatureSet> Create(FeatureSet featureSet)
+        private bool CheckPackageCodeForUpdate(string packageCode)
         {
-            try
-            {
-                throw new NotImplementedException();
-
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
+            var packageFilter = new PackageFilter();
+            var packages = Get(packageFilter);
+            var codeExists = packages.Result.Where(t => t.Code == packageCode).Count();
+            return codeExists > 1 ? false : true;
         }
 
         public async Task<List<Package>> Get(PackageFilter filter)
@@ -209,7 +203,7 @@ namespace net.atos.daf.ct2.package.repository
                     // package name filter
                     if (!string.IsNullOrEmpty(filter.Name))
                     {
-                        parameter.Add("@name", "%"+filter.Name + "%");
+                        parameter.Add("@name", "%" + filter.Name + "%");
                         query = query + " and LOWER(pkg.name) like @name ";
                     }
                     // feature set id filter
@@ -220,7 +214,7 @@ namespace net.atos.daf.ct2.package.repository
                     }
                     // package type filter
                     if (!string.IsNullOrEmpty(filter.Type) && filter.Type.Length == 1)
-                    {                      
+                    {
                         parameter.Add("@type", (char)_packageCoreMapper.ToPackageType(filter.Type), DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and pkg.type=@type ";
                     }
@@ -228,7 +222,7 @@ namespace net.atos.daf.ct2.package.repository
 
                     // package status filter 
                     if (!string.IsNullOrEmpty(filter.Status) && filter.Status.Length == 1)
-                    {                        
+                    {
                         parameter.Add("@status", (char)_packageCoreMapper.ToPackageStatus(filter.Status), DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and pkg.status=@status";
                     }
@@ -248,7 +242,7 @@ namespace net.atos.daf.ct2.package.repository
             {
                 throw ex;
             }
-        }      
+        }
 
         public async Task<bool> Delete(int packageId)
         {
@@ -268,9 +262,26 @@ namespace net.atos.daf.ct2.package.repository
                 throw ex;
             }
         }
-        public Task<List<Package>> Export()
+        public async Task<Package> UpdatePackageStatus(Package package)
         {
-            throw new NotImplementedException();
+            
+            try
+            {
+               
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@Id", package.Id);                   
+                    parameter.Add("@status", Convert.ToChar(package.Status));  
+                
+                    string query = @"update master.package set  status=@status                                                          
+                                                           where id = @Id RETURNING id";
+                    package.Id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+               
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return package;
         }
     }
 }
