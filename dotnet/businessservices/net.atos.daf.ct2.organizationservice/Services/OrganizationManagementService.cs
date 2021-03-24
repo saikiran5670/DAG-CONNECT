@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.organizationservice
                     OrganizationprimaryFieldsResponse objOrganizationprimaryFieldsResponse = new OrganizationprimaryFieldsResponse();
                     objOrganizationprimaryFieldsResponse.Id = item.id;
                     objOrganizationprimaryFieldsResponse.Name = item.name;
-                    objOrganizationprimaryFieldsListResponse.Response.Add(objOrganizationprimaryFieldsResponse);
+                    objOrganizationprimaryFieldsListResponse.OrganizationList.Add(objOrganizationprimaryFieldsResponse);
                 }
                 return objOrganizationprimaryFieldsListResponse;
             }

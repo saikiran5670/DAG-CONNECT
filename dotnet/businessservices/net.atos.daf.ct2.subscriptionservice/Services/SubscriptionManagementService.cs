@@ -43,8 +43,8 @@ namespace net.atos.daf.ct2.subscriptionservice
                     objSubscriptionDetails.SubscriptionEndDate = item.subscription_end_date;
                     objSubscriptionDetails.IsActive = item.is_active;
                     objSubscriptionDetails.Count = item.count;
-
-                    objSubscribeListResponce.Responce.Add(objSubscriptionDetails);
+                    objSubscriptionDetails.OrgName = item.orgname == null ? string.Empty : item.orgname;
+                    objSubscribeListResponce.SubscriptionList.Add(objSubscriptionDetails);
                 }
                 return objSubscribeListResponce;
             }

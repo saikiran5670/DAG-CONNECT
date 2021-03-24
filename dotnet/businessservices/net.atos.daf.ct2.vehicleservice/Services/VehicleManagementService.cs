@@ -53,7 +53,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     objVehiclesBySubscriptionId.Name = item.name;
                     objVehiclesBySubscriptionId.Vin = item.vin;
                     objVehiclesBySubscriptionId.LicensePlateNumber = item.license_plate_number;
-                    objVehiclesBySubscriptionDetailsResponse.Response.Add(objVehiclesBySubscriptionId);
+                    objVehiclesBySubscriptionDetailsResponse.Vehicles.Add(objVehiclesBySubscriptionId);
                 }
                 return objVehiclesBySubscriptionDetailsResponse;
             }
