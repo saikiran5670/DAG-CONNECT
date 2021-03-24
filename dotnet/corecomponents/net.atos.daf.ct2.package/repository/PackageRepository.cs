@@ -3,12 +3,9 @@ using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.features;
 using net.atos.daf.ct2.features.entity;
 using net.atos.daf.ct2.package.entity;
-using net.atos.daf.ct2.package.ENUM;
 using net.atos.daf.ct2.utilities;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,11 +18,13 @@ namespace net.atos.daf.ct2.package.repository
         private readonly IFeatureManager _featureManager;
         private static readonly log4net.ILog log =
        log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly PackageCoreMapper _packageCoreMapper;
 
         public PackageRepository(IDataAccess dataAccess, IFeatureManager featureManager)
         {
             _dataAccess = dataAccess;
             _featureManager = featureManager;
+            _packageCoreMapper = new PackageCoreMapper();
         }
 
         public async Task<Package> Create(Package package)
@@ -126,7 +125,7 @@ namespace net.atos.daf.ct2.package.repository
                             parameter.Add("@packagecode", package.Code);
                             parameter.Add("@feature_set_id", package.FeatureSetID);
                             parameter.Add("@name", package.Name);
-                            parameter.Add("@type", package.Type.Length > 1 ? MapPackageType(package.Type) : Convert.ToChar(package.Type));
+                            parameter.Add("@type", package.Type.Length > 1 ? _packageCoreMapper.MapPackageType(package.Type) : Convert.ToChar(package.Type));
                             parameter.Add("@description", package.Description);
                             parameter.Add("@is_active", package.IsActive);
                             parameter.Add("@status", Convert.ToChar(package.Status));
@@ -151,25 +150,6 @@ namespace net.atos.daf.ct2.package.repository
             return packages;
         }
 
-        //  private Task<int> CreateFeatureSet(List<string> featues)
-        //{
-        //    var pkgFeatures = featues.Select(x => new Feature() { Name = x }).ToList();
-
-        //    long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-        //    long iSessionExpireddAt = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(30));
-        //    FeatureSet featureSet = new FeatureSet();
-        //    featureSet.Name = "FeatureSet_" + iSessionStartedAt;
-        //    featureSet.description = "PackageTest data";
-        //    featureSet.Is_Active = true;
-        //    featureSet.created_at = iSessionStartedAt;
-        //    featureSet.created_by = 1;
-        //    featureSet.modified_at = iSessionExpireddAt;
-        //    featureSet.modified_by = 1;
-        //    featureSet.Features = pkgFeatures;
-        //    var featureId = _featureManager.AddFeatureSet(featureSet);
-        //    return featureId;
-
-        //}
         private List<Package> PackageExists(List<Package> packageList)
         {
             var packageFilter = new PackageFilter();
@@ -187,7 +167,6 @@ namespace net.atos.daf.ct2.package.repository
             var codeExists = packages.Result.Any(t => t.Code == packageCode);
             return codeExists;
         }
-
         public Task<FeatureSet> Create(FeatureSet featureSet)
         {
             try
@@ -230,8 +209,8 @@ namespace net.atos.daf.ct2.package.repository
                     // package name filter
                     if (!string.IsNullOrEmpty(filter.Name))
                     {
-                        parameter.Add("@name", filter.Name + "%");
-                        query = query + " and pkg.name like @name ";
+                        parameter.Add("@name", "%"+filter.Name + "%");
+                        query = query + " and LOWER(pkg.name) like @name ";
                     }
                     // feature set id filter
                     if (filter.FeatureSetId > 0)
@@ -241,28 +220,26 @@ namespace net.atos.daf.ct2.package.repository
                     }
                     // package type filter
                     if (!string.IsNullOrEmpty(filter.Type) && filter.Type.Length == 1)
-                    {
-                        parameter.Add("@type", Convert.ToChar(filter.Type));
-
+                    {                      
+                        parameter.Add("@type", (char)_packageCoreMapper.ToPackageType(filter.Type), DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and pkg.type=@type ";
                     }
 
 
                     // package status filter 
                     if (!string.IsNullOrEmpty(filter.Status) && filter.Status.Length == 1)
-                    {
-                        parameter.Add("@status ", Convert.ToChar(filter.Status));
-
+                    {                        
+                        parameter.Add("@status", (char)_packageCoreMapper.ToPackageStatus(filter.Status), DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
                         query = query + " and pkg.status=@status";
                     }
-                    
+
                     query = query + " and pkg.type in ('O','V') ORDER BY id ASC; ";
                     dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
 
                     foreach (dynamic record in result)
                     {
 
-                        packages.Add(Map(record));
+                        packages.Add(_packageCoreMapper.Map(record));
                     }
                 }
                 return packages;
@@ -271,82 +248,7 @@ namespace net.atos.daf.ct2.package.repository
             {
                 throw ex;
             }
-        }
-        private Package Map(dynamic record)
-        {
-            Package package = new Package();
-            package.Id = record.id;
-            package.Code = !string.IsNullOrEmpty(record.packagecode) ? record.packagecode : string.Empty;
-            package.IsActive = record.is_active;
-            package.Status = !string.IsNullOrEmpty(record.status) ? MapCharToPackageStatus(record.status) : string.Empty;
-            package.Type = !string.IsNullOrEmpty(record.type) ? MapCharToPackageType(record.type) : string.Empty;
-            package.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;
-            package.Description = !string.IsNullOrEmpty(record.description) ? record.description : string.Empty;
-            package.FeatureSetID = record.feature_set_id != null ? record.feature_set_id : 0;
-            package.CreatedAt = record.created_at;
-            return package;
-        }
-
-        private char MapPackageType(string packageType)
-        {
-            var type = default(char);
-            switch (packageType)
-            {
-                case "Organization":
-                    type = 'O';
-                    break;
-                case "Vehicle":
-                    type = 'V';
-                    break;
-                case "ORGVIN":
-                    type = 'R';
-                    break;
-            }
-            return type; ;
-        }
-
-
-        private string MapCharToPackageType(string type)
-        {
-            var ptype = string.Empty;
-            switch (type)
-            {
-                case "O":
-                    ptype = "Organization";
-                    break;
-                case "V":
-                    ptype = "VIN";
-                    break;
-                case "R":
-                    ptype = "ORG VIN";
-                    break;
-            }
-            return ptype;
-        }
-
-        private string MapCharToPackageStatus(string status)
-        {
-
-            var ptype = status == "A" ? "Active" : "Inactive";
-            return ptype;
-
-        }
-
-        public Task<FeatureSet> Update(FeatureSet featureSet)
-        {
-            throw new NotImplementedException();
-        }
-
-        //public Task<Feature> GetFeature(int featureId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public Task<FeatureSet> GetFeatureSet(int featureSetId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
+        }      
 
         public async Task<bool> Delete(int packageId)
         {

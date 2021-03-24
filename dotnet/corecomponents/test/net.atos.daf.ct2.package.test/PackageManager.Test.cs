@@ -87,7 +87,7 @@ namespace net.atos.daf.ct2.package.test
         [TestMethod]
         public void GetPackage_Manager()
         {
-            var packageFilter = new PackageFilter() /*{ Id = 2 }*/;
+            var packageFilter = new PackageFilter() {  Status = "I" };
             var result = _packageManager.Get(packageFilter).Result;
             Console.WriteLine(result);
             Assert.IsTrue(result != null);
