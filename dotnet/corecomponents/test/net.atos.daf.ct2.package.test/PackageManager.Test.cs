@@ -112,5 +112,18 @@ namespace net.atos.daf.ct2.package.test
             Assert.IsTrue(result);
         }
 
+
+        [TestMethod]
+        public void UpdatePackageStatus()
+
+        {
+            var package = new Package() {Id=75, Status = "I" };
+            var result = _packageManager.UpdatePackageStatus(package).Result;
+            Console.WriteLine(result);
+            Assert.IsTrue(result != null);
+        }
+
+
+
     }
 }
