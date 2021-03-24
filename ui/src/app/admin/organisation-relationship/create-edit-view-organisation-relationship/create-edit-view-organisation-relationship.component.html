@@ -19,8 +19,8 @@
             <div class='areaWidth'>
                 <mat-form-field appearance="outline" class='margin-right-xxlg'>
                     <mat-select formControlName="relationship" (selectionChange)="onRelationshipSelection()" placeholder="{{ translationData.lblSelectCRelationship || 'Select Relationship' }}">
-                    <mat-option *ngFor="let options of relationshipList" [value]="options.name">
-                        {{ options.name }}
+                    <mat-option *ngFor="let options of relationshipList" [value]="options.relationId">
+                        {{ options.relationName }}
                     </mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -85,7 +85,7 @@
           </div>
           <div fxLayout="row" >
             <div fxLayout="column" class='full-width'>
-              <mat-table [dataSource]="dataSource" matSort>
+              <mat-table [dataSource]="dataSourceVehicle" matSort>
                 <!-- <ng-container matColumnDef="all">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAll || 'All' }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" style="word-break: 'break-word'">{{row.all}}</mat-cell>
@@ -107,7 +107,7 @@
                 </ng-container>
                 <ng-container matColumnDef="vehicleGroupName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group Name'}}</mat-header-cell>
-                    <mat-cell *matCellDef="let row">{{row.groupName}} </mat-cell>
+                    <mat-cell *matCellDef="let row" >{{row.groupName}} </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="vehicleGroupDisplayColumn"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: vehicleGroupDisplayColumn;">
@@ -132,29 +132,29 @@
         
         <div fxLayout="row" >
           <div fxLayout="column" class='full-width'>
-            <mat-table [dataSource]="dataSource" matSort>
+            <mat-table [dataSource]="dataSourceOrg" matSort>
               <!-- <ng-container matColumnDef="all">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAll || 'All' }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" style="word-break: 'break-word'">{{row.all}}</mat-cell>
               </ng-container> -->
               <ng-container matColumnDef="select">
                 <mat-header-cell *matHeaderCellDef>
-                  <mat-checkbox (change)='$event ? masterToggleForOrgRelationship() : null'
-                    [checked]='selectedOrgRelations.hasValue() && isAllSelectedForOrgRelationship()'
-                    [indeterminate]='selectedOrgRelations.hasValue() && !isAllSelectedForOrgRelationship()'
-                    [aria-label]='checkboxLabelForOrgRelationship()'>
+                  <mat-checkbox (change)='$event ? masterToggleForOrganisation() : null'
+                    [checked]='selectedOrganisation.hasValue() && isAllSelectedForOrganisation()'
+                    [indeterminate]='selectedOrganisation.hasValue() && !isAllSelectedForOrganisation()'
+                    [aria-label]='checkboxLabelForOrganisation()'>
                   </mat-checkbox>
                   <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                  <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedOrgRelations.toggle(row) : null'
-                    [checked]='selectedOrgRelations.isSelected(row)' [aria-label]='checkboxLabelForOrgRelationship(row)'>
+                  <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedOrganisation.toggle(row) : null'
+                    [checked]='selectedOrganisation.isSelected(row)' [aria-label]='checkboxLabelForOrganisation(row)'>
                   </mat-checkbox>
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="organisationName">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOrganisationName || 'Organisation Name'}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row">{{row.organisationName}} </mat-cell>
+                  <mat-cell *matCellDef="let row">{{row.organizationName}} </mat-cell>
               </ng-container>
               <mat-header-row *matHeaderRowDef="organisationNameDisplayColumn"></mat-header-row>
               <mat-row *matRowDef="let row; columns: organisationNameDisplayColumn;">

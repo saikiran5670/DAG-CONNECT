@@ -20,9 +20,9 @@
             <div class="areaWidth min-width-5-per" fxLayoutGap="2px" fxLayoutAlign="left">
                 <mat-form-field appearance="outline" class="full-width" >
                   <mat-label>Relationship</mat-label>
-                  <mat-select>
-                    <mat-option>
-                      
+                      <mat-select (selectionChange)="applyFilterOnRelationship($event.value)">
+                        <mat-option  *ngFor="let options of relationshipList" [value]="options.relationId">
+                          {{options.relationName}}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
@@ -31,8 +31,9 @@
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-label>Vehicle Group</mat-label>
                   <mat-select>
-                    <mat-option>
-                        vehicleGroup
+                    <!-- <mat-option *ngFor="let options of relationshipList" [value]="options.id"> -->
+                      <mat-option *ngFor="let options of vehicleList" [value]="options.vehiclegroupID">
+                      {{options.groupName}}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
@@ -41,8 +42,8 @@
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-label>Organisation</mat-label>
                   <mat-select>
-                    <mat-option>
-                       targetOrg
+                    <mat-option *ngFor="let options of organizationList" [value]="options.organizationId">
+                      {{options.organizationName}}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
@@ -51,14 +52,14 @@
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-label>All Type</mat-label>
                   <mat-select>
-                    <mat-option>
-                        End Relationship
+                    <mat-option *ngFor="let options of allTypes" [value]="options.name">
+                        {{options.name}}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
               </div>
               <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-                <button mat-flat-button color="warn" (click)="newRelationship()">
+                <button mat-flat-button color="warn" (click)="deleteOrgRelationship()">
                     <mat-icon>block_outline</mat-icon> {{ translationData.lblEndRelationship || 'End Relationship'}}
                 </button>
             </div>
@@ -84,13 +85,17 @@
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row">
                           <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedOrgRelations.toggle(row) : null'
-                            [checked]='selectedOrgRelations.isSelected(row)' [aria-label]='checkboxLabelForOrgRelationship(row)'>
+                            [checked]='selectedOrgRelations.isSelected(row)' [aria-label]='checkboxLabelForOrgRelationship(row)' [disabled]="row.endDate != 0">
                           </mat-checkbox>
                         </mat-cell>
                       </ng-container>
                     <ng-container matColumnDef="relationshipName">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRelationshipName || 'Relationship Name' }}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" style="word-break: 'break-word'">{{row.relationshipName}}</mat-cell>
+                        <mat-cell *matCellDef="let row" [disabled]="row.endDate != 0" style="word-break: 'break-word'">
+                          
+                          {{row.relationshipName}}
+                          
+                        </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="vehicleGroup">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group'}}</mat-header-cell>
@@ -106,52 +111,33 @@
                     </ng-container>
                     <ng-container matColumnDef="startDate">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartDate || 'Start Date'}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row">{{row.startDate}} </mat-cell>
+                        <mat-cell *matCellDef="let row"> {{setDate(row.startDate)}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="endDate">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndDate || 'End Date'}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row">{{row.endDate}} </mat-cell>
+                        <mat-cell *matCellDef="let row">{{setDate(row.endDate)}} </mat-cell>
                     </ng-container>
-                    <!-- <ng-container matColumnDef="chainRelationship">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblChainRelationship || 'Allow Chaining'}}</mat-header-cell> -->
-                        <!-- <mat-cell *matCellDef="let row" matTooltip="{{ row.description }}"><span class="text-truncate">{{row.chainRelationship}}</span> </mat-cell> -->
-                        <!-- <mat-cell *matCellDef="let row">{{ row.status }}
-                            <button class='actionBtn' mat-flat-button (click)="changeOrgRelationStatus(row)" matTooltip="{{ row.state == 0 ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}">
-                              <mat-slide-toggle color="primary" [checked]='row.state == 0 ? true : false' >
-                            </mat-slide-toggle>
-                            <span>{{ row.state == 0 ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}</span>
-                            </button>
-                          </mat-cell>
-                    </ng-container> -->
                     <ng-container matColumnDef="allowChain">
                       <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Allow Chaining' }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">
                         <button class='actionBtn' mat-flat-button (click)="changeOrgRelationStatus(row)" matTooltip="{{ row.allowChain == true ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Inactive' }}">
-                          <mat-slide-toggle color="primary" [checked]='row.allowChain == true ? true : false' >
+                          <mat-slide-toggle color="primary" [checked]='row.allowChain == true && row.endDate == 0 ? true : false' >
                         </mat-slide-toggle>&nbsp;
-                        <span>{{ row.allowChain == true ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Inactive' }}</span>
+                        <span>{{ row.allowChain == true && row.endDate == 0 ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Inactive' }}</span>
                         </button>
                       </mat-cell>
                     </ng-container>
-                    <!-- <ng-container matColumnDef="actions">
-                        <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Actions' }}</mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                            <button class='actionBtn' mat-flat-button (click)="changeStatus(row)" matTooltip="{{ row.chainRelationship == 'Active' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}">
-                                <mat-icon>{{ row.chainRelationship == 'Active' ? 'sync' : 'sync_disabled' }}</mat-icon>
-                            </button>
-                            <button class='actionBtn'  mat-flat-button  (click)="deleteRow(row)" matTooltip="Delete">
-                                <mat-icon class="deleteIcon">delete_outline</mat-icon>
-                            </button>
-                        </mat-cell>
-                    </ng-container> -->
                     <ng-container matColumnDef="endRelationship">
                         <mat-header-cell *matHeaderCellDef>{{ translationData.lblEndOrgRelationship || 'End Relationship' }}</mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                            <mat-icon>directions_car</mat-icon>
+                          <mat-cell *matCellDef="let row">
+                            <mat-icon *ngIf = "row.endDate != 0">block_outline</mat-icon>
+                            <mat-icon *ngIf = "row.endDate == 0">directions_car</mat-icon>                     
                        </mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="orgrelationshipDisplayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: orgrelationshipDisplayedColumns;">
+                    <mat-row *matRowDef="let row; columns: orgrelationshipDisplayedColumns;" 
+                    (click)="row.endDate != 0"
+                    [ngStyle]="row.endDate != 0 && {'background-color': 'lightgrey'}" >
                     </mat-row>
                 </mat-table>
                 <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
