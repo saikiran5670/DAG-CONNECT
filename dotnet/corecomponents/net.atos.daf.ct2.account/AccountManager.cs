@@ -141,8 +141,7 @@ namespace net.atos.daf.ct2.account
         }
         public async Task<Response> ChangePassword(Account accountRequest)
         {
-            var accountResult = await repository.Get(new AccountFilter() { Email = accountRequest.EmailId.ToLower() });
-            var account = accountResult.SingleOrDefault();
+            var account = await repository.GetAccountByEmailId(accountRequest.EmailId.ToLower());
 
             if (account != null)
             {
@@ -310,8 +309,7 @@ namespace net.atos.daf.ct2.account
             var response = new Response() { StatusCode = System.Net.HttpStatusCode.NotFound };
             try
             {
-                var accountResult = await repository.Get(new AccountFilter() { Email = emailId.ToLower() });
-                var account = accountResult.SingleOrDefault();
+                var account = await repository.GetAccountByEmailId(emailId.ToLower());
 
                 if (account != null)
                 {
@@ -386,8 +384,7 @@ namespace net.atos.daf.ct2.account
                         return response;
                     }
                     //Fetch Account corrosponding to it
-                    var accounts = await repository.Get(new AccountFilter() { Id = resetPasswordToken.AccountId });
-                    var account = accounts.SingleOrDefault();
+                    var account = await repository.GetAccountByAccountId(resetPasswordToken.AccountId);
 
                     // create user in identity
                     IdentityEntity.Identity identityEntity = new IdentityEntity.Identity();
