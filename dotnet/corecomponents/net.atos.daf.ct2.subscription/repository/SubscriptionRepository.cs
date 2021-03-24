@@ -112,7 +112,7 @@ namespace net.atos.daf.ct2.subscription.repository
                     parameter.Add("@package_code", objSubscription.packageId);
                     parameter.Add("@package_id", data.id);
                     parameter.Add("@type", data.type); 
-                    parameter.Add("@subscription_start_date", UTCHandling.GetUTCFromDateTime(objSubscription.StartDateTime.Value));
+                    parameter.Add("@subscription_start_date", objSubscription.StartDateTime);
                     parameter.Add("@subscription_end_date", null);
                     parameter.Add("@vehicle_id", null);
                     parameter.Add("@is_active", true);
@@ -154,7 +154,7 @@ namespace net.atos.daf.ct2.subscription.repository
                         parameter.Add("@type", data.type);
                         parameter.Add("@package_code", objSubscription.packageId);
                         parameter.Add("@package_id", data.id);
-                        parameter.Add("@subscription_start_date", UTCHandling.GetUTCFromDateTime(objSubscription.StartDateTime.Value));
+                        parameter.Add("@subscription_start_date",objSubscription.StartDateTime);
                         parameter.Add("@subscription_end_date", null);
                         parameter.Add("@is_active", true);
                         parameter.Add("@is_zuora_package", true);
@@ -198,7 +198,7 @@ namespace net.atos.daf.ct2.subscription.repository
                     {
                         var parameter = new DynamicParameters();
                         parameter.Add("@subscription_id", objUnSubscription.OrderID);
-                        parameter.Add("@subscription_end_date", UTCHandling.GetUTCFromDateTime(objUnSubscription.EndDateTime));
+                        parameter.Add("@subscription_end_date", objUnSubscription.EndDateTime);
                         string queryInsert = @"update master.subscription set is_active=false, subscription_end_date=@subscription_end_date where subscription_id=@subscription_id";
                         int roweffected = await dataAccess.ExecuteAsync
                             (queryInsert, parameter);
