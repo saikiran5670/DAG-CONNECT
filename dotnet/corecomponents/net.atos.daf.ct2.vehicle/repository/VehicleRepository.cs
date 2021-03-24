@@ -1179,9 +1179,12 @@ namespace net.atos.daf.ct2.vehicle.repository
 
             if (((System.Collections.Generic.List<object>)result).Count == 0)
             {
-                vin_prefix = "UNK";
-                parameter.Add("@vin_prefix", vin_prefix);
-                result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+                var UnkQueryStatement = @"SELECT id, oem_organisation_id
+	                             FROM master.oem
+                                 where name=@name";
+                vin_prefix = "Unknown";
+                parameter.Add("@name", vin_prefix);
+                result = await dataAccess.QueryAsync<dynamic>(UnkQueryStatement, parameter);
             }
 
 
@@ -1262,7 +1265,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                     Inner join master.oem oem
                                     on veh.oem_id=oem.id
                                     where veh.vin=@vin
-                                    and vin_prefix='UNK'";
+                                    and LOWER(oem.name)=LOWER('Unknown')";
             var parameter = new DynamicParameters();
             parameter.Add("@vin", VIN);
             result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
