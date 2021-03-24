@@ -107,7 +107,6 @@ export class PackageManagementComponent implements OnInit {
   }
 
   updatedTableData(tableData : any) {
-    // this.initData = this.getNewTagData(filterTypeData);
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
@@ -136,7 +135,7 @@ export class PackageManagementComponent implements OnInit {
       message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
       cancelText: this.translationData.lblNo || "No",
       confirmText: this.translationData.lblYes || "Yes",
-      status: rowData.status == true ? 'Inactive' : 'Active' ,
+      status: rowData.status == 'Active' ? 'Inactive' : 'Active' ,
       name: rowData.name
     };
     const dialogConfig = new MatDialogConfig();
@@ -201,7 +200,15 @@ export class PackageManagementComponent implements OnInit {
   }
 
   checkCreationForPackage(item: any){
-    this.createEditViewPackageFlag = !this.createEditViewPackageFlag;
+    // this.createEditViewPackageFlag = !this.createEditViewPackageFlag;
+    this.createEditViewPackageFlag = item.stepFlag;
+    if(item.successMsg) {
+      this.successMsgBlink(item.successMsg);
+    }
+    if(item.tableData) {
+      this.initData = item.tableData;
+    }
+    this.updatedTableData(this.initData);
   }
 
   hideloader() {

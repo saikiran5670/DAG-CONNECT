@@ -19,16 +19,16 @@
             </mat-form-field>
         </div>
   
-<div>
-  <mat-form-field appearance="outline" class="full-width">
-    <mat-label>{{ translationData.lblSelectStatus || 'Select Status' }}</mat-label>
-    <mat-select (selectionChange)="filterStatus($event.value)">
-      <mat-option *ngFor='let status of options' [value]="status">
-{{status}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-</div>
+    <div>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ translationData.lblSelectStatus || 'Select Status' }}</mat-label>
+        <mat-select (selectionChange)="filterStatus($event.value)">
+          <mat-option *ngFor='let status of options' [value]="status">
+          {{status}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
 
     </div>
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
@@ -51,41 +51,41 @@
                   </mat-cell>
                 </div>
               </ng-container> -->
-            <ng-container matColumnDef="orderId">
+            <ng-container matColumnDef="subscriptionId">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOrderId || 'Order ID' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <!-- <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
                   <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span> -->
-                  <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.orderId }}</span>
+                  <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.subscriptionId }}</span>
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="packageCode">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPackageCode || 'Package Code' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.packageCode }}</mat-cell>
               </ng-container>
-              <ng-container matColumnDef="packageName">
+              <ng-container matColumnDef="name">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPackageName || 'Package Name' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.packageName }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="type">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblType || 'Type' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.type }}</mat-cell>
               </ng-container>
-              <ng-container matColumnDef="vehicle">
+              <ng-container matColumnDef="count">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicle || 'Vehicle' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.vehicle }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.count }}</mat-cell>
               </ng-container>
-              <ng-container matColumnDef="startDate">
+              <ng-container matColumnDef="subscriptionStartDate">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartDate || 'Start Date' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.startDate }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.subscriptionStartDate }}</mat-cell>
               </ng-container>
-              <ng-container matColumnDef="endDate">
+              <ng-container matColumnDef="subscriptionEndDate">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndDate || 'End Date' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.endDate }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.subscriptionEndDate }}</mat-cell>
               </ng-container>
-              <ng-container matColumnDef="status">
+              <ng-container matColumnDef="isActive">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.status }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.isActive == true ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Expired' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="action">
                 <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
@@ -93,7 +93,7 @@
                   <!-- <button mat-stroked-button color="primary" class='actionBtn' *ngIf="row.status == 'Expired' ? true : false ">
                      shop
                   </button>  -->
-                  <button type="button" class="btn btn-outline-primary btn-sm" *ngIf="row.status == 'Expired' ? true : false " [disabled]="!adminAccessType.adminReadOnlyAccess">Shop</button>           
+                  <button type="button" class="btn btn-outline-primary btn-sm" *ngIf="row.isActive == false ? true : false " [disabled]="!adminAccessType.adminReadOnlyAccess">Shop</button>           
                </mat-cell>
               </ng-container>
               <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

@@ -20,6 +20,7 @@ import { OrganizationService } from './services/organization.service';
 import { DriverService } from './services/driver.service';
 import { FeatureService } from './services/feature.service';
 import { PackageService } from './services/package.service';
+import { SubscriptionService } from './services/subscription.service';
 import { AppInterceptor } from './interceptor/app.interceptor';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
@@ -49,7 +50,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     PreferencesModule
     //RouterModule.forRoot(appRoute)
   ],
-  providers: [{provide: HTTP_INTERCEPTORS,useClass: AppInterceptor,multi:true},{provide: LocationStrategy, useClass: HashLocationStrategy}, DataInterchangeService, AccountService, RoleService, OrganizationService, DriverService, FeatureService, PackageService],
+  providers: [{provide: HTTP_INTERCEPTORS,useClass: AppInterceptor,multi:true},{provide: LocationStrategy, useClass: HashLocationStrategy}, DataInterchangeService, AccountService, RoleService, OrganizationService, DriverService, FeatureService, PackageService, SubscriptionService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
