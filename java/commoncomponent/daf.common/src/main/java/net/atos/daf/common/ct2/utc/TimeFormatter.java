@@ -61,6 +61,13 @@ public class TimeFormatter implements Serializable {
 	 * This method returns the current UTC time
 	 * return long
 	 */
+	public String getCurrentUTCTimeInStringFmt() {
+		return Instant.now().toString();
+	}
+	/**
+	 * This method returns the current UTC time
+	 * return long
+	 */
 	public long getCurrentUTCTimeInSec() {
 		return ZonedDateTime.now(zoneId).toInstant().getEpochSecond();
 	}

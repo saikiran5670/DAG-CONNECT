@@ -295,13 +295,13 @@ export class AccountService {
       .pipe(catchError(this.handleError));
   }
 
-  getAccessRelationshipDetails(orgId: any): Observable<any[]> {
+  getAccessRelationshipDetails(orgId: any, accountStatus: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.accountServiceUrl}/accessrelationship/getdetails?organizationId=${orgId}`, headers)
+      .get<any[]>(`${this.accountServiceUrl}/accessrelationship/getdetails?organizationId=${orgId}&isAccount=${accountStatus}`, headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -353,24 +353,91 @@ export class AccountService {
       .pipe(catchError(this.handleError));
   }
 
-  deleteVehicleAccessRelationship(orgId:any, id: any): Observable<void> {
+  deleteVehicleAccessRelationship(orgId: any, id: any, groupStatus: any): Observable<void> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .delete<void>(`${this.accountServiceUrl}/accessrelationship/vehicle/delete?organizationId=${orgId}&Id=${id}`, headers)
+      .delete<void>(`${this.accountServiceUrl}/accessrelationship/vehicle/delete?organizationId=${orgId}&Id=${id}&isGroup=${groupStatus}`, headers)
       .pipe(catchError(this.handleError));
   }
 
-  deleteAccountAccessRelationship(orgId:any, id: any): Observable<void> {
+  deleteAccountAccessRelationship(orgId: any, id: any, groupStatus: any): Observable<void> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .delete<void>(`${this.accountServiceUrl}/accessrelationship/account/delete?organizationId=${orgId}&Id=${id}`, headers)
+      .delete<void>(`${this.accountServiceUrl}/accessrelationship/account/delete?organizationId=${orgId}&Id=${id}&isGroup=${groupStatus}`, headers)
       .pipe(catchError(this.handleError));
+  }
+
+  createpassword(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.accountServiceUrl}/createpassword`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  resetPassword(data: any): Observable<any[]> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
+    // let headerObj = this.generateHeader();
+    // const headers = {
+    //   headers: new HttpHeaders({ headerObj }),
+    // // };
+    // return this.httpClient
+    //   .post<any[]>(
+    //     `${this.accountServiceUrl}/resetpassword`, data, headers
+    //   )
+    //   .pipe(catchError(this.handleError));
+    return this.httpClient.post<any[]>(
+      `${this.accountServiceUrl}/resetpassword`, 
+       data , 
+      { headers, responseType: 'text' as 'json'}
+    ).pipe(catchError(this.handleError));
+  }
+
+  resetPasswordInitiate(data: any): Observable<any[]> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
+
+    // let headerObj = this.generateHeader();
+    // const headers = {
+    //   headers: new HttpHeaders({ headerObj }),
+    // };
+    // return this.httpClient
+    //   .post<any[]>(
+    //     `${this.accountServiceUrl}/resetpasswordinitiate`, data, { headers, responseType: 'text'}
+    //   )
+    //   .pipe(catchError(this.handleError));
+    return this.httpClient.post<any[]>(
+      `${this.accountServiceUrl}/resetpasswordinitiate`, 
+       data , 
+      { headers, responseType: 'text' as 'json'}
+    ).pipe(catchError(this.handleError));
+  }
+
+  resetPasswordInvalidate(data: any): Observable<any[]> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
+    // let headerObj = this.generateHeader();
+    // const headers = {
+    //   headers: new HttpHeaders({ headerObj }),
+    // };
+    // return this.httpClient
+    //   .post<any[]>(
+    //     `${this.accountServiceUrl}/resetpasswordinvalidate`, data, headers
+    //   )
+    //   .pipe(catchError(this.handleError));
+    return this.httpClient.post<any[]>(
+      `${this.accountServiceUrl}/resetpasswordinvalidate`, 
+       data , 
+      { headers, responseType: 'text' as 'json'}
+    ).pipe(catchError(this.handleError));
   }
 
   private handleError(errResponse: HttpErrorResponse) {

@@ -7,8 +7,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
         public string Code { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
-        public int FeatureSetId { get; set; }
-        public bool  Status { get; set; }
-        public string PackageCodes { get; set; }
+        public int FeatureSetId { get; set; }      
+        public string Status { get; set; }
+        
     }
 }

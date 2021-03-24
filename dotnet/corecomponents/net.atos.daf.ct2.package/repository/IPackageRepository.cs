@@ -17,12 +17,12 @@ namespace net.atos.daf.ct2.package.repository
         Task<List<Package>> Export();
 
 
-        Task<Feature> GetFeature(int featureId);
+        //Task<Feature> GetFeature(int featureId);
 
 
-        Task<FeatureSet> Create(FeatureSet featureSet);
-        Task<FeatureSet> Update(FeatureSet featureSet);
-        Task<FeatureSet> GetFeatureSet(int featureSetId);
+        //Task<FeatureSet> Create(FeatureSet featureSet);
+        //Task<FeatureSet> Update(FeatureSet featureSet);
+        //Task<FeatureSet> GetFeatureSet(int featureSetId);
 
     }
 }

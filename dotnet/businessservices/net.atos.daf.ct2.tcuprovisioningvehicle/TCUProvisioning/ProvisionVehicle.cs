@@ -22,16 +22,13 @@ using System.Threading.Tasks;
 using TCUReceive;
 using net.atos.daf.ct2.organization.entity;
 using net.atos.daf.ct2.audit.Enum;
-
+using net.atos.daf.ct2.identitysession.repository;
+using net.atos.daf.ct2.identitysession;
 
 namespace TCUProvisioning
-{
-
-    
-
+{    
     class ProvisionVehicle
-    {
-       
+    {       
         private ILog log;
         private string brokerList;
         private string connStr ;
@@ -60,8 +57,7 @@ namespace TCUProvisioning
             ConsumerConfig consumerConfig = getConsumer();
 
             using (var consumer = new ConsumerBuilder<Null, string>(consumerConfig).Build())
-            {
-               
+            {               
                 log.Info("Subscribing Topic");
                 consumer.Subscribe(topic);
 
@@ -115,7 +111,6 @@ namespace TCUProvisioning
             };
             return config;
         }
-
 
         async Task updateVehicleDetails(TCUDataReceive TCUDataReceive, string psqlConnString)
         {
@@ -179,13 +174,13 @@ namespace TCUProvisioning
 
                 log.Info("Creating Vehicle Object in database");
                 veh = await vehicleManager.Create(receivedVehicle);
-                
-                _auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create method in TCU Vehicle Component", 0, veh.ID, JsonConvert.SerializeObject(receivedVehicle));
+
+                await _auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create method in TCU Vehicle Component", 0, veh.ID, JsonConvert.SerializeObject(receivedVehicle));
 
             }
             catch (Exception ex)
             {
-                _auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Create vehicle in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(receivedVehicle));
+                await _auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Create vehicle in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(receivedVehicle));
                 throw ex;
             }
 
@@ -217,17 +212,15 @@ namespace TCUProvisioning
                     relationship.isFirstRelation = true;
                     relationship.allow_chain = true;
                     await org.CreateOwnerRelationship(relationship);
-                    _auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create org relationship in TCU Vehicle Component", 0, vehId, JsonConvert.SerializeObject(relationship));
+                    await _auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create org relationship in TCU Vehicle Component", 0, vehId, JsonConvert.SerializeObject(relationship));
                 }
             }
             catch (Exception ex)
             {
-
-                _auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Create org relationship in TCU Vehicle Component", 0, vehId, JsonConvert.SerializeObject(relationship));
+                await _auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Create org relationship in TCU Vehicle Component", 0, vehId, JsonConvert.SerializeObject(relationship));
                 throw ex;
             }
         }
-
 
         private async Task<Vehicle> updateVehicle(Vehicle receivedVehicle, TCUDataReceive TCUDataReceive, VehicleManager vehicleManager) 
         {
@@ -236,7 +229,6 @@ namespace TCUProvisioning
             Vehicle veh = null;
             try
             {
-
                 receivedVehicle.Tcu_Id = TCUDataReceive.DeviceIdentifier;
                 receivedVehicle.Tcu_Serial_Number = TCUDataReceive.DeviceSerialNumber;
                 receivedVehicle.Is_Tcu_Register = true;
@@ -246,18 +238,16 @@ namespace TCUProvisioning
 
                 log.Info("Updating Vehicle details in database");
                 veh = await vehicleManager.Update(receivedVehicle);
-                _auditlog.AddLogs(DateTime.Now, DateTime.Now, (int)veh.Organization_Id, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "update vehicle in TCU Vehicle Component", 0, veh.ID, JsonConvert.SerializeObject(receivedVehicle));
-
+                await _auditlog.AddLogs(DateTime.Now, DateTime.Now, (int)veh.Organization_Id, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "update vehicle in TCU Vehicle Component", 0, veh.ID, JsonConvert.SerializeObject(receivedVehicle));
 
             }
             catch (Exception ex)
             {
-                _auditlog.AddLogs(DateTime.Now, DateTime.Now, (int)veh.Organization_Id, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "update vehicle in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(receivedVehicle));
+                await _auditlog.AddLogs(DateTime.Now, DateTime.Now, (int)veh.Organization_Id, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "update vehicle in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(receivedVehicle));
                 throw ex;
             }
             return veh;
         }
-
 
         private  VehicleFilter getFilteredVehicle(TCUDataReceive TCUDataReceive)
         {
@@ -275,8 +265,6 @@ namespace TCUProvisioning
             return vehicleFilter;
         }
 
-
-
         private OrganizationManager getOrgnisationManager(string psqlConnString, VehicleManager vehicleManager)
         {
             IDataAccess dataacess = new PgSQLDataAccess(psqlConnString);
@@ -288,6 +276,12 @@ namespace TCUProvisioning
 
             SubscriptionRepository subscriptionRepository = new SubscriptionRepository(dataacess);
             ISubscriptionManager subscriptionManager = new SubscriptionManager(subscriptionRepository);
+
+            AccountSessionRepository sessionRepository = new AccountSessionRepository(dataacess);
+            IAccountSessionManager accountSessionManager = new AccountSessionManager(sessionRepository);
+
+            AccountTokenRepository tokenRepository = new AccountTokenRepository(dataacess);
+            IAccountTokenManager accountTokenManager = new AccountTokenManager(tokenRepository);
 
             var idenityconfiguration = new IdentityJsonConfiguration()
             {
@@ -310,16 +304,13 @@ namespace TCUProvisioning
             IOptions<IdentityJsonConfiguration> setting = Options.Create(idenityconfiguration);
             net.atos.daf.ct2.identity.IAccountManager iaccountManager = new net.atos.daf.ct2.identity.AccountManager(setting);
           
-
             IAccountRepository accountrepo = new AccountRepository(dataacess);
             net.atos.daf.ct2.account.IAccountManager accManager = new net.atos.daf.ct2.account.AccountManager(accountrepo, audit, iaccountManager, config);
-           
 
-            OrganizationRepository orgRepo = new OrganizationRepository(dataacess, vehicleManager, groupManager, accManager, subscriptionManager);
+            OrganizationRepository orgRepo = new OrganizationRepository(dataacess, vehicleManager, groupManager, accManager, subscriptionManager, accountSessionManager, accountTokenManager);
             OrganizationManager org = new OrganizationManager(orgRepo,audit);
             return org;
         }
-
 
         private VehicleManager getVehicleManager(string psqlConnString)
         {
@@ -355,7 +346,6 @@ namespace TCUProvisioning
             }
             
         }
-
 
     }
 }

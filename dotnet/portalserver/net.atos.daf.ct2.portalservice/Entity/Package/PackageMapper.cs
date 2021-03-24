@@ -25,9 +25,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                 Description = request.Description,
                 Status = request.Status,
                 Type = request.Type,
+                IsActive=request.IsActive
 
             };
-            createPackagerequest.Features.AddRange(request.Features.Select(x => x.ToString()));
+            createPackagerequest.FeatureIds.AddRange(request.FeatureIds.Select(x => x));
             return createPackagerequest;
 
         }
@@ -60,7 +61,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
         {
 
             var packageRequest = new ImportPackageRequest();
-            foreach (var x in request.packages)
+            foreach (var x in request.packagesToImport)
             {
                 var featureSetID = _featureSetMapper.RetrieveFeatureSetIdByName(x.Features).Result;
                 if (featureSetID > 0)
@@ -72,7 +73,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                         Description = x.Description,
                         Name = x.Name,
                         Status = x.Status,
-                        Type = x.Type
+                        Type = x.Type,
+                        IsActive=x.IsActive
                     };
                     packageRequest.Packages.Add(pkgRequest);
                 }

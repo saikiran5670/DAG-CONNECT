@@ -32,84 +32,92 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {  
                 var authHeader = Request.Headers["Authorization"].ToString().Replace("Basic ", "");  
                 var identity = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(authHeader));
-                var arrUsernamePassword = identity.Split(':');  
-                if(string.IsNullOrEmpty(arrUsernamePassword[0]))
-                {
-                    return StatusCode(401,"invalid_grant: The username is Empty.");
-                }
-                else if(string.IsNullOrEmpty(arrUsernamePassword[1]))
-                {
-                    return StatusCode(401,"invalid_grant: The password is Empty.");
-                }
-                else
-                {
-                    AccountBusinessService.IdentityRequest identityRequest = new AccountBusinessService.IdentityRequest();
-                    identityRequest.UserName=arrUsernamePassword[0];
-                    identityRequest.Password=arrUsernamePassword[1];
-                    AccountBusinessService.AccountIdentityResponse response = await _accountClient.AuthAsync(identityRequest).ResponseAsync;
-                    if(response !=null && response.Code == AccountBusinessService.Responcecode.Success)
+                var arrUsernamePassword = identity.Split(':');
+                    if (string.IsNullOrEmpty(arrUsernamePassword[0]))
                     {
-                        Identity.Identity accIdentity = new Identity.Identity();
-                        accIdentity.AccountInfo = new Identity.Account(); ;
-                        accIdentity.AccountInfo.Id = response.AccountInfo.Id;
-                        accIdentity.AccountInfo.EmailId = response.AccountInfo.EmailId;
-                        accIdentity.AccountInfo.Salutation = response.AccountInfo.Salutation;
-                        accIdentity.AccountInfo.FirstName = response.AccountInfo.FirstName;
-                        accIdentity.AccountInfo.LastName = response.AccountInfo.LastName;
-                        accIdentity.AccountInfo.Organization_Id = response.AccountInfo.OrganizationId;
-                        accIdentity.AccountInfo.PreferenceId = response.AccountInfo.PreferenceId;
-                        accIdentity.AccountInfo.BlobId = response.AccountInfo.BlobId;
-                        if (response.AccOrganization != null && response.AccOrganization.Count > 0)
+                        return StatusCode(401, "invalid_grant: The username is Empty.");
+                    }
+                    else if (string.IsNullOrEmpty(arrUsernamePassword[1]))
+                    {
+                        return StatusCode(401, "invalid_grant: The password is Empty.");
+                    }
+                    else
+                    {
+                        AccountBusinessService.IdentityRequest identityRequest = new AccountBusinessService.IdentityRequest();
+                        identityRequest.UserName = arrUsernamePassword[0];
+                        identityRequest.Password = arrUsernamePassword[1];
+                        AccountBusinessService.AccountIdentityResponse response = await _accountClient.AuthAsync(identityRequest).ResponseAsync;
+                        if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                         {
-                            accIdentity.AccountOrganization = new List<Identity.KeyValue>();
-                            Identity.KeyValue keyValue = new Identity.KeyValue();
-                            foreach (var accOrg in response.AccOrganization)
+                            Identity.Identity accIdentity = new Identity.Identity();
+                            accIdentity.AccountInfo = new Identity.Account(); ;
+                            accIdentity.AccountInfo.Id = response.AccountInfo.Id;
+                            accIdentity.AccountInfo.EmailId = response.AccountInfo.EmailId;
+                            accIdentity.AccountInfo.Salutation = response.AccountInfo.Salutation;
+                            accIdentity.AccountInfo.FirstName = response.AccountInfo.FirstName;
+                            accIdentity.AccountInfo.LastName = response.AccountInfo.LastName;
+                            accIdentity.AccountInfo.Organization_Id = response.AccountInfo.OrganizationId;
+                            accIdentity.AccountInfo.PreferenceId = response.AccountInfo.PreferenceId;
+                            accIdentity.AccountInfo.BlobId = response.AccountInfo.BlobId;
+                            if (response.AccOrganization != null && response.AccOrganization.Count > 0)
                             {
-                                keyValue = new Identity.KeyValue();
-                                keyValue.Id = accOrg.Id;
-                                keyValue.Name = accOrg.Name;
-                                accIdentity.AccountOrganization.Add(keyValue);
+                                accIdentity.AccountOrganization = new List<Identity.KeyValue>();
+                                Identity.KeyValue keyValue = new Identity.KeyValue();
+                                foreach (var accOrg in response.AccOrganization)
+                                {
+                                    keyValue = new Identity.KeyValue();
+                                    keyValue.Id = accOrg.Id;
+                                    keyValue.Name = accOrg.Name;
+                                    accIdentity.AccountOrganization.Add(keyValue);
+                                }
                             }
-                        }
-                        if (response.AccountRole != null && response.AccountRole.Count > 0)
-                        {
-                             accIdentity.AccountRole = new List<AccountOrgRole>();
-                            Identity.AccountOrgRole accRole = new Identity.AccountOrgRole();
-                            foreach (var accrole in response.AccountRole)
+                            if (response.AccountRole != null && response.AccountRole.Count > 0)
                             {
-                                accRole = new Identity.AccountOrgRole();
-                                accRole.Id = accrole.Id;
-                                accRole.Name = accrole.Name;
-                                accRole.Organization_Id= accrole.OrganizationId;
-                                accIdentity.AccountRole.Add(accRole);
+                                accIdentity.AccountRole = new List<AccountOrgRole>();
+                                Identity.AccountOrgRole accRole = new Identity.AccountOrgRole();
+                                foreach (var accrole in response.AccountRole)
+                                {
+                                    accRole = new Identity.AccountOrgRole();
+                                    accRole.Id = accrole.Id;
+                                    accRole.Name = accrole.Name;
+                                    accRole.Organization_Id = accrole.OrganizationId;
+                                    accIdentity.AccountRole.Add(accRole);
+                                }
                             }
-                        }
-                        if (response.Authenticated)
-                        {
-                            //var claims = new List<Claim>
-                            //{
-                            //    new Claim(ClaimTypes.Email,accIdentity.AccountInfo.EmailId)
-                            //};
-                            //var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                            //var authProperties = new AuthenticationProperties();
-                            //await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+                            if (response.Authenticated)
+                            {
+                                //var claims = new List<Claim>
+                                //{
+                                //    new Claim(ClaimTypes.Email,accIdentity.AccountInfo.EmailId)
+                                //};
+                                //var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                                //var authProperties = new AuthenticationProperties();
+                                //await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
-                            var claims = new List<Claim>
+                                var claims = new List<Claim>
                                 {
                                     new Claim(ClaimTypes.Email, accIdentity.AccountInfo.EmailId),
                                     new Claim(ClaimTypes.Name, accIdentity.AccountInfo.FirstName)
                                 };
 
-                            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,new ClaimsPrincipal(claimsIdentity));
+                                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+                            }
+                            return Ok(accIdentity);
                         }
-                        return Ok(accIdentity); 
+                        else if (response != null && response.Code == AccountBusinessService.Responcecode.Failed)
+                        {
+                            return StatusCode(500, response.Message);
+                        }
+                        else if (response != null && response.Code == AccountBusinessService.Responcecode.Failed)
+                        {
+                            return StatusCode(500, response.Message);
+                        }
+                        else
+                        {
+                            return StatusCode(500, "Please contact system administrator.");
+                        }
                     }
-                    else 
-                    {
-                        return StatusCode(500,"Please contact system administrator 123");
-                    }
-                }
             }
             else 
             {

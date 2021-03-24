@@ -28,6 +28,8 @@ export class RelationshipManagementComponent implements OnInit {
   organizationId: number;
   localStLanguage: any;
   showLoadingIndicator: any;
+  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  userType: any = localStorage.getItem("userType");
 
   constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private organizationService: OrganizationService) {
     this.defaultTranslation();

@@ -31,6 +31,7 @@ export class LoginComponent implements OnInit {
   invalidUserMsg: boolean = false;
   cookiesFlag: boolean = true;
   forgotPwdFlag: boolean = false;
+  resetPwdFlag: boolean = false;
   dialogRefLogin: MatDialogRef<LoginDialogComponent>;
   maintenancePopupFlag: boolean = false;
   loginClicks = 0;
@@ -43,17 +44,35 @@ export class LoginComponent implements OnInit {
       'password': [null, Validators.compose([Validators.required])]
     });
     this.forgotPasswordForm = this.fb.group({
-      'email': [null, Validators.compose([Validators.required, Validators.email])]
+      'emailId': [null, Validators.compose([Validators.required, Validators.email])]
     });
-    
+
     this.cookiesFlag = this.cookieService.get('cookiePolicy') ? false : true;
   }
 
   ngOnInit(): void {
   }
+  public getCookieValue(name:string) {
+    document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || ''
+  }
+
+  public getCookie(name: string) {
+    const ca: Array<string> = decodeURIComponent(document.cookie).split(';');
+    const caLen: number = ca.length;
+    const cookieName = `${name}=`;
+    let c: string;
+
+    for (let i  = 0; i < caLen; i += 1) {
+        c = ca[i].replace(/^\s+/g, '');
+        if (c.indexOf(cookieName) === 0) {
+            return c.substring(cookieName.length, c.length);
+        }
+    }
+    return '';
+  }
 
   public onLogin(values: Object) {
-    
+
     if (this.loginForm.valid) {
       //console.log("values:: ", values)
        this.authService.signIn(this.loginForm.value).subscribe((data:any) => {
@@ -61,7 +80,10 @@ export class LoginComponent implements OnInit {
          if(data.status === 200){
            this.invalidUserMsg = false;
             //this.cookiesFlag = true;
-
+            let _cookie=this.getCookie('Account');
+            let _cookie1=this.getCookieValue('Account');
+            console.log('cookie: ' ,_cookie);
+            console.log('cookie1: ' ,_cookie1);
             let loginObj = {
               id: data.body.accountInfo.id,
               organizationId: 0,
@@ -85,7 +107,7 @@ export class LoginComponent implements OnInit {
           console.log("Error: " + error);
           this.invalidUserMsg = true;
           //this.cookiesFlag = false;
-        }) 
+        })
 
        //--------- For Mock------//
       //  if(this.loginForm.value.username === 'testuser@atos.net' && this.loginForm.value.password === '123456'){
@@ -102,7 +124,14 @@ export class LoginComponent implements OnInit {
   public onResetPassword(values: object): void {
     console.log("values:: ", values)
     if (this.forgotPasswordForm.valid) {
+      this.accountService.resetPasswordInitiate(values).subscribe(data => {
+        if(data){
+          this.forgotPwdFlag = false;
+          this.resetPwdFlag = true;
+        }
+      },(error)=> {
 
+      })
     }
   }
 
@@ -119,16 +148,16 @@ export class LoginComponent implements OnInit {
       data.accountId = 0;
     }
     localStorage.setItem('accountId', data.accountId);
-    
+
   //---Test scenario -----//
   //  org  role  action
   //  0     0    popup skip - dashboard with no data
   //  1     0    popup skip - dashboard with org data only
   //  1     1    popup skip - dashboard with both role & org data
   //  2     0    popup show w/o role - dashboard with org data only
-  //  2	    1    popup show with both data - dashboard with both role & org data 
-  //  1     2    popup show with both data - dashboard with both role & org data 
-  
+  //  2	    1    popup show with both data - dashboard with both role & org data
+  //  1     2    popup show with both data - dashboard with both role & org data
+
   //--- Test data-------------
     //data.accountOrganization.push({id: 1, name: 'Org01'});
     //data.accountRole.push({id: 1, name: 'Role01'});
@@ -191,11 +220,13 @@ export class LoginComponent implements OnInit {
   }
 
   onForgetPassword() {
-    //this.forgotPwdFlag = true;
+    this.forgotPwdFlag = true;
   }
 
   onBackToLogin() {
+    this.forgotPasswordForm.controls.emailId.setValue("");
     this.forgotPwdFlag = false;
+    this.resetPwdFlag = false;
   }
 
   onCancel(){

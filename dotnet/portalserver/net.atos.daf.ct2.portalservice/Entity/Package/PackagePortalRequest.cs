@@ -8,23 +8,25 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
     {
         public int Id { get; set; }
         [Required]
-        [StringLength(20, MinimumLength = 7)]
+        [StringLength(20)]
         public string Code { get; set; }
+        [Required]
         public int FeatureSetID { get; set; }
+        [Required]      
+        public List<int> FeatureIds { get; set; }
         [Required]
-        public List<string> Features { get; set; }
-        [Required]
-        [StringLength(50, MinimumLength = 5)]
+        [StringLength(50)]
         public string Name { get; set; }
+        [Required]
+        [StringLength(1)]
         public string Type { get; set; }
-        [StringLength(120)]
-        public string Description { get; set; }        
-        public bool Status { get; set; }
+        [StringLength(100)]
+        public string Description { get; set; }
+        public bool IsActive { get; set; }
+        [Required]
+        [StringLength(1)]
+        public string Status { get; set; }
+        public long CreatedAt { get; set; }
     }
 
-    public class PackageImportRequest
-    {
-        [Required]
-        public List<PackagePortalRequest> packages { get; set; }
-    }
 }

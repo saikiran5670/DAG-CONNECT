@@ -18,17 +18,19 @@ export class ConsentOptComponent implements OnInit {
   closePopup: boolean = true;
   accountOrganizationId: any = 0;
   accountId: any = 0;
-  orgInheritMode: any = 'I'; // TODO: check current organisation opt-out/opt-in status 
+  orgInheritMode: any;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     translationData: any,
     driverData: any,
     actionType: any,
-    consentType: any
+    consentType: any,
+    organizationData: any
   }, private mdDialogRef: MatDialogRef<ConsentOptComponent>, private driverService: DriverService) {
     this.organizationName = localStorage.getItem('organizationName');
     this.totalDrivers = data.driverData.length;
     this.showOptOutMsg = data.consentType === 'U' ? true : false;
+    this.orgInheritMode = data.organizationData ? data.organizationData.driverOptIn : 'I'; //-- org driver dafult
     this.getConsentMsg(data.consentType); 
   }
 

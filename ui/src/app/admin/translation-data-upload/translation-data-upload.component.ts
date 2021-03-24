@@ -40,6 +40,8 @@ export class TranslationDataUploadComponent implements OnInit {
   isTranslationDataUploaded: boolean = false;
   dialogRef: MatDialogRef<LanguageSelectionComponent>;
   excelEmptyMsg: boolean = false;
+  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  userType: any = localStorage.getItem("userType");
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) { 
       this.defaultTranslation();
@@ -138,14 +140,15 @@ export class TranslationDataUploadComponent implements OnInit {
     this.translationService.importTranslationData(langObj).subscribe(data => {
       if(data){
         console.log(data);
+        let msg= this.translationData.lblTranslationFileSuccessfullyUploaded ? this.translationData.lblTranslationFileSuccessfullyUploaded : "Translation file successfully uploaded";
+        this.successMsgBlink(msg);
+        this.isTranslationDataUploaded = true;
       }
     }, (error) => {
-
+      
     });
     
-    let msg= this.translationData.lblTranslationFileSuccessfullyUploaded ? this.translationData.lblTranslationFileSuccessfullyUploaded : "Translation file successfully uploaded";
-    this.successMsgBlink(msg);
-    this.isTranslationDataUploaded = true;
+    
   }
 
   applyFilter(filterValue: string) {

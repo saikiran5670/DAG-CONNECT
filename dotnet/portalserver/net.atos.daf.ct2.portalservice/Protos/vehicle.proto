@@ -32,6 +32,22 @@ service VehicleService {
   rpc GetDynamicVisibleVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
   rpc GetDynamicOwnedVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
   rpc GetRelationshipVehicles (OrgvehicleIdRequest) returns (VehicleListResponce);
+  rpc GetVehicleBySubscriptionId (subscriptionIdRequest) returns (VehiclesBySubscriptionDetailsResponse);
+}
+
+message VehiclesBySubscriptionDetailsResponse{
+ repeated VehiclesBySubscriptionDetails response =1;
+}
+message VehiclesBySubscriptionDetails{
+ string orderId  = 1;
+ string name = 2;
+ string vin = 3;
+ string license_plate_number = 4;
+ int32 id = 5;
+}
+
+message subscriptionIdRequest{
+ string subscriptionId = 1;
 }
 
 enum VehicleStatusType{

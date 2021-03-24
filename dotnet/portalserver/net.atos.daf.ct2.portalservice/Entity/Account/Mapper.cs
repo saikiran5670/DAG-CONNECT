@@ -333,6 +333,7 @@ namespace net.atos.daf.ct2.portalservice.Account
                 accessRelationship.Name = request.Name;
                 accessRelationship.IsGroup = request.IsGroup;
                 accessRelationship.Count = request.Count;
+                accessRelationship.AccessType = request.AccessType;
             }
             if (request.AssociateData != null)
             {

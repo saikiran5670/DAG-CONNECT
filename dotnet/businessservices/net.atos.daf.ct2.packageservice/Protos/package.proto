@@ -16,6 +16,7 @@ message PackageResponse {
   Responsecode Code=1;
   string Message = 2;
   PackageDeleteRequest PackageDeleteRequest= 3; 
+   int32 packageId=4;
 }
 
 message ImportPackageRequest
@@ -34,22 +35,26 @@ message PackageCreateRequest {
     int32 Id=1;
     string Code=2;
     int32 FeatureSetID=3;
-    repeated string Features =4;
+    repeated int32 FeatureIds =4;
     string Name=5;
     string Type =6;
     string Description=7;    
-    bool Status =8;
+    bool IsActive =8;
+    string Status =9;
+    int64 createdAt=10; 
   }
 
   message PackageUpdateRequest { 
     int32 Id=1;
     string Code=2;
     int32 FeatureSetID=3;
-    repeated string Features =4;
+    repeated int32 FeatureIds =4;
     string Name=5;
     string Type =6;
     string Description=7;    
-    bool Status =8;
+    bool IsActive =8;
+    string Status =9;
+    int64 createdAt=10; 
   }
    message PackageDeleteRequest {
     int32 Id = 1;  
@@ -58,11 +63,13 @@ message PackageCreateRequest {
     int32 Id=1;
     string Code= 2;
     int32 FeatureSetID =3;    
-    repeated string Features =4;
+    repeated int32 FeatureIds =4;
     string Name=5;
     string Type =6;
     string Description=7; 
-    bool Status =8;
+    bool IsActive =8;
+    string Status =9;
+    int64 createdAt=10; 
 }
 message GetPackageResponce { 
    Responsecode code=1;  

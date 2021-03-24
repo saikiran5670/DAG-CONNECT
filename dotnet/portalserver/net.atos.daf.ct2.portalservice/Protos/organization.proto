@@ -30,8 +30,21 @@ service OrganizationService {
   rpc EndOrgRelationShip (EndOrgRelationShipRequest) returns (EndOrgRelationshipResponse);
   rpc AllowChaining (ChainingRequest) returns (ChainingResponse); 
   rpc GetOrgRelationshipMapping (OrgRelationshipMappingGetRequest) returns (OrgRelationshipGetResponse);
+  rpc GetAllOrganizations (OrganizationByID) returns (OrganizationprimaryFieldsListResponse);
 }
 
+message OrganizationprimaryFieldsListResponse{
+ repeated OrganizationprimaryFieldsResponse Response = 1;
+}
+
+message OrganizationByID{
+ int32 id = 1;
+}
+
+message OrganizationprimaryFieldsResponse{
+ int32 id = 1;
+ string name = 2;
+}
 message OrgRelationshipMappingGetRequest
 {
     int32 id = 1;

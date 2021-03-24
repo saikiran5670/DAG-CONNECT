@@ -62,9 +62,9 @@ namespace net.atos.daf.ct2.organization
             return await organizationRepository.GetAll(organizationId);
         }
 
-        public async Task<List<OrganizationNameandID>> Get(OrganizationNameandID request)
+        public async Task<List<OrganizationNameandID>> Get(OrganizationByID objOrganizationByID)
         {
-            return await organizationRepository.Get(request);
+            return await organizationRepository.Get(objOrganizationByID);
         }
         public async Task<int> IsOwnerRelationshipExist(int VehicleID)
         {

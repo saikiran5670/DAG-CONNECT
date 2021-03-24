@@ -16,14 +16,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 
 export class FeatureManagementComponent implements OnInit {
-  //--------Rest data-----------//
   featureRestData: any = [];
   dataAttributeList: any = [];
-
-  //displayedColumns = ['name','type', 'setName', 'setType', 'dataAttribute', 'status', 'action'];
   displayedColumns = ['name','dataAttribute.isExclusive','state', 'action'];
   selectedElementData: any;
-  //-------------------------//
   titleVisible : boolean = false;
   feautreCreatedMsg : any = '';
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -31,8 +27,9 @@ export class FeatureManagementComponent implements OnInit {
   initData: any = [];
   accountOrganizationId: any = 0;
   localStLanguage: any;
+  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  userType: any = localStorage.getItem("userType");
   dataSource: any;
-  // viewFlag: any;
   translationData: any;
   createEditViewFeatureFlag: boolean = false;
   actionType: any;
@@ -77,23 +74,19 @@ export class FeatureManagementComponent implements OnInit {
       this.processTranslation(data);
       this.loadFeatureData();
     });
-      this.loadFeatureData();
   }
 
   loadFeatureData(){
-  
     this.featureService.getFeatures().subscribe((data : any) => {
       let filterTypeData = data.filter(item => item.type == "D");
-
       this.updatedTableData(filterTypeData);
-    })
-
+    });
   }
 
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
-    data.forEach((row: any) => {
-      let createdDate = new Date(row.createdAt).getTime(); //  need to check API response.
+    data.forEach(row => {
+      let createdDate = parseInt(row.createdAt); 
       let nextDate = createdDate + 86400000;
       if(currentDate > createdDate && currentDate < nextDate){
         row.newTag = true;
@@ -103,11 +96,11 @@ export class FeatureManagementComponent implements OnInit {
       }
     });
     let newTrueData = data.filter(item => item.newTag == true);
+    newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
     let newFalseData = data.filter(item => item.newTag == false);
     Array.prototype.push.apply(newTrueData, newFalseData); 
     return newTrueData;
   }
-
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -120,17 +113,9 @@ export class FeatureManagementComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
-  createNewFeature(){
-
-    
-    this.featureService.getDataAttribute().subscribe((data : any) => {
-      // console.log("--getDataAttribute---",data)
-      this.dataAttributeList = data;
-      this.actionType = 'create';
-      this.createEditViewFeatureFlag = true;
-
-    })
-
+  createNewFeature(){ 
+    this.actionType = 'create';
+    this.getDataAttributeList();
   }
 
   onClose(){
@@ -138,14 +123,16 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   editViewFeature(rowData: any, type: any){
-    // console.log("----rowData--- in parent---",rowData,type)
+    this.actionType = type;
+    this.selectedElementData = rowData;
+    this.getDataAttributeList();
+  }
+
+  getDataAttributeList(){
     this.featureService.getDataAttribute().subscribe((data : any) => {
-      this.dataAttributeList =  data;
-      this.actionType = type;
-      this.selectedElementData = rowData;
+      this.dataAttributeList = data;
       this.createEditViewFeatureFlag = true;
-    }) 
-   
+    });
   }
 
   changeFeatureStatus(rowData: any){
@@ -170,7 +157,6 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   deleteFeature(rowData: any){
-    let fetureId = rowData.id;
     const options = {
       title: this.translationData.lblDelete || "Delete",
       message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
@@ -179,23 +165,13 @@ export class FeatureManagementComponent implements OnInit {
     };
     this.dialogService.DeleteModelOpen(options, rowData.name);
     this.dialogService.confirmedDel().subscribe((res) => {
-    if (res) {
-        this.featureService.deleteFeature(fetureId).subscribe((data) => {
-          this.openSnackBar('Item delete', 'dismiss');
+      if(res) {
+        let fetureId = rowData.id;
+        this.featureService.deleteFeature(fetureId).subscribe((data: any) => {
+          this.successMsgBlink(this.getDeletMsg(rowData.name));
           this.loadFeatureData();
-        })
-        this.successMsgBlink(this.getDeletMsg(rowData.name));
+        });
       }
-    });
-    
-  }
-  openSnackBar(message: string, action: string) {
-    let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
-    snackBarRef.afterDismissed().subscribe(() => {
-      console.log('The snackbar is dismissed');
-    });
-    snackBarRef.onAction().subscribe(() => {
-      console.log('The snackbar action was triggered!');
     });
   }
 
@@ -215,19 +191,20 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   checkCreationForFeature(item: any){
-    // console.log("---item---",item)
-    this.createEditViewFeatureFlag = !this.createEditViewFeatureFlag;
+    //this.createEditViewFeatureFlag = !this.createEditViewFeatureFlag;
+    this.createEditViewFeatureFlag = item.stepFlag;
     if(item.successMsg) {
       this.successMsgBlink(item.successMsg);
     }
     if(item.tableData) {
-      this.updatedTableData(item.tableData)
+      this.initData = item.tableData;
     }
+    this.updatedTableData(this.initData);
   }
 
   updatedTableData(tableData : any) {
     this.initData = tableData;
-    // this.initData = this.getNewTagData(filterTypeData);
+    // this.initData = this.getNewTagData(this.initData);
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
