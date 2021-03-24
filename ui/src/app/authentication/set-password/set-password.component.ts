@@ -52,7 +52,8 @@ export class SetPasswordComponent implements OnInit {
       this.accountService.resetPasswordInvalidate(objData).subscribe(data => {
         this.isResetPwdInvalidate= true;
       },(error)=> {
-
+        this.isResetPwdInvalidate= true;
+        this.errorMsg= 'InvalidateFailed'
       })
     }
   }
