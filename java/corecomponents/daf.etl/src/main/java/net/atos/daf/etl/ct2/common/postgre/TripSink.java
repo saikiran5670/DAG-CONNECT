@@ -18,8 +18,10 @@ import net.atos.daf.common.ct2.exception.TechnicalException;
 import net.atos.daf.common.ct2.util.DAFConstants;
 //import net.atos.daf.etl.ct2.common.bo.Trip;
 import net.atos.daf.etl.ct2.common.util.ETLConstants;
+import net.atos.daf.postgre.bo.Co2Master;
 import net.atos.daf.postgre.bo.Trip;
 import net.atos.daf.postgre.connection.PostgreDataSourceConnection;
+import net.atos.daf.postgre.dao.Co2MasterDao;
 import net.atos.daf.postgre.dao.TripSinkDao;
 
 public class TripSink extends RichSinkFunction<Trip> implements Serializable{
@@ -31,11 +33,13 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private PreparedStatement statement;
 	private Connection connection;
+	private Connection masterConnection;
 	private List<Trip> queue;//=new ArrayList<Trip>();
 	private List<Trip> synchronizedCopy;// = new ArrayList<Trip>();
 	TripSinkDao tripDao; //= new TripSinkDao();
+	Co2MasterDao cmDAO;
 	
-	String query = "INSERT INTO tripdetail.trip_statistics( trip_id, vin, start_time_stamp, end_time_stamp, veh_message_distance, etl_gps_distance, idle_duration"
+	/*String query = "INSERT INTO tripdetail.trip_statistics( trip_id, vin, start_time_stamp, end_time_stamp, veh_message_distance, etl_gps_distance, idle_duration"
 			+ ", average_speed, average_weight, start_odometer, last_odometer, start_position_lattitude, start_position_longitude, end_position_lattitude"
 			+ ", end_position_longitude, veh_message_fuel_consumed, etl_gps_fuel_consumed, veh_message_driving_time"
 			+ ", etl_gps_driving_time, message_received_timestamp, message_inserted_into_kafka_timestamp, message_inserted_into_hbase_timestamp, message_processed_by_etl_process_timestamp"
@@ -55,19 +59,24 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 			+ ", cruise_control_distance_50_75 = ?, cruise_control_distance_more_than_75 = ?, average_traffic_classification = ?"
 			+ ", cc_fuel_consumption = ?, v_cruise_control_fuel_consumed_for_cc_fuel_consumption = ?, v_cruise_control_dist_for_cc_fuel_consumption = ?"
 			+ ", fuel_consumption_cc_non_active = ?, idling_consumption = ?, dpa_score = ?, driver1_id = ?, driver2_id = ?, etl_gps_trip_time = ?, is_ongoing_trip = ?";
-
+*/
 	  
 	  @Override
 	public void invoke(Trip rec) throws Exception {
 
 		try {
 			queue.add(rec);
+			Co2Master cmData = cmDAO.read();
+			
 			if (queue.size() >= 1) {
 				System.out.println("inside syncronized");
 				synchronized (synchronizedCopy) {
 					synchronizedCopy = new ArrayList<Trip>(queue);
 					queue.clear();
 					for (Trip tripData : synchronizedCopy) {
+						if(tripData.getVUsedFuel()!=null)
+							tripData.setTripCalC02Emission((tripData.getVUsedFuel() * cmData.getCoefficient_D()) / 1000);
+					
 					tripDao.insert(tripData);
 					// jPAPostgreDao.saveTripDetails(synchronizedCopy);
 					System.out.println("save done");
@@ -510,6 +519,7 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 		tripDao = new TripSinkDao();
 		queue =new ArrayList<Trip>();
 		synchronizedCopy = new ArrayList<Trip>();
+		cmDAO = new Co2MasterDao();
 		connection=PostgreDataSourceConnection.getInstance().getDataSourceConnection(envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME),
 				Integer.parseInt(envParams.get(ETLConstants.DATAMART_POSTGRE_PORT)),
 				envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME),
@@ -517,6 +527,15 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
 				envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
 		System.out.println("In trip sink connection done" + connection);
 		tripDao.setConnection(connection);
+		
+		masterConnection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
+				envParams.get(ETLConstants.MASTER_POSTGRE_SERVER_NAME),
+				Integer.parseInt(envParams.get(ETLConstants.MASTER_POSTGRE_PORT)),
+				envParams.get(ETLConstants.MASTER_POSTGRE_DATABASE_NAME),
+				envParams.get(ETLConstants.MASTER_POSTGRE_USER),
+				envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD));
+		cmDAO.setConnection(masterConnection);
+		
 		
 		/*//TODOonly for testing remove
  		System.out.println("envParams.get(ETLConstants.POSTGRE_SQL_SERVER_NAME) :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME));
@@ -553,6 +572,11 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable{
         	System.out.println("Releasing connection from Trip Job");
             connection.close();
         }
+        if (masterConnection != null) {
+        	System.out.println("Releasing Master connection from Trip Job");
+        	masterConnection.close();
+        }
+       
         super.close(); 
 		
     }
