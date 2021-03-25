@@ -86,5 +86,8 @@ public class DafConstants {
 	public static final String QUERY_LIVEFLEET_TRIP_STATISTICS = "livefleet.trip.statistics.query";
 	public static final String QUERY_LIVEFLEET_TRIP_READ = "livefleet.trip.read.query";
 	public static final String QUERY_LIVEFLEET_POSITION_READ = "livefleet.position.read.query";
+	
+	
+	public static final int CURRENT_TRIP_INDICATOR = 1;		
 
 }
