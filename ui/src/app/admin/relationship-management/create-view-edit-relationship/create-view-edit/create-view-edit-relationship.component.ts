@@ -26,6 +26,8 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   @Input() viewFlag: boolean;
   @Input() translationData: any;
   @Input() relationshipData:any;
+  @Input() viewRelationshipFromOrg:any;
+  @Input() selectedRowFromRelationship:any;
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -38,6 +40,10 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   organizationId: number;
   levels= [10, 20, 30];
   codes= ['Code 1', 'Code 2', 'Code 3'];
+  titleText: string;
+  rowsData: any;
+  editFlag: boolean = false;
+  editFromRelationship: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService, private organizationService: OrganizationService) { }
 
@@ -78,6 +84,17 @@ export class CreateViewEditRelationshipComponent implements OnInit {
 
   onCancel() {
     this.backToPage.emit({ viewFlag: false, editFlag: false, editText: 'cancel' });
+  }
+
+  editRelationship(row: any){
+    console.log("---selectedRowFromRelationship",this.selectedRowFromRelationship)
+    this.titleText = this.translationData.lblRelationshipDetails || "Relationship Details";
+    this.rowsData = [];
+    this.editFlag = true;
+    this.viewFlag = false;
+    this.viewRelationshipFromOrg = false
+    this.editFromRelationship = true;
+    this.createStatus = false;    
   }
 
   onReset(){

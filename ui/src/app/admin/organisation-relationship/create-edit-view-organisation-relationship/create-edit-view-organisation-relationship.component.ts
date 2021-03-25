@@ -50,7 +50,10 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   selectionForRelations = new SelectionModel(true, []);
   selectionForVehicle = new SelectionModel(true, []);
-  
+  userCreatedMsg: any = '';
+  @Input() actionType: any;
+  @Input() roleData:any;
+
   ngOnInit(): void {
     console.log("--createStatus--",this.createStatus)
     this.OrganisationRelationshipFormGroup = this._formBuilder.group({
@@ -199,13 +202,32 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
     }
 
     this.organizationService.createOrgRelationship(objData).subscribe((res) => {
-      this.backToPage.emit({ editFlag: false, editText: 'create',  name: this.organisationFormGroup.controls.relationshipName.value });
-    }, (error) => { 
-      if(error.status == 409){
-        this.isRelationshipExist = true;
-      }
-    });
+      this.organizationService.getOrgRelationshipDetailsLandingPage().subscribe((getData: any) => {
+        this.userCreatedMsg = this.getUserCreatedMessage();
+        let emitObj = {
+          stepFlag: false,
+          successMsg: this.userCreatedMsg,
+          tableData: getData
+        }    
+        this.backToPage.emit(emitObj);
+      });
+        });
       
+  }
+
+  getUserCreatedMessage() {
+    let attrName: any = `${this.OrganisationRelationshipFormGroup.controls.relationship.value}`;
+    if (this.actionType == 'create') {
+      if (this.translationData.lblUserAccountCreatedSuccessfully)
+        return this.translationData.lblUserAccountCreatedSuccessfully.replace('$', attrName);
+      else
+        return ("New Feature '$' Created Successfully").replace('$', attrName);
+    } else {
+      if (this.translationData.lblUserAccountUpdatedSuccessfully)
+        return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', attrName);
+      else
+        return ("New Details '$' Updated Successfully").replace('$', attrName);
+    }
   }
 
   applyFilter(filterValue: string) {

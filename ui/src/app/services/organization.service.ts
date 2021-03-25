@@ -57,6 +57,18 @@ export class OrganizationService {
        .pipe(catchError(this.handleError));
    }
 
+   getRelationshipByRelationID(dataId: any): Observable<any[]> {
+     console.log("--data in service--", dataId)
+    let headerObj = this.generateHeader();
+    const headers = {
+     headers: new HttpHeaders({ headerObj }),
+   };
+     const options =  { params: new HttpParams(dataId), headers: headers };
+     return this.httpClient
+       .get<any[]>(`${this.organizationServiceUrl}/relationship/get?Id=${dataId}`,headers)
+       .pipe(catchError(this.handleError));
+   }
+
    createRelationship(data: any): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -8,6 +8,7 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
 import { SelectionModel } from '@angular/cdk/collections';
 import { OrganizationService } from 'src/app/services/organization.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-organisation-relationship',
@@ -17,10 +18,11 @@ import { OrganizationService } from 'src/app/services/organization.service';
 export class OrganisationRelationshipComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @Output() createViewEditPackageEmit = new EventEmitter<object>();
   dataSource: any;
   orgrelationshipDisplayedColumns: string[]= ['select', 'relationshipName', 'vehicleGroup', 'targetOrg', 'startDate', 'endDate','allowChain', 'endRelationship'];
   editFlag: boolean = false;
-  viewFlag: boolean = false;
+  viewFlag: boolean = true;
   initData: any = [];
   rowsData: any;
   createStatus: boolean = false;
@@ -46,7 +48,7 @@ export class OrganisationRelationshipComponent implements OnInit {
     }
   ];
 
-  constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService) { 
+  constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService, private router: Router) { 
     this.defaultTranslation();
   }
   ngOnInit(): void {
@@ -105,6 +107,11 @@ export class OrganisationRelationshipComponent implements OnInit {
     
   }
 
+//   btnClick= function () {
+//     this.viewFlag = true;
+//     this.router.navigate('/relationshipmanagement',this.viewFlag);
+// };
+
   setDate(date : any){​​​​​​​​
     if (date === 0) {​​​​​​​​
         return 0;
@@ -150,12 +157,22 @@ export class OrganisationRelationshipComponent implements OnInit {
   }
 
   applyFilterOnRelationship(filterValue: string){
-
-    console.log(filterValue)
     this.dataSource.filterPredicate = function(data, filter: string): boolean {
-      console.log(data);
-      console.log(filter);
       return data.relationShipId === filter;
+    };  
+    this.dataSource.filter = filterValue;
+  }
+
+  applyFilterOnVehicle(filterValue: string){
+    this.dataSource.filterPredicate = function(data, filter: string): boolean {
+      return data.vehicleGroupID === filter;
+    };  
+    this.dataSource.filter = filterValue;
+  }
+
+  applyFilterOnOrganisation(filterValue: string){
+    this.dataSource.filterPredicate = function(data, filter: string): boolean {
+      return data.targetOrgId === filter;
     };  
     this.dataSource.filter = filterValue;
   }
@@ -224,15 +241,47 @@ export class OrganisationRelationshipComponent implements OnInit {
   // editViewFeature(data, viewEdit){
 
   // }
-  deleteRow(row){
+  deleteRow(rowData){
+    let selectedOptions = [rowData.id];
+    const options = {
+      title: this.translationData.lblDeleteAccount || 'Delete Account',
+      message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Are you sure you want to delete '$' relationship?",
+      cancelText: this.translationData.lblNo || 'No',
+      confirmText: this.translationData.lblYes || 'Yes'
+    };
+    let name = rowData.relationshipName;
+    this.dialogService.DeleteModelOpen(options, name);
+    this.dialogService.confirmedDel().subscribe((res) => {
+    if (res) {
+       {
+        this.organizationService
+        .deleteOrgRelationship(selectedOptions) 
+        .subscribe((d) => {
+          this.successMsgBlink(this.getDeletMsg(name));
+          this.loadInitData();
+        });
+        }
+    }
+  });
 
   }
+
   hideloader() {
     // Setting display of spinner
       this.showLoadingIndicator=false;
   }
 
+  // viewRelationship(row: any){
+  //   this.titleText = this.translationData.lblRelationshipDetails || "Relationship Details";
+  //   this.editFlag = true;
+  //   this.viewFlag = true;
+  //   this.rowsData = [];
+  //   this.rowsData.push(row);
+  // }
+
   changeOrgRelationStatus(rowData: any){
+    if(rowData.endDate == 0)
+    {
     const options = {
       title: this.translationData.lblAlert || "Alert",
       message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
@@ -241,6 +290,7 @@ export class OrganisationRelationshipComponent implements OnInit {
       status: rowData.status == 'Active' ? 'Inactive' : 'Active' ,
       name: rowData.name
     };
+   
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
@@ -250,7 +300,7 @@ export class OrganisationRelationshipComponent implements OnInit {
       if(res){ 
         //TODO: change status with latest grid data
       }
-    });
+    });}
   }
 
   deleteOrgRelationship(){
@@ -313,6 +363,18 @@ export class OrganisationRelationshipComponent implements OnInit {
     else
       return `${this.selectedOrgRelations.isSelected(row) ? 'deselect' : 'select'
         } row`;
+  }
+
+  checkCreationForOrgRelationship(item: any){
+    // this.createEditViewPackageFlag = !this.createEditViewPackageFlag;
+    // this.createEditViewPackageFlag = item.stepFlag;
+    if(item.successMsg) {
+      this.successMsgBlink(item.successMsg);
+    }
+    if(item.tableData) {
+      this.initData = item.tableData;
+    }
+    // this.updatedTableData(this.initData);
   }
 
 }

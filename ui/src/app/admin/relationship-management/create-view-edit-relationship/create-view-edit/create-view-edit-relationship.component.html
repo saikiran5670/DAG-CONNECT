@@ -1,4 +1,4 @@
-<div *ngIf="viewFlag" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+<div *ngIf="viewFlag || viewRelationshipFromOrg" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
       <span>{{ breadcumMsg }}</span>
     </div>
@@ -9,12 +9,17 @@
     </div>
 </div>
 <form [formGroup]="relationshipFormGroup">
-    <mat-card class='mat-elevation-z margin-bottom-xlg' *ngIf="viewFlag">
+    <mat-card class='mat-elevation-z margin-bottom-xlg' *ngIf="viewFlag || viewRelationshipFromOrg">
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ title }}</span>
                 </div>
+          
+                    <button *ngIf="viewRelationshipFromOrg" class='actionBtn'  mat-flat-button (click)="editRelationship(selectedRowFromRelationship)" matTooltip="Edit">
+                        <mat-icon>create</mat-icon>
+                    </button>
+                
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
