@@ -213,9 +213,16 @@ export class AppComponent {
       }
     })
 
+    this.dataInterchangeService.profilePictureInterface$.subscribe(data => {
+      if(data){
+        this.fileUploadedPath= data;
+      }
+    })
+
     if(!this.isLogedIn){
       this.getTranslationLabels();
       this.getAccountInfo();
+      
     }
 
     this.appForm = this.fb.group({

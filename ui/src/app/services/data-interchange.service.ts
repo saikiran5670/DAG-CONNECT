@@ -13,6 +13,8 @@ export class DataInterchangeService {
     userNameInterface$ = this.userNameInterfaceSource.asObservable();
     private generalSettingInterfaceSource = new Subject<any>();
     generalSettingInterface$ = this.generalSettingInterfaceSource.asObservable();
+    private profilePictureInterfaceSource= new Subject<any>();
+    profilePictureInterface$= this.profilePictureInterfaceSource.asObservable();
     
     constructor(){ }
 
@@ -34,6 +36,10 @@ export class DataInterchangeService {
 
     getUserGeneralSettings(data: any){
         this.generalSettingInterfaceSource.next(data);
+    }
+
+    getProfilePicture(data: any){
+        this.profilePictureInterfaceSource.next(data);
     }
 
 }   
