@@ -38,7 +38,6 @@ export class VehicleService {
       .post<any[]>(`${this.vehicleServiceUrl}/group/getgroupdetails`,data,headers)
       .pipe(catchError(this.handleError));
   }
-  
   getVehicleListById(groupId: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -79,7 +78,15 @@ export class VehicleService {
       .pipe(catchError(this.handleError));
   }
 
-
+  getVehiclesData(orgId: any,vehId?:any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.vehicleServiceUrl}/GetRelationshipVehicles?OrganizationId=${orgId}`,headers)
+      .pipe(catchError(this.handleError));
+  }
   createVehicleGroup(data: any): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -156,7 +163,6 @@ export class VehicleService {
       .get<any[]>(`${this.vehicleServiceUrl}/group/getvehiclesDetails??GroupId=${data.groupId}&GroupType=${data.groupType}&FunctionEnum=${data.functionEnum}&OrganizationId=${data.organizationId}`, headers)
       .pipe(catchError(this.handleError));
     }
-    
   }
 
   private handleError(errResponse: HttpErrorResponse) {
@@ -165,5 +171,4 @@ export class VehicleService {
       errResponse
     );
   }
-  
 }

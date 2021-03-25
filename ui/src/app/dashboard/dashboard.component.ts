@@ -119,9 +119,9 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.getCookieDetails().subscribe(data=>{
-      console.log(data)
-    })
+    // this.getCookieDetails().subscribe(data=>{
+    //   console.log(data)
+    // })
   }
   getCookieDetails(): Observable<any[]> {
     let defaultHeaders = new HttpHeaders();

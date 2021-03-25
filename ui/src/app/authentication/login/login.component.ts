@@ -52,24 +52,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
   }
-  public getCookieValue(name:string) {
-    document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || ''
-  }
 
-  public getCookie(name: string) {
-    const ca: Array<string> = decodeURIComponent(document.cookie).split(';');
-    const caLen: number = ca.length;
-    const cookieName = `${name}=`;
-    let c: string;
-
-    for (let i  = 0; i < caLen; i += 1) {
-        c = ca[i].replace(/^\s+/g, '');
-        if (c.indexOf(cookieName) === 0) {
-            return c.substring(cookieName.length, c.length);
-        }
-    }
-    return '';
-  }
 
   public onLogin(values: Object) {
 
@@ -80,10 +63,7 @@ export class LoginComponent implements OnInit {
          if(data.status === 200){
            this.invalidUserMsg = false;
             //this.cookiesFlag = true;
-            let _cookie=this.getCookie('Account');
-            let _cookie1=this.getCookieValue('Account');
-            console.log('cookie: ' ,_cookie);
-            console.log('cookie1: ' ,_cookie1);
+
             let loginObj = {
               id: data.body.accountInfo.id,
               organizationId: 0,
