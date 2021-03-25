@@ -33,10 +33,10 @@
     <ng-container matColumnDef="code">
       <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPackageCode || 'Package Code' }}</mat-header-cell>
       <mat-cell *matCellDef="let row">
-        <!-- <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
-        <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span> -->
+        <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
+        <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
         <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.code }}</span>
-      </mat-cell>
+    </mat-cell>
     </ng-container>
     <ng-container matColumnDef="name">
       <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
