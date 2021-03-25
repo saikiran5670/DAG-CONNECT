@@ -45,5 +45,6 @@ namespace net.atos.daf.ct2.vehicle.entity
          public int Modified_By { get; set; }
         public string RelationShip { get; set; }
         public string AssociatedGroups { get; set; }
+        public string Fuel { get; set; }
     }
 }
