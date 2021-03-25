@@ -466,9 +466,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response.Code == AccountBusinessService.Responcecode.Success)
                     return Ok(response.MenuFeatures);
                 else if (response.Code == AccountBusinessService.Responcecode.NotFound)
-                    return NotFound(response.Message);
+                    return NoContent();
                 else
-                    return StatusCode(500, "Error occurred while fetching Menu and Features.");
+                    return StatusCode(500, "Error occurred while fetching menu items and features.");
             }
             catch (Exception ex)
             {
