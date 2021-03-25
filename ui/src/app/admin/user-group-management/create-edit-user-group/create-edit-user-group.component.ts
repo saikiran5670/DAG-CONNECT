@@ -5,6 +5,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { AccountService } from '../../../services/account.service';
+import { CustomValidators } from '../../../shared/custom.validators';
 
 @Component({
   selector: 'app-create-edit-user-group',
@@ -35,9 +36,9 @@ export class CreateEditUserGroupComponent implements OnInit {
   ngOnInit() {
     this.OrgId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.userGroupForm = this._formBuilder.group({
-      userGroupName: ['', [Validators.required]],
+      userGroupName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       groupType: ['', [Validators.required]],
-      userGroupDescription: []
+      userGroupDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
     });
     this.groupTypeList = [
       {

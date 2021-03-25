@@ -31,7 +31,7 @@ export class UserRoleManagementComponent implements OnInit {
   organizationId: number;
   isGlobal: boolean;
   localStLanguage: any;
-  showLoadingIndicator: any;
+  showLoadingIndicator: any = false;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
 
@@ -116,16 +116,20 @@ export class UserRoleManagementComponent implements OnInit {
         IsGlobal: this.isGlobal
      };
   
-    this.roleService.getUserRoles(objData).subscribe((data) => {
-      this.initData = this.getNewTagData(data); 
-      if(data)
-        this.hideloader();
-      this.initData = data; //temporary 
+    this.roleService.getUserRoles(objData).subscribe((data: any) => {
+      this.hideloader();
+      this.initData = data; //temporary
+      if(data && data.length > 0){
+        this.initData = this.getNewTagData(data); 
+      } 
       setTimeout(()=>{
         this.dataSource = new MatTableDataSource(this.initData);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
       });
+    }, (error) => {
+      //console.log(error)
+      this.hideloader();
     });
   }
 
@@ -251,6 +255,6 @@ export class UserRoleManagementComponent implements OnInit {
 
   hideloader() {
     // Setting display of spinner
-      this.showLoadingIndicator=false;
+    this.showLoadingIndicator=false;
   }
 }
