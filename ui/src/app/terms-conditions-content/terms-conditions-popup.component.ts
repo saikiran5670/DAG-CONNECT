@@ -28,13 +28,11 @@ export class TermsConditionsPopupComponent implements OnInit {
 
   onClickIAgree(){
     //Send terms and conditions accept flag to backend.
-    //this.mdDialogRef.close({termsConditionsAgreeFlag : true}); 
-    this.close(false);
+    this.mdDialogRef.close({termsConditionsAgreeFlag : true}); 
   }
 
-  @HostListener('keydown.esc')
-  public onEsc() {
-    this.close(false);
+  disagree(){
+    this.mdDialogRef.close({termsConditionsAgreeFlag : false})
   }
 
 }

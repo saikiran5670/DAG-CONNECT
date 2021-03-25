@@ -11,7 +11,7 @@ import { AccountService } from './services/account.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Variable } from '@angular/compiler/src/render3/r3_ast';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { TermsConditionsPopupComponent } from './shared/terms-conditions-popup/terms-conditions-popup.component';
+import { TermsConditionsPopupComponent } from './terms-conditions-content/terms-conditions-popup.component';
 
 @Component({
   selector: 'app-root',
@@ -169,7 +169,7 @@ export class AppComponent {
       pageTitles: {
         information: 'Information'
       },
-      link: "https://www.daf.com/en/sites-landing"
+      link: "https://connectinfo.daf.com/en/?accesskey=2126e1f9-078d-4902-ab5f-46ea70f0e461"
     },
     legalnotices : {
       open: false,
@@ -179,6 +179,14 @@ export class AppComponent {
         legalnotices: 'Legal Notices'
       },
       link: "https://www.daf.com/en/legal/legal-notice"
+    },
+    termsConditions : {
+      open: false,
+      icon: "notes",
+      externalLink: false,
+      pageTitles: {
+        termsConditions: 'Terms & Conditions'
+      }
     }
   }
 
@@ -222,7 +230,6 @@ export class AppComponent {
     if(!this.isLogedIn){
       this.getTranslationLabels();
       this.getAccountInfo();
-      
     }
 
     this.appForm = this.fb.group({
@@ -272,9 +279,14 @@ export class AppComponent {
       translationData: this.translationData
     }
     this.dialogRefTerms = this.dialog.open(TermsConditionsPopupComponent, dialogConfig);
-    // this.dialogRefTerms.afterClosed().subscribe(res => {
-      
-    // });
+    this.dialogRefTerms.afterClosed().subscribe(res => {
+      if(res.termsConditionsAgreeFlag){
+
+      } 
+      else{
+        this.logOut();
+      } 
+    });
   }
 
   getAccountInfo(){
@@ -358,7 +370,8 @@ export class AppComponent {
       lblMobilePortal: "Mobile Portal",
       lblShop: "Shop",
       lblInformation: "Information",
-      lblAdmin: "Admin"
+      lblAdmin: "Admin",
+      lblTermsAndConditions: "Terms & Conditions"
     }
   }
 
