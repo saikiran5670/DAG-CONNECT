@@ -83,7 +83,15 @@ public class DafConstants {
 		public static final String QUERY_DRIVER_ACTIVITY = "driver.activity.query";
 		public static final String QUERY_DRIVER_ACTIVITY_READ = "driver.activity.read.query";
 		public static final String QUERY_LIVEFLEET_POSITION = "livefleet.position.query";
-		
+	
+	public static final int FUEL_CONSUMPTION_INDICATOR = 2;		
+	
+	//master datamart
+		public static final String MASTER_POSTGRE_SERVER_NAME = "master_postgre_server_name";
+		public static final String MASTER_POSTGRE_PORT = "master_postgre_port";
+		public static final String MASTER_POSTGRE_DATABASE_NAME = "master_postgre_database_name";
+		public static final String MASTER_POSTGRE_USER = "master_postgre_userId";
+		public static final String MASTER_POSTGRE_PASSWORD = "master_postgre_password";
 	
 
 }

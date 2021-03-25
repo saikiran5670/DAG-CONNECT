@@ -26,10 +26,13 @@
                   formControlName="vehicleGroupName" required>
               </mat-form-field>
               <mat-error *ngIf="vehicleGroupForm.get('vehicleGroupName').hasError('required')">
-                {{translationData.lblPleaseEnterVehicleGroupName || 'Please Enter Vehicle Group Name' }}
+                {{ translationData.lblPleaseEnterVehicleGroupName || 'Please Enter Vehicle Group Name' }}
               </mat-error>
+              <mat-error *ngIf="!vehicleGroupForm.get('vehicleGroupName').hasError('required')  && vehicleGroupForm.get('vehicleGroupName').hasError('whitespace')">
+                {{ translationData.lblVehicleGroupNamecannotcontainonlywhitespace || 'Vehicle Group Name cannot contain only whitespace' }}
+               </mat-error>
               <mat-error *ngIf="duplicateVehicleGroupMsg">
-                {{translationData.lblDuplicateVehicleGroupName || 'Duplicate Vehicle Group Name' }}
+                {{ translationData.lblDuplicateVehicleGroupName || 'Duplicate Vehicle Group Name' }}
               </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
@@ -83,6 +86,9 @@
                 placeholder="{{translationData.lblEnteraboutgroupdetails || 'Enter about group details' }}" matInput
                 formControlName="vehicleGroupDescription">
             </mat-form-field>
+            <mat-error *ngIf="vehicleGroupForm.get('vehicleGroupDescription').hasError('whitespace')">
+              {{ translationData.lblVehicleGroupDescriptioncannotcontainonlywhitespace || 'Vehicle Group Description cannot contain only whitespace' }}
+            </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
             <span style='font-weight: 500!important;'>{{ selectedRowData.description ? selectedRowData.description : '--' }}</span>

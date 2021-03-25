@@ -184,7 +184,7 @@ export class PackageManagementComponent implements OnInit {
     if(this.translationData.lblPackagewassuccessfullydeleted)
       return this.translationData.lblPackagewassuccessfullydeleted.replace('$', PackageName);
     else
-      return ("Feature Relationship '$' was successfully deleted").replace('$', PackageName);
+      return ("Package '$' was successfully deleted").replace('$', PackageName);
   }
 
   successMsgBlink(msg: any){

@@ -239,12 +239,11 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
-        public override async Task<AccountResponse> ChangePassword(AccountRequest request, ServerCallContext context)
+        public override async Task<AccountResponse> ChangePassword(ChangePasswordRequest request, ServerCallContext context)
         {
             try
             {
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
-                account.Id = request.Id;
                 account.EmailId = request.EmailId;
                 account.Password = request.Password;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;

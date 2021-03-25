@@ -29,18 +29,21 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Caching.Distributed;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.subscriptionservice;
+using Microsoft.AspNetCore.Authorization;
 
 namespace net.atos.daf.ct2.portalservice
 {
     public class Startup
     {
         private readonly string swaggerBasePath = "portalservice";
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
+            Environment = environment;
         }
 
         public IConfiguration Configuration { get; }
+        public IWebHostEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -71,28 +74,35 @@ namespace net.atos.daf.ct2.portalservice
             services.Configure<PortalCacheConfiguration>(Configuration.GetSection("PortalCacheConfiguration"));
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            {
+                options.Cookie.Name = "Account";
+                options.Cookie.HttpOnly = true;
+                //options.Cookie.Expiration = TimeSpan.FromMinutes(Convert.ToDouble(cookiesexpireat));
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;//options.Cookie.SecurePolicy = string.IsNullOrEmpty(isdevelopmentenv)? CookieSecurePolicy.Always : Convert.ToBoolean(isdevelopmentenv) ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.SlidingExpiration = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat) ? 5184000 : Convert.ToDouble(authcookiesexpireat));
+                options.Events = new CookieAuthenticationEvents
                 {
-                    options.Cookie.Name = "Account";
-                    options.Cookie.HttpOnly = true;
-                    //options.Cookie.Expiration = TimeSpan.FromMinutes(Convert.ToDouble(cookiesexpireat));
-                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;//options.Cookie.SecurePolicy = string.IsNullOrEmpty(isdevelopmentenv)? CookieSecurePolicy.Always : Convert.ToBoolean(isdevelopmentenv) ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
-                    options.Cookie.SameSite = SameSiteMode.Lax;
-                    options.SlidingExpiration = true;
-                    options.ExpireTimeSpan = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat)? 5184000 : Convert.ToDouble(authcookiesexpireat));
-                    options.Events = new CookieAuthenticationEvents
-                    {                          
-                        OnRedirectToLogin = redirectContext =>
-                        {
-                            redirectContext.HttpContext.Response.StatusCode = 401;
-                            return Task.CompletedTask;
-                        },
-                        OnRedirectToAccessDenied = context => 
-                        { 
-                            context.Response.StatusCode = 403; 
-                            return Task.CompletedTask; 
-                        }
-                    };                
+                    OnRedirectToLogin = redirectContext =>
+                    {
+                        redirectContext.HttpContext.Response.StatusCode = 401;
+                        return Task.CompletedTask;
+                    },
+                    OnRedirectToAccessDenied = context =>
+                    {
+                        context.Response.StatusCode = 403;
+                        return Task.CompletedTask;
+                    }
+                };
+            });
+
+            services.AddAuthorization(options => { 
+                if (Environment.IsDevelopment())
+                {
+                    options.DefaultPolicy = new AuthorizationPolicyBuilder().RequireAssertion(_ => true).Build();
+                }
             });
 
             /*   services.AddHsts(options =>
@@ -229,7 +239,7 @@ namespace net.atos.daf.ct2.portalservice
             });
 
             //app.UseCookiePolicy();
-            
+
             app.UseAuthentication();
 
             app.UseAuthorization();

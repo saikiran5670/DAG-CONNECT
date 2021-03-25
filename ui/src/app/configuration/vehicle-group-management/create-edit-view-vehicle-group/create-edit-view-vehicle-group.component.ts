@@ -5,6 +5,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { VehicleService } from '../../../services/vehicle.service';
+import { CustomValidators } from '../../../shared/custom.validators';
 
 @Component({
   selector: 'app-create-edit-view-vehicle-group',
@@ -36,10 +37,10 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
   ngOnInit() { 
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.vehicleGroupForm = this._formBuilder.group({
-      vehicleGroupName: ['', [Validators.required]],
+      vehicleGroupName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       vehicleGroupType: ['', [Validators.required]],
       methodType: [],
-      vehicleGroupDescription: []
+      vehicleGroupDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
     });
     this.vehGroupTypeList = [
       {

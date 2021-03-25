@@ -217,21 +217,7 @@ namespace net.atos.daf.ct2.identity
                                 modelCreate.firstName=user.FirstName;
                                 modelCreate.lastName=user.LastName;
                                 modelCreate.enabled=true;
-                                
-                                keycloakPwdChangeModel modelChangePwd = new keycloakPwdChangeModel();
-                                modelChangePwd.type="password";
-                                if(!string.IsNullOrEmpty(user.Password))
-                                {
-                                    modelChangePwd.value=user.Password;
-                                }
-                                else 
-                                {
-                                    modelChangePwd.value="123456";
-                                }
-                                modelChangePwd.temporary=false;
-                                List<keycloakPwdChangeModel> pwdList= new List<keycloakPwdChangeModel>();
-                                pwdList.Add(modelChangePwd);
-                                modelCreate.credentials=pwdList;
+                                                             
                                 stringData= JsonConvert.SerializeObject(modelCreate,Formatting.Indented); 
                                 break;
                 case "UPDATE":  

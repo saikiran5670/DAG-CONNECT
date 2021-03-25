@@ -13,10 +13,12 @@ import { ConfigService } from '@ngx-config/core';
 export class SubscriptionService {
     SubscriptionServiceUrl: string = '';
     vehicleServiceUrl: string = '';
+    organizationUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
     this.SubscriptionServiceUrl = config.getSettings("foundationServices").subscriptionRESTServiceURL;
     this.vehicleServiceUrl = config.getSettings("foundationServices").vehicleGroupRESTServiceUrl;
+    this.organizationUrl = config.getSettings("foundationServices").organizationRESTServiceURL;
   }
 
   generateHeader(){
@@ -30,13 +32,33 @@ export class SubscriptionService {
     return getHeaderObj;
   }
 
-  getSubscriptions(): Observable<any[]> {
+  getSubscriptions(data): Observable<any[]> {
     let headerObj = this.generateHeader();
-    const headers = {
-      headers: new HttpHeaders({ headerObj }),
-    };
+    const headers = new HttpHeaders({ headerObj });
+    
+    const options =  { params: new HttpParams(data), headers: headers };
     return this.httpClient
-      .get<any[]>(`${this.SubscriptionServiceUrl}/getsubscriptiondetails`,headers)
+      .get<any[]>(`${this.SubscriptionServiceUrl}/getsubscriptiondetails?organization_id=${data}`,options)
+      .pipe(catchError(this.handleError));
+  }
+
+  getSubscriptionByStatus(data: any , status: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = new HttpHeaders({ headerObj });
+    
+    const options =  { params: new HttpParams(data), headers: headers };
+    return this.httpClient
+      .get<any[]>(`${this.SubscriptionServiceUrl}/getsubscriptiondetails?organization_id=${data}&&is_active=${status}`,options)
+      .pipe(catchError(this.handleError));
+  }
+
+  getSubscriptionByType(data: any , type: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = new HttpHeaders({ headerObj });
+    
+    const options =  { params: new HttpParams(data), headers: headers };
+    return this.httpClient
+      .get<any[]>(`${this.SubscriptionServiceUrl}/getsubscriptiondetails?organization_id=${data}&&type=${type}`,options)
       .pipe(catchError(this.handleError));
   }
 
@@ -46,11 +68,19 @@ export class SubscriptionService {
     
     const options =  { params: new HttpParams(data), headers: headers };
     return this.httpClient
-      .get<any[]>(`${this.vehicleServiceUrl}/getvehiclebysubscriptionid?orderId=${data.orderId}`,options)
+      .get<any[]>(`${this.vehicleServiceUrl}/getvehiclebysubscriptionid/${data}`,options)
       .pipe(catchError(this.handleError));
   }
 
-
+  getOrganizations(): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.organizationUrl}/getallorganizations`,headers)
+      .pipe(catchError(this.handleError));
+  }
 
 
   private handleError(errResponse: HttpErrorResponse) {

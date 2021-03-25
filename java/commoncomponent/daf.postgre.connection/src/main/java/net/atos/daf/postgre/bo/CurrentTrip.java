@@ -20,6 +20,7 @@ public class CurrentTrip implements Serializable{
 	private long end_time_stamp;
 	private double start_position_lattitude;
 	private double start_position_longitude;
+	private long fuel_consumption;
 	
 	
 }

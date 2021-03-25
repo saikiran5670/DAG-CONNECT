@@ -90,7 +90,7 @@ export class EditVINSettingComponent implements OnInit {
       vin: this.vehicleData.vin,
       license_Plate_Number: this.vehicleData.registrationNo,
     };
-    this.vehService.updateVehicleSettings(objData).subscribe(
+    this.vehService.updateVehicle(objData).subscribe(
       (d) => {
         this.backToPage.emit({
           editFlag: false,

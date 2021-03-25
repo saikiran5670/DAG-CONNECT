@@ -48,7 +48,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
         public async Task<IActionResult> UpdateVehicleProperties(Root vehicleData)
         {
             try
-            {               
+            {
                 logger.LogInformation("UpdateVehicle function called -" + vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN);
 
                 // Length Validation
@@ -89,12 +89,15 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     return StatusCode(400, string.Empty);
                 }
 
-                if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit != null)
+                if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits != null)
                 {
-                    if ((!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit.type)) ||
-                        (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit.Name)))
+                    if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit != null)
                     {
-                        return StatusCode(400, string.Empty);
+                        if ((!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit.type)) ||
+                            (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit.Name)))
+                        {
+                            return StatusCode(400, string.Empty);
+                        }
                     }
                 }
 
@@ -123,11 +126,11 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
 
                 if (string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN))
                 {
-                        return StatusCode(400,string.Empty);
+                    return StatusCode(400, string.Empty);
                     //return BadRequest();                        
                 }
 
-                 
+
 
                 net.atos.daf.ct2.vehicle.entity.VehicleProperty vehicleProperties = new net.atos.daf.ct2.vehicle.entity.VehicleProperty();
 
@@ -136,7 +139,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                 vehicleProperties.License_Plate_Number = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.LicensePlate;
                 if (!string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.ManufactureDate))
                 {
-                    if (Common.Common.IsValidDate(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.ManufactureDate)==true)
+                    if (Common.Common.IsValidDate(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.ManufactureDate) == true)
                     {
                         vehicleProperties.ManufactureDate = Convert.ToDateTime(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.ManufactureDate);
                     }
@@ -150,7 +153,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                 //Vehicle Classification
                 vehicleProperties.Classification_Make = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Make.Trim();
                 vehicleProperties.Classification_Series_Id = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.ID.Trim();
-                if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange != "LF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange != "XF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange != "CF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange !=null )
+                if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange != "LF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange != "XF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange != "CF" && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange != null)
                 {
                     //vehicleProperties.Classification_Series_VehicleRange = null;
                     return StatusCode(400, string.Empty);
@@ -223,6 +226,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     vehicleProperties.Engine_Power = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Power;
                 vehicleProperties.Engine_Coolant = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Coolant;
                 vehicleProperties.Engine_EmissionLevel = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.EmissionLevel;
+                vehicleProperties.Fuel = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Fuel;
 
                 //Transmission
                 //GearBox
@@ -282,10 +286,13 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                 vehicleProperties.DriverLine_Cabin_Type = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin.Type;
 
                 //ElectronicControlUnits
-                if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit != null)
+                if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits != null)
                 {
-                    vehicleProperties.DriverLine_ElectronicControlUnit_Type = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit.type.Trim();
-                    vehicleProperties.DriverLine_ElectronicControlUnit_Name = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit.Name.Trim();
+                    if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit != null)
+                    {
+                        vehicleProperties.DriverLine_ElectronicControlUnit_Type = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit.type.Trim();
+                        vehicleProperties.DriverLine_ElectronicControlUnit_Name = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit.Name.Trim();
+                    }
                 }
                 //VehicleDimensions
                 //if (!string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Size.Length))

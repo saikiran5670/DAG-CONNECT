@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import net.atos.daf.common.ct2.exception.TechnicalException;
-
+import net.atos.daf.postgre.bo.Co2Master;
 import net.atos.daf.postgre.bo.Trip;
 import net.atos.daf.postgre.util.DafConstants;
 
@@ -185,7 +185,8 @@ public class TripSinkDao implements Serializable {
 			statement.setLong(23, rec.getEtlProcessingTS());
 		else
 			statement.setLong(23, 0);
-
+		
+		System.out.println("CO2Emission==" + rec.getTripCalC02Emission());
 		if (rec.getTripCalC02Emission() != null)
 			statement.setDouble(24, rec.getTripCalC02Emission());
 		else

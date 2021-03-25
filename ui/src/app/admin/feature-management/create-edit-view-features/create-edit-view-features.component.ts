@@ -132,14 +132,14 @@ export class CreateEditViewFeaturesComponent implements OnInit {
         id: 0,
         name: "",
         isActive: true,
-        is_Exclusive: this.selectedSetType == "true" ? true : false,
+        is_Exclusive: this.selectedSetType,
         description: "",
-        status: parseInt(this.selectedStatus)
+        status: 0
       },
       key: "",
       dataAttributeIds: selectedId,
       level: 0,
-      featureState: 0
+      featureState: parseInt(this.selectedStatus)
     }
     if(this.actionType == 'create'){
       this.featureService.createFeature(createFeatureParams).subscribe((data: any) => {
@@ -167,14 +167,14 @@ export class CreateEditViewFeaturesComponent implements OnInit {
           id: this.selectedElementData.dataAttribute.dataAttributeSetId,
           name: "",
           isActive: true,
-          is_Exclusive: this.selectedSetType == "true" ? true : false,
+          is_Exclusive: this.selectedSetType,
           description: "",
-          status: parseInt(this.selectedStatus)
+          status: 0
         },
         key: "",
         dataAttributeIds: selectedId,
         level: 0,
-        featureState: 0
+        featureState: parseInt(this.selectedStatus)
       }        
       this.featureService.updateFeature(updatedFeatureParams).subscribe((dataUpdated: any) => {
         this.featureService.getFeatures().subscribe((getData: any) => {

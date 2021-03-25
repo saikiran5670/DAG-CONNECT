@@ -44,9 +44,9 @@ export class EditUserRoleDetailsComponent implements OnInit {
   ngOnInit() {
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.userRoleFormGroup = this._formBuilder.group({
-      userRoleName: ['', [Validators.required, Validators.maxLength(60),CustomValidators.noWhitespaceValidator]],
+      userRoleName: ['', [Validators.required, Validators.maxLength(60), CustomValidators.noWhitespaceValidator]],
       roleType: ['Regular', [Validators.required]],
-      userRoleDescription: ['',[CustomValidators.noWhitespaceValidatorforDesc]]
+      userRoleDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
     });
 
     let objData = {

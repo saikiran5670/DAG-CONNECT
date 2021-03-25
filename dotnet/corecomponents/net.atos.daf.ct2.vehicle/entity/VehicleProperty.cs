@@ -52,6 +52,7 @@ namespace net.atos.daf.ct2.vehicle.entity
         // public int Party_Role_ID_2 { get; set; }
         // public string Party_Role_Name_2 { get; set; }
         public int VehicleId { get; set; }
+        public string Fuel { get; set; }
     }
 
     public class VehicleAxelInformation

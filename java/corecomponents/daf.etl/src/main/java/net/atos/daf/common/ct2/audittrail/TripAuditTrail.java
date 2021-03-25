@@ -24,6 +24,7 @@ public class TripAuditTrail implements Serializable {
 			String evtType) {
 		try {
 			Map<String, String> auditMap = createAuditMap(jobStatus, jobName, message, evtType);
+			System.out.println("Inside auditTrail meesage = "+ message);
 
 			AuditETLJobClient auditing = new AuditETLJobClient(envParams.get(ETLConstants.GRPC_SERVER),
 					Integer.valueOf(envParams.get(ETLConstants.GRPC_PORT)));
@@ -37,6 +38,8 @@ public class TripAuditTrail implements Serializable {
 	private static Map<String, String> createAuditMap(String jobStatus, String jobName, String message,
 			String evtType) {
 		Map<String, String> auditMap = new HashMap<>();
+		System.out.println("Inside auditMap");
+		System.out.println("Message =" + message);
 
 		auditMap.put(ETLConstants.JOB_EXEC_TIME, String.valueOf(TimeFormatter.getInstance().getCurrentUTCTimeInSec()));
 		auditMap.put(ETLConstants.AUDIT_PERFORMED_BY, jobName);
