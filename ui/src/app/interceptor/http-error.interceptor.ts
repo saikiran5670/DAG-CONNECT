@@ -6,12 +6,25 @@ import {
   HttpResponse,
   HttpErrorResponse,
 } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import {
+  MatDialog,
+  MatDialogConfig,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
-import { retry, catchError, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
+import { ErrorComponent } from '../error/error.component';
 
+@Injectable({ providedIn: 'root' })
 export class HttpErrorInterceptor implements HttpInterceptor {
-  intercept(
-    request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  constructor(private dialogService: SessionDialogService) {}
+
+  public intercept(
+    request: HttpRequest<any>,
+    next: HttpHandler
+  ): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
       tap(
         (event: HttpEvent<any>) => {
@@ -25,9 +38,16 @@ export class HttpErrorInterceptor implements HttpInterceptor {
           if (err instanceof HttpErrorResponse) {
             // server-side error
             errorMessage = `Error Code: ${err.status}\nMessage: ${err.message}`;
-            if (err.status === 401) {
-              // redirect to the login route
-              // or show a modal
+            if (err.status === 401 &&  localStorage.getItem("accountOrganizationId")) {
+              // redirect to the login route or show a modal
+              const options = {
+                title: 'Session Time Out',
+                message:
+                  'Your sessoin has been expired. kindly login again to continue.',
+                confirmText: 'Ok',
+              };
+
+              this.dialogService.SessionModelOpen(options);
             }
           } else if (err instanceof ErrorEvent) {
             // client-side error
@@ -37,5 +57,26 @@ export class HttpErrorInterceptor implements HttpInterceptor {
         }
       )
     );
+  }
+}
+
+@Injectable()
+export class SessionDialogService {
+  constructor(private dialog: MatDialog, public _route: Router) {}
+
+  dialogRefSession: MatDialogRef<ErrorComponent>;
+
+  public SessionModelOpen(options: any) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      title: options.title,
+      message: options.message,
+      confirmText: options.confirmText,
+
+    };
+    this.dialogRefSession = this.dialog.open(ErrorComponent, dialogConfig);
+
   }
 }

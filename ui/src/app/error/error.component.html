@@ -1,2 +1,25 @@
-<h1>The resource you are looking for cannot be found</h1>
-
+<div>
+  <mat-card class='mat-elevation-z margin-bottom-xlg no-padding'>
+    <mat-card-content>
+      <div fxLayout="row" fxLayoutAlign="start space-around"
+        style='padding: 10px 20px !important; background: #d4d4d4;'>
+        <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+          <span class='custom-font'>{{ data.title}}</span>
+        </div>
+        <!-- <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
+          <mat-icon (click)='cancel()' style='cursor: pointer;'>close</mat-icon>
+        </div> -->
+      </div>
+      <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="30px" style="padding: 20px 50px 10px 50px;">
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+          <span class='custom-font'>{{ data.message }}</span>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions fxLayoutAlign="center center" class='no-margin' style="padding: 0px 20px;">
+      <div fxLayout="row" fxLayoutAlign="center center" class="full-width">
+          <button (click)="confirm()" class='no-margin' mat-raised-button color="primary">{{ data.confirmText }}</button>
+      </div>
+  </mat-card-actions>
+  </mat-card>
+</div>
