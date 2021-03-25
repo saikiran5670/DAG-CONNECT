@@ -78,15 +78,16 @@ export class VehicleService {
       .pipe(catchError(this.handleError));
   }
 
-  getVehiclesData(orgId: any,vehId?:any): Observable<any[]> {
+  getVehiclesData(orgId: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.vehicleServiceUrl}/GetRelationshipVehicles?OrganizationId=${orgId}`,headers)
+      .get<any[]>(`${this.vehicleServiceUrl}/GetRelationshipVehicles?OrganizationId=${orgId}`, headers)
       .pipe(catchError(this.handleError));
   }
+
   createVehicleGroup(data: any): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {
