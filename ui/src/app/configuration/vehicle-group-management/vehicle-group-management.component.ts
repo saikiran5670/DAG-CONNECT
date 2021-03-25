@@ -146,6 +146,12 @@ export class VehicleGroupManagementComponent implements OnInit {
         this.vehicleService.getVehicleListById(rowData.groupId).subscribe((selectedVehList: any) => {
           this.selectedRowData.selectedVehicleList = selectedVehList;
           this.createViewEditStatus = true;
+        }, (error) => {
+          //console.log("error:: ", error);
+          if(error.status == 404){
+            this.selectedRowData.selectedVehicleList = [];
+            this.createViewEditStatus = true;
+          }
         });
       }
       else{
@@ -232,8 +238,8 @@ export class VehicleGroupManagementComponent implements OnInit {
     if(item.successMsg && item.successMsg != ''){
       this.showSuccessMessage(item.successMsg);
     }
-    if(item.tableData){
-     this.initData = item.tableData; 
+    if(item.gridData){
+     this.initData = item.gridData; 
     }
     this.updateDataSource(this.initData);
   }

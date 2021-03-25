@@ -83,7 +83,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
   setDefaultValue(){
     this.vehicleGroupForm.get('vehicleGroupName').setValue(this.selectedRowData.groupName);
     this.vehicleGroupForm.get('vehicleGroupType').setValue(this.selectedRowData.groupType);
-    this.vehicleGroupForm.get('methodType').setValue(this.selectedRowData.groupType);
+    this.vehicleGroupForm.get('methodType').setValue(this.selectedRowData.functionEnum);
     this.vehicleGroupForm.get('vehicleGroupDescription').setValue(this.selectedRowData.description);
   }
 
