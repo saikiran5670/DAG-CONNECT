@@ -98,8 +98,7 @@ export class SubscriptionManagementComponent implements OnInit {
   ngOnInit() { 
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    // this.orgID = parseInt(localStorage.getItem('accountOrganizationId'));
-    this.orgID = 99;
+    this.orgID = parseInt(localStorage.getItem('accountOrganizationId'));
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
