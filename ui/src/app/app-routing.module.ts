@@ -1,5 +1,6 @@
 import { NgModule, Component } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { ErrorComponent } from './error/error.component';
 
 const routes: Routes = [
   { path:'', redirectTo:'auth/login', pathMatch: 'full'},
@@ -13,6 +14,7 @@ const routes: Routes = [
   { path: 'mobileportal', loadChildren: () => import('./mobile-portal/mobile-portal.module').then(m => m.MobilePortalModule) },
   { path: 'shop', loadChildren: () => import('./shop/shop.module').then(m => m.ShopModule) },
   { path: 'information', loadChildren: () => import('./information/information.module').then(m => m.InformationModule) },
+  { path: "errorPage", component: ErrorComponent },
 
 ];
 
