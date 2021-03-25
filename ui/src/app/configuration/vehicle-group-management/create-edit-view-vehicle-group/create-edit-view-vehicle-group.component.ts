@@ -4,6 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
+import { VehicleService } from '../../../services/vehicle.service';
 
 @Component({
   selector: 'app-create-edit-view-vehicle-group',
@@ -30,7 +31,7 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
   duplicateVehicleGroupMsg: boolean = false;
   showVehicleList: boolean = true;
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder, private vehicleService: VehicleService) { }
 
   ngOnInit() { 
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -160,7 +161,84 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
   }
 
   onCreateUpdateVehicleGroup(){
-    this.onCancel();
+    this.duplicateVehicleGroupMsg = false;
+    let vehicleList = [];
+    this.selectedVehicles.selected.forEach(element => {
+      vehicleList.push({ "vehicleGroupId": (this.actionType == 'create' ? 0 : this.selectedRowData.groupId), "vehicleId": element.id })
+    });
+    if(this.actionType == 'create'){ // create
+      let createVehGrpObj = {
+        id: 0,
+        name: this.vehicleGroupForm.controls.vehicleGroupName.value, 
+        description: this.vehicleGroupForm.controls.vehicleGroupDescription.value, 
+        organizationId: this.accountOrganizationId,
+        groupType: this.vehicleGroupForm.controls.vehicleGroupType.value, 
+        functionEnum: (this.vehicleGroupForm.controls.vehicleGroupType.value == "G") ? "N" : this.vehicleGroupForm.controls.methodType.value, //-- N-> Group &  O/A/V -> Dynamic
+        vehicles: vehicleList
+      }
+      this.vehicleService.createVehicleGroup(createVehGrpObj).subscribe((createVehData: any) => {
+        this.getVehicleGroupData();
+      }, (err) => {
+        //console.log(err);
+        if (err.status == 409) {
+          this.duplicateVehicleGroupMsg = true;
+        }
+      });
+    }
+    else{ // update
+      let updateVehGrpObj = {
+        id: this.selectedRowData.groupId,
+        name: this.vehicleGroupForm.controls.vehicleGroupName.value, 
+        description: this.vehicleGroupForm.controls.vehicleGroupDescription.value, 
+        organizationId: this.selectedRowData.organizationId,
+        groupType: this.vehicleGroupForm.controls.vehicleGroupType.value, 
+        functionEnum: (this.vehicleGroupForm.controls.vehicleGroupType.value == "G") ? "N" : this.vehicleGroupForm.controls.methodType.value, //-- N-> Group &  O/A/V -> Dynamic
+        vehicles: vehicleList
+      }
+      this.vehicleService.updateVehicleGroup(updateVehGrpObj).subscribe((updateVehData: any) => {
+        this.getVehicleGroupData();
+      }, (err) => {
+        //console.log(err);
+        if (err.status == 409) {
+          this.duplicateVehicleGroupMsg = true;
+        }
+      });
+    }
+  }
+
+  getVehicleGroupData(){
+    this.vehicleService.getVehicleGroupList(this.accountOrganizationId).subscribe((vehGrpData: any) => {
+      this.goToLandingPage(vehGrpData);
+    }, (error) => {
+      if(error.status == 404){
+        let vehGrpData = [];
+        this.goToLandingPage(vehGrpData);
+      }
+    });
+  }
+
+  goToLandingPage(tableData: any){
+    let createUpdateMsg = this.getVehicleCreateUpdateMessage();
+    let emitObj = { stepFlag: false, gridData: tableData, successMsg: createUpdateMsg };
+    this.backToPage.emit(emitObj);
+  }
+
+  getVehicleCreateUpdateMessage(){
+    let vehGrpName = `${this.vehicleGroupForm.controls.vehicleGroupName.value}`;
+    if(this.actionType == 'create') {
+      if(this.translationData.lblNewVehicleGroupCreatedSuccessfully)
+        return this.translationData.lblNewVehicleGroupCreatedSuccessfully.replace('$', vehGrpName);
+      else
+        return ("New Vehicle Group '$' Created Successfully").replace('$', vehGrpName);
+    }else if(this.actionType == 'edit') {
+      if (this.translationData.lblVehicleGroupUpdatedSuccessfully)
+        return this.translationData.lblVehicleGroupUpdatedSuccessfully.replace('$', vehGrpName);
+      else
+        return ("Vehicle Group '$' Updated Successfully").replace('$', vehGrpName);
+    }
+    else{
+      return '';
+    }
   }
 
   applyFilter(filterValue: string) {

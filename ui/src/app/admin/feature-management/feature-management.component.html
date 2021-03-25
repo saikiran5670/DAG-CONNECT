@@ -84,6 +84,7 @@
       </mat-table>
       <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
     </div>
+    <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
   </mat-card>
   <app-create-edit-view-features *ngIf='createEditViewFeatureFlag' [translationData]='translationData'
     [actionType]='actionType' [dataAttributeList]='dataAttributeList' [selectedElementData]='selectedElementData'

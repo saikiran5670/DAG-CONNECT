@@ -39,7 +39,7 @@ export class UserGroupManagementComponent implements OnInit {
   inputText: any;
   translationData: any;
   localStLanguage: any;
-  showLoadingIndicator: any;
+  showLoadingIndicator: any = false;
   createViewEditStatus: boolean = false;
   actionType: any = '';
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));

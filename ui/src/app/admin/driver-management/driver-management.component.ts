@@ -24,9 +24,7 @@ const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.
 })
 
 export class DriverManagementComponent implements OnInit {
-  //--------------Rest mock data----------------//
   driverRestData: any = [];
-  //--------------------------------------------//
   titleVisibleMsg : boolean = false;
   userCreatedMsg : any;
   accountOrganizationId: any = 0;
@@ -51,7 +49,7 @@ export class DriverManagementComponent implements OnInit {
   translationData: any;
   localStLanguage: any;
   actionType: any = '';
-  showLoadingIndicator: any;
+  showLoadingIndicator: any = false;
   consentSelectionList: any = [
     {
       name: 'All'
@@ -220,9 +218,14 @@ export class DriverManagementComponent implements OnInit {
 
   loadDriverData(){
     let drvId: any = 0;
+    this.showLoadingIndicator = true;
     this.driverService.getDrivers(this.accountOrganizationId, drvId).subscribe((driverList: any) => {
+      this.hideloader();
       this.initData = driverList;
       this.onConsentChange(this.selectedConsentType);
+    }, (error) => {
+      console.log("error:: ", error);
+      this.hideloader();
     });
   }
 
@@ -600,7 +603,7 @@ export class DriverManagementComponent implements OnInit {
 
   hideloader() {
     // Setting display of spinner
-      this.showLoadingIndicator=false;
+    this.showLoadingIndicator = false;
   }
 
   changeOptStatus(driverData: any){ //--- single opt-in/out mode

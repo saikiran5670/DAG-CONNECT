@@ -6,8 +6,7 @@ import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog
 import { TranslationService } from '../../services/translation.service';
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { FeatureService } from '../../services/feature.service'
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { FeatureService } from '../../services/feature.service';
 
 @Component({
   selector: 'app-feature-management',
@@ -34,12 +33,12 @@ export class FeatureManagementComponent implements OnInit {
   createEditViewFeatureFlag: boolean = false;
   actionType: any;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
+  showLoadingIndicator: any = false;
 
   constructor(private translationService: TranslationService,
     private featureService: FeatureService,
-     private dialogService: ConfirmDialogService,
-      private dialog: MatDialog,
-      private _snackBar: MatSnackBar) { 
+    private dialogService: ConfirmDialogService,
+    private dialog: MatDialog) { 
     this.defaultTranslation();
   }
 
@@ -77,10 +76,20 @@ export class FeatureManagementComponent implements OnInit {
   }
 
   loadFeatureData(){
-    this.featureService.getFeatures().subscribe((data : any) => {
+    this.showLoadingIndicator = true;
+    this.featureService.getFeatures().subscribe((data: any) => {
+      this.hideloader();
       let filterTypeData = data.filter(item => item.type == "D");
       this.updatedTableData(filterTypeData);
+    }, (error) => {
+      console.log("error:: ", error);
+      this.hideloader();
     });
+  }
+
+  hideloader() {
+    // Setting display of spinner
+    this.showLoadingIndicator = false;
   }
 
   getNewTagData(data: any){

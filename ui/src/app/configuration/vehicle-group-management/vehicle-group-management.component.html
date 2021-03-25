@@ -72,6 +72,7 @@
             </mat-table>
             <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
         </div>
+        <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
     </mat-card>
     <app-create-edit-view-vehicle-group *ngIf='createViewEditStatus' [actionType]='actionType' [translationData]="translationData"
     [selectedRowData]="selectedRowData" [vehicleListData]='vehicleListData' (backToPage)='onVehicleGroupCreation($event)'></app-create-edit-view-vehicle-group>
