@@ -22,7 +22,7 @@ import { FeatureService } from './services/feature.service';
 import { PackageService } from './services/package.service';
 import { SubscriptionService } from './services/subscription.service';
 import { AppInterceptor } from './interceptor/app.interceptor';
-import { HttpErrorInterceptor } from './interceptor/http-error.interceptor';
+import { HttpErrorInterceptor, SessionDialogService } from './interceptor/http-error.interceptor';
 import { ErrorComponent } from './error/error.component';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
@@ -56,8 +56,9 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpErrorInterceptor,
-      multi: true,
+      multi: true
     },
+    SessionDialogService,
     DataInterchangeService,
     AccountService,
     RoleService,
