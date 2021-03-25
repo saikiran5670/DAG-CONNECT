@@ -15,7 +15,7 @@ service AccountService
   rpc Create (AccountRequest) returns (AccountData);
   rpc Update (AccountRequest) returns (AccountData);
   rpc Delete (AccountRequest) returns (AccountResponse);
-  rpc ChangePassword (AccountRequest) returns (AccountResponse);
+  rpc ChangePassword (ChangePasswordRequest) returns (AccountResponse);
   rpc Get (AccountFilter) returns (AccountDataList);
   rpc AddAccountToOrg (AccountOrganization) returns (AccountOrganizationResponse);  
   rpc GetAccountDetail (AccountGroupDetailsRequest) returns (AccountDetailsResponse); 
@@ -118,17 +118,21 @@ message AccountRequest {
     string EmailId=2;
     string Salutation=3;
     string FirstName=4;
-    string LastName=5;
-    string Password=6;    
-    int32 OrganizationId=7;
-    string Type=8;
-    string DriverId=9;
-    int32 PreferenceId=10;
-    int32 BlobId=11;
-    int64 CreatedAt=12;
-    int64 StartDate=13;
-    int64 EndDate=14;    
+    string LastName=5; 
+    int32 OrganizationId=6;
+    string Type=7;
+    string DriverId=8;
+    int32 PreferenceId=9;
+    int32 BlobId=10;
+    int64 CreatedAt=11;
+    int64 StartDate=12;
+    int64 EndDate=13;    
   }
+
+message ChangePasswordRequest {
+    string EmailId=1;
+    string Password=2;
+}
 
 //Account Reset Password
 message ResetPasswordInitiateRequest {

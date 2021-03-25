@@ -226,7 +226,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(404, "The Email address and password is required.");
                 }
-                AccountBusinessService.AccountRequest changePasswordRequest = new AccountBusinessService.AccountRequest();
+                AccountBusinessService.ChangePasswordRequest changePasswordRequest = new AccountBusinessService.ChangePasswordRequest();
                 changePasswordRequest.EmailId = request.EmailId;
                 changePasswordRequest.Password = request.Password;
                 AccountBusinessService.AccountResponse response = await _accountClient.ChangePasswordAsync(changePasswordRequest);

@@ -25,7 +25,6 @@ namespace net.atos.daf.ct2.portalservice.Account
             account.Salutation = request.Salutation;
             account.FirstName = request.FirstName;
             account.LastName = request.LastName;
-            account.Password = request.Password;
             account.OrganizationId = request.OrganizationId;
             account.DriverId = request.DriverId;
             account.CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
@@ -43,7 +42,6 @@ namespace net.atos.daf.ct2.portalservice.Account
             account.Salutation = response.Salutation;
             account.FirstName = response.FirstName;
             account.LastName = response.LastName;
-            account.Password = response.Password;
             account.OrganizationId = response.OrganizationId;
             account.DriverId = response.DriverId;
             account.PreferenceId = response.PreferenceId;

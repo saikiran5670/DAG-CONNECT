@@ -65,7 +65,6 @@ namespace net.atos.daf.ct2.accountservice
             account.Salutation = request.Salutation;
             account.FirstName = request.FirstName;
             account.LastName = request.LastName;
-            account.Password = request.Password;
             account.Organization_Id = request.OrganizationId;
             account.DriverId = request.DriverId;
             if (request.StartDate > 0) account.StartDate = request.StartDate;

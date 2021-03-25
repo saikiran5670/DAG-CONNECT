@@ -15,7 +15,6 @@ namespace net.atos.daf.ct2.portalservice.Account
         public string Salutation { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Password { get; set; }
         public int OrganizationId { get; set; }
         public string DriverId { get; set; }
         //public string CreatedAt { get; set; }
@@ -29,7 +28,6 @@ namespace net.atos.daf.ct2.portalservice.Account
         public string Salutation { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Password { get; set; }
         public int OrganizationId { get; set; }
         public string DriverId { get; set; }
         public int PreferenceId { get; set; }
