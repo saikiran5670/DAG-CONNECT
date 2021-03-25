@@ -12,6 +12,7 @@ import { VehicleManagementComponent } from './vehicle-management/vehicle-managem
 import { VehicleGroupManagementComponent } from './vehicle-group-management/vehicle-group-management.component';
 import { VehicleService } from '../services/vehicle.service';
 import { CreateEditViewVehicleGroupComponent } from './vehicle-group-management/create-edit-view-vehicle-group/create-edit-view-vehicle-group.component';
+import { EditViewVehicleComponent } from './vehicle-management/edit-view-vehicle/edit-view-vehicle.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { CreateEditViewVehicleGroupComponent } from './vehicle-group-management/
     CommonTableComponent,
     VehicleManagementComponent,
     VehicleGroupManagementComponent,
-    CreateEditViewVehicleGroupComponent
+    CreateEditViewVehicleGroupComponent,
+    EditViewVehicleComponent
   ],
   imports: [
     CommonModule,

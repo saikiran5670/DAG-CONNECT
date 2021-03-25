@@ -106,4 +106,24 @@ export class VehicleManagementComponent implements OnInit {
     this.updateViewStatus = true;
   }
 
+  onVehicleUpdateView(item: any){
+    //this.updateViewStatus = !this.updateViewStatus;
+    this.updateViewStatus = item.stepFlag;
+    if(item.successMsg && item.successMsg != ''){
+      this.showSuccessMessage(item.successMsg);
+    }
+    if(item.tableData){
+      this.initData = item.tableData;  
+    }
+    this.updateDataSource(this.initData);
+  }
+
+  showSuccessMessage(msg: any){
+    this.vehicleUpdatedMsg = msg;
+    this.titleVisible = true;
+    setTimeout(() => {
+      this.titleVisible = false;
+    }, 5000);
+  }
+
 }

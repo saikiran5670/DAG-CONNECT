@@ -1,6 +1,6 @@
 <div class='bgtrans'>
   <div *ngIf='titleVisible' fxLayout="row" fxLayoutAlign="center center"
-    style='padding:10px; color:#fff; background: #5dc24e;'>
+    style='padding:10px; color:#fff; background: #5dc24e;' class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
       {{ vehicleUpdatedMsg }}
     </div>
@@ -88,4 +88,6 @@
     </div>
     <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
   </mat-card>
+  <app-edit-view-vehicle *ngIf='updateViewStatus' [actionType]='actionType' [translationData]="translationData"
+  [selectedRowData]="selectedRowData" (backToPage)='onVehicleUpdateView($event)'></app-edit-view-vehicle>
 </div>

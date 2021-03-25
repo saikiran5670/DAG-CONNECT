@@ -108,7 +108,7 @@ export class VehicleService {
       .pipe(catchError(this.handleError));
   }
 
-  updateVehicleSettings(data: any): Observable<any> {
+  updateVehicle(data: any): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
