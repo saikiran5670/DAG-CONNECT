@@ -1038,7 +1038,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                     objVeh.ID = vehicleId;
                     vehicleproperty.VehicleId = vehicleId;
                     vehicleproperty.ID = await dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, parameter);
-                    await dataAccess.ExecuteAsync("UPDATE master.vehicle SET vehicle_property_id = @vehicle_property_id, modified_at=@modified_at WHERE id = @id", new { vehicle_property_id = vehicleproperty.ID, id = objVeh.ID, modified_at = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) });
+                    await dataAccess.ExecuteAsync("UPDATE master.vehicle SET vehicle_property_id = @vehicle_property_id, model_id = @model_id , license_plate_number = @license_plate_number, fuel_type=@fuel_type , modified_at=@modified_at WHERE id = @id", new { vehicle_property_id = vehicleproperty.ID, id = objVeh.ID, model_id = objVeh.ModelId, license_plate_number = objVeh.License_Plate_Number, fuel_type = objVeh.Fuel, modified_at = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) });
 
                 }
 

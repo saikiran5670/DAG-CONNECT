@@ -1555,7 +1555,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
 
         #region TestMethods 
-  //      [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [HttpPost]
         [Route("authmethodpost")]
         public async Task<OkObjectResult> AuthMethodPost()
@@ -1570,7 +1569,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             return await Task.FromResult(Ok(new { Message = "This method does not need any authentication " + Dns.GetHostName() }));
         }
 
-//        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [HttpGet]
         [Route("authmethodget")]
         public async Task<OkObjectResult> AuthMethodGet()

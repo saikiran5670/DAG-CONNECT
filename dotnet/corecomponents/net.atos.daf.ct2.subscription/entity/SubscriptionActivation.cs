@@ -19,6 +19,23 @@ namespace net.atos.daf.ct2.subscription.entity
 		public string packagecode { get; set; }
 	}
 
+	public class subscriptionIdType
+	{
+		public int id { get; set; }
+		public string type { get; set; }
+	}
+
+	public class subscriptionIdStatus
+	{
+		public string subscription_id { get; set; }
+		public bool is_active { get; set; }
+	}
+	public class UnSubscribeVin
+	{
+		public int id { get; set; }
+		public bool is_active { get; set; }
+	}
+	
 	public class SubscriptionResponse
 	{
 		public string orderId { get; set; }//M

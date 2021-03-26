@@ -292,8 +292,7 @@ export class EditViewUserComponent implements OnInit {
         lastName: this.accountInfoForm.controls.lastName.value,
         type: (this.privilegeAccess) ? this.accountInfoForm.controls.userType.value : this.userTypeList[0].value, //-- privilege check
         organizationId: this.accountInfoData.organizationId,
-        driverId: "",
-        password: ""
+        driverId: ""
     }
     this.accountService.updateAccount(objData).subscribe((data)=>{
       this.accountInfoData = data;

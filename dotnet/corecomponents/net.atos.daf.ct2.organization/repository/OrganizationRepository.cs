@@ -590,7 +590,7 @@ namespace net.atos.daf.ct2.organization.repository
             {             
                 var parameter = new DynamicParameters();
                 parameter.Add("@org_id", keyHandOver.CustomerID);
-                var query = @"Select id from master.organization where org_id=@org_id";
+                var query = @"select coalesce((Select id from master.organization where org_id=@org_id), 0)";
                 int iscustomerexist = await dataAccess.ExecuteScalarAsync<int>(query, parameter);                
                 int isVINExist= await vehicelManager.IsVINExists(keyHandOver.VIN);
 

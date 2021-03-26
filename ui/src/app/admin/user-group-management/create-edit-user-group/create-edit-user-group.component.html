@@ -1,8 +1,8 @@
-<div *ngIf="actionType == 'view'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+<div *ngIf="actionType != 'create'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
     <span>{{ breadcumMsg }}</span>
   </div>
-  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+  <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
     <span class='custom-font' (click)="onCancel()">
       <span><&nbsp;</span>
       <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
@@ -90,7 +90,7 @@
         <div fxLayout="column" fxLayoutAlign="end" *ngIf="actionType != 'view'">
           <div fxLayout="row">
             <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
-            <button *ngIf="actionType == 'edit'" class='margin-right-10' mat-raised-button color="primary"
+            <button *ngIf="actionType == 'edit'" class='margin-right-10 no-margin' mat-raised-button color="primary"
               (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
             <button class='no-margin' [disabled]="!userGroupForm.valid" mat-raised-button color="primary"
               (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
