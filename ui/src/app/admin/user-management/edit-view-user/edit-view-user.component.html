@@ -85,8 +85,8 @@
                   <span
                     style="border-left: 1px solid; height: 20px; margin-left: 20px; margin-top: 15px; color: grey;"></span>
                   <span style="margin-left: 20px; margin-top: 15px;">
-                    <a style="cursor: pointer;"
-                      (click)="isAccountPictureSelected ? onSelectPictureConfirm() : ''">{{ translationData.lblConfirm || 'Confirm' }}</a>
+                    <button style="cursor: pointer; border: none;" [disabled]="croppedImage == croppedImageTemp"
+                      (click)="isAccountPictureSelected ? onSelectPictureConfirm() : ''">{{ translationData.lblConfirm || 'Confirm' }}</button>
                   </span>
                 </div>
                 <div fxLayout="row" *ngIf="imageError!=''">

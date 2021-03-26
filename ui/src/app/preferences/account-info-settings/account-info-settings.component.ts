@@ -57,6 +57,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   organizationId: any;
   imageError= '';
   profilePicture: any= '';
+  croppedImageTemp= '';
   salutationList: any = [
     {
       name: 'Mr'
@@ -218,6 +219,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
   
   editAccountSettings(){
+    this.croppedImage= '';
     this.isAccountPictureSelected = false;
     this.isSelectPictureConfirm = false;
     this.editAccountSettingsFlag = true;
@@ -324,12 +326,14 @@ export class AccountInfoSettingsComponent implements OnInit {
     this.changePictureFlag = false;
     this.isAccountPictureSelected = false;
     this.imageChangedEvent = '';
+    this.croppedImageTemp= '';
   }
 
   onSelectPictureConfirm(){
     if(this.croppedImage != ''){
       this.isSelectPictureConfirm = true;
       this.isAccountPictureSelected = false;
+      this.croppedImageTemp= '';
 
       let objData = {
         "blobId": this.blobId,
@@ -365,6 +369,9 @@ export class AccountInfoSettingsComponent implements OnInit {
 
   imageCropped(event: ImageCroppedEvent) {
       this.croppedImage = event.base64;
+      if(this.croppedImageTemp == ''){
+        this.croppedImageTemp = this.croppedImage;
+      }
   }
 
   imageLoaded() {

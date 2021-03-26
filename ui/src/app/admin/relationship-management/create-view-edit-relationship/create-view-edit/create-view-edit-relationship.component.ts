@@ -7,6 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { RoleService } from 'src/app/services/role.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { OrganizationService } from 'src/app/services/organization.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-view-edit-relationship',
@@ -45,7 +46,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   editFlag: boolean = false;
   editFromRelationship: boolean = false;
 
-  constructor(private _formBuilder: FormBuilder, private roleService: RoleService, private organizationService: OrganizationService) { }
+  constructor(private _formBuilder: FormBuilder, private roleService: RoleService, private organizationService: OrganizationService, private router: Router) { }
 
   ngAfterViewInit() {}
 
@@ -78,6 +79,10 @@ export class CreateViewEditRelationshipComponent implements OnInit {
     this.breadcumMsg = this.getBreadcum();
   }
 
+    backToOrgRelationPage= function () {
+    this.router.navigate(['/admin/organisationrelationship']);
+};
+
   getBreadcum(){
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblRelationshipManagement ? this.translationData.lblRelationshipManagement : "Relationship Management"} / ${this.translationData.lblRelationshipDetails ? this.translationData.lblRelationshipDetails : 'Relationship Details'}`;
   }
@@ -87,12 +92,11 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   }
 
   editRelationship(row: any){
-    console.log("---selectedRowFromRelationship",this.selectedRowFromRelationship)
     this.titleText = this.translationData.lblRelationshipDetails || "Relationship Details";
     this.rowsData = [];
     this.editFlag = true;
     this.viewFlag = false;
-    this.viewRelationshipFromOrg = false
+    // this.viewRelationshipFromOrg = false
     this.editFromRelationship = true;
     this.createStatus = false;    
   }
@@ -138,6 +142,10 @@ export class CreateViewEditRelationshipComponent implements OnInit {
         }
         else {
             this.updateRelationship();
+            if(this.viewRelationshipFromOrg)
+            {
+              this.backToOrgRelationPage();
+            }
         }
       }
     }

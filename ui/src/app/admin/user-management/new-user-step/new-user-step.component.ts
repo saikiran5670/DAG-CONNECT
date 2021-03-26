@@ -71,6 +71,7 @@ export class NewUserStepComponent implements OnInit {
   linkFlag: boolean = false;
   linkAccountId: any = 0;
   imageError= '';
+  croppedImageTemp= '';
   @Input() privilegeAccess: any;
 
   myFilter = (d: Date | null): boolean => {
@@ -496,10 +497,14 @@ export class NewUserStepComponent implements OnInit {
     this.isAccountPictureSelected = false;
     this.imageChangedEvent = '';
     this.croppedImage = '';
+    this.croppedImageTemp= '';
   }
 
   imageCropped(event: ImageCroppedEvent) {
     this.croppedImage = event.base64;
+    if(this.croppedImageTemp == ''){
+      this.croppedImageTemp = this.croppedImage;
+    }
   }
 
   imageLoaded() {
@@ -517,6 +522,7 @@ export class NewUserStepComponent implements OnInit {
   onSelectPictureConfirm(){
     this.isSelectPictureConfirm = true;
     this.isAccountPictureSelected = false;
+    this.croppedImageTemp= '';
     //TODO : send cropped image to backend 
   }
 

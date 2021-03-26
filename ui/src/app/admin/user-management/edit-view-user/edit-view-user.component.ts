@@ -71,6 +71,7 @@ export class EditViewUserComponent implements OnInit {
   blobId: number= 0;
   imageError= '';
   profilePicture: any= '';
+  croppedImageTemp= '';
   servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
   @Input() privilegeAccess: any;
 
@@ -260,6 +261,7 @@ export class EditViewUserComponent implements OnInit {
   }
 
   editAccountInfo(){
+    this.croppedImage= '';
     this.editAccountInfoFlag = true;
     this.isSelectPictureConfirm = false;
   }
@@ -382,10 +384,14 @@ export class EditViewUserComponent implements OnInit {
     this.isAccountPictureSelected = false;
     this.imageChangedEvent = '';
     this.croppedImage = '';
+    this.croppedImageTemp= '';
   }
 
   imageCropped(event: ImageCroppedEvent) {
     this.croppedImage = event.base64;
+    if(this.croppedImageTemp == ''){
+      this.croppedImageTemp = this.croppedImage;
+    }
   }
 
   imageLoaded() {
@@ -403,7 +409,7 @@ export class EditViewUserComponent implements OnInit {
   onSelectPictureConfirm(){
     this.isSelectPictureConfirm = true;
     this.isAccountPictureSelected = false;
-
+    this.croppedImageTemp= '';
     let objData = {
       "blobId": this.blobId,
       "accountId": this.accountInfoData.id,
