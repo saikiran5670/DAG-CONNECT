@@ -51,7 +51,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     //RouterModule.forRoot(appRoute)
   ],
   providers: [
-    //{ provide: HTTP_INTERCEPTORS, useClass: AppInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: AppInterceptor, multi: true },
     { provide: LocationStrategy, useClass: HashLocationStrategy },
     {
       provide: HTTP_INTERCEPTORS,
