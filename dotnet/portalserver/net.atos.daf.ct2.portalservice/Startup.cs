@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.portalservice
             var vehicleservice = Configuration["ServiceConfiguration:vehicleservice"];
             var translationservice = Configuration["ServiceConfiguration:translationservice"];
             var auditservice = Configuration["ServiceConfiguration:auditservice"];
-            var featureservice= Configuration["ServiceConfiguration:featureservice"];
+            var featureservice = Configuration["ServiceConfiguration:featureservice"];
             var roleservice = Configuration["ServiceConfiguration:roleservice"];
             var organizationservice = Configuration["ServiceConfiguration:organizationservice"];
             var driverservice = Configuration["ServiceConfiguration:driverservice"];
@@ -65,7 +65,7 @@ namespace net.atos.daf.ct2.portalservice
             var cookiesexpireat = Configuration["WebServerConfiguration:cookiesexpireat"];
             var authcookiesexpireat = Configuration["WebServerConfiguration:authcookiesexpireat"];
             var headerstricttransportsecurity = Configuration["WebServerConfiguration:headerstricttransportsecurity"];
-           // var httpsport = Configuration["WebServerConfiguration:httpsport"];
+            // var httpsport = Configuration["WebServerConfiguration:httpsport"];
 
             // We are enforcing to call Insercure service             
             AppContext.SetSwitch(
@@ -78,11 +78,10 @@ namespace net.atos.daf.ct2.portalservice
             {
                 options.Cookie.Name = "Account";
                 options.Cookie.HttpOnly = true;
-                //options.Cookie.Expiration = TimeSpan.FromMinutes(Convert.ToDouble(cookiesexpireat));
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;//options.Cookie.SecurePolicy = string.IsNullOrEmpty(isdevelopmentenv)? CookieSecurePolicy.Always : Convert.ToBoolean(isdevelopmentenv) ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
+                options.Cookie.SecurePolicy = options.Cookie.SecurePolicy = string.IsNullOrEmpty(isdevelopmentenv) || isdevelopmentenv.Contains("Configuration") ? CookieSecurePolicy.None : (Convert.ToBoolean(isdevelopmentenv) ? CookieSecurePolicy.Always : CookieSecurePolicy.None);
                 options.Cookie.SameSite = SameSiteMode.Lax;
                 options.SlidingExpiration = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat) ? 5184000 : Convert.ToDouble(authcookiesexpireat));
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat) || authcookiesexpireat.Contains("Configuration") ? 5184000 : Convert.ToDouble(authcookiesexpireat));
                 options.Events = new CookieAuthenticationEvents
                 {
                     OnRedirectToLogin = redirectContext =>
@@ -98,8 +97,9 @@ namespace net.atos.daf.ct2.portalservice
                 };
             });
 
-            services.AddAuthorization(options => { 
-                if (Environment.IsDevelopment())
+            services.AddAuthorization(options => {
+                //if (Environment.IsDevelopment())  //not working for dev0 environment
+                if (isdevelopmentenv.Contains("Configuration") || Convert.ToBoolean(isdevelopmentenv))
                 {
                     options.DefaultPolicy = new AuthorizationPolicyBuilder().RequireAssertion(_ => true).Build();
                 }
@@ -186,14 +186,7 @@ namespace net.atos.daf.ct2.portalservice
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-           // else
-           // {
-           //     app.UseHsts();
-           // }
+            
             //Web Server Configuration
             var headercachecontrol = Configuration["WebServerConfiguration:headercachecontrol"];
             var headerexpires = Configuration["WebServerConfiguration:headerexpires"];
@@ -204,20 +197,30 @@ namespace net.atos.daf.ct2.portalservice
             var headeraccesscontrolalloworigin = Configuration["WebServerConfiguration:headeraccesscontrolalloworigin"];
             var headeraccesscontrolallowmethods = Configuration["WebServerConfiguration:headeraccesscontrolallowmethods"];
             var headerAccesscontrolallowheaders = Configuration["WebServerConfiguration:headeraccesscontrolallowheaders"];
+            var headerAccesscontrolallowcredentials = Configuration["WebServerConfiguration:headeraccesscontrolallowcredentials"];
+            var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
 
+            //if (Environment.IsDevelopment())  //not working for dev0 environment
+            if (isdevelopmentenv.Contains("Configuration") || Convert.ToBoolean(isdevelopmentenv))
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            // else
+            // {
+            //     app.UseHsts();
+            // }
             app.Use(async (context, next) =>
             {
                 //context.Response.Headers["Cache-Control"] = string.IsNullOrEmpty(headercachecontrol) ? "no-cache, no-store, must-revalidate" : headercachecontrol;
                 //context.Response.Headers["Expires"] = string.IsNullOrEmpty(headerexpires) ? "-1" : headerexpires;
                 //context.Response.Headers["Pragma"] = string.IsNullOrEmpty(headerpragma) ? "no-cache" : headerpragma;
-                context.Response.Headers.Add("X-Frame-Options", string.IsNullOrEmpty(headerxframeoptions) ? "DENY" : headerxframeoptions);
-                context.Response.Headers.Add("X-Xss-Protection", string.IsNullOrEmpty(headerxxssprotection) ? "1" : headerxxssprotection);
+                context.Response.Headers.Add("X-Frame-Options", string.IsNullOrEmpty(headerxframeoptions) || headerxframeoptions.Contains("Configuration") ? "DENY" : headerxframeoptions);
+                context.Response.Headers.Add("X-Xss-Protection", string.IsNullOrEmpty(headerxxssprotection) || headerxxssprotection.Contains("Configuration") ? "1" : headerxxssprotection);
                 ///////context.Response.Headers.Add("Content-Security-Policy", "script-src 'self' 'unsafe-eval' 'unsafe-inline'; navigate-to https://www.daf.com; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'");
                 //context.Response.Headers.Add("Strict-Transport-Security", string.IsNullOrEmpty(headerstricttransportsecurity) ? "31536000" : headerstricttransportsecurity);
-                context.Response.Headers.Add("Access-Control-Allow-Origin", string.IsNullOrEmpty(headeraccesscontrolalloworigin) ? "*" : headeraccesscontrolalloworigin);
-                //////context.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:4200");
-                context.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
-                context.Response.Headers.Add("Access-Control-Allow-Methods", string.IsNullOrEmpty(headeraccesscontrolallowmethods) ? "GET, POST, PUT, DELETE" : headeraccesscontrolallowmethods);
+                context.Response.Headers.Add("Access-Control-Allow-Origin", string.IsNullOrEmpty(headeraccesscontrolalloworigin) || headeraccesscontrolalloworigin.Contains("Configuration") ? "*" : headeraccesscontrolalloworigin);
+                context.Response.Headers.Add("Access-Control-Allow-Credentials", string.IsNullOrEmpty(headerAccesscontrolallowcredentials) || headerAccesscontrolallowcredentials.Contains("Configuration") ? "true" : headerAccesscontrolallowcredentials);                
+                context.Response.Headers.Add("Access-Control-Allow-Methods", string.IsNullOrEmpty(headeraccesscontrolallowmethods) || headeraccesscontrolallowmethods.Contains("Configuration") ? "GET, POST, PUT, DELETE" : headeraccesscontrolallowmethods);
                 //context.Response.Headers.Add("Access-Control-Allow-Headers", string.IsNullOrEmpty(headerAccesscontrolallowheaders) ? "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With" : headerAccesscontrolallowheaders);
 
                 context.Response.Headers.Remove("X-Powered-By");
