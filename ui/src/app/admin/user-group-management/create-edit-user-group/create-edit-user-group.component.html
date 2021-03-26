@@ -90,7 +90,7 @@
         <div fxLayout="column" fxLayoutAlign="end" *ngIf="actionType != 'view'">
           <div fxLayout="row">
             <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
-            <button *ngIf="actionType == 'edit'" class='margin-right-10' mat-raised-button color="primary"
+            <button *ngIf="actionType == 'edit'" class='margin-right-10 no-margin' mat-raised-button color="primary"
               (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
             <button class='no-margin' [disabled]="!userGroupForm.valid" mat-raised-button color="primary"
               (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
