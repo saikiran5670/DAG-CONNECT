@@ -191,8 +191,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     Id = filterRequest.Id,
                     Status = filterRequest.Status == null ? string.Empty : filterRequest.Status,
-                    Code = filterRequest.Code == null ? string.Empty : filterRequest.Code,
-                    Name = filterRequest.Name == null ? string.Empty : filterRequest.Name,
+                    Code = filterRequest.Code == null ? string.Empty : filterRequest.Code,                   
                     Type = filterRequest.Type == null ? string.Empty : filterRequest.Type,
                     FeatureSetID = filterRequest.FeatureSetId
                 };

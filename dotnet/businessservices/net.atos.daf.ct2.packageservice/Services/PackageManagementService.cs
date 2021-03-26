@@ -154,8 +154,7 @@ namespace net.atos.daf.ct2.packageservice
                 packageFilter.Id = request.Id;
                 packageFilter.Code = request.Code;
                 packageFilter.FeatureSetId = request.FeatureSetID;
-                packageFilter.Status = request.Status;
-                packageFilter.Name = request.Name;
+                packageFilter.Status = request.Status;              
                 packageFilter.Type = request.Type;
                 var packages = _packageManager.Get(packageFilter).Result;
                 response.PacakageList.AddRange(packages
