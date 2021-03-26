@@ -38,7 +38,7 @@ namespace net.atos.daf.ct2.subscription.test
         {
             long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
             SubscriptionActivation objSubscription = new SubscriptionActivation();
-            objSubscription.OrganizationId = "ddsss";
+            objSubscription.OrganizationId = "manoj";
             //objSubscription.packageId = "PKG007";//for type O
             objSubscription.packageId = "string12";//for type V
             objSubscription.VINs = new List<string>();
@@ -79,7 +79,7 @@ namespace net.atos.daf.ct2.subscription.test
         public async Task UnT_subscribe_SubscriptionManager_CreatebyOrgIdSubscriptionSet()
         {
             long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-            int orgId = 115;int packageId = 17;
+            int orgId = 24;int packageId = 75;
             var results = await _SubscriptionManager.Create(orgId, packageId);
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);

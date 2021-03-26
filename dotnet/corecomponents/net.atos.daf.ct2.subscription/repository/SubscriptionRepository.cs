@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.subscription.repository
             parameterToGetPackageId.Add("@packagecode", PackageCode);
             parameterToGetPackageId.Add("@is_active", true);
             var data = await dataAccess.QueryFirstOrDefaultAsync<Package>
-                             (@"select id, type from master.package where packagecode =@packagecode and is_active =@is_active",
+                             (@"select id, type, packagecode from master.package where packagecode =@packagecode and is_active =@is_active",
                             parameterToGetPackageId);
             return data;
         }
@@ -60,26 +60,43 @@ namespace net.atos.daf.ct2.subscription.repository
         }
 
         //to check Subscription Id exits or not
-        async Task<int> SubscriptionIdExits(string orderId)
+        async Task<subscriptionIdType> SubscriptionIdExits(string orderId, int orgId)
         {
             var parameterToGetSubscribeId = new DynamicParameters();
-            parameterToGetSubscribeId.Add("@subscription_id", orderId);
+            parameterToGetSubscribeId.Add("@subscription_id", orderId); 
+                parameterToGetSubscribeId.Add("@organization_id", orgId);
             parameterToGetSubscribeId.Add("@is_active", true);
-            int data = await dataAccess.ExecuteScalarAsync<int>
-                             (@"select id from master.subscription where subscription_id =@subscription_id and is_active =@is_active",
+            var data = await dataAccess.QueryFirstOrDefaultAsync<subscriptionIdType>
+                             (@"SELECT id, type FROM master.subscription 
+                               where subscription_id =@subscription_id AND is_active =@is_active
+                               AND  organization_id = @organization_id",
                             parameterToGetSubscribeId);
             return data;
         }
 
         //To check if Organization is already inserted
-        async Task<string> OrganizationExits(int orgId, int packageId)
+        async Task<subscriptionIdStatus> SubscriptionExits(int orgId, int packageId)
         {
             var parameterToGetSubscribeId = new DynamicParameters();
             parameterToGetSubscribeId.Add("@organization_Id", orgId);
             parameterToGetSubscribeId.Add("@package_id", packageId);
-            parameterToGetSubscribeId.Add("@is_active", true);
-            string data = await dataAccess.ExecuteScalarAsync<string>
-                             (@"select subscription_id from master.subscription where organization_Id =@organization_Id and package_id=@package_id and is_active =@is_active",
+            //parameterToGetSubscribeId.Add("@is_active", true);
+            var data = await dataAccess.QueryFirstOrDefaultAsync<subscriptionIdStatus>
+                             (@"select subscription_id, is_active from master.subscription where organization_Id =@organization_Id and package_id=@package_id",
+                            parameterToGetSubscribeId);
+            return data;
+        }
+
+        //To check if Subscription exits with orgid, packid and vinid is already inserted
+        async Task<subscriptionIdStatus> SubscriptionExits(int orgId, int packageId, int vinId)
+        {
+            var parameterToGetSubscribeId = new DynamicParameters();
+            parameterToGetSubscribeId.Add("@organization_Id", orgId);
+            parameterToGetSubscribeId.Add("@package_id", packageId);
+            parameterToGetSubscribeId.Add("@vehicle_id", vinId);
+            //parameterToGetSubscribeId.Add("@is_active", true);
+            var data = await dataAccess.QueryFirstOrDefaultAsync<subscriptionIdStatus>
+                             (@"select subscription_id, is_active from master.subscription where organization_Id =@organization_Id and package_id=@package_id and vehicle_id=@vehicle_id",
                             parameterToGetSubscribeId);
             return data;
         }
@@ -88,40 +105,69 @@ namespace net.atos.daf.ct2.subscription.repository
             log.Info("Subscribe Subscription method called in repository");
             try
             {
+                // Get package Id and type to insert in Subscription Table
                 var data = await GetPackageTypeByCode(objSubscription.packageId);
                 //Get Organization id to insert in subscription Table
                 int orgid = await GetOrganizationIdByCode(objSubscription.OrganizationId);
-                string SubscriptionId = Guid.NewGuid().ToString();
                 SubscriptionResponse objSubscriptionResponse = new SubscriptionResponse();
-                objSubscriptionResponse.orderId = SubscriptionId;
-                if (data == null)
+                if (data == null || orgid == 0)
                 {
                     return null;
                 }
-                else if ( data.id > 0 && data.type.ToLower() == "o")
+                else if (data.id > 0 && data.type.ToLower() == "o")
                 {
                     //if package type is organization and has vins in the payload return bad request
                     if (objSubscription.VINs != null && objSubscription.VINs.Count > 0)
                     {
                         return null;
                     }
-                 
-                    var parameter = new DynamicParameters();
-                    parameter.Add("@organization_id", orgid);
-                    parameter.Add("@subscription_id", SubscriptionId);
-                    parameter.Add("@package_code", objSubscription.packageId);
-                    parameter.Add("@package_id", data.id);
-                    parameter.Add("@type", data.type); 
-                    parameter.Add("@subscription_start_date", objSubscription.StartDateTime);
-                    parameter.Add("@subscription_end_date", null);
-                    parameter.Add("@vehicle_id", null);
-                    parameter.Add("@is_active", true);
-                    parameter.Add("@is_zuora_package", true);
-                    string queryInsert = "insert into master.subscription(organization_id, subscription_id, type, package_code, package_id, vehicle_id, subscription_start_date, subscription_end_date, is_active,is_zuora_package) " +
-                                 "values(@organization_id, @subscription_id, @type, @package_code, @package_id, @vehicle_id, @subscription_start_date, @subscription_end_date, @is_active,@is_zuora_package) RETURNING id";
 
-                   int subid = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
+                    string SubscriptionId = string.Empty;
+                    //return subscriptionid and is_active from subscription table
+                    var responce  = await SubscriptionExits(orgid, data.id);
+                    if (responce != null && !string.IsNullOrEmpty(responce.subscription_id) && responce.is_active)
+                    {// Subscription exists and Active
+                        return null;
+                    }
+                    else if (responce != null && !string.IsNullOrEmpty(responce.subscription_id) && !responce.is_active)
+                    {// Subscription exists and InActive
+                        var parameterStatus = new DynamicParameters();
+                        parameterStatus.Add("@is_active", true);
+                        parameterStatus.Add("@subscription_id", responce.subscription_id);
+                        parameterStatus.Add("@subscription_start_date", objSubscription.StartDateTime);
+                        parameterStatus.Add("@subscription_end_date", null);
+                        string queryUpdate = @"update master.subscription set is_active = @is_active, subscription_start_date = @subscription_start_date,
+                                           subscription_end_date = @subscription_end_date where subscription_id = @subscription_id and is_active = false";
 
+                        int updated = await dataAccess.ExecuteAsync(queryUpdate, parameterStatus);
+                        if (updated > 0)
+                        {
+                            objSubscriptionResponse.orderId = responce.subscription_id;
+                            return objSubscriptionResponse;
+                        }
+                    }
+                    else if (responce == null && string.IsNullOrEmpty(responce.subscription_id))
+                    {//Subscription does'nt exists for this scenerio
+                        SubscriptionId = Guid.NewGuid().ToString();
+                        var parameter = new DynamicParameters();
+                        parameter.Add("@organization_id", orgid);
+                        parameter.Add("@subscription_id", SubscriptionId);
+                        parameter.Add("@package_code", objSubscription.packageId);
+                        parameter.Add("@package_id", data.id);
+                        parameter.Add("@type", data.type);
+                        parameter.Add("@subscription_start_date", objSubscription.StartDateTime);
+                        parameter.Add("@subscription_end_date", null);
+                        parameter.Add("@vehicle_id", null);
+                        parameter.Add("@is_active", true);
+                        parameter.Add("@is_zuora_package", true);
+                        string queryInsert = "insert into master.subscription(organization_id, subscription_id, type, package_code, package_id, vehicle_id, subscription_start_date, subscription_end_date, is_active,is_zuora_package) " +
+                                     "values(@organization_id, @subscription_id, @type, @package_code, @package_id, @vehicle_id, @subscription_start_date, @subscription_end_date, @is_active,@is_zuora_package) RETURNING id";
+
+                        int subid = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
+                        if (subid > 0)
+                            objSubscriptionResponse.orderId = SubscriptionId;
+                    }
+                         
                 }
                 //if package type is vehicle then only check vehicle table
                 else if (data.id > 0 && data.type.ToLower() == "v")
@@ -145,16 +191,46 @@ namespace net.atos.daf.ct2.subscription.repository
                             {//return Bad Request if vin does not exits in vehicle table
                                 return null;
                             }
+                            int vinActivated = 0;
+                            var response = await SubscriptionExits(orgid, data.id, vinexist);
+                            if (response != null && !string.IsNullOrEmpty(response.subscription_id) && response.is_active)
+                            {
+                                return null;
+                            }
+                            else if (response != null && !string.IsNullOrEmpty(response.subscription_id) && !response.is_active)
+                            {
+                                // Subscription exists and InActive
+                                var parameterStatus = new DynamicParameters();
+                                parameterStatus.Add("@is_active", true);
+                                parameterStatus.Add("@subscription_id", response.subscription_id);
+                                parameterStatus.Add("@subscription_start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                                parameterStatus.Add("@subscription_end_date", null);
+                                parameterStatus.Add("@vehicle_id", vinexist); 
+                                string queryUpdate = @"update master.subscription set is_active = @is_active, subscription_start_date = @subscription_start_date,
+                                           subscription_end_date = @subscription_end_date where subscription_id = @subscription_id and vehicle_id=@vehicle_id and is_active = false";
+
+                                vinActivated = await dataAccess.ExecuteAsync(queryUpdate, parameterStatus);
+                                if (vinActivated > 0)
+                                {
+                                }
+                            }
                             //This will get us the list of vins exits on Vehicle Table or Not
-                            objvinList.Add(vinexist);
+                            if (vinActivated == 0)
+                            {
+                                objvinList.Add(vinexist);
+                            }
+
                         }
+
+                        string SubscriptionId = string.Empty;
+                        SubscriptionId = Guid.NewGuid().ToString();
                         var parameter = new DynamicParameters();
                         parameter.Add("@organization_id", orgid);
                         parameter.Add("@subscription_id", SubscriptionId);
                         parameter.Add("@type", data.type);
                         parameter.Add("@package_code", objSubscription.packageId);
                         parameter.Add("@package_id", data.id);
-                        parameter.Add("@subscription_start_date",objSubscription.StartDateTime);
+                        parameter.Add("@subscription_start_date", objSubscription.StartDateTime);
                         parameter.Add("@subscription_end_date", null);
                         parameter.Add("@is_active", true);
                         parameter.Add("@is_zuora_package", true);
@@ -168,6 +244,7 @@ namespace net.atos.daf.ct2.subscription.repository
                             int subid = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
                         }
                         objSubscriptionResponse.numberOfVehicles = objvinList.Count;
+                        objSubscriptionResponse.orderId = SubscriptionId;
                     }
                 }
                 return objSubscriptionResponse;
@@ -189,47 +266,37 @@ namespace net.atos.daf.ct2.subscription.repository
 
                 if (!string.IsNullOrEmpty(objUnSubscription.OrderID))// for Organization
                 {
-                    int orderid = await SubscriptionIdExits(objUnSubscription.OrderID);
-                    if (orderid == 0)
+                    //To Get Organizationid by orgcode
+                    int orgid = await GetOrganizationIdByCode(objUnSubscription.OrganizationID);
+                    if (orgid == 0)
                     {
                         return null;
                     }
-                    else
+                    //To Get SubscriptionId and Type
+                    var data = await SubscriptionIdExits(objUnSubscription.OrderID, orgid);
+                    
+                    if (data == null)
                     {
+                        return null;
+                    }
+                    else if (data.id > 0 && data.type.ToLower() == "o")
+                    {
+                        //if package type is organization and has vins in the payload return bad request
+                        if (objUnSubscription.VINs != null && objUnSubscription.VINs.Count > 0)
+                        {
+                            return null;
+                        }
                         var parameter = new DynamicParameters();
                         parameter.Add("@subscription_id", objUnSubscription.OrderID);
                         parameter.Add("@subscription_end_date", objUnSubscription.EndDateTime);
-                        string queryInsert = @"update master.subscription set is_active=false, subscription_end_date=@subscription_end_date where subscription_id=@subscription_id";
+                        parameter.Add("@organization_id", orgid);
+                        string queryUpdate = @"update master.subscription set is_active=false, subscription_end_date=@subscription_end_date where subscription_id=@subscription_id and organization_id=@organization_id";
                         int roweffected = await dataAccess.ExecuteAsync
-                            (queryInsert, parameter);
-                        objSubscriptionResponse.numberOfVehicles = roweffected;
+                            (queryUpdate, parameter);
+                        objSubscriptionResponse.orderId = objUnSubscription.OrderID;
                         return objSubscriptionResponse;
                     }
-                }
-
-                var data = await GetPackageTypeByCode(objUnSubscription.PackageId);
-                //Get Organization id to insert in subscription Table
-                int orgid = await GetOrganizationIdByCode(objUnSubscription.OrganizationID);
-
-                if (data == null)
-                {
-                    return null;
-                }
-                else if (data.id > 0 && data.type.ToLower() == "o")
-                {
-                    //if package type is organization and has vins in the payload return bad request
-                    if (objUnSubscription.VINs != null && objUnSubscription.VINs.Count > 0)
-                    {
-                        return null;
-                    }
-                    var parameter = new DynamicParameters();
-                    parameter.Add("@organization_id", orgid);
-                    parameter.Add("@package_id", data.id);
-                    parameter.Add("@subscription_end_date", objUnSubscription.EndDateTime);
-                    parameter.Add("@is_active", false);
-                    int count = await dataAccess.ExecuteAsync
-(@"update master.subscription set is_active=@is_active,subscription_end_date=@subscription_end_date where organization_id=@organization_id and package_id=@package_id", parameter);
-                }
+                
                 //if package type is vehicle then only check vehicle table
                 else if (data.id > 0 && data.type.ToLower() == "v")
                 {
@@ -242,47 +309,41 @@ namespace net.atos.daf.ct2.subscription.repository
                         ArrayList objvinList = new ArrayList();
                         foreach (var item in objUnSubscription.VINs)
                         {
-                            int exist = 0;
+                            
                             var parameterToGetVehicleId = new DynamicParameters();
                             parameterToGetVehicleId.Add("@vin", item);
-                            exist = await dataAccess.ExecuteScalarAsync<int>
-                                (@"SELECT id FROM master.vehicle where vin=@vin", parameterToGetVehicleId);
-                            if (exist == 0)
-                            {//return Bad Request if vin does not exits in vehicle table
+                                parameterToGetVehicleId.Add("@subscription_id", objUnSubscription.OrderID);
+                                parameterToGetVehicleId.Add("@organization_id", orgid);
+                                string query = @"SELECT sub.id,sub.is_active FROM master.subscription sub 
+		                                            left JOIN master.vehicle veh ON sub.vehicle_id = veh.id
+		                                            WHERE veh.vin= @vin
+                                             AND  sub.subscription_id = @subscription_id
+                                             AND  sub.organization_id = @organization_id";
+                            var vinExist = await dataAccess.QueryFirstOrDefaultAsync<UnSubscribeVin>
+                                (query, parameterToGetVehicleId);
+                            if (vinExist == null || vinExist.id == 0 || !vinExist.is_active)
+                            {//return Bad Request if vin does not exits and is_active is already false in Subscription table
                                 return null;
                             }
-
-                            int vinexist = 0;
-                            //forgeting vehicle id
-                            var parametertogetUniqueVin = new DynamicParameters();
-                            parametertogetUniqueVin.Add("@vehicle_id", exist);
-                            parametertogetUniqueVin.Add("@package_id", data.id);
-                            parametertogetUniqueVin.Add("@organization_id", orgid);
-                            parametertogetUniqueVin.Add("@is_active", true);
-                            string query = @"SELECT id FROM master.subscription where vehicle_id=@vehicle_id and package_id=@package_id and organization_id=@organization_id and is_active=@is_active";
-                            vinexist = await dataAccess.ExecuteAsync(query, parametertogetUniqueVin);
-                            if (vinexist == 0)
-                            {//return Bad Request if vin does not exits in vehicle table
-                                return null;
-                            }
+                           
                             //This will get us the list of vins exits on Vehicle Table or Not
-                            objvinList.Add(vinexist);
+                            objvinList.Add(vinExist.id);
                         }
                         var parameter = new DynamicParameters();
                         parameter.Add("@subscription_end_date", objUnSubscription.EndDateTime);
-                        parameter.Add("@is_active", false);
-                        //This Condition to insert only if all the VIN exits in Vehicle Table
-                        foreach (var item in objvinList)
+                        parameter.Add("@is_active", false); 
+                            //This Condition to insert only if all the VIN exits in Vehicle Table
+                            foreach (var item in objvinList)
                         {
                             parameter.Add("@id", item);
                  string queryInsert = "update master.subscription set is_active=@is_active,subscription_end_date=@subscription_end_date where id=@id";
 
-                            int subid = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
+                            int rowEffected = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
                         }
                         objSubscriptionResponse.numberOfVehicles = objvinList.Count;
                     }
                 }
-               
+                }
                 return objSubscriptionResponse;
             }
             catch (Exception ex)
@@ -293,161 +354,47 @@ namespace net.atos.daf.ct2.subscription.repository
             }
         }
 
-        public async Task<Subscription> Create(Subscription subscription)
-        {
-            try
-            {
-                var parameter = new DynamicParameters();
-
-                //parameter.Add("@id", subscription.Id);
-                parameter.Add("@orderid", subscription.OrderId);
-                // parameter.Add("@orderid", Subscription.OrderId);
-                //parameter.Add("@organizationid", Subscription.OrganizationId);
-                // parameter.add("@organizationdate", Subscription.OrganizationDate )
-
-                string query = @"insert into master.subscription(id,orderid,organizationid,organizationdate) " +
-                              "values(@id,@orderid,@organizationid,@organizationdate,true) RETURNING id";
-
-                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                subscription.Id = id;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return subscription;
-        }
-        public async Task<Subscription> Update(Subscription subscription)
-        {
-            try
-            {
-                var parameter = new DynamicParameters();
-                parameter.Add("@id", subscription.Id);
-                parameter.Add("@orderid", subscription.OrderId);
-                parameter.Add("@organizationid", subscription.OrganizationId);
-                parameter.Add("@organizationdate", subscription.OrganizationDate);
-
-                string query = @"update master.subscription set orderid= @orderid, organizationid = @organizationid,
-                                organizationdate = @organizationdate,
-                                where id = @id RETURNING id";
-
-                subscription.Id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return subscription;
-        }
-
-
-        //public async Task<Subscription> Get(int subscriptionId)
-        //{
-        //    try
-        //    {
-        //        var parameter = new DynamicParameters();
-        //        parameter.Add("@id", subscriptionId);
-
-        //        string query = string.Empty;
-        //        query = "select * from master.subscription where id=@id";
-        //        dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
-        //        return Map(result);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
-
-        private Subscription Map(dynamic record)
-        {
-            Subscription subscription = new Subscription();
-            subscription.Id = record.id;
-            subscription.OrderId = record.orderid;
-            subscription.OrganizationId = record.organizationid;
-            subscription.OrganizationDate = record.organizationdate;
-            return subscription;
-        }
-        public async Task<Subscription> Get(int OrganizationId, int VehicleId, char Status, DateTime StartDate, DateTime EndDate)
-        {
-            try
-            {
-                var parameter = new DynamicParameters();
-                parameter.Add("@organizationId", OrganizationId);
-                parameter.Add("@vehicleId", VehicleId);
-                parameter.Add("@status", Status);
-                parameter.Add("@startdate", StartDate);
-                parameter.Add("@enddate", EndDate);
-                string query = string.Empty;
-                query = "select * from master.subscription where organizationid=@organizationid,vehicleid=@vehicleid,status=@status,startdate=@statrtdate,enddate=@enddate";
-                dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
-                return Map(result);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        private Subscription Map1(dynamic record)
-        {
-            Subscription subscription = new Subscription();
-            subscription.Id = record.id;
-            subscription.OrderId = record.orderid;
-            subscription.OrganizationId = record.organizationid;
-            subscription.OrganizationDate = record.organizationdate;
-            return subscription;
-        }
-        public async Task<Subscription> Get(char Status, int VehicleGroupID, int VehicleId,  DateTime StartDate, DateTime EndDate)
-        {
-            try
-            {
-                var parameter = new DynamicParameters();
-                parameter.Add("@vehiclegroupid", VehicleGroupID);
-                parameter.Add("@vehicleid", VehicleId);
-                parameter.Add("@status", Status);
-                parameter.Add("@startdate", StartDate);
-                parameter.Add("@enddate", EndDate);
-                string query = string.Empty;
-                query = "select * from master.subscription where vehiclegroupid=@vehiclegroupid,vehicleid=@vehicleid,status=@status,startdate=@statrtdate,enddate=@enddate";
-                dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
-                return Map(result);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        private Subscription Map2(dynamic record)
-        {
-            Subscription subscription = new Subscription();
-            subscription.Id = record.id;
-            subscription.OrderId = record.orderid;
-            subscription.OrganizationId = record.organizationid;
-            subscription.OrganizationDate = record.organizationdate;
-            return subscription;
-        }
-
-       public async Task<SubscriptionResponse> Create(int orgId,int packageId)
+        public async Task<SubscriptionResponse> Create(int orgId,int packageId)
         {
             try
             {
                 SubscriptionResponse objSubscriptionResponse = new SubscriptionResponse();
-                string SubscriptionId = string.Empty;
-                SubscriptionId = await OrganizationExits(orgId, packageId);
-                if (!string.IsNullOrEmpty(SubscriptionId))
+                //To check if subscription_id exists and to get status
+                var response = await SubscriptionExits(orgId, packageId);
+                if (response != null && !string.IsNullOrEmpty(response.subscription_id) && response.is_active)
                 {
-                    objSubscriptionResponse.orderId = SubscriptionId;
+                    objSubscriptionResponse.orderId = response.subscription_id;
                     return objSubscriptionResponse;
                 }
+                else if (response != null && !string.IsNullOrEmpty(response.subscription_id) && !response.is_active)
+                {
+                    var parameterStatus = new DynamicParameters();
+                    parameterStatus.Add("@is_active", true);
+                    parameterStatus.Add("@subscription_id", response.subscription_id);
+                    parameterStatus.Add("@subscription_start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                    parameterStatus.Add("@subscription_end_date", null);
+                    parameterStatus.Add("@is_zuora_package", false);
+                    string queryUpdate = @"update master.subscription set is_active = @is_active
+                                           ,subscription_start_date = @subscription_start_date
+                                           ,subscription_end_date = @subscription_end_date
+                                           ,is_zuora_package = @is_zuora_package
+                                     where subscription_id = @subscription_id and is_active = false";
+
+                    int updated = await dataAccess.ExecuteAsync(queryUpdate, parameterStatus);
+                    if (updated > 0)
+                    {
+                        objSubscriptionResponse.orderId = response.subscription_id;
+                        return objSubscriptionResponse;
+                    }
+                }
                 Package objPackage = await GetPackageTypeById(packageId);
+                string SubscriptionId = string.Empty;
                 SubscriptionId = Guid.NewGuid().ToString();
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", orgId);
                 parameter.Add("@subscription_id", SubscriptionId);
                 parameter.Add("@type", objPackage.type == null ? null : objPackage.type);
-                parameter.Add("@package_code", objPackage.packagecode);
+                parameter.Add("@package_code", objPackage.packagecode == null ? null : objPackage.packagecode);
                 parameter.Add("@package_id", packageId);
                 parameter.Add("@vehicle_id", null);
                 parameter.Add("@subscription_start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
@@ -459,9 +406,10 @@ namespace net.atos.daf.ct2.subscription.repository
                              "values(@organization_id, @subscription_id,@type, @package_code, @package_id, @vehicle_id, @subscription_start_date, @subscription_end_date, @is_active,@is_zuora_package) RETURNING id";
 
                 int subid = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
-
-                
-                objSubscriptionResponse.orderId = SubscriptionId;
+                if (subid > 0)
+                {
+                    objSubscriptionResponse.orderId = SubscriptionId;
+                }
                 return objSubscriptionResponse;
 
             }
