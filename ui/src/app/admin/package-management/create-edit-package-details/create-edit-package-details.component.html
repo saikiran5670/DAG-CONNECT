@@ -22,13 +22,18 @@
                     <mat-label><span>{{ translationData.lblPackageCode || 'Package Code' }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
-                            <input  placeholder="{{ translationData.lblEnterPackageCode || 'Enter Package Code ' }}" matInput formControlName="code" maxlength="50" >
+                            <input maxlength="50" placeholder="{{ translationData.lblEnterPackagecode || 'Enter Package Code' }}" matInput
+                                formControlName="code">
                         </mat-form-field>
                         <mat-error *ngIf="packageFormGroup.get('code').hasError('required')">
-                            {{ translationData.lblPleaseenterfeaturename || 'Please enter Package code'}}
+                            {{ translationData.lblPleasenterpackagecode || 'Please enter Package Code'}}
                         </mat-error>
                         <mat-error *ngIf="packageFormGroup.get('code').hasError('whitespace')">
-                            {{ translationData.lblPackageCodecannotcontainonlywhitespace || 'Package Code cannot contain only whitespace' }}
+                            {{ translationData.lblPackagecodecannotcontainonlywhitespace || 'Package Code
+                            cannot contain only whitespace' }}
+                        </mat-error>
+                        <mat-error *ngIf="duplicateMsg">
+                            {{ translationData.lblDuplicatecode || 'Duplicate Package Code' }}
                         </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
@@ -41,14 +46,15 @@
                     </mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
-                            <input maxlength="100" placeholder="{{ translationData.lblEnterPackageName || 'Enter Package Name' }}" matInput
+                            <input maxlength="50" placeholder="{{ translationData.lblEnterPackageName || 'Enter Package Name' }}" matInput
                                 formControlName="name">
                         </mat-form-field>
                         <mat-error *ngIf="packageFormGroup.get('name').hasError('required')">
-                            {{ translationData.lblPleaseenterfeaturename || 'Please enter Package Name'}}
+                            {{ translationData.lblPleasenterpackagename || 'Please enter Package Name'}}
                         </mat-error>
                         <mat-error *ngIf="packageFormGroup.get('name').hasError('whitespace')">
-                            {{ translationData.lblNAmecannotcontainonlywhitespace || 'Name cannot contain only whitespace' }}
+                            {{ translationData.lblPackagenamecannotcontainonlywhitespace || 'Package Name
+                            cannot contain only whitespace' }}
                         </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
@@ -58,11 +64,11 @@
                 <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
                         <span>{{ translationData.lblDescription || 'Description' }}</span>
-                        <span *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax || '120 characters max' }}</span>
+                        <span *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax || '100 characters max' }}</span>
                     </mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
-                            <input maxlength="120" placeholder="{{ translationData.lblEnterDescription || 'Enter Description' }}" matInput
+                            <input maxlength="100" placeholder="{{ translationData.lblEnterDescription || 'Enter Description' }}" matInput
                                 formControlName="description">
                         </mat-form-field>
                         <mat-error *ngIf=" packageFormGroup.get('description').hasError('whitespace')">
@@ -86,7 +92,11 @@
                               {{ rer.name }}
                             </mat-option>
                           </mat-select>
-                        </mat-form-field></div>
+                        </mat-form-field>
+                        <mat-error *ngIf="packageFormGroup.get('type').hasError('required')">
+                            {{ translationData.lblPleaseselectpackagetype || 'Please Select Package Type'}}
+                        </mat-error>
+                    </div>
                     <div *ngIf="actionType == 'view'">
                         <span style='font-weight: 500!important;'>{{ selectedElementData.type }}</span>
                     </div>
@@ -150,11 +160,11 @@
                             <mat-cell *matCellDef="let row; let index"> {{row.name}} </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="select">
-                            <mat-header-cell *matHeaderCellDef>{{ translationData.lblAccess || 'Access'}}
+                            <mat-header-cell *matHeaderCellDef>
                                 <mat-slide-toggle color="primary" (change)='$event ? masterToggleForFeatures() : null;' [disabled]="viewFlag"
                                   [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
                                   [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
-                                  [aria-label]='checkboxLabelForFeatures()'>
+                                  [aria-label]='checkboxLabelForFeatures()'>{{ translationData.lblExclude || 'Exclude'}}
                                 </mat-slide-toggle>
                               </mat-header-cell>
                               <mat-cell *matCellDef="let row">
@@ -164,6 +174,9 @@
                                   [aria-label]='checkboxLabelForFeatures(row)'>
                                 </mat-slide-toggle>
                               </mat-cell>
+                              <!-- <mat-error *ngIf="packageFormGroup.get('featureIds').hasError('required')">
+                                {{ translationData.lblPleaseselectpackagetype || 'Please Select Package Type'}}
+                            </mat-error> -->
                         </ng-container> 
                         <mat-header-row *matHeaderRowDef="featureDisplayedColumns"></mat-header-row>
                         <mat-row *matRowDef="let row; columns: featureDisplayedColumns;">

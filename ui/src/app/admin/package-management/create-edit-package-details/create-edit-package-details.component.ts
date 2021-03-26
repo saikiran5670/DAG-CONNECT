@@ -17,7 +17,6 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   @Input() translationData: any;
   @Input() selectedElementData: any;
   @Input() createStatus: boolean;
-  @Input() duplicateFlag: boolean;
   @Input() viewFlag: boolean;
   @Output() createViewEditPackageEmit = new EventEmitter<object>();
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -31,11 +30,12 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   featuresSelected = [];
   selectionForFeatures = new SelectionModel(true, []);
   selectedType: any = 'O';
-  selectedStatus: any = 'active';
+  selectedStatus: any = 'Active';
   featuresData = [];
   organizationId: number;
   userCreatedMsg: any = '';
   userName: string = '';
+  duplicateMsg: boolean = false;
   TypeList: any = [
     {
       name: 'Organization',
@@ -56,11 +56,11 @@ export class CreateEditPackageDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.packageFormGroup = this._formBuilder.group({
-      code: ['', [ CustomValidators.noWhitespaceValidator]],
+      code: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc ]],
       description: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
       status: ['', [CustomValidators.numberValidationForName]],
-      type: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
-      name: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
+      type: ['', [ Validators.required]],
+      name: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc]]
     });
     this.breadcumMsg = this.getBreadcum(this.actionType);
     if(this.actionType == 'view' || this.actionType == 'edit' ){
@@ -74,7 +74,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
         this.dataSource = new MatTableDataSource(data);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-        if(!this.createStatus || this.duplicateFlag || this.viewFlag){
+        if(!this.createStatus || this.duplicateMsg || this.viewFlag){
           this.onReset();
         }
       });
@@ -131,8 +131,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
 
   onCancel(){
     let emitObj = {
-      stepFlag: false,
-      msg: ""
+      stepFlag: false
     }    
     this.createViewEditPackageEmit.emit(emitObj); 
   }
@@ -166,6 +165,11 @@ export class CreateEditPackageDetailsComponent implements OnInit {
         }    
         this.createViewEditPackageEmit.emit(emitObj); 
     });
+  },(err) => {
+    //console.log(err);
+    if (err.status == 409) {
+      this.duplicateMsg = true;
+    }
   })
   }
   else if(this.actionType == 'edit'){
