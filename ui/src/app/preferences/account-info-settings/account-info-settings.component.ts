@@ -236,7 +236,6 @@ export class AccountInfoSettingsComponent implements OnInit {
         lastName: this.accountSettingsForm.controls.lastName.value,
         organizationId: this.organizationId,
         driverId: "",
-        password: "",
         type: this.accountInfo.type ? this.accountInfo.type : 'P'
     }
     this.accountService.updateAccount(objData).subscribe((data)=>{
