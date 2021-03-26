@@ -2,7 +2,6 @@ import {
   HttpErrorResponse,
   HttpEvent,
   HttpHandler,
-  HttpHeaders,
   HttpInterceptor,
   HttpRequest,
   HttpResponse,
@@ -10,8 +9,8 @@ import {
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { tap, catchError } from 'rxjs/operators';
-//import { AuthService } from '../services/auth.service';
+import { tap } from 'rxjs/operators';
+
 
 @Injectable({ providedIn: 'root' })
 export class AppInterceptor implements HttpInterceptor {
@@ -38,7 +37,7 @@ export class AppInterceptor implements HttpInterceptor {
             // do stuff with response if you want
             //console.log(event)
             //console.log(event.headers.get('Set-Cookie'));
-            //console.log(event.headers.get('Content-Type'));
+
           }
         },
         (err: any) => {
