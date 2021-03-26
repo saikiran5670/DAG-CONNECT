@@ -29,7 +29,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   dataSourceOrg: any;
   dataSourceRelation: any;
   OrganisationRelationshipFormGroup: FormGroup;
-  selectedType: any = '';
+  selectedType: any = 'active';
   organizationId: number;
   localStLanguage: any;
   vehicleGroupDisplayColumn: string[]= ['select', 'vehicleGroupName'];
@@ -55,7 +55,6 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   @Input() roleData:any;
 
   ngOnInit(): void {
-    console.log("--createStatus--",this.createStatus)
     this.OrganisationRelationshipFormGroup = this._formBuilder.group({
       relationship: ['', [Validators.required]],
       // userGroupDescription: [],
@@ -137,35 +136,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
       })
   }
 
-  mockData(){
-    this.initData = [
-      {
-        all:"",
-        vehicleGroupName: 'Vehicle Group  1',
-        organisationName: 'Organisation 1'
-      },
-      {
-        all:"",
-        vehicleGroupName: 'Vehicle Group 2',
-        organisationName: 'Organisation 2'
-      },
-      {
-        all:"",
-        vehicleGroupName: 'Vehicle Group  3',
-        organisationName: 'Organisation 3'
-      },
-      {
-        all:"",
-        vehicleGroupName: 'Vehicle Group  4',
-        organisationName: 'Organisation 4'
-      },
-      {
-        all:"",
-        vehicleGroupName: 'Vehicle Group  5',
-        organisationName: 'Organisation 5'
-      }
-    ]
-  }
+  
  onInputChange(event: any) {
 
   }
@@ -175,7 +146,13 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   onChange(event:any){
 
   }
+  
   onCancel(){
+    let emitObj = {
+      stepFlag: false,
+      successMsg: this.userCreatedMsg,
+    }    
+    this.backToPage.emit(emitObj);
 
   }
 
@@ -190,7 +167,6 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   onCreate(){
     let selectedId = this.selectionIDsVehicle();
     let selectedIdOrg = this.selectionIDsOrg();
-    console.log(this.OrganisationRelationshipFormGroup)
     let objData = {
       id:0,
       relationShipId:this.OrganisationRelationshipFormGroup.controls.relationship.value,
@@ -203,7 +179,8 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
 
     this.organizationService.createOrgRelationship(objData).subscribe((res) => {
       this.organizationService.getOrgRelationshipDetailsLandingPage().subscribe((getData: any) => {
-        this.userCreatedMsg = this.getUserCreatedMessage();
+        let name = getData.relationshipName;
+        this.userCreatedMsg = this.getUserCreatedMessage(name);
         let emitObj = {
           stepFlag: false,
           successMsg: this.userCreatedMsg,
@@ -215,7 +192,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
       
   }
 
-  getUserCreatedMessage() {
+  getUserCreatedMessage(name1: any) {
     let attrName: any = `${this.OrganisationRelationshipFormGroup.controls.relationship.value}`;
     if (this.actionType == 'create') {
       if (this.translationData.lblUserAccountCreatedSuccessfully)
@@ -226,7 +203,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
       if (this.translationData.lblUserAccountUpdatedSuccessfully)
         return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', attrName);
       else
-        return ("New Details '$' Updated Successfully").replace('$', attrName);
+        return ("New Relationship '$' created Successfully").replace('$', name1);
     }
   }
 

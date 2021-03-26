@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-organisation-relationship',
   templateUrl: './organisation-relationship.component.html',
-  styleUrls: ['./organisation-relationship.component.css']
+  styleUrls: ['./organisation-relationship.component.less']
 })
 export class OrganisationRelationshipComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -22,7 +22,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   dataSource: any;
   orgrelationshipDisplayedColumns: string[]= ['select', 'relationshipName', 'vehicleGroup', 'targetOrg', 'startDate', 'endDate','allowChain', 'endRelationship'];
   editFlag: boolean = false;
-  viewFlag: boolean = true;
+  viewFlag: boolean = false;
   initData: any = [];
   rowsData: any;
   createStatus: boolean = false;
@@ -72,49 +72,53 @@ export class OrganisationRelationshipComponent implements OnInit {
   }
 
   loadInitData() {
-    this.showLoadingIndicator = true;
-    //  this.mockData(); 
-    //     this.dataSource = new MatTableDataSource(this.initData);
-    //     this.dataSource.paginator = this.paginator;
-    //     this.dataSource.sort = this.sort;
-  
-        this.organizationService.getOrgRelationshipDetailsLandingPage().subscribe((data: any) => {
-          this.hideloader();
-          if(data)
-           this.initData = data["orgRelationshipMappingList"];
-           setTimeout(()=>{
-            this.dataSource = new MatTableDataSource(this.initData);
-            this.dataSource.paginator = this.paginator;
-            this.dataSource.sort = this.sort;
-          });
-          // this.relationshipList = this.initData;
-        }
-        ); 
 
         let objData = {
-          Organization_Id: this.organizationId
-        }
+            Organization_Id: this.organizationId
+              }
+          this.showLoadingIndicator = true;
+          this.organizationService.GetOrgRelationdetails(objData).subscribe((newdata: any) => {
+          this.organizationService.getOrgRelationshipDetailsLandingPage().subscribe((data: any) => {
+          this.hideloader();
+            if(data)
+            {
+                this.relationshipList = newdata["relationShipData"];
+                this.organizationList = newdata["organizationData"];
+                this.initData = data["orgRelationshipMappingList"];
+                this.initData = this.getNewTagData(this.initData)
+                  setTimeout(()=>{
+                    this.dataSource = new MatTableDataSource(this.initData);
+                    this.dataSource.paginator = this.paginator;
+                    this.dataSource.sort = this.sort;
+                    });
+             }
 
-        this.organizationService.GetOrgRelationdetails(objData).subscribe((data: any) => {
-          if(data)
-          {
-            this.initData = data["relationShipData"];
-            this.relationshipList = this.initData;
-            this.vehicleList = data["vehicleGroup"];
-            this.organizationList = data["organizationData"];
+            },(error)=>{
+              this.hideloader();
+            }
+            );
           }
-        });
+          ); 
+
+        // let objData = {
+        //   Organization_Id: this.organizationId
+        // }
+
+        // this.organizationService.GetOrgRelationdetails(objData).subscribe((data: any) => {
+        //   if(data)
+        //   {
+        //     this.initData = data["relationShipData"];
+        //     this.relationshipList = this.initData;
+        //     this.vehicleList = data["vehicleGroup"];
+        //     this.organizationList = data["organizationData"];
+        //   }
+        // });
     
   }
 
-//   btnClick= function () {
-//     this.viewFlag = true;
-//     this.router.navigate('/relationshipmanagement',this.viewFlag);
-// };
-
   setDate(date : any){​​​​​​​​
     if (date === 0) {​​​​​​​​
-        return 0;
+        return '-';
         }​​​​​​​​
     else {​​​​​​​​
       var newdate = new Date(date);
@@ -144,15 +148,13 @@ export class OrganisationRelationshipComponent implements OnInit {
   }
 
   newRelationship(){
-    // this.rowsData = [];
-    // this.rowsData = this.initData; 
     this.editFlag = false;
     this.createStatus = true;
-    // console.log("---newRelationship called createStatus--",this.createStatus)
   }
+
   applyFilter(filterValue: string) {
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
+    filterValue = filterValue.trim(); 
+    filterValue = filterValue.toLowerCase(); 
     this.dataSource.filter = filterValue;
   }
 
@@ -177,7 +179,28 @@ export class OrganisationRelationshipComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
-  
+  applyFilterOnType(filterValue: string){
+    this.dataSource.filterPredicate = function(data, filter: string): boolean {
+      if(filterValue == 'Terminated')
+      {
+      if(data.endDate != 0)
+      {
+        return data.endDate != 0;
+      }
+    }
+
+    if(filterValue == 'Active')
+      {
+      if(data.endDate == 0)
+      {
+        return data.endDate == 0;
+      }
+    }
+
+    };  
+    this.dataSource.filter = filterValue;
+  }
+
   mockData(){
     this.initData = [
       {
@@ -305,7 +328,6 @@ export class OrganisationRelationshipComponent implements OnInit {
 
   deleteOrgRelationship(){
     let selectedOptions = this.selectedOrgRelations.selected.map(item=>item.id);
-    console.log(selectedOptions);
     const options = {
       title: this.translationData.lblDeleteAccount || 'Delete Account',
       message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Are you sure you want to delete '$' relationship?",
@@ -366,15 +388,37 @@ export class OrganisationRelationshipComponent implements OnInit {
   }
 
   checkCreationForOrgRelationship(item: any){
-    // this.createEditViewPackageFlag = !this.createEditViewPackageFlag;
-    // this.createEditViewPackageFlag = item.stepFlag;
+    this.createStatus = item.stepFlag;
     if(item.successMsg) {
       this.successMsgBlink(item.successMsg);
     }
     if(item.tableData) {
-      this.initData = item.tableData;
+      this.initData = item.tableData["orgRelationshipMappingList"];
+      // this.initData = this.getNewTagData(this.initData)
+          this.dataSource = new MatTableDataSource(this.initData);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
     }
-    // this.updatedTableData(this.initData);
+    this.loadInitData();
+  }
+
+  getNewTagData(data: any){
+    let currentDate = new Date().getTime();
+    data.forEach(row => {
+      let createdDate = parseInt(row.createdAt); 
+      let nextDate = createdDate + 86400000;
+      if(currentDate > createdDate && currentDate < nextDate){
+        row.newTag = true;
+      }
+      else{
+        row.newTag = false;
+      }
+    });
+    let newTrueData = data.filter(item => item.newTag == true);
+    newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
+    let newFalseData = data.filter(item => item.newTag == false);
+    Array.prototype.push.apply(newTrueData, newFalseData); 
+    return newTrueData;
   }
 
 }

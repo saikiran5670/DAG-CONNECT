@@ -20,7 +20,7 @@
                 </button>
             </div>
         </div>
-        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
             <div class='areaWidth min-width-10-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <mat-form-field appearance="outline">
                   <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
@@ -28,9 +28,8 @@
               </mat-form-field>
             </div>
             <div class="areaWidth min-width-5-per" fxLayoutGap="2px" fxLayoutAlign="left">
-                <mat-form-field appearance="outline" class="full-width" >
-                  <mat-label>Relationship</mat-label>
-                      <mat-select (selectionChange)="applyFilterOnRelationship($event.value)">
+                <mat-form-field appearance="outline" class="full-width" >   
+                      <mat-select placeholder="Relationship" (selectionChange)="applyFilterOnRelationship($event.value)">
                         <mat-option  *ngFor="let options of relationshipList" [value]="options.relationId">
                           {{options.relationName}}
                     </mat-option>
@@ -39,8 +38,7 @@
               </div>
               <div class="areaWidth min-width-5-per"  fxLayoutAlign="left">
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Vehicle Group</mat-label>
-                  <mat-select (selectionChange)="applyFilterOnVehicle($event.value)">
+                  <mat-select placeholder="Vehicle Group" (selectionChange)="applyFilterOnVehicle($event.value)">
                     <!-- <mat-option *ngFor="let options of relationshipList" [value]="options.id"> -->
                       <mat-option *ngFor="let options of vehicleList" [value]="options.vehiclegroupID">
                       {{options.groupName}}
@@ -50,8 +48,7 @@
               </div>
               <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Organisation</mat-label>
-                  <mat-select (selectionChange)="applyFilterOnOrganisation($event.value)">
+                  <mat-select placeholder="Organisation" (selectionChange)="applyFilterOnOrganisation($event.value)">
                     <mat-option *ngFor="let options of organizationList" [value]="options.organizationId">
                       {{options.organizationName}}
                     </mat-option>
@@ -60,8 +57,7 @@
               </div>
               <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>All Type</mat-label>
-                  <mat-select>
+                  <mat-select placeholder="All Type" (selectionChange)="applyFilterOnType($event.value)">
                     <mat-option *ngFor="let options of allTypes" [value]="options.name">
                         {{options.name}}
                     </mat-option>
@@ -94,6 +90,9 @@
                           <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row">
+                          <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
+                          <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+                          <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
                           <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedOrgRelations.toggle(row) : null'
                             [checked]='selectedOrgRelations.isSelected(row)' [aria-label]='checkboxLabelForOrgRelationship(row)' [disabled]="row.endDate != 0">
                           </mat-checkbox>
@@ -103,9 +102,10 @@
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRelationshipName || 'Relationship Name' }}</mat-header-cell>
                         <mat-cell *matCellDef="let row" [disabled]="row.endDate != 0" style="word-break: 'break-word'">
                           <!-- <a routerLink="relationshipmanagement", viewFlag;> -->
+
                             <a *ngIf="row.endDate == 0" [routerLink]="['relationshipmanagement']" [state]="{ id:1 ,name:'orgRelationship',rowData: row, viewRelationshipFromOrg:true}">
-                          {{row.relationshipName}}
-                        </a>
+                              {{row.relationshipName}}
+                            </a>
                         <a *ngIf="row.endDate != 0" style= "cursor:not-allowed" >
                           {{row.relationshipName}}
                         </a>
@@ -136,7 +136,10 @@
                       <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Allow Chaining' }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">
                         <button class='actionBtn' mat-flat-button (click)="changeOrgRelationStatus(row)" matTooltip="{{ row.allowChain == true && row.endDate == 0 ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Inactive' }}">
-                          <mat-slide-toggle color="primary"  [disabled]="row.endDate != 0" [checked]='row.allowChain == true && row.endDate == 0 ? true : false' >
+                          <mat-slide-toggle color="primary"  
+                          [disabled]="row.endDate != 0" 
+                          [checked]='row.allowChain == true && row.endDate == 0 ? true : false'
+                           >
                         </mat-slide-toggle>&nbsp;
                         <span>{{ row.allowChain == true && row.endDate == 0 ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Inactive' }}</span>
                         </button>

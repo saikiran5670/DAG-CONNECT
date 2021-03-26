@@ -91,13 +91,19 @@ export class OrganizationService {
   }
 
   updateRelationship(data: any): Observable<any> {
-    let headerObj = this.generateHeader();
-    const headers = {
-      headers: new HttpHeaders({ headerObj }),
-    };
-    return this.httpClient
-      .put<any>(`${this.organizationServiceUrl}/relationship/update`, data, headers)
-      .pipe(catchError(this.handleError));
+    // let headerObj = this.generateHeader();
+    // const headers = {
+    //   headers: new HttpHeaders({ headerObj }),
+    // };
+    // return this.httpClient
+    //   .put<any>(`${this.organizationServiceUrl}/relationship/update`, data, headers)
+    //   .pipe(catchError(this.handleError));
+    const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
+    return this.httpClient.put<any[]>(
+      `${this.organizationServiceUrl}/relationship/update`, 
+       data , 
+      { headers, responseType: 'text' as 'json'}
+    ).pipe(catchError(this.handleError));
   }
 
   getOrgRelationshipDetailsLandingPage(): Observable<any[]> {
@@ -105,7 +111,7 @@ export class OrganizationService {
     const headers = {
      headers: new HttpHeaders({ headerObj }),
    };
-     const options =  { params: new HttpParams(), headers: headers };
+    //  const options =  { params: new HttpParams(), headers: headers };
      return this.httpClient
        .get<any[]>(`${this.organizationServiceUrl}/orgrelationship/get`,headers)
        .pipe(catchError(this.handleError));
