@@ -49,7 +49,7 @@
   <ng-container matColumnDef="status">
     <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
     <mat-cell *matCellDef="let row">
-      <button class='actionBtn' mat-flat-button (click)="changePackageStatus(row)" matTooltip="{{ row.status == 'Active' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Inactive' }}">
+      <button class='actionBtn' mat-flat-button (click)="changePackageStatus(row)" matTooltip="{{ row.status == 'Active' ? (translationData.lblClicktodeactivate || 'Click to Deactivate') : translationData.lblClicktoactivate || 'Click to Activate' }}">
         <mat-slide-toggle color="primary" [checked]='row.status == "Active" ? true : false' >
       </mat-slide-toggle>&nbsp;
       <span>{{ row.status == "Active" ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Inactive' }}</span>
@@ -57,7 +57,7 @@
     </mat-cell>
   </ng-container>
   <ng-container matColumnDef="action">
-    <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
+    <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Actions' }} </mat-header-cell>
     <mat-cell *matCellDef="let row">
       <button class='actionBtn' mat-flat-button (click)="editViewPackage(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
         <mat-icon>visibility</mat-icon>
