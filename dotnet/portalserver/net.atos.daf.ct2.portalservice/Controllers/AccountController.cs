@@ -19,7 +19,7 @@ using AccountBusinessService = net.atos.daf.ct2.accountservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("account")]
     public class AccountController : ControllerBase
