@@ -1044,10 +1044,16 @@ namespace net.atos.daf.ct2.vehicle.repository
 
                 if (objVeh.ID > 0)
                 {
-                    //Create axelproperties                
-                    await CreateVehicleAxelInformation(vehicleproperty.VehicleAxelInformation, objVeh.ID);
-                    //Create Fuel Tank Properties
-                    await CreateVehicleFuelTank(vehicleproperty.VehicleFuelTankProperties, objVeh.ID);
+                    if (vehicleproperty.VehicleAxelInformation != null)
+                    {
+                        //Create axelproperties                
+                        await CreateVehicleAxelInformation(vehicleproperty.VehicleAxelInformation, objVeh.ID);
+                    }
+                    if (vehicleproperty.VehicleFuelTankProperties != null)
+                    {
+                        //Create Fuel Tank Properties
+                        await CreateVehicleFuelTank(vehicleproperty.VehicleFuelTankProperties, objVeh.ID);
+                    }
                 }
 
                 return vehicleproperty;
