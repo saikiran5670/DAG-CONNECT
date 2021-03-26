@@ -81,7 +81,7 @@ metadata:
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
     traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
-    traefik.ingress.kubernetes.io/service.sticky.cookie.name: "Account"
+    #traefik.ingress.kubernetes.io/service.sticky.cookie.name: "Account"
 spec:
   type: LoadBalancer
   ports:
