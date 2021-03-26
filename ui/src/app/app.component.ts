@@ -202,6 +202,7 @@ export class AppComponent {
       this.getTranslationLabels();
       this.getAccountInfo();
       this.openTermsConditionsPopup();
+      this.getNavigationMenu();
     });
 
     this.dataInterchangeService.userNameInterface$.subscribe(data => {
@@ -230,6 +231,7 @@ export class AppComponent {
     if(!this.isLogedIn){
       this.getTranslationLabels();
       this.getAccountInfo();
+      this.getNavigationMenu();
     }
 
     this.appForm = this.fb.group({
@@ -287,6 +289,51 @@ export class AppComponent {
         this.logOut();
       } 
     });
+  }
+
+  getNavigationMenu() {
+      // For checking Access of the User
+      let accessNameList = [];
+      this.menuPages.features.forEach((obj: any) => {
+          accessNameList.push(obj.name)
+        });
+        // console.log("---print name access ---",accessNameList)
+        if(accessNameList.includes("Admin#Admin")){
+          this.adminFullAccess = true;
+        }else if(accessNameList.includes("Admin#Contributor")){
+          this.adminContributorAccess = true;
+        }else {
+          this.adminReadOnlyAccess = true;
+        }
+  
+        this.accessType = {
+          adminFullAccess : this.adminFullAccess,
+          adminContributorAccess: this.adminContributorAccess,
+          adminReadOnlyAccess: this.adminReadOnlyAccess
+        }
+        localStorage.setItem("accessType", JSON.stringify(this.accessType));
+        // For checking Type of the User
+        if(accessNameList.includes("Admin#Platform")){
+          this.userType = "Admin#Platform";
+        }else if(accessNameList.includes("Admin#Global")){
+          this.userType = "Admpin#Global";
+        }else if(accessNameList.includes("Admin#Organisation")){
+          this.userType = "Admin#Organisation";
+        }else if(accessNameList.includes("Admin#Account")){
+          this.userType = "Admin#Account";
+        }
+        localStorage.setItem("userType", this.userType);
+      
+  
+        // This will handle externalLink and Icons for Navigation Menu
+      this.menuPages.menus.forEach(elem => {
+        elem.externalLink = this.menuStatus[elem.url].externalLink ;
+        elem.icon = this.menuStatus[elem.url].icon;
+        if(elem.externalLink){
+          elem.link = this.menuStatus[elem.url].link;
+        }
+        })
+  
   }
 
   getAccountInfo(){
@@ -439,48 +486,7 @@ export class AppComponent {
 
   ngOnInit() {
 
-    // For checking Access of the User
-    let accessNameList = [];
-    this.menuPages.features.forEach((obj: any) => {
-        accessNameList.push(obj.name)
-      });
-      // console.log("---print name access ---",accessNameList)
-      if(accessNameList.includes("Admin#Admin")){
-        this.adminFullAccess = true;
-      }else if(accessNameList.includes("Admin#Contributor")){
-        this.adminContributorAccess = true;
-      }else {
-        this.adminReadOnlyAccess = true;
-      }
-
-      this.accessType = {
-        adminFullAccess : this.adminFullAccess,
-        adminContributorAccess: this.adminContributorAccess,
-        adminReadOnlyAccess: this.adminReadOnlyAccess
-      }
-      localStorage.setItem("accessType", JSON.stringify(this.accessType));
-      // For checking Type of the User
-      if(accessNameList.includes("Admin#Platform")){
-        this.userType = "Admin#Platform";
-      }else if(accessNameList.includes("Admin#Global")){
-        this.userType = "Admpin#Global";
-      }else if(accessNameList.includes("Admin#Organisation")){
-        this.userType = "Admin#Organisation";
-      }else if(accessNameList.includes("Admin#Account")){
-        this.userType = "Admin#Account";
-      }
-      localStorage.setItem("userType", this.userType);
-    
-
-      // This will handle externalLink and Icons for Navigation Menu
-    this.menuPages.menus.forEach(elem => {
-      elem.externalLink = this.menuStatus[elem.url].externalLink ;
-      elem.icon = this.menuStatus[elem.url].icon;
-      if(elem.externalLink){
-        elem.link = this.menuStatus[elem.url].link;
-      }
-      })
-
+  
   
     if (this.router.url) {
       //this.isLogedIn = true;
