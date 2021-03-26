@@ -119,31 +119,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
 
-    // this.getCookieDetails().subscribe(data=>{
-    //   console.log(data)
-    // })
   }
-  getCookieDetails(): Observable<any[]> {
-    let defaultHeaders = new HttpHeaders();
 
-    defaultHeaders = defaultHeaders.append("Content-Type", "application/json")
-    const requestOptions = { headers: defaultHeaders, withCredentials: true};
 
-    // const httpOptions = {
-    //   'Content-Type': 'application/json',
-    //   observe: 'response',
-    //   withCredentials: true
-    // };
-
-    const data = {};
-    return this.httpClient
-      .post<any[]>(
-        'https://api.dev1.ct2.atos.net/account/authmethodpost',data,requestOptions
-      )
-      .pipe(catchError(this.handleError));
-  }
-  private handleError(errResponse: HttpErrorResponse) {
-    console.error('Error : ', errResponse.error);
-    return throwError(errResponse);
-  }
 }

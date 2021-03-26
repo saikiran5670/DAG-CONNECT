@@ -80,6 +80,9 @@ metadata:
     svc.kubernetes.io/type: businessservice
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
+    traefik.ingress.kubernetes.io/service.sticky.cookie.secure: "true"
+    #traefik.ingress.kubernetes.io/service.sticky.cookie.name: "IPTrackingCookie"
 spec:
   type: LoadBalancer
   ports:

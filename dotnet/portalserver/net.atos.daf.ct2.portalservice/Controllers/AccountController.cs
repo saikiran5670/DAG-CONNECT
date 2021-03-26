@@ -19,7 +19,7 @@ using AccountBusinessService = net.atos.daf.ct2.accountservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
-    // [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("account")]
     public class AccountController : ControllerBase
@@ -1555,34 +1555,34 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
 
         #region TestMethods 
-        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+  //      [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [HttpPost]
         [Route("authmethodpost")]
         public async Task<OkObjectResult> AuthMethodPost()
         {
-            return await Task.FromResult(Ok(new { Message = "You are authenticated user" }));
+            return await Task.FromResult(Ok(new { Message = "You are authenticated user " + Dns.GetHostName() }));
         }
 
         [HttpPost]
         [Route("withoutauthmethodpost")]
         public async Task<OkObjectResult> WithoutAuthMethod()
         {
-            return await Task.FromResult(Ok(new { Message = "This method does not need any authentication" }));
+            return await Task.FromResult(Ok(new { Message = "This method does not need any authentication " + Dns.GetHostName() }));
         }
 
-        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+//        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [HttpGet]
         [Route("authmethodget")]
         public async Task<OkObjectResult> AuthMethodGet()
         {
-            return await Task.FromResult(Ok(new { Message = "You will need authentication" }));
+            return await Task.FromResult(Ok(new { Message = "You will need authentication " + Dns.GetHostName() }));
         }
 
         [HttpGet]
         [Route("withoutauthmethodget")]
         public async Task<OkObjectResult> WithoutAuthMethodGet()
         {
-            return await Task.FromResult(Ok(new { Message = "This method does not need any authentication" }));
+            return await Task.FromResult(Ok(new { Message = "This method does not need any authentication " + Dns.GetHostName() }));
         }
         #endregion
     }

@@ -41,8 +41,8 @@
                     <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
                     <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.groupName }}</span>
                     <span>
-                        <img *ngIf="row.groupType == 'G'" src='assets/images/group_icon.svg' style="width: 30px; height: 30px;" />
-                        <img *ngIf="row.groupType == 'D'" src='assets/images/dynamic_group.svg' style="width: 30px; height: 30px; margin-left: 5px;" />
+                        <img *ngIf="row.groupType == 'G'" src='assets/images/icons/vehicleStatus/Group.svg' style="width: 30px; height: 30px;" />
+                        <img *ngIf="row.groupType == 'D'" src='assets/images/icons/vehicleStatus/Dynamic_Group.svg' style="width: 30px; height: 30px; margin-left: 5px;" />
                     </span>
                   </mat-cell>
                 </ng-container>

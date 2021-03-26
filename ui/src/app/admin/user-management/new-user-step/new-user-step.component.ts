@@ -191,9 +191,9 @@ export class NewUserStepComponent implements OnInit {
         salutation: this.firstFormGroup.controls.salutation.value,
         firstName: this.firstFormGroup.controls.firstName.value,
         lastName: this.firstFormGroup.controls.lastName.value,
-        password: "",
         organizationId: this.accountOrganizationId,
-        driverId: ""
+        driverId: "",
+        password: ""
       }
 
       this.accountService.createAccount(objData).subscribe((res)=>{
@@ -594,7 +594,7 @@ export class NewUserStepComponent implements OnInit {
         type: (this.privilegeAccess) ? this.firstFormGroup.controls.userType.value : this.userTypeList[0].value, // privilege check
         organizationId: this.accountOrganizationId,
         driverId: "",
-        password: "",
+        password: ""
       }
       this.accountService.updateAccount(infoObj).subscribe((data)=>{
         let prefObj: any = {
