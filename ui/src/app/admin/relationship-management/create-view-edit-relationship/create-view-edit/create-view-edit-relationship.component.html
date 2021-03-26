@@ -9,7 +9,7 @@
     </div>
 </div>
 <form [formGroup]="relationshipFormGroup">
-    <mat-card class='mat-elevation-z margin-bottom-xlg' *ngIf="viewFlag || viewRelationshipFromOrg">
+    <mat-card class='mat-elevation-z margin-bottom-xlg' *ngIf="viewFlag">
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
@@ -124,7 +124,8 @@
                         <button class='margin-right-10'  mat-raised-button color="primary" *ngIf="!createStatus"
                             (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
                         <button class='no-margin' [disabled]="!relationshipFormGroup.valid || selectionForFeatures.selected.length == 0" mat-raised-button color="primary"
-                            (click)='onCreate()'>{{ createStatus  ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm || 'Confirm') }}</button>
+                            (click)='onCreate()'>
+                            {{ createStatus  ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm || 'Confirm') }}</button>
                     </div>
                 </div>
             </div>
