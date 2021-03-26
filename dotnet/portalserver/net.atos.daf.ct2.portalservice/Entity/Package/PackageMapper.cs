@@ -7,10 +7,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
 {
     public class PackageMapper
     {
-       
+
         private readonly FeatureSetMapper _featureSetMapper;
         public PackageMapper(FeatureService.FeatureServiceClient featureclient)
-        {           
+        {
             _featureSetMapper = new FeatureSetMapper(featureclient);
         }
         public PackageCreateRequest ToCreatePackage(PackagePortalRequest request)
@@ -21,11 +21,11 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                 Id = request.Id,
                 Code = request.Code,
                 Name = request.Name,
-                FeatureSetID=request.FeatureSetID,
+                FeatureSetID = request.FeatureSetID,
                 Description = request.Description,
                 Status = request.Status,
                 Type = request.Type,
-                IsActive=request.IsActive
+                IsActive = request.IsActive
 
             };
             createPackagerequest.FeatureIds.AddRange(request.FeatureIds.Select(x => x));
@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                         Name = x.Name,
                         Status = x.Status,
                         Type = x.Type,
-                        IsActive=x.IsActive
+                        IsActive = x.IsActive
                     };
                     packageRequest.Packages.Add(pkgRequest);
                 }
