@@ -53,19 +53,20 @@
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
           <mat-cell *matCellDef="let row">
           <span *ngIf="row.status == 'O'">
-            <img matTooltip="{{ translationData.lblOff || 'Off' }}" src='assets/images/dynamic_group.svg' style="width: 30px; height: 30px; margin-left: 5px;" />
+            <img matTooltip="{{ translationData.lblOptOut || 'Opt-Out' }}" src='assets/images/icons/vehicleStatus/Opt_Out.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
           </span>
           <span *ngIf="row.status == 'C'">
-            <img matTooltip="{{ translationData.lblConnected || 'Connected' }}" src='assets/images/dynamic_group.svg' style="width: 30px; height: 30px; margin-left: 5px;" />
+            <img matTooltip="{{ translationData.lblOptIn || 'Opt-In' }}" src='assets/images/icons/vehicleStatus/Opt_In.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
           </span>
           <span *ngIf="row.status == 'N'">
-            <img matTooltip="{{ translationData.lblConnectedOTA || 'Connected OTA' }}" src='assets/images/dynamic_group.svg' style="width: 30px; height: 30px; margin-left: 5px;" />
+            <img matTooltip="{{ translationData.lblOptInOTA || 'Opt-In + OTA' }}" src='assets/images/icons/vehicleStatus/Opt_In.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
+            <img matTooltip="{{ translationData.lblOptInOTA || 'Opt-In + OTA' }}" src='assets/images/icons/vehicleStatus/Ota.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
           </span>
           <span *ngIf="row.status == 'A'">
-            <img matTooltip="{{ translationData.lblOTA || 'OTA' }}" src='assets/images/dynamic_group.svg' style="width: 30px; height: 30px; margin-left: 5px;" />
+            <img matTooltip="{{ translationData.lblOTA || 'OTA' }}" src='assets/images/icons/vehicleStatus/Ota.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
           </span>
           <span *ngIf="row.status == 'T'">
-            <img matTooltip="{{ translationData.lblTerminate || 'Terminate' }}" src='assets/images/dynamic_group.svg' style="width: 30px; height: 30px; margin-left: 5px;" />
+            <img matTooltip="{{ translationData.lblTerminate || 'Terminate' }}" src='assets/images/icons/vehicleStatus/Terminate.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
           </span>
         </mat-cell>
         </ng-container>

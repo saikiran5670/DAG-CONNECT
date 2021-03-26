@@ -118,7 +118,7 @@
             <mat-cell *matCellDef="let row">
               {{ row.name }}
               <div [ngClass]="{'cursor-pointer': (row.isGroup == true && row.count > 0)}" (click)="(row.isGroup == true && row.count > 0) ? showVehiclePopup(row) : ''" *ngIf="row.isGroup == true">
-                <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
+                <img src='assets/images/icons/vehicleStatus/Group.svg' style="width: 40px; height: 40px;" />
                 <span class='iconTxt'>{{ (row.count < 10) ? '0' : '' }}{{ row.count }}</span>
               </div>
             </mat-cell>
