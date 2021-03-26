@@ -7,7 +7,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
     traefik.ingress.kubernetes.io/affinity: "true"
-    traefik.ingress.kubernetes.io/session-cookie-name: "account"
+    traefik.ingress.kubernetes.io/session-cookie-name: "Account"
   name: customerdataservice-ingress
 spec:
   rules:
