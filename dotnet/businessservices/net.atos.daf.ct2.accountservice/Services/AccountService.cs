@@ -258,11 +258,22 @@ namespace net.atos.daf.ct2.accountservice
                 }
                 else if (identityResult.StatusCode == System.Net.HttpStatusCode.BadRequest)
                 {
-                    var responseContent = JsonConvert.DeserializeObject<IdentityResponse>(identityResult.Result.ToString());
+                    IdentityResponse responseContent = null;
+                    try
+                    {
+                         responseContent = JsonConvert.DeserializeObject<IdentityResponse>(identityResult.Result.ToString());
+                    }
+                    catch(Exception e)
+                    { }
                     if (responseContent != null && responseContent.Error.Equals("invalidPasswordHistoryMessage"))
                     {
                         response.Code = Responcecode.BadRequest;
                         response.Message = "Password must not be equal to any of last 6 passwords.";
+                    }
+                    else if(responseContent != null && responseContent.Error.Equals("InValidPassword"))
+                    {
+                        response.Code = Responcecode.BadRequest;
+                        response.Message = responseContent.Error_Description;
                     }
                     else
                     {

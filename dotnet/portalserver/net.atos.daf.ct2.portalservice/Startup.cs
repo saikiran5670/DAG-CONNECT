@@ -29,6 +29,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.subscriptionservice;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -92,7 +93,8 @@ namespace net.atos.daf.ct2.portalservice
                     }
                 };
             });
-            services.AddAuthorization(options => {
+            services.AddAuthorization(options =>
+            {
                 //if (Environment.IsDevelopment())  //not working for dev0 environment
                 if ((!isdevelopmentenv.Contains("Configuration")) && Convert.ToBoolean(isdevelopmentenv))
                 {
@@ -111,7 +113,13 @@ namespace net.atos.daf.ct2.portalservice
             //    options.HttpsPort = string.IsNullOrEmpty(httpsport) || httpsport.Contains("Configuration") ? 443 : Convert.ToInt32(httpsport);
             //});
             services.AddMemoryCache();
-            services.AddControllers();
+            services.AddControllers().ConfigureApiBehaviorOptions(options =>
+            {
+                options.InvalidModelStateResponseFactory = actionContext =>
+                {
+                    return CustomErrorResponse(actionContext);
+                };
+            });
             services.AddDistributedMemoryCache();
             services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
             services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();
@@ -240,6 +248,48 @@ namespace net.atos.daf.ct2.portalservice
                 c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
                 c.RoutePrefix = $"{swaggerBasePath}/swagger";
             });
+        }
+
+        private ObjectResult CustomErrorResponse(ActionContext context)
+        {
+            // create a problem details object
+            var problemDetailsFactory = context.HttpContext.RequestServices
+                    .GetRequiredService<ProblemDetailsFactory>();
+            var problemDetails = problemDetailsFactory.CreateValidationProblemDetails(
+                    context.HttpContext,
+                    context.ModelState);
+
+            // add additional info not added by default
+            problemDetails.Detail = "See the errors field for details.";
+            problemDetails.Instance = context.HttpContext.Request.Path;
+
+            // find out which status code to use
+            var actionExecutingContext =
+                      context as Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext;
+
+            // if there are modelstate errors & all arguments were correctly
+            // found/parsed we're dealing with validation errors
+            if ((context.ModelState.ErrorCount > 0) &&
+                    (actionExecutingContext?.ActionArguments.Count == context.ActionDescriptor.Parameters.Count))
+            {
+                problemDetails.Type = "/modelvalidationproblem";
+                problemDetails.Status = StatusCodes.Status422UnprocessableEntity;
+                problemDetails.Title = "One or more validation errors occurred.";
+
+                return new UnprocessableEntityObjectResult(problemDetails)
+                {
+                    ContentTypes = { "application/json" }
+                };
+            }
+
+            // if one of the arguments wasn't correctly found / couldn't be parsed
+            // we're dealing with null/unparseable input
+            problemDetails.Status = StatusCodes.Status400BadRequest;
+            problemDetails.Title = "One or more errors on input occurred.";
+            return new BadRequestObjectResult(problemDetails)
+            {
+                ContentTypes = { "application/json" }
+            };
         }
     }
 }
