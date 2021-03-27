@@ -6,13 +6,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.auditservice;
-
-
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class AuditController : ControllerBase
     {
         private readonly ILogger<AuditController> _logger;

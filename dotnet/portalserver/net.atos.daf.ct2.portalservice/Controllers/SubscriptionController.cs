@@ -15,11 +15,14 @@ using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Feature;
 using net.atos.daf.ct2.subscription.entity;
 using SubscriptionBusinessService = net.atos.daf.ct2.subscriptionservice;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
     [Route("subscribe")]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class SubscriptionController : Controller
     {
 

@@ -55,9 +55,9 @@ export class CreateEditUserGroupComponent implements OnInit {
     }
     if(this.actionType == 'view' || this.actionType == 'edit'){
       this.showHideUserList();
+      this.breadcumMsg = this.getBreadcum();
     }
     this.loadUsersData();
-    this.breadcumMsg = this.getBreadcum();
   }
 
   setDefaultValue(){
@@ -75,7 +75,7 @@ export class CreateEditUserGroupComponent implements OnInit {
   }
 
   getBreadcum() {
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblUserGroupManagement ? this.translationData.lblUserGroupManagement : "User Group Management"} / ${this.translationData.lblUserGroupDetails ? this.translationData.lblUserGroupDetails : 'User Group Details'}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblUserGroupManagement ? this.translationData.lblUserGroupManagement : "User Group Management"} / ${(this.actionType == 'edit') ? (this.translationData.lblEditUserGroupDetails ? this.translationData.lblEditUserGroupDetails : 'Edit User Group Details') : (this.translationData.lblViewUserGroupDetails ? this.translationData.lblViewUserGroupDetails : 'View User Group Details')}`;
   }
 
   makeRoleAccountGrpList(initdata: any) {

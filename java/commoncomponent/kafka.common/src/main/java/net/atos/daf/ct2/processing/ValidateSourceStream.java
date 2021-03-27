@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import net.atos.daf.common.ct2.utc.TimeFormatter;
+import net.atos.daf.ct2.constant.KafkaCT2Constant;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.utils.JsonMapper;
 
@@ -45,9 +46,9 @@ public class ValidateSourceStream implements Serializable {
 					KafkaRecord<String> kafkaRecord = new KafkaRecord<String>();
 					kafkaRecord.setKey(UUID.randomUUID().toString());
                     kafkaRecord.setValue( JsonMapper.configuring().writeValueAsString(inputMsg));
-                    return new Tuple2<Integer, KafkaRecord<String>>(Integer.valueOf(1), kafkaRecord);
+                    return new Tuple2<Integer, KafkaRecord<String>>(KafkaCT2Constant.VALID_DATA, kafkaRecord);
 				} catch (Exception e) {
-					return new Tuple2<Integer, KafkaRecord<String>>(Integer.valueOf(0), rec);
+					return new Tuple2<Integer, KafkaRecord<String>>(KafkaCT2Constant.UNKNOWN_DATA, rec);
 				}
 			}
 		}).returns(new TypeHint<Tuple2<Integer, KafkaRecord<String>>>() {
@@ -55,7 +56,7 @@ public class ValidateSourceStream implements Serializable {
 	}
 
 	public DataStream<KafkaRecord<String>> getValidSourceMessages(
-			DataStream<Tuple2<Integer, KafkaRecord<String>>> streamWithValidSts) {
+			DataStream<Tuple2<Integer, KafkaRecord<String>>> streamWithValidSts, int filterSts) {
 
 		return streamWithValidSts.filter(new FilterFunction<Tuple2<Integer, KafkaRecord<String>>>() {
 			/**
@@ -64,7 +65,7 @@ public class ValidateSourceStream implements Serializable {
 			private static final long serialVersionUID = 1L;
 
 			public boolean filter(Tuple2<Integer, KafkaRecord<String>> rec) throws Exception {
-				return rec.f0 == 1;
+				return rec.f0 == filterSts;
 			}
 
 		}).map(new MapFunction<Tuple2<Integer, KafkaRecord<String>>, KafkaRecord<String>>() {
@@ -80,5 +81,33 @@ public class ValidateSourceStream implements Serializable {
 
 		});
 	}
+	
+	public DataStream<String> getValidSourceMessageAsString(
+			DataStream<Tuple2<Integer, KafkaRecord<String>>> streamWithValidSts, int filterSts) {
+
+		return streamWithValidSts.filter(new FilterFunction<Tuple2<Integer, KafkaRecord<String>>>() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			public boolean filter(Tuple2<Integer, KafkaRecord<String>> rec) throws Exception {
+				return rec.f0 == filterSts;
+			}
+
+		}).map(new MapFunction<Tuple2<Integer, KafkaRecord<String>>, String>() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			public String map(Tuple2<Integer, KafkaRecord<String>> rec) throws Exception {
+				return rec.f1.getValue();
+			}
+
+		});
+	}
+
 
 }

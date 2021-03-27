@@ -903,6 +903,7 @@ input:-webkit-autofill {
      background-color: #00529C !important;
      font-size: 15px; // keeping 15px for now as it is mentioned 20px in StyleGuide which looks too large
      font-weight: 500;
+     min-width: 100px;
  }}}
  //for sub pages only primary buttons
  .mat-button-base{
@@ -911,6 +912,7 @@ input:-webkit-autofill {
         font-size: 15px; 
         font-weight: 500;
         color: #ffffff !important;
+        min-width: 100px;
     }}
 //  .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background, .mat-checkbox-checked.mat-accent .mat-checkbox-background
  .mat-checkbox-checked,.mat-checkbox-indeterminate,.mat-checkbox {
@@ -1006,5 +1008,18 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
         .mat-checkbox-label{
             color: #000 !important;
         }
+    }
+}
+
+.areaWidth{
+    .resetCancelBtnColor{
+        border: 1px solid #29539c !important;
+        background-color: #ebf2f8 !important;
+        color: #000 !important;
+    }
+    .confirmBtnColor{
+        border: 1px solid #ac2e2e !important;
+        background-color: #ac2e2e !important;
+        color: #FFF !important;
     }
 }

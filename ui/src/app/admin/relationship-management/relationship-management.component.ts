@@ -151,7 +151,7 @@ export class RelationshipManagementComponent implements OnInit {
 
   deleteRelationship(row: any){
     const options = {
-      title: this.translationData.lblDeleteAccount || 'Delete Account',
+      title: this.translationData.lblDelete || 'Delete',
       message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Are you sure you want to delete '$' relationship?",
       cancelText: this.translationData.lblNo || 'No',
       confirmText: this.translationData.lblYes || 'Yes'

@@ -34,6 +34,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   showLoadingIndicator: any;
   createStatus:boolean;
   duplicateMsg:boolean;
+  isDataAttributeSetExist: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private featureService: FeatureService) { }
 
@@ -41,7 +42,14 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     this.featureFormGroup = this._formBuilder.group({
       dataAttributeSetName: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
       dataAttributeDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForName('dataAttributeSetName'),
+        CustomValidators.specialCharValidationForNameWithoutRequired('dataAttributeDescription')
+      ]
     });
+
     this.breadcumMsg = this.getBreadcum(this.actionType);
     if(this.actionType == 'view' || this.actionType == 'edit' ){
       this.setDefaultValue();

@@ -252,8 +252,8 @@
           </div>
         </mat-card-content>
       </mat-card>
-      <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
-        <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel(false)'>{{ translationData.lblCancel || 'Cancel' }}</button>
+      <div fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
+        <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel(false)'>{{ translationData.lblCancel || 'Cancel' }}</button>
         <button *ngIf='!linkFlag' [disabled]="!firstFormGroup.valid" class='margin-right-10' mat-raised-button color="primary" (click)='onCreate(true)'>{{ ( translationData.lblCreate || 'Create' ) }}</button>
         <button *ngIf='!linkFlag' [disabled]="!firstFormGroup.valid" mat-raised-button color="primary" (click)='onCreate(false)'>{{ translationData.lblCreateContinue || 'Create & Continue' }}</button>
         <button *ngIf='linkFlag' [disabled]="!firstFormGroup.valid" class='margin-right-10' mat-raised-button color="primary" (click)='onLink(true)'>{{ ( translationData.lblLink || 'Link' ) }}</button>
@@ -317,8 +317,8 @@
           </div>
         </mat-card-content>
         <mat-card-actions fxLayoutAlign="end end">
-          <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
-            <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel(true)'>{{ translationData.lblCancel || 'Cancel' }}</button>
+          <div fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel(true)'>{{ translationData.lblCancel || 'Cancel' }}</button>
             <button mat-raised-button color="primary" matStepperNext>{{ translationData.lblNext || 'Next' }}</button>
           </div>
         </mat-card-actions>
@@ -377,8 +377,8 @@
           </div>
         </mat-card-content>
         <mat-card-actions fxLayoutAlign="end end">
-          <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
-            <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel(true)'>{{ translationData.lblCancel || 'Cancel' }}</button>
+          <div fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel(true)'>{{ translationData.lblCancel || 'Cancel' }}</button>
             <button class='margin-right-10' mat-raised-button color="primary" matStepperPrevious>{{ translationData.lblPrevious || 'Previous' }}</button>
             <button mat-raised-button color="primary" (click)='nextToSummaryStep()'>{{ translationData.lblNext || 'Next' }}</button>
           </div>
@@ -392,8 +392,8 @@
     <app-summary-step *ngIf='summaryStepFlag' [defaultSetting]='defaultSetting' [profilePath]='croppedImage' [translationData]='translationData' [accountInfoData]='firstFormGroup.controls' [selectedRoleData]='selectionForRole.selected' [selectedUserGrpData]='selectionForUserGrp.selected' [privilegeAccess]='privilegeAccess'></app-summary-step>
     <mat-card class='bg-theme mat-elevation-z'>
       <mat-card-actions fxLayoutAlign="end end">
-        <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
-          <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel(true)'>{{ translationData.lblCancel || 'Cancel' }}</button>
+        <div fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
+          <button class='margin-right-10 resetCancelBtnColor' mat-raised-button color="primary" (click)='onCancel(true)'>{{ translationData.lblCancel || 'Cancel' }}</button>
           <button class='margin-right-10' mat-raised-button color="primary" (click)='backFromSummaryStep()'>{{ translationData.lblPrevious || 'Previous' }}</button>
           <button mat-raised-button color="primary" (click)="onUpdateUserData()">{{ translationData.lblConfirm || 'Confirm' }}</button>
         </div>

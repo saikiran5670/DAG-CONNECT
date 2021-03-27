@@ -129,10 +129,10 @@
         </mat-table>
         <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
       </div>
-      <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="end end" class="full-width">
-        <button class='margin-right-10' mat-raised-button color="primary"
+      <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
+        <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
           (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
-        <button *ngIf="actionType == 'edit'" class='margin-right-10' mat-raised-button color="primary"
+        <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
           (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
         <button [disabled]="!vehicleAccessRelationshipFormGroup.valid" mat-raised-button color="primary"
           (click)='onConfirm()'>{{ translationData.lblConfirm || 'Confirm' }}</button>

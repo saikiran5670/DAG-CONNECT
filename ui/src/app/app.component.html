@@ -99,9 +99,9 @@
                                     fxLayoutAlign="left">
                                     <mat-label>Select Role</mat-label>
                                     <mat-form-field appearance="outline" class="full-width">
-                                        <mat-select (selectionChange)="onRoleChange($event.value)"
+                                        <mat-select [disabled]='selectedRoles.length == 0' (selectionChange)="onRoleChange($event.value)"
                                             formControlName="role">
-                                            <mat-option *ngFor="let role of roleDropdown" [value]="role.id">
+                                            <mat-option *ngFor="let role of selectedRoles" [value]="role.id">
                                                 {{ role.name }}
                                             </mat-option>
                                         </mat-select>

@@ -6,11 +6,15 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using DriverBusinessService = net.atos.daf.ct2.driverservice;
 using net.atos.daf.ct2.portalservice.Entity.Driver;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
+
     [ApiController]
     [Route("driver")]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class DriverController : ControllerBase
     {
         private readonly ILogger<DriverController> logger;

@@ -9,6 +9,7 @@
                     <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
         </span>
     </div>
+</div>   
 <form [formGroup]="packageFormGroup">
     <mat-card class='mat-elevation-z'>
         <mat-card-content>
@@ -126,10 +127,10 @@
                     </div>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="end">
-                    <div fxLayout="row">
-                      <button class='margin-right-10' mat-raised-button color="primary"
+                    <div fxLayout="row" class='areaWidth'>
+                      <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
                             (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
-                      <button class='margin-right-10'  mat-raised-button color="primary" *ngIf="actionType == 'edit'"
+                      <button class='resetCancelBtnColor margin-right-10'  mat-raised-button color="primary" *ngIf="actionType == 'edit'"
                               (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
                       <button class='no-margin' [disabled]="!packageFormGroup.valid" mat-raised-button color="primary"
                             (click)='onCreate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm || 'Confirm') }}</button>   
