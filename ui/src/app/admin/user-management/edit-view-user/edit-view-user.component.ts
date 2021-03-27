@@ -180,14 +180,14 @@ export class EditViewUserComponent implements OnInit {
     this.filterDefaultGeneralSetting(selectedPreference);
     if(this.defaultSetting){
       setTimeout(()=>{
-        this.generalSettingForm.get('language').setValue(this.languageData.length > 0 ? this.languageData[0].id : 2 );
-        this.generalSettingForm.get('timeZone').setValue(this.timezoneData.length > 0 ? this.timezoneData[0].id : 2);
-        this.generalSettingForm.get('unit').setValue(this.unitData.length > 0 ? this.unitData[0].id : 2);
-        this.generalSettingForm.get('currency').setValue(this.currencyData.length > 0 ? this.currencyData[0].id : 2);
-        this.generalSettingForm.get('dateFormat').setValue(this.dateFormatData.length > 0 ? this.dateFormatData[0].id : 2);
-        this.generalSettingForm.get('timeFormat').setValue(this.timeFormatData.length > 0 ? this.timeFormatData[0].id : 2);
-        this.generalSettingForm.get('vehDisplay').setValue(this.vehicleDisplayData.length > 0 ? this.vehicleDisplayData[0].id : 2);
-        this.generalSettingForm.get('landingPage').setValue(this.landingPageDisplayData.length > 0 ? this.landingPageDisplayData[0].id : 2);
+        this.generalSettingForm.get('language').setValue(this.languageData.length > 0 ? this.languageData[0].id : this.defaultSetting.languageDropdownData[0].id);
+        this.generalSettingForm.get('timeZone').setValue(this.timezoneData.length > 0 ? this.timezoneData[0].id : this.defaultSetting.timezoneDropdownData[0].id);
+        this.generalSettingForm.get('unit').setValue(this.unitData.length > 0 ? this.unitData[0].id : this.defaultSetting.unitDropdownData[0].id);
+        this.generalSettingForm.get('currency').setValue(this.currencyData.length > 0 ? this.currencyData[0].id : this.defaultSetting.currencyDropdownData[0].id);
+        this.generalSettingForm.get('dateFormat').setValue(this.dateFormatData.length > 0 ? this.dateFormatData[0].id : this.defaultSetting.dateFormatDropdownData[0].id);
+        this.generalSettingForm.get('timeFormat').setValue(this.timeFormatData.length > 0 ? this.timeFormatData[0].id : this.defaultSetting.timeFormatDropdownData[0].id);
+        this.generalSettingForm.get('vehDisplay').setValue(this.vehicleDisplayData.length > 0 ? this.vehicleDisplayData[0].id : this.defaultSetting.vehicleDisplayDropdownData[0].id);
+        this.generalSettingForm.get('landingPage').setValue(this.landingPageDisplayData.length > 0 ? this.landingPageDisplayData[0].id : this.defaultSetting.landingPageDisplayDropdownData[0].id);
       });
     }
   }
@@ -243,14 +243,14 @@ export class EditViewUserComponent implements OnInit {
     let objData: any = {
       id: 0,
       refId: this.accountInfoData.id,
-      languageId: this.generalSettingForm.controls.language.value ? this.generalSettingForm.controls.language.value : 2,
-      timezoneId: this.generalSettingForm.controls.timeZone.value ? this.generalSettingForm.controls.timeZone.value : 2,
-      unitId: this.generalSettingForm.controls.unit.value ? this.generalSettingForm.controls.unit.value : 2,
-      currencyId: this.generalSettingForm.controls.currency.value ? this.generalSettingForm.controls.currency.value : 2,
-      dateFormatTypeId: this.generalSettingForm.controls.dateFormat.value ? this.generalSettingForm.controls.dateFormat.value : 2,
-      timeFormatId: this.generalSettingForm.controls.timeFormat.value ? this.generalSettingForm.controls.timeFormat.value : 2,
-      vehicleDisplayId: this.generalSettingForm.controls.vehDisplay.value ? this.generalSettingForm.controls.vehDisplay.value : 2,
-      landingPageDisplayId: this.generalSettingForm.controls.landingPage.value ? this.generalSettingForm.controls.landingPage.value : 2
+      languageId: this.generalSettingForm.controls.language.value ? this.generalSettingForm.controls.language.value : this.defaultSetting.languageDropdownData[0].id,
+      timezoneId: this.generalSettingForm.controls.timeZone.value ? this.generalSettingForm.controls.timeZone.value : this.defaultSetting.timezoneDropdownData[0].id,
+      unitId: this.generalSettingForm.controls.unit.value ? this.generalSettingForm.controls.unit.value : this.defaultSetting.unitDropdownData[0].id,
+      currencyId: this.generalSettingForm.controls.currency.value ? this.generalSettingForm.controls.currency.value : this.defaultSetting.currencyDropdownData[0].id,
+      dateFormatTypeId: this.generalSettingForm.controls.dateFormat.value ? this.generalSettingForm.controls.dateFormat.value : this.defaultSetting.dateFormatDropdownData[0].id,
+      timeFormatId: this.generalSettingForm.controls.timeFormat.value ? this.generalSettingForm.controls.timeFormat.value : this.defaultSetting.timeFormatDropdownData[0].id,
+      vehicleDisplayId: this.generalSettingForm.controls.vehDisplay.value ? this.generalSettingForm.controls.vehDisplay.value : this.defaultSetting.vehicleDisplayDropdownData[0].id,
+      landingPageDisplayId: this.generalSettingForm.controls.landingPage.value ? this.generalSettingForm.controls.landingPage.value : this.defaultSetting.landingPageDisplayDropdownData[0].id
     }
 
     this.accountService.updateAccountPreference(objData).subscribe((data) => {
