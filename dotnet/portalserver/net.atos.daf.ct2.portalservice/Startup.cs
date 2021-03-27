@@ -219,7 +219,6 @@ namespace net.atos.daf.ct2.portalservice
             });
             //app.UseHttpsRedirection();
             app.UseRouting();
-            app.UseCors("dafcorspolicy");
             //app.UseCookiePolicy();
             app.UseAuthentication();
             app.UseAuthorization();
@@ -236,6 +235,7 @@ namespace net.atos.daf.ct2.portalservice
                 c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
                 c.RoutePrefix = $"{swaggerBasePath}/swagger";
             });
+            app.UseCors("dafcorspolicy");
         }
     }
 }
