@@ -180,14 +180,14 @@ export class AccountInfoSettingsComponent implements OnInit {
 
   setDefaultGeneralSetting(){
     setTimeout(()=>{
-      this.userSettingsForm.get('language').setValue(this.languageData.length > 0 ? this.languageData[0].id : 2 );
-      this.userSettingsForm.get('timeZone').setValue(this.timezoneData.length > 0 ? this.timezoneData[0].id : 2);
-      this.userSettingsForm.get('unit').setValue(this.unitData.length > 0 ? this.unitData[0].id : 2);
-      this.userSettingsForm.get('currency').setValue(this.currencyData.length > 0 ? this.currencyData[0].id : 2);
-      this.userSettingsForm.get('dateFormat').setValue(this.dateFormatData.length > 0 ? this.dateFormatData[0].id : 2);
-      this.userSettingsForm.get('timeFormat').setValue(this.timeFormatData.length > 0 ? this.timeFormatData[0].id : 2);
-      this.userSettingsForm.get('vehDisplay').setValue(this.vehicleDisplayData.length > 0 ? this.vehicleDisplayData[0].id : 2);
-      this.userSettingsForm.get('landingPage').setValue(this.landingPageDisplayData.length > 0 ? this.landingPageDisplayData[0].id : 2);
+      this.userSettingsForm.get('language').setValue(this.languageData.length > 0 ? this.languageData[0].id : this.languageDropdownData[0].id);
+      this.userSettingsForm.get('timeZone').setValue(this.timezoneData.length > 0 ? this.timezoneData[0].id : this.timezoneDropdownData[0].id);
+      this.userSettingsForm.get('unit').setValue(this.unitData.length > 0 ? this.unitData[0].id : this.unitDropdownData[0].id);
+      this.userSettingsForm.get('currency').setValue(this.currencyData.length > 0 ? this.currencyData[0].id : this.currencyDropdownData[0].id);
+      this.userSettingsForm.get('dateFormat').setValue(this.dateFormatData.length > 0 ? this.dateFormatData[0].id : this.dateFormatDropdownData[0].id);
+      this.userSettingsForm.get('timeFormat').setValue(this.timeFormatData.length > 0 ? this.timeFormatData[0].id : this.timeFormatDropdownData[0].id);
+      this.userSettingsForm.get('vehDisplay').setValue(this.vehicleDisplayData.length > 0 ? this.vehicleDisplayData[0].id : this.vehicleDisplayDropdownData[0].id);
+      this.userSettingsForm.get('landingPage').setValue(this.landingPageDisplayData.length > 0 ? this.landingPageDisplayData[0].id : this.landingPageDisplayDropdownData[0].id);
     });
   }
 
@@ -275,14 +275,14 @@ export class AccountInfoSettingsComponent implements OnInit {
     let objData: any = {
       id: this.accountInfo[0]["preferenceId"],
       refId: this.accountId,
-      languageId: this.userSettingsForm.controls.language.value ? this.userSettingsForm.controls.language.value : 24,
-      timezoneId: this.userSettingsForm.controls.timeZone.value ? this.userSettingsForm.controls.timeZone.value : 27,
-      unitId: this.userSettingsForm.controls.unit.value ? this.userSettingsForm.controls.unit.value : 5,
-      currencyId: this.userSettingsForm.controls.currency.value ? this.userSettingsForm.controls.currency.value : 4,
-      dateFormatTypeId: this.userSettingsForm.controls.dateFormat.value ? this.userSettingsForm.controls.dateFormat.value : 6,
-      timeFormatId: this.userSettingsForm.controls.timeFormat.value ? this.userSettingsForm.controls.timeFormat.value : 3,
-      vehicleDisplayId: this.userSettingsForm.controls.vehDisplay.value ? this.userSettingsForm.controls.vehDisplay.value : 5,
-      landingPageDisplayId: this.userSettingsForm.controls.landingPage.value ? this.userSettingsForm.controls.landingPage.value : 2
+      languageId: this.userSettingsForm.controls.language.value ? this.userSettingsForm.controls.language.value : this.languageDropdownData[0].id,
+      timezoneId: this.userSettingsForm.controls.timeZone.value ? this.userSettingsForm.controls.timeZone.value : this.timezoneDropdownData[0].id,
+      unitId: this.userSettingsForm.controls.unit.value ? this.userSettingsForm.controls.unit.value : this.unitDropdownData[0].id,
+      currencyId: this.userSettingsForm.controls.currency.value ? this.userSettingsForm.controls.currency.value : this.currencyDropdownData[0].id,
+      dateFormatTypeId: this.userSettingsForm.controls.dateFormat.value ? this.userSettingsForm.controls.dateFormat.value : this.dateFormatDropdownData[0].id,
+      timeFormatId: this.userSettingsForm.controls.timeFormat.value ? this.userSettingsForm.controls.timeFormat.value : this.timeFormatDropdownData[0].id,
+      vehicleDisplayId: this.userSettingsForm.controls.vehDisplay.value ? this.userSettingsForm.controls.vehDisplay.value : this.vehicleDisplayDropdownData[0].id,
+      landingPageDisplayId: this.userSettingsForm.controls.landingPage.value ? this.userSettingsForm.controls.landingPage.value : this.landingPageDisplayDropdownData[0].id
       //driverId: ""
     }
     this.accountService.updateAccountPreference(objData).subscribe((data) => {
