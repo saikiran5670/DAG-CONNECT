@@ -236,6 +236,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return BadRequest(response.Message);
                 else if (response.Code == AccountBusinessService.Responcecode.NotFound)
                     return NotFound(response.Message);
+                else if (response.Code == AccountBusinessService.Responcecode.Forbidden)
+                    return StatusCode(403, response.Message);
                 else
                     return StatusCode(500, "Account not configured or failed to change password.");
             }
