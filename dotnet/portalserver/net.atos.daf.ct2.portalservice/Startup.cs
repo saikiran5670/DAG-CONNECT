@@ -102,11 +102,11 @@ namespace net.atos.daf.ct2.portalservice
                 options.IncludeSubDomains = true;
                 options.MaxAge = string.IsNullOrEmpty(headerstricttransportsecurity) || headerstricttransportsecurity.Contains("Configuration") ? TimeSpan.FromHours(31536000) : TimeSpan.FromHours(Convert.ToDouble(headerstricttransportsecurity));
             });
-            services.AddHttpsRedirection(options =>
-            {
-                options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
-                options.HttpsPort = string.IsNullOrEmpty(httpsport) || httpsport.Contains("Configuration") ? 443 : Convert.ToInt32(httpsport);
-            });
+            //services.AddHttpsRedirection(options =>
+            //{
+            //    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+            //    options.HttpsPort = string.IsNullOrEmpty(httpsport) || httpsport.Contains("Configuration") ? 443 : Convert.ToInt32(httpsport);
+            //});
             services.AddMemoryCache();
             services.AddControllers();
             services.AddDistributedMemoryCache();
@@ -191,7 +191,7 @@ namespace net.atos.daf.ct2.portalservice
             else
             {
                 app.UseHsts();
-                app.UseHttpsRedirection();
+                //app.UseHttpsRedirection();
             }
             app.Use(async (context, next) =>
             {
