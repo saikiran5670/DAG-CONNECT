@@ -58,17 +58,17 @@ public class ContiMessageProcessing {
   public static void main(String[] args) {
 	ContiMessageProcessing contiMessageProcessing = new ContiMessageProcessing();
 	Properties properties = null; 
-    try {
-      FILE_PATH = args[0];
+		try {
+			FILE_PATH = args[0];
 
-     properties = configuration();
-     contiMessageProcessing.auditContiJobDetails(properties, "Conti streaming job started");
+			properties = configuration();
+			contiMessageProcessing.auditContiJobDetails(properties, "Conti streaming job started");
 
-      contiMessageProcessing.flinkConnection();
-      contiMessageProcessing.processing(properties);
-      contiMessageProcessing.startExecution();
+			contiMessageProcessing.flinkConnection();
+			contiMessageProcessing.processing(properties);
+			contiMessageProcessing.startExecution();
 
-    } catch (DAFCT2Exception e) {
+	   } catch (DAFCT2Exception e) {
       log.error("Exception: ", e);
       contiMessageProcessing.auditContiJobDetails(properties, "Conti streaming job failed :: "+e.getMessage());
 
@@ -149,7 +149,7 @@ public class ContiMessageProcessing {
     DataStream<Tuple2<Integer, KafkaRecord<String>>> contiStreamValiditySts = validateSourceStream
 			.isValidJSON(contiInputStream);
 	DataStream<KafkaRecord<String>> contiValidInputStream = validateSourceStream
-			.getValidSourceMessages(contiStreamValiditySts);
+			.getValidSourceMessages(contiStreamValiditySts, DAFCT2Constant.MEASUREMENT_DATA);
 
 	new EgressCorruptMessages().egressCorruptMessages(contiStreamValiditySts, properties,
 			properties.getProperty(DAFCT2Constant.CONTI_CORRUPT_MESSAGE_TOPIC_NAME));
