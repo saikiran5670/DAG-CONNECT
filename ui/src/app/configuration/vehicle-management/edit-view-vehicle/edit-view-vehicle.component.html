@@ -125,9 +125,9 @@
       </div>
     </mat-card-content>
     <mat-card-actions *ngIf="actionType != 'view'" fxLayoutAlign="end end" class='no-margin no-padding'>
-      <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
-            <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
-            <button *ngIf="actionType == 'edit'" class='margin-right-10 no-margin' mat-raised-button color="primary"
+      <div fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+            <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
               (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
             <button class='no-margin' [disabled]="!vehicleForm.valid" mat-raised-button color="primary"
               (click)='onUpdateVehicle()'>{{ translationData.lblConfirm || 'Confirm' }}</button>

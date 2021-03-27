@@ -57,9 +57,9 @@
             </div>
           </div>
           <div fxLayout="column" fxLayoutAlign="end">
-            <div fxLayout="row">
-              <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>Cancel</button>
-              <!-- <button *ngIf="editUserContent" class='margin-right-10' mat-raised-button color="primary"
+            <div fxLayout="row" class='areaWidth'>
+              <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+              <!-- <button *ngIf="editUserContent" class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
                 (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button> -->
               <button class='no-margin' [disabled]="!OrganisationRelationshipFormGroup.valid" mat-raised-button color="primary"
                 (click)='onCreate()' id="createUpdateButton">{{ createStatus ? (translationData.lblCreate || 'Create') :

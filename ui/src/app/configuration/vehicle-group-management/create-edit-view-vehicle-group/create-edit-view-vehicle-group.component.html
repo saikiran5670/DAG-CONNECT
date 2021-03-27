@@ -105,9 +105,9 @@
           </div>
         </div>
         <div fxLayout="column" fxLayoutAlign="end" *ngIf="actionType != 'view'">
-          <div fxLayout="row">
-            <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
-            <button *ngIf="actionType == 'edit'" class='margin-right-10' mat-raised-button color="primary"
+          <div fxLayout="row" class="areaWidth">
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+            <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor no-margin margin-right-10' mat-raised-button color="primary"
               (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
             <button class='no-margin' [disabled]="!vehicleGroupForm.valid" mat-raised-button color="primary"
               (click)='onCreateUpdateVehicleGroup()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
