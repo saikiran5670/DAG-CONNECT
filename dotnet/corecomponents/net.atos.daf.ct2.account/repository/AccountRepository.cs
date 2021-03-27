@@ -325,7 +325,7 @@ namespace net.atos.daf.ct2.account
         {
             try
             {
-                var parameter = new DynamicParameters();                
+                var parameter = new DynamicParameters();
                 string query = string.Empty;
                 int count = 0;
                 query = @"select count(1) from master.account a join master.accountorg ag on a.id = ag.account_id and a.is_active=true 
@@ -367,6 +367,51 @@ namespace net.atos.daf.ct2.account
                 throw ex;
             }
             return account;
+        }
+
+        public async Task<int> UpsertPasswordModifiedDate(int accountId, long modifiedAt)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@account_id", accountId);
+                parameter.Add("@modified_at", modifiedAt);
+
+                string query =
+                    @"INSERT INTO master.passwordpolicy (account_id, modified_at)
+                        VALUES(@account_id, @modified_at) 
+                        ON CONFLICT (account_id) 
+                        DO 
+                        UPDATE SET modified_at = @modified_at
+                        RETURNING id";
+
+                return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<long?> GetPasswordModifiedDate(int accountId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@account_id", accountId);
+
+                string query =
+                    @"SELECT modified_at from master.passwordpolicy where account_id = @account_id";
+
+                var record = await dataAccess.ExecuteScalarAsync<long?>(query, parameter);
+                return record;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         #endregion
 
@@ -570,19 +615,19 @@ namespace net.atos.daf.ct2.account
                 throw ex;
             }
         }
-        
+
         #endregion
 
         #region Account/Vehicle Access Relationship
 
-        public async Task<List<AccountVehicleAccessRelationship>> GetAccountVehicleAccessRelationship(AccountVehicleAccessRelationshipFilter filter,bool is_vehicleGroup)
+        public async Task<List<AccountVehicleAccessRelationship>> GetAccountVehicleAccessRelationship(AccountVehicleAccessRelationshipFilter filter, bool is_vehicleGroup)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 List<AccountAccessRelationshipEntity> entity = new List<AccountAccessRelationshipEntity>();
                 string query = string.Empty;
-                List<AccountVehicleAccessRelationship> response = new List<AccountVehicleAccessRelationship>();               
+                List<AccountVehicleAccessRelationship> response = new List<AccountVehicleAccessRelationship>();
                 if (filter != null)
                 {
                     // org filter
@@ -697,9 +742,9 @@ namespace net.atos.daf.ct2.account
         {
             try
             {
-                var parameter = new DynamicParameters();               
+                var parameter = new DynamicParameters();
                 string query = string.Empty;
-                List<AccountVehicleEntity> response = new List<AccountVehicleEntity>();                
+                List<AccountVehicleEntity> response = new List<AccountVehicleEntity>();
                 if (filter != null)
                 {
                     // org filter
@@ -737,7 +782,7 @@ namespace net.atos.daf.ct2.account
                     }
                     parameter.Add("@organization_id", filter.OrganizationId);
                     IEnumerable<AccountVehicleEntity> accessRelationship = await dataAccess.QueryAsync<AccountVehicleEntity>(query, parameter);
-                    response =  accessRelationship.ToList();
+                    response = accessRelationship.ToList();
                 }
                 return response;
             }
@@ -806,9 +851,9 @@ namespace net.atos.daf.ct2.account
         {
             try
             {
-                var parameter = new DynamicParameters();                
+                var parameter = new DynamicParameters();
                 string query = string.Empty;
-                
+
                 //TODO: duplicate access relationship check and should not insert
                 if (organizationId > 0 && groupId > 0 && isVehicle)
                 {
@@ -1192,12 +1237,12 @@ namespace net.atos.daf.ct2.account
             account.LastName = record.last_name;
             return account;
         }
-            private Account Map(dynamic record)
+        private Account Map(dynamic record)
         {
             Account account = new Account();
             account.Id = record.id;
-            if((object)record.email !=null)
-            account.EmailId = record.email;
+            if ((object)record.email != null)
+                account.EmailId = record.email;
             if ((object)record.salutation != null)
                 account.Salutation = record.salutation;
             if ((object)record.first_name != null)
