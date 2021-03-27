@@ -136,14 +136,8 @@ namespace net.atos.daf.ct2.accountservice
                 account = await accountmanager.Create(account);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Account Create", 1, 2, account.EmailId);
                 // response 
-                AccountData response = new AccountData();
-                if (account.isDuplicateInOrg)
-                {
-                    response.Message = "The duplicate account.";
-                    response.Code = Responcecode.Failed;
-                    response.Account = null;
-                }
-                if (account.isDuplicate)
+                AccountData response = new AccountData();                
+                if (account.isDuplicate || account.isDuplicateInOrg)
                 {
                     response.Message = "The duplicate account.";
                     response.Code = Responcecode.Conflict;

@@ -86,7 +86,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     AccountBusinessService.AccountPreferenceFilter preferenceRequest = new AccountBusinessService.AccountPreferenceFilter();
                     preferenceRequest.Id = response.PreferenceId;
                     // get preference
-                    AccountBusinessService.AccountPreferenceResponse accountPreferenceResponse = await _accountClient.GetPreferenceAsync(preferenceRequest);                    
+                    AccountBusinessService.AccountPreferenceResponse accountPreferenceResponse = await _accountClient.GetPreferenceAsync(preferenceRequest);
                     if (accountPreferenceResponse != null && accountPreferenceResponse.Code == AccountBusinessService.Responcecode.Success)
                     {
                         if (accountPreferenceResponse.AccountPreference != null)
@@ -97,24 +97,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     return StatusCode(409, accountPreference);
                 }
-                else if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed
-                    && accountResponse.Message == PortalConstants.AccountValidation.ErrorMessage)
-                {
-                    return StatusCode(500, PortalConstants.AccountValidation.ErrorMessage);
-                }
-                else if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed
-                    && accountResponse.Message == PortalConstants.AccountValidation.EmailSendingFailedMessage)
-                {
-                    return StatusCode(500, PortalConstants.AccountValidation.EmailSendingFailedMessage);
-                }
                 else if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Success)
                 {
                     return Ok(response);
                 }
                 else
                 {
-                    if (accountResponse.Account == null) return Ok(accountResponse.Account);
-                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "01"));
+                    if (accountResponse.Message == PortalConstants.AccountValidation.ErrorMessage)
+                    {
+                        return StatusCode(500, PortalConstants.AccountValidation.ErrorMessage);
+                    }
+                    else if (accountResponse.Message == PortalConstants.AccountValidation.EmailSendingFailedMessage)
+                    {
+                        return StatusCode(500, PortalConstants.AccountValidation.EmailSendingFailedMessage);
+                    }
+                    else
+                    {
+                        return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "01"));
+                    }
                 }
             }
             catch (Exception ex)

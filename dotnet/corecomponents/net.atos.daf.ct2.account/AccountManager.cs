@@ -99,6 +99,7 @@ namespace net.atos.daf.ct2.account
                 if (identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
                     // check to handle message
+                    account.isError = true;
                 }
             }
             return account;
