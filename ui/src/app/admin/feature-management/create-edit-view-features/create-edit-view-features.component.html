@@ -32,7 +32,7 @@
                     </mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
-                            <input maxlength="100"
+                            <input maxlength="250"
                                 placeholder="{{ translationData.lblEnterDataAttributeSetName || 'Enter Data Attribute Set Name' }}"
                                 matInput formControlName="dataAttributeSetName">
                         </mat-form-field>
@@ -43,6 +43,15 @@
                         <mat-error *ngIf="featureFormGroup.get('dataAttributeSetName').hasError('whitespace')">
                             {{ translationData.lblDataAttributeSetcannotcontainonlywhitespace || 'Data Attribute Set
                             cannot contain only whitespace' }}
+                        </mat-error>
+                        <mat-error *ngIf="featureFormGroup.get('dataAttributeSetName').hasError('maxlength')">
+                            {{ translationData.lblDataAttributeSetmaxlength || 'Max length should be 250' }}
+                        </mat-error>
+                        <mat-error *ngIf="featureFormGroup.get('dataAttributeSetName').hasError('specialCharsNotAllowed')">
+                            {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                        </mat-error>
+                        <mat-error #UserValueCheck *ngIf="isDataAttributeSetExist" >
+                            {{ translationData.lblDataAttributeSetalreadyexistsPleasechooseadifferentisAttributeSet || 'Data Attribute Set already exists. Please choose a different.'}}
                         </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
@@ -56,18 +65,24 @@
                                 style="padding-left: 7px; font-size: 15px; padding-top: 4px; vertical-align: middle;">
                                 info</mat-icon>
                         </span>
-                        <span *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax || '120 characters max'
+                        <span *ngIf="actionType != 'view'">{{ translationData.lbl250CharMax || '250 characters max'
                             }}</span>
                     </mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
-                            <input maxlength="100"
+                            <input maxlength="250"
                                 placeholder="{{ translationData.lblEnterDataAttributeDescription || 'Enter Data Attribute Description' }}"
                                 matInput formControlName="dataAttributeDescription">
                         </mat-form-field>
                         <mat-error *ngIf="featureFormGroup.get('dataAttributeDescription').hasError('whitespace')">
                             {{ translationData.lblDataAttributeDescriptioncannotcontainonlywhitespace || 'Data Attribute
                             Description cannot contain only whitespace' }}
+                        </mat-error>
+                        <mat-error *ngIf="featureFormGroup.get('dataAttributeDescription').hasError('maxlength')">
+                            {{ translationData.lblDataAttributeSetmaxlength || 'Max length should be 250' }}
+                        </mat-error>
+                        <mat-error *ngIf="featureFormGroup.get('dataAttributeDescription').hasError('specialCharsNotAllowed')">
+                            {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                         </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
