@@ -211,10 +211,7 @@ namespace net.atos.daf.ct2.portalservice
             // }
             app.Use(async (context, next) =>
             {
-                //context.Response.Headers["Cache-Control"] = string.IsNullOrEmpty(headercachecontrol) ? "no-cache, no-store, must-revalidate" : headercachecontrol;
-
-                context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
-
+                context.Response.Headers["Cache-Control"] = string.IsNullOrEmpty(headercachecontrol) || headercachecontrol.Contains("Configuration") ? "no-cache, no-store, must-revalidate" : headercachecontrol;
                 //context.Response.Headers["Expires"] = string.IsNullOrEmpty(headerexpires) ? "-1" : headerexpires;
                 //context.Response.Headers["Pragma"] = string.IsNullOrEmpty(headerpragma) ? "no-cache" : headerpragma;
                 context.Response.Headers.Add("X-Frame-Options", string.IsNullOrEmpty(headerxframeoptions) || headerxframeoptions.Contains("Configuration") ? "DENY" : headerxframeoptions);
