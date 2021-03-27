@@ -160,13 +160,7 @@ namespace net.atos.daf.ct2.portalservice
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portal Service", Version = "v1" });
             });
-            services.AddCors(c =>
-            {
-                //This need to be change to orgin specific on UAT and prod
-                c.AddPolicy("AllowOrigin", 
-                    options => options.AllowAnyOrigin()
-                 );
-            });
+            services.AddCors();
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -220,7 +214,7 @@ namespace net.atos.daf.ct2.portalservice
             {
                 builder.WithOrigins(string.IsNullOrEmpty(headeraccesscontrolalloworigin) || headeraccesscontrolalloworigin.Contains("Configuration") ? "*" : headeraccesscontrolalloworigin);
                 builder.WithMethods(string.IsNullOrEmpty(headeraccesscontrolallowmethods) || headeraccesscontrolallowmethods.Contains("Configuration") ? "GET, POST, PUT, DELETE" : headeraccesscontrolallowmethods);
-                builder.WithHeaders(string.IsNullOrEmpty(headerAccesscontrolallowheaders) || headerAccesscontrolallowheaders.Contains("Configuration") ? "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With" : headerAccesscontrolallowheaders);
+                builder.AllowAnyHeader();
             });            
             app.UseEndpoints(endpoints =>
             {
