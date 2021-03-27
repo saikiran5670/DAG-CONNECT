@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [Route("translation")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class TranslationController : ControllerBase
     {
         private readonly ILogger<TranslationController> _logger;
@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         }
 
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpPost]
         [Route("menutranslations")]
         public async Task<IActionResult> GetTranslations(TranslationsRequest request)
@@ -282,7 +282,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpGet]
         [Route("languagecodes")]
         public async Task<IActionResult> GetAllLanguagecodes([FromQuery] Request request)
