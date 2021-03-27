@@ -8,11 +8,14 @@ using VehicleBusinessService = net.atos.daf.ct2.vehicleservice;
 using net.atos.daf.ct2.portalservice.Entity.Vehicle;
 using System.Text;
 using net.atos.daf.ct2.portalservice.Common;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
     [Route("vehicle")]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class VehicleController : Controller
     {
         private readonly ILogger<VehicleController> _logger;

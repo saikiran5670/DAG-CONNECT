@@ -41,10 +41,8 @@ namespace net.atos.daf.ct2.portalservice
             Configuration = configuration;
             Environment = environment;
         }
-
         public IConfiguration Configuration { get; }
         public IWebHostEnvironment Environment { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -59,20 +57,20 @@ namespace net.atos.daf.ct2.portalservice
             var organizationservice = Configuration["ServiceConfiguration:organizationservice"];
             var driverservice = Configuration["ServiceConfiguration:driverservice"];
             var subscriptionservice = Configuration["ServiceConfiguration:subscriptionservice"];
-
             //Web Server Configuration
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
             var cookiesexpireat = Configuration["WebServerConfiguration:cookiesexpireat"];
             var authcookiesexpireat = Configuration["WebServerConfiguration:authcookiesexpireat"];
             var headerstricttransportsecurity = Configuration["WebServerConfiguration:headerstricttransportsecurity"];
+            var headeraccesscontrolalloworigin = Configuration["WebServerConfiguration:headeraccesscontrolalloworigin"];
+            var headeraccesscontrolallowmethods = Configuration["WebServerConfiguration:headeraccesscontrolallowmethods"];
+            var headerAccesscontrolallowheaders = Configuration["WebServerConfiguration:headeraccesscontrolallowheaders"];
+            var headerAccesscontrolallowcredentials = Configuration["WebServerConfiguration:headeraccesscontrolallowcredentials"];
             // var httpsport = Configuration["WebServerConfiguration:httpsport"];
-
             // We are enforcing to call Insercure service             
             AppContext.SetSwitch(
                     "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-
             services.Configure<PortalCacheConfiguration>(Configuration.GetSection("PortalCacheConfiguration"));
-
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
             {
@@ -96,15 +94,14 @@ namespace net.atos.daf.ct2.portalservice
                     }
                 };
             });
-
-            services.AddAuthorization(options => {
+            services.AddAuthorization(options =>
+            {
                 //if (Environment.IsDevelopment())  //not working for dev0 environment
                 if (isdevelopmentenv.Contains("Configuration") || Convert.ToBoolean(isdevelopmentenv))
                 {
                     options.DefaultPolicy = new AuthorizationPolicyBuilder().RequireAssertion(_ => true).Build();
                 }
             });
-
             /*   services.AddHsts(options =>
                {
                    options.Preload = true;
@@ -116,16 +113,11 @@ namespace net.atos.daf.ct2.portalservice
                    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
                    options.HttpsPort = string.IsNullOrEmpty(httpsport)? 443 : Convert.ToInt32(httpsport);
                }); */
-
             services.AddMemoryCache();
-
             services.AddControllers();
-
             services.AddDistributedMemoryCache();
-
             services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
             services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();
-
             services.AddGrpcClient<AccountService.AccountServiceClient>(o =>
             {
                 o.Address = new Uri(accountservice);
@@ -138,15 +130,14 @@ namespace net.atos.daf.ct2.portalservice
             {
                 o.Address = new Uri(vehicleservice);
             });
-          
             services.AddGrpcClient<FeatureService.FeatureServiceClient>(o =>
             {
                 o.Address = new Uri(featureservice);
             });
-             services.AddGrpcClient<FeatureService.FeatureServiceClient>(o =>
-            {
-                o.Address = new Uri(featureservice);
-            });
+            services.AddGrpcClient<FeatureService.FeatureServiceClient>(o =>
+           {
+               o.Address = new Uri(featureservice);
+           });
             services.AddGrpcClient<RoleService.RoleServiceClient>(o =>
             {
                 o.Address = new Uri(roleservice);
@@ -163,10 +154,10 @@ namespace net.atos.daf.ct2.portalservice
             {
                 o.Address = new Uri(auditservice);
             });
-             services.AddGrpcClient<DriverService.DriverServiceClient>(o =>
-            {
-                o.Address = new Uri(driverservice);
-            });
+            services.AddGrpcClient<DriverService.DriverServiceClient>(o =>
+           {
+               o.Address = new Uri(driverservice);
+           });
             services.AddGrpcClient<SubscribeGRPCService.SubscribeGRPCServiceClient>(o =>
             {
                 o.Address = new Uri(subscriptionservice);
@@ -174,19 +165,22 @@ namespace net.atos.daf.ct2.portalservice
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portal Service", Version = "v1" });
-             });
+            });
             services.AddCors(c =>
             {
                 //This need to be change to orgin specific on UAT and prod
-                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+                //Note: please remove * from origin
+                c.AddPolicy("dafcorspolicy", options =>
+                    options.WithOrigins(string.IsNullOrEmpty(headeraccesscontrolalloworigin) || headeraccesscontrolalloworigin.Contains("Configuration") ? "*" : headeraccesscontrolalloworigin)
+                    .WithMethods(string.IsNullOrEmpty(headeraccesscontrolallowmethods) || headeraccesscontrolallowmethods.Contains("Configuration") ? "GET, POST, PUT, DELETE" : headeraccesscontrolallowmethods)
+                    .WithHeaders(string.IsNullOrEmpty(headerAccesscontrolallowheaders) || headerAccesscontrolallowheaders.Contains("Configuration") ? "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With" : headerAccesscontrolallowheaders)
+                    .AllowCredentials()
+            );
             });
-
         }
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            
             //Web Server Configuration
             var headercachecontrol = Configuration["WebServerConfiguration:headercachecontrol"];
             var headerexpires = Configuration["WebServerConfiguration:headerexpires"];
@@ -194,12 +188,7 @@ namespace net.atos.daf.ct2.portalservice
             var headerxframeoptions = Configuration["WebServerConfiguration:headerxframeoptions"];
             var headerxxssprotection = Configuration["WebServerConfiguration:headerxxssprotection"];
             var headerstricttransportsecurity = Configuration["WebServerConfiguration:headerstricttransportsecurity"];
-            var headeraccesscontrolalloworigin = Configuration["WebServerConfiguration:headeraccesscontrolalloworigin"];
-            var headeraccesscontrolallowmethods = Configuration["WebServerConfiguration:headeraccesscontrolallowmethods"];
-            var headerAccesscontrolallowheaders = Configuration["WebServerConfiguration:headeraccesscontrolallowheaders"];
-            var headerAccesscontrolallowcredentials = Configuration["WebServerConfiguration:headeraccesscontrolallowcredentials"];
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
-
             //if (Environment.IsDevelopment())  //not working for dev0 environment
             if (isdevelopmentenv.Contains("Configuration") || Convert.ToBoolean(isdevelopmentenv))
             {
@@ -218,43 +207,30 @@ namespace net.atos.daf.ct2.portalservice
                 context.Response.Headers.Add("X-Xss-Protection", string.IsNullOrEmpty(headerxxssprotection) || headerxxssprotection.Contains("Configuration") ? "1" : headerxxssprotection);
                 ///////context.Response.Headers.Add("Content-Security-Policy", "script-src 'self' 'unsafe-eval' 'unsafe-inline'; navigate-to https://www.daf.com; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'");
                 //context.Response.Headers.Add("Strict-Transport-Security", string.IsNullOrEmpty(headerstricttransportsecurity) ? "31536000" : headerstricttransportsecurity);
-                context.Response.Headers.Add("Access-Control-Allow-Origin", string.IsNullOrEmpty(headeraccesscontrolalloworigin) || headeraccesscontrolalloworigin.Contains("Configuration") ? "*" : headeraccesscontrolalloworigin);
-                context.Response.Headers.Add("Access-Control-Allow-Credentials", string.IsNullOrEmpty(headerAccesscontrolallowcredentials) || headerAccesscontrolallowcredentials.Contains("Configuration") ? "true" : headerAccesscontrolallowcredentials);                
-                context.Response.Headers.Add("Access-Control-Allow-Methods", string.IsNullOrEmpty(headeraccesscontrolallowmethods) || headeraccesscontrolallowmethods.Contains("Configuration") ? "GET, POST, PUT, DELETE" : headeraccesscontrolallowmethods);
+                //////context.Response.Headers.Add("Access-Control-Allow-Origin", string.IsNullOrEmpty(headeraccesscontrolalloworigin) || headeraccesscontrolalloworigin.Contains("Configuration") ? "*" : headeraccesscontrolalloworigin);
+                //////context.Response.Headers.Add("Access-Control-Allow-Credentials", string.IsNullOrEmpty(headerAccesscontrolallowcredentials) || headerAccesscontrolallowcredentials.Contains("Configuration") ? "true" : headerAccesscontrolallowcredentials);                
+                //////context.Response.Headers.Add("Access-Control-Allow-Methods", string.IsNullOrEmpty(headeraccesscontrolallowmethods) || headeraccesscontrolallowmethods.Contains("Configuration") ? "GET, POST, PUT, DELETE" : headeraccesscontrolallowmethods);
                 //context.Response.Headers.Add("Access-Control-Allow-Headers", string.IsNullOrEmpty(headerAccesscontrolallowheaders) ? "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With" : headerAccesscontrolallowheaders);
-
                 context.Response.Headers.Remove("X-Powered-By");
                 context.Response.Headers.Remove("Server");
                 context.Response.Headers.Remove("X-AspNet-Version");
                 context.Response.Headers.Remove("X-AspNetMvc-Version");
-
                 await next();
             });
             //app.UseHttpsRedirection();
-
             app.UseRouting();
-            //This need to be change to orgin specific on UAT and prod
-            app.UseCors(builder =>
-            {
-                builder.WithOrigins(string.IsNullOrEmpty(headeraccesscontrolalloworigin) ? "*" : headeraccesscontrolalloworigin);
-                builder.AllowAnyMethod();
-                builder.AllowAnyHeader();
-            });
-
+            app.UseCors("dafcorspolicy");
             //app.UseCookiePolicy();
-
             app.UseAuthentication();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-             app.UseSwagger(c =>
-            {
-                c.RouteTemplate = swaggerBasePath+"/swagger/{documentName}/swagger.json";
-            });
+            app.UseSwagger(c =>
+           {
+               c.RouteTemplate = swaggerBasePath + "/swagger/{documentName}/swagger.json";
+           });
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
