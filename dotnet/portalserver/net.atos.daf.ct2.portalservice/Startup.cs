@@ -169,6 +169,8 @@ namespace net.atos.daf.ct2.portalservice
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseAuthentication();
+            
             //Web Server Configuration
             var headercachecontrol = Configuration["WebServerConfiguration:headercachecontrol"];
             var headerexpires = Configuration["WebServerConfiguration:headerexpires"];
@@ -189,6 +191,7 @@ namespace net.atos.daf.ct2.portalservice
             else
             {
                 app.UseHsts();
+                app.UseHttpsRedirection();
             }
             app.Use(async (context, next) =>
             {
@@ -209,17 +212,16 @@ namespace net.atos.daf.ct2.portalservice
                 context.Response.Headers.Remove("X-AspNetMvc-Version");
                 await next();
             });
-            //app.UseHttpsRedirection();
+            
             app.UseRouting();
+            app.UseAuthorization();
             //This need to be change to orgin specific on UAT and prod
             app.UseCors(builder =>
             {
                 builder.WithOrigins(string.IsNullOrEmpty(headeraccesscontrolalloworigin) ? "*" : headeraccesscontrolalloworigin);
                 builder.AllowAnyMethod();
                 builder.AllowAnyHeader();
-            });
-            app.UseAuthentication();
-            app.UseAuthorization();
+            });            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
