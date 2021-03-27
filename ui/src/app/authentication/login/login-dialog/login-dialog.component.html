@@ -16,7 +16,7 @@
           <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-label>Select Organisation</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-select formControlName="organization">
+              <mat-select (selectionChange)="orgBasedRoleSelection($event)" formControlName="organization">
                 <mat-option *ngFor="let org of data.organization" [value]="org.id">
                   {{ org.name }}
                 </mat-option>
@@ -32,8 +32,8 @@
           <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-label>Select Role</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-              <mat-select formControlName="role">
-                <mat-option *ngFor="let role of data.role" [value]="role.id">
+              <mat-select [disabled]='selectedRoles.length == 0' formControlName="role">
+                <mat-option *ngFor="let role of selectedRoles" [value]="role.id">
                   {{ role.name }}
                 </mat-option>
               </mat-select>
@@ -46,7 +46,7 @@
         <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
           <button style='background: #ebf2f8; color: #000;' type="button" class='margin-right-10' mat-raised-button color="warn"
             (click)='cancel()'>Cancel</button>
-          <button style='background: #2e5fa3;' [disabled]="!loginDialogForm.valid" type="submit" class='no-margin' mat-raised-button
+          <button style='background: #2e5fa3;' [disabled]="!loginDialogForm.valid || selectedRoles.length == 0" type="submit" class='no-margin' mat-raised-button
             color="primary">Confirm</button>
         </div>
       </mat-card-actions>
