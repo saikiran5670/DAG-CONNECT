@@ -14,11 +14,14 @@ using net.atos.daf.ct2.portalservice.Account;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Feature;
 using FeatuseBusinessService = net.atos.daf.ct2.featureservice;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController] 
     [Route("feature")]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class FeatureController : Controller
     {
 

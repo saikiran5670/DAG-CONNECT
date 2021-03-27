@@ -8,10 +8,12 @@ using net.atos.daf.ct2.portalservice.Identity;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class AuthenticationController: ControllerBase
     {
         private readonly ILogger<AuthenticationController> _logger;
@@ -21,7 +23,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             _accountClient = accountClient;
             _logger = logger;
-        }        
+        }
+        [AllowAnonymous]
         [HttpPost]        
         [Route("login")]
         public async Task<IActionResult> Login()
