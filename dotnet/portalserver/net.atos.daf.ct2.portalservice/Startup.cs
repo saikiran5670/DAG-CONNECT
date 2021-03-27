@@ -163,16 +163,12 @@ namespace net.atos.daf.ct2.portalservice
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portal Service", Version = "v1" });
             });
-            services.AddCors(options =>
+            services.AddCors(c =>
             {
-                options.AddPolicy("dafcorspolicy",
-                                  builder =>
-                                  {
-                                      builder.AllowAnyOrigin();
-                                      builder.AllowAnyMethod();
-                                      builder.AllowAnyHeader();
-                                      builder.AllowCredentials();
-                                  });
+                //This need to be change to orgin specific on UAT and prod
+                c.AddPolicy("AllowOrigin",
+                    options => options.AllowAnyOrigin()
+                 );
             });
             services.AddControllers();
         }
@@ -222,9 +218,15 @@ namespace net.atos.daf.ct2.portalservice
                 await next();
             });
             app.UseRouting();
-            app.UseAuthorization();
+
             //This need to be change to orgin specific on UAT and prod
-            app.UseCors("dafcorspolicy");            
+            app.UseCors(builder =>
+            {
+                builder.WithOrigins(string.IsNullOrEmpty(headeraccesscontrolalloworigin) ? "*" : headeraccesscontrolalloworigin);
+                builder.AllowAnyMethod();
+                builder.AllowAnyHeader();
+            });
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
