@@ -61,6 +61,9 @@ namespace net.atos.daf.ct2.portalservice
             var cookiesexpireat = Configuration["WebServerConfiguration:cookiesexpireat"];
             var authcookiesexpireat = Configuration["WebServerConfiguration:authcookiesexpireat"];
             var headerstricttransportsecurity = Configuration["WebServerConfiguration:headerstricttransportsecurity"];
+            var headeraccesscontrolalloworigin = Configuration["WebServerConfiguration:headeraccesscontrolalloworigin"];
+            var headeraccesscontrolallowmethods = Configuration["WebServerConfiguration:headeraccesscontrolallowmethods"];
+            var headerAccesscontrolallowheaders = Configuration["WebServerConfiguration:headeraccesscontrolallowheaders"];
             var httpsport = Configuration["WebServerConfiguration:httpsport"];
             // We are enforcing to call Insercure service             
             AppContext.SetSwitch(
@@ -160,7 +163,18 @@ namespace net.atos.daf.ct2.portalservice
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portal Service", Version = "v1" });
             });
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("dafcorspolicy",
+                                  builder =>
+                                  {
+                                      builder.AllowAnyOrigin();
+                                      builder.AllowAnyMethod();
+                                      builder.AllowAnyHeader();
+                                      builder.AllowCredentials();
+                                  });
+            });
+            services.AddControllers();
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -210,12 +224,7 @@ namespace net.atos.daf.ct2.portalservice
             app.UseRouting();
             app.UseAuthorization();
             //This need to be change to orgin specific on UAT and prod
-            app.UseCors(builder =>
-            {
-                builder.WithOrigins(string.IsNullOrEmpty(headeraccesscontrolalloworigin) || headeraccesscontrolalloworigin.Contains("Configuration") ? "*" : headeraccesscontrolalloworigin);
-                builder.WithMethods(string.IsNullOrEmpty(headeraccesscontrolallowmethods) || headeraccesscontrolallowmethods.Contains("Configuration") ? "GET, POST, PUT, DELETE" : headeraccesscontrolallowmethods);
-                builder.AllowAnyHeader();
-            });            
+            app.UseCors("dafcorspolicy");            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
