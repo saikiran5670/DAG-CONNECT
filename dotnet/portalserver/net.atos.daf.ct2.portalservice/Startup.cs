@@ -213,7 +213,7 @@ namespace net.atos.daf.ct2.portalservice
             {
                 context.Response.Headers["Cache-Control"] = string.IsNullOrEmpty(headercachecontrol) || headercachecontrol.Contains("Configuration") ? "no-cache, no-store, must-revalidate" : headercachecontrol;
                 //context.Response.Headers["Expires"] = string.IsNullOrEmpty(headerexpires) ? "-1" : headerexpires;
-                //context.Response.Headers["Pragma"] = string.IsNullOrEmpty(headerpragma) ? "no-cache" : headerpragma;
+                context.Response.Headers["Pragma"] = string.IsNullOrEmpty(headerpragma) || headerpragma.Contains("Configuration") ? "no-cache" : headerpragma;
                 context.Response.Headers.Add("X-Frame-Options", string.IsNullOrEmpty(headerxframeoptions) || headerxframeoptions.Contains("Configuration") ? "DENY" : headerxframeoptions);
                 context.Response.Headers.Add("X-Xss-Protection", string.IsNullOrEmpty(headerxxssprotection) || headerxxssprotection.Contains("Configuration") ? "1" : headerxxssprotection);
                 ///////context.Response.Headers.Add("Content-Security-Policy", "script-src 'self' 'unsafe-eval' 'unsafe-inline'; navigate-to https://www.daf.com; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'");
