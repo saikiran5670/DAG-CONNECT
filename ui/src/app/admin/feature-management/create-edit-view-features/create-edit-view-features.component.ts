@@ -34,6 +34,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   showLoadingIndicator: any;
   createStatus:boolean;
   duplicateMsg:boolean;
+  isDataAttributeSetExist: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private featureService: FeatureService) { }
 
