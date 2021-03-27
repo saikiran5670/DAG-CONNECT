@@ -465,6 +465,8 @@ export class AppComponent {
         this.localStLanguage = JSON.parse(localStorage.getItem("language"));
       }
 
+      this.appForm.get("languageSelection").setValue(this.localStLanguage.id); //-- set language dropdown
+
       let translationObj = {
         id: 0,
         code: preferencelanguageCode, //-- TODO: Lang code based on account 
