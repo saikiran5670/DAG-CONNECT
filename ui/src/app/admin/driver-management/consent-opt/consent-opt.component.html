@@ -69,8 +69,8 @@
             </div> 
         </mat-card-content>
         <mat-card-actions fxLayoutAlign="end end" class='no-margin' style="padding: 0px 20px;">
-            <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
-                <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ data.translationData.lblCancel || 'Cancel' }}</button>
+            <div fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
+                <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ data.translationData.lblCancel || 'Cancel' }}</button>
                 <button (click)="onConfirm()" class='no-margin' mat-raised-button color="primary">{{ data.translationData.lblConfirm || 'Confirm' }}</button>
             </div>
         </mat-card-actions>
