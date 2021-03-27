@@ -22,6 +22,7 @@ public class KafkaCT2Constant {
     public static final String AUDIT_CREATE_EVENT_TYPE = "1";
     public static final String AUDIT_EVENT_STATUS_START = "2";
     public static final String AUDIT_EVENT_STATUS_FAIL = "1";
-   public static final String DEFAULT_OBJECT_ID = "00";
-	
+    public static final String DEFAULT_OBJECT_ID = "00";
+    public static final Integer VALID_DATA = 1;
+    public static final Integer UNKNOWN_DATA = 0;
 }
