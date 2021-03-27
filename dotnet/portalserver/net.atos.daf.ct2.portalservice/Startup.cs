@@ -163,14 +163,15 @@ namespace net.atos.daf.ct2.portalservice
             services.AddCors(c =>
             {
                 //This need to be change to orgin specific on UAT and prod
-                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+                c.AddPolicy("AllowOrigin", 
+                    options => options.AllowAnyOrigin()
+                 );
             });
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseAuthentication();
-            
             //Web Server Configuration
             var headercachecontrol = Configuration["WebServerConfiguration:headercachecontrol"];
             var headerexpires = Configuration["WebServerConfiguration:headerexpires"];
@@ -196,12 +197,12 @@ namespace net.atos.daf.ct2.portalservice
             app.Use(async (context, next) =>
             {
                 context.Response.Headers["Cache-Control"] = string.IsNullOrEmpty(headercachecontrol) || headercachecontrol.Contains("Configuration") ? "no-cache, no-store, must-revalidate" : headercachecontrol;
-                context.Response.Headers["Expires"] = string.IsNullOrEmpty(headerexpires) ? "-1" : headerexpires;
+                context.Response.Headers["Expires"] = string.IsNullOrEmpty(headerexpires) || headerexpires.Contains("Configuration") ? "-1" : headerexpires;
                 context.Response.Headers["Pragma"] = string.IsNullOrEmpty(headerpragma) || headerpragma.Contains("Configuration") ? "no-cache" : headerpragma;
                 context.Response.Headers.Add("X-Frame-Options", string.IsNullOrEmpty(headerxframeoptions) || headerxframeoptions.Contains("Configuration") ? "DENY" : headerxframeoptions);
                 context.Response.Headers.Add("X-Xss-Protection", string.IsNullOrEmpty(headerxxssprotection) || headerxxssprotection.Contains("Configuration") ? "1" : headerxxssprotection);
                 ///////context.Response.Headers.Add("Content-Security-Policy", "script-src 'self' 'unsafe-eval' 'unsafe-inline'; navigate-to https://www.daf.com; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'");
-                context.Response.Headers.Add("Strict-Transport-Security", string.IsNullOrEmpty(headerstricttransportsecurity) ? "31536000" : headerstricttransportsecurity);
+                context.Response.Headers.Add("Strict-Transport-Security", string.IsNullOrEmpty(headerstricttransportsecurity) || headerstricttransportsecurity.Contains("Configuration") ? "31536000" : headerstricttransportsecurity);
                 context.Response.Headers.Add("Access-Control-Allow-Origin", string.IsNullOrEmpty(headeraccesscontrolalloworigin) || headeraccesscontrolalloworigin.Contains("Configuration") ? "*" : headeraccesscontrolalloworigin);
                 context.Response.Headers.Add("Access-Control-Allow-Credentials", string.IsNullOrEmpty(headerAccesscontrolallowcredentials) || headerAccesscontrolallowcredentials.Contains("Configuration") ? "true" : headerAccesscontrolallowcredentials);
                 context.Response.Headers.Add("Access-Control-Allow-Methods", string.IsNullOrEmpty(headeraccesscontrolallowmethods) || headeraccesscontrolallowmethods.Contains("Configuration") ? "GET, POST, PUT, DELETE" : headeraccesscontrolallowmethods);
@@ -212,15 +213,14 @@ namespace net.atos.daf.ct2.portalservice
                 context.Response.Headers.Remove("X-AspNetMvc-Version");
                 await next();
             });
-            
             app.UseRouting();
             app.UseAuthorization();
             //This need to be change to orgin specific on UAT and prod
             app.UseCors(builder =>
             {
-                builder.WithOrigins(string.IsNullOrEmpty(headeraccesscontrolalloworigin) ? "*" : headeraccesscontrolalloworigin);
-                builder.AllowAnyMethod();
-                builder.AllowAnyHeader();
+                builder.WithOrigins(string.IsNullOrEmpty(headeraccesscontrolalloworigin) || headeraccesscontrolalloworigin.Contains("Configuration") ? "*" : headeraccesscontrolalloworigin);
+                builder.WithMethods(string.IsNullOrEmpty(headeraccesscontrolallowmethods) || headeraccesscontrolallowmethods.Contains("Configuration") ? "GET, POST, PUT, DELETE" : headeraccesscontrolallowmethods);
+                builder.WithHeaders(string.IsNullOrEmpty(headerAccesscontrolallowheaders) || headerAccesscontrolallowheaders.Contains("Configuration") ? "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With" : headerAccesscontrolallowheaders);
             });            
             app.UseEndpoints(endpoints =>
             {
