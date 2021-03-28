@@ -54,10 +54,10 @@ namespace net.atos.daf.ct2.accountservice
                 account.UserName = request.UserName.Trim();
                 account.Password = request.Password;
                 AccountComponent.entity.AccountIdentity accIdentity = accountIdentityManager.Login(account).Result;
-                if (accIdentity != null && accIdentity.Authenticated)
+                if (accIdentity != null && (!string.IsNullOrEmpty(accIdentity.tokenIdentifier)))
                 {
                     _logger.LogInformation("account is Authenticated", accIdentity);
-                    response.Authenticated = accIdentity.Authenticated;
+                    response.TokenIdentifier = accIdentity.tokenIdentifier;
                     if (accIdentity.accountInfo != null)
                     {
                         response.AccountInfo = _mapper.ToAccount(accIdentity.accountInfo);
@@ -87,7 +87,7 @@ namespace net.atos.daf.ct2.accountservice
                     }
                     return Task.FromResult(response);
                 }
-                if (accIdentity != null && !accIdentity.Authenticated)
+                if (accIdentity != null && string.IsNullOrEmpty(accIdentity.tokenIdentifier))
                 {
                     _logger.LogInformation("account is not authenticated", accIdentity);
                     _logger.LogError("account is not authenticated", accIdentity);
@@ -107,7 +107,7 @@ namespace net.atos.daf.ct2.accountservice
                         //Account not present  in IDP or IDP related error
                         Code = Responcecode.Failed,
                         Message = "Account is not configured.",
-                        Authenticated = false,
+                        TokenIdentifier = string.Empty,
                     });
                 }
             }
@@ -118,11 +118,34 @@ namespace net.atos.daf.ct2.accountservice
                 {
                     Code = Responcecode.Failed,
                     Message = " Authentication is failed due to - " + ex.ToString(),
-                    Authenticated = false,
+                    TokenIdentifier = string.Empty,
                 });
             }
         }
-
+        public override Task<LogoutResponse> Logout(LogoutRequest request, ServerCallContext context)
+        {
+            LogoutResponse response = new LogoutResponse();
+            try
+            {
+                bool result= accountIdentityManager.LogoutByTokenId(request.TokenId).Result;
+                if (result)
+                {
+                    _logger.LogInformation("account is logged out", request.TokenId);
+                    response.Success = true;                    
+                }
+                else
+                {
+                    _logger.LogInformation("account is logged out", request.TokenId);
+                    response.Success = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString() + " "+ request.TokenId);
+                response.Success = false;
+            }
+            return Task.FromResult(response);
+        }
 
         #endregion
 

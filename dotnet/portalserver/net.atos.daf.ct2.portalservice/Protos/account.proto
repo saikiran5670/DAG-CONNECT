@@ -10,7 +10,7 @@ service AccountService
 {
   //Identity Methods
   rpc Auth (IdentityRequest) returns (AccountIdentityResponse);
-
+  rpc Logout (LogoutRequest) returns (LogoutResponse);
   // Account Methods 
   rpc Create (AccountRequest) returns (AccountData);
   rpc Update (AccountRequest) returns (AccountData);
@@ -390,7 +390,7 @@ message IdentityRequest {
 message AccountIdentityResponse {
     Responcecode code=1;
     string Message=2;
-    bool Authenticated = 3;
+    string tokenIdentifier = 3;
     repeated AccountIdentityOrg AccOrganization = 4;
     repeated AccountIdentityRole AccountRole=5;
     AccountRequest accountInfo=6;
@@ -406,6 +406,13 @@ message AccountIdentityRole
     string Name=2;
     int32 OrganizationId=3;
 }
+message LogoutRequest {
+    string TokenId=1;
+}
+message LogoutResponse {
+    bool Success=1;
+}
+
 // End - Identity  
 
 // begin - vehicle-account access relatioship

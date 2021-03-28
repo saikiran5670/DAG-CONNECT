@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.account
         public async Task<AccountIdentity> Login(IdentityEntity.Identity user)
         {
             AccountIdentity accIdentity = new AccountIdentity();
-            accIdentity.Authenticated = false;
+            accIdentity.tokenIdentifier = string.Empty;
             IdentityEntity.AccountToken accToken = new IdentityEntity.AccountToken();
             Account account = GetAccountByEmail(user.UserName);
             if (account != null && account.Id > 0)
@@ -40,7 +40,9 @@ namespace net.atos.daf.ct2.account
                 accToken = await PrepareSaveToken(user, account);
                 if (accToken != null && accToken.statusCode == HttpStatusCode.OK)
                 {
-                    accIdentity.Authenticated = true;
+                    IdentityEntity.AccountIDPClaim accIDPclaims = tokenManager.DecodeToken(accToken.AccessToken);
+
+                    accIdentity.tokenIdentifier = accIDPclaims.Id;
                     accIdentity.accountInfo = account;
                     accIdentity.AccountOrganization = accountManager.GetAccountOrg(account.Id).Result;
                     accIdentity.AccountRole = accountManager.GetAccountRole(account.Id).Result;
@@ -66,7 +68,7 @@ namespace net.atos.daf.ct2.account
         public async Task<AccountIdentity> LoginOld(IdentityEntity.Identity user)
         {
             AccountIdentity accIdentity = new AccountIdentity();
-            accIdentity.Authenticated = false;
+            accIdentity.tokenIdentifier = string.Empty;
             Account account = GetAccountByEmail(user.UserName);
             if (account != null && account.Id > 0)
             {
@@ -82,7 +84,7 @@ namespace net.atos.daf.ct2.account
                     accIDPclaims.TokenExpiresIn = token.expires_in;
 
                     IdentityEntity.AccountToken accToken = tokenManager.CreateToken(accIDPclaims);
-                    accIdentity.Authenticated = true;
+                    //accIdentity.tokenIdentifier = true;
                     //accIdentity.AccountToken=accToken;
                     // int accountId= GetAccountByEmail(user.UserName);
                     // if(accountId>0)
@@ -119,11 +121,146 @@ namespace net.atos.daf.ct2.account
             }
             return accToken;
         }
-        public Task<bool> ValidateToken(string token)
+        public async Task<bool> ValidateToken(string token)
         {
             bool result = false;
-            result = tokenManager.ValidateToken(token);
-            return Task.FromResult(result);
+            result = await tokenManager.ValidateToken(token);
+            if (result)
+                result = await VerifyAccountToken(token);
+
+            return await Task.FromResult(result);
+        }        
+        public async Task<bool> LogoutByJwtToken(string token)
+        {
+            bool isLogout = false;
+            bool tokenValid = await ValidateToken(token);
+            if (tokenValid)
+            {
+                //decode token to extract token identifier, sessoin state and email
+                IdentityEntity.AccountIDPClaim accIDPclaims = tokenManager.DecodeToken(token);
+                if (accIDPclaims != null && !string.IsNullOrEmpty(accIDPclaims.Id))
+                {
+                    //delete token by passing token identifier extracted from token
+                    int accountid = await accountTokenManager.DeleteTokenByTokenId(Guid.Parse(accIDPclaims.Id));
+                    //check if another token are availble for same account 
+                    int tokencount = await accountTokenManager.GetTokenCount(accountid);
+                    if (tokencount == 0)
+                    {
+                        //no token belong to this session hence delete the token
+                        int sessionid = await accountSessionManager.DeleteSession(accIDPclaims.Sessionstate);
+                        //sign out account from IDP by using username
+                        IdentityEntity.Identity identity= new IdentityEntity.Identity();
+                        identity.UserName = accIDPclaims.Email;
+                        IdentityEntity.Response response=await identityAccountManager.LogOut(identity);
+                    }
+                    isLogout = true;
+                }
+            }
+            return await Task.FromResult(isLogout);
+        }
+        public async Task<bool> LogoutByAccountId(int accountId)
+        {
+            bool isLogout = false;
+            if (accountId > 0)
+            {
+                await accountTokenManager.DeleteTokenbyAccountId(accountId);
+                await accountSessionManager.DeleteSessionByAccountId(accountId);
+
+                string emailid = string.Empty;
+                AccountFilter filter = new AccountFilter();
+                filter.Id = accountId;
+                IEnumerable<Account> accounts = await accountManager.Get(filter);
+                foreach (var account in accounts)
+                {
+                    emailid = account.EmailId;
+                    break;
+                }
+                if (!string.IsNullOrEmpty(emailid))
+                {   //sign out account from IDP using email
+                    IdentityEntity.Identity identity = new IdentityEntity.Identity();
+                    identity.UserName = emailid;
+                    IdentityEntity.Response response = await identityAccountManager.LogOut(identity);
+                }
+                isLogout = true;
+            }
+            return await Task.FromResult(isLogout);
+
+        }
+        public async Task<bool> LogoutByTokenId(string tokenid)
+        {
+            bool isLogout = false;
+            //delete token by passing token identifier extracted from token
+            int accountid = await accountTokenManager.DeleteTokenByTokenId(Guid.Parse(tokenid));
+            if (accountid > 0)
+            {
+                //check if another token are availble for same account 
+                int tokencount = await accountTokenManager.GetTokenCount(accountid);
+                if (tokencount == 0)
+                {
+                    //no token belong to this session hence delete the token
+                    int sessionid = await accountSessionManager.DeleteSessionByAccountId(accountid);
+                    await LogoutFromIDP(accountid);
+                }
+                isLogout = true;
+            }
+            return await Task.FromResult(isLogout);
+        }
+        private async Task LogoutFromIDP(int accountId)
+        {
+            string emailid = string.Empty;
+            AccountFilter filter = new AccountFilter();
+            filter.Id = accountId;
+            IEnumerable<Account> accounts = await accountManager.Get(filter);
+            foreach (var account in accounts)
+            {
+                emailid = account.EmailId;
+                break;
+            }
+            if (!string.IsNullOrEmpty(emailid))
+            {   //sign out account from IDP using email
+                IdentityEntity.Identity identity = new IdentityEntity.Identity();
+                identity.UserName = emailid;
+                IdentityEntity.Response response = await identityAccountManager.LogOut(identity);
+            }
+        }
+        private async Task<bool> VerifyAccountToken(string token)
+        {
+            bool isAvailable = false;
+            //decode token to extract token identifier, sessoin state and email
+            IdentityEntity.AccountIDPClaim accIDPclaims = tokenManager.DecodeToken(token);
+            if (accIDPclaims != null && !string.IsNullOrEmpty(accIDPclaims.Id))
+            {
+                int accountid = 0;
+                int sessionid= 0;
+                //check token is available in account token 
+                IEnumerable <IdentitySessionComponent.entity.AccountToken> tokenlst = await accountTokenManager.GetTokenDetails(accIDPclaims.Id);
+                foreach (var item in tokenlst)
+                {
+                    accountid = item.AccountId;
+                    break;
+                }
+                //check session is available in account account
+                if (accountid > 0)
+                {
+                    IEnumerable<IdentitySessionComponent.entity.AccountSession> sessionlst = await accountSessionManager.GetAccountSession(accountid);
+                    foreach (var item in tokenlst)
+                    {
+                        sessionid = item.Session_Id;
+                        break;
+                    }
+                    if (sessionid > 0)
+                    {
+                        isAvailable = true;
+                    }
+                    else
+                        isAvailable = false;
+                }
+                else
+                    isAvailable = false;
+            }
+            else
+                isAvailable = false;
+            return await Task.FromResult(isAvailable);
         }
         private async Task<IdentityEntity.AccountToken> PrepareSaveToken(IdentityEntity.Identity user, Account account)
         {
@@ -251,61 +388,6 @@ namespace net.atos.daf.ct2.account
                 break;//get only first account id
             }
             return account;
-        }
-        public async Task<bool> LogOut(string token)
-        {
-            bool isLogout = false;
-            bool tokenValid = await ValidateToken(token);
-            if (tokenValid)
-            {
-                //decode token to extract token identifier, sessoin state and email
-                IdentityEntity.AccountIDPClaim accIDPclaims = tokenManager.DecodeToken(token);
-                if (accIDPclaims != null && !string.IsNullOrEmpty(accIDPclaims.Id))
-                {
-                    //delete token by passing token identifier extracted from token
-                    int accountid = await accountTokenManager.DeleteTokenByTokenId(new Guid(accIDPclaims.Id));
-                    //check if another token are availble for same account 
-                    int tokencount = await accountTokenManager.GetTokenCount(accountid);
-                    if (tokencount == 0)
-                    {
-                        //no token belong to this session hence delete the token
-                        int sessionid = await accountSessionManager.DeleteSession(accIDPclaims.Sessionstate);
-                        //sign out account from IDP by using username
-                        IdentityEntity.Identity identity= new IdentityEntity.Identity();
-                        identity.UserName = accIDPclaims.Email;
-                        IdentityEntity.Response response=await identityAccountManager.LogOut(identity);
-                    }
-                    isLogout = true;
-                }
-            }
-            return await Task.FromResult(isLogout);
-        }
-        public async Task<bool> LogOut(int accountId)
-        {
-            bool isLogout = false;
-            if (accountId > 0)
-            {
-                await accountTokenManager.DeleteTokenbyAccountId(accountId);
-                await accountSessionManager.DeleteSessionByAccountId(accountId);
-
-                string emailid = string.Empty;
-                AccountFilter filter = new AccountFilter();
-                filter.Id = accountId;
-                IEnumerable<Account> accounts = await accountManager.Get(filter);
-                foreach (var account in accounts)
-                {
-                    emailid = account.EmailId;
-                    break;
-                }
-                if (!string.IsNullOrEmpty(emailid))
-                {   //sign out account from IDP using email
-                    IdentityEntity.Identity identity = new IdentityEntity.Identity();
-                    identity.UserName = emailid;
-                    IdentityEntity.Response response = await identityAccountManager.LogOut(identity);
-                }
-                isLogout = true;
-            }
-            return await Task.FromResult(isLogout);
         }
     }
 }

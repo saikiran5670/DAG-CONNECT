@@ -9,6 +9,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using System.Text.Json;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -87,17 +89,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                     accIdentity.AccountRole.Add(accRole);
                                 }
                             }
-                            if (response.Authenticated)
+                            if (!string.IsNullOrEmpty(response.TokenIdentifier))
                             {
-                                //var claims = new List<Claim>
-                                //{
-                                //    new Claim(ClaimTypes.Email,accIdentity.AccountInfo.EmailId)
-                                //};
-                                //var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                                //var authProperties = new AuthenticationProperties();
-                                //await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-
-                                var claims = new List<Claim>
+                                HttpContext.Session.SetString("session_id",response.TokenIdentifier);
+                                 var claims = new List<Claim>
                                 {
                                     new Claim(ClaimTypes.Email, accIdentity.AccountInfo.EmailId),
                                     new Claim(ClaimTypes.Name, accIdentity.AccountInfo.FirstName)
@@ -133,46 +128,28 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500,"Please contact system administrator. "+ ex.Message );
             }            
         }
-
-
+        
         [HttpPost]
         [Route("logout")]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return Ok(new { Message = "You are logged out" });
+            try
+            {
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                string sessionid = HttpContext.Session.GetString("session_id");
+                if (!string.IsNullOrEmpty(sessionid))
+                {
+                    AccountBusinessService.LogoutRequest request = new AccountBusinessService.LogoutRequest();
+                    request.TokenId = sessionid;
+                    await _accountClient.LogoutAsync(request);
+                }
+                return Ok(new { Message = "You are logged out" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                return StatusCode(500, "Please contact system administrator. " + ex.Message);
+            }
         }
-
-        //[HttpPost]        
-        //[Route("validate")]
-        //public async Task<IActionResult> Validate([FromBody] string token)
-        //{
-        //    try 
-        //    {
-        //        if(string.IsNullOrEmpty(token))
-        //        {
-        //            return StatusCode(401,"invalid_grant: The token is Empty.");
-        //        }
-        //        else
-        //        {
-        //            ValidateRequest request = new ValidateRequest();
-        //            request.Token=token;
-        //            ValidateResponse response = await _authClient.ValidateAsync(request);
-        //            if(response !=null && response.Code == Responsecode.Success)
-        //            {
-        //               return Ok(response.Valid); 
-        //            }
-        //            else 
-        //            {
-        //                return StatusCode(500,"Please contact system administrator");
-        //            }                    
-        //        }
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        logger.LogError(ex.Message +" " +ex.StackTrace);
-        //        return StatusCode(500,"Please contact system administrator.");
-        //    }           
-        //}
     }
 }

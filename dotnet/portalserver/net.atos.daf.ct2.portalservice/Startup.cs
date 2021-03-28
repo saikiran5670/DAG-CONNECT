@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.portalservice
             {
                 options.Cookie.Name = "Account";
                 options.Cookie.HttpOnly = true;
-                options.Cookie.SecurePolicy = options.Cookie.SecurePolicy = string.IsNullOrEmpty(isdevelopmentenv) || isdevelopmentenv.Contains("Configuration") ? CookieSecurePolicy.None : (Convert.ToBoolean(isdevelopmentenv) ? CookieSecurePolicy.Always : CookieSecurePolicy.None);
+                options.Cookie.SecurePolicy = options.Cookie.SecurePolicy = string.IsNullOrEmpty(isdevelopmentenv) || isdevelopmentenv.Contains("Configuration") ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
                 options.Cookie.SameSite = SameSiteMode.Lax;
                 options.SlidingExpiration = true;
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat) || authcookiesexpireat.Contains("Configuration") ? 5184000 : Convert.ToDouble(authcookiesexpireat));
@@ -92,6 +92,12 @@ namespace net.atos.daf.ct2.portalservice
                         return Task.CompletedTask;
                     }
                 };
+            });
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat) || authcookiesexpireat.Contains("Configuration") ? 5184000 : Convert.ToDouble(authcookiesexpireat)); ;
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+                options.Cookie.SecurePolicy= string.IsNullOrEmpty(isdevelopmentenv) || isdevelopmentenv.Contains("Configuration") ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
             });
             services.AddAuthorization(options =>
             {
@@ -226,7 +232,7 @@ namespace net.atos.daf.ct2.portalservice
                 await next();
             });
             app.UseRouting();
-
+            app.UseSession();
             //This need to be change to orgin specific on UAT and prod
             app.UseCors(builder =>
             {

@@ -52,7 +52,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                     AccountEntity.AccountIdentity response = await accountIdentityManager.Login(user);
                     if(response!=null)
                     {
-                        if(!response.Authenticated)
+                        if(string.IsNullOrEmpty(response.tokenIdentifier))
                         {
                             return StatusCode(401,"Account is not configured.");
                         }

@@ -8,8 +8,11 @@ namespace net.atos.daf.ct2.account
 {
     public interface IAccountIdentityManager
     {
-       Task<AccountIdentity> Login(Identity user);
-       Task<bool> ValidateToken(string token);
-       Task<AccountToken> GenerateToken(Identity user);
+        Task<AccountIdentity> Login(Identity user);
+        Task<bool> ValidateToken(string token);
+        Task<AccountToken> GenerateToken(Identity user);
+        Task<bool> LogoutByJwtToken(string token);
+        Task<bool> LogoutByAccountId(int accountId);
+        Task<bool> LogoutByTokenId(string tokenid);
     }
 }

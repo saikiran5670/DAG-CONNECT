@@ -103,7 +103,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         AND sessoin_expired_at < @sessoin_expired_at
                                         RETURNING Id;";//DONE (testing pending) expired at check for delete sesion
                 var parameter = new DynamicParameters();
-                parameter.Add("@id", new Guid(SessionId));
+                parameter.Add("@id", Guid.Parse(SessionId));
                 parameter.Add("@sessoin_expired_at", currentUTCFormate);
                 int Id= await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return Id;
