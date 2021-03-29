@@ -271,8 +271,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Package data is required.");
                 }
-                bool hasFeature = request.packagesToImport.Any(x => x.Features.Count >= 1);
-                if (hasFeature)
+                bool hasFeature = request.packagesToImport.Any(x => x.Features.Count == 0);
+                if (!hasFeature)
                 {
                     var packageRequest = _packageMapper.ToImportPackage(request);
                     var packageResponse = await _packageClient.ImportAsync(packageRequest);
