@@ -32,7 +32,7 @@
                                     <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                                         <mat-label>{{ translationData.lblUploadUpdatedExcelFile || 'Upload updated Excel file' }} <span class='mandatoryColor'>*</span></mat-label>
                                         <mat-form-field appearance="outline">
-                                            <ngx-mat-file-input (change)="addfile($event)" [accept]="'.xlsx'" formControlName="uploadFile" placeholder="Upload Excel File" ></ngx-mat-file-input>
+                                            <ngx-mat-file-input #removableInput (change)="addfile($event)" [accept]="'.xlsx'" formControlName="uploadFile" placeholder="Upload Excel File" ></ngx-mat-file-input>
                                             <button mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse || 'Browse' }}</button>
                                         </mat-form-field>
                                         <mat-error *ngIf="importDriverFormGroup.get('uploadFile').hasError('required')">
@@ -48,7 +48,7 @@
                                     </div>
                                     <div fxLayout="column" fxLayoutAlign="space-around" class='margin-bottom-sm'>
                                         <button style='color: #fff;' [disabled]="!importDriverFormGroup.valid || importDriverPopup || excelEmptyMsg" [ngStyle]="{'margin-top': importDriverFormGroup.get('uploadFile').hasError('required') || excelEmptyMsg ? '9px' : '29px' }" mat-flat-button color="primary"
-                                            (click)="importDrivers()">
+                                            (click)="importDrivers(removableInput)">
                                             <mat-icon>arrow_circle_up</mat-icon> {{ translationData.lblImportDrivers || 'Import Driver(s)' }}
                                         </button>
                                     </div>
