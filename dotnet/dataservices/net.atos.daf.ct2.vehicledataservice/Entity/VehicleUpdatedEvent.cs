@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace net.atos.daf.ct2.vehicledataservice.Entity
 {
     
     public class VehicleID
     {
+        [Required]
         public string VIN { get; set; }
         public string LicensePlate { get; set; }
         public string ManufactureDate { get; set; }
