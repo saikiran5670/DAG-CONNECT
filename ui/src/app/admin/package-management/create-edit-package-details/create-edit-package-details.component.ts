@@ -6,7 +6,6 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { CustomValidators } from '../../../shared/custom.validators';
 import { PackageService } from 'src/app/services/package.service';
-import { features } from 'process';
 
 @Component({
   selector: 'app-create-edit-package-details',
@@ -18,7 +17,6 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   @Input() translationData: any;
   @Input() selectedElementData: any;
   @Input() createStatus: boolean;
-  @Input() duplicateFlag: boolean;
   @Input() viewFlag: boolean;
   @Output() createViewEditPackageEmit = new EventEmitter<object>();
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -28,14 +26,16 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   dataSource: any;
   packageFormGroup: FormGroup;
   initData: any = [];
+  updatedData: any = [];
   featuresSelected = [];
   selectionForFeatures = new SelectionModel(true, []);
   selectedType: any = 'O';
-  selectedStatus: any = 'active';
+  selectedStatus: any = 'Active';
   featuresData = [];
   organizationId: number;
   userCreatedMsg: any = '';
   userName: string = '';
+  duplicateMsg: boolean = false;
   TypeList: any = [
     {
       name: 'Organization',
@@ -56,11 +56,11 @@ export class CreateEditPackageDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.packageFormGroup = this._formBuilder.group({
-      code: ['', [ CustomValidators.noWhitespaceValidator]],
+      code: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc ]],
       description: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
       status: ['', [CustomValidators.numberValidationForName]],
-      type: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
-      name: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
+      type: ['', [ Validators.required]],
+      name: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc]]
     });
     this.breadcumMsg = this.getBreadcum(this.actionType);
     if(this.actionType == 'view' || this.actionType == 'edit' ){
@@ -74,7 +74,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
         this.dataSource = new MatTableDataSource(data);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-        if(!this.createStatus || this.duplicateFlag || this.viewFlag){
+        if(!this.createStatus || this.duplicateMsg || this.viewFlag){
           this.onReset();
         }
       });
@@ -131,8 +131,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
 
   onCancel(){
     let emitObj = {
-      stepFlag: false,
-      msg: ""
+      stepFlag: false
     }    
     this.createViewEditPackageEmit.emit(emitObj); 
   }
@@ -157,14 +156,20 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     if(this.actionType == 'create'){
       this.packageService.createPackage(createPackageParams).subscribe((res) => {
         this.packageService.getPackages().subscribe((getData) => {
+        this.updatedData = getData["pacakageList"];
         this.userCreatedMsg = this.getUserCreatedMessage();
         let emitObj = {
           stepFlag: false,
           successMsg: this.userCreatedMsg,
-          tableData: getData,
+          tableData: this.updatedData,
         }    
         this.createViewEditPackageEmit.emit(emitObj); 
     });
+  },(err) => {
+    //console.log(err);
+    if (err.status == 409) {
+      this.duplicateMsg = true;
+    }
   })
   }
   else if(this.actionType == 'edit'){
@@ -181,11 +186,12 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     }
     this.packageService.updatePackage(updatePackageParams).subscribe((data) => {
       this.packageService.getPackages().subscribe((getData) => {
+      this.updatedData = getData["pacakageList"];
       this.userCreatedMsg = this.getUserCreatedMessage();
       let emitObj = {
         stepFlag: false,
         successMsg: this.userCreatedMsg,
-        tableData: getData,
+        tableData: this.updatedData,
       }    
       this.createViewEditPackageEmit.emit(emitObj); 
       });
@@ -248,46 +254,5 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       return `${this.selectionForFeatures.isSelected(row) ? 'deselect' : 'select'} row`;
   }
 
-  // onCheckboxChange(event: any, row: any){
-  //   if(event.checked){  
-  //     if(row.featureName.includes(" _fullAccess")){
-  //       this.dataSource.data.forEach(item => {
-  //         if(item.featureName.includes(row.featureName.split(" _")[0])){
-  //           this.selectionForFeatures.select(item);
-  //         }
-  //       })
-  //     }
-  //     else if(row.featureName.includes(" _create") || row.featureName.includes(" _edit") || row.featureName.includes(" _delete") ){
-  //       this.dataSource.data.forEach(item => {
-  //         if(item.featureName.includes(row.featureName.split(" _")[0]+" _view")){
-  //           this.selectionForFeatures.select(item);
-  //         }
-  //       })
-  //     }
-  //   }
-  //   else {
-  //     if(row.featureName.includes(" _fullAccess")){
-  //       this.dataSource.data.forEach(item => {
-  //         if(item.featureName.includes(row.featureName.split(" _")[0])){
-  //           this.selectionForFeatures.deselect(item);
-  //         }
-  //       })
-  //     }
-  //     else if(row.featureName.includes(" _view")){
-  //       this.dataSource.data.forEach(item => {
-  //         if(item.featureName.includes(row.featureName.split(" _")[0])){
-  //           this.selectionForFeatures.deselect(item);
-  //         }
-  //       })
-  //     }
-  //     else if(!row.featureName.includes(" _fullAccess")){
-  //       this.dataSource.data.forEach(item => {
-  //         if(item.featureName.includes(row.featureName.split(" _")[0]+" _fullAccess")){
-  //           this.selectionForFeatures.deselect(item);
-  //         }
-  //       })
-  //     }
-  //   }
-  // }
 }
   

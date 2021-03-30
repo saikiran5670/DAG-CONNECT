@@ -17,12 +17,14 @@ namespace net.atos.daf.ct2.account
         Task<Account> GetAccountByAccountId(int accountId);
         Task<int> GetCount(int organization_id);
         Task<Account> AddAccountToOrg(Account account);
+        Task<int> UpsertPasswordModifiedDate(int accountId, long modifiedAt);
+        Task<long?> GetPasswordModifiedDate(int accountId);
         Task<AccountBlob> CreateBlob(AccountBlob accountBlob);
         Task<AccountBlob> GetBlob(int blobId);
-        Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter);    
+        Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter);
         Task<AccessRelationship> CreateAccessRelationship(AccessRelationship entity);
         Task<AccessRelationship> UpdateAccessRelationship(AccessRelationship entity);
-        Task<bool> DeleteAccessRelationship(int accountGroupId,int vehicleGroupId);
+        Task<bool> DeleteAccessRelationship(int accountGroupId, int vehicleGroupId);
         Task<List<AccountVehicleAccessRelationship>> GetAccountVehicleAccessRelationship(AccountVehicleAccessRelationshipFilter filter, bool is_vehicleGroup);
         Task<List<AccountVehicleEntity>> GetVehicle(AccountVehicleAccessRelationshipFilter filter, bool is_vehicle);
         Task<List<AccountVehicleEntity>> GetAccount(AccountVehicleAccessRelationshipFilter filter, bool is_account);
@@ -41,4 +43,3 @@ namespace net.atos.daf.ct2.account
         Task<bool> CheckForFeatureAccessByEmailId(string emailId, string featureName);
     }
 }
-  

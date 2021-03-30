@@ -71,6 +71,7 @@ export class NewUserStepComponent implements OnInit {
   linkFlag: boolean = false;
   linkAccountId: any = 0;
   imageError= '';
+  croppedImageTemp= '';
   @Input() privilegeAccess: any;
 
   myFilter = (d: Date | null): boolean => {
@@ -152,16 +153,16 @@ export class NewUserStepComponent implements OnInit {
       this.firstFormGroup.get('timeFormat').setValue(prefObj.timeFormatId);
       this.firstFormGroup.get('landingPage').setValue(prefObj.landingPageDisplayId);
     }
-    // else{
-    //   this.firstFormGroup.get('language').setValue(24);
-    //   this.firstFormGroup.get('timeZone').setValue(17);
-    //   this.firstFormGroup.get('unit').setValue(5);
-    //   this.firstFormGroup.get('currency').setValue(4);
-    //   this.firstFormGroup.get('dateFormat').setValue(6);
-    //   this.firstFormGroup.get('vehDisplay').setValue(5);
-    //   this.firstFormGroup.get('timeFormat').setValue(3);
-    //   this.firstFormGroup.get('landingPage').setValue(2); 
-    // }
+    else{ //-- Set default setting
+      this.firstFormGroup.get('language').setValue(this.defaultSetting.languageDropdownData[0].id);
+      this.firstFormGroup.get('timeZone').setValue(this.defaultSetting.timezoneDropdownData[0].id);
+      this.firstFormGroup.get('unit').setValue(this.defaultSetting.unitDropdownData[0].id);
+      this.firstFormGroup.get('currency').setValue(this.defaultSetting.currencyDropdownData[0].id);
+      this.firstFormGroup.get('dateFormat').setValue(this.defaultSetting.dateFormatDropdownData[0].id);
+      this.firstFormGroup.get('vehDisplay').setValue(this.defaultSetting.vehicleDisplayDropdownData[0].id);
+      this.firstFormGroup.get('timeFormat').setValue(this.defaultSetting.timeFormatDropdownData[0].id);
+      this.firstFormGroup.get('landingPage').setValue(this.defaultSetting.landingPageDisplayDropdownData[0].id);
+    }
    }
 
   onClose(){
@@ -191,7 +192,6 @@ export class NewUserStepComponent implements OnInit {
         salutation: this.firstFormGroup.controls.salutation.value,
         firstName: this.firstFormGroup.controls.firstName.value,
         lastName: this.firstFormGroup.controls.lastName.value,
-        password: "",
         organizationId: this.accountOrganizationId,
         driverId: ""
       }
@@ -201,14 +201,14 @@ export class NewUserStepComponent implements OnInit {
         let preferenceObj = {
           id: 0,
           refId: this.userData.id,
-          languageId: this.firstFormGroup.controls.language.value != '' ? this.firstFormGroup.controls.language.value : 24,
-          timezoneId: this.firstFormGroup.controls.timeZone.value != '' ?  this.firstFormGroup.controls.timeZone.value : 17,
-          unitId: this.firstFormGroup.controls.unit.value != '' ?  this.firstFormGroup.controls.unit.value : 5,
-          currencyId: this.firstFormGroup.controls.currency.value != '' ?  this.firstFormGroup.controls.currency.value : 4,
-          dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value != '' ?  this.firstFormGroup.controls.dateFormat.value : 6,
-          timeFormatId: this.firstFormGroup.controls.timeFormat.value != '' ?  this.firstFormGroup.controls.timeFormat.value : 3,
-          vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : 5,
-          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : 2
+          languageId: this.firstFormGroup.controls.language.value != '' ? this.firstFormGroup.controls.language.value : this.defaultSetting.languageDropdownData[0].id,
+          timezoneId: this.firstFormGroup.controls.timeZone.value != '' ?  this.firstFormGroup.controls.timeZone.value : this.defaultSetting.timezoneDropdownData[0].id,
+          unitId: this.firstFormGroup.controls.unit.value != '' ?  this.firstFormGroup.controls.unit.value : this.defaultSetting.unitDropdownData[0].id,
+          currencyId: this.firstFormGroup.controls.currency.value != '' ?  this.firstFormGroup.controls.currency.value : this.defaultSetting.currencyDropdownData[0].id,
+          dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value != '' ?  this.firstFormGroup.controls.dateFormat.value : this.defaultSetting.dateFormatDropdownData[0].id,
+          timeFormatId: this.firstFormGroup.controls.timeFormat.value != '' ?  this.firstFormGroup.controls.timeFormat.value : this.defaultSetting.timeFormatDropdownData[0].id,
+          vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : this.defaultSetting.vehicleDisplayDropdownData[0].id,
+          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : this.defaultSetting.landingPageDisplayDropdownData[0].id
         }
         
         this.accountService.createPreference(preferenceObj).subscribe(()=>{
@@ -497,10 +497,14 @@ export class NewUserStepComponent implements OnInit {
     this.isAccountPictureSelected = false;
     this.imageChangedEvent = '';
     this.croppedImage = '';
+    this.croppedImageTemp= '';
   }
 
   imageCropped(event: ImageCroppedEvent) {
     this.croppedImage = event.base64;
+    if(this.croppedImageTemp == ''){
+      this.croppedImageTemp = this.croppedImage;
+    }
   }
 
   imageLoaded() {
@@ -518,6 +522,7 @@ export class NewUserStepComponent implements OnInit {
   onSelectPictureConfirm(){
     this.isSelectPictureConfirm = true;
     this.isAccountPictureSelected = false;
+    this.croppedImageTemp= '';
     //TODO : send cropped image to backend 
   }
 
@@ -593,21 +598,20 @@ export class NewUserStepComponent implements OnInit {
         lastName: this.firstFormGroup.controls.lastName.value,
         type: (this.privilegeAccess) ? this.firstFormGroup.controls.userType.value : this.userTypeList[0].value, // privilege check
         organizationId: this.accountOrganizationId,
-        driverId: "",
-        password: "",
+        driverId: ""
       }
       this.accountService.updateAccount(infoObj).subscribe((data)=>{
         let prefObj: any = {
           id: 0,
           refId: this.linkAccountId, //-- link account id
-          languageId: this.firstFormGroup.controls.language.value ? this.firstFormGroup.controls.language.value : 24,
-          timezoneId: this.firstFormGroup.controls.timeZone.value ? this.firstFormGroup.controls.timeZone.value : 17,
-          unitId: this.firstFormGroup.controls.unit.value ? this.firstFormGroup.controls.unit.value : 5,
-          currencyId: this.firstFormGroup.controls.currency.value ? this.firstFormGroup.controls.currency.value : 4,
-          dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value ? this.firstFormGroup.controls.dateFormat.value : 6,
-          timeFormatId: this.firstFormGroup.controls.timeFormat.value ? this.firstFormGroup.controls.timeFormat.value : 3,
-          vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value ? this.firstFormGroup.controls.vehDisplay.value : 5,
-          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value ? this.firstFormGroup.controls.landingPage.value : 2
+          languageId: this.firstFormGroup.controls.language.value ? this.firstFormGroup.controls.language.value : this.defaultSetting.languageDropdownData[0].id,
+          timezoneId: this.firstFormGroup.controls.timeZone.value ? this.firstFormGroup.controls.timeZone.value : this.defaultSetting.timezoneDropdownData[0].id,
+          unitId: this.firstFormGroup.controls.unit.value ? this.firstFormGroup.controls.unit.value : this.defaultSetting.unitDropdownData[0].id,
+          currencyId: this.firstFormGroup.controls.currency.value ? this.firstFormGroup.controls.currency.value : this.defaultSetting.currencyDropdownData[0].id,
+          dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value ? this.firstFormGroup.controls.dateFormat.value : this.defaultSetting.dateFormatDropdownData[0].id,
+          timeFormatId: this.firstFormGroup.controls.timeFormat.value ? this.firstFormGroup.controls.timeFormat.value : this.defaultSetting.timeFormatDropdownData[0].id,
+          vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value ? this.firstFormGroup.controls.vehDisplay.value : this.defaultSetting.vehicleDisplayDropdownData[0].id,
+          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value ? this.firstFormGroup.controls.landingPage.value : this.defaultSetting.landingPageDisplayDropdownData[0].id
         }
         this.accountService.updateAccountPreference(prefObj).subscribe((data) => {
           if(linkStatus){

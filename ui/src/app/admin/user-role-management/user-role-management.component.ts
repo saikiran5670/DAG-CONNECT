@@ -182,7 +182,7 @@ export class UserRoleManagementComponent implements OnInit {
 
   deleteUserRole(row: any) {
     const options = {
-      title: this.translationData.lblDeleteAccount || 'Delete Account',
+      title: this.translationData.lblDeleteRole || 'Delete Role',
       message: this.translationData.lblAreyousureyouwanttodeleterole || "Are you sure you want to delete '$' role?",
       cancelText: this.translationData.lblNo || 'No',
       confirmText: this.translationData.lblYes || 'Yes'

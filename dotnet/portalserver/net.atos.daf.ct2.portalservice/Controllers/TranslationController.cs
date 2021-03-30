@@ -8,6 +8,8 @@ using net.atos.daf.ct2.utilities;
 using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.translationservice;
 using net.atos.daf.ct2.portalservice.Entity.Translation;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Audit;
 
@@ -15,6 +17,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [Route("translation")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class TranslationController : ControllerBase
     {
         private readonly ILogger<TranslationController> _logger;
@@ -33,7 +36,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _Audit = auditHelper;
         }
 
-
+        [AllowAnonymous]
         [HttpPost]
         [Route("menutranslations")]
         public async Task<IActionResult> GetTranslations(TranslationsRequest request)
@@ -281,7 +284,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, "Internal Server Error.");
             }
         }
-
+        
+        [AllowAnonymous]
         [HttpGet]
         [Route("languagecodes")]
         public async Task<IActionResult> GetAllLanguagecodes([FromQuery] Request request)

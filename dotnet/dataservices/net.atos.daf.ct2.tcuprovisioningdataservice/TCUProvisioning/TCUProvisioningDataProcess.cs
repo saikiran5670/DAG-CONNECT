@@ -30,6 +30,11 @@ namespace TCUProvisioning
         private  IAuditTraillib _auditlog;
         private  IConfiguration config = null;
 
+        private string access_url;
+        private string grant_type ;
+        private string client_id ;
+        private string client_secret;
+
         public TCUProvisioningDataProcess(ILog log, IAuditTraillib auditlog, IConfiguration config)
         {
             this.log = log;
@@ -41,7 +46,12 @@ namespace TCUProvisioning
             topic = config.GetSection("EH_NAME").Value;
             cacertlocation = config.GetSection("CA_CERT_LOCATION").Value;
             dafurl = config.GetSection("DAFURL").Value;
+            access_url = config.GetSection("ACCESS_TOKEN_URL").Value;
+            grant_type = config.GetSection("GRANT_TYPE").Value;
+            client_id = config.GetSection("CLIENT_ID").Value;
+            client_secret = config.GetSection("CLIENT_SECRET").Value;
         }
+              
 
         public async Task readTCUProvisioningDataAsync()
         {
@@ -121,13 +131,31 @@ namespace TCUProvisioning
             return config;
         }
 
-        private  HttpClient GetHttpClient()
+        private  async Task<HttpClient> GetHttpClient()
         {
             var client = new HttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var token = await GetElibilityToken(client);
+            client.DefaultRequestHeaders.Authorization =  new AuthenticationHeaderValue("Bearer", token.AccessToken);
             return client;
 
+        }
+
+        private async Task<Token> GetElibilityToken(HttpClient client)
+        {   
+            var form = new Dictionary<string, string>
+                {
+                    {"grant_type", grant_type},
+                    {"client_id", client_id},
+                    {"client_secret", client_secret},
+                };
+
+            HttpResponseMessage tokenResponse = await client.PostAsync(access_url, new FormUrlEncodedContent(form));
+            var jsonContent = await tokenResponse.Content.ReadAsStringAsync();
+            Token tok = JsonConvert.DeserializeObject<Token>(jsonContent);
+            return tok;
         }
 
         private async Task postTCUProvisioningMesssageToDAF(TCUDataSend TCUDataSend)
@@ -137,7 +165,7 @@ namespace TCUProvisioning
             string TCUDataSendJson = JsonConvert.SerializeObject(TCUDataSend);
             try
             {
-                var client = GetHttpClient();
+                var client = await GetHttpClient();
                 var data = new StringContent(TCUDataSendJson, Encoding.UTF8, "application/json");
                 HttpResponseMessage response = new HttpResponseMessage();
                 response.StatusCode = HttpStatusCode.BadRequest;
@@ -171,7 +199,22 @@ namespace TCUProvisioning
                 log.Error(ex.Message);
                 
             }
-        }
+        }         
+        
+    }
 
+    internal class Token
+    {
+        [JsonProperty("access_token")]
+        public string AccessToken { get; set; }
+
+        [JsonProperty("token_type")]
+        public string TokenType { get; set; }
+
+        [JsonProperty("expires_in")]
+        public int ExpiresIn { get; set; }
+
+        [JsonProperty("refresh_token")]
+        public string RefreshToken { get; set; }
     }
 }

@@ -21,19 +21,19 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 
 	/** SQL statement for insert. */
 	private static final String READ_CURRENT_TRIP = "SELECT * FROM livefleet.livefleet_current_trip_statistics WHERE trip_id = ? ORDER BY created_at_m2m ASC limit 1";
-	private static final String INSERT_CURRENT_TRIP = "INSERT INTO livefleet.livefleet_current_trip_statistics ( trip_id   , vin        ,start_time_stamp          ,end_time_stamp                ,driver1_id          ,start_position_lattitude              ,start_position_longitude             ,start_position                ,last_received_position_lattitude             , last_received_position_longitude  ,last_known_position                ,vehicle_status ,driver1_status ,vehicle_health_status  ,last_odometer_val ,distance_until_next_service ,last_processed_message_time_stamp ,driver2_id ,driver2_status ,created_at_m2m ,created_at_kafka ,created_at_dm_ ,modified_at, fuel_consumption) VALUES (? ,?         ,?            ,?            ,?            ,?            ,?            ,?            ,?            ,?            ,?                ,?            ,?            ,? ,? ,?   ,?            ,?            ,?            ,?            ,?            ,?            ,?     ,?       )";
+	private static final String INSERT_CURRENT_TRIP = "INSERT INTO livefleet.livefleet_current_trip_statistics ( trip_id   , vin        ,start_time_stamp          ,end_time_stamp                ,driver1_id          ,start_position_lattitude              ,start_position_longitude             ,start_position                ,last_received_position_lattitude             , last_received_position_longitude  ,last_known_position                ,vehicle_status ,driver1_status ,vehicle_health_status  ,last_odometer_val ,distance_until_next_service ,last_processed_message_time_stamp ,driver2_id ,driver2_status ,created_at_m2m ,created_at_kafka ,created_at_dm_ ,modified_at, fuel_consumption ) VALUES (? ,?         ,?            ,?            ,?            ,?            ,?            ,?            ,?            ,?            ,?                ,?            ,?            ,? ,? ,?   ,?            ,?            ,?            ,?            ,?            ,?            ,?  ,?  )";
 
-	public void insert(Index row, Integer distance_until_next_service) throws TechnicalException, SQLException {
+	public void insert(Index row, int distance_until_next_service) throws TechnicalException, SQLException {
 		PreparedStatement stmt_insert_current_trip = null;
 		try {
 
 			if (null != row && null != (connection = getConnection())) {
 				stmt_insert_current_trip = connection.prepareStatement(INSERT_CURRENT_TRIP);
-				stmt_insert_current_trip = fillStatement(stmt_insert_current_trip, row ,distance_until_next_service);
+				stmt_insert_current_trip = fillStatement(stmt_insert_current_trip, row);
 				stmt_insert_current_trip.addBatch();
-				System.out.println("before current trip execute batch ");
+				System.out.println("before LiveFleet Current TRip Statstics execute batch ");
 				stmt_insert_current_trip.executeBatch();
-				System.out.println("after executeBatch Current Trip");
+				System.out.println("after executeBatch LiveFleet Current TRip Statstics Trip");
 			}
 		} catch (SQLException e) {
 			System.out.println("in catch of LiveFleet Current TRip Statstics");
@@ -41,21 +41,22 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 		}
 	}
 
-	private PreparedStatement fillStatement(PreparedStatement stmt_insert_current_trip, Index row,Integer distance_until_next_service)
+	private PreparedStatement fillStatement(PreparedStatement stmt_insert_current_trip, Index row)
 			throws SQLException {
 
 		long start_time_stamp = 0;
 		// long end_time_stamp = 0;
 		double start_position_lattitude = 0;
 		double start_position_longitude = 0;
-		
+		int distance_until_next_service = 0;
+		System.out.println("Inside current trip fillStatement");
 		String varTripID = row.getDocument().getTripID();
 		int varVEvtid = row.getVEvtID();
 
 		if (varTripID != null) {
 			stmt_insert_current_trip.setString(1, row.getDocument().getTripID()); // 1
 																					// tripID
-			System.out.println("trip id " + row.getDocument().getTripID());
+			System.out.println(" Current trip id " + row.getDocument().getTripID());
 		}
 
 		else {
@@ -153,7 +154,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 			stmt_insert_current_trip.setInt(15, odometer_val);
 		}
 
-		stmt_insert_current_trip.setInt(16, distance_until_next_service.intValue()); // distance_until_next_service
+		stmt_insert_current_trip.setInt(16, distance_until_next_service); // distance_until_next_service
 
 		stmt_insert_current_trip.setLong(17, row.getReceivedTimestamp()); // 17
 																			// last_processed_message_time
@@ -177,14 +178,15 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 
 		stmt_insert_current_trip.setLong(23, row.getReceivedTimestamp()); // 23
 																			// modified_at
+		stmt_insert_current_trip.setLong(24, row.getVUsedFuel()); // 24 Fuel_consumption
+		//stmt_insert_current_trip.setLong(24, 100);
 		
-		stmt_insert_current_trip.setLong(24, row.getVUsedFuel()); // 24 vusedFuel
-
 		return stmt_insert_current_trip;
 
 	}
 
-	public CurrentTrip read(String tripId) throws TechnicalException, SQLException {
+	public CurrentTrip read(String tripId, int num) throws TechnicalException, SQLException {
+		System.out.println("first sysout " +tripId +"  "+num );
 		PreparedStatement stmt_read_current_trip = null;
 		ResultSet rs_trip = null;
 		long trip_Start_time = 0;
@@ -204,18 +206,38 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 
 				rs_trip = stmt_read_current_trip.executeQuery();
 
-				while (rs_trip.next()) {
+				
+				//while (rs_trip.next()) {
+				if (num == 1) {
+					
+					while (rs_trip.first()) {
 
-					currentTripdata.setStart_time_stamp(rs_trip.getLong("start_time_stamp"));
+						currentTripdata.setStart_time_stamp(rs_trip.getLong("start_time_stamp"));
 
-					currentTripdata.setEnd_time_stamp(rs_trip.getLong("end_time_stamp"));
+						currentTripdata.setEnd_time_stamp(rs_trip.getLong("end_time_stamp"));
 
-					currentTripdata.setStart_position_lattitude(rs_trip.getDouble("start_position_lattitude"));
+						currentTripdata.setStart_position_lattitude(rs_trip.getDouble("start_position_lattitude"));
 
-					currentTripdata.setStart_position_longitude(rs_trip.getDouble("start_position_longitude"));
+						currentTripdata.setStart_position_longitude(rs_trip.getDouble("start_position_longitude"));
 
-					System.out.println("inside query , result set data" + start_time_stamp);
+						System.out.println("inside query , result set data" + start_time_stamp);
+					}
+					
+				} else if (num == 2) {
+					
+					System.out.println("in num 2 of DAO");
+					
+					while (rs_trip.last()) {
+						currentTripdata.setFuel_consumption(rs_trip.getLong("fuel_consumption"));
+						System.out.println("fuel_consumption in DAO -- " + rs_trip.getLong("fuel_consumption") );
+						
+					}
+					
+					
+					
 				}
+				
+				
 				rs_trip.close();
 
 			}

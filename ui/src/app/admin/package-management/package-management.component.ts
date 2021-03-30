@@ -107,11 +107,31 @@ export class PackageManagementComponent implements OnInit {
   }
 
   updatedTableData(tableData : any) {
-    this.dataSource = new MatTableDataSource(this.initData);
+    tableData = this.getNewTagData(tableData);
+    this.dataSource = new MatTableDataSource(tableData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
+  }
+
+  getNewTagData(data: any){
+    let currentDate = new Date().getTime();
+    data.forEach(row => {
+      let createdDate = parseInt(row.createdAt); 
+      let nextDate = createdDate + 86400000;
+      if(currentDate > createdDate && currentDate < nextDate){
+        row.newTag = true;
+      }
+      else{
+        row.newTag = false;
+      }
+    });
+    let newTrueData = data.filter(item => item.newTag == true);
+    newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
+    let newFalseData = data.filter(item => item.newTag == false);
+    Array.prototype.push.apply(newTrueData, newFalseData); 
+    return newTrueData;
   }
 
   createNewPackage(){
@@ -184,7 +204,7 @@ export class PackageManagementComponent implements OnInit {
     if(this.translationData.lblPackagewassuccessfullydeleted)
       return this.translationData.lblPackagewassuccessfullydeleted.replace('$', PackageName);
     else
-      return ("Feature Relationship '$' was successfully deleted").replace('$', PackageName);
+      return ("Package '$' was successfully deleted").replace('$', PackageName);
   }
 
   successMsgBlink(msg: any){

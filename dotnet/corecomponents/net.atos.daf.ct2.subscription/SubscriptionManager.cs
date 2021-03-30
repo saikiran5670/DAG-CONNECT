@@ -26,31 +26,6 @@ namespace net.atos.daf.ct2.subscription
             return await subscriptionRepository.Unsubscribe(objUnSubscription);
         }
 
-        public async Task<Subscription> Create(Subscription subscription)
-        {
-            return await subscriptionRepository.Create(subscription);
-        }
-
-        public async Task<Subscription> Update(Subscription subscription)
-        {
-            return await subscriptionRepository.Update(subscription);
-        }
-
-        //public async Task<Subscription> Get(int subscriptionId)
-        //{
-        //    return await subscriptionRepository.Get(subscriptionId);
-        //}
-
-        public async Task<Subscription> Get(int organizationId, int vehicleId, char status, DateTime StartDate, DateTime EndDate)
-        {
-            return await subscriptionRepository.Get(organizationId, vehicleId, status, StartDate, EndDate);
-        }
-
-        public async Task<Subscription> Get(char status, int vehicleGroupID, int vehicleId, DateTime StartDate, DateTime EndDate)
-        {
-            return await subscriptionRepository.Get(status, vehicleGroupID, vehicleId, StartDate, EndDate);
-        }
-
         public async Task<SubscriptionResponse> Create(int orgId, int packageId)
         {
             return await subscriptionRepository.Create(orgId, packageId);

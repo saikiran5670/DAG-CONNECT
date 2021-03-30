@@ -79,7 +79,7 @@ namespace net.atos.daf.ct2.package.repository
                     parameter.Add("@description", package.Description);
                     parameter.Add("@is_active", package.IsActive);
                     parameter.Add("@status", Convert.ToChar(package.Status));
-                 //   parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    //   parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                     string query = @"update master.package set packagecode=@packagecode, 
                                                            feature_set_id=@feature_set_id,
                                                            name=@name,
@@ -200,12 +200,6 @@ namespace net.atos.daf.ct2.package.repository
                         parameter.Add("@packagecode", filter.Code.ToLower());
                         query = query + " and LOWER(pkg.packagecode) = @packagecode ";
                     }
-                    // package name filter
-                    if (!string.IsNullOrEmpty(filter.Name))
-                    {
-                        parameter.Add("@name", "%" + filter.Name + "%");
-                        query = query + " and LOWER(pkg.name) like @name ";
-                    }
                     // feature set id filter
                     if (filter.FeatureSetId > 0)
                     {
@@ -264,18 +258,18 @@ namespace net.atos.daf.ct2.package.repository
         }
         public async Task<Package> UpdatePackageStatus(Package package)
         {
-            
+
             try
             {
-               
-                    var parameter = new DynamicParameters();
-                    parameter.Add("@Id", package.Id);                   
-                    parameter.Add("@status", Convert.ToChar(package.Status));  
-                
-                    string query = @"update master.package set  status=@status                                                          
+
+                var parameter = new DynamicParameters();
+                parameter.Add("@Id", package.Id);
+                parameter.Add("@status", Convert.ToChar(package.Status));
+
+                string query = @"update master.package set  status=@status                                                          
                                                            where id = @Id RETURNING id";
-                    package.Id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
-               
+                package.Id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+
             }
             catch (Exception ex)
             {

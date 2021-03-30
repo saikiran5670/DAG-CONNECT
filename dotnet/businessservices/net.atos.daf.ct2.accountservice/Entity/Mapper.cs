@@ -14,15 +14,11 @@ namespace net.atos.daf.ct2.accountservice
         {
             AccountRequest request = new AccountRequest();
 
-            request.Id = account.Id;
-            if(!string.IsNullOrEmpty(account.EmailId))
-            request.EmailId = account.EmailId;
-            if (!string.IsNullOrEmpty(account.Salutation))
-                request.Salutation = account.Salutation;
-            if (!string.IsNullOrEmpty(account.FirstName))
-                request.FirstName = account.FirstName;
-            if (!string.IsNullOrEmpty(account.LastName))
-                request.LastName = account.LastName;
+            request.Id = account.Id;            
+            request.EmailId = account.EmailId;            
+            request.Salutation = account.Salutation;            
+            request.FirstName = account.FirstName;
+            request.LastName = account.LastName ?? string.Empty;
             request.OrganizationId = account.Organization_Id;
             if (account.PreferenceId.HasValue)
                 request.PreferenceId = account.PreferenceId.Value;
@@ -37,6 +33,7 @@ namespace net.atos.daf.ct2.accountservice
             {
                 request.Type = Convert.ToString((char)AccountComponent.ENUM.AccountType.SystemAccount);
             }
+            if(account.CreatedAt.HasValue)
             request.CreatedAt = (long)account.CreatedAt.Value;
             return request;
         }
@@ -65,7 +62,6 @@ namespace net.atos.daf.ct2.accountservice
             account.Salutation = request.Salutation;
             account.FirstName = request.FirstName;
             account.LastName = request.LastName;
-            account.Password = request.Password;
             account.Organization_Id = request.OrganizationId;
             account.DriverId = request.DriverId;
             if (request.StartDate > 0) account.StartDate = request.StartDate;
@@ -112,13 +108,13 @@ namespace net.atos.daf.ct2.accountservice
             response.EmailId = account.EmailId;
             response.Salutation = account.Salutation;
             response.FirstName = account.FirstName;
-            response.LastName = account.LastName;
+            response.LastName = account.LastName ?? string.Empty;
             response.OrganizationId = account.Organization_Id;
             if (account.PreferenceId.HasValue)
                 response.PreferenceId = account.PreferenceId.Value;
             if (account.BlobId.HasValue)
                 response.BlobId = account.BlobId.Value;
-            if (!string.IsNullOrEmpty(account.DriverId)) response.DriverId = account.DriverId;
+            response.DriverId = account.DriverId ?? string.Empty;
             if (account.AccountType == AccountComponent.ENUM.AccountType.PortalAccount)
             {
                 response.Type = Convert.ToString((char)AccountComponent.ENUM.AccountType.PortalAccount);
@@ -127,7 +123,9 @@ namespace net.atos.daf.ct2.accountservice
             {
                 response.Type = Convert.ToString((char)AccountComponent.ENUM.AccountType.SystemAccount);
             }
+            if(account.CreatedAt.HasValue)
             response.CreatedAt = (long)account.CreatedAt.Value;
+            
             return response;
         }
         public accountpreference.AccountPreference ToPreference(AccountPreference request)

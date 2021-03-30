@@ -85,7 +85,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                                        ,oem_id
                                        ,oem_organisation_id
                                        ,opt_in
-                                       ,is_ota) 
+                                       ,is_ota
+                                       ,fuel_type) 
                             	VALUES(
                                        @organization_id 
                                       ,@name
@@ -109,6 +110,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                       ,@oem_organisation_id
                                       ,@opt_in
                                       ,@is_ota
+                                      ,@fuel_type
                                       ) RETURNING id";
 
 
@@ -142,6 +144,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@oem_organisation_id", vehicle.Oem_Organisation_id);
                 parameter.Add("@opt_in", (char)vehicle.Opt_In);
                 parameter.Add("@is_ota", vehicle.Is_Ota);
+                parameter.Add("@fuel_type", vehicle.Fuel);
                 parameter.Add("@id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
 
                 int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
@@ -855,6 +858,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 objVeh.ModelId = vehicleproperty.Classification_Model_Id;
                 objVeh.License_Plate_Number = vehicleproperty.License_Plate_Number;
                 objVeh.VehiclePropertiesId = VehiclePropertiesId;
+                objVeh.Fuel = vehicleproperty.Fuel;
                 //dynamic oiedetail = await GetOEM_Id(vehicleproperty.VIN);
                 //if (oiedetail != null)
                 //{
@@ -1018,7 +1022,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 if (VehiclePropertiesId > 0 && vehicleId > 0)
                 {
                     await CheckUnknownOEM(objVeh.VIN);
-                    await dataAccess.ExecuteAsync("UPDATE master.vehicle SET model_id = @model_id , license_plate_number = @license_plate_number, modified_at=@modified_at WHERE vin = @vin", new { model_id = objVeh.ModelId, license_plate_number = objVeh.License_Plate_Number, vin = objVeh.VIN, modified_at = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) });
+                    await dataAccess.ExecuteAsync("UPDATE master.vehicle SET model_id = @model_id , license_plate_number = @license_plate_number, fuel_type=@fuel_type , modified_at=@modified_at WHERE vin = @vin", new { model_id = objVeh.ModelId, license_plate_number = objVeh.License_Plate_Number, fuel_type=objVeh.Fuel, vin = objVeh.VIN, modified_at = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) });
                     vehicleproperty.ID = await dataAccess.ExecuteScalarAsync<int>(UpdateQueryStatement, parameter);
                     objVeh.ID = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vehicle_property_id=@id), 0)", new { id = vehicleproperty.ID });
                     vehicleproperty.VehicleId = objVeh.ID;
@@ -1034,16 +1038,22 @@ namespace net.atos.daf.ct2.vehicle.repository
                     objVeh.ID = vehicleId;
                     vehicleproperty.VehicleId = vehicleId;
                     vehicleproperty.ID = await dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, parameter);
-                    await dataAccess.ExecuteAsync("UPDATE master.vehicle SET vehicle_property_id = @vehicle_property_id, modified_at=@modified_at WHERE id = @id", new { vehicle_property_id = vehicleproperty.ID, id = objVeh.ID, modified_at = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) });
+                    await dataAccess.ExecuteAsync("UPDATE master.vehicle SET vehicle_property_id = @vehicle_property_id, model_id = @model_id , license_plate_number = @license_plate_number, fuel_type=@fuel_type , modified_at=@modified_at WHERE id = @id", new { vehicle_property_id = vehicleproperty.ID, id = objVeh.ID, model_id = objVeh.ModelId, license_plate_number = objVeh.License_Plate_Number, fuel_type = objVeh.Fuel, modified_at = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) });
 
                 }
 
                 if (objVeh.ID > 0)
                 {
-                    //Create axelproperties                
-                    await CreateVehicleAxelInformation(vehicleproperty.VehicleAxelInformation, objVeh.ID);
-                    //Create Fuel Tank Properties
-                    await CreateVehicleFuelTank(vehicleproperty.VehicleFuelTankProperties, objVeh.ID);
+                    if (vehicleproperty.VehicleAxelInformation != null)
+                    {
+                        //Create axelproperties                
+                        await CreateVehicleAxelInformation(vehicleproperty.VehicleAxelInformation, objVeh.ID);
+                    }
+                    if (vehicleproperty.VehicleFuelTankProperties != null)
+                    {
+                        //Create Fuel Tank Properties
+                        await CreateVehicleFuelTank(vehicleproperty.VehicleFuelTankProperties, objVeh.ID);
+                    }
                 }
 
                 return vehicleproperty;

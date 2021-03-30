@@ -67,7 +67,7 @@ public class MonitorDocument implements Serializable {
     @JsonProperty(value = "VEngineTotalHours")
     private Integer vEngineTotalHours;
     @JsonProperty(value = "VEngineTotalHoursIdle")
-    private Integer vEngineTotalHoursIdle;
+    private Long vEngineTotalHoursIdle;
     @JsonProperty(value = "VFuelCumulated")
     private Integer vFuelCumulated;
     @JsonProperty(value = "VFuelCumulatedIdle")

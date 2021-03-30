@@ -14,6 +14,8 @@ public class DAFCT2Constant {
     public static final String MASTER_DATA_TOPIC_NAME = "master.data.topic.name";
     public static final String CONTI_CORRUPT_MESSAGE_TOPIC_NAME = "conti.corrupt.message.topic.name";
     public static final String BOSCH_CORRUPT_MESSAGE_TOPIC_NAME = "bosch.corrupt.message.topic.name";
+    public static final String SINK_TCU_TOPIC_NAME = "egress.bosch.tcu.topic.name";
+    
 
     public static final String INDEX_TRANSID = "index.transid";
     public static final String STATUS_TRANSID = "status.transid";
@@ -42,6 +44,9 @@ public class DAFCT2Constant {
     public static final String HBASE_BOSCH_HISTORICAL_TABLE_NAME = "bosch.historical.table.name";
     public static final String HBASE_BOSCH_HISTORICAL_TABLE_CF = "bosch.historical.table.colfm";
     public static final String UNKNOWN = "UNKNOWN";
+    public static final Integer MEASUREMENT_DATA = 1;
+    public static final Integer TCU_DATA = 2;
+    public static final Integer UNKNOWN_DATA = 0;
     
 	//HBase
 	public static final String HBASE_ZOOKEEPER_QUORUM = "hbase.zookeeper.quorum";

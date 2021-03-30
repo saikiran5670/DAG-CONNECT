@@ -19,7 +19,7 @@ using AccountBusinessService = net.atos.daf.ct2.accountservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
-    // [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("account")]
     public class AccountController : ControllerBase
@@ -86,7 +86,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     AccountBusinessService.AccountPreferenceFilter preferenceRequest = new AccountBusinessService.AccountPreferenceFilter();
                     preferenceRequest.Id = response.PreferenceId;
                     // get preference
-                    AccountBusinessService.AccountPreferenceResponse accountPreferenceResponse = await _accountClient.GetPreferenceAsync(preferenceRequest);                    
+                    AccountBusinessService.AccountPreferenceResponse accountPreferenceResponse = await _accountClient.GetPreferenceAsync(preferenceRequest);
                     if (accountPreferenceResponse != null && accountPreferenceResponse.Code == AccountBusinessService.Responcecode.Success)
                     {
                         if (accountPreferenceResponse.AccountPreference != null)
@@ -97,24 +97,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     return StatusCode(409, accountPreference);
                 }
-                else if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed
-                    && accountResponse.Message == PortalConstants.AccountValidation.ErrorMessage)
-                {
-                    return StatusCode(500, PortalConstants.AccountValidation.ErrorMessage);
-                }
-                else if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed
-                    && accountResponse.Message == PortalConstants.AccountValidation.EmailSendingFailedMessage)
-                {
-                    return StatusCode(500, PortalConstants.AccountValidation.EmailSendingFailedMessage);
-                }
                 else if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Success)
                 {
                     return Ok(response);
                 }
                 else
                 {
-                    if (accountResponse.Account == null) return Ok(accountResponse.Account);
-                    return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "01"));
+                    if (accountResponse.Message == PortalConstants.AccountValidation.ErrorMessage)
+                    {
+                        return StatusCode(500, PortalConstants.AccountValidation.ErrorMessage);
+                    }
+                    else if (accountResponse.Message == PortalConstants.AccountValidation.EmailSendingFailedMessage)
+                    {
+                        return StatusCode(500, PortalConstants.AccountValidation.EmailSendingFailedMessage);
+                    }
+                    else
+                    {
+                        return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "01"));
+                    }
                 }
             }
             catch (Exception ex)
@@ -226,7 +226,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(404, "The Email address and password is required.");
                 }
-                AccountBusinessService.AccountRequest changePasswordRequest = new AccountBusinessService.AccountRequest();
+                AccountBusinessService.ChangePasswordRequest changePasswordRequest = new AccountBusinessService.ChangePasswordRequest();
                 changePasswordRequest.EmailId = request.EmailId;
                 changePasswordRequest.Password = request.Password;
                 AccountBusinessService.AccountResponse response = await _accountClient.ChangePasswordAsync(changePasswordRequest);
@@ -236,6 +236,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return BadRequest(response.Message);
                 else if (response.Code == AccountBusinessService.Responcecode.NotFound)
                     return NotFound(response.Message);
+                else if (response.Code == AccountBusinessService.Responcecode.Forbidden)
+                    return StatusCode(403, response.Message);
                 else
                     return StatusCode(500, "Account not configured or failed to change password.");
             }
@@ -466,9 +468,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response.Code == AccountBusinessService.Responcecode.Success)
                     return Ok(response.MenuFeatures);
                 else if (response.Code == AccountBusinessService.Responcecode.NotFound)
-                    return NotFound(response.Message);
+                    return NoContent();
                 else
-                    return StatusCode(500, "Error occurred while fetching Menu and Features.");
+                    return StatusCode(500, "Error occurred while fetching menu items and features.");
             }
             catch (Exception ex)
             {
@@ -1555,34 +1557,32 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
 
         #region TestMethods 
-        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [HttpPost]
         [Route("authmethodpost")]
         public async Task<OkObjectResult> AuthMethodPost()
         {
-            return await Task.FromResult(Ok(new { Message = "You are authenticated user" }));
+            return await Task.FromResult(Ok(new { Message = "You are authenticated user " + Dns.GetHostName() }));
         }
 
         [HttpPost]
         [Route("withoutauthmethodpost")]
         public async Task<OkObjectResult> WithoutAuthMethod()
         {
-            return await Task.FromResult(Ok(new { Message = "This method does not need any authentication" }));
+            return await Task.FromResult(Ok(new { Message = "This method does not need any authentication " + Dns.GetHostName() }));
         }
 
-        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [HttpGet]
         [Route("authmethodget")]
         public async Task<OkObjectResult> AuthMethodGet()
         {
-            return await Task.FromResult(Ok(new { Message = "You will need authentication" }));
+            return await Task.FromResult(Ok(new { Message = "You will need authentication " + Dns.GetHostName() }));
         }
 
         [HttpGet]
         [Route("withoutauthmethodget")]
         public async Task<OkObjectResult> WithoutAuthMethodGet()
         {
-            return await Task.FromResult(Ok(new { Message = "This method does not need any authentication" }));
+            return await Task.FromResult(Ok(new { Message = "This method does not need any authentication " + Dns.GetHostName() }));
         }
         #endregion
     }

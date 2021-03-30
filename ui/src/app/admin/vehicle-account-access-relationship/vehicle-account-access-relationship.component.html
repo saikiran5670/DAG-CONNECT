@@ -72,16 +72,8 @@
           <div *ngIf="disCol != 'action' && disCol != 'accessType' && disCol != 'associatedAccount' && disCol != 'associatedVehicle'">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames[colIndex] }}</mat-header-cell>
             <mat-cell *matCellDef="let element">{{ element[disCol] }} 
-              <!-- <div [ngClass]="{'cursor-pointer': (element.isVehicleGroup == true && element.vehicleCount > 0)}" (click)="(element.isVehicleGroup == true && element.vehicleCount > 0) ? showVehiclePopup(element) : ''" *ngIf="element.isVehicleGroup == true">
-                <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
-                <span class='iconTxt'>{{ (element.vehicleCount < 10) ? '0' : '' }}{{ element.vehicleCount }}</span>
-              </div>
-              <div [ngClass]="{'cursor-pointer': (element.isAccountGroup == true && element.accountCount > 0)}" (click)="(element.isAccountGroup == true && element.accountCount > 0) ? showAccountPopup(element) : ''" *ngIf="element.isAccountGroup == true">
-                <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
-                <span class='iconTxt'>{{ (element.accountCount < 10) ? '0' : '' }}{{ element.accountCount }}</span>
-              </div> -->
               <div [ngClass]="{'cursor-pointer': (element.isGroup == true && element.count > 0)}" (click)="(element.isGroup == true && element.count > 0) ? showPopup(element) : ''" *ngIf="element.isGroup == true">
-                <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
+                <img src='assets/images/icons/vehicleStatus/Group.svg' style="width: 40px; height: 40px;" />
                 <span class='iconTxt'>{{ (element.count < 10) ? '0' : '' }}{{ element.count }}</span>
               </div>
             </mat-cell>

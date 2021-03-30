@@ -4,19 +4,19 @@
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-              translationData.lblAddNewRelationsip || 'Add New Relationship' }} 
+              translationData.lblAddNewRelationsip || 'Add New Relationship' }}
             </mat-label>
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-              translationData.lblRelationsip || 'Relationship' }} 
+              translationData.lblRelationsip || 'Relationship' }} <span *ngIf="createStatus" class='mandatoryColor'>*</span>
             </mat-label>
           </div>
         </div>
         <div fxLayout="row" class="full-width" fxLayoutGap="10px">
-            <div class='areaWidth'>
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-form-field appearance="outline" class='margin-right-xxlg'>
                     <mat-select formControlName="relationship" (selectionChange)="onRelationshipSelection()" placeholder="{{ translationData.lblSelectCRelationship || 'Select Relationship' }}">
                     <mat-option *ngFor="let options of relationshipList" [value]="options.relationId">
@@ -24,16 +24,18 @@
                     </mat-option>
                     </mat-select>
                 </mat-form-field>
-            </div>
+                <mat-error *ngIf="OrganisationRelationshipFormGroup.get('relationship').hasError('required')">
+                  {{ translationData.lblPleaseEnterRelationname || 'Please select Relation'}}
+              </mat-error>
+          </div>
           <!-- </div> -->
           <!-- <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left"> -->
-            <mat-label style='display: flex;'>
-              <span
-                style='font: 300 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{translationData.lblChainRelationship
-                || 'Chain Relationship:' }}</span>
-            </mat-label>
+          
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
                 <!-- <span>{{ translationData.lblViewby || 'View by' }}:</span> -->
+                  <span
+                    style='font: 300 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{translationData.lblChainRelationship
+                    || 'Chain Relationship:' }}</span>
                 <mat-radio-group (change)='onChange($event)'>
                   <mat-radio-button style='margin-right: 20px;' value="active"
                     [checked]="selectedType ===  'active' ? true : false">{{ translationData.lblActive || 'Active' }}
@@ -55,9 +57,9 @@
             </div>
           </div>
           <div fxLayout="column" fxLayoutAlign="end">
-            <div fxLayout="row">
-              <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>Cancel</button>
-              <!-- <button *ngIf="editUserContent" class='margin-right-10' mat-raised-button color="primary"
+            <div fxLayout="row" class='areaWidth'>
+              <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+              <!-- <button *ngIf="editUserContent" class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
                 (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button> -->
               <button class='no-margin' [disabled]="!OrganisationRelationshipFormGroup.valid" mat-raised-button color="primary"
                 (click)='onCreate()' id="createUpdateButton">{{ createStatus ? (translationData.lblCreate || 'Create') :
@@ -73,7 +75,7 @@
     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
 
       <div fxLayout="column" style="width: 50%" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}</span>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}<span *ngIf="createStatus" class='mandatoryColor'>*</span></span>
      
         <div fxLayout="row"  class='margin-bottom-sm'>
           <div class='areaWidth' fxLayoutAlign="left">
@@ -119,7 +121,7 @@
       </div>
 
     <div fxLayout="column" style="width: 50%" fxLayoutGap="3px" fxLayoutAlign="left">
-      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectOrganisation || 'Select Organisation' }}</span>
+      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectOrganisation || 'Select Organisation' }}<span *ngIf="createStatus" class='mandatoryColor'>*</span></span>
   
       <div fxLayout="row"  class='margin-bottom-sm'>
         <div class='areaWidth' fxLayoutAlign="left">

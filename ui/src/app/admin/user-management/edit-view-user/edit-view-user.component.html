@@ -85,8 +85,8 @@
                   <span
                     style="border-left: 1px solid; height: 20px; margin-left: 20px; margin-top: 15px; color: grey;"></span>
                   <span style="margin-left: 20px; margin-top: 15px;">
-                    <a style="cursor: pointer;"
-                      (click)="isAccountPictureSelected ? onSelectPictureConfirm() : ''">{{ translationData.lblConfirm || 'Confirm' }}</a>
+                    <button style="cursor: pointer; border: none;" [disabled]="croppedImage == croppedImageTemp"
+                      (click)="isAccountPictureSelected ? onSelectPictureConfirm() : ''">{{ translationData.lblConfirm || 'Confirm' }}</button>
                   </span>
                 </div>
                 <div fxLayout="row" *ngIf="imageError!=''">
@@ -146,7 +146,7 @@
                      </mat-error>
                   </div>
                 </div>
-                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
                   <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
@@ -180,10 +180,10 @@
                   </div>
                   <div *ngIf='!privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
                 </div>
-                <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
-                  <button class='margin-right-10' mat-raised-button color="primary"
+                <div fxLayout="row" fxLayoutAlign="end end" class="areaWidth full-width">
+                  <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
                     (click)='onEditAccountInfoCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
-                  <button class='margin-right-10' mat-raised-button color="primary"
+                  <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
                     (click)='onEditAccountInfoReset()'>{{ translationData.lblReset || 'Reset' }}</button>
                   <button [disabled]="!accountInfoForm.valid" mat-raised-button color="primary"
                     (click)='onAccountInfoUpdate()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
@@ -329,10 +329,10 @@
               </div>
               <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
             </div>
-            <div fxLayout="row" fxLayoutAlign="end end" class="full-width">
-              <button class='margin-right-10' mat-raised-button color="primary"
+            <div fxLayout="row" fxLayoutAlign="end end" class="areaWidth full-width">
+              <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
                 (click)='onEditGeneralSettingsCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
-              <button class='margin-right-10' mat-raised-button color="primary"
+              <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
                 (click)='onEditGeneralSettingsReset()'>{{ translationData.lblReset || 'Reset' }}</button>
               <button mat-raised-button color="primary"
                 (click)='onGeneralSettingsUpdate()'>{{ translationData.lblConfirm || 'Confirm' }}</button>

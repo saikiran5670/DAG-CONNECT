@@ -55,7 +55,6 @@ public class TripStreamingJob {
 			// Map to status data
 			SingleOutputStreamOperator<TripStatusData> statusDataStream = FlinkKafkaStatusMsgConsumer
 					.consumeStatusMsgs(envParams, env).map(new MapFunction<KafkaRecord<Status>, TripStatusData>() {
-
 						/**
 						 * 
 						 */
@@ -77,6 +76,7 @@ public class TripStreamingJob {
 					vehDieselEmissionFactors, Long.valueOf(envParams.get(ETLConstants.TRIP_TIME_WINDOW_MILLISEC)), tableEnv);
 			
 			// Call Audit Trail
+			//System.out.println("call AuditTrial");
 			TripAuditTrail.auditTrail(envParams, ETLConstants.AUDIT_EVENT_STATUS_START, ETLConstants.TRIP_STREAMING_JOB_NAME,
 					"Trip Streaming Job Started", ETLConstants.AUDIT_CREATE_EVENT_TYPE);
 
@@ -98,6 +98,7 @@ public class TripStreamingJob {
 		} catch (Exception e) {
 
 			// Call Audit Trail
+			//System.out.println("call audit Trail from catch");
 			TripAuditTrail.auditTrail(envParams, ETLConstants.AUDIT_EVENT_STATUS_FAIL, ETLConstants.TRIP_STREAMING_JOB_NAME,
 					"Trip Streaming Job Failed" + e.getMessage(), ETLConstants.AUDIT_CREATE_EVENT_TYPE);
 

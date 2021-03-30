@@ -118,7 +118,7 @@
             <mat-cell *matCellDef="let row">
               {{ row.name }}
               <div [ngClass]="{'cursor-pointer': (row.isGroup == true && row.count > 0)}" (click)="(row.isGroup == true && row.count > 0) ? showAccountPopup(row) : ''" *ngIf="row.isGroup == true">
-                <img src='assets/images/group_icon.svg' style="width: 40px; height: 40px;" />
+                <img src='assets/images/icons/vehicleStatus/Group.svg' style="width: 40px; height: 40px;" />
                 <span class='iconTxt'>{{ (row.count < 10) ? '0' : '' }}{{ row.count }}</span>
               </div>
             </mat-cell>
@@ -129,10 +129,10 @@
         </mat-table>
         <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
       </div>
-      <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="end end" class="full-width">
-        <button class='margin-right-10' mat-raised-button color="primary"
+      <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
+        <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
           (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
-        <button *ngIf="actionType == 'edit'" class='margin-right-10' mat-raised-button color="primary"
+        <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
           (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
         <button [disabled]="!vehicleAccessRelationshipFormGroup.valid" mat-raised-button color="primary"
           (click)='onConfirm()'>{{ translationData.lblConfirm || 'Confirm' }}</button>

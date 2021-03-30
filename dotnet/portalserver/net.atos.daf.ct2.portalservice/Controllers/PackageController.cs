@@ -8,12 +8,15 @@ using net.atos.daf.ct2.packageservice;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.portalservice.Entity.Package;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
 
     [ApiController]
     [Route("package")]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class PackageController : ControllerBase
     {
         private readonly ILogger<PackageController> _logger;
@@ -48,13 +51,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(400, "Please provide package features");
+                    return StatusCode(400, "Please provide package featureIds");
                 }
                 if (request.FeatureSetID > 0)
                 {
                     var createPackageRequest = _packageMapper.ToCreatePackage(request);
 
                     var packageResponse = await _packageClient.CreateAsync(createPackageRequest);
+
+                    if (packageResponse.PackageId == -1 && packageResponse.Code == Responsecode.Conflict)
+                    {
+                        return StatusCode(409, packageResponse.Message);
+                    }
+
+
                     if (packageResponse != null
                        && packageResponse.Message == PortalConstants.PackageValidation.ErrorMessage)
                     {
@@ -122,12 +132,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(400, "Please provide package features");
+                        return StatusCode(400, "Please provide package featureIds");
                     }
                     var createPackageRequest = _packageMapper.ToCreatePackage(request);
 
                     var packageResponse = await _packageClient.UpdateAsync(createPackageRequest);
 
+                    if (packageResponse.PackageId == -1 && packageResponse.Code == Responsecode.Conflict)
+                    {
+                        return StatusCode(409, packageResponse.Message);
+                    }
 
                     if (packageResponse != null && packageResponse.Code == Responsecode.Failed
                          && packageResponse.Message == "There is an error updating package.")
@@ -180,8 +194,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     Id = filterRequest.Id,
                     Status = filterRequest.Status == null ? string.Empty : filterRequest.Status,
-                    Code = filterRequest.Code == null ? string.Empty : filterRequest.Code,
-                    Name = filterRequest.Name == null ? string.Empty : filterRequest.Name,
+                    Code = filterRequest.Code == null ? string.Empty : filterRequest.Code,                   
                     Type = filterRequest.Type == null ? string.Empty : filterRequest.Type,
                     FeatureSetID = filterRequest.FeatureSetId
                 };
@@ -258,28 +271,37 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Package data is required.");
                 }
-                var packageRequest = _packageMapper.ToImportPackage(request);
-                var packageResponse = await _packageClient.ImportAsync(packageRequest);
-
-                if (packageResponse != null
-                   && packageResponse.Message == "There is an error importing package.")
+                bool hasFeature = request.packagesToImport.Any(x => x.Features.Count == 0);
+                if (!hasFeature)
                 {
-                    return StatusCode(500, "There is an error importing package.");
-                }
-                else if (packageResponse != null && packageResponse.Code == Responsecode.Success &&
-                         packageResponse.PackageList != null && packageResponse.PackageList.Count > 0)
-                {
+                    var packageRequest = _packageMapper.ToImportPackage(request);
+                    var packageResponse = await _packageClient.ImportAsync(packageRequest);
 
-                    return Ok(packageResponse);
+                    if (packageResponse != null
+                       && packageResponse.Message == "There is an error importing package.")
+                    {
+                        return StatusCode(500, "There is an error importing package.");
+                    }
+                    else if (packageResponse != null && packageResponse.Code == Responsecode.Success &&
+                             packageResponse.PackageList != null && packageResponse.PackageList.Count > 0)
+                    {
+
+                        return Ok(packageResponse);
+                    }
+                    else
+                    {
+                        if (packageResponse.PackageList.Count == 0)
+                            return StatusCode(500, "package code already exists");
+                        else
+                        {
+                            return StatusCode(500, "Package response is null");
+                        }
+                    }
                 }
                 else
                 {
-                    if (packageResponse.PackageList.Count == 0)
-                        return StatusCode(500, "package code already exists");
-                    else
-                    {
-                        return StatusCode(500, "Package response is null");
-                    }
+
+                    return StatusCode(400, "Please provide package features");
                 }
             }
             catch (Exception ex)
@@ -332,8 +354,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Package Service:Update : " + ex.Message + " " + ex.StackTrace);               
-                return StatusCode(500,  ex.Message + " " + ex.StackTrace);
+                _logger.LogError("Package Service:Update : " + ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
 

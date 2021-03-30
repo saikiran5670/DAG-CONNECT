@@ -19,43 +19,45 @@
             </mat-form-field>
         </div>
   
-    <div>
+        <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Organisation</mat-label>
+            <mat-select (selectionChange)="applyFilterOnOrganization($event.value)">
+              <mat-option *ngFor="let options of organizationList" [value]="options.id">
+                {{options.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+    <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>{{ translationData.lblSelectStatus || 'Select Status' }}</mat-label>
-        <mat-select (selectionChange)="filterStatus($event.value)">
-          <mat-option *ngFor='let status of options' [value]="status">
-          {{status}}
+        <mat-label>Select Status</mat-label>
+        <mat-select (selectionChange)="applyFilterOnStatus(1,$event.value)">
+          <mat-option *ngFor="let options of StatusList" [value]="options.value">
+            {{options.name}}
           </mat-option>
         </mat-select>
       </mat-form-field>
     </div>
+    <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Select Type</mat-label>
+        <mat-select (selectionChange)="applyFilterOnType(1,$event.value)">
+          <mat-option *ngFor="let options of TypeList" [value]="options.value">
+            {{options.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    
 
     </div>
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
     <div *ngIf='initData.length > 0'>
         <mat-table [dataSource]="dataSource" class="table-items" matSort>
-            <!-- <ng-container matColumnDef="select">
-                <div>
-                  <mat-header-cell *matHeaderCellDef>
-                    <mat-checkbox (change)='$event ? masterToggleForSubscription() : null'
-                      [checked]='selectionForSubscription.hasValue() && isAllSelectedForSubscription()'
-                      [indeterminate]='selectionForSubscription.hasValue() && !isAllSelectedForSubscription()'
-                      [aria-label]='checkboxLabelForSubscription()' [disabled]="actionType == 'view'">
-                    </mat-checkbox>
-                    <span style="margin: 5px 0px 0px 5px;" [ngClass]="{'opacity-0-5': actionType == 'view'}">{{ translationData.lblAll || 'All' }}</span>
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row">
-                    <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectionForSubscription.toggle(row) : null'
-                      [checked]='selectionForSubscription.isSelected(row)' [aria-label]='checkboxLabelForSubscription(row)' >
-                    </mat-checkbox>
-                  </mat-cell>
-                </div>
-              </ng-container> -->
             <ng-container matColumnDef="subscriptionId">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOrderId || 'Order ID' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                  <!-- <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
-                  <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span> -->
                   <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.subscriptionId }}</span>
                 </mat-cell>
               </ng-container>
@@ -67,21 +69,26 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPackageName || 'Package Name' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
               </ng-container>
+              <ng-container matColumnDef="orgName">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPackageName || 'Organization' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">{{ row.orgName }}</mat-cell>
+              </ng-container>
               <ng-container matColumnDef="type">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblType || 'Type' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.type }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.type == 'O' ? (translationData.lblOrganization || 'Organization') : translationData.lblVehicle || 'Vehicle' }}</mat-cell>
               </ng-container>
-              <ng-container matColumnDef="count">
+              <ng-container matColumnDef="count" >
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicle || 'Vehicle' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.count }}</mat-cell>
+                <mat-cell *matCellDef="let row"><span [ngClass]="row.count != 0 ? 'row-hover' : ''"
+                  (click)="row.count != 0 ? onVehicleClick(row) : ''">{{ (row.count < 10) ? '0' : '' }}{{ row.count }}</span></mat-cell>
               </ng-container>
               <ng-container matColumnDef="subscriptionStartDate">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartDate || 'Start Date' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.subscriptionStartDate }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ setDate(row.subscriptionStartDate) }}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="subscriptionEndDate">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndDate || 'End Date' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.subscriptionEndDate }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ setDate(row.subscriptionEndDate) }}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="isActive">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>

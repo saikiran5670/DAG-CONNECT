@@ -30,12 +30,31 @@ export class RelationshipManagementComponent implements OnInit {
   showLoadingIndicator: any;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
+  viewRelationshipFromOrg: boolean;
+  selectedRowFromRelationship: any = {};
 
   constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private organizationService: OrganizationService) {
     this.defaultTranslation();
    }
 
   ngOnInit(): void {
+    console.log("---initial value of viewRelationshipFromOrg",this.viewRelationshipFromOrg)
+    console.log(history.state);
+    this.viewRelationshipFromOrg = history.state.viewRelationshipFromOrg;
+
+    if(this.viewRelationshipFromOrg){
+      let relationShipId = history.state.rowData.relationShipId;
+      let newData = {};
+      this.organizationService.getRelationshipByRelationID(relationShipId).subscribe((data) => {
+        if(data){
+          this.initData = data["relationshipList"];
+          newData= this.initData;
+          this.viewRelationship(newData[0]);
+        }});
+       
+      
+    }
+   
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     if(this.organizationId == 1 || this.organizationId == 2)
@@ -119,6 +138,7 @@ export class RelationshipManagementComponent implements OnInit {
     this.viewFlag = true;
     this.rowsData = [];
     this.rowsData.push(row);
+    this.selectedRowFromRelationship = this.rowsData;
   }
 
   editRelationship(row: any){
@@ -131,7 +151,7 @@ export class RelationshipManagementComponent implements OnInit {
 
   deleteRelationship(row: any){
     const options = {
-      title: this.translationData.lblDeleteAccount || 'Delete Account',
+      title: this.translationData.lblDelete || 'Delete',
       message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Are you sure you want to delete '$' relationship?",
       cancelText: this.translationData.lblNo || 'No',
       confirmText: this.translationData.lblYes || 'Yes'

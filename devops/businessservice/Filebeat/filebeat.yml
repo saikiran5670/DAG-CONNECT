@@ -1,0 +1,34 @@
+
+# ============================== Filebeat inputs ===============================
+
+filebeat.inputs:
+
+- type: log
+  enabled: true
+  paths:
+    - /tmp/log/Error/*
+    - /tmp/log/Info/*
+  fields:
+    ENV: DEV01
+  fields_under_root: true
+  ignore_older: 72h  
+
+# ------------------------------ Logstash Output -------------------------------
+output.logstash:
+   hosts: ["localhost:5044"]
+   loadbalance: true
+
+  # Optional SSL. By default is off.
+  # List of root certificates for HTTPS server verifications
+  #ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]
+
+  # Certificate for SSL client authentication
+  #ssl.certificate: "/etc/pki/client/cert.pem"
+
+  # Client Certificate Key
+  #ssl.key: "/etc/pki/client/cert.key"
+
+# ================================= Processors =================================
+processors:
+  - drop_fields:
+      fields: ["agent", "log", "input", "ecs" ]

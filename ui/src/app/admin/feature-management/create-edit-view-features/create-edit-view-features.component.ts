@@ -34,6 +34,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   showLoadingIndicator: any;
   createStatus:boolean;
   duplicateMsg:boolean;
+  isDataAttributeSetExist: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private featureService: FeatureService) { }
 
@@ -41,7 +42,14 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     this.featureFormGroup = this._formBuilder.group({
       dataAttributeSetName: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
       dataAttributeDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForName('dataAttributeSetName'),
+        CustomValidators.specialCharValidationForNameWithoutRequired('dataAttributeDescription')
+      ]
     });
+
     this.breadcumMsg = this.getBreadcum(this.actionType);
     if(this.actionType == 'view' || this.actionType == 'edit' ){
       this.setDefaultValue();
@@ -132,14 +140,14 @@ export class CreateEditViewFeaturesComponent implements OnInit {
         id: 0,
         name: "",
         isActive: true,
-        is_Exclusive: this.selectedSetType == "true" ? true : false,
+        is_Exclusive: this.selectedSetType,
         description: "",
-        status: parseInt(this.selectedStatus)
+        status: 0
       },
       key: "",
       dataAttributeIds: selectedId,
       level: 0,
-      featureState: 0
+      featureState: parseInt(this.selectedStatus)
     }
     if(this.actionType == 'create'){
       this.featureService.createFeature(createFeatureParams).subscribe((data: any) => {
@@ -167,14 +175,14 @@ export class CreateEditViewFeaturesComponent implements OnInit {
           id: this.selectedElementData.dataAttribute.dataAttributeSetId,
           name: "",
           isActive: true,
-          is_Exclusive: this.selectedSetType == "true" ? true : false,
+          is_Exclusive: this.selectedSetType,
           description: "",
-          status: parseInt(this.selectedStatus)
+          status: 0
         },
         key: "",
         dataAttributeIds: selectedId,
         level: 0,
-        featureState: 0
+        featureState: parseInt(this.selectedStatus)
       }        
       this.featureService.updateFeature(updatedFeatureParams).subscribe((dataUpdated: any) => {
         this.featureService.getFeatures().subscribe((getData: any) => {

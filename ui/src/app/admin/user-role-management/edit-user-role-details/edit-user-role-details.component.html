@@ -104,9 +104,9 @@
                     </div>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="end">
-                    <div fxLayout="row">
-                        <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel'}}</button>
-                        <button class='margin-right-10'  mat-raised-button color="primary" *ngIf="!createStatus"
+                    <div fxLayout="row" class='areaWidth'>
+                        <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel'}}</button>
+                        <button class='resetCancelBtnColor margin-right-10 no-margin'  mat-raised-button color="primary" *ngIf="!createStatus"
                             (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
                         <button class='no-margin' [disabled]="!userRoleFormGroup.valid || selectionForFeatures.selected.length == 0" mat-raised-button color="primary"
                             (click)='onCreate()'>{{ createStatus || duplicateFlag ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm || 'Confirm') }}</button>
@@ -121,7 +121,7 @@
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ createStatus ? ( translationData.lblSelectRoleAccess || 'Select Role Access') : (translationData.lblSelectedRoleAccess || 'Selected Role Access') }}</span>
             </div>
         </div>
-        <div *ngIf='createStatus' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <mat-form-field appearance="outline">
                   <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">

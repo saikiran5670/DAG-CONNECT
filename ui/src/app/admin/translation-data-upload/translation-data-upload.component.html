@@ -32,7 +32,7 @@
                                     <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                                         <mat-label>{{ translationData.lblUploadTranslationDataFile || 'Upload Translation Data file' }} <span class='mandatoryColor'>*</span></mat-label>
                                         <mat-form-field appearance="outline">
-                                            <ngx-mat-file-input (change)="addfile($event)" [accept]="'.xlsx'" formControlName="uploadFile" placeholder="Upload your updated xlsx File" ></ngx-mat-file-input>
+                                            <ngx-mat-file-input (change)="addfile($event)" [accept]="'.xlsx'" formControlName="uploadFile" placeholder="{{ translationData.lblUploadYourUpdatedXLSXFile || 'Upload your updated xlsx File'}}" ></ngx-mat-file-input>
                                             <button mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse || 'Browse' }}</button>
                                         </mat-form-field>
                                         <mat-error *ngIf="uploadTranslationDataFormGroup.get('uploadFile').hasError('required')">
@@ -84,7 +84,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="start space-between">
                 <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span style='color: green'>{{ translationData.fileuploadedSuccessfully || 'File has been uploaded successfully'}}</span>
+                    <span style='color: green'>{{ translationData.lblFileuploadedSuccessfully || 'File has been uploaded successfully'}}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="start space-between">
@@ -101,7 +101,7 @@
         <mat-card class='mat-elevation-z'>
                 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-xlg'>
                     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.uploadedFileHistory || 'Uploaded File History' }}</span>
+                        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lbluploadedFileHistory || 'Uploaded File History' }}</span>
                     </div>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>

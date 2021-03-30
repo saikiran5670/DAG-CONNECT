@@ -51,6 +51,13 @@ public class ETLConstants {
 	public static final String DATAMART_POSTGRE_DATABASE_NAME ="datamart_postgre_database_name";
 	public static final String DATAMART_POSTGRE_PASSWORD = "datamart_postgre_password";
 	
+	//master datamart
+	public static final String MASTER_POSTGRE_SERVER_NAME = "master_postgre_server_name";
+	public static final String MASTER_POSTGRE_PORT = "master_postgre_port";
+	public static final String MASTER_POSTGRE_DATABASE_NAME = "master_postgre_database_name";
+	public static final String MASTER_POSTGRE_USER = "master_postgre_userId";
+	public static final String MASTER_POSTGRE_PASSWORD = "master_postgre_password";
+	
 	//HBase Status Column Family
 	public static final String STS_MSG_COLUMNFAMILY_T = "t";
 	

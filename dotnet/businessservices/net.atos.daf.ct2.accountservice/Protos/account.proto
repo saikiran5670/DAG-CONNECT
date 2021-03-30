@@ -10,12 +10,13 @@ service AccountService
 {
   //Identity Methods
   rpc Auth (IdentityRequest) returns (AccountIdentityResponse);
+  rpc Logout (LogoutRequest) returns (LogoutResponse);
 
   // Account Methods 
   rpc Create (AccountRequest) returns (AccountData);
   rpc Update (AccountRequest) returns (AccountData);
   rpc Delete (AccountRequest) returns (AccountResponse);
-  rpc ChangePassword (AccountRequest) returns (AccountResponse);
+  rpc ChangePassword (ChangePasswordRequest) returns (AccountResponse);
   rpc Get (AccountFilter) returns (AccountDataList);
   rpc AddAccountToOrg (AccountOrganization) returns (AccountOrganizationResponse);  
   rpc GetAccountDetail (AccountGroupDetailsRequest) returns (AccountDetailsResponse); 
@@ -76,6 +77,7 @@ enum AccountType
       Conflict = 2;
       NotFound = 3;
       BadRequest = 4;
+      Forbidden = 5;
     }
 // common response 
 message AccountResponse {
@@ -118,17 +120,21 @@ message AccountRequest {
     string EmailId=2;
     string Salutation=3;
     string FirstName=4;
-    string LastName=5;
-    string Password=6;    
-    int32 OrganizationId=7;
-    string Type=8;
-    string DriverId=9;
-    int32 PreferenceId=10;
-    int32 BlobId=11;
-    int64 CreatedAt=12;
-    int64 StartDate=13;
-    int64 EndDate=14;    
+    string LastName=5; 
+    int32 OrganizationId=6;
+    string Type=7;
+    string DriverId=8;
+    int32 PreferenceId=9;
+    int32 BlobId=10;
+    int64 CreatedAt=11;
+    int64 StartDate=12;
+    int64 EndDate=13;    
   }
+
+message ChangePasswordRequest {
+    string EmailId=1;
+    string Password=2;
+}
 
 //Account Reset Password
 message ResetPasswordInitiateRequest {
@@ -385,7 +391,7 @@ message IdentityRequest {
 message AccountIdentityResponse {
     Responcecode code=1;
     string Message=2;
-    bool Authenticated = 3;
+    string tokenIdentifier = 3;
     repeated AccountIdentityOrg AccOrganization = 4;
     repeated AccountIdentityRole AccountRole=5;
     AccountRequest accountInfo=6;
@@ -400,6 +406,12 @@ message AccountIdentityRole
     int32 Id=1;
     string Name=2;
     int32 OrganizationId=3;
+}
+message LogoutRequest {
+    string TokenId=1;
+}
+message LogoutResponse {
+    bool Success=1;
 }
 // End - Identity  
 

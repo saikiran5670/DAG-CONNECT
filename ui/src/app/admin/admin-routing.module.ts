@@ -14,6 +14,7 @@ import { PackageManagementComponent } from './package-management/package-managem
 import { SubscriptionManagementComponent } from './subscription-management/subscription-management.component';
 import { RelationshipManagementComponent } from './relationship-management/relationship-management.component';
 import { OrganisationRelationshipComponent } from './organisation-relationship/organisation-relationship.component';
+import { ReadKeyExpr } from '@angular/compiler';
 
 const routes: Routes = [
   {
@@ -32,7 +33,8 @@ const routes: Routes = [
       { path: 'packagemanagement', component: PackageManagementComponent },
       { path: 'subscriptionmanagement', component: SubscriptionManagementComponent },
       { path: 'relationshipmanagement', component: RelationshipManagementComponent },
-      { path: 'organisationrelationship', component: OrganisationRelationshipComponent }
+      { path: 'organisationrelationship', component: OrganisationRelationshipComponent },
+      { path: 'organisationrelationship/relationshipmanagement', component: RelationshipManagementComponent, data:{ id:'1', name:'orgRelationship',viewviewRelationshipFromOrg:true}}
     ],
   },
 ];

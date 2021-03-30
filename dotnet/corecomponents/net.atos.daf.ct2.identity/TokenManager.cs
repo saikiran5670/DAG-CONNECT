@@ -113,7 +113,7 @@ namespace net.atos.daf.ct2.identity
             accountToken.AccessToken = token;
             return accountToken;
         }
-        public bool ValidateToken(string token)
+        public async Task<bool> ValidateToken(string token)
         {
             // CryptoProviderFactory.DefaultCacheSignatureProviders = false;
             //var publicKey = _settings.RsaPublicKey.ToByteArray();
@@ -149,9 +149,9 @@ namespace net.atos.daf.ct2.identity
             }
             catch
             {
-                return false;
+                return await Task.FromResult(false);
             }
-            return true;
+            return await Task.FromResult(true);
         }
         public AccountIDPClaim DecodeToken(string jwtInput)
         {

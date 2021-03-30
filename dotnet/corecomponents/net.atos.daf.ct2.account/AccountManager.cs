@@ -15,6 +15,7 @@ using net.atos.daf.ct2.email;
 using net.atos.daf.ct2.email.Entity;
 using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.identity.entity;
+using System.Net;
 
 namespace net.atos.daf.ct2.account
 {
@@ -40,7 +41,7 @@ namespace net.atos.daf.ct2.account
             // create user in identity
             IdentityEntity.Identity identityEntity = new IdentityEntity.Identity();
             identityEntity.UserName = account.EmailId;
-            identityEntity.EmailId = account.EmailId;            
+            identityEntity.EmailId = account.EmailId;
             identityEntity.FirstName = account.FirstName;
             identityEntity.LastName = account.LastName;
             identityEntity.Password = account.Password;
@@ -48,7 +49,7 @@ namespace net.atos.daf.ct2.account
             //TODO: If created in IDP, but have exception while create in DB.
             var identityresult = await identity.CreateUser(identityEntity);
 
-            if (identityresult.StatusCode == System.Net.HttpStatusCode.Created)
+            if (identityresult.StatusCode == HttpStatusCode.Created)
             {
                 // if this fails
                 account = await repository.Create(account);
@@ -58,9 +59,9 @@ namespace net.atos.daf.ct2.account
             else // there is issues and need delete user from IDP. 
             {
                 // user already exits in IDP.
-                if (identityresult.StatusCode == System.Net.HttpStatusCode.Conflict)
+                if (identityresult.StatusCode == HttpStatusCode.Conflict)
                 {
-                   // get account by email , if not exists in DB-- create it
+                    // get account by email , if not exists in DB-- create it
                     AccountFilter filter = new AccountFilter();
                     filter.Email = account.EmailId;
                     filter.OrganizationId = account.Organization_Id;
@@ -68,7 +69,7 @@ namespace net.atos.daf.ct2.account
                     filter.AccountType = AccountType.None;
                     filter.AccountIds = string.Empty;
                     filter.Name = string.Empty;
-                    var accountGet = await repository.Duplicate(filter);                    
+                    var accountGet = await repository.Duplicate(filter);
                     if (accountGet == null)
                     {
                         account = await repository.Create(account);
@@ -87,18 +88,19 @@ namespace net.atos.daf.ct2.account
                     }
                 }
                 // inter server error in IDP.
-                else if (identityresult.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+                else if (identityresult.StatusCode == HttpStatusCode.InternalServerError)
                 {
                     account.isError = true;
                 }
-                else if (identityresult.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                else if (identityresult.StatusCode == HttpStatusCode.BadRequest)
                 {
                     account.isError = true;
                 }
                 //identityresult = await identity.DeleteUser(identityEntity);
-                if (identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
+                if (identityresult.StatusCode == HttpStatusCode.NoContent)
                 {
                     // check to handle message
+                    account.isError = true;
                 }
             }
             return account;
@@ -113,7 +115,7 @@ namespace net.atos.daf.ct2.account
             identityEntity.LastName = account.LastName;
             var identityresult = await identity.UpdateUser(identityEntity);
 
-            if (identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
+            if (identityresult.StatusCode == HttpStatusCode.NoContent)
             {
                 account = await repository.Update(account);
             }
@@ -129,13 +131,13 @@ namespace net.atos.daf.ct2.account
             // identityEntity.FirstName = account.FirstName;
             // identityEntity.LastName = account.LastName;
             var identityresult = await identity.DeleteUser(identityEntity);
-            if (identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
+            if (identityresult.StatusCode == HttpStatusCode.NoContent)
             {
                 result = await repository.Delete(account.Id, account.Organization_Id);
             }
-            else if (identityresult.StatusCode == System.Net.HttpStatusCode.NotFound)
+            else if (identityresult.StatusCode == HttpStatusCode.NotFound)
             {
-                    //TODO:  need to handle this -- is there in DB but not is IDP.
+                //TODO:  need to handle this -- is there in DB but not is IDP.
             }
             return result;
         }
@@ -145,23 +147,28 @@ namespace net.atos.daf.ct2.account
 
             if (account != null)
             {
-                // create user in identity
-                IdentityEntity.Identity identityEntity = new IdentityEntity.Identity();
-                identityEntity.UserName = account.EmailId;
-                identityEntity.Password = accountRequest.Password;
-                var identityResult = await identity.ChangeUserPassword(identityEntity);
-                if (identityResult.StatusCode == System.Net.HttpStatusCode.NoContent)
+                if (await CheckForMinPasswordAge(account))
                 {
-                    //Send confirmation email
-                    await TriggerSendEmailRequest(account, EmailTemplateType.ChangeResetPasswordSuccess);
+                    // create user in identity
+                    IdentityEntity.Identity identityEntity = new IdentityEntity.Identity();
+                    identityEntity.UserName = account.EmailId;
+                    identityEntity.Password = accountRequest.Password;
+                    var identityResult = await identity.ChangeUserPassword(identityEntity);
+                    if (identityResult.StatusCode == HttpStatusCode.NoContent)
+                    {
+                        //Update password policy entry
+                        await repository.UpsertPasswordModifiedDate(account.Id, UTCHandling.GetUTCFromDateTime(DateTime.Now));
+
+                        //Send confirmation email
+                        await TriggerSendEmailRequest(account, EmailTemplateType.ChangeResetPasswordSuccess);
+                    }
+                    return identityResult;
                 }
-                return identityResult;
+                return new Response(HttpStatusCode.Forbidden);
             }
-            return new Response()
-            {
-                StatusCode = System.Net.HttpStatusCode.NotFound
-            };
+            return new Response(HttpStatusCode.NotFound);
         }
+
         public async Task<IEnumerable<Account>> Get(AccountFilter filter)
         {
             return await repository.Get(filter);
@@ -169,7 +176,7 @@ namespace net.atos.daf.ct2.account
         public async Task<int> GetCount(int organization_id)
         {
             return await repository.GetCount(organization_id);
-        }        
+        }
         public async Task<Account> AddAccountToOrg(Account account)
         {
             return await repository.AddAccountToOrg(account);
@@ -189,7 +196,7 @@ namespace net.atos.daf.ct2.account
         //    // 
         //    if (entity != null)
         //    {
-                
+
         //            if (!entity.IsGroup)
         //            {
         //                // create vehicle group with vehicle
@@ -202,7 +209,7 @@ namespace net.atos.daf.ct2.account
         //                    if (!account.IsGroup)
         //                    {
         //                        // create group for account
-                                
+
         //                        // 
         //                    }
         //                    else
@@ -253,9 +260,9 @@ namespace net.atos.daf.ct2.account
         {
             return await repository.UpdateAccessRelationship(entity);
         }
-        public async Task<bool> DeleteAccessRelationship(int accountGroupId,int vehicleGroupId)
+        public async Task<bool> DeleteAccessRelationship(int accountGroupId, int vehicleGroupId)
         {
-            return await repository.DeleteAccessRelationship(accountGroupId,vehicleGroupId);
+            return await repository.DeleteAccessRelationship(accountGroupId, vehicleGroupId);
         }
         public async Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter)
         {
@@ -276,8 +283,8 @@ namespace net.atos.daf.ct2.account
         public async Task<bool> DeleteVehicleAccessRelationship(int organizationId, int groupId, bool isVehicle)
         {
             return await repository.DeleteVehicleAccessRelationship(organizationId, groupId, isVehicle);
-        }        
-        #endregion 
+        }
+        #endregion
         public async Task<bool> AddRole(AccountRole accountRoles)
         {
             return await repository.AddRole(accountRoles);
@@ -306,7 +313,7 @@ namespace net.atos.daf.ct2.account
 
         public async Task<Response> ResetPasswordInitiate(string emailId, bool canSendEmail = true)
         {
-            var response = new Response() { StatusCode = System.Net.HttpStatusCode.NotFound };
+            var response = new Response(HttpStatusCode.NotFound);
             try
             {
                 var account = await repository.GetAccountByEmailId(emailId.ToLower());
@@ -330,7 +337,7 @@ namespace net.atos.daf.ct2.account
 
                     var identityResult = await identity.ResetUserPasswordInitiate();
                     var processToken = (Guid)identityResult.Result;
-                    if (identityResult.StatusCode == System.Net.HttpStatusCode.OK)
+                    if (identityResult.StatusCode == HttpStatusCode.OK)
                     {
                         //Save Reset Password Token to the database
                         var objToken = new ResetPasswordToken();
@@ -346,7 +353,7 @@ namespace net.atos.daf.ct2.account
 
                         bool isSent = false;
                         //Send activation email based on flag
-                        if (canSendEmail)                      
+                        if (canSendEmail)
                             isSent = await TriggerSendEmailRequest(account, EmailTemplateType.ResetPassword, processToken);
 
                         if ((canSendEmail && isSent) || !canSendEmail)
@@ -368,7 +375,7 @@ namespace net.atos.daf.ct2.account
 
         public async Task<Response> ResetPassword(Account accountInfo)
         {
-            var response = new Response() { StatusCode = System.Net.HttpStatusCode.NotFound };
+            var response = new Response(HttpStatusCode.NotFound);
             try
             {
                 //Check if token record exists, Fetch it and validate the status
@@ -391,8 +398,11 @@ namespace net.atos.daf.ct2.account
                     identityEntity.UserName = account.EmailId;
                     identityEntity.Password = accountInfo.Password;
                     var identityresult = await identity.ChangeUserPassword(identityEntity);
-                    if (identityresult.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    if (identityresult.StatusCode == HttpStatusCode.NoContent)
                     {
+                        //Update password policy entry
+                        await repository.UpsertPasswordModifiedDate(account.Id, UTCHandling.GetUTCFromDateTime(DateTime.Now));
+
                         //Update status to Used
                         await repository.Update(resetPasswordToken.Id, ResetTokenStatus.Used);
 
@@ -411,7 +421,7 @@ namespace net.atos.daf.ct2.account
         }
         public async Task<Response> ResetPasswordInvalidate(Guid ResetToken)
         {
-            var response = new Response() { StatusCode = System.Net.HttpStatusCode.NotFound };
+            var response = new Response(HttpStatusCode.NotFound);
             try
             {
                 //Check if token record exists
@@ -422,7 +432,7 @@ namespace net.atos.daf.ct2.account
                     //Update status to Invalidated
                     await repository.Update(resetPasswordToken.Id, ResetTokenStatus.Invalidated);
 
-                    response.StatusCode = System.Net.HttpStatusCode.OK;
+                    response.StatusCode = HttpStatusCode.OK;
                     return response;
                 }
             }
@@ -431,7 +441,7 @@ namespace net.atos.daf.ct2.account
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Reset Password Invalidate: " + ex.Message, 1, 2, ResetToken.ToString());
                 throw ex;
             }
-            
+
             return response;
         }
 
@@ -451,7 +461,7 @@ namespace net.atos.daf.ct2.account
         {
             var response = await ResetPasswordInitiate(account.EmailId, false);
 
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (response.StatusCode != HttpStatusCode.OK)
                 return false;
             else
             {
@@ -517,6 +527,24 @@ namespace net.atos.daf.ct2.account
             messageRequest.Content = sb.ToString();
             messageRequest.ContentMimeType = EnumExtension.GetAttribute<MimeTypeAttribute>(templateType).Name;
 
+            return true;
+        }
+
+        private async Task<bool> CheckForMinPasswordAge(Account account)
+        {
+            //Check for Min Password Age if policy enabled
+            var isPolicyEnabled = Convert.ToBoolean(configuration["AccountPolicy:MinPasswordAgePolicyEnabled"]);
+            if (isPolicyEnabled)
+            {
+                var lastModifiedDate = await repository.GetPasswordModifiedDate(account.Id);
+
+                if (lastModifiedDate.HasValue)
+                {
+                    var minPasswordAge = Convert.ToInt32(configuration["AccountPolicy:MinPasswordAgeInDays"]);
+
+                    return (UTCHandling.GetUTCFromDateTime(DateTime.Now.AddDays(-minPasswordAge)) > lastModifiedDate);
+                }
+            }
             return true;
         }
 

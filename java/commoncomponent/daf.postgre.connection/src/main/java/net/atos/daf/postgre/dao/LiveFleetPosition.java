@@ -3,13 +3,12 @@ package net.atos.daf.postgre.dao;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import net.atos.daf.common.ct2.exception.TechnicalException;
-import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.ct2.pojo.standard.Monitor;
+import net.atos.daf.postgre.bo.Co2Master;
 
 public class LiveFleetPosition implements Serializable {
 	/**
@@ -22,7 +21,7 @@ public class LiveFleetPosition implements Serializable {
 	private static final String READ_LIVEFLEET_POSITION = "SELECT distance_until_next_service from livefleet.livefleet_position_statistics WHERE vin = ? ORDER BY created_at_m2m DESC limit 1";
 	private static final String INSERT_LIVEFLEET_POSITION = "INSERT INTO livefleet.livefleet_position_statistics ( trip_id    , vin    ,message_time_stamp    ,gps_altitude    ,gps_heading    ,gps_latitude    ,gps_longitude    ,co2_emission    ,fuel_consumption    , last_odometer_val  ,distance_until_next_service    , created_at_m2m    ,created_at_kafka    ,created_at_dm    ) VALUES (?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    )";
 
-	public boolean insert(Monitor row) throws TechnicalException, SQLException {
+	public boolean insert(Monitor row, Long fuel_consumption, Co2Master cm) throws TechnicalException, SQLException {
 		PreparedStatement stmt_insert_livefleet_position;
 
 		boolean result = false;
@@ -33,7 +32,8 @@ public class LiveFleetPosition implements Serializable {
 
 			if (null != row && null != (connection = getConnection())) {
 				stmt_insert_livefleet_position = connection.prepareStatement(INSERT_LIVEFLEET_POSITION);
-				stmt_insert_livefleet_position = fillStatement(stmt_insert_livefleet_position, row);
+				stmt_insert_livefleet_position = fillStatement(stmt_insert_livefleet_position, row, fuel_consumption,
+						cm);
 				System.out.println("inside LiveFleetDriverActivityDao Insert");
 				stmt_insert_livefleet_position.addBatch();
 				stmt_insert_livefleet_position.executeBatch();
@@ -69,6 +69,7 @@ public class LiveFleetPosition implements Serializable {
 				System.out.println("outside livefleet position while loop");
 				rs_position.close();
 			}
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -82,11 +83,13 @@ public class LiveFleetPosition implements Serializable {
 				}
 			}
 		}
+
 		return distance_until_next_service;
+
 	}
 
-	private PreparedStatement fillStatement(PreparedStatement stmt_insert_livefleet_position, Monitor row)
-			throws SQLException {
+	private PreparedStatement fillStatement(PreparedStatement stmt_insert_livefleet_position, Monitor row,
+			Long fuel_consumption, Co2Master cm) throws SQLException {
 		int varVEvtid = 0;
 		if (row.getVEvtID() != null) {
 
@@ -166,16 +169,27 @@ public class LiveFleetPosition implements Serializable {
 
 		}
 
-		if (row.getDocument().getVFuelLevel1() != null)
-			stmt_insert_livefleet_position.setDouble(8, row.getDocument().getVFuelLevel1()); // CO2 Emission
-																								// Have to apply formula
-		else
-			stmt_insert_livefleet_position.setDouble(8, 0); // CO2 Emission //Have to apply formula
+		if (fuel_consumption != null) {
 
-		if (row.getDocument().getVFuelLevel1() != null)
-			stmt_insert_livefleet_position.setDouble(9, row.getDocument().getVFuelLevel1()); // fuel_consumption
-		else
+			double co2emission = (fuel_consumption * cm.getCoefficient_D()) / 1000;
+
+			System.out.println("  In fillStatement co2emission-- > " + co2emission);
+
+			stmt_insert_livefleet_position.setDouble(8, co2emission);  // co2emission
+
+			System.out.println(" In fillStatement fuel_consumption --> " + fuel_consumption);
+
+			stmt_insert_livefleet_position.setDouble(9, fuel_consumption); // fuel_consumption
+
+		}
+
+		else {
+
+			stmt_insert_livefleet_position.setDouble(8, 0); // co2 emission
+
 			stmt_insert_livefleet_position.setDouble(9, 0); // fuel_consumption
+
+		}
 
 		if (varVEvtid == 26 || varVEvtid == 28 || varVEvtid == 29 || varVEvtid == 32 || varVEvtid == 42
 				|| varVEvtid == 43 || varVEvtid == 44 || varVEvtid == 45 || varVEvtid == 46) {

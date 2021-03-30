@@ -1,4 +1,4 @@
-<div *ngIf="viewFlag" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+<div *ngIf="viewFlag || viewRelationshipFromOrg" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
       <span>{{ breadcumMsg }}</span>
     </div>
@@ -15,6 +15,11 @@
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ title }}</span>
                 </div>
+          
+                    <button *ngIf="viewRelationshipFromOrg" class='actionBtn'  mat-flat-button (click)="editRelationship(selectedRowFromRelationship)" matTooltip="Edit">
+                        <mat-icon>create</mat-icon>
+                    </button>
+                
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -114,12 +119,13 @@
                     </div>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="end">
-                    <div fxLayout="row">
-                        <button class='margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel'}}</button>
-                        <button class='margin-right-10'  mat-raised-button color="primary" *ngIf="!createStatus"
+                    <div fxLayout="row" class='areaWidth'>
+                        <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel'}}</button>
+                        <button class='resetCancelBtnColor no-margin margin-right-10'  mat-raised-button color="primary" *ngIf="!createStatus"
                             (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
                         <button class='no-margin' [disabled]="!relationshipFormGroup.valid || selectionForFeatures.selected.length == 0" mat-raised-button color="primary"
-                            (click)='onCreate()'>{{ createStatus  ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm || 'Confirm') }}</button>
+                            (click)='onCreate()'>
+                            {{ createStatus  ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm || 'Confirm') }}</button>
                     </div>
                 </div>
             </div>

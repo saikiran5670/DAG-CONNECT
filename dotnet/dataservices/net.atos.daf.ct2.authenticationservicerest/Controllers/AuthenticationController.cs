@@ -89,7 +89,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
             {
                 if(string.IsNullOrEmpty(token))
                 {
-                    return StatusCode(401,"invalid_grant: The username is Empty.");
+                    return StatusCode(401);
                 }
                 else
                 {
@@ -104,5 +104,38 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
             }           
             return Ok(valid); 
         }
+        
+        [HttpPost]
+        [Route("signout")]
+        public async Task<IActionResult> signout([FromBody] string token)
+        {
+            bool valid = false;
+            try
+            {
+                if (string.IsNullOrEmpty(token))
+                {
+                    return StatusCode(401);
+                }
+                else
+                {
+                    valid = await accountIdentityManager.LogoutByJwtToken(token);
+                    if (valid)
+                    {
+                        return StatusCode(200);
+                    }
+                    else 
+                    {
+                        return StatusCode(401);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                valid = false;
+                logger.LogError(ex.ToString());
+                return StatusCode(500);
+            }
+        }
+
     }
 }

@@ -19,7 +19,6 @@ using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.translationservice;
 using net.atos.daf.ct2.auditservice;
 using net.atos.daf.ct2.roleservice;
-
 using net.atos.daf.ct2.organizationservice;
 using net.atos.daf.ct2.driverservice;
 using Microsoft.AspNetCore.Http;
@@ -29,19 +28,21 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Caching.Distributed;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.subscriptionservice;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace net.atos.daf.ct2.portalservice
 {
     public class Startup
     {
         private readonly string swaggerBasePath = "portalservice";
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
+            Environment = environment;
         }
-
         public IConfiguration Configuration { get; }
-
+        public IWebHostEnvironment Environment { get; }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -51,71 +52,86 @@ namespace net.atos.daf.ct2.portalservice
             var vehicleservice = Configuration["ServiceConfiguration:vehicleservice"];
             var translationservice = Configuration["ServiceConfiguration:translationservice"];
             var auditservice = Configuration["ServiceConfiguration:auditservice"];
-            var featureservice= Configuration["ServiceConfiguration:featureservice"];
+            var featureservice = Configuration["ServiceConfiguration:featureservice"];
             var roleservice = Configuration["ServiceConfiguration:roleservice"];
             var organizationservice = Configuration["ServiceConfiguration:organizationservice"];
             var driverservice = Configuration["ServiceConfiguration:driverservice"];
             var subscriptionservice = Configuration["ServiceConfiguration:subscriptionservice"];
-
             //Web Server Configuration
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
             var cookiesexpireat = Configuration["WebServerConfiguration:cookiesexpireat"];
             var authcookiesexpireat = Configuration["WebServerConfiguration:authcookiesexpireat"];
             var headerstricttransportsecurity = Configuration["WebServerConfiguration:headerstricttransportsecurity"];
-           // var httpsport = Configuration["WebServerConfiguration:httpsport"];
-
+            var headeraccesscontrolalloworigin = Configuration["WebServerConfiguration:headeraccesscontrolalloworigin"];
+            var headeraccesscontrolallowmethods = Configuration["WebServerConfiguration:headeraccesscontrolallowmethods"];
+            var headerAccesscontrolallowheaders = Configuration["WebServerConfiguration:headeraccesscontrolallowheaders"];
+            var httpsport = Configuration["WebServerConfiguration:httpsport"];
             // We are enforcing to call Insercure service             
             AppContext.SetSwitch(
                     "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-
             services.Configure<PortalCacheConfiguration>(Configuration.GetSection("PortalCacheConfiguration"));
-
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            {
+                options.Cookie.Name = "Account";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = options.Cookie.SecurePolicy = string.IsNullOrEmpty(isdevelopmentenv) || isdevelopmentenv.Contains("Configuration") ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.SlidingExpiration = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat) || authcookiesexpireat.Contains("Configuration") ? 5184000 : Convert.ToDouble(authcookiesexpireat));
+                options.Events = new CookieAuthenticationEvents
                 {
-                    options.Cookie.Name = "Account";
-                    options.Cookie.HttpOnly = true;
-                    //options.Cookie.Expiration = TimeSpan.FromMinutes(Convert.ToDouble(cookiesexpireat));
-                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;//options.Cookie.SecurePolicy = string.IsNullOrEmpty(isdevelopmentenv)? CookieSecurePolicy.Always : Convert.ToBoolean(isdevelopmentenv) ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
-                    options.Cookie.SameSite = SameSiteMode.Lax;
-                    options.SlidingExpiration = true;
-                    options.ExpireTimeSpan = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat)? 5184000 : Convert.ToDouble(authcookiesexpireat));
-                    options.Events = new CookieAuthenticationEvents
-                    {                          
-                        OnRedirectToLogin = redirectContext =>
-                        {
-                            redirectContext.HttpContext.Response.StatusCode = 401;
-                            return Task.CompletedTask;
-                        },
-                        OnRedirectToAccessDenied = context => 
-                        { 
-                            context.Response.StatusCode = 403; 
-                            return Task.CompletedTask; 
-                        }
-                    };                
+                    OnRedirectToLogin = redirectContext =>
+                    {
+                        redirectContext.HttpContext.Response.StatusCode = 401;
+                        return Task.CompletedTask;
+                    },
+                    OnRedirectToAccessDenied = context =>
+                    {
+                        context.Response.StatusCode = 403;
+                        return Task.CompletedTask;
+                    }
+                };
             });
-
-            /*   services.AddHsts(options =>
-               {
-                   options.Preload = true;
-                   options.IncludeSubDomains = true;
-                   options.MaxAge = TimeSpan.FromHours(Convert.ToInt32(headerstricttransportsecurity));
-               });
-               services.AddHttpsRedirection(options =>
-               {
-                   options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
-                   options.HttpsPort = string.IsNullOrEmpty(httpsport)? 443 : Convert.ToInt32(httpsport);
-               }); */
-
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat) || authcookiesexpireat.Contains("Configuration") ? 5184000 : Convert.ToDouble(authcookiesexpireat)); ;
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+                options.Cookie.SecurePolicy= string.IsNullOrEmpty(isdevelopmentenv) || isdevelopmentenv.Contains("Configuration") ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
+            });
+            services.AddAuthorization(options =>
+            {
+                //if (Environment.IsDevelopment())  //not working for dev0 environment
+                if ((!isdevelopmentenv.Contains("Configuration")) && Convert.ToBoolean(isdevelopmentenv))
+                {
+                    options.DefaultPolicy = new AuthorizationPolicyBuilder().RequireAssertion(_ => true).Build();
+                }
+            });
+            services.AddHsts(options =>
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = string.IsNullOrEmpty(headerstricttransportsecurity) || headerstricttransportsecurity.Contains("Configuration") ? TimeSpan.FromHours(31536000) : TimeSpan.FromHours(Convert.ToDouble(headerstricttransportsecurity));
+            });
+            //services.AddHttpsRedirection(options =>
+            //{
+            //    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+            //    options.HttpsPort = string.IsNullOrEmpty(httpsport) || httpsport.Contains("Configuration") ? 443 : Convert.ToInt32(httpsport);
+            //});
             services.AddMemoryCache();
+            services.AddControllers().ConfigureApiBehaviorOptions(options =>
+            {
+                options.InvalidModelStateResponseFactory = actionContext =>
+                {
+                    return CustomErrorResponse(actionContext);
+                };
+            });
 
             services.AddControllers();
             services.AddTransient<AuditHelper, AuditHelper>();
             services.AddDistributedMemoryCache();
-
             services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
             services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();
-
             services.AddGrpcClient<AccountService.AccountServiceClient>(o =>
             {
                 o.Address = new Uri(accountservice);
@@ -128,12 +144,11 @@ namespace net.atos.daf.ct2.portalservice
             {
                 o.Address = new Uri(vehicleservice);
             });
-          
             services.AddGrpcClient<FeatureService.FeatureServiceClient>(o =>
             {
                 o.Address = new Uri(featureservice);
             });
-             services.AddGrpcClient<FeatureService.FeatureServiceClient>(o =>
+            services.AddGrpcClient<FeatureService.FeatureServiceClient>(o =>
             {
                 o.Address = new Uri(featureservice);
             });
@@ -153,7 +168,7 @@ namespace net.atos.daf.ct2.portalservice
             {
                 o.Address = new Uri(auditservice);
             });
-             services.AddGrpcClient<DriverService.DriverServiceClient>(o =>
+            services.AddGrpcClient<DriverService.DriverServiceClient>(o =>
             {
                 o.Address = new Uri(driverservice);
             });
@@ -164,26 +179,20 @@ namespace net.atos.daf.ct2.portalservice
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portal Service", Version = "v1" });
-             });
+            });
             services.AddCors(c =>
             {
                 //This need to be change to orgin specific on UAT and prod
-                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+                c.AddPolicy("AllowOrigin",
+                    options => options.AllowAnyOrigin()
+                 );
             });
-
+            services.AddControllers();
         }
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-           // else
-           // {
-           //     app.UseHsts();
-           // }
+            app.UseAuthentication();
             //Web Server Configuration
             var headercachecontrol = Configuration["WebServerConfiguration:headercachecontrol"];
             var headerexpires = Configuration["WebServerConfiguration:headerexpires"];
@@ -194,32 +203,39 @@ namespace net.atos.daf.ct2.portalservice
             var headeraccesscontrolalloworigin = Configuration["WebServerConfiguration:headeraccesscontrolalloworigin"];
             var headeraccesscontrolallowmethods = Configuration["WebServerConfiguration:headeraccesscontrolallowmethods"];
             var headerAccesscontrolallowheaders = Configuration["WebServerConfiguration:headeraccesscontrolallowheaders"];
-
+            var headerAccesscontrolallowcredentials = Configuration["WebServerConfiguration:headeraccesscontrolallowcredentials"];
+            var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
+            //if (Environment.IsDevelopment())  //not working for dev0 environment
+            if (isdevelopmentenv.Contains("Configuration") || Convert.ToBoolean(isdevelopmentenv))
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseHsts();
+                //app.UseHttpsRedirection();
+            }
             app.Use(async (context, next) =>
             {
-                //context.Response.Headers["Cache-Control"] = string.IsNullOrEmpty(headercachecontrol) ? "no-cache, no-store, must-revalidate" : headercachecontrol;
-                //context.Response.Headers["Expires"] = string.IsNullOrEmpty(headerexpires) ? "-1" : headerexpires;
-                //context.Response.Headers["Pragma"] = string.IsNullOrEmpty(headerpragma) ? "no-cache" : headerpragma;
-                context.Response.Headers.Add("X-Frame-Options", string.IsNullOrEmpty(headerxframeoptions) ? "DENY" : headerxframeoptions);
-                context.Response.Headers.Add("X-Xss-Protection", string.IsNullOrEmpty(headerxxssprotection) ? "1" : headerxxssprotection);
+                context.Response.Headers["Cache-Control"] = string.IsNullOrEmpty(headercachecontrol) || headercachecontrol.Contains("Configuration") ? "no-cache, no-store, must-revalidate" : headercachecontrol;
+                context.Response.Headers["Expires"] = string.IsNullOrEmpty(headerexpires) || headerexpires.Contains("Configuration") ? "-1" : headerexpires;
+                context.Response.Headers["Pragma"] = string.IsNullOrEmpty(headerpragma) || headerpragma.Contains("Configuration") ? "no-cache" : headerpragma;
+                context.Response.Headers.Add("X-Frame-Options", string.IsNullOrEmpty(headerxframeoptions) || headerxframeoptions.Contains("Configuration") ? "DENY" : headerxframeoptions);
+                context.Response.Headers.Add("X-Xss-Protection", string.IsNullOrEmpty(headerxxssprotection) || headerxxssprotection.Contains("Configuration") ? "1" : headerxxssprotection);
                 ///////context.Response.Headers.Add("Content-Security-Policy", "script-src 'self' 'unsafe-eval' 'unsafe-inline'; navigate-to https://www.daf.com; connect-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'");
-                //context.Response.Headers.Add("Strict-Transport-Security", string.IsNullOrEmpty(headerstricttransportsecurity) ? "31536000" : headerstricttransportsecurity);
-                context.Response.Headers.Add("Access-Control-Allow-Origin", string.IsNullOrEmpty(headeraccesscontrolalloworigin) ? "*" : headeraccesscontrolalloworigin);
-                //////context.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:4200");
-                context.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
-                context.Response.Headers.Add("Access-Control-Allow-Methods", string.IsNullOrEmpty(headeraccesscontrolallowmethods) ? "GET, POST, PUT, DELETE" : headeraccesscontrolallowmethods);
-                //context.Response.Headers.Add("Access-Control-Allow-Headers", string.IsNullOrEmpty(headerAccesscontrolallowheaders) ? "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With" : headerAccesscontrolallowheaders);
-
+                context.Response.Headers.Add("Strict-Transport-Security", string.IsNullOrEmpty(headerstricttransportsecurity) || headerstricttransportsecurity.Contains("Configuration") ? "31536000" : headerstricttransportsecurity);
+                context.Response.Headers.Add("Access-Control-Allow-Origin", string.IsNullOrEmpty(headeraccesscontrolalloworigin) || headeraccesscontrolalloworigin.Contains("Configuration") ? "*" : headeraccesscontrolalloworigin);
+                context.Response.Headers.Add("Access-Control-Allow-Credentials", string.IsNullOrEmpty(headerAccesscontrolallowcredentials) || headerAccesscontrolallowcredentials.Contains("Configuration") ? "true" : headerAccesscontrolallowcredentials);
+                context.Response.Headers.Add("Access-Control-Allow-Methods", string.IsNullOrEmpty(headeraccesscontrolallowmethods) || headeraccesscontrolallowmethods.Contains("Configuration") ? "GET, POST, PUT, DELETE" : headeraccesscontrolallowmethods);
+                context.Response.Headers.Add("Access-Control-Allow-Headers", string.IsNullOrEmpty(headerAccesscontrolallowheaders) || headerAccesscontrolallowheaders.Contains("Configuration") ? "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With" : headerAccesscontrolallowheaders);
                 context.Response.Headers.Remove("X-Powered-By");
                 context.Response.Headers.Remove("Server");
                 context.Response.Headers.Remove("X-AspNet-Version");
                 context.Response.Headers.Remove("X-AspNetMvc-Version");
-
                 await next();
             });
-            //app.UseHttpsRedirection();
-
             app.UseRouting();
+            app.UseSession();
             //This need to be change to orgin specific on UAT and prod
             app.UseCors(builder =>
             {
@@ -227,26 +243,62 @@ namespace net.atos.daf.ct2.portalservice
                 builder.AllowAnyMethod();
                 builder.AllowAnyHeader();
             });
-
-            //app.UseCookiePolicy();
-            
-            app.UseAuthentication();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-             app.UseSwagger(c =>
+            app.UseSwagger(c =>
             {
-                c.RouteTemplate = swaggerBasePath+"/swagger/{documentName}/swagger.json";
+                c.RouteTemplate = swaggerBasePath + "/swagger/{documentName}/swagger.json";
             });
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
                 c.RoutePrefix = $"{swaggerBasePath}/swagger";
             });
+        }
+
+        private ObjectResult CustomErrorResponse(ActionContext context)
+        {
+            // create a problem details object
+            var problemDetailsFactory = context.HttpContext.RequestServices
+                    .GetRequiredService<ProblemDetailsFactory>();
+            var problemDetails = problemDetailsFactory.CreateValidationProblemDetails(
+                    context.HttpContext,
+                    context.ModelState);
+
+            // add additional info not added by default
+            problemDetails.Detail = "See the errors field for details.";
+            problemDetails.Instance = context.HttpContext.Request.Path;
+
+            // find out which status code to use
+            var actionExecutingContext =
+                      context as Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext;
+
+            // if there are modelstate errors & all arguments were correctly
+            // found/parsed we're dealing with validation errors
+            if ((context.ModelState.ErrorCount > 0) &&
+                    (actionExecutingContext?.ActionArguments.Count == context.ActionDescriptor.Parameters.Count))
+            {
+                problemDetails.Type = "/modelvalidationproblem";
+                problemDetails.Status = StatusCodes.Status422UnprocessableEntity;
+                problemDetails.Title = "One or more validation errors occurred.";
+
+                return new UnprocessableEntityObjectResult(problemDetails)
+                {
+                    ContentTypes = { "application/json" }
+                };
+            }
+
+            // if one of the arguments wasn't correctly found / couldn't be parsed
+            // we're dealing with null/unparseable input
+            problemDetails.Status = StatusCodes.Status400BadRequest;
+            problemDetails.Title = "One or more errors on input occurred.";
+            return new BadRequestObjectResult(problemDetails)
+            {
+                ContentTypes = { "application/json" }
+            };
         }
     }
 }

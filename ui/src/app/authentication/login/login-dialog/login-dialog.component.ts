@@ -11,6 +11,7 @@ import { DataInterchangeService } from 'src/app/services/data-interchange.servic
 })
 export class LoginDialogComponent {
   public loginDialogForm: FormGroup;
+  selectedRoles: any = [];
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     title: string,
     cancelText: string,
@@ -30,13 +31,15 @@ export class LoginDialogComponent {
   setDropdownValues(){
     if(this.data.organization.length > 0){
       this.loginDialogForm.get('organization').setValue(this.data.organization[0].id);
+      this.filterOrgRoles(this.data.organization[0].id); //-- filter roles based on org
     }
-    if(this.data.role.length > 0){
-      this.loginDialogForm.get('role').setValue(this.data.role[0].id);
-    }
+    // if(this.data.role.length > 0){
+    //   this.loginDialogForm.get('role').setValue(this.data.role[0].id);
+    // }
   }
 
   public cancel() {
+    localStorage.clear(); // clear localstorage
     this.close(false);
   }
 
@@ -49,7 +52,7 @@ export class LoginDialogComponent {
       let selectedValues = formValue;
       localStorage.setItem('accountOrganizationId', this.loginDialogForm.controls.organization.value);
       localStorage.setItem('accountRoleId', this.loginDialogForm.controls.role.value);
-      let orgName = this.data.organization.filter(item => item.id === this.loginDialogForm.controls.organization.value);
+      let orgName = this.data.organization.filter(item => parseInt(item.id) === parseInt(this.loginDialogForm.controls.organization.value));
       if(orgName.length > 0){
         localStorage.setItem("organizationName", orgName[0].name);
       }
@@ -70,6 +73,23 @@ export class LoginDialogComponent {
   @HostListener('keydown.esc')
   public onEsc() {
     this.close(false);
+  }
+
+  orgBasedRoleSelection(event: any){
+    this.filterOrgRoles(event.value); //-- pass orgId
+  }
+
+  filterOrgRoles(orgId: any){
+    if(this.data.role.length > 0){ //-- (Roles > 0) 
+      let filterRoles = this.data.role.filter(item => parseInt(item.organization_Id) === parseInt(orgId));
+      if(filterRoles.length > 0){
+        this.selectedRoles = filterRoles;
+        this.loginDialogForm.get('role').setValue(this.selectedRoles[0].id);
+      }
+      else{
+        this.selectedRoles = [];
+      }
+    }
   }
 
 }

@@ -1,0 +1,137 @@
+<div *ngIf="actionType == 'view'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+      <span>{{ breadcumMsg }}</span>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+      <span class='custom-font' (click)="onCancel()">
+        <span><&nbsp;</span>
+        <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+    </div>
+</div>
+<form [formGroup]="vehicleForm">
+  <mat-card class='mat-elevation-z'>
+    <mat-card-content>
+      <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'edit' ? (translationData.lblEditVehicleDetails || 'Edit Vehicle Details') : (translationData.lblViewVehicleDetails || 'View Vehicle Details') }}</span>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblVehicleName || 'Vehicle Name' }} <span class='mandatoryColor'>*</span>
+          </mat-label>
+          <div *ngIf="actionType != 'view'">
+            <mat-form-field appearance="outline" class="full-width">
+              <input maxlength="50" placeholder="{{ translationData.lblEnterVehicleName || 'Enter Vehicle Name' }}" matInput
+                formControlName="vehicleName" required>
+            </mat-form-field>
+            <mat-error *ngIf="vehicleForm.get('vehicleName').hasError('required')">
+              {{ translationData.lblPleaseEnterVehicleName || 'Please Enter Vehicle Name' }}
+            </mat-error>
+            <mat-error *ngIf="!vehicleForm.get('vehicleName').hasError('required')  && vehicleForm.get('vehicleName').hasError('whitespace')">
+              {{ translationData.lblVehicleNamecannotcontainonlywhitespace || 'Vehicle Name cannot contain only whitespace' }}
+              </mat-error>
+            <mat-error *ngIf="duplicateVehicleMsg">
+              {{ translationData.lblDuplicateVehicleName || 'Duplicate Vehicle Name' }}
+            </mat-error>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedRowData.name ? selectedRowData.name : '--' }}</span>
+          </div>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblRegistrationNumber || 'Registration Number' }} <span class='mandatoryColor'>*</span>
+          </mat-label>
+          <div *ngIf="actionType != 'view'">
+            <mat-form-field appearance="outline" class="full-width">
+              <input maxlength="50" placeholder="{{ translationData.lblEnterRegistrationNumber || 'Enter Registration Number' }}" matInput
+                formControlName="registrationNumber" required>
+            </mat-form-field>
+            <mat-error *ngIf="vehicleForm.get('registrationNumber').hasError('required')">
+              {{ translationData.lblPleaseEnterRegistrationNumber || 'Please Enter Registration Number' }}
+            </mat-error>
+            <mat-error *ngIf="!vehicleForm.get('registrationNumber').hasError('required')  && vehicleForm.get('registrationNumber').hasError('whitespace')">
+              {{ translationData.lblRegistrationNumbercannotcontainonlywhitespace || 'Registration Number cannot contain only whitespace' }}
+            </mat-error>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedRowData.licensePlateNumber ? selectedRowData.licensePlateNumber : '--' }}</span>
+          </div>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblVehicleIdentificationNumberVIN || 'Vehicle Identification Number (VIN)' }}
+          </mat-label>
+          <div *ngIf="actionType != 'view'">
+            <mat-form-field appearance="outline" class="full-width">
+              <input maxlength="50" placeholder="{{ translationData.lblEnterVehicleIdentificationNumberVIN || 'Enter Vehicle Identification Number (VIN)' }}" matInput
+                formControlName="vin">
+            </mat-form-field>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedRowData.vin ? selectedRowData.vin : '--' }}</span>
+          </div>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblVehicleModel || 'Vehicle Model' }}
+          </mat-label>
+          <div *ngIf="actionType != 'view'">
+            <mat-form-field appearance="outline" class="full-width">
+              <input maxlength="50" placeholder="{{ translationData.lblEnterVehicleModel || 'Enter Vehicle Model' }}" matInput
+                formControlName="vehicleModel">
+            </mat-form-field>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedRowData.modelId ? selectedRowData.modelId : '--' }}</span>
+          </div>
+        </div>
+        <div class="areaWidth min-width-65-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblAssociatedGroups || 'Associated Groups' }}
+          </mat-label>
+          <div *ngIf="actionType != 'view'">
+            <mat-form-field appearance="outline" class="full-width">
+              <input placeholder="{{ translationData.lblEnterAssociatedGroups || 'Enter Associated Groups' }}" matInput
+                formControlName="associatedGroups">
+            </mat-form-field>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedRowData.associatedGroups ? selectedRowData.associatedGroups : '--' }}</span>
+          </div>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblRelationship || 'Relationship' }}
+          </mat-label>
+          <div *ngIf="actionType != 'view'">
+            <mat-form-field appearance="outline" class="full-width">
+              <input placeholder="{{ translationData.lblEnterRelationship || 'Enter Relationship' }}" matInput
+                formControlName="relationship">
+            </mat-form-field>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedRowData.relationShip ? selectedRowData.relationShip : '--' }}</span>
+          </div>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblStatus || 'Status' }}
+          </mat-label>
+          <div class='margin-top-10'>
+            <span style='font-weight: 500!important;'>{{ vehicleStatus ? vehicleStatus : '--' }}</span>
+          </div>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions *ngIf="actionType != 'view'" fxLayoutAlign="end end" class='no-margin no-padding'>
+      <div fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+            <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
+              (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
+            <button class='no-margin' [disabled]="!vehicleForm.valid" mat-raised-button color="primary"
+              (click)='onUpdateVehicle()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
+      </div>
+    </mat-card-actions> 
+  </mat-card>
+</form>

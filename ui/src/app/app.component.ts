@@ -11,7 +11,7 @@ import { AccountService } from './services/account.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Variable } from '@angular/compiler/src/render3/r3_ast';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { TermsConditionsPopupComponent } from './shared/terms-conditions-popup/terms-conditions-popup.component';
+import { TermsConditionsPopupComponent } from './terms-conditions-content/terms-conditions-popup.component';
 
 @Component({
   selector: 'app-root',
@@ -56,6 +56,7 @@ export class AppComponent {
   public userPreferencesFlag : boolean = false;
   appForm: FormGroup;
   dialogRefTerms: MatDialogRef<TermsConditionsPopupComponent>;
+  selectedRoles: any = [];
   private pagetTitles = {
     livefleet: 'live fleet',
     logbook: 'log book',
@@ -169,7 +170,7 @@ export class AppComponent {
       pageTitles: {
         information: 'Information'
       },
-      link: "https://www.daf.com/en/sites-landing"
+      link: "https://connectinfo.daf.com/en/?accesskey=2126e1f9-078d-4902-ab5f-46ea70f0e461"
     },
     legalnotices : {
       open: false,
@@ -179,6 +180,14 @@ export class AppComponent {
         legalnotices: 'Legal Notices'
       },
       link: "https://www.daf.com/en/legal/legal-notice"
+    },
+    termsConditions : {
+      open: false,
+      icon: "notes",
+      externalLink: false,
+      pageTitles: {
+        termsConditions: 'Terms & Conditions'
+      }
     }
   }
 
@@ -222,7 +231,6 @@ export class AppComponent {
     if(!this.isLogedIn){
       this.getTranslationLabels();
       this.getAccountInfo();
-      
     }
 
     this.appForm = this.fb.group({
@@ -272,12 +280,63 @@ export class AppComponent {
       translationData: this.translationData
     }
     this.dialogRefTerms = this.dialog.open(TermsConditionsPopupComponent, dialogConfig);
-    // this.dialogRefTerms.afterClosed().subscribe(res => {
+    this.dialogRefTerms.afterClosed().subscribe(res => {
+      if(res.termsConditionsAgreeFlag){
+
+      } 
+      else{
+        this.logOut();
+      } 
+    });
+  }
+
+  getNavigationMenu() {
+      // For checking Access of the User
+      let accessNameList = [];
+      this.menuPages.features.forEach((obj: any) => {
+          accessNameList.push(obj.name)
+        });
+        // console.log("---print name access ---",accessNameList)
+        if(accessNameList.includes("Admin#Admin")){
+          this.adminFullAccess = true;
+        }else if(accessNameList.includes("Admin#Contributor")){
+          this.adminContributorAccess = true;
+        }else {
+          this.adminReadOnlyAccess = true;
+        }
+  
+        this.accessType = {
+          adminFullAccess : this.adminFullAccess,
+          adminContributorAccess: this.adminContributorAccess,
+          adminReadOnlyAccess: this.adminReadOnlyAccess
+        }
+        localStorage.setItem("accessType", JSON.stringify(this.accessType));
+        // For checking Type of the User
+        if(accessNameList.includes("Admin#Platform")){
+          this.userType = "Admin#Platform";
+        }else if(accessNameList.includes("Admin#Global")){
+          this.userType = "Admpin#Global";
+        }else if(accessNameList.includes("Admin#Organisation")){
+          this.userType = "Admin#Organisation";
+        }else if(accessNameList.includes("Admin#Account")){
+          this.userType = "Admin#Account";
+        }
+        localStorage.setItem("userType", this.userType);
       
-    // });
+  
+        // This will handle externalLink and Icons for Navigation Menu
+      this.menuPages.menus.forEach(elem => {
+        elem.externalLink = this.menuStatus[elem.url].externalLink ;
+        elem.icon = this.menuStatus[elem.url].icon;
+        if(elem.externalLink){
+          elem.link = this.menuStatus[elem.url].link;
+        }
+        })
+  
   }
 
   getAccountInfo(){
+    this.openUserRoleDialog = false;
     this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
     if(this.accountInfo){
       this.userFullName = `${this.accountInfo.accountDetail.salutation} ${this.accountInfo.accountDetail.firstName} ${this.accountInfo.accountDetail.lastName}`;
@@ -304,7 +363,8 @@ export class AppComponent {
 
   setDropdownValues(){
     this.landingPageForm.get("organization").setValue(parseInt(localStorage.getItem("accountOrganizationId")));
-    this.landingPageForm.get("role").setValue(parseInt(localStorage.getItem("accountRoleId")));
+    this.selectedRoles = this.roleDropdown;
+    this.filterOrgBasedRoles(localStorage.getItem("accountOrganizationId"), true);
   }
 
   public detectDevice() {
@@ -358,7 +418,8 @@ export class AppComponent {
       lblMobilePortal: "Mobile Portal",
       lblShop: "Shop",
       lblInformation: "Information",
-      lblAdmin: "Admin"
+      lblAdmin: "Admin",
+      lblTermsAndConditions: "Terms & Conditions"
     }
   }
 
@@ -404,6 +465,8 @@ export class AppComponent {
         this.localStLanguage = JSON.parse(localStorage.getItem("language"));
       }
 
+      this.appForm.get("languageSelection").setValue(this.localStLanguage.id); //-- set language dropdown
+
       let translationObj = {
         id: 0,
         code: preferencelanguageCode, //-- TODO: Lang code based on account 
@@ -426,48 +489,7 @@ export class AppComponent {
 
   ngOnInit() {
 
-    // For checking Access of the User
-    let accessNameList = [];
-    this.menuPages.features.forEach((obj: any) => {
-        accessNameList.push(obj.name)
-      });
-      // console.log("---print name access ---",accessNameList)
-      if(accessNameList.includes("Admin#Admin")){
-        this.adminFullAccess = true;
-      }else if(accessNameList.includes("Admin#Contributor")){
-        this.adminContributorAccess = true;
-      }else {
-        this.adminReadOnlyAccess = true;
-      }
-
-      this.accessType = {
-        adminFullAccess : this.adminFullAccess,
-        adminContributorAccess: this.adminContributorAccess,
-        adminReadOnlyAccess: this.adminReadOnlyAccess
-      }
-      localStorage.setItem("accessType", JSON.stringify(this.accessType));
-      // For checking Type of the User
-      if(accessNameList.includes("Admin#Platform")){
-        this.userType = "Admin#Platform";
-      }else if(accessNameList.includes("Admin#Global")){
-        this.userType = "Admpin#Global";
-      }else if(accessNameList.includes("Admin#Organisation")){
-        this.userType = "Admin#Organisation";
-      }else if(accessNameList.includes("Admin#Account")){
-        this.userType = "Admin#Account";
-      }
-      localStorage.setItem("userType", this.userType);
-    
-
-      // This will handle externalLink and Icons for Navigation Menu
-    this.menuPages.menus.forEach(elem => {
-      elem.externalLink = this.menuStatus[elem.url].externalLink ;
-      elem.icon = this.menuStatus[elem.url].icon;
-      if(elem.externalLink){
-        elem.link = this.menuStatus[elem.url].link;
-      }
-      })
-
+  
   
     if (this.router.url) {
       //this.isLogedIn = true;
@@ -559,15 +581,43 @@ private setPageTitle() {
 
   onOrgChange(value: any){
     localStorage.setItem("accountOrganizationId", value);
-    let orgname = this.organizationDropdown.filter(item => item.id === value);
+    let orgname = this.organizationDropdown.filter(item => parseInt(item.id) === parseInt(value));
     this.userOrg = orgname[0].name;
     localStorage.setItem("organizationName", this.userOrg);
+    this.filterOrgBasedRoles(value, false);
   }
 
    onRoleChange(value: any){
     localStorage.setItem("accountRoleId", value);
-    let rolename = this.roleDropdown.filter(item => item.id === value);
+    let rolename = this.roleDropdown.filter(item => parseInt(item.id) === parseInt(value));
     this.userRole = rolename[0].name;
+    this.filterOrgBasedRoles(localStorage.getItem("accountOrganizationId"), true);
+   }
+
+   filterOrgBasedRoles(orgId: any, defaultType: boolean){
+     if(defaultType){ //-- from setdefault
+      this.landingPageForm.get("role").setValue(parseInt(localStorage.getItem("accountRoleId")));
+     }
+     else{ //-- On org change
+         if(this.roleDropdown.length > 0){ //-- (Roles > 0) 
+          let filterRoles = this.roleDropdown.filter(item => parseInt(item.organization_Id) === parseInt(orgId));
+          if(filterRoles.length > 0){
+            this.selectedRoles = filterRoles;
+            this.landingPageForm.get('role').setValue(this.selectedRoles[0].id);
+            localStorage.setItem("accountRoleId", this.selectedRoles[0].id);
+            this.userRole = this.selectedRoles[0].name;
+          }
+          else{
+            this.selectedRoles = [];
+            localStorage.removeItem('accountRoleId');
+            this.userRole = '';
+          }
+        }
+     }
+    //-- TODO: call API to get navigation menu data ---//
+    if(this.selectedRoles.length > 0){ //-- When role available
+      this.getNavigationMenu();
+    }
    }
 
    onLanguageChange(value: any){

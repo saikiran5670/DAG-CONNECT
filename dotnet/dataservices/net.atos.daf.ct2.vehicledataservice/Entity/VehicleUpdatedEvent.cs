@@ -70,6 +70,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         public string Power { get; set; }
         public string Coolant { get; set; }
         public string EmissionLevel { get; set; }
+        public string Fuel { get; set; }
     }
     public class Transmission
     {

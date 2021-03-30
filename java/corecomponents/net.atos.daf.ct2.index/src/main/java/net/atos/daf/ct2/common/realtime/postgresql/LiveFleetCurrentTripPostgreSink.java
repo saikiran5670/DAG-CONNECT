@@ -70,7 +70,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 		System.out.println("livefleetposition --> " + readposition);
 
 		try {
-			System.out.println("in open try");
+			System.out.println("in LiveFleet Current TRip Statstics open try");
 
 			connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
 					envParams.get(DafConstants.DATAMART_POSTGRE_SERVER_NAME),
@@ -89,10 +89,10 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 					envParams.get(DafConstants.DATAMART_POSTGRE_USER),
 					envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
 			positionDAO.setConnection(connection2);*/
-			System.out.println("After Connection");
+			System.out.println("After Connection of LiveFleet Current TRip Statstics");
 
 		} catch (Exception e) {
-			log.error("Error in Live fleet driver" + e.getMessage());
+			log.error("Error in LiveFleet Current TRip Statstics" + e.getMessage());
 			e.printStackTrace();
 
 		}
@@ -105,11 +105,11 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 		// Live Fleet CURRENT TRIP Activity
 		Index row = index.getValue();
 		
-		
+		System.out.println("in current trip Invoke above try");
 
 		try {
 			queue.add(row);
-			if (queue.size() >= 3) {
+			if (queue.size() >= 1) {
 				System.out.println("inside current trip syncronized");
 				synchronized (synchronizedCopy) {
 					synchronizedCopy = new ArrayList<Index>(queue);
@@ -122,7 +122,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 						if (varVEvtid != 4) {
 
 							CurrentTrip current_trip_start_var = currentTripDAO
-									.read(index.getValue().getDocument().getTripID());
+									.read(index.getValue().getDocument().getTripID() ,DafConstants.CURRENT_TRIP_INDICATOR );
 
 							indexValue.setReceivedTimestamp(current_trip_start_var.getStart_time_stamp());
 
