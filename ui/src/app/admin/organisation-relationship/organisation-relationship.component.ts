@@ -264,8 +264,9 @@ export class OrganisationRelationshipComponent implements OnInit {
       message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
       cancelText: this.translationData.lblNo || "No",
       confirmText: this.translationData.lblYes || "Yes",
-      status: rowData.status == 'Active' ? 'Inactive' : 'Active' ,
-      name: rowData.name
+      // status: rowData.status == 'Active' ? 'Inactive' : 'Active' ,
+      status: rowData.allowChain == true ? 'Inactive' : 'Active' ,
+      name: rowData.relationshipName
     };
    
     const dialogConfig = new MatDialogConfig();
@@ -275,7 +276,7 @@ export class OrganisationRelationshipComponent implements OnInit {
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
       if(res){ 
-        //TODO: change status with latest grid data
+        
       }
     });}
   }
