@@ -114,7 +114,7 @@
             </div>
         </div>
         <div style="clear: both"></div>
-        <ul>
+        <ul *ngIf="menuPages">
             <li #menuName *ngFor='let menu of menuPages.menus; index as i' class="menuItem"
                 [ngClass]="{'active': pageName === menu.url}" [attr.menuName]="menu.url">
                 <span *ngIf="menu.subMenus.length == 0; else elseBlock">
