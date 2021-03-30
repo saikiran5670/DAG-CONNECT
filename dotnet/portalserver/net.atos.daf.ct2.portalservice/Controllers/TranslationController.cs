@@ -8,7 +8,8 @@ using net.atos.daf.ct2.utilities;
 using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.translationservice;
 using net.atos.daf.ct2.portalservice.Entity.Translation;
-
+using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.portalservice.Entity.Audit;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -17,18 +18,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     public class TranslationController : ControllerBase
     {
         private readonly ILogger<TranslationController> _logger;
+        private readonly AuditHelper _Audit;
         private readonly TranslationService.TranslationServiceClient _translationServiceClient;
         private readonly Mapper _mapper;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
 
         //Constructor
-        public TranslationController(TranslationService.TranslationServiceClient translationServiceClient, ILogger<TranslationController> logger)
+        public TranslationController(TranslationService.TranslationServiceClient translationServiceClient, ILogger<TranslationController> logger, AuditHelper auditHelper)
         {
             _translationServiceClient = translationServiceClient;
             _logger = logger;
             _mapper = new Mapper();
-
+            _Audit = auditHelper;
         }
 
 
@@ -283,7 +285,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [HttpGet]
         [Route("languagecodes")]
         public async Task<IActionResult> GetAllLanguagecodes([FromQuery] Request request)
-        {
+        {          
             _logger.LogInformation("All languages method get");
 
             TranslationListResponce ResponseList = await _translationServiceClient.GetAllLanguagecodesAsync(request);

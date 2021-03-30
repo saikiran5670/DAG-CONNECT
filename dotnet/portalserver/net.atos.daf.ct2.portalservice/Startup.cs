@@ -110,7 +110,7 @@ namespace net.atos.daf.ct2.portalservice
             services.AddMemoryCache();
 
             services.AddControllers();
-
+            services.AddTransient<AuditHelper, AuditHelper>();
             services.AddDistributedMemoryCache();
 
             services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
