@@ -39,7 +39,14 @@ export class CreateEditUserGroupComponent implements OnInit {
       userGroupName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       groupType: ['', [Validators.required]],
       userGroupDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForName('userGroupName'),
+        CustomValidators.specialCharValidationForNameWithoutRequired('userGroupDescription')
+      ]
     });
+
     this.groupTypeList = [
       {
         name: this.translationData.lblGroup || 'Group',

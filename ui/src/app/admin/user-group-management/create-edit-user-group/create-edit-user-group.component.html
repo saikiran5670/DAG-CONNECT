@@ -33,6 +33,9 @@
                </mat-error>
               <mat-error *ngIf="duplicateEmailMsg">{{translationData.lblDuplicateUserGroupName || 'Duplicate User Group
                 Name' }}</mat-error>
+                <mat-error *ngIf="userGroupForm.get('userGroupName').hasError('specialCharsNotAllowed')">
+                  {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+              </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
               <span style='font-weight: 500!important;'>{{ selectedRowData.name ? selectedRowData.name : '--' }}</span>
@@ -71,6 +74,9 @@
             <mat-error *ngIf="userGroupForm.get('userGroupDescription').hasError('whitespace')">
               {{ translationData.lblUserGroupDescriptioncannotcontainonlywhitespace || 'User Group Description cannot contain only whitespace' }}
             </mat-error>
+            <mat-error *ngIf="userGroupForm.get('userGroupDescription').hasError('specialCharsNotAllowed')">
+              {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+          </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
             <span style='font-weight: 500!important;'>{{ selectedRowData.description ? selectedRowData.description : '--' }}</span>
