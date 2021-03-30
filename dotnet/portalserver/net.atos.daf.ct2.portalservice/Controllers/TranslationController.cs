@@ -162,9 +162,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(request.Key.Trim()))
+                if (string.IsNullOrEmpty(request.Key.Trim()) || string.IsNullOrEmpty(request.Languagecode.Trim()))
                 {
-                    return StatusCode(400, " Key  required..");
+                    return StatusCode(400, " Language code and key required..");
                 }
                 _logger.LogInformation("GetKeyTranslationByLanguageCode  method " + request.Key);
 

@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 // import * as data from './shared/menuData.json';
-import * as data from './shared/navigationMenuData.json';
+// import * as data from './shared/navigationMenuData.json';
 import { DataInterchangeService } from './services/data-interchange.service';
 import { TranslationService } from './services/translation.service';
 import { DeviceDetectorService } from 'ngx-device-detector';
@@ -33,7 +33,7 @@ export class AppComponent {
   public pageName:string = '';
   public fileUploadedPath: SafeUrl;
   isLogedIn: boolean = false;
-  menuPages: any = (data as any).default;
+  menuPages: any;
   // newData: any = {};
   languages= [];
   openUserRoleDialog= false;
@@ -105,7 +105,15 @@ export class AppComponent {
       icon: "info",
       pageTitles: {
         tripreport: 'Trip Report',
-        triptracing: 'Trip Tracing'
+        triptracing: 'Trip Tracing',
+        advancedfleetfuelreport: 'Advanced Fleet Fuel Report',
+        fleetfuelreport: 'Fleet Fuel Report',
+        fleetutilisation: 'Fleet Utilisation',
+        fuelbenchmarking: 'Fuel Benchmarking',
+        fueldeviationreport: 'Fuel Deviation Report',
+        vehicleperformancereport: 'Vehicle Performance Report',
+        drivetimemanagement: 'Drive Time Management',
+        ecoscorereport: 'Ecoscore Report'
       }
     },
     configuration : {
@@ -115,8 +123,10 @@ export class AppComponent {
       pageTitles: {
         alerts: 'Alerts',
         landmarks: 'Landmarks',
+        reportscheduler: 'Report Scheduler',
+        drivermanagement: 'Driver Management',
         vehiclemanagement: 'Vehicle Management',
-        vehiclegroupmanagement: 'Vehicle Group Management'
+        // vehiclegroupmanagement: 'Vehicle Group Management'
       }
     },
     admin : {
@@ -125,18 +135,21 @@ export class AppComponent {
       externalLink: false,
       pageTitles: {
         organisationdetails: 'Organisation Details',
-        usergroupmanagement: 'User Group Management',
-        usermanagement: 'User Management',
-        drivermanagement: 'Driver Management',
-        userrolemanagement: 'User Role Management',
-        // vehiclemanagement: 'Vehicle Management',
-        vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship',
-        translationdataupload: 'Translation Data Upload',
+        accountgroupmanagement: 'User Group Management',
+        accountmanagement: 'User Management',
+        // drivermanagement: 'Driver Management',
+        accountrolemanagement: 'User Role Management',
+        vehiclegroupmanagement: 'Vehicle Group Management',
         featuremanagement: 'Feature Management',
-        packagemanagement: 'Package Management',
-        subscriptionmanagement: 'Subscription Management',
+        organisationrelationshipmanagement: 'Organisation Relationship',
         relationshipmanagement: 'Relationship Management',
-        organisationrelationship: 'Organisation Relationship'
+        translationmanagement: 'Translation Data Upload',
+        // vehiclemanagement: 'Vehicle Management',
+        configurationmanagemnt: 'Configuration Managemnt',
+        packagemanagement: 'Package Management',
+        // vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship',
+        accessrelationshipmanagement: 'Vehicle/Account Access-Relationship',
+        subscriptionmanagement: 'Subscription Management',
       }
     },
     tachograph : {
@@ -203,6 +216,7 @@ export class AppComponent {
       this.getTranslationLabels();
       this.getAccountInfo();
       this.openTermsConditionsPopup();
+      // this.getNavigationMenu();
     });
 
     this.dataInterchangeService.userNameInterface$.subscribe(data => {
@@ -231,6 +245,7 @@ export class AppComponent {
     if(!this.isLogedIn){
       this.getTranslationLabels();
       this.getAccountInfo();
+      // this.getNavigationMenu();
     }
 
     this.appForm = this.fb.group({
@@ -291,47 +306,115 @@ export class AppComponent {
   }
 
   getNavigationMenu() {
-      // For checking Access of the User
-      let accessNameList = [];
-      this.menuPages.features.forEach((obj: any) => {
-          accessNameList.push(obj.name)
-        });
-        // console.log("---print name access ---",accessNameList)
-        if(accessNameList.includes("Admin#Admin")){
-          this.adminFullAccess = true;
-        }else if(accessNameList.includes("Admin#Contributor")){
-          this.adminContributorAccess = true;
-        }else {
-          this.adminReadOnlyAccess = true;
-        }
+    let parseLanguageCode = JSON.parse(localStorage.getItem("language"))
+
+    //accessing getmenufeature api from account
+    
+  //   let featureMenuObj = {
+  //     "accountId": 336,
+  //     "roleId": 161,
+  //     "organizationId": 1,
+  //     "languageCode": "EN-GB"
+  // }
+    let featureMenuObj = {
+      "accountId": parseInt(localStorage.getItem("accountId")),
+      "roleId": parseInt(localStorage.getItem("accountRoleId")),
+      "organizationId": parseInt(localStorage.getItem("accountOrganizationId")),
+      "languageCode": parseLanguageCode.code
+}
+    this.accountService.getMenuFeatures(featureMenuObj).subscribe((result : any) => {
+
+      this.menuPages = result;
+
+        // This will handle externalLink and Icons for Navigation Menu
+        this.menuPages.menus.forEach(elem => {
+            elem.externalLink = this.menuStatus[elem.url].externalLink ;
+            elem.icon = this.menuStatus[elem.url].icon;
+            if(elem.externalLink){
+              elem.link = this.menuStatus[elem.url].link;
+            }
+        })
+       // For checking Access of the User
+       let accessNameList = [];
+       this.menuPages.features.forEach((obj: any) => {
+           accessNameList.push(obj.name)
+         });
+         // console.log("---print name access ---",accessNameList)
+         if(accessNameList.includes("Admin#Admin")){
+           this.adminFullAccess = true;
+         }else if(accessNameList.includes("Admin#Contributor")){
+           this.adminContributorAccess = true;
+         }else {
+           this.adminReadOnlyAccess = true;
+         }
+   
+         this.accessType = {
+           adminFullAccess : this.adminFullAccess,
+           adminContributorAccess: this.adminContributorAccess,
+           adminReadOnlyAccess: this.adminReadOnlyAccess
+         }
+         localStorage.setItem("accessType", JSON.stringify(this.accessType));
+         // For checking Type of the User
+         if(accessNameList.includes("Admin#Platform")){
+           this.userType = "Admin#Platform";
+         }else if(accessNameList.includes("Admin#Global")){
+           this.userType = "Admpin#Global";
+         }else if(accessNameList.includes("Admin#Organisation")){
+           this.userType = "Admin#Organisation";
+         }else if(accessNameList.includes("Admin#Account")){
+           this.userType = "Admin#Account";
+         }
+         localStorage.setItem("userType", this.userType);
+       
+   
+
+ 
+     }
+     );
   
-        this.accessType = {
-          adminFullAccess : this.adminFullAccess,
-          adminContributorAccess: this.adminContributorAccess,
-          adminReadOnlyAccess: this.adminReadOnlyAccess
-        }
-        localStorage.setItem("accessType", JSON.stringify(this.accessType));
-        // For checking Type of the User
-        if(accessNameList.includes("Admin#Platform")){
-          this.userType = "Admin#Platform";
-        }else if(accessNameList.includes("Admin#Global")){
-          this.userType = "Admpin#Global";
-        }else if(accessNameList.includes("Admin#Organisation")){
-          this.userType = "Admin#Organisation";
-        }else if(accessNameList.includes("Admin#Account")){
-          this.userType = "Admin#Account";
-        }
-        localStorage.setItem("userType", this.userType);
+
+      // // For checking Access of the User
+      // let accessNameList = [];
+      // this.menuPages.features.forEach((obj: any) => {
+      //     accessNameList.push(obj.name)
+      //   });
+      //   // console.log("---print name access ---",accessNameList)
+      //   if(accessNameList.includes("Admin#Admin")){
+      //     this.adminFullAccess = true;
+      //   }else if(accessNameList.includes("Admin#Contributor")){
+      //     this.adminContributorAccess = true;
+      //   }else {
+      //     this.adminReadOnlyAccess = true;
+      //   }
+  
+      //   this.accessType = {
+      //     adminFullAccess : this.adminFullAccess,
+      //     adminContributorAccess: this.adminContributorAccess,
+      //     adminReadOnlyAccess: this.adminReadOnlyAccess
+      //   }
+      //   localStorage.setItem("accessType", JSON.stringify(this.accessType));
+      //   // For checking Type of the User
+      //   if(accessNameList.includes("Admin#Platform")){
+      //     this.userType = "Admin#Platform";
+      //   }else if(accessNameList.includes("Admin#Global")){
+      //     this.userType = "Admpin#Global";
+      //   }else if(accessNameList.includes("Admin#Organisation")){
+      //     this.userType = "Admin#Organisation";
+      //   }else if(accessNameList.includes("Admin#Account")){
+      //     this.userType = "Admin#Account";
+      //   }
+      //   localStorage.setItem("userType", this.userType);
       
   
-        // This will handle externalLink and Icons for Navigation Menu
-      this.menuPages.menus.forEach(elem => {
-        elem.externalLink = this.menuStatus[elem.url].externalLink ;
-        elem.icon = this.menuStatus[elem.url].icon;
-        if(elem.externalLink){
-          elem.link = this.menuStatus[elem.url].link;
-        }
-        })
+      //   // This will handle externalLink and Icons for Navigation Menu
+      // this.menuPages.menus.forEach(elem => {
+      //   elem.externalLink = this.menuStatus[elem.url].externalLink ;
+      //   elem.icon = this.menuStatus[elem.url].icon;
+      //   if(elem.externalLink){
+      //     elem.link = this.menuStatus[elem.url].link;
+      //   }
+      //   })
+
   
   }
 
@@ -488,9 +571,7 @@ export class AppComponent {
   }
 
   ngOnInit() {
-
-  
-  
+    
     if (this.router.url) {
       //this.isLogedIn = true;
     }
