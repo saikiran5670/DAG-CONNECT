@@ -351,6 +351,7 @@ export class AccountInfoSettingsComponent implements OnInit {
             msg= "Account picture successfully updated";
 
           this.successMsgBlink(msg);  
+          this.profilePicture= this.croppedImage;
           this.dataInterchangeService.getProfilePicture(this.croppedImage);
         }
       }, (error) => {

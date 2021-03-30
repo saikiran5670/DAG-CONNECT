@@ -63,7 +63,7 @@
             <span style="color:red">{{imageError}}</span>
           </div>
         </div>
-        <div class="areaWidth min-width-75-per accountInfo">
+        <div fxLayout="column" class="areaWidth min-width-75-per accountInfo">
           <div *ngIf="!editAccountSettingsFlag" fxLayout="row" fxLayoutAlign="space-between"
             class="full-width margin-bottom-sm accountInfo__fNlN" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -103,6 +103,7 @@
           </div>
           <form [formGroup]="accountSettingsForm" *ngIf="editAccountSettingsFlag">
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+              <div fxLayout="row"></div>
               <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                 <span
                   style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAccountInformation || 'Account Information' }}</span>
