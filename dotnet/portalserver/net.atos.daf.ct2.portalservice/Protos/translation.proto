@@ -178,7 +178,7 @@ message TranslationUploadRequest
      // int32 created_by =5;
       repeated TranslationData file =5;
       int32 added_count =6;
-      string updated_count =7;
+      int32 updated_count =7;
 }
 
 message TranslationData
@@ -219,7 +219,7 @@ message TranslationUpload
       int64 createdAt =10;
       repeated TranslationData file =6;
       int32 added_count =7;
-      string updated_count =8;
+      int32 updated_count =8;
      // repeated Translation translations =9;
 
 }

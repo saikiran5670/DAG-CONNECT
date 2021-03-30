@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
         //public int created_by { get; set; }
         public List<FileData> file { get; set; }
         public int added_count { get; set; }
-        public string updated_count { get; set; }
+        public int updated_count { get; set; }
 
     }
 

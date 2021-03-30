@@ -269,7 +269,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (string.IsNullOrEmpty(request.Languagecode.Trim()))
                 {
-                    return StatusCode(400, "Language code and dropdown  required..");
+                    return StatusCode(400, "Language code required..");
                 }
                 PreferenceResponse ResponseList = await _translationServiceClient.GetTranslationsPreferencDropDownsAsync(request);
 
@@ -357,11 +357,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
             {
-                if (request.FileID > 0)
+                if (request.FileID > 0 && ResponseList.Translationupload.Count > 0)
                 {
                     return Ok(ResponseList.Translationupload.FirstOrDefault().File);
                 }
-                return Ok(ResponseList);
+                return Ok(ResponseList.Translationupload);
             }
             else
             {
