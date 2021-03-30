@@ -22,6 +22,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   breadcumMsg: any = ''; 
+  editPackageFlag : boolean = false;
   featureDisplayedColumns: string[] = ['name', 'select'];
   dataSource: any;
   packageFormGroup: FormGroup;
@@ -51,7 +52,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   constructor(private _formBuilder: FormBuilder, private packageService: PackageService,) { }
 
   getBreadcum(type: any){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblPackageManagement ? this.translationData.lblPackageManagement : "Package Management"} / ${(type == 'view') ? (this.translationData.lblViewPackage ? this.translationData.lblViewPackage : 'View Package') : (this.translationData.lblPackageDetails ? this.translationData.lblPackageDetails : 'Package Details')}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblPackageManagement ? this.translationData.lblPackageManagement : "Package Management"} / ${(type == 'view') ? (this.translationData.lblViewPackage ? this.translationData.lblViewPackage : 'View Package Details') : (type == 'edit') ? (this.translationData.lblViewPackage ? this.translationData.lblViewPackage : 'Edit Package Details') : (this.translationData.lblPackageDetails ? this.translationData.lblPackageDetails : 'Add New Package')}`;
   }
 
   ngOnInit() {
@@ -95,6 +96,12 @@ export class CreateEditPackageDetailsComponent implements OnInit {
         this.selectionForFeatures.select(row);
       }
     });
+  }
+
+  editPackage(){
+    this.actionType = "edit";
+    this.editPackageFlag = true;
+    this.breadcumMsg = this.getBreadcum(this.actionType);
   }
 
   updateDataSource(tableData: any){

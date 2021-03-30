@@ -5,17 +5,18 @@
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
         <span class='custom-font' (click)="toBack()">
             <span>
-                <&nbsp;</span>
-                    <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
+                <&nbsp;
+            </span>
+            <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
         </span>
     </div>
-</div>   
+</div>
 <form [formGroup]="packageFormGroup">
     <mat-card class='mat-elevation-z'>
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddPackage || 'Add New Package') : actionType == 'edit' ? (translationData.lblEditPackage || 'Edit Package') : (translationData.lblViewPacakge|| 'View Package') }}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddPackage || 'Add New Package') : actionType == 'edit' ? (translationData.lblEditPackage || 'Edit Package Details') : (translationData.lblViewPacakge|| 'View Package Details') }}<mat-icon *ngIf="actionType == 'view'" (click)="editPackage()" style="cursor: pointer;">edit</mat-icon></span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
@@ -115,7 +116,7 @@
                         </mat-radio-group>
                     </div>
                     <div *ngIf="actionType == 'view'">
-                        <span style='font-weight: 500!important;'>{{ selectedElementData.status === true ? "Active" : "Inactive" }}</span>
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.status === "Active" ? "Active" : "Inactive" }}</span>
                     </div>
                 </div>
             </div>
@@ -127,10 +128,10 @@
                     </div>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="end">
-                    <div fxLayout="row" class='areaWidth'>
-                      <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
+                    <div fxLayout="row">
+                      <button class='margin-right-10' mat-raised-button color="primary"
                             (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
-                      <button class='resetCancelBtnColor margin-right-10'  mat-raised-button color="primary" *ngIf="actionType == 'edit'"
+                      <button class='margin-right-10'  mat-raised-button color="primary" *ngIf="actionType == 'edit'"
                               (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
                       <button class='no-margin' [disabled]="!packageFormGroup.valid" mat-raised-button color="primary"
                             (click)='onCreate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm || 'Confirm') }}</button>   
@@ -142,7 +143,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectFeatures || 'Select Features' }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'view' ? (translationData.lblSelectedFeatures || 'Selected Features'):(translationData.lblSelectFeatures || 'Select Features') }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
                 </div>
             </div>
            <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
@@ -162,17 +163,17 @@
                         </ng-container>
                         <ng-container matColumnDef="select">
                             <mat-header-cell *matHeaderCellDef>
-                                <mat-slide-toggle color="primary" (change)='$event ? masterToggleForFeatures() : null;' [disabled]="viewFlag"
+                                <mat-slide-toggle color="primary" (change)='$event ? masterToggleForFeatures() : null;' 
                                   [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
                                   [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
-                                  [aria-label]='checkboxLabelForFeatures()'>{{ translationData.lblExclude || 'Exclude'}}
+                                  [aria-label]='checkboxLabelForFeatures()' [disabled]="actionType == 'view'">{{ translationData.lblExclude || 'Exclude'}}
                                 </mat-slide-toggle>
                               </mat-header-cell>
                               <mat-cell *matCellDef="let row">
-                                <mat-slide-toggle color="primary" (click)='$event.stopPropagation()' [disabled]="viewFlag"
+                                <mat-slide-toggle color="primary" (click)='$event.stopPropagation()'
                                   (change)='$event ? selectionForFeatures.toggle(row) : null;'
                                   [checked]='selectionForFeatures.isSelected(row)'
-                                  [aria-label]='checkboxLabelForFeatures(row)'>
+                                  [aria-label]='checkboxLabelForFeatures(row)' [disabled]="actionType == 'view'"> 
                                 </mat-slide-toggle>
                               </mat-cell>
                               <!-- <mat-error *ngIf="packageFormGroup.get('featureIds').hasError('required')">
