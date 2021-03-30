@@ -412,16 +412,17 @@ namespace net.atos.daf.ct2.translation.repository
                 
                 var translationcodeList = TranslationsList.Where(I => I.Name == translationdata.Name).ToList();
 
-
+                
                 if (translationcodeList != null && translationcodeList.Count > 0)
                 {
+                    var type = translationcodeList.FirstOrDefault().Type;
                     var translationobjdata = translationcodeList.Where(I => I.Name == translationdata.Name && I.Code == translationdata.Code).FirstOrDefault();
                     if (translationobjdata != null)
                     {
                         parameter = new DynamicParameters();
                         parameter.Add("@id", translationobjdata.Id);
                         parameter.Add("@Code", translationobjdata.Code);
-                        parameter.Add("@Type", translationobjdata.Type);
+                        parameter.Add("@Type", type == null ? "L":type);
                         parameter.Add("@Name", translationobjdata.Name);
                         parameter.Add("@Value", translationobjdata.Value);
                         //parameter.Add("@Created_at", translationdata.created_at);
@@ -436,7 +437,7 @@ namespace net.atos.daf.ct2.translation.repository
 
                         parameter = new DynamicParameters();
                         parameter.Add("@Code", translationdata.Code);
-                        parameter.Add("@Type", translationdata.Type);
+                        parameter.Add("@Type", type == null ? "L" : type);
                         parameter.Add("@Name", translationdata.Name);
                         parameter.Add("@Value", translationdata.Value);
                         parameter.Add("@Created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
