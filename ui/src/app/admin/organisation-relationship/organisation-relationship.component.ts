@@ -84,6 +84,7 @@ export class OrganisationRelationshipComponent implements OnInit {
             {
                 this.relationshipList = newdata["relationShipData"];
                 this.organizationList = newdata["organizationData"];
+                this.vehicleList =  newdata["vehicleGroup"];
                 this.initData = data["orgRelationshipMappingList"];
                 this.initData = this.getNewTagData(this.initData)
                   setTimeout(()=>{
@@ -99,20 +100,6 @@ export class OrganisationRelationshipComponent implements OnInit {
             );
           }
           ); 
-
-        // let objData = {
-        //   Organization_Id: this.organizationId
-        // }
-
-        // this.organizationService.GetOrgRelationdetails(objData).subscribe((data: any) => {
-        //   if(data)
-        //   {
-        //     this.initData = data["relationShipData"];
-        //     this.relationshipList = this.initData;
-        //     this.vehicleList = data["vehicleGroup"];
-        //     this.organizationList = data["organizationData"];
-        //   }
-        // });
     
   }
 
@@ -159,27 +146,46 @@ export class OrganisationRelationshipComponent implements OnInit {
   }
 
   applyFilterOnRelationship(filterValue: string){
+    if(filterValue == "allRelations"){
+      this.dataSource.filter = '';
+    }
+    else{
     this.dataSource.filterPredicate = function(data, filter: string): boolean {
       return data.relationShipId === filter;
-    };  
-    this.dataSource.filter = filterValue;
+    }; this.dataSource.filter = filterValue; 
+      }
   }
 
   applyFilterOnVehicle(filterValue: string){
+    if(filterValue == "allVehicle"){
+      this.dataSource.filter = '';
+    }
+    else{
     this.dataSource.filterPredicate = function(data, filter: string): boolean {
       return data.vehicleGroupID === filter;
     };  
     this.dataSource.filter = filterValue;
+    }
   }
 
   applyFilterOnOrganisation(filterValue: string){
+    if(filterValue == "allOrg"){
+      this.dataSource.filter = '';
+    }
+    else{
     this.dataSource.filterPredicate = function(data, filter: string): boolean {
       return data.targetOrgId === filter;
     };  
     this.dataSource.filter = filterValue;
+    }
   }
 
   applyFilterOnType(filterValue: string){
+    if(filterValue == 'all')
+    {
+     this.dataSource.filter = '';
+    }
+    else{
     this.dataSource.filterPredicate = function(data, filter: string): boolean {
       if(filterValue == 'Terminated')
       {
@@ -199,61 +205,9 @@ export class OrganisationRelationshipComponent implements OnInit {
 
     };  
     this.dataSource.filter = filterValue;
+    }
   }
 
-  mockData(){
-    this.initData = [
-      {
-        relationshipName: "Relation 1",
-        vehicleGroup: 'Vehicle Group Name 1',
-        code: 'Code 1',
-        targetOrg: 'Organisation 1',
-        startDate:'02/02/2021',
-        endDate:'22/03/2021',
-        chainRelationship: 'Active'
-      },
-      {
-        relationshipName: "Relation 2",
-        vehicleGroup: 'Vehicle Group Name 2',
-        targetOrg: 'Organisation 2',
-        startDate:'02/02/2021',
-        endDate:'22/03/2021',
-        chainRelationship: 'Inactive'
-      },
-      {
-        relationshipName: "Relation 3",
-        vehicleGroup: 'Vehicle Group Name 3',
-        targetOrg: 'Organisation 3',
-        startDate:'02/02/2021',
-        endDate:'22/03/2021',
-        chainRelationship: 'Active'
-      },
-      {
-        relationshipName: "Relation 4",
-        vehicleGroup: 'Vehicle Group Name 4',
-        targetOrg: 'Organisation 4',
-        startDate:'02/02/2021',
-        endDate:'22/03/2021',
-        chainRelationship: 'Active'
-      },
-      {
-        relationshipName: "Relation 5",
-        vehicleGroup: 'Vehicle Group Name 5',
-        targetOrg: 'Organisation 5',
-        startDate:'02/02/2021',
-        endDate:'22/03/2021',
-        chainRelationship: 'Inactive'
-      },
-      {
-        relationshipName: "Relation 6",
-        vehicleGroup: 'Vehicle Group Name 6',
-        targetOrg: 'Organisation 6',
-        startDate:'02/02/2021',
-        endDate:'22/03/2021',
-        chainRelationship: 'Active'
-      }
-    ]
-  }
   onClose(){
     this.grpTitleVisible = false;
   }
@@ -268,7 +222,7 @@ export class OrganisationRelationshipComponent implements OnInit {
     let selectedOptions = [rowData.id];
     const options = {
       title: this.translationData.lblDeleteAccount || 'Delete Account',
-      message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Are you sure you want to delete '$' relationship?",
+      message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Do you want to end '$' relationship?",
       cancelText: this.translationData.lblNo || 'No',
       confirmText: this.translationData.lblYes || 'Yes'
     };
