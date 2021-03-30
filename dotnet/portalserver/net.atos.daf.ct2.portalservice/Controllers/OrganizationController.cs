@@ -656,11 +656,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var UpdateResponce = await organizationClient.AllowChainingAsync(request);
                 if (UpdateResponce.Code == OrganizationBusinessService.Responcecode.Success)
                 {
+                    UpdateResponce.Message = "Updated allow chain";
                     return Ok(UpdateResponce);
                 }
                 else
                 {
-                    return StatusCode(500, "Error in creating relationships");
+                    return StatusCode(500, "Error in updating relationships");
                 }
 
             }
