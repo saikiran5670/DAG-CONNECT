@@ -29,7 +29,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   dataSourceOrg: any;
   dataSourceRelation: any;
   OrganisationRelationshipFormGroup: FormGroup;
-  selectedType: any = 'active';
+  selectedType: any = true;
   organizationId: number;
   localStLanguage: any;
   vehicleGroupDisplayColumn: string[]= ['select', 'vehicleGroupName'];
@@ -144,7 +144,8 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
 
   }
   onChange(event:any){
-
+    let valueToBoolean = event.value == "true" ? true : false 
+    this.selectedType = valueToBoolean;
   }
   
   onCancel(){
@@ -174,7 +175,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
       ownerOrgId:this.organizationId,
       createdOrgId:this.organizationId,
       targetOrgId:selectedIdOrg,
-      allow_chain:true
+      allow_chain:this.selectedType
     }
 
     this.organizationService.createOrgRelationship(objData).subscribe((res) => {
@@ -207,12 +208,18 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
     }
   }
 
-  applyFilter(filterValue: string) {
+  applyFilterOnVehicle(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSourceVehicle.filter = filterValue;
   }
   
+  applyFilterOnOrg(filterValue: string) {
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
+    this.dataSourceOrg.filter = filterValue;
+  }
+
   masterToggleForOrgRelationship() {
     this.isAllSelectedForOrgRelationship()
       ? this.selectedOrgRelations.clear()

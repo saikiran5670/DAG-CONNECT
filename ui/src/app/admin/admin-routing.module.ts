@@ -15,26 +15,38 @@ import { SubscriptionManagementComponent } from './subscription-management/subsc
 import { RelationshipManagementComponent } from './relationship-management/relationship-management.component';
 import { OrganisationRelationshipComponent } from './organisation-relationship/organisation-relationship.component';
 import { ReadKeyExpr } from '@angular/compiler';
+import { VehicleGroupManagementComponent } from '../configuration/vehicle-group-management/vehicle-group-management.component';
+import { ConfigurationComponent } from '../configuration/configuration.component';
 
 const routes: Routes = [
   {
     path: '',
     component: AdminComponent,
     children: [
+      // { path: 'organisationdetails', component: OrganisationDetailsComponent },
       { path: 'organisationdetails', component: OrganisationDetailsComponent },
-      { path: 'usergroupmanagement', component: UserGroupManagementComponent },
-      { path: 'usermanagement', component: UserManagementComponent },
-      { path: 'userrolemanagement', component: UserRoleManagementComponent },
-      { path: 'drivermanagement', component: DriverManagementComponent },
+      // { path: 'usergroupmanagement', component: UserGroupManagementComponent },
+      { path: 'accountgroupmanagement', component: UserGroupManagementComponent },
+      // { path: 'usermanagement', component: UserManagementComponent },
+      { path: 'accountmanagement', component: UserManagementComponent },
+      // { path: 'userrolemanagement', component: UserRoleManagementComponent },
+      { path: 'accountrolemanagement', component: UserRoleManagementComponent },
+      { path: 'vehiclegroupmanagement', component: VehicleGroupManagementComponent },
+      { path: "featuremanagement", component: FeatureManagementComponent },
+      // { path: 'drivermanagement', component: DriverManagementComponent },
       // { path: "vehiclemanagement", component: VehicleManagementComponent },
       { path: "vehicleaccountaccessrelationship", component: VehicleAccountAccessRelationshipComponent },
-      { path: "translationdataupload", component: TranslationDataUploadComponent },
-      { path: "featuremanagement", component: FeatureManagementComponent },
+      // { path: "translationdataupload", component: TranslationDataUploadComponent },
+      { path: "translationmanagement", component: TranslationDataUploadComponent },
       { path: 'packagemanagement', component: PackageManagementComponent },
       { path: 'subscriptionmanagement', component: SubscriptionManagementComponent },
+      { path: 'configurationmanagemnt', component: ConfigurationComponent },
       { path: 'relationshipmanagement', component: RelationshipManagementComponent },
-      { path: 'organisationrelationship', component: OrganisationRelationshipComponent },
-      { path: 'organisationrelationship/relationshipmanagement', component: RelationshipManagementComponent, data:{ id:'1', name:'orgRelationship',viewviewRelationshipFromOrg:true}}
+      { path: 'accessrelationshipmanagement', component: VehicleAccountAccessRelationshipComponent },
+      // { path: 'organisationrelationship', component: OrganisationRelationshipComponent },
+      // { path: 'organisationrelationship/relationshipmanagement', component: RelationshipManagementComponent, data:{ id:'1', name:'orgRelationship',viewviewRelationshipFromOrg:true}}
+      { path: 'organisationrelationshipmanagement', component: OrganisationRelationshipComponent },
+      { path: 'organisationrelationshipmanagement/relationshipmanagement', component: RelationshipManagementComponent, data:{ id:'1', name:'orgRelationship',viewviewRelationshipFromOrg:true}}
     ],
   },
 ];
@@ -44,3 +56,7 @@ const routes: Routes = [
   exports: [RouterModule],
 })
 export class AdminRoutingModule {}
+
+
+// drivermanagement: 'Driver Management',
+// vehiclemanagement: 'Vehicle Management',

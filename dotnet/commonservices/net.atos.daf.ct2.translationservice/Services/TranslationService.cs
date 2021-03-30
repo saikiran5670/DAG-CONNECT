@@ -15,6 +15,7 @@ using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.translation.entity;
 using net.atos.daf.ct2.translationservice.Entity;
 using static net.atos.daf.ct2.translationservice.Entity.Mapper;
+using System.Collections;
 
 namespace net.atos.daf.ct2.translationservice
 {
@@ -492,6 +493,7 @@ namespace net.atos.daf.ct2.translationservice
         {
             try
             {
+                
                 _logger.LogInformation("GetFileUploadDetails Method");
                // Translationupload Objtranslationupload = new Translationupload();
                 var fileID = _mapper.ToTranslationEntity(request);
@@ -501,9 +503,17 @@ namespace net.atos.daf.ct2.translationservice
                 {
                     response.Translationupload.Add(_mapper.ToTranslationUploadDetailEntity(item));
                 }
+                ICollection collection = ObjRetrieveFileUploadList as ICollection;
 
-                response.Message = "Translations data retrieved";
-                response.Code = Responcecode.Success;
+                if (collection.Count == 0)
+                {
+                    response.Message = "bad Request please Enter Valid Data";
+                    response.Code = Responcecode.NotFound;
+                }
+                else {
+                    response.Message = "Translations data retrieved";
+                    response.Code = Responcecode.Success;
+                }
                 _logger.LogInformation("Get method in vehicle service called.");
                 return await Task.FromResult(response);
 
