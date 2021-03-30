@@ -30,6 +30,7 @@
             <div class="areaWidth min-width-5-per" fxLayoutGap="2px" fxLayoutAlign="left">
                 <mat-form-field appearance="outline" class="full-width" >   
                       <mat-select placeholder="Relationship" (selectionChange)="applyFilterOnRelationship($event.value)">
+                        <mat-option value="allRelations">All</mat-option>
                         <mat-option  *ngFor="let options of relationshipList" [value]="options.relationId">
                           {{options.relationName}}
                     </mat-option>
@@ -40,6 +41,7 @@
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-select placeholder="Vehicle Group" (selectionChange)="applyFilterOnVehicle($event.value)">
                     <!-- <mat-option *ngFor="let options of relationshipList" [value]="options.id"> -->
+                      <mat-option value="allVehicle">All</mat-option>
                       <mat-option *ngFor="let options of vehicleList" [value]="options.vehiclegroupID">
                       {{options.groupName}}
                     </mat-option>
@@ -49,6 +51,7 @@
               <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-select placeholder="Organisation" (selectionChange)="applyFilterOnOrganisation($event.value)">
+                    <mat-option value="allOrg">All</mat-option>
                     <mat-option *ngFor="let options of organizationList" [value]="options.organizationId">
                       {{options.organizationName}}
                     </mat-option>
@@ -58,6 +61,7 @@
               <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-select placeholder="All Type" (selectionChange)="applyFilterOnType($event.value)">
+                    <mat-option value="all">All</mat-option>
                     <mat-option *ngFor="let options of allTypes" [value]="options.name">
                         {{options.name}}
                     </mat-option>
