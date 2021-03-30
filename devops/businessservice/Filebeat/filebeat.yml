@@ -15,7 +15,7 @@ filebeat.inputs:
 
 # ------------------------------ Logstash Output -------------------------------
 output.logstash:
-   hosts: ["localhost:5044"]
+   hosts: ["dafct-lan1-d-euwe-cdp-elk-ls-vm1.daf.internal:5044"]
    loadbalance: true
 
   # Optional SSL. By default is off.
