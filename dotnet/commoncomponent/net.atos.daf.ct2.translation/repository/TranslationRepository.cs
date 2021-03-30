@@ -525,7 +525,16 @@ namespace net.atos.daf.ct2.translation.repository
             Entity.created_at = record.created_at;
             Entity.file = record.file;
             Entity.added_count = record.added_count;
-            Entity.updated_count = record.updated_count;
+            try
+            {
+                Entity.updated_count = Convert.ToInt32(record.updated_count);
+            }
+            catch (Exception ex)
+            {
+
+                Entity.updated_count = 0; ;
+            }
+            
             Entity.created_by = record.created_by;
             return Entity;
         }

@@ -88,7 +88,7 @@ namespace net.atos.daf.ct2.translation
         {
             try
             {
-                var result = await Translationrepository.InsertTranslationFileDetails(translationupload);
+                
                 TranslationDataStatus TdataStatus = new TranslationDataStatus();
                 TdataStatus.AddCount = 0;
                 TdataStatus.UpdateCount = 0;
@@ -104,6 +104,10 @@ namespace net.atos.daf.ct2.translation
                     else
                         TdataStatus.FailedCount = TdataStatus.FailedCount + 1;
                 }
+                translationupload.added_count = TdataStatus.AddCount;
+                translationupload.updated_count = TdataStatus.UpdateCount;
+                translationupload.failure_count = TdataStatus.FailedCount;
+                var result = await Translationrepository.InsertTranslationFileDetails(translationupload);
                 return TdataStatus;
             }
             catch (Exception ex)
