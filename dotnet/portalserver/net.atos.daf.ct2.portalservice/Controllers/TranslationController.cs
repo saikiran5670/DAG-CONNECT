@@ -43,9 +43,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(request.Code) || string.IsNullOrEmpty(request.Type))
+                if (string.IsNullOrEmpty(request.Code.Trim()) || string.IsNullOrEmpty(request.Type.Trim()))
                 {
                     return StatusCode(400, "Language code and type required..");
+                }
+                if (!string.IsNullOrEmpty(request.Type.Trim()) && (request.Type.Trim() != "Menu" || request.Type.Trim() != "Feature") )
+                {
+                    return StatusCode(400, "Invalid Type In Request.. ");
                 }
                 _logger.LogInformation("Get translation Menu  method get " + request.Code + " " + request.MenuId);
 
@@ -80,7 +84,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(request.Languagecode))
+                if (string.IsNullOrEmpty(request.Languagecode.Trim()))
                 {
                     return StatusCode(400, "Language code  required..");
                 }
@@ -153,7 +157,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(request.Key))
+                if (string.IsNullOrEmpty(request.Key.Trim()))
                 {
                     return StatusCode(400, " Key  required..");
                 }
