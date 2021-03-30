@@ -21,9 +21,11 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
     {
         private readonly ILogger logger;
         AccountComponent.IAccountIdentityManager accountIdentityManager;
-        public AuthenticationController(AccountComponent.IAccountIdentityManager _accountIdentityManager,ILogger<AuthenticationController> _logger)
+        private readonly AccountComponent.IAccountManager accountManager;
+        public AuthenticationController(AccountComponent.IAccountIdentityManager _accountIdentityManager, AccountComponent.IAccountManager _accountManager, ILogger<AuthenticationController> _logger)
         {
             accountIdentityManager = _accountIdentityManager;
+            accountManager = _accountManager;
             logger =_logger;
         }
         [HttpPost]
@@ -31,12 +33,21 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
         //In case, to generate only account token 
         public async Task<IActionResult> GenerateToken()
         {
+            string identity = string.Empty;
             try
             {
                 if (!string.IsNullOrEmpty(Request.Headers["Authorization"]))
                 {
                     var authHeader = Request.Headers["Authorization"].ToString().Replace("Basic ", "");
-                    var identity = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(authHeader));
+                    try
+                    {
+                        identity = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(authHeader));
+                    }
+                    catch (Exception)
+                    {
+                        return StatusCode(400, string.Empty);
+                    }
+                    
                     var arrUsernamePassword = identity.Split(':');
                     if (string.IsNullOrEmpty(arrUsernamePassword[0].Trim()))
                     {
@@ -51,9 +62,15 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                         IdentityEntity.Identity user = new IdentityEntity.Identity();
                         user.UserName = arrUsernamePassword[0].Trim();
                         user.Password = arrUsernamePassword[1];
+
                         IdentityEntity.AccountToken response = await accountIdentityManager.GenerateToken(user);
                         if (response != null && response.statusCode==System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(response.AccessToken))
                         {
+                            //Check for feature access
+                            var isExists = await accountManager.CheckForFeatureAccessByEmailId(user.UserName, Constants.MainPolicy);
+                            if (!isExists)
+                                return StatusCode(403, string.Empty);
+
                             AuthToken authToken = new AuthToken();
                             authToken.access_token = response.AccessToken;
                             authToken.expires_in = response.ExpiresIn;

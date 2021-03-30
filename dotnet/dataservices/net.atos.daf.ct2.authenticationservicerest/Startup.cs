@@ -19,6 +19,7 @@ using AccountComponent = net.atos.daf.ct2.account;
 using Identity = net.atos.daf.ct2.identity;
 using AccountPreference = net.atos.daf.ct2.accountpreference;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
+using net.atos.daf.ct2.account;
 
 namespace net.atos.daf.ct2.authenticationservicerest
 {
@@ -57,6 +58,8 @@ namespace net.atos.daf.ct2.authenticationservicerest
             services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
 
             services.AddTransient<Identity.IAccountManager,Identity.AccountManager>();
+            services.AddTransient<IAccountManager, AccountManager>();
+            services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<Identity.ITokenManager,Identity.TokenManager>();
             services.AddTransient<Identity.IAccountAuthenticator,Identity.AccountAuthenticator>();
             
