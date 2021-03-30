@@ -363,6 +363,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 return Ok(ResponseList.Translationupload);
             }
+            else if (ResponseList != null && ResponseList.Code == Responcecode.NotFound)
+            {
+                return StatusCode(404, "GetFileUploadDetails not found.");
+            }
             else
             {
                 return StatusCode(500, "GetFileUploadDetails Response is null");
