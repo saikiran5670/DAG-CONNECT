@@ -47,10 +47,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Language code and type required..");
                 }
-                if (!string.IsNullOrEmpty(request.Type.Trim()) && (request.Type.Trim() != "Menu" || request.Type.Trim() != "Feature") )
+                if (!string.IsNullOrEmpty(request.Type.Trim()) && request.Type.Trim() != "Menu" )
                 {
-                    return StatusCode(400, "Invalid Type In Request.. ");
+                    if (!string.IsNullOrEmpty(request.Type.Trim()) && request.Type.Trim() != "Feature" && request.Type.Trim() != "Menu")
+                    {
+                        return StatusCode(400, "Invalid Type In Request ");
+                    }
+                    //return StatusCode(400, "Invalid Type In Request ");
                 }
+                
                 _logger.LogInformation("Get translation Menu  method get " + request.Code + " " + request.MenuId);
 
                 TranslationsResponce translationsResponce = await _translationServiceClient.GetTranslationsAsync(request);
