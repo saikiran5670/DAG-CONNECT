@@ -138,6 +138,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var responce = await _featureclient.CreateAsync(FeatureObj);
                 if (responce.Code == Responcecode.Success)
                 {
+                    if (responce.Message == "Feature name allready exists")
+                    {
+                        return StatusCode(409, responce.Message)
+;                    }
                     return Ok(responce);
                 }
                 else
@@ -193,11 +197,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var responce = await _featureclient.UpdateAsync(FeatureObj);
                 if (responce.Code == Responcecode.Success)
                 {
+                    if (responce.Message == "Feature name allready exists")
+                    {
+                        return StatusCode(409, responce.Message)
+;
+                    }
                     return Ok(responce);
                 }
                 else
                 {
-                    return StatusCode(500, "Internal Server Error.");
+                    return StatusCode(400, "Error in feature update.");
                 }
             }
             catch (Exception ex)

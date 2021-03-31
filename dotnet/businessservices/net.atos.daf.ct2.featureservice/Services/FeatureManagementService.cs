@@ -174,7 +174,18 @@ namespace net.atos.daf.ct2.featureservice
             try
             {
                 Feature FeatureObj = new Feature();
-                FeatureObj.Name = featureRequest.Name;
+                var FeatureExist = _FeaturesManager.CheckFeatureNameExist(featureRequest.Name,0);
+                if (FeatureExist > 0)
+                {
+                    return await Task.FromResult(new FeatureResponce
+                    {
+                        Message = "Feature name allready exists",
+                        Code = Responcecode.Success,
+                        FeatureID = 0
+
+                    });
+                }
+                FeatureObj.Name = featureRequest.Name.Trim();
                 FeatureObj.Level = featureRequest.Level;
                 
                 FeatureObj.Description = featureRequest.Description;
@@ -214,7 +225,18 @@ namespace net.atos.daf.ct2.featureservice
             try
             {
                 Feature FeatureObj = new Feature();
-                FeatureObj.Name = featureRequest.Name;
+                FeatureObj.Name = featureRequest.Name.Trim();
+                var FeatureExist = _FeaturesManager.CheckFeatureNameExist(featureRequest.Name, featureRequest.Id);
+                if (FeatureExist > 0)
+                {
+                    return await Task.FromResult(new FeatureResponce
+                    {
+                        Message = "Feature name allready exists",
+                        Code = Responcecode.Success,
+                        FeatureID = 0
+
+                    });
+                }
                 FeatureObj.Level = featureRequest.Level;
                 FeatureObj.Key = featureRequest.Key;
                 //FeatureObj.Is_Active = featureRequest.State;

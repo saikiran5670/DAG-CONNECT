@@ -1044,6 +1044,25 @@ namespace net.atos.daf.ct2.features.repository
             }
         }
 
+        public int CheckFeatureNameExist(string FeatureName,int FeatureId)
+        {
+            var QueryStatement = @"SELECT id
+                                    FROM master.feature 
+                                    WHERE is_active=true
+                                    AND LOWER(name) = LOWER(@roleName)";
+            var parameter = new DynamicParameters();
+           
+            parameter.Add("@roleName", FeatureName.Trim());
+            if (FeatureId > 0)
+            {
+                parameter.Add("@featureid", FeatureId);
+                QueryStatement = QueryStatement + " and id != @featureid";
+            }
+            int resultRoleId = dataAccess.ExecuteScalar<int>(QueryStatement, parameter);
+            return resultRoleId;
+
+        }
+
 
 
     }
