@@ -28,7 +28,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   selectionForDataAttribute = new SelectionModel(true, []);
   initData: any = [];
   selectedSetType: any = true; //byDefault Exclusive
-  selectedStatus: any = "0"; //byDefault active
+  selectedStatus: any = 0; //byDefault active
   userCreatedMsg: any = '';
   vehGrpName: string = '';
   showLoadingIndicator: any;
@@ -202,12 +202,14 @@ export class CreateEditViewFeaturesComponent implements OnInit {
           }    
           this.createViewEditFeatureEmit.emit(emitObj); 
         });
-      }, (err) => {
-        //console.log(err);
-        if (err.status == 409) {
-          this.duplicateEmailMsg = true;
-        }
-      });
+      }
+      // , (err) => {
+      //   //console.log(err);
+      //   if (err.status == 409) {
+      //     this.duplicateEmailMsg = true;
+      //   }
+      // }
+      );
     }
   }
 
