@@ -153,7 +153,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
 
                 if ((objHandOver.ReferenceDateTime != null)     
                     && (objHandOver.VIN != null) && (objHandOver.VIN.Trim().Length>0) 
-                    && (objHandOver.TCUID != null) && (objHandOver.TCUActivation.Trim().Length>0)
+                    && (objHandOver.TCUID != null) && (objHandOver.TCUID.Trim().Length>0)
                     && (objHandOver.CustomerID != null) && (objHandOver.CustomerID.Trim().Length>0)
                     && (objHandOver.TCUActivation != null) && (objHandOver.TCUActivation.Trim().Length>0)
                     && ((Convert.ToDateTime(objHandOver.ReferenceDateTime)).ToUniversalTime() < System.DateTime.Now.ToUniversalTime())
