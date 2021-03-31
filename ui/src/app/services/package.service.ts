@@ -69,6 +69,16 @@ export class PackageService {
       .pipe(catchError(this.handleError));
   }
 
+  updateChangedStatus(data): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .put<any>(`${this.PackageServiceUrl}/updatestatus`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+
   deletePackage(packageId: number): Observable<void> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -88,7 +98,7 @@ export class PackageService {
       console.error('Server side error', errResponse);
     }
     return throwError(
-      'There is a problem with the service. Please try again later.'
+      errResponse
     );
   };
 }

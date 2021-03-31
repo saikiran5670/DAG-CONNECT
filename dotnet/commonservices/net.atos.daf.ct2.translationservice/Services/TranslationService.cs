@@ -144,7 +144,7 @@ namespace net.atos.daf.ct2.translationservice
             try
             {
                
-                var translation = await translationmanager.GetKeyTranslationByLanguageCode(request.Languagecode, request.Key);
+                var translation = await translationmanager.GetKeyTranslationByLanguageCode(request.Languagecode.Trim(), request.Key.Trim());
 
 
                 KeyCodeResponce keytranslationList = new KeyCodeResponce();

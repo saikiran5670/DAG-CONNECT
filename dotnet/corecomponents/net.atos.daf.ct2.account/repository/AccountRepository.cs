@@ -634,7 +634,7 @@ namespace net.atos.daf.ct2.account
                     if (filter.OrganizationId > 0 && is_vehicleGroup)
                     {
                         // vehicles and vehicle groups
-                        query = @"select id,name,access_type,count,true as is_group,group_id,group_name,is_ag_vg_group from (
+                        query = @"select id,COALESCE(name,'') as name,access_type,count,true as is_group,group_id,COALESCE(group_name,'') as group_name,is_ag_vg_group from (
                             select vg.id,vg.name,ar.access_type,
                             case when (vg.group_type ='D') then 
                             (select count(gr.group_id) from master.groupref gr inner join master.group g on g.id=gr.group_id and g.organization_id=@organization_id)
@@ -651,7 +651,7 @@ namespace net.atos.daf.ct2.account
                             where vg.organization_id=@organization_id
                             order by vg.id desc ) vehiclegroup
                             union all
-                            select id,name,access_type,count,false as is_group,group_id,group_name,is_ag_vg_group from (
+                            select id,COALESCE(name,'') as name,access_type,count,false as is_group,group_id,COALESCE(group_name,'') as group_name,is_ag_vg_group from (
                             select v.id,v.name,ar.access_type,0 as count,
                             case when (a.id is NULL) then ag.id else a.id end as group_id,
                             case when (a.id is NULL) then ag.name else a.salutation || ' ' || a.first_name || ' ' || a.last_name  end as group_name,
@@ -668,7 +668,7 @@ namespace net.atos.daf.ct2.account
                     else
                     {
                         // account and account groups
-                        query = @" select id,name,access_type,count,true as is_group,group_id,group_name,is_ag_vg_group  from (
+                        query = @" select id,COALESCE(name,'') as name,access_type,count,true as is_group,group_id,COALESCE(group_name,'') as group_name,is_ag_vg_group  from (
                          select ag.id,ag.name,ar.access_type, 
                          case when (ag.group_type ='D') then 
                          (select count(gr.group_id) from master.groupref gr inner join master.group g on g.id=gr.group_id 
@@ -688,7 +688,7 @@ namespace net.atos.daf.ct2.account
                         ) accountgroup
                          -- accounts
                          union all
-                         select id,name,access_type,count,false as is_group,group_id,group_name,is_ag_vg_group from (
+                         select id,COALESCE(name,'') as name,access_type,count,false as is_group,group_id,COALESCE(group_name,'') as group_name,is_ag_vg_group from (
                          select a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name as name,
                          ar.access_type,0 as count,
                          case when (v.id is NULL) then vg.id else v.id end as group_id,
@@ -757,13 +757,13 @@ namespace net.atos.daf.ct2.account
                                         from master.groupref gr inner join master.group g on g.id=gr.group_id and g.organization_id=@organization_id)
 	                                else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id ) end as count
                                 from master.group vg 
-                                where vg.organization_id=@organization_id and vg.object_type='V' and vg.group_type in ('G','D')
+                                where length(vg.name) > 0 and vg.organization_id=@organization_id and vg.object_type='V' and vg.group_type in ('G','D')
                                 ) vehicleGroup
                                 union all
                                 select id,name,count,false as is_group from (
                                 select v.id,v.name, 0 as count
                                 from master.vehicle v 
-                                where v.organization_id=@organization_id 
+                                where v.organization_id=@organization_id and length(v.name) > 0
                                 ) vehicles";
                     }
                     else
@@ -771,13 +771,14 @@ namespace net.atos.daf.ct2.account
                         query = @"select id,name,0 as count,true as is_group from (
                                 select vg.id,vg.name
                                 from master.group vg 
-                                where vg.organization_id=@organization_id and vg.object_type='V' and vg.group_type in ('G','D')
+                                where vg.organization_id=@organization_id and vg.object_type='V' and vg.group_type in ('G','D') 
+                                and length(vg.name) > 0
                                 ) vehicleGroup
                                 union all
                                 select id,name,count,false as is_group from (
                                 select v.id,v.name, 0 as count
                                 from master.vehicle v 
-                                where v.organization_id=@organization_id 
+                                where v.organization_id=@organization_id and length(v.name) > 0
                                 ) vehicles";
                     }
                     parameter.Add("@organization_id", filter.OrganizationId);
@@ -811,13 +812,14 @@ namespace net.atos.daf.ct2.account
                                             and g.organization_id=@organization_id)
 	                                        else (select count(gr.group_id) from master.groupref gr where gr.group_id=ag.id ) end as count
                                         from master.group ag 
-                                        where ag.object_type='A' and ag.group_type in ('G','D') and ag.organization_id=@organization_id
+                                        where ag.object_type='A' and ag.group_type in ('G','D') and ag.organization_id=@organization_id 
+                                         and length(ag.name) > 0
                                         ) accountGroup
                                         union all
                                         select id,name,count,false as is_group from (
                                         select a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name  as name,0 as count
                                         from master.account a inner join master.accountorg ar on ar.account_id=a.id 
-                                        where ar.organization_id=@organization_id
+                                        where ar.organization_id=@organization_id and length(a.first_name) > 0
                                         ) accounts";
                     }
                     else
@@ -826,13 +828,14 @@ namespace net.atos.daf.ct2.account
                                         select id,name,0 as count,true as is_group from (
                                         select ag.id,ag.name                                         
                                         from master.group ag 
-                                        where ag.object_type='A' and ag.group_type in ('G','D') and ag.organization_id=@organization_id
+                                        where ag.object_type='A' and ag.group_type in ('G','D') and ag.organization_id=@organization_id 
+                                        and length(ag.name) > 0
                                         ) accountGroup
                                         union all
                                         select id,name,count,false as is_group from (
                                         select a.id,a.salutation || ' ' || a.first_name || ' ' || a.last_name  as name,0 as count
                                         from master.account a inner join master.accountorg ar on ar.account_id=a.id 
-                                        where ar.organization_id=@organization_id
+                                        where ar.organization_id=@organization_id and length(a.first_name) > 0
                                         ) accounts";
                     }
                     parameter.Add("@organization_id", filter.OrganizationId);
@@ -1188,19 +1191,23 @@ namespace net.atos.daf.ct2.account
                     FROM
                     (
 	                    --Account Route
-	                    SELECT r.feature_set_id
+	                    SELECT f.id
 	                    FROM master.Account acc
 	                    INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.id = @account_id AND ar.organization_id = @organization_id AND ar.role_id = @role_id AND acc.is_active = True
 	                    INNER JOIN master.Role r ON ar.role_id = r.id AND r.is_active = True
+	                    INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.is_active = True
+ 	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True AND f.type <> 'D' AND f.name not like 'api.%'
 	                    INTERSECT
 	                    --Subscription Route
-	                    SELECT pkg.feature_set_id
+	                    SELECT f.id
 	                    FROM master.Subscription s
 	                    INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @organization_id AND s.is_active = True AND pkg.is_active = True
+	                    INNER JOIN master.FeatureSet fset ON pkg.feature_set_id = fset.id AND fset.is_active = True
+ 	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True AND f.type <> 'D' AND f.name not like 'api.%'
                     ) fsets
-                    INNER JOIN master.FeatureSet fset ON fsets.feature_set_id = fset.id AND fset.is_active = True
-                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
-                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True AND f.type <> 'D' AND f.name not like 'api.%'
+                    INNER JOIN master.Feature f ON f.id = fsets.id AND f.is_active = True AND f.type <> 'D' AND f.name not like 'api.%'
                     LEFT JOIN master.Menu mn ON mn.feature_id = f.id AND mn.is_active = True AND mn.id <> 0
                     LEFT JOIN master.Menu mn2 ON mn.parent_id = mn2.id AND mn2.is_active = True AND mn2.id <> 0
                     LEFT JOIN translation.translation tl ON tl.name = mn.key AND tl.code = @code
@@ -1276,7 +1283,7 @@ namespace net.atos.daf.ct2.account
         {
             AccountVehicleAccessRelationship entity = new AccountVehicleAccessRelationship();
             entity.Id = record.id;
-            entity.Name = record.name;
+            entity.Name = record.name ?? string.Empty;
             entity.AccessType = (AccessRelationType)Convert.ToChar(record.access_type);
             entity.Count = record.count;
             entity.IsGroup = record.is_group;
@@ -1300,7 +1307,7 @@ namespace net.atos.daf.ct2.account
         {
             RelationshipData entity = new RelationshipData();
             entity.Id = record.group_id;
-            entity.Name = record.group_name;
+            entity.Name = record.group_name ?? string.Empty;
             entity.IsGroup = record.is_ag_vg_group;
             return entity;
         }

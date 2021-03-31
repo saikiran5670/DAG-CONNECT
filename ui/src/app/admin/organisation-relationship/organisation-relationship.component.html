@@ -118,7 +118,7 @@
                     </ng-container>
                     <ng-container matColumnDef="vehicleGroup">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group'}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row">{{row.vehicleGroupName}} </mat-cell>
+                        <mat-cell *matCellDef="let row" class="text-truncate"  matTooltip="{{row.vehicleGroupName}}">{{row.vehicleGroupName}} </mat-cell>
                     </ng-container>
                     <!-- <ng-container matColumnDef="level">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblLevel || 'Level'}}</mat-header-cell>
@@ -164,8 +164,8 @@
                 </mat-table>
                 <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
             </div>
-            <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
         </div>
+        <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
     </mat-card>
 </div>
 <div *ngIf='createStatus || editFlag || viewFlag' >

@@ -62,8 +62,8 @@
       <button class='actionBtn' mat-flat-button (click)="editViewPackage(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
         <mat-icon>visibility</mat-icon>
       </button>
-      <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="editViewPackage(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
-        <mat-icon>create</mat-icon>
+      <button *ngIf="!adminAccessType.adminReadOnlyAccess" [disabled]="row.status == 'Inactive'"  class='actionBtn' mat-flat-button (click)="editViewPackage(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+        <mat-icon [disabled]="row.status == 'Inactive'">create</mat-icon>
       </button>
       <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deletePackage(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
         <mat-icon class="deleteIcon">delete_outline</mat-icon>

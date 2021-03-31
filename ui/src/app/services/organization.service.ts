@@ -148,4 +148,14 @@ export class OrganizationService {
       .pipe(catchError(this.handleError));
   }
 
+  updateAllowChain(data: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any>(`${this.organizationServiceUrl}/orgrelationship/AllowChain`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+
 }
