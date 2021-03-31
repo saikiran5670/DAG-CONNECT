@@ -214,7 +214,7 @@ export class AppComponent {
     this.dataInterchangeService.dataInterface$.subscribe(data => {
       this.isLogedIn = data;
       this.getTranslationLabels();
-      this.getAccountInfo();
+      //this.getAccountInfo();
       this.openTermsConditionsPopup();
       // this.getNavigationMenu();
     });
@@ -244,7 +244,7 @@ export class AppComponent {
 
     if(!this.isLogedIn){
       this.getTranslationLabels();
-      this.getAccountInfo();
+      //this.getAccountInfo();
       // this.getNavigationMenu();
     }
 
@@ -507,24 +507,32 @@ export class AppComponent {
   }
 
   getTranslationLabels(){
-    // let accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
-    // console.log("accountInfo.accountPreference:: ", this.accountInfo.accountPreference)
-    this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
-    let preferencelanguageCode= "";
-    let preferenceLanguageId = 1;
-    this.translationService.getLanguageCodes().subscribe(languageCodes => {
-      this.languages = languageCodes;
-      this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-      let filterLang = [];
-      if(this.localStLanguage){
-        preferencelanguageCode = this.localStLanguage.code;
-        preferenceLanguageId = this.localStLanguage.id;
-      }
-      else if(this.accountInfo){
-          filterLang = this.languages.filter(item => item.id == (this.accountInfo.accountPreference ? this.accountInfo.accountPreference.languageId : 8))
-        if(filterLang.length > 0){
-          preferencelanguageCode = filterLang[0].code;
-          preferenceLanguageId = filterLang[0].id;
+    let curAccId = localStorage.getItem("accountId");
+    if(curAccId){ //- checked for refresh page
+      this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+      let preferencelanguageCode= "";
+      let preferenceLanguageId = 1;
+      this.translationService.getLanguageCodes().subscribe(languageCodes => {
+        this.languages = languageCodes;
+        this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+        let filterLang = [];
+        if(this.localStLanguage){
+          preferencelanguageCode = this.localStLanguage.code;
+          preferenceLanguageId = this.localStLanguage.id;
+        }
+        else if(this.accountInfo){
+            filterLang = this.languages.filter(item => item.id == (this.accountInfo.accountPreference ? this.accountInfo.accountPreference.languageId : 8))
+          if(filterLang.length > 0){
+            preferencelanguageCode = filterLang[0].code;
+            preferenceLanguageId = filterLang[0].id;
+          }
+          else{
+            filterLang = this.languages.filter(item => item.code == "EN-GB" )
+            if(filterLang.length > 0){
+              preferencelanguageCode = filterLang[0].code;
+              preferenceLanguageId = filterLang[0].id;
+            }
+          }
         }
         else{
           filterLang = this.languages.filter(item => item.code == "EN-GB" )
@@ -533,37 +541,30 @@ export class AppComponent {
             preferenceLanguageId = filterLang[0].id;
           }
         }
-      }
-      else{
-        filterLang = this.languages.filter(item => item.code == "EN-GB" )
-        if(filterLang.length > 0){
-          preferencelanguageCode = filterLang[0].code;
-          preferenceLanguageId = filterLang[0].id;
+
+        if(!this.localStLanguage){
+          let languageObj = {id: filterLang[0].id, code: preferencelanguageCode}
+          localStorage.setItem("language", JSON.stringify(languageObj));
+          this.localStLanguage = JSON.parse(localStorage.getItem("language"));
         }
-      }
 
-      if(!this.localStLanguage){
-        let languageObj = {id: filterLang[0].id, code: preferencelanguageCode}
-        localStorage.setItem("language", JSON.stringify(languageObj));
-        this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-      }
+        this.appForm.get("languageSelection").setValue(this.localStLanguage.id); //-- set language dropdown
 
-      this.appForm.get("languageSelection").setValue(this.localStLanguage.id); //-- set language dropdown
-
-      let translationObj = {
-        id: 0,
-        code: preferencelanguageCode, //-- TODO: Lang code based on account 
-        type: "Menu",
-        name: "",
-        value: "",
-        filter: "",
-        menuId: 0 //-- for common & user preference
-      }
-      this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
-        this.processTranslation(data);
+        let translationObj = {
+          id: 0,
+          code: preferencelanguageCode, //-- TODO: Lang code based on account 
+          type: "Menu",
+          name: "",
+          value: "",
+          filter: "",
+          menuId: 0 //-- for common & user preference
+        }
+        this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+          this.processTranslation(data);
+          this.getAccountInfo();
+        });
       });
-    })
-    
+    }
   }
 
   processTranslation(transData: any){
