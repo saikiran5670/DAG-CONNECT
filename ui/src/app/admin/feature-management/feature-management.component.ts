@@ -17,7 +17,7 @@ import { FeatureService } from '../../services/feature.service';
 export class FeatureManagementComponent implements OnInit {
   featureRestData: any = [];
   dataAttributeList: any = [];
-  displayedColumns = ['name','dataAttribute.isExclusive','state', 'action'];
+  displayedColumns = ['name','isExclusive','state', 'action'];
   selectedElementData: any;
   titleVisible : boolean = false;
   feautreCreatedMsg : any = '';
@@ -80,6 +80,9 @@ export class FeatureManagementComponent implements OnInit {
     this.featureService.getFeatures().subscribe((data: any) => {
       this.hideloader();
       let filterTypeData = data.filter(item => item.type == "D");
+      filterTypeData.forEach(element => {
+        element["isExclusive"] = element.dataAttribute.isExclusive
+      });
       this.updatedTableData(filterTypeData);
     }, (error) => {
       console.log("error:: ", error);

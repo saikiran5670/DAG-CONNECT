@@ -74,7 +74,14 @@ export class LoginComponent implements OnInit {
             }
             if(this.loginClicks == 0){
               this.accountService.getAccount(loginObj).subscribe(resp => {
-                this.showOrganizationRolePopup(data.body, resp[0]);
+                if(resp[0].preferenceId != 0){
+                  this.accountService.getAccountPreference(resp[0].preferenceId).subscribe(accPref => {
+                    this.showOrganizationRolePopup(data.body, resp[0], accPref);  
+                  })
+                }
+                else{
+                  this.showOrganizationRolePopup(data.body, resp[0], "");  
+                } 
               }, (error) => {});
             }
             this.loginClicks = 1;
@@ -120,7 +127,7 @@ export class LoginComponent implements OnInit {
     this.cookieService.set('cookiePolicy', 'true');
   }
 
-  public showOrganizationRolePopup(data: any, accountDetails: any) {
+  public showOrganizationRolePopup(data: any, accountDetails: any, accountPreference: any) {
     if(data.accountInfo.id){
       data.accountId = data.accountInfo.id;
     }
@@ -150,7 +157,7 @@ export class LoginComponent implements OnInit {
       data.accountRole = [];
     }
     let role: Role[] = data.accountRole;
-    let accountPreference: any = data.accountPreference ? data.accountPreference : '';
+    //let accountPreference: any = data.accountPreference ? data.accountPreference : '';
 
     if(data.accountOrganization.length > 1 || data.accountRole.length > 1){ //-- show popup
       const options = {
