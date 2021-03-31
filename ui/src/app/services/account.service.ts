@@ -385,6 +385,18 @@ export class AccountService {
       .pipe(catchError(this.handleError));
   }
 
+  getMenuFeatures(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.accountServiceUrl}/getmenufeatures`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
   resetPassword(data: any): Observable<any[]> {
     const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
     // let headerObj = this.generateHeader();

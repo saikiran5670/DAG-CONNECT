@@ -89,9 +89,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                     accIdentity.AccountRole.Add(accRole);
                                 }
                             }
-                            if (!string.IsNullOrEmpty(response.TokenIdentifier))
-                            {
-                                HttpContext.Session.SetString("session_id",response.TokenIdentifier);
+                            //if (!string.IsNullOrEmpty(response.TokenIdentifier))
+                           // {
+                               // HttpContext.Session.SetString("session_id",response.TokenIdentifier);
                                  var claims = new List<Claim>
                                 {
                                     new Claim(ClaimTypes.Email, accIdentity.AccountInfo.EmailId),
@@ -100,7 +100,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-                            }
+                           // }
                             return Ok(accIdentity);
                         }
                         else if (response != null && response.Code == AccountBusinessService.Responcecode.Failed)

@@ -43,10 +43,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(request.Code) || string.IsNullOrEmpty(request.Type))
+                if (string.IsNullOrEmpty(request.Code.Trim()) || string.IsNullOrEmpty(request.Type.Trim()))
                 {
                     return StatusCode(400, "Language code and type required..");
                 }
+                if (!string.IsNullOrEmpty(request.Type.Trim()) && request.Type.Trim() != "Menu" )
+                {
+                    if (!string.IsNullOrEmpty(request.Type.Trim()) && request.Type.Trim() != "Feature" && request.Type.Trim() != "Menu")
+                    {
+                        return StatusCode(400, "Invalid Type In Request ");
+                    }
+                    //return StatusCode(400, "Invalid Type In Request ");
+                }
+                
                 _logger.LogInformation("Get translation Menu  method get " + request.Code + " " + request.MenuId);
 
                 TranslationsResponce translationsResponce = await _translationServiceClient.GetTranslationsAsync(request);
@@ -80,7 +89,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(request.Languagecode))
+                if (string.IsNullOrEmpty(request.Languagecode.Trim()))
                 {
                     return StatusCode(400, "Language code  required..");
                 }
@@ -153,9 +162,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(request.Key))
+                if (string.IsNullOrEmpty(request.Key.Trim()) || string.IsNullOrEmpty(request.Languagecode.Trim()))
                 {
-                    return StatusCode(400, " Key  required..");
+                    return StatusCode(400, " Language code and key required..");
                 }
                 _logger.LogInformation("GetKeyTranslationByLanguageCode  method " + request.Key);
 
@@ -362,6 +371,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return Ok(ResponseList.Translationupload.FirstOrDefault().File);
                 }
                 return Ok(ResponseList.Translationupload);
+            }
+            else if (ResponseList != null && ResponseList.Code == Responcecode.NotFound)
+            {
+                return StatusCode(404, "GetFileUploadDetails not found.");
             }
             else
             {

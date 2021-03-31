@@ -22,6 +22,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   breadcumMsg: any = ''; 
+  editPackageFlag : boolean = false;
   featureDisplayedColumns: string[] = ['name', 'select'];
   dataSource: any;
   packageFormGroup: FormGroup;
@@ -51,7 +52,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   constructor(private _formBuilder: FormBuilder, private packageService: PackageService,) { }
 
   getBreadcum(type: any){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblPackageManagement ? this.translationData.lblPackageManagement : "Package Management"} / ${(type == 'view') ? (this.translationData.lblViewPackage ? this.translationData.lblViewPackage : 'View Package') : (this.translationData.lblPackageDetails ? this.translationData.lblPackageDetails : 'Package Details')}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblPackageManagement ? this.translationData.lblPackageManagement : "Package Management"} / ${(type == 'view') ? (this.translationData.lblViewPackage ? this.translationData.lblViewPackage : 'View Package Details') : (type == 'edit') ? (this.translationData.lblViewPackage ? this.translationData.lblViewPackage : 'Edit Package Details') : (this.translationData.lblPackageDetails ? this.translationData.lblPackageDetails : 'Add New Package')}`;
   }
 
   ngOnInit() {
@@ -61,6 +62,13 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       status: ['', [CustomValidators.numberValidationForName]],
       type: ['', [ Validators.required]],
       name: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc]]
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForName('code'),
+        CustomValidators.specialCharValidationForName('name'),
+        CustomValidators.specialCharValidationForNameWithoutRequired('description')
+      ]
     });
     this.breadcumMsg = this.getBreadcum(this.actionType);
     if(this.actionType == 'view' || this.actionType == 'edit' ){
@@ -97,6 +105,12 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     });
   }
 
+  editPackage(){
+    this.actionType = "edit";
+    this.editPackageFlag = true;
+    this.breadcumMsg = this.getBreadcum(this.actionType);
+  }
+
   updateDataSource(tableData: any){
     this.dataSource = new MatTableDataSource(tableData);
       setTimeout(()=>{
@@ -114,7 +128,6 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     // this.selectedType = this.selectedElementData.type.toLowerCase();
     this.packageFormGroup.get("description").setValue(this.selectedElementData.description);
     this.selectedStatus = this.selectedElementData.status;
-   
   }
 
   toBack(){
@@ -151,7 +164,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       "type": this.packageFormGroup.controls.type.value === "VIN" ? "V" : "O",
       "description": this.packageFormGroup.controls.description.value,
       "isActive": true,
-      "status": this.packageFormGroup.controls.status.value === "I" ? "I" : "A"
+      "status": this.selectedStatus.value === "Inactive" ? "I" : "A"
     }
     if(this.actionType == 'create'){
       this.packageService.createPackage(createPackageParams).subscribe((res) => {
@@ -166,7 +179,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
         this.createViewEditPackageEmit.emit(emitObj); 
     });
   },(err) => {
-    //console.log(err);
+
     if (err.status == 409) {
       this.duplicateMsg = true;
     }
@@ -181,7 +194,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       "name": this.packageFormGroup.controls.name.value,
       "type": this.packageFormGroup.controls.type.value === "VIN" ? "V" : "O",
       "description": this.packageFormGroup.controls.description.value,
-      "status": this.packageFormGroup.controls.status.value === "I" ? "I" : "A",
+      "status": this.selectedStatus.value === "Inactive" ? "I" : "A",
       "isActive": true
     }
     this.packageService.updatePackage(updatePackageParams).subscribe((data) => {

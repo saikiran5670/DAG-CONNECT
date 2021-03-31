@@ -284,17 +284,18 @@ export class DriverManagementComponent implements OnInit {
     return newTrueData;
   }
 
-  importDrivers(){ 
+  importDrivers(clearInput: any){ 
     if(this.filelist.length > 0){
-      this.validateExcelFileField();
+      this.validateExcelFileField(clearInput);
       this.excelEmptyMsg = false;
     }else{
       console.log("Empty Excel File...");
       this.excelEmptyMsg = true;
+      clearInput.clear();
     }
   }
 
-  validateExcelFileField(){
+  validateExcelFileField(clearInput: any){
     let driverAPIData: any = [];
     //--- Parse driver data ---//
     this.filelist.map((item: any) => {
@@ -327,11 +328,13 @@ export class DriverManagementComponent implements OnInit {
           this.selectedConsentType = 'All';
           this.loadDriverData(); //-- load driver list
           this.setConsentDropdown();
+          clearInput.clear();
         }
       });
     }
     else{
       this.importDriverPopup = true;
+      clearInput.clear();
     }
     this.newDriverCount = (this.filelist.length - this.rejectedDriverList.length); // new = (total - rejected)
   }

@@ -29,6 +29,8 @@ enum TranslationType{
     enum Responcecode{
         Success = 0;
         Failed = 1;
+         NotFound = 2;
+      BadRequest = 3;
       }
   
   enum Contenttype{

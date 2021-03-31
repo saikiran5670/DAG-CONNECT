@@ -30,6 +30,7 @@
             <div class="areaWidth min-width-5-per" fxLayoutGap="2px" fxLayoutAlign="left">
                 <mat-form-field appearance="outline" class="full-width" >   
                       <mat-select placeholder="Relationship" (selectionChange)="applyFilterOnRelationship($event.value)">
+                        <mat-option value="allRelations">All</mat-option>
                         <mat-option  *ngFor="let options of relationshipList" [value]="options.relationId">
                           {{options.relationName}}
                     </mat-option>
@@ -40,6 +41,7 @@
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-select placeholder="Vehicle Group" (selectionChange)="applyFilterOnVehicle($event.value)">
                     <!-- <mat-option *ngFor="let options of relationshipList" [value]="options.id"> -->
+                      <mat-option value="allVehicle">All</mat-option>
                       <mat-option *ngFor="let options of vehicleList" [value]="options.vehiclegroupID">
                       {{options.groupName}}
                     </mat-option>
@@ -49,6 +51,7 @@
               <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-select placeholder="Organisation" (selectionChange)="applyFilterOnOrganisation($event.value)">
+                    <mat-option value="allOrg">All</mat-option>
                     <mat-option *ngFor="let options of organizationList" [value]="options.organizationId">
                       {{options.organizationName}}
                     </mat-option>
@@ -58,6 +61,7 @@
               <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-select placeholder="All Type" (selectionChange)="applyFilterOnType($event.value)">
+                    <mat-option value="all">All</mat-option>
                     <mat-option *ngFor="let options of allTypes" [value]="options.name">
                         {{options.name}}
                     </mat-option>
@@ -114,7 +118,7 @@
                     </ng-container>
                     <ng-container matColumnDef="vehicleGroup">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group'}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row">{{row.vehicleGroupName}} </mat-cell>
+                        <mat-cell *matCellDef="let row" class="text-truncate"  matTooltip="{{row.vehicleGroupName}}">{{row.vehicleGroupName}} </mat-cell>
                     </ng-container>
                     <!-- <ng-container matColumnDef="level">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblLevel || 'Level'}}</mat-header-cell>
@@ -160,8 +164,8 @@
                 </mat-table>
                 <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
             </div>
-            <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
         </div>
+        <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
     </mat-card>
 </div>
 <div *ngIf='createStatus || editFlag || viewFlag' >
