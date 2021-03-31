@@ -42,6 +42,8 @@ export class TranslationDataUploadComponent implements OnInit {
   excelEmptyMsg: boolean = false;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
+  addedCount: number= 0;
+  updatedCount: number= 0;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) { 
       this.defaultTranslation();
@@ -134,15 +136,16 @@ export class TranslationDataUploadComponent implements OnInit {
       "failure_count": 0,
       "file": languageData,
       "added_count": 0,
-      "updated_count": ""
+      "updated_count": 0
     }
 
     this.translationService.importTranslationData(langObj).subscribe(data => {
       if(data){
-        console.log(data);
         let msg= this.translationData.lblTranslationFileSuccessfullyUploaded ? this.translationData.lblTranslationFileSuccessfullyUploaded : "Translation file successfully uploaded";
         this.successMsgBlink(msg);
         this.isTranslationDataUploaded = true;
+        this.addedCount= data["translationupload"].added;
+        this.updatedCount= data["translationupload"].updated;
       }
     }, (error) => {
       

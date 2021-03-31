@@ -2,7 +2,7 @@
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <span>{{ breadcumMsg }}</span>
     </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+    <div  fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
         <span class='custom-font' (click)="toBack()">
             <span>
                 <&nbsp;
@@ -24,7 +24,7 @@
                     <mat-label><span>{{ translationData.lblPackageCode || 'Package Code' }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
-                            <input maxlength="50" placeholder="{{ translationData.lblEnterPackagecode || 'Enter Package Code' }}" matInput
+                            <input maxlength="20" placeholder="{{ translationData.lblEnterPackagecode || 'Enter Package Code' }}" matInput
                                 formControlName="code">
                         </mat-form-field>
                         <mat-error *ngIf="packageFormGroup.get('code').hasError('required')">
@@ -34,8 +34,11 @@
                             {{ translationData.lblPackagecodecannotcontainonlywhitespace || 'Package Code
                             cannot contain only whitespace' }}
                         </mat-error>
+                        <mat-error *ngIf="packageFormGroup.get('code').hasError('specialCharsNotAllowed')">
+                            {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                        </mat-error>
                         <mat-error *ngIf="duplicateMsg">
-                            {{ translationData.lblDuplicatecode || 'Duplicate Package Code' }}
+                            {{ translationData.lblPackagecodealreadyexists || 'Package code already exists' }}
                         </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
@@ -58,6 +61,9 @@
                             {{ translationData.lblPackagenamecannotcontainonlywhitespace || 'Package Name
                             cannot contain only whitespace' }}
                         </mat-error>
+                        <mat-error *ngIf="packageFormGroup.get('name').hasError('specialCharsNotAllowed')">
+                            {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                        </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
                         <span style='font-weight: 500!important;'>{{ selectedElementData.name }}</span>
@@ -76,6 +82,9 @@
                         <mat-error *ngIf=" packageFormGroup.get('description').hasError('whitespace')">
                             {{ translationData.lblDescriptioncannotcontainonlywhitespace || 'Feature Description cannot contain only whitespace' }}
                         </mat-error>
+                        <mat-error *ngIf="packageFormGroup.get('description').hasError('specialCharsNotAllowed')">
+                            {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                        </mat-error>
                     </div>
                     <div *ngIf="actionType == 'view'">
                         <span style='font-weight: 500!important;'>{{ selectedElementData.description }}</span>
@@ -85,7 +94,7 @@
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
                 <div class='areaWidth min-width-10-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
                     <mat-label>
-                        <span>{{ translationData.lblType || 'Type' }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+                        <span>{{ translationData.lblType || 'Select Type' }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
                     </mat-label>                    
                     <div *ngIf="actionType != 'view'">            
                         <mat-form-field appearance="outline" class="full-width">
@@ -105,13 +114,13 @@
                 </div> 
                 <div class='areaWidth min-width-60-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
                     <mat-label>
-                        {{ translationData.lblStatus|| 'Status' }}
+                        {{ translationData.lblStatus|| 'Select Status' }}
                     </mat-label>
                     <div *ngIf="actionType != 'view'" class='margin-top-5'>
-                        <mat-radio-group (change)='onStatusChange($event)'>
-                            <mat-radio-button [checked]="selectedStatus ===  'Active' ? true : false" style='margin-right: 20px;' value="A">{{ translationData.lblActive || 'Active' }}
+                        <mat-radio-group (change)='onStatusChange($event)' >
+                            <mat-radio-button [checked]="selectedStatus ===  'Active' ? true : false" style='margin-right: 20px;' value="Active">{{ translationData.lblActive || 'Active' }}
                             </mat-radio-button>
-                            <mat-radio-button [checked]="selectedStatus ===  'Inactive' ? true : false" style='margin-right: 20px;' value="I" >{{ translationData.lblInactive || 'Inactive' }}
+                            <mat-radio-button [checked]="selectedStatus ===  'Inactive' ? true : false" style='margin-right: 20px;' value="Inactive" >{{ translationData.lblInactive || 'Inactive' }}
                             </mat-radio-button>
                         </mat-radio-group>
                     </div>

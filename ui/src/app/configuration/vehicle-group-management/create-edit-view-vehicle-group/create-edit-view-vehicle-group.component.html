@@ -101,7 +101,7 @@
         <div fxLayout="column" fxLayoutAlign="left">
           <div *ngIf='showVehicleList' fxLayout="row" fxLayoutAlign='center center'>
             <mat-icon class='margin-right-10'>info</mat-icon>
-            <span>{{translationData.lblVehicleGroupManagementInfo || 'You can select vehicles from below list to add in this group' }}</span>
+            <span>{{ actionType == 'view' ? (translationData.lblVehicleGroupManagementViewInfo || 'You can view vehicle associations from the list below') : (translationData.lblVehicleGroupManagementInfo || 'You can select vehicles from below list to add in this group') }}</span>
           </div>
         </div>
         <div fxLayout="column" fxLayoutAlign="end" *ngIf="actionType != 'view'">

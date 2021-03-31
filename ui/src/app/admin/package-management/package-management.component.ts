@@ -135,10 +135,8 @@ export class PackageManagementComponent implements OnInit {
   }
 
   createNewPackage(){
-   
     this.actionType = 'create';
     this.createEditViewPackageFlag = true;
-
   }
 
   editViewPackage(rowData: any, type: any){
@@ -146,8 +144,6 @@ export class PackageManagementComponent implements OnInit {
     this.selectedElementData = rowData;
     this.createEditViewPackageFlag = true;
   }
-
-  
 
   changePackageStatus(rowData: any){
     const options = {
@@ -165,7 +161,16 @@ export class PackageManagementComponent implements OnInit {
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
       if(res){ 
-        //TODO: change status with latest grid data
+        // TODO: change status with latest grid data
+        console.log(rowData);
+        let updatePackageParams = {
+          "packageId": rowData.id,
+          "status":rowData.status === "Active" ? "I" : "A"
+        }
+        console.log(updatePackageParams);
+        this.packageService.updateChangedStatus(updatePackageParams).subscribe((data) => {
+          this.loadPackageData();
+        })
       }
     });
   }
