@@ -1414,7 +1414,12 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                throw ex;
+                _logger.LogError("Error in GetAccessRelationship with exception - " + ex.Message);
+                return await Task.FromResult(new AccessRelationshipResponse
+                {
+                    Message = "Exception :-" + ex.Message + ex.StackTrace,
+                    Code = Responcecode.Failed
+                });
             }
         }
         public override async Task<AccountVehiclesResponse> GetAccountsVehicles(AccessRelationshipFilter request, ServerCallContext context)
@@ -1450,7 +1455,12 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                throw ex;
+                _logger.LogError("Error in GetAccountsVehicles with exception - " + ex.Message);
+                return await Task.FromResult(new AccountVehiclesResponse
+                {
+                    Message = "Exception :-" + ex.Message + ex.StackTrace,
+                    Code = Responcecode.Failed
+                });
             }
         }
 
