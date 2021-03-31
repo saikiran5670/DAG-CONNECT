@@ -246,15 +246,15 @@ export class CreateEditUserGroupComponent implements OnInit {
   getUserCreatedMessage() {
     let userName = `${this.userGroupForm.controls.userGroupName.value}`;
     if(this.actionType == 'create') {
-      if(this.translationData.lblUserAccountCreatedSuccessfully)
-        return this.translationData.lblUserAccountCreatedSuccessfully.replace('$', userName);
+      if(this.translationData.lblUserGroupCreatedSuccessfully)
+        return this.translationData.lblUserGroupCreatedSuccessfully.replace('$', userName);
       else
-        return ("User Account '$' Created Successfully").replace('$', userName);
+        return ("User Group '$' Created Successfully").replace('$', userName);
     }else if(this.actionType == 'edit') {
-      if (this.translationData.lblUserAccountUpdatedSuccessfully)
-        return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', userName);
+      if (this.translationData.lblUserGroupUpdatedSuccessfully)
+        return this.translationData.lblUserGroupUpdatedSuccessfully.replace('$', userName);
       else
-        return ("User Account '$' Updated Successfully").replace('$', userName);
+        return ("User Group '$' Updated Successfully").replace('$', userName);
     }
     else{
       return '';
