@@ -35,6 +35,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   createStatus:boolean;
   duplicateMsg:boolean;
   isDataAttributeSetExist: boolean = false;
+  duplicateEmailMsg: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private featureService: FeatureService) { }
 
@@ -129,6 +130,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   onCreate(){
+    this.duplicateEmailMsg = false;
     let selectedId = this.selectionIDs();
     let createFeatureParams = {
       id: 0,
@@ -161,6 +163,11 @@ export class CreateEditViewFeaturesComponent implements OnInit {
           }    
           this.createViewEditFeatureEmit.emit(emitObj);
         });
+      }, (err) => {
+        //console.log(err);
+        if (err.status == 409) {
+          this.duplicateEmailMsg = true;
+        }
       });
     }
     else if(this.actionType == 'edit'){
@@ -195,6 +202,11 @@ export class CreateEditViewFeaturesComponent implements OnInit {
           }    
           this.createViewEditFeatureEmit.emit(emitObj); 
         });
+      }, (err) => {
+        //console.log(err);
+        if (err.status == 409) {
+          this.duplicateEmailMsg = true;
+        }
       });
     }
   }

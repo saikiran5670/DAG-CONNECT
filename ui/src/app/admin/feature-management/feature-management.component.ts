@@ -53,7 +53,8 @@ export class FeatureManagementComponent implements OnInit {
       lblEdit: "Edit",
       lblDelete: "Delete",
       lblExclude: "Exclude",
-      lblInclude: "Include"
+      lblInclude: "Include",
+      lblDuplicateDataAttributeSetName: "Duplicate Data Attribute Set Name"
     }
   }
 
