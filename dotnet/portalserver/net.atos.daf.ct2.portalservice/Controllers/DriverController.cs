@@ -154,6 +154,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(404, "Please provide the Optoutoptinstatus.");
                 }
+                else if (!((Optrequest.Optoutoptinstatus.ToUpper() =="U") || (Optrequest.Optoutoptinstatus.ToUpper() == "I") || (Optrequest.Optoutoptinstatus.ToUpper() == "H")))
+                {
+                    return StatusCode(404, "Please provide correct Optoutoptinstatus.");
+                }
                 logger.LogInformation("Driver UpdateOptinOptout function called ");
                 DriverBusinessService.OptOutOptInResponse response = await driverClient.UpdateOptinOptoutAsync(Optrequest);
                 return Ok(response);

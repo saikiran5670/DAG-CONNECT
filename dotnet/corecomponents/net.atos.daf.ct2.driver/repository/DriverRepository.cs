@@ -386,13 +386,21 @@ namespace net.atos.daf.ct2.driver
                         if (ObjDriverExist > 0)
                         {
                             var queryUpdate = @"update master.driver set first_name=@first_name, last_name=@last_name,email=@email,opt_in=@opt_in,modified_at=@modified_by,created_at=@created_at
-                                        WHERE driver_id_ext = @driver_id_ext RETURNING id;";
-                            await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameter);
+                                        WHERE is_active=true and driver_id_ext = @driver_id_ext RETURNING id;";
+                            var id = await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameter);
                             // ErrorMessage=item.Driver_id_ext + "Not Updated";
 
                             //dicMessage.Add(item.Driver_id_ext,"Updated");
-                            objDriver.ReturnMessage = "Updated";
-                            objDriver.Status = "PASS";
+                            if(id > 0)
+                            {
+                                objDriver.ReturnMessage = "Updated";
+                                objDriver.Status = "PASS";
+                            }
+                            else
+                            {                                
+                                objDriver.ReturnMessage = "IsNotActive";
+                                objDriver.Status = "FAIL";
+                            }                            
                         }
                         else
                         {
