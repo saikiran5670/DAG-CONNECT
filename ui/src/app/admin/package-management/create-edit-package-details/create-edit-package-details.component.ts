@@ -164,7 +164,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       "type": this.packageFormGroup.controls.type.value === "VIN" ? "V" : "O",
       "description": this.packageFormGroup.controls.description.value,
       "isActive": true,
-      "status": this.selectedStatus.value === "Inactive" ? "I" : "A"
+      "status": this.selectedStatus === "Inactive" ? "I" : "A"
     }
     if(this.actionType == 'create'){
       this.packageService.createPackage(createPackageParams).subscribe((res) => {
@@ -194,7 +194,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       "name": this.packageFormGroup.controls.name.value,
       "type": this.packageFormGroup.controls.type.value === "VIN" ? "V" : "O",
       "description": this.packageFormGroup.controls.description.value,
-      "status": this.selectedStatus.value === "Inactive" ? "I" : "A",
+      "status": this.selectedStatus === "Inactive" ? "I" : "A",
       "isActive": true
     }
     this.packageService.updatePackage(updatePackageParams).subscribe((data) => {
