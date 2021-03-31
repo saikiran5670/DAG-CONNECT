@@ -219,8 +219,10 @@ namespace net.atos.daf.ct2.packageservice
                                          CreatedAt = x.CreatedAt
                                      }).ToList());
 
-
+                response.Code = Responsecode.Success;
+                response.Message = "Package imported successfully.";
                 return await Task.FromResult(response);
+
             }
             catch (Exception ex)
             {
