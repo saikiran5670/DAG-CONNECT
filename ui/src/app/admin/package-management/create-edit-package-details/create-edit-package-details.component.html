@@ -175,8 +175,11 @@
                                 <mat-slide-toggle color="primary" (change)='$event ? masterToggleForFeatures() : null;' 
                                   [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
                                   [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
-                                  [aria-label]='checkboxLabelForFeatures()' [disabled]="actionType == 'view'">{{ translationData.lblInclude || 'Include'}}
+                                  [aria-label]='checkboxLabelForFeatures()' [disabled]="actionType == 'view'">
                                 </mat-slide-toggle>
+                                <span style="margin: 5px 0px 0px 5px;"
+                                    [ngClass]="{'opacity-0-5': actionType == 'view'}">{{ translationData.lblInclude ||
+                                    'Include'}}</span>
                               </mat-header-cell>
                               <mat-cell *matCellDef="let row">
                                 <mat-slide-toggle color="primary" (click)='$event.stopPropagation()'

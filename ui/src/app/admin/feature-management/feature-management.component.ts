@@ -53,7 +53,8 @@ export class FeatureManagementComponent implements OnInit {
       lblEdit: "Edit",
       lblDelete: "Delete",
       lblExclude: "Exclude",
-      lblInclude: "Include"
+      lblInclude: "Include",
+      lblDuplicateDataAttributeSetName: "Duplicate Data Attribute Set Name"
     }
   }
 
@@ -153,7 +154,7 @@ export class FeatureManagementComponent implements OnInit {
       message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
       cancelText: this.translationData.lblNo || "No",
       confirmText: this.translationData.lblYes || "Yes",
-      status: rowData.status == 'Active' ? 'Inactive' : 'Active' ,
+      status: rowData.state == 0 ? 'Inactive' : 'Active' ,
       name: rowData.name
     };
     const dialogConfig = new MatDialogConfig();
@@ -163,7 +164,31 @@ export class FeatureManagementComponent implements OnInit {
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
       if(res){ 
-        //TODO: change status with latest grid data
+              // TODO: change status with latest grid data
+
+              let updatedFeatureParams = {
+                    id: rowData.id,
+                    name: rowData.name,
+                    description: "",
+                    type: "D",
+                    IsFeatureActive: true,
+                    dataattributeSet: {
+                      id: rowData.dataAttribute.dataAttributeSetId,
+                      name: "",
+                      isActive: true,
+                      is_Exclusive: true,
+                      description: "",
+                      status: 0
+                    },
+                    key: "",
+                    dataAttributeIds: rowData.dataAttribute.dataAttributeIDs,
+                    level: 0,
+                    featureState: parseInt(rowData.state) == 1 ? 0 : 1
+                  }
+
+              this.featureService.updateFeature(updatedFeatureParams).subscribe((dataUpdated: any) => {
+                this.loadFeatureData();
+              });
       }
     });
   }

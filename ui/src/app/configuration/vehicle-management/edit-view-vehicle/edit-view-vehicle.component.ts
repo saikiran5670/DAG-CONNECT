@@ -24,8 +24,10 @@ export class EditViewVehicleComponent implements OnInit {
   ngOnInit(){
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.vehicleForm = this._formBuilder.group({
-      vehicleName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
-      registrationNumber: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
+      // vehicleName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
+      // registrationNumber: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
+      vehicleName: ['', [CustomValidators.noWhitespaceValidatorWithoutRequired]],
+      registrationNumber: ['', [CustomValidators.noWhitespaceValidatorWithoutRequired]],
       vin: new FormControl({value: null, disabled: true}),
       vehicleModel: new FormControl({value: null, disabled: true}),
       associatedGroups: new FormControl({value: null, disabled: true}),
@@ -123,7 +125,7 @@ export class EditViewVehicleComponent implements OnInit {
       if (this.translationData.lblVehicleUpdatedSuccessfully)
         return this.translationData.lblVehicleUpdatedSuccessfully.replace('$', vehName);
       else
-        return ("Vehicle '$' Updated Successfully").replace('$', vehName);
+        return ("Vehicle $ Updated Successfully").replace('$', (vehName != '' ? vehName : ''));
     }
     else{
       return '';
