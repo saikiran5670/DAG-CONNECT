@@ -33,6 +33,7 @@ namespace net.atos.daf.ct2.features.repository
         Task<Feature> UpdateFeature(Feature feature);
         Task<int> DeleteFeature(int FeatureId);
         int CheckFeatureNameExist(string FeatureName, int FeatureId);
+        Task<int> ChangeFeatureState(int FeatureID, Char State);
 
         #endregion
     }

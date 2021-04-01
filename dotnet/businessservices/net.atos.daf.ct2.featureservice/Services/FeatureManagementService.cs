@@ -398,5 +398,48 @@ namespace net.atos.daf.ct2.featureservice
 
             }
         }
+
+        public async override Task<FeatureStateResponce> ChangeFeatureState(FeatureStateRequest featureSetRequest, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("Feature State method in Feature API called.");
+
+                var FeatureId = await _FeaturesManager.ChangeFeatureState(featureSetRequest.Featureid,Convert.ToChar(featureSetRequest.FeatureState));
+
+                //await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Feature Component", "Feature Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "DeleteFeatureSet method in Feature manager", FeatureSetId, FeatureSetId, JsonConvert.SerializeObject(FeatureSetId));
+                if (FeatureId > 0)
+                {
+                    return await Task.FromResult(new FeatureStateResponce
+                    {
+                        Message = featureSetRequest.Featureid.ToString() + " Changed successfully",
+                        Code = Responcecode.Success                       
+
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new FeatureStateResponce
+                    {
+                        Message = featureSetRequest.Featureid.ToString() + " Not a valid feature Id",
+                        Code = Responcecode.Failed
+                        
+
+                    });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Feature Service:DeleteFeatureSet : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new FeatureStateResponce
+                {
+                    Message = featureSetRequest.Featureid.ToString() + " Feature state change failed",
+                    Code = Responcecode.Failed                    
+
+                });
+
+            }
+        }
     }
 }

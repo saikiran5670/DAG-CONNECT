@@ -27,5 +27,6 @@ namespace net.atos.daf.ct2.features
         Task<int> DeleteFeature(int FeatureId);
 
         int CheckFeatureNameExist(string FeatureName,int FeatureId);
+        Task<int> ChangeFeatureState(int FeatureID, Char State);
     }
 }

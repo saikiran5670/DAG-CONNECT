@@ -910,7 +910,6 @@ namespace net.atos.daf.ct2.features.repository
                                  SET 
                                     name= @name,
                                     description= @description, 
-                                    is_active= @is_active,                                   
                                     modified_at=@modified_at,
                                     modified_by=@modified_by
                                 WHERE id = @id
@@ -919,7 +918,7 @@ namespace net.atos.daf.ct2.features.repository
                     parameter.Add("@id", featureSet.FeatureSetID);
                     parameter.Add("@name", featureSet.Name);
                     parameter.Add("@description", featureSet.description);
-                    parameter.Add("@is_active", featureSet.Is_Active);                    
+                    //parameter.Add("@is_active", featureSet.Is_Active);                    
                     parameter.Add("@modified_at", featureSet.modified_at);
                     parameter.Add("@modified_by", featureSet.modified_by);
                     int UpdateFeatureSetID = await dataAccess.ExecuteScalarAsync<int>(FSQueryStatement, parameter);
@@ -1063,6 +1062,21 @@ namespace net.atos.daf.ct2.features.repository
 
         }
 
+
+        public async  Task<int> ChangeFeatureState(int FeatureID,Char State)
+        {
+            var QueryStatement = @"Update master.feature set state=@state
+                                    where id=@featureid returning id";
+            var parameter = new DynamicParameters();
+
+                parameter.Add("@featureid", FeatureID);
+                parameter.Add("@state", State);
+                
+        
+            int resultfeatureid = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            return resultfeatureid;
+
+        }
 
 
     }
