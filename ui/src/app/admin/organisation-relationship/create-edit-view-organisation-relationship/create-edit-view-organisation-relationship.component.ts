@@ -10,7 +10,7 @@ import { OrganizationService } from 'src/app/services/organization.service';
 @Component({
   selector: 'app-create-edit-view-organisation-relationship',
   templateUrl: './create-edit-view-organisation-relationship.component.html',
-  styleUrls: ['./create-edit-view-organisation-relationship.component.css']
+  styleUrls: ['./create-edit-view-organisation-relationship.component.less']
 })
 export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   constructor(private _formBuilder: FormBuilder, private _snackBar: MatSnackBar, private organizationService: OrganizationService) { 
