@@ -76,13 +76,13 @@ namespace net.atos.daf.ct2.account
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", account.Id);
-                parameter.Add("@email", String.IsNullOrEmpty(account.EmailId) ? account.EmailId : account.EmailId.ToLower());
+               // parameter.Add("@email", String.IsNullOrEmpty(account.EmailId) ? account.EmailId : account.EmailId.ToLower());
                 parameter.Add("@salutation", account.Salutation);
                 parameter.Add("@first_name", account.FirstName);
                 parameter.Add("@last_name", account.LastName);
                 parameter.Add("@type", (char)account.AccountType);
                 parameter.Add("@driver_id", account.DriverId);
-                string query = @"update master.account set email = @email,salutation = @salutation,
+                string query = @"update master.account set salutation = @salutation,
                                 first_name = @first_name,last_name = @last_name ,driver_id=@driver_id, type = @type
                                 where id = @id RETURNING id";
                 account.Id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);

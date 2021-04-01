@@ -139,6 +139,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                bool isSameEmail = false;
+
                 // Validation 
                 if ((request.Id <= 0) || (string.IsNullOrEmpty(request.EmailId))
                     || (string.IsNullOrEmpty(request.FirstName)) || (string.IsNullOrEmpty(request.LastName)))
@@ -162,6 +164,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (!EnumValidator.ValidateAccountType(accountType))
                 {
                     return StatusCode(400, PortalConstants.AccountValidation.InvalidAccountType);
+                }
+                AccountBusinessService.AccountFilter accFilter = new AccountBusinessService.AccountFilter();
+                accFilter.Id = request.Id;
+                AccountBusinessService.AccountDataList accountList = await _accountClient.GetAsync(accFilter);
+                foreach (AccountBusinessService.AccountRequest entity in accountList.Accounts)
+                {
+                    if (entity.EmailId.ToUpper() == request.EmailId.ToUpper())
+                    {
+                        isSameEmail = true;
+                    }
+                    //As filtering by id, hence only one row is expected.
+                    break;
+                }
+                if (!isSameEmail)
+                {
+                    return StatusCode(400, PortalConstants.AccountValidation.EmailUpdateNotAllowed);
                 }
                 var accountRequest = _mapper.ToAccount(request);
                 AccountBusinessService.AccountData accountResponse = await _accountClient.UpdateAsync(accountRequest);
