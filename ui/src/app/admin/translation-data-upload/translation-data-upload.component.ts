@@ -85,7 +85,7 @@ export class TranslationDataUploadComponent implements OnInit {
   loadInitData(){
     this.translationService.getTranslationUploadDetails().subscribe(data => {
       if(data){
-        data["translationupload"].forEach(element => {
+        data.forEach(element => {
           var date = new Date(element.createdAt);
           var year = date.getFullYear();
           var month = ("0" + (date.getMonth() + 1)).slice(-2);
@@ -95,7 +95,7 @@ export class TranslationDataUploadComponent implements OnInit {
         });
         
 
-        this.initData = data["translationupload"];
+        this.initData = data;
         this.updateGridData(this.initData);
       }
     }, (error) => {
