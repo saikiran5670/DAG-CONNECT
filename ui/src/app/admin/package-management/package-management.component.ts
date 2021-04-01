@@ -160,17 +160,19 @@ export class PackageManagementComponent implements OnInit {
     dialogConfig.data = options;
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
-      if(res){ 
+      if(res == true){ 
         // TODO: change status with latest grid data
-        console.log(rowData);
         let updatePackageParams = {
           "packageId": rowData.id,
           "status":rowData.status === "Active" ? "I" : "A"
         }
-        console.log(updatePackageParams);
         this.packageService.updateChangedStatus(updatePackageParams).subscribe((data) => {
           this.loadPackageData();
+          let successMsg = "Updated Successfully!";
+          this.successMsgBlink(successMsg);
         })
+      }else {
+        this.loadPackageData();
       }
     });
   }
