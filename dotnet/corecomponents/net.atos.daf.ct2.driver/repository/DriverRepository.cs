@@ -379,7 +379,7 @@ namespace net.atos.daf.ct2.driver
 
                         var parameterduplicate = new DynamicParameters();
                         parameterduplicate.Add("@driver_id_ext", item.Driver_id_ext);
-                        var query = @"SELECT id FROM master.driver where driver_id_ext=@driver_id_ext";
+                        var query = @"SELECT id FROM master.driver where driver_id_ext=@driver_id_ext and is_active=true";
                         int ObjDriverExist = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
 
