@@ -38,8 +38,8 @@ export class RelationshipManagementComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    console.log("---initial value of viewRelationshipFromOrg",this.viewRelationshipFromOrg)
-    console.log(history.state);
+    // console.log("---initial value of viewRelationshipFromOrg",this.viewRelationshipFromOrg)
+    // console.log(history.state);
     this.viewRelationshipFromOrg = history.state.viewRelationshipFromOrg;
 
     if(this.viewRelationshipFromOrg){
@@ -51,8 +51,6 @@ export class RelationshipManagementComponent implements OnInit {
           newData= this.initData;
           this.viewRelationship(newData[0]);
         }});
-       
-      
     }
    
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -74,8 +72,7 @@ export class RelationshipManagementComponent implements OnInit {
       this.processTranslation(data);
       this.loadInitData();
     });
-    this.loadInitData();//temporary
-
+    //this.loadInitData(); //--temporary
   }
 
   defaultTranslation(){
@@ -88,40 +85,56 @@ export class RelationshipManagementComponent implements OnInit {
   }
 
   loadInitData() {
-    //this.showLoadingIndicator = true;
+    this.showLoadingIndicator = true;
      let objData = { 
         Organizationid : this.organizationId,
      };
      
     //  this.mockData(); //temporary
-    this.organizationService.getRelationship(objData).subscribe((data) => {
+    this.organizationService.getRelationship(objData).subscribe((data: any) => {
+      this.hideloader();
       if(data){
-       this.initData = data["relationshipList"];
-       setTimeout(()=>{
-        this.dataSource = new MatTableDataSource(this.initData);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-      });
-    }
+        this.initData = data["relationshipList"];
+        this.updateDataSource(this.initData);
+      }
+    }, (error) => {
+      this.hideloader();
+      this.initData = [];
+      this.updateDataSource(this.initData);
     }); 
+  }
+
+  updateDataSource(tableData: any){
+    this.initData = this.getNewTagData(tableData);
+    this.dataSource = new MatTableDataSource(tableData);
+    setTimeout(()=>{
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    });
   }
 
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
-    data.forEach(row => {
-      let createdDate = new Date(row.createddate).getTime();
-      let nextDate = createdDate + 86400000;
-      if(currentDate > createdDate && currentDate < nextDate){
-        row.newTag = true;
-      }
-      else{
-        row.newTag = false;
-      }
-    });
-    let newTrueData = data.filter(item => item.newTag == true);
-    let newFalseData = data.filter(item => item.newTag == false);
-    Array.prototype.push.apply(newTrueData,newFalseData); 
-    return newTrueData;
+    if(data.length > 0){
+      data.forEach(row => {
+        let createdDate = parseInt(row.createdAt); 
+        let nextDate = createdDate + 86400000;
+        if(currentDate > createdDate && currentDate < nextDate){
+          row.newTag = true;
+        }
+        else{
+          row.newTag = false;
+        }
+      });
+      let newTrueData = data.filter(item => item.newTag == true);
+      newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
+      let newFalseData = data.filter(item => item.newTag == false);
+      Array.prototype.push.apply(newTrueData, newFalseData); 
+      return newTrueData;
+    }
+    else{
+      return data;
+    }
   }
 
   newRelationship(){
@@ -225,7 +238,7 @@ export class RelationshipManagementComponent implements OnInit {
 
   hideloader() {
     // Setting display of spinner
-      this.showLoadingIndicator=false;
+    this.showLoadingIndicator = false;
   }
 
 }

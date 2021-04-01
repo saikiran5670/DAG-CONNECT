@@ -1,48 +1,53 @@
 <div *ngIf="viewFlag || viewRelationshipFromOrg" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-      <span>{{ breadcumMsg }}</span>
+        <span>{{ breadcumMsg }}</span>
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
-      <span class='custom-font' (click)="onCancel()">
-        <span>&nbsp;</span>
-        <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+        <span class='custom-font' (click)="onCancel()">
+            <span><&nbsp;</span>
+            <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
     </div>
 </div>
 <form [formGroup]="relationshipFormGroup">
     <mat-card class='mat-elevation-z margin-bottom-xlg' *ngIf="viewFlag">
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
-                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+                <div>
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ title }}</span>
-                </div>
-          
-                    <button *ngIf="viewRelationshipFromOrg" class='actionBtn'  mat-flat-button (click)="editRelationship(selectedRowFromRelationship)" matTooltip="Edit">
-                        <mat-icon>create</mat-icon>
+                    <button *ngIf="viewRelationshipFromOrg" class='actionBtn' mat-flat-button
+                    (click)="editRelationship(selectedRowFromRelationship)" matTooltip="Edit">
+                    <mat-icon>create</mat-icon>
                     </button>
-                
-            </div>
-            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblRelationshipName || 'Relationship Name' }}</mat-label>
-                  <mat-label class='custom-font'>{{ this.gridData[0].name  }}</mat-label>
-                </div>
-                <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblRelationshipDescription || 'Relationship Description' }}</mat-label>
-                    <mat-label class='custom-font'>{{ this.gridData[0].description ? this.gridData[0].description : '--' }}</mat-label>
                 </div>
             </div>
-             <div *ngIf="organizationId == 1 || organizationId == 2" fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+            <div fxLayout="row" fxLayoutAlign="start" class="full-width margin-bottom-sm" fxLayoutGap="50px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblLevelOnlyForDAFPlatformAdmin || 'Level(Only for DAF/platform admin)' }}</mat-label>
-                  <mat-label class='custom-font'>{{ this.gridData[0].level  }}</mat-label>
+                    <mat-label>{{ translationData.lblRelationshipName || 'Relationship Name' }}</mat-label>
+                    <mat-label class='custom-font'>{{ this.gridData[0].name }}</mat-label>
                 </div>
-                <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left" >
-                    <mat-label>{{ translationData.lblCodeOnlyForDAFPlatformAdmin || 'Code(Only for DAF/platform admin)' }}</mat-label>
-                  <mat-label class='custom-font'>{{ this.gridData[0].code  }}</mat-label>
+                <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblRelationshipDescription || 'Relationship Description' }}
+                    </mat-label>
+                    <mat-label class='custom-font'>{{ this.gridData[0].description ? this.gridData[0].description : '--'
+                        }}</mat-label>
                 </div>
+            </div>
+            <div *ngIf="organizationId == 1 || organizationId == 2" fxLayout="row" fxLayoutAlign="start"
+                class="full-width margin-bottom-sm" fxLayoutGap="50px">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblLevelOnlyForDAFPlatformAdmin || 'Level(Only for DAF/platform
+                        admin)' }}</mat-label>
+                    <mat-label class='custom-font'>{{ this.gridData[0].level }}</mat-label>
+                </div>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblCodeOnlyForDAFPlatformAdmin || 'Code(Only for DAF/platform admin)'
+                        }}</mat-label>
+                    <mat-label class='custom-font'>{{ this.gridData[0].code }}</mat-label>
+                </div>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
             </div>
         </mat-card-content>
-    </mat-card> 
+    </mat-card>
     <mat-card class='mat-elevation-z margin-bottom-xlg' *ngIf="!viewFlag">
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
@@ -50,46 +55,57 @@
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ title }}</span>
                 </div>
             </div>
-            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+            <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="50px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ createStatus ? (translationData.lblNewRelationshipName || 'New Relationship Name') : (translationData.lblRelationshipName || 'Relationship Name') }}<span class='mandatoryColor'>*</span></mat-label>
+                    <mat-label>{{ createStatus ? (translationData.lblNewRelationshipName || 'New Relationship Name') :
+                        (translationData.lblRelationshipName || 'Relationship Name') }}<span
+                            class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <input placeholder="{{ translationData.lblEnterRelationshipName || 'Enter Relationship Name' }}" (keyup)="isRelationshipExist=false; doneFlag=false"  matInput formControlName="relationshipName" required maxlength="60">
-                    <mat-icon style='color:green;' matSuffix *ngIf="doneFlag">done</mat-icon>
+                        <input placeholder="{{ translationData.lblEnterRelationshipName || 'Enter Relationship Name' }}"
+                            (keyup)="isRelationshipExist=false; doneFlag=false" matInput
+                            formControlName="relationshipName" required maxlength="60">
+                        <mat-icon style='color:green;' matSuffix *ngIf="doneFlag">done</mat-icon>
                     </mat-form-field>
                     <mat-error *ngIf="relationshipFormGroup.get('relationshipName').hasError('required')">
                         {{ translationData.lblPleaseentertheRelationshipname || 'Please enter the relationship name'}}
                     </mat-error>
                     <mat-error *ngIf="relationshipFormGroup.get('relationshipName').hasError('maxlength')">
-                        {{ translationData.lblRelationshipNameShouldbeMax60Characters || 'Relationshipname should be max. 60 characters'}}
+                        {{ translationData.lblRelationshipNameShouldbeMax60Characters || 'Relationshipname should be
+                        max. 60 characters'}}
                     </mat-error>
-                    <mat-error #RelationshipValueCheck *ngIf="isRelationshipExist" >
-                        {{ translationData.lblRelationshipalreadyexistsPleasechooseadifferentname || 'Relationship already exists. Please choose a different name.'}}
+                    <mat-error #RelationshipValueCheck *ngIf="isRelationshipExist">
+                        {{ translationData.lblRelationshipalreadyexistsPleasechooseadifferentname || 'Relationship
+                        already exists. Please choose a different name.'}}
                     </mat-error>
-                    <mat-error *ngIf="!relationshipFormGroup.get('relationshipName').hasError('required')  && relationshipFormGroup.get('relationshipName').hasError('whitespace')">
-                      Relationship name cannot contain only whitespace
-                     </mat-error>
+                    <mat-error
+                        *ngIf="!relationshipFormGroup.get('relationshipName').hasError('required')  && relationshipFormGroup.get('relationshipName').hasError('whitespace')">
+                        Relationship name cannot contain only whitespace
+                    </mat-error>
                 </div>
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
                         <span>{{ translationData.lblRelationshipDescription || 'Relationship Description'}}</span>
                         <span>{{ translationData.lbl120CharMax || '120 characters max'}}</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <input maxlength="120" placeholder="{{ translationData.lblEnterAboutRelationship || 'Enter About Relationship' }}" matInput formControlName="relationshipDescription">
+                        <input maxlength="120"
+                            placeholder="{{ translationData.lblEnterAboutRelationship || 'Enter About Relationship' }}"
+                            matInput formControlName="relationshipDescription">
                     </mat-form-field>
                     <mat-error *ngIf="  relationshipFormGroup.get('relationshipDescription').hasError('whitespace')">
-                      Relationship description cannot contain only whitespace
+                        Relationship description cannot contain only whitespace
                     </mat-error>
                 </div>
             </div><br>
-            <div *ngIf="organizationId == 1 || organizationId == 2" fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+            <div *ngIf="organizationId == 1 || organizationId == 2" fxLayout="row" fxLayoutAlign="start"
+                class="full-width" fxLayoutGap="50px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>
-                        {{ translationData.lblLevelOnlyForDAFPlatformAdmin || 'Level(Only for DAF/platform admin)' }}<span class='mandatoryColor'>*</span>
+                        {{ translationData.lblLevelOnlyForDAFPlatformAdmin || 'Level (Only for DAF/platform admin)'
+                        }}<span class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-select formControlName="level">
+                        <mat-select placeholder="{{ translationData.lblSelectLevel || 'Select Level' }}" formControlName="level">
                             <mat-option *ngFor="let level of levels" [value]="level">
                                 {{level}}
                             </mat-option>
@@ -98,34 +114,40 @@
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>
-                        {{ translationData.lblCodeOnlyForDAFPlatformAdmin || 'Code(Only for DAF/platform admin)' }}<span class='mandatoryColor'>*</span>
+                        {{ translationData.lblCodeOnlyForDAFPlatformAdmin || 'Code(Only for DAF/platform admin)' }}<span
+                            class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-select formControlName="code">
+                        <mat-select placeholder="{{ translationData.lblSelectCode || 'Select Code' }}" formControlName="code">
                             <mat-option *ngFor="let code of codes" [value]="code">
                                 {{code}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
             </div>
-        </mat-card-content>        
+        </mat-card-content>
         <mat-card-actions class='no-margin no-padding'>
             <div fxLayout="row" fxLayoutAlign="space-between center">
                 <div fxLayout="column" fxLayoutAlign="left">
                     <div fxLayout="row" fxLayoutAlign='center center'>
                         <mat-icon class='margin-right-10'>info</mat-icon>
-                        <span>{{ translationData.lblHintMessage || 'You can select multiple "features" from below list to map with this Relationship'}}</span>
+                        <span>{{ translationData.lblHintMessage || 'You can select multiple "features" from below list
+                            to map with this Relationship'}}</span>
                     </div>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="end">
                     <div fxLayout="row" class='areaWidth'>
-                        <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel'}}</button>
-                        <button class='resetCancelBtnColor no-margin margin-right-10'  mat-raised-button color="primary" *ngIf="!createStatus"
-                            (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
-                        <button class='no-margin' [disabled]="!relationshipFormGroup.valid || selectionForFeatures.selected.length == 0" mat-raised-button color="primary"
-                            (click)='onCreate()'>
-                            {{ createStatus  ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm || 'Confirm') }}</button>
+                        <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
+                            (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel'}}</button>
+                        <button class='resetCancelBtnColor no-margin margin-right-10' mat-raised-button color="primary"
+                            *ngIf="!createStatus" (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
+                        <button class='no-margin'
+                            [disabled]="!relationshipFormGroup.valid || selectionForFeatures.selected.length == 0"
+                            mat-raised-button color="primary" (click)='onCreate()'>
+                            {{ createStatus ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm ||
+                            'Confirm') }}</button>
                     </div>
                 </div>
             </div>
@@ -134,44 +156,52 @@
     <mat-card class='mat-elevation-z'>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ createStatus ? ( translationData.lblSelectFeatures || 'Select Features') : (translationData.lblSelectedFeatures || 'Selected Features') }}</span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ createStatus ? (
+                    translationData.lblSelectFeatures || 'Select Features') : (translationData.lblSelectedFeatures ||
+                    'Selected Features') }}</span>
             </div>
         </div>
         <div *ngIf='createStatus' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-              <mat-form-field appearance="outline">
-                  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
-                  <span matPrefix><mat-icon>search</mat-icon></span>
-              </mat-form-field>
+                <mat-form-field appearance="outline">
+                    <input matInput (keyup)="applyFilter($event.target.value)"
+                        placeholder="{{ translationData.lblSearch || 'Search' }}">
+                    <span matPrefix>
+                        <mat-icon>search</mat-icon>
+                    </span>
+                </mat-form-field>
             </div>
-          </div>
+        </div>
         <div fxLayout="row" class='margin-top-xlg'>
             <div fxLayout="column" class='full-width'>
                 <mat-table [dataSource]="dataSource" class="table-items" matSort>
                     <ng-container matColumnDef="select">
-                      <mat-header-cell *matHeaderCellDef>
-                        <mat-checkbox (change)='$event ? masterToggleForFeatures() : null'
-                          [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
-                          [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
-                          [aria-label]='checkboxLabelForFeatures()'>
-                        </mat-checkbox>
-                        <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
-                      </mat-header-cell>
-                      <mat-cell *matCellDef="let row">
-                        <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectionForFeatures.toggle(row) : null'
-                          [checked]='selectionForFeatures.isSelected(row)' [aria-label]='checkboxLabelForFeatures(row)'>
-                        </mat-checkbox>
-                      </mat-cell>
+                        <mat-header-cell *matHeaderCellDef>
+                            <mat-checkbox (change)='$event ? masterToggleForFeatures() : null'
+                                [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
+                                [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
+                                [aria-label]='checkboxLabelForFeatures()'>
+                            </mat-checkbox>
+                            <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <mat-checkbox (click)='$event.stopPropagation()'
+                                (change)='$event ? selectionForFeatures.toggle(row) : null'
+                                [checked]='selectionForFeatures.isSelected(row)'
+                                [aria-label]='checkboxLabelForFeatures(row)'>
+                            </mat-checkbox>
+                        </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="name">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatureName || 'Feature Name' }}</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFeatureName || 'Feature
+                            Name' }}</mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                          {{ row.name }}
+                            {{ row.name }}
                         </mat-cell>
-                      </ng-container>
-                      <mat-header-row *matHeaderRowDef="featureDisplayedColumns"></mat-header-row>
-                        <mat-row *matRowDef="let row; columns: featureDisplayedColumns;">
-                        </mat-row>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="featureDisplayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: featureDisplayedColumns;">
+                    </mat-row>
                 </mat-table>
                 <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
             </div>

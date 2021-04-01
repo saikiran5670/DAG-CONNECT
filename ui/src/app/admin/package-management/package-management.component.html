@@ -76,7 +76,7 @@
   </mat-table>
   <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
 </div>
-<app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
+<app-spinner *ngIf="showLoadingIndicator"></app-spinner>
 </mat-card>
 <app-create-edit-package-details *ngIf='createEditViewPackageFlag' [translationData]='translationData' [actionType]='actionType' [selectedElementData]='selectedElementData' (createViewEditPackageEmit)='checkCreationForPackage($event)'></app-create-edit-package-details>
 </div>
