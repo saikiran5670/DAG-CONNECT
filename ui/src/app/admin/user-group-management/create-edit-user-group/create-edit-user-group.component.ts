@@ -82,7 +82,10 @@ export class CreateEditUserGroupComponent implements OnInit {
   }
 
   getBreadcum() {
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblUserGroupManagement ? this.translationData.lblUserGroupManagement : "User Group Management"} / ${(this.actionType == 'edit') ? (this.translationData.lblEditUserGroupDetails ? this.translationData.lblEditUserGroupDetails : 'Edit User Group Details') : (this.translationData.lblViewUserGroupDetails ? this.translationData.lblViewUserGroupDetails : 'View User Group Details')}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
+    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / 
+    ${this.translationData.lblAccountGroupManagement ? this.translationData.lblAccountGroupManagement : "Account Group Management"} / 
+    ${(this.actionType == 'edit') ? (this.translationData.lblEditAccountGroupDetails ? this.translationData.lblEditAccountGroupDetails : 'Edit Account Group Details') : (this.translationData.lblViewAccountGroupDetails ? this.translationData.lblViewAccountGroupDetails : 'View Account Group Details')}`;
   }
 
   makeRoleAccountGrpList(initdata: any) {

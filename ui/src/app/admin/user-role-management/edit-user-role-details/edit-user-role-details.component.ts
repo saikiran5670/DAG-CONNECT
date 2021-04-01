@@ -70,7 +70,10 @@ export class EditUserRoleDetailsComponent implements OnInit {
   }
 
   getBreadcum(){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblUserRoleManagement ? this.translationData.lblUserRoleManagement : "User Role Management"} / ${this.translationData.lblUserRoleDetails ? this.translationData.lblUserRoleDetails : 'User Role Details'}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / 
+    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / 
+    ${this.translationData.lblAccountRoleManagement ? this.translationData.lblAccountRoleManagement : "Account Role Management"} / 
+    ${this.translationData.lblAccountRoleDetails ? this.translationData.lblAccountRoleDetails : 'Account Role Details'}`;
   }
 
   onCancel() {

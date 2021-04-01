@@ -53,9 +53,9 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
         name: this.translationData.lblViewOnly || 'View Only'
       }
     ];
-    this.breadcumMsg = this.getBreadcum(this.actionType);
     if(this.actionType == 'view' || this.actionType == 'edit' ){
       this.setDropdownValue();
+      this.breadcumMsg = this.getBreadcum(this.actionType);
     }
     this.loadGridData(this.vehicleGrpList);
     this.selectedViewType = this.selectedViewType == '' ? 'both' : this.selectedViewType;
@@ -103,7 +103,10 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
   }
 
   getBreadcum(type: any){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblVehicleAccountAccessRelationship ? this.translationData.lblAccountAccessRelationship : "Account Access Relationship"} / ${(type == 'view') ? (this.translationData.lblViewAssociationDetails ? this.translationData.lblViewAssociationDetails : 'View Association Details') : (this.translationData.lblAccessRelationshipDetails ? this.translationData.lblAccessRelationshipDetails : 'Access Relationship Details')}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / 
+    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / 
+    ${this.translationData.lblAccessRelationshipManagement ? this.translationData.AccessRelationshipManagement : 'Access Relationship Management'} / 
+    ${(type == 'view') ? (this.translationData.lblViewAccountAssociationDetails ? this.translationData.lblViewAccountAssociationDetails : 'View Account Association Details') : (this.translationData.lblEditAccountAssociationDetails ? this.translationData.lblEditAccountAssociationDetails : 'Edit Account Association Details')}`;
   }
 
   toBack(){
