@@ -49,109 +49,170 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
         {
             try
             {
-                logger.LogInformation("UpdateVehicle function called -" + vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN);
+               
 
                 if (ModelState.IsValid)
                 {
-                    // Length Validation
-                    if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification != null && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure != null && vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions != null)
+                    if (vehicleData.VehicleUpdatedEvent.Vehicle != null)
                     {
-                        if (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN) ||
-                            !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.LicensePlate) ||
-                            !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Make) ||
-                            !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.ID) ||
-                            !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange) ||
-                            !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.ModelYear) ||
-                            !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Type.ID) ||
-                            !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.ID) ||
-                            !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.SideSkirts) ||
-                            !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.SideCollars) ||
-                            !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.RearOverhang) ||
-                            !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.ID))
+                        // Length Validation
+                        if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification != null)
                         {
-                            return StatusCode(400, string.Empty);
-                        }
+                            logger.LogInformation("UpdateVehicle function called -" + vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN);
 
-                        if ((!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Type)) ||
-                            (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Power)) ||
-                            (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Coolant)) ||
-                            (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.EmissionLevel)) ||
-                            (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Transmission.GearBox.ID)) ||
-                            (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Transmission.GearBox.Type)) ||
-                            (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.AxleConfiguration)) ||
-                            (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.Wheels.Tire.Size)) ||
-                            (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.WheelBase)) ||
-                            (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin.ID)))
-                        {
-                            return StatusCode(400, string.Empty);
-                        }
-
-                        if ((!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin.RoofSpoiler)) ||
-                            (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin.Type)))
-                        {
-                            return StatusCode(400, string.Empty);
-                        }
-
-
-                        if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits != null)
-                        {
-                            if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit != null)
+                            if (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN) ||
+                                !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.LicensePlate) ||
+                                !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Make) ||
+                                !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.ID) ||
+                                !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange) ||
+                                !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.ModelYear) ||
+                                !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Type.ID))
                             {
-                                if ((!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit.type)) ||
-                                    (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit.Name)))
+                                return StatusCode(400, string.Empty);
+                            }
+                        }
+
+                        if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure != null)
+                        {
+                            if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis != null)
+                            {
+                                if (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.ID) ||
+                                    !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.SideSkirts) ||
+                                    !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.SideCollars) ||
+                                    !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.RearOverhang))
                                 {
                                     return StatusCode(400, string.Empty);
                                 }
                             }
-                        }
 
-
-                        if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Size != null)
-                        {
-                            if ((!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Size.Length)) ||
-                                (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Size.Width)) ||
-                                (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Size.Height)))
+                            if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine != null)
                             {
-                                return StatusCode(400, string.Empty);
+                                if (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.ID) ||
+                                 !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Type) ||
+                                !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Power) ||
+                                !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Fuel) ||
+                                !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Coolant) ||
+                                !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.EmissionLevel))
+                                {
+                                    return StatusCode(400, string.Empty);
+
+                                }
+                            }
+
+                            if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Transmission != null)
+                            {
+                                if (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Transmission.GearBox.ID) ||
+                                !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Transmission.GearBox.Type))
+                                {
+                                    return StatusCode(400, string.Empty);
+                                }
+                            }
+
+
+                            if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine != null)
+                            {
+                                if (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.AxleConfiguration) ||
+                                !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.WheelBase))
+                                {
+                                    return StatusCode(400, string.Empty);
+                                }
+
+                                if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.Wheels != null)
+                                {
+                                    if (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.Wheels.Tire.Size))
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                }
+                            }
+
+
+
+                            if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin != null)
+                            {
+                                if (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin.RoofSpoiler) ||
+                                    !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin.ID) ||
+                                    !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin.Type))
+                                {
+                                    return StatusCode(400, string.Empty);
+                                }
+                            }
+
+
+                            if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits != null)
+                            {
+                                if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit != null)
+                                {
+                                    if ((!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit.type)) ||
+                                        (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits.ElectronicControlUnit.Name)))
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                }
                             }
                         }
 
-                        if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights != null)
+                        if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions != null)
                         {
-                            if ((!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.type)) ||
-                                (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.value)))
+
+                            if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Size != null)
                             {
-                                return StatusCode(400, string.Empty);
+                                if ((!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Size.Length)) ||
+                                    (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Size.Width)) ||
+                                    (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Size.Height)))
+                                {
+                                    return StatusCode(400, string.Empty);
+                                }
+                            }
+
+                            if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights != null)
+                            {
+                                if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight != null)
+                                {
+                                    if ((!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.type)) ||
+                                    (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.value)))
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                }
                             }
                         }
-
                     }
-
-                    //Mandatory Validation
-
-                    if (string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN))
+                    else
                     {
                         return StatusCode(400, string.Empty);
-                        //return BadRequest();                        
                     }
-
 
 
                     net.atos.daf.ct2.vehicle.entity.VehicleProperty vehicleProperties = new net.atos.daf.ct2.vehicle.entity.VehicleProperty();
-
-                    //Vehicle ID
-                    vehicleProperties.VIN = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN.Trim();
-                    vehicleProperties.License_Plate_Number = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.LicensePlate;
-                    if (!string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.ManufactureDate))
+                    if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID != null)
                     {
-                        if (Common.Common.IsValidDate(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.ManufactureDate) == true)
-                        {
-                            vehicleProperties.ManufactureDate = Convert.ToDateTime(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.ManufactureDate);
-                        }
-                        else
+                        //Mandatory Validation
+
+                        if (string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN))
                         {
                             return StatusCode(400, string.Empty);
+                            //return BadRequest();                        
+                        }                       
+
+                        //Vehicle ID
+                        vehicleProperties.VIN = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN.Trim();
+                        vehicleProperties.License_Plate_Number = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.LicensePlate;
+                        if (!string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.ManufactureDate))
+                        {
+                            if (Common.Common.IsValidDate(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.ManufactureDate) == true)
+                            {
+                                vehicleProperties.ManufactureDate = Convert.ToDateTime(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.ManufactureDate);
+                            }
+                            else
+                            {
+                                return StatusCode(400, string.Empty);
+                            }
                         }
+                    }
+                    else
+                    {
+                        return StatusCode(400, string.Empty);
                     }
 
                     if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification != null)
@@ -194,8 +255,22 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                                     if (tank != null)
                                     {
                                         VehicleFuelTankProperties tankProperties = new VehicleFuelTankProperties();
-                                        tankProperties.Chassis_Tank_Nr = tank.nr;
-                                        tankProperties.Chassis_Tank_Volume = tank.Volume;
+                                        if (!Common.Common.ValidateFieldLength(50, tank.nr))
+                                        {
+                                            return StatusCode(400, string.Empty);
+                                        }
+                                        else
+                                        {
+                                            tankProperties.Chassis_Tank_Nr = tank.nr;
+                                        }
+                                        if (!Common.Common.ValidateFieldLength(50, tank.Volume))
+                                        {
+                                            return StatusCode(400, string.Empty);
+                                        }
+                                        else
+                                        {
+                                            tankProperties.Chassis_Tank_Volume = tank.Volume;
+                                        }
                                         vehicleProperties.VehicleFuelTankProperties.Add(tankProperties);
                                     }
                                 }
@@ -229,70 +304,160 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                             vehicleProperties.Chassis_RearOverhang = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.RearOverhang.Trim();
 
                         //Engine
-                        vehicleProperties.Engine_ID = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.ID;
-                        vehicleProperties.Engine_Type = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Type;
-                        if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Power != null)
-                            vehicleProperties.Engine_Power = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Power;
-                        vehicleProperties.Engine_Coolant = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Coolant;
-                        vehicleProperties.Engine_EmissionLevel = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.EmissionLevel;
-                        vehicleProperties.Fuel = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Fuel;
-
-                        //Transmission
-                        //GearBox
-                        vehicleProperties.GearBox_Id = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Transmission.GearBox.ID;
-                        vehicleProperties.GearBox_Type = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Transmission.GearBox.Type;
-
-                        //DriveLine
-                        vehicleProperties.DriverLine_AxleConfiguration = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.AxleConfiguration;
-
-                        vehicleProperties.DriverLine_Tire_Size = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.Wheels.Tire.Size;
-
-                        vehicleProperties.DriverLine_Wheelbase = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.WheelBase;
-
-                        //Front Axel
-                        vehicleProperties.VehicleAxelInformation = new List<VehicleAxelInformation>();
-                        if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.FrontAxle != null)
+                        if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine != null)
                         {
-                            foreach (var frontAxel in vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.FrontAxle)
+                            vehicleProperties.Engine_ID = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.ID;
+                            vehicleProperties.Engine_Type = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Type;
+                            if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Power != null)
+                                vehicleProperties.Engine_Power = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Power;
+                            vehicleProperties.Engine_Coolant = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Coolant;
+                            vehicleProperties.Engine_EmissionLevel = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.EmissionLevel;
+                            vehicleProperties.Fuel = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Engine.Fuel;
+                        }
+
+                        if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Transmission != null)
+                        {
+                            //Transmission
+                            //GearBox
+                            vehicleProperties.GearBox_Id = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Transmission.GearBox.ID;
+                            vehicleProperties.GearBox_Type = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Transmission.GearBox.Type;
+                        }
+
+                        if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine != null)
+                        {
+                            //DriveLine
+                            vehicleProperties.DriverLine_AxleConfiguration = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.AxleConfiguration;
+
+                            vehicleProperties.DriverLine_Wheelbase = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.WheelBase;
+
+                            if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.Wheels != null)
                             {
-                                VehicleAxelInformation vehiclefrontaxelInfo = new VehicleAxelInformation();
-                                vehiclefrontaxelInfo.AxelType = vehicle.AxelType.FrontAxle;
-                                vehiclefrontaxelInfo.Type = frontAxel.Type;
-                                vehiclefrontaxelInfo.Position = frontAxel.position;
-                                vehiclefrontaxelInfo.Springs = frontAxel.Springs;
-                                if (frontAxel.AxleSpecificWheels != null)
+                                vehicleProperties.DriverLine_Tire_Size = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.Wheels.Tire.Size;
+                            }
+
+
+                            //Front Axel
+                            vehicleProperties.VehicleAxelInformation = new List<VehicleAxelInformation>();
+                            if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.FrontAxle != null)
+                            {
+                                foreach (var frontAxel in vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.FrontAxle)
                                 {
-                                    vehiclefrontaxelInfo.Size = frontAxel.AxleSpecificWheels.Tire.Size;
-                                    vehiclefrontaxelInfo.Is_Wheel_Tire_Size_Replaced = true;
+                                    VehicleAxelInformation vehiclefrontaxelInfo = new VehicleAxelInformation();
+                                    vehiclefrontaxelInfo.AxelType = vehicle.AxelType.FrontAxle;
+
+                                    if (!Common.Common.ValidateFieldLength(50, frontAxel.Type))
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                    else
+                                    {
+                                        vehiclefrontaxelInfo.Type = frontAxel.Type;
+                                    }
+
+                                    if (!Common.Common.ValidateFieldLength(50, frontAxel.position))
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                    else
+                                    {
+                                        vehiclefrontaxelInfo.Position = frontAxel.position;
+                                    }
+
+                                    if (!Common.Common.ValidateFieldLength(50, frontAxel.Springs))
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                    else
+                                    {
+                                        vehiclefrontaxelInfo.Springs = frontAxel.Springs;
+                                    }
+
+
+                                    if (frontAxel.AxleSpecificWheels != null)
+                                    {
+                                        if (!Common.Common.ValidateFieldLength(50, frontAxel.AxleSpecificWheels.Tire.Size))
+                                        {
+                                            return StatusCode(400, string.Empty);
+                                        }
+                                        else
+                                        {
+                                            vehiclefrontaxelInfo.Size = frontAxel.AxleSpecificWheels.Tire.Size;
+                                        }
+
+                                        vehiclefrontaxelInfo.Is_Wheel_Tire_Size_Replaced = true;
+                                    }
+                                    vehicleProperties.VehicleAxelInformation.Add(vehiclefrontaxelInfo);
                                 }
-                                vehicleProperties.VehicleAxelInformation.Add(vehiclefrontaxelInfo);
+                            }
+
+                            //Rear Axel
+                            if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.RearAxle != null)
+                            {
+                                foreach (var rearAxel in vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.RearAxle)
+                                {
+                                    VehicleAxelInformation vehiclefrontaxelInfo = new VehicleAxelInformation();
+                                    vehiclefrontaxelInfo.AxelType = vehicle.AxelType.RearAxle;
+
+                                    if (!Common.Common.ValidateFieldLength(50, rearAxel.Ratio))
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                    else
+                                    {
+                                        vehiclefrontaxelInfo.Ratio = rearAxel.Ratio;
+                                    }
+
+                                    if (!Common.Common.ValidateFieldLength(50, rearAxel.Load))
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                    else
+                                    {
+                                        vehiclefrontaxelInfo.Load = rearAxel.Load;
+                                    }
+
+                                    if (!Common.Common.ValidateFieldLength(50, rearAxel.position))
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                    else
+                                    {
+                                        vehiclefrontaxelInfo.Position = rearAxel.position;
+                                    }
+
+                                    if (!Common.Common.ValidateFieldLength(50, rearAxel.Springs))
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                    else
+                                    {
+                                        vehiclefrontaxelInfo.Springs = rearAxel.Springs;
+                                    }
+
+                                    if (rearAxel.AxleSpecificWheels != null)
+                                    {
+                                        if (!Common.Common.ValidateFieldLength(50, rearAxel.AxleSpecificWheels.Tire.Size))
+                                        {
+                                            return StatusCode(400, string.Empty);
+                                        }
+                                        else
+                                        {
+                                            vehiclefrontaxelInfo.Size = rearAxel.AxleSpecificWheels.Tire.Size;
+                                        }
+                                        vehiclefrontaxelInfo.Is_Wheel_Tire_Size_Replaced = true;
+                                    }
+                                    vehicleProperties.VehicleAxelInformation.Add(vehiclefrontaxelInfo);
+                                }
                             }
                         }
 
-                        //Rear Axel
-                        if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.RearAxle != null)
+                        if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin != null)
                         {
-                            foreach (var rearAxel in vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.DriveLine.RearAxle)
-                            {
-                                VehicleAxelInformation vehiclefrontaxelInfo = new VehicleAxelInformation();
-                                vehiclefrontaxelInfo.AxelType = vehicle.AxelType.RearAxle;
-                                vehiclefrontaxelInfo.Ratio = rearAxel.Ratio;
-                                vehiclefrontaxelInfo.Load = rearAxel.Load;
-                                vehiclefrontaxelInfo.Position = rearAxel.position;
-                                vehiclefrontaxelInfo.Springs = rearAxel.Springs;
-                                if (rearAxel.AxleSpecificWheels != null)
-                                {
-                                    vehiclefrontaxelInfo.Size = rearAxel.AxleSpecificWheels.Tire.Size;
-                                    vehiclefrontaxelInfo.Is_Wheel_Tire_Size_Replaced = true;
-                                }
-                                vehicleProperties.VehicleAxelInformation.Add(vehiclefrontaxelInfo);
-                            }
+                            //Cabin
+                            vehicleProperties.DriverLine_Cabin_ID = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin.ID;
+                            vehicleProperties.DriverLine_Cabin_RoofSpoiler = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin.RoofSpoiler;
+                            vehicleProperties.DriverLine_Cabin_Type = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin.Type;
                         }
-
-                        //Cabin
-                        vehicleProperties.DriverLine_Cabin_ID = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin.ID;
-                        vehicleProperties.DriverLine_Cabin_RoofSpoiler = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin.RoofSpoiler;
-                        vehicleProperties.DriverLine_Cabin_Type = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Cabin.Type;
 
                         //ElectronicControlUnits
                         if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.ElectronicControlUnits != null)
@@ -322,19 +487,29 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
 
                         if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights != null)
                         {
-                            if (!string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.type))
-                                vehicleProperties.Dimensions_Size_Weight_Type = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.type;
+                            if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight != null)
+                            {
+                                if (!string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.type))
+                                    vehicleProperties.Dimensions_Size_Weight_Type = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.type;
 
-                            //if (!string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.value))
-                            vehicleProperties.Dimensions_Size_Weight_Value = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.value;
+                                //if (!string.IsNullOrEmpty(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.value))
+                                vehicleProperties.Dimensions_Size_Weight_Value = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDimensions.Weights.Weight.value;
+                            }
                         }
                     }
                     //VehicleDelivery
                     if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDelivery != null)
                     {
-                        if (Common.Common.IsValidDate(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDelivery.DeliveryDate) == true)
+                        if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDelivery.DeliveryDate != null)
                         {
-                            vehicleProperties.DeliveryDate = Convert.ToDateTime(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDelivery.DeliveryDate);
+                            if (Common.Common.IsValidDate(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDelivery.DeliveryDate) == true)
+                            {
+                                vehicleProperties.DeliveryDate = Convert.ToDateTime(vehicleData.VehicleUpdatedEvent.Vehicle.VehicleDelivery.DeliveryDate);
+                            }
+                            else
+                            {
+                                return StatusCode(400, string.Empty);
+                            }
                         }
                     }
 

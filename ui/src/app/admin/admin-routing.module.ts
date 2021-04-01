@@ -6,7 +6,6 @@ import { OrganisationDetailsComponent } from './organisation-details/organisatio
 import { UserManagementComponent } from './user-management/user-management.component';
 import { DriverManagementComponent } from './driver-management/driver-management.component';
 import { UserRoleManagementComponent } from './user-role-management/user-role-management.component';
-// import { VehicleManagementComponent } from './vehicle-management/vehicle-management.component';
 import { VehicleAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/vehicle-account-access-relationship.component';
 import { TranslationDataUploadComponent } from './translation-data-upload/translation-data-upload.component';
 import { FeatureManagementComponent } from './feature-management/feature-management.component';
@@ -34,7 +33,6 @@ const routes: Routes = [
       { path: 'vehiclegroupmanagement', component: VehicleGroupManagementComponent },
       { path: "featuremanagement", component: FeatureManagementComponent },
       // { path: 'drivermanagement', component: DriverManagementComponent },
-      // { path: "vehiclemanagement", component: VehicleManagementComponent },
       { path: "vehicleaccountaccessrelationship", component: VehicleAccountAccessRelationshipComponent },
       // { path: "translationdataupload", component: TranslationDataUploadComponent },
       { path: "translationmanagement", component: TranslationDataUploadComponent },
@@ -56,7 +54,3 @@ const routes: Routes = [
   exports: [RouterModule],
 })
 export class AdminRoutingModule {}
-
-
-// drivermanagement: 'Driver Management',
-// vehiclemanagement: 'Vehicle Management',

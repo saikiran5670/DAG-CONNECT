@@ -58,26 +58,43 @@ export class AppComponent {
   dialogRefTerms: MatDialogRef<TermsConditionsPopupComponent>;
   selectedRoles: any = [];
   private pagetTitles = {
-    livefleet: 'live fleet',
-    logbook: 'log book',
+    dashboard: 'Dashboard',
+    livefleet: 'Live Fleet',
+    logbook: 'Log Book',
     tripreport: 'Trip Report',
     triptracing: 'Trip Tracing',
+    advancedfleetfuelreport: 'Advanced Fleet Fuel Report',
+    fleetfuelreport: 'Fleet Fuel Report',
+    fleetutilisation: 'Fleet Utilisation',
+    fuelbenchmarking: 'Fuel Benchmarking',
+    fueldeviationreport: 'Fuel Deviation Report',
+    vehicleperformancereport: 'Vehicle Performance Report',
+    drivetimemanagement: 'Drive Time Management',
+    ecoscorereport: 'Ecoscore Report',
     alerts: 'Alerts',
     landmarks: 'Landmarks',
-    organisationdetails: 'Organisation Details',
-    usergroupmanagement: 'User Group Management',
-    usermanagement: 'User Management',
-    vehiclemanagement: 'Vehicle Management',
-    vehiclegroupmanagement: 'Vehicle Group Management',
+    reportscheduler: 'Report Scheduler',
     drivermanagement: 'Driver Management',
-    userrolemanagement: 'User Role Management',
-    vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship',
-    translationdataupload: 'Translation Data Upload',
+    vehiclemanagement: 'Vehicle Management',
+    organisationdetails: 'Organisation Details',
+    accountgroupmanagement: 'Account Group Management',
+    accountmanagement: 'Account Management',
+    accountrolemanagement: 'Account Role Management',
+    vehiclegroupmanagement: 'Vehicle Group Management',
     featuremanagement: 'Feature Management',
+    organisationrelationshipmanagement: 'Organisation Relationship Management',
+    relationshipmanagement: 'Relationship Management',
+    translationmanagement: 'Translation Management',
+    configurationmanagemnt: 'Configuration Managemnt',
     packagemanagement: 'Package Management',
+    accessrelationshipmanagement: 'Access Relationship Management',
     subscriptionmanagement: 'Subscription Management',
-    relationshipmanagement: 'Relationship management',
-    organisationrelationship: 'Organisation Relationship'
+    tachograph: 'Tachograph',
+    mobileportal: 'Mobile Portal',
+    shop: 'Shop',
+    information: 'Information',
+    legalnotices: 'Legal Notices',
+    termsConditions: 'Terms & Conditions'
   }
 
 
@@ -125,8 +142,7 @@ export class AppComponent {
         landmarks: 'Landmarks',
         reportscheduler: 'Report Scheduler',
         drivermanagement: 'Driver Management',
-        vehiclemanagement: 'Vehicle Management',
-        // vehiclegroupmanagement: 'Vehicle Group Management'
+        vehiclemanagement: 'Vehicle Management'
       }
     },
     admin : {
@@ -135,20 +151,17 @@ export class AppComponent {
       externalLink: false,
       pageTitles: {
         organisationdetails: 'Organisation Details',
-        accountgroupmanagement: 'User Group Management',
-        accountmanagement: 'User Management',
-        // drivermanagement: 'Driver Management',
-        accountrolemanagement: 'User Role Management',
+        accountgroupmanagement: 'Account Group Management',
+        accountmanagement: 'Account Management',
+        accountrolemanagement: 'Account Role Management',
         vehiclegroupmanagement: 'Vehicle Group Management',
         featuremanagement: 'Feature Management',
-        organisationrelationshipmanagement: 'Organisation Relationship',
+        organisationrelationshipmanagement: 'Organisation Relationship Management',
         relationshipmanagement: 'Relationship Management',
-        translationmanagement: 'Translation Data Upload',
-        // vehiclemanagement: 'Vehicle Management',
+        translationmanagement: 'Translation Management',
         configurationmanagemnt: 'Configuration Managemnt',
         packagemanagement: 'Package Management',
-        // vehicleaccountaccessrelationship: 'Vehicle/Account Access-Relationship',
-        accessrelationshipmanagement: 'Vehicle/Account Access-Relationship',
+        accessrelationshipmanagement: 'Access Relationship Management',
         subscriptionmanagement: 'Subscription Management',
       }
     },
@@ -214,7 +227,7 @@ export class AppComponent {
     this.dataInterchangeService.dataInterface$.subscribe(data => {
       this.isLogedIn = data;
       this.getTranslationLabels();
-      this.getAccountInfo();
+      //this.getAccountInfo();
       this.openTermsConditionsPopup();
       // this.getNavigationMenu();
     });
@@ -244,7 +257,7 @@ export class AppComponent {
 
     if(!this.isLogedIn){
       this.getTranslationLabels();
-      this.getAccountInfo();
+      //this.getAccountInfo();
       // this.getNavigationMenu();
     }
 
@@ -476,55 +489,75 @@ export class AppComponent {
   defaultTranslation(){
     this.translationData = {
       lblDashboard: "Dashboard",
-      lblReports: "Reports",
-      lblVehicleManagement: "Vehicle Management",
-      lblOrganisationDetails: 'Organisation Details',
-      lblUserGroupManagement: "User Group Management",
-      lblUserManagement: "User Management",
-      lblUserRoleManagement: "User Role Management",
-      lblVehicleAccountAccessRelationship: 'Vehicle/Account Access-Relationship',
-      lblDriverManagement: "Driver Management",
-      lblTranslationDataUpload: "Translation Data Upload",
-      lblFeatureManagement: "Feature Management",
-      lblPackageManagement: "Package Management",
-      lblSubscriptionmanagement: "Subscription Management",
-      lblRelationshipManagement: 'Relationship Management',
-      lblOrganisationRelationship: 'Organisation Relationship',
       lblLiveFleet: "Live Fleet",
       lblLogBook: "Log Book",
-      lblTripReport: "Trip Report",
-      lblTripTracing: "Trip Tracing",
+      lblReports: "Reports",
+      lblTripReport: 'Trip Report',
+      lblTripTracing: 'Trip Tracing',
+      lblAdvancedFleetFuelReport: 'Advanced Fleet Fuel Report',
+      lblFleetFuelReport: 'Fleet Fuel Report',
+      lblFleetUtilisation: 'Fleet Utilisation',
+      lblFuelBenchmarking: 'Fuel Benchmarking',
+      lblFuelDeviationReport: 'Fuel Deviation Report',
+      lblvehiclePerformanceReport: 'Vehicle Performance Report',
+      lblDriveTimeManagement: 'Drive Time Management',
+      lblEcoscoreReport: 'Ecoscore Report',
       lblConfiguration: "Configuration",
-      lblAlerts: "Alerts",
-      lblLandmarks: "Landmarks",
-      lblTachograph: "Tachograph",
-      lblMobilePortal: "Mobile Portal",
-      lblShop: "Shop",
-      lblInformation: "Information",
+      lblAlerts: 'Alerts',
+      lblLandmarks: 'Landmarks',
+      lblReportScheduler: 'Report Scheduler',
+      lblDriverManagement: 'Driver Management',
+      lblVehicleManagement: 'Vehicle Management',
       lblAdmin: "Admin",
-      lblTermsAndConditions: "Terms & Conditions"
+      lblOrganisationDetails: 'Organisation Details',
+      lblAccountGroupManagement: 'Account Group Management',
+      lblAccountManagement: 'Account Management',
+      lblAccountRoleManagement: 'Account Role Management',
+      lblVehicleGroupManagement: 'Vehicle Group Management',
+      lblFeatureManagement: 'Feature Management',
+      lblOrganisationRelationshipManagement: 'Organisation Relationship Management',
+      lblRelationshipManagement: 'Relationship Management',
+      lblTranslationManagement: 'Translation Management',
+      lblConfigurationManagemnt: 'Configuration Managemnt',
+      lblPackageManagement: 'Package Management',
+      lblAccessRelationshipManagement: 'Access Relationship Management',
+      lblSubscriptionManagement: 'Subscription Management',
+      lblTachograph: 'Tachograph',
+      lblMobilePortal: 'Mobile Portal',
+      lblShop: 'Shop',
+      lblInformation: 'Information',
+      lblLegalNotices: 'Legal Notices',
+      lblTermsAndConditions: 'Terms & Conditions'
     }
   }
 
   getTranslationLabels(){
-    // let accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
-    // console.log("accountInfo.accountPreference:: ", this.accountInfo.accountPreference)
-    this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
-    let preferencelanguageCode= "";
-    let preferenceLanguageId = 1;
-    this.translationService.getLanguageCodes().subscribe(languageCodes => {
-      this.languages = languageCodes;
-      this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-      let filterLang = [];
-      if(this.localStLanguage){
-        preferencelanguageCode = this.localStLanguage.code;
-        preferenceLanguageId = this.localStLanguage.id;
-      }
-      else if(this.accountInfo){
-          filterLang = this.languages.filter(item => item.id == (this.accountInfo.accountPreference ? this.accountInfo.accountPreference.languageId : 8))
-        if(filterLang.length > 0){
-          preferencelanguageCode = filterLang[0].code;
-          preferenceLanguageId = filterLang[0].id;
+    let curAccId = localStorage.getItem("accountId");
+    if(curAccId){ //- checked for refresh page
+      this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
+      let preferencelanguageCode= "";
+      let preferenceLanguageId = 1;
+      this.translationService.getLanguageCodes().subscribe(languageCodes => {
+        this.languages = languageCodes;
+        this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+        let filterLang = [];
+        if(this.localStLanguage){
+          preferencelanguageCode = this.localStLanguage.code;
+          preferenceLanguageId = this.localStLanguage.id;
+        }
+        else if(this.accountInfo){
+            filterLang = this.languages.filter(item => item.id == (this.accountInfo.accountPreference ? this.accountInfo.accountPreference.languageId : 8))
+          if(filterLang.length > 0){
+            preferencelanguageCode = filterLang[0].code;
+            preferenceLanguageId = filterLang[0].id;
+          }
+          else{
+            filterLang = this.languages.filter(item => item.code == "EN-GB" )
+            if(filterLang.length > 0){
+              preferencelanguageCode = filterLang[0].code;
+              preferenceLanguageId = filterLang[0].id;
+            }
+          }
         }
         else{
           filterLang = this.languages.filter(item => item.code == "EN-GB" )
@@ -533,37 +566,30 @@ export class AppComponent {
             preferenceLanguageId = filterLang[0].id;
           }
         }
-      }
-      else{
-        filterLang = this.languages.filter(item => item.code == "EN-GB" )
-        if(filterLang.length > 0){
-          preferencelanguageCode = filterLang[0].code;
-          preferenceLanguageId = filterLang[0].id;
+
+        if(!this.localStLanguage){
+          let languageObj = {id: filterLang[0].id, code: preferencelanguageCode}
+          localStorage.setItem("language", JSON.stringify(languageObj));
+          this.localStLanguage = JSON.parse(localStorage.getItem("language"));
         }
-      }
 
-      if(!this.localStLanguage){
-        let languageObj = {id: filterLang[0].id, code: preferencelanguageCode}
-        localStorage.setItem("language", JSON.stringify(languageObj));
-        this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-      }
+        this.appForm.get("languageSelection").setValue(this.localStLanguage.id); //-- set language dropdown
 
-      this.appForm.get("languageSelection").setValue(this.localStLanguage.id); //-- set language dropdown
-
-      let translationObj = {
-        id: 0,
-        code: preferencelanguageCode, //-- TODO: Lang code based on account 
-        type: "Menu",
-        name: "",
-        value: "",
-        filter: "",
-        menuId: 0 //-- for common & user preference
-      }
-      this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
-        this.processTranslation(data);
+        let translationObj = {
+          id: 0,
+          code: preferencelanguageCode, //-- TODO: Lang code based on account 
+          type: "Menu",
+          name: "",
+          value: "",
+          filter: "",
+          menuId: 0 //-- for common & user preference
+        }
+        this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+          this.processTranslation(data);
+          this.getAccountInfo();
+        });
       });
-    })
-    
+    }
   }
 
   processTranslation(transData: any){

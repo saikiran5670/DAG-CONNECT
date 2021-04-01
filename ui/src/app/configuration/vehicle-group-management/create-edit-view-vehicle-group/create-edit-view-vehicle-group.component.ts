@@ -72,13 +72,16 @@ export class CreateEditViewVehicleGroupComponent implements OnInit {
     }
     if(this.actionType == 'view' || this.actionType == 'edit'){
       this.showHideVehicleList();
+      this.breadcumMsg = this.getBreadcum();
     }
     this.loadGridData(this.vehicleListData);
-    this.breadcumMsg = this.getBreadcum();
   }
 
   getBreadcum() {
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / ${this.translationData.lblVehicleGroupManagement ? this.translationData.lblVehicleGroupManagement : "Vehicle Group Management"} / ${this.translationData.lblVehicleGroupDetails ? this.translationData.lblVehicleGroupDetails : 'Vehicle Group Details'}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
+    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / 
+    ${this.translationData.lblVehicleGroupManagement ? this.translationData.lblVehicleGroupManagement : "Vehicle Group Management"} / 
+    ${(this.actionType = 'edit') ? (this.translationData.lblEditVehicleGroupDetails ? this.translationData.lblEditVehicleGroupDetails : 'Edit Vehicle Group Details') : (this.translationData.lblViewVehicleGroupDetails ? this.translationData.lblViewVehicleGroupDetails : 'View Vehicle Group Details') }`;
   }
 
   setDefaultValue(){

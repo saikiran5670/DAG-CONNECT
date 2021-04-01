@@ -76,10 +76,10 @@ export class OrganisationDetailsComponent implements OnInit {
       filter: "",
       menuId: 23 //-- for org details
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data) => {
-      this.processTranslation(data);
-      this.loadOrgData();
-    });
+    // this.translationService.getMenuTranslations(translationObj).subscribe((data) => {
+    //   this.processTranslation(data);
+    //   this.loadOrgData();
+    // });
   }
 
   loadOrgData() {

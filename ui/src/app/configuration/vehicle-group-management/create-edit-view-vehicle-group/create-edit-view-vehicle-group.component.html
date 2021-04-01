@@ -1,8 +1,8 @@
-<div *ngIf="actionType == 'view'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+<div *ngIf="actionType == 'edit' || actionType == 'view'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
       <span>{{ breadcumMsg }}</span>
     </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+    <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
       <span class='custom-font' (click)="onCancel()">
         <span><&nbsp;</span>
         <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
@@ -101,7 +101,7 @@
         <div fxLayout="column" fxLayoutAlign="left">
           <div *ngIf='showVehicleList' fxLayout="row" fxLayoutAlign='center center'>
             <mat-icon class='margin-right-10'>info</mat-icon>
-            <span>{{translationData.lblVehicleGroupManagementInfo || 'You can select vehicles from below list to add in this group' }}</span>
+            <span>{{ actionType == 'view' ? (translationData.lblVehicleGroupManagementViewInfo || 'You can view vehicle associations from the list below') : (translationData.lblVehicleGroupManagementInfo || 'You can select vehicles from below list to add in this group') }}</span>
           </div>
         </div>
         <div fxLayout="column" fxLayoutAlign="end" *ngIf="actionType != 'view'">

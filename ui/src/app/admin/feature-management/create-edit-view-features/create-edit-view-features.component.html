@@ -22,14 +22,19 @@
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label style='display: flex;'>
-                        <span>{{ translationData.lblDataAttributeSetName || 'Data Attribute Set Name' }}</span>
+                <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label style='display: flex; place-content: space-between;'>
+                        <div>{{ translationData.lblDataAttributeSetName || 'Data Attribute Set Name' }}
                         <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
                         <span *ngIf="actionType != 'view'">
-                            <mat-icon style="padding-left: 7px; font-size: 15px; padding-top: 3px;">info</mat-icon>
+                            <mat-icon matTooltip="{{ translationData.lblToolTipTextDataAttrSetName || 'New Feature will auto create same as Data Attribute set name' }}" style="padding-left: 7px; font-size: 15px; padding-top: 3px;">info</mat-icon>
                         </span>
+                        </div>
+                        <span *ngIf="actionType != 'view'">{{ translationData.lbl250CharMax || '250 characters max'
+                        }}</span>
                     </mat-label>
+                    <mat-error *ngIf="duplicateEmailMsg">{{translationData.lblDuplicateDataAttributeSetName || 'Duplicate Data Attribute Set
+                        Name' }}</mat-error>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
                             <input maxlength="250"
@@ -58,19 +63,20 @@
                         <span style='font-weight: 500!important;'>{{ selectedElementData.name }}</span>
                     </div>
                 </div>
-                <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
                         <span>{{ translationData.lblDataAttributeDescription || 'Data Attribute Description' }}
                             <mat-icon *ngIf="actionType != 'view'"
+                            matTooltip="{{ translationData.lblToolTipTextDataAttrDescription || 'New Feature description will auto create same as Data Attribute description' }}"
                                 style="padding-left: 7px; font-size: 15px; padding-top: 4px; vertical-align: middle;">
                                 info</mat-icon>
                         </span>
-                        <span *ngIf="actionType != 'view'">{{ translationData.lbl250CharMax || '250 characters max'
+                        <span *ngIf="actionType != 'view'">{{ translationData.lbl100CharMax || '100 characters max'
                             }}</span>
                     </mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
-                            <input maxlength="250"
+                            <input maxlength="100"
                                 placeholder="{{ translationData.lblEnterDataAttributeDescription || 'Enter Data Attribute Description' }}"
                                 matInput formControlName="dataAttributeDescription">
                         </mat-form-field>

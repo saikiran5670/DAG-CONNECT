@@ -116,5 +116,15 @@ namespace net.atos.daf.ct2.features
 
             return await FeatureRepository.DeleteFeature(FeatureId);
         }
+
+        public int CheckFeatureNameExist(string FeatureName, int FeatureId)
+        {
+            return FeatureRepository.CheckFeatureNameExist(FeatureName,FeatureId);
+        }
+
+        public async Task<int> ChangeFeatureState(int FeatureID, Char State)
+        {
+            return await FeatureRepository.ChangeFeatureState(FeatureID, State);
+        }
     }
 }

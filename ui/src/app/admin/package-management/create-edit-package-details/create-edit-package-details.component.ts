@@ -62,6 +62,13 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       status: ['', [CustomValidators.numberValidationForName]],
       type: ['', [ Validators.required]],
       name: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc]]
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForName('code'),
+        CustomValidators.specialCharValidationForName('name'),
+        CustomValidators.specialCharValidationForNameWithoutRequired('description')
+      ]
     });
     this.breadcumMsg = this.getBreadcum(this.actionType);
     if(this.actionType == 'view' || this.actionType == 'edit' ){
@@ -71,14 +78,29 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       organization_Id: this.organizationId
     }
     this.packageService.getFeatures(objData).subscribe((data) => {
-      setTimeout(()=>{
-        this.dataSource = new MatTableDataSource(data);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-        if(!this.createStatus || this.duplicateMsg || this.viewFlag){
-          this.onReset();
-        }
-      });
+      var tempdata = data;
+      
+      if (this.actionType == "view") {
+        let selectedFeatureList: any = [];
+        tempdata.forEach((row: any) => {
+          let search = this.selectedElementData.featureIds.includes(row.id);
+          if (search) {
+            selectedFeatureList.push(row);
+          }
+        });
+        this.dataSource = selectedFeatureList;
+        this.updateDataSource(selectedFeatureList);
+        this.featureDisplayedColumns = ['name'] ;
+      } else {
+        setTimeout(()=>{
+          this.dataSource = new MatTableDataSource(data);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+          if(!this.createStatus || this.duplicateMsg || this.viewFlag){
+            this.onReset();
+          }
+        });
+      }
       this.featuresData 
   }, (error) => { });
 }
@@ -121,7 +143,6 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     // this.selectedType = this.selectedElementData.type.toLowerCase();
     this.packageFormGroup.get("description").setValue(this.selectedElementData.description);
     this.selectedStatus = this.selectedElementData.status;
-   
   }
 
   toBack(){
@@ -158,7 +179,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       "type": this.packageFormGroup.controls.type.value === "VIN" ? "V" : "O",
       "description": this.packageFormGroup.controls.description.value,
       "isActive": true,
-      "status": this.packageFormGroup.controls.status.value === "I" ? "I" : "A"
+      "status": this.selectedStatus === "Inactive" ? "I" : "A"
     }
     if(this.actionType == 'create'){
       this.packageService.createPackage(createPackageParams).subscribe((res) => {
@@ -173,7 +194,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
         this.createViewEditPackageEmit.emit(emitObj); 
     });
   },(err) => {
-    //console.log(err);
+
     if (err.status == 409) {
       this.duplicateMsg = true;
     }
@@ -188,7 +209,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       "name": this.packageFormGroup.controls.name.value,
       "type": this.packageFormGroup.controls.type.value === "VIN" ? "V" : "O",
       "description": this.packageFormGroup.controls.description.value,
-      "status": this.packageFormGroup.controls.status.value === "I" ? "I" : "A",
+      "status": this.selectedStatus === "Inactive" ? "I" : "A",
       "isActive": true
     }
     this.packageService.updatePackage(updatePackageParams).subscribe((data) => {

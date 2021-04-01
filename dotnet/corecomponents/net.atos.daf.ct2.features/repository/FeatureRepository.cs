@@ -910,7 +910,6 @@ namespace net.atos.daf.ct2.features.repository
                                  SET 
                                     name= @name,
                                     description= @description, 
-                                    is_active= @is_active,                                   
                                     modified_at=@modified_at,
                                     modified_by=@modified_by
                                 WHERE id = @id
@@ -919,7 +918,7 @@ namespace net.atos.daf.ct2.features.repository
                     parameter.Add("@id", featureSet.FeatureSetID);
                     parameter.Add("@name", featureSet.Name);
                     parameter.Add("@description", featureSet.description);
-                    parameter.Add("@is_active", featureSet.Is_Active);                    
+                    //parameter.Add("@is_active", featureSet.Is_Active);                    
                     parameter.Add("@modified_at", featureSet.modified_at);
                     parameter.Add("@modified_by", featureSet.modified_by);
                     int UpdateFeatureSetID = await dataAccess.ExecuteScalarAsync<int>(FSQueryStatement, parameter);
@@ -1044,6 +1043,40 @@ namespace net.atos.daf.ct2.features.repository
             }
         }
 
+        public int CheckFeatureNameExist(string FeatureName,int FeatureId)
+        {
+            var QueryStatement = @"SELECT id
+                                    FROM master.feature 
+                                    WHERE is_active=true
+                                    AND LOWER(name) = LOWER(@roleName)";
+            var parameter = new DynamicParameters();
+           
+            parameter.Add("@roleName", FeatureName.Trim());
+            if (FeatureId > 0)
+            {
+                parameter.Add("@featureid", FeatureId);
+                QueryStatement = QueryStatement + " and id != @featureid";
+            }
+            int resultRoleId = dataAccess.ExecuteScalar<int>(QueryStatement, parameter);
+            return resultRoleId;
+
+        }
+
+
+        public async  Task<int> ChangeFeatureState(int FeatureID,Char State)
+        {
+            var QueryStatement = @"Update master.feature set state=@state
+                                    where id=@featureid returning id";
+            var parameter = new DynamicParameters();
+
+                parameter.Add("@featureid", FeatureID);
+                parameter.Add("@state", State);
+                
+        
+            int resultfeatureid = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            return resultfeatureid;
+
+        }
 
 
     }

@@ -35,6 +35,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   createStatus:boolean;
   duplicateMsg:boolean;
   isDataAttributeSetExist: boolean = false;
+  duplicateEmailMsg: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private featureService: FeatureService) { }
 
@@ -129,6 +130,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   onCreate(){
+    this.duplicateEmailMsg = false;
     let selectedId = this.selectionIDs();
     let createFeatureParams = {
       id: 0,
@@ -147,7 +149,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
       key: "",
       dataAttributeIds: selectedId,
       level: 0,
-      featureState: parseInt(this.selectedStatus)
+      featureState: this.selectedStatus === "1" ? 1 : 0
     }
     if(this.actionType == 'create'){
       this.featureService.createFeature(createFeatureParams).subscribe((data: any) => {
@@ -161,6 +163,11 @@ export class CreateEditViewFeaturesComponent implements OnInit {
           }    
           this.createViewEditFeatureEmit.emit(emitObj);
         });
+      }, (err) => {
+        //console.log(err);
+        if (err.status == 409) {
+          this.duplicateEmailMsg = true;
+        }
       });
     }
     else if(this.actionType == 'edit'){
@@ -182,7 +189,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
         key: "",
         dataAttributeIds: selectedId,
         level: 0,
-        featureState: parseInt(this.selectedStatus)
+        featureState: this.selectedStatus === "1" ? 1 : 0
       }        
       this.featureService.updateFeature(updatedFeatureParams).subscribe((dataUpdated: any) => {
         this.featureService.getFeatures().subscribe((getData: any) => {
@@ -195,7 +202,14 @@ export class CreateEditViewFeaturesComponent implements OnInit {
           }    
           this.createViewEditFeatureEmit.emit(emitObj); 
         });
-      });
+      }
+      // , (err) => {
+      //   //console.log(err);
+      //   if (err.status == 409) {
+      //     this.duplicateEmailMsg = true;
+      //   }
+      // }
+      );
     }
   }
 
