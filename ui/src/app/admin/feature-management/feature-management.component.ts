@@ -236,6 +236,7 @@ export class FeatureManagementComponent implements OnInit {
     if(item.tableData) {
       this.initData = item.tableData;
     }
+    this.loadFeatureData();
     this.updatedTableData(this.initData);
   }
 
