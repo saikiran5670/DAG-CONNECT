@@ -32,7 +32,7 @@ export class PackageManagementComponent implements OnInit {
   accountOrganizationId: any = 0;
   localStLanguage: any;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
-  showLoadingIndicator: any;
+  showLoadingIndicator: any = false;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
 
@@ -54,7 +54,6 @@ export class PackageManagementComponent implements OnInit {
       lblNewPackage: "New Package",
       lblNoRecordFound: "No Record Found",
       lblPackageCode: "Package Code",
-
       lblView: "View",
       lblEdit: "Edit",
       lblDelete: "Delete",
@@ -65,7 +64,6 @@ export class PackageManagementComponent implements OnInit {
       lblStatus : "Status",
       lblActive : "Active",
       lblAction : "Action"
-
     }
   }
 
@@ -80,7 +78,7 @@ export class PackageManagementComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
@@ -92,16 +90,21 @@ export class PackageManagementComponent implements OnInit {
       filter: "",
       menuId: 3 //-- for user mgnt
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.loadPackageData();
     });
-    this.loadPackageData();
   }
 
   loadPackageData(){
+    this.showLoadingIndicator = true;
     this.packageService.getPackages().subscribe((data : any) => {
-      this.initData = data["pacakageList"]
+      this.initData = data["pacakageList"];
+      this.hideloader();
+      this.updatedTableData(this.initData);
+    }, (error) => {
+      this.initData = [];
+      this.hideloader();
       this.updatedTableData(this.initData);
     });
   }
@@ -117,21 +120,26 @@ export class PackageManagementComponent implements OnInit {
 
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
-    data.forEach(row => {
-      let createdDate = parseInt(row.createdAt); 
-      let nextDate = createdDate + 86400000;
-      if(currentDate > createdDate && currentDate < nextDate){
-        row.newTag = true;
-      }
-      else{
-        row.newTag = false;
-      }
-    });
-    let newTrueData = data.filter(item => item.newTag == true);
-    newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
-    let newFalseData = data.filter(item => item.newTag == false);
-    Array.prototype.push.apply(newTrueData, newFalseData); 
-    return newTrueData;
+    if(data.length > 0){
+      data.forEach(row => {
+        let createdDate = parseInt(row.createdAt); 
+        let nextDate = createdDate + 86400000;
+        if(currentDate > createdDate && currentDate < nextDate){
+          row.newTag = true;
+        }
+        else{
+          row.newTag = false;
+        }
+      });
+      let newTrueData = data.filter(item => item.newTag == true);
+      newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
+      let newFalseData = data.filter(item => item.newTag == false);
+      Array.prototype.push.apply(newTrueData, newFalseData); 
+      return newTrueData;
+    }
+    else{
+      return data;
+    }
   }
 
   createNewPackage(){
@@ -240,6 +248,6 @@ export class PackageManagementComponent implements OnInit {
 
   hideloader() {
     // Setting display of spinner
-      this.showLoadingIndicator=false;
+    this.showLoadingIndicator = false;
   }
 }

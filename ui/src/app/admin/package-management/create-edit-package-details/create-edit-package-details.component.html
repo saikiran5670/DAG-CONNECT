@@ -19,7 +19,7 @@
                     <mat-icon *ngIf="actionType == 'view' && selectedElementData.status == 'Active'" (click)="editPackage()" style="cursor: pointer;" [disabled]="selectedElementData.status == 'Inactive'">edit</mat-icon></span>
                 </div>
             </div>
-            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
                 <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label><span>{{ translationData.lblPackageCode || 'Package Code' }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
                     <div *ngIf="actionType != 'view'">
@@ -112,11 +112,11 @@
                         <span style='font-weight: 500!important;'>{{ selectedElementData.type }}</span>
                     </div>
                 </div> 
-                <div class='areaWidth min-width-60-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
+                <div class='areaWidth min-width-10-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
                     <mat-label>
                         {{ translationData.lblStatus|| 'Select Status' }}
                     </mat-label>
-                    <div *ngIf="actionType != 'view'" class='margin-top-5'>
+                    <div *ngIf="actionType != 'view'" class='margin-top-10'>
                         <mat-radio-group (change)='onStatusChange($event)' >
                             <mat-radio-button [checked]="selectedStatus ===  'Active' ? true : false" style='margin-right: 20px;' value="Active">{{ translationData.lblActive || 'Active' }}
                             </mat-radio-button>
@@ -128,6 +128,7 @@
                         <span style='font-weight: 500!important;'>{{ selectedElementData.status === "Active" ? "Active" : "Inactive" }}</span>
                     </div>
                 </div>
+                <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left"></div>
             </div>
             <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="space-between center">
                 <div fxLayout="column" fxLayoutAlign="left">
