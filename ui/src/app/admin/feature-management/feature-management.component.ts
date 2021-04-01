@@ -54,7 +54,9 @@ export class FeatureManagementComponent implements OnInit {
       lblDelete: "Delete",
       lblExclude: "Exclude",
       lblInclude: "Include",
-      lblDuplicateDataAttributeSetName: "Duplicate Data Attribute Set Name"
+      lblDuplicateDataAttributeSetName: "Duplicate Data Attribute Set Name",
+      lblToolTipTextDataAttrSetName : "New Feature will auto create same as Data Attribute set name",
+      lblToolTipTextDataAttrDescription: "New Feature description will auto create same as Data Attribute description"
     }
   }
 
