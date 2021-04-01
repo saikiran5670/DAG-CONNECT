@@ -106,7 +106,7 @@ export class RelationshipManagementComponent implements OnInit {
 
   updateDataSource(tableData: any){
     this.initData = this.getNewTagData(tableData);
-    this.dataSource = new MatTableDataSource(tableData);
+    this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
