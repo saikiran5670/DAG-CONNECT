@@ -27,7 +27,7 @@ CREATE TABLE if not exists master.report
 TABLESPACE pg_default;
 
 ALTER TABLE  master.report 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -54,7 +54,7 @@ CREATE TABLE if not exists master.reportdef
 TABLESPACE pg_default;
 
 ALTER TABLE  master.reportdef 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -116,7 +116,7 @@ CREATE TABLE if not exists master.reportpreference
 TABLESPACE pg_default;
 
 ALTER TABLE  master.reportpreference 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -328,7 +328,7 @@ CREATE TABLE if not exists master.vehicleaxleproperties
 TABLESPACE pg_default;
 
 ALTER TABLE  master.vehicleaxleproperties 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -365,7 +365,7 @@ $$;
 
 
 ALTER SCHEMA logs RENAME TO auditlog;
-ALTER SCHEMA auditlog OWNER TO pgadmin;
+ALTER SCHEMA auditlog OWNER TO pgdbadmin;
 
 
 --advice
@@ -378,7 +378,7 @@ CREATE TABLE if not exists master.advice
 TABLESPACE pg_default;
 
 ALTER TABLE  master.advice 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -409,7 +409,7 @@ CREATE TABLE if not exists master.warning
 TABLESPACE pg_default;
 
 ALTER TABLE  master.warning 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -459,7 +459,7 @@ CREATE TABLE if not exists master.driver
 TABLESPACE pg_default;
 
 ALTER TABLE  master.driver 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -507,7 +507,7 @@ CREATE TABLE if not exists  master.driveroptinoptout
 TABLESPACE pg_default;
 
 ALTER TABLE  master.driveroptinoptout 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -574,7 +574,7 @@ CREATE TABLE if not exists  master.vehiclefueltankproperties
 TABLESPACE pg_default;
 
 ALTER TABLE  master.vehiclefueltankproperties 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -624,7 +624,7 @@ CREATE TABLE if not exists master.translationupload
 TABLESPACE pg_default;
 
 ALTER TABLE  master.translationupload 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -654,7 +654,7 @@ $$;
 -- TABLESPACE pg_default;
 
 -- ALTER TABLE  master.orgconfiguration 
-    -- OWNER to pgadmin;
+    -- OWNER to pgdbadmin;
 
 -- Do $$
 -- begin
@@ -701,7 +701,7 @@ CREATE TABLE if not exists master.oem
 TABLESPACE pg_default;
 
 ALTER TABLE  master.oem 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -921,7 +921,7 @@ CREATE TABLE if not exists master.drivertemplate
 TABLESPACE pg_default;
 
 ALTER TABLE  master.drivertemplate 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -952,7 +952,7 @@ CREATE TABLE if not exists master.featurebasedobjects
 TABLESPACE pg_default;
 
 ALTER TABLE  master.featurebasedobjects 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1030,7 +1030,7 @@ CREATE TABLE if not exists master.resetpasswordtoken
 TABLESPACE pg_default;
 
 ALTER TABLE  master.resetpasswordtoken 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1241,7 +1241,7 @@ CREATE TABLE if not exists translation.translationupload
 TABLESPACE pg_default;
 
 ALTER TABLE  translation.translationupload 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -1323,7 +1323,7 @@ CREATE TABLE if not exists  master.co2coefficient
 TABLESPACE pg_default;
 
 ALTER TABLE master.co2coefficient  
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
