@@ -218,7 +218,7 @@ namespace net.atos.daf.ct2.accountservice
         {
             VehicleAccountAccessData response = new VehicleAccountAccessData();
             response.Id = entity.Id;
-            response.Name = entity.Name;
+            response.Name = entity.Name ?? string.Empty;
             response.AccessType = Convert.ToString((char) entity.AccessType);
             response.IsGroup = entity.IsGroup;
             response.Count = entity.Count;
@@ -226,7 +226,7 @@ namespace net.atos.daf.ct2.accountservice
             {
                 RelationshipData data = new RelationshipData();
                 data.Id = account.Id;
-                data.Name = account.Name;
+                data.Name = account.Name ?? string.Empty;
                 data.IsGroup = account.IsGroup;
                 response.AssociateData.Add(data);
             }

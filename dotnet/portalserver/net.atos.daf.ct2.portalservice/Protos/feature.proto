@@ -22,8 +22,20 @@ service FeatureService {
   rpc Delete (FeatureRequest) returns (FeatureResponce);
   rpc GetFeatures (FeaturesFilterRequest) returns (FeaturesListResponce);
   rpc GetDataAttributes(DataAtributeRequest)returns(DataAttributeResponceList);
+rpc ChangeFeatureState(FeatureStateRequest)returns(FeatureStateResponce);
 
 }
+message FeatureStateRequest
+{
+    int32 Featureid =1;
+    string FeatureState =2;
+}
+message FeatureStateResponce
+{
+    Responcecode Code=1;
+    string Message = 2;  
+}
+
 message DataAtributeRequest
 {
 string LangaugeCode = 1;

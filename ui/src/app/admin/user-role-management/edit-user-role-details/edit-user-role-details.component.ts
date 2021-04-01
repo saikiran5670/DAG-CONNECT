@@ -70,7 +70,10 @@ export class EditUserRoleDetailsComponent implements OnInit {
   }
 
   getBreadcum(){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblUserRoleManagement ? this.translationData.lblUserRoleManagement : "User Role Management"} / ${this.translationData.lblUserRoleDetails ? this.translationData.lblUserRoleDetails : 'User Role Details'}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / 
+    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / 
+    ${this.translationData.lblAccountRoleManagement ? this.translationData.lblAccountRoleManagement : "Account Role Management"} / 
+    ${this.translationData.lblAccountRoleDetails ? this.translationData.lblAccountRoleDetails : 'Account Role Details'}`;
   }
 
   onCancel() {
@@ -205,44 +208,44 @@ export class EditUserRoleDetailsComponent implements OnInit {
   }
 
   onCheckboxChange(event: any, row: any){
-    if(event.checked){  
-      if(row.featureName.includes(" _fullAccess")){
-        this.dataSource.data.forEach(item => {
-          if(item.featureName.includes(row.featureName.split(" _")[0])){
-            this.selectionForFeatures.select(item);
-          }
-        })
-      }
-      else if(row.featureName.includes(" _create") || row.featureName.includes(" _edit") || row.featureName.includes(" _delete") ){
-        this.dataSource.data.forEach(item => {
-          if(item.featureName.includes(row.featureName.split(" _")[0]+" _view")){
-            this.selectionForFeatures.select(item);
-          }
-        })
-      }
-    }
-    else {
-      if(row.featureName.includes(" _fullAccess")){
-        this.dataSource.data.forEach(item => {
-          if(item.featureName.includes(row.featureName.split(" _")[0])){
-            this.selectionForFeatures.deselect(item);
-          }
-        })
-      }
-      else if(row.featureName.includes(" _view")){
-        this.dataSource.data.forEach(item => {
-          if(item.featureName.includes(row.featureName.split(" _")[0])){
-            this.selectionForFeatures.deselect(item);
-          }
-        })
-      }
-      else if(!row.featureName.includes(" _fullAccess")){
-        this.dataSource.data.forEach(item => {
-          if(item.featureName.includes(row.featureName.split(" _")[0]+" _fullAccess")){
-            this.selectionForFeatures.deselect(item);
-          }
-        })
-      }
-    }
+    // if(event.checked){  
+    //   if(row.name.includes(" _fullAccess")){
+    //     this.dataSource.data.forEach(item => {
+    //       if(item.name.includes(row.name.split(" _")[0])){
+    //         this.selectionForFeatures.select(item);
+    //       }
+    //     })
+    //   }
+    //   else if(row.name.includes(" _create") || row.name.includes(" _edit") || row.name.includes(" _delete") ){
+    //     this.dataSource.data.forEach(item => {
+    //       if(item.name.includes(row.name.split(" _")[0]+" _view")){
+    //         this.selectionForFeatures.select(item);
+    //       }
+    //     })
+    //   }
+    // }
+    // else {
+    //   if(row.name.includes(" _fullAccess")){
+    //     this.dataSource.data.forEach(item => {
+    //       if(item.name.includes(row.name.split(" _")[0])){
+    //         this.selectionForFeatures.deselect(item);
+    //       }
+    //     })
+    //   }
+    //   else if(row.name.includes(" _view")){
+    //     this.dataSource.data.forEach(item => {
+    //       if(item.name.includes(row.name.split(" _")[0])){
+    //         this.selectionForFeatures.deselect(item);
+    //       }
+    //     })
+    //   }
+    //   else if(!row.name.includes(" _fullAccess")){
+    //     this.dataSource.data.forEach(item => {
+    //       if(item.name.includes(row.name.split(" _")[0]+" _fullAccess")){
+    //         this.selectionForFeatures.deselect(item);
+    //       }
+    //     })
+    //   }
+    // }
   }
 }

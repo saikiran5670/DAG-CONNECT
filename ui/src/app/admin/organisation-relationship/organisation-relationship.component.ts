@@ -276,16 +276,27 @@ export class OrganisationRelationshipComponent implements OnInit {
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
       if(res){ 
-        
+        // console.log(rowData);
+        // let objData = {
+        //   "orgRelationID": rowData.id,
+        //   "allowChaining": !rowData.allowChain 
+        // }
+        // console.log(objData);
+        // this.organizationService.updateAllowChain(objData).subscribe((data) => {
+        //   this.loadInitData();
+        // })
       }
-    });}
+    });
+      
+  }
+    
   }
 
   deleteOrgRelationship(){
     let selectedOptions = this.selectedOrgRelations.selected.map(item=>item.id);
     const options = {
       title: this.translationData.lblDeleteAccount || 'Delete Account',
-      message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Are you sure you want to delete '$' relationship?",
+      message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Do you want to end  '$' relationship?",
       cancelText: this.translationData.lblNo || 'No',
       confirmText: this.translationData.lblYes || 'Yes'
     };

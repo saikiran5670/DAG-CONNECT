@@ -226,6 +226,9 @@ export class DriverManagementComponent implements OnInit {
     }, (error) => {
       console.log("error:: ", error);
       this.hideloader();
+      this.initData = [];
+      this.selectedConsentType = 'All';
+      this.onConsentChange(this.selectedConsentType);
     });
   }
 
@@ -267,21 +270,26 @@ export class DriverManagementComponent implements OnInit {
 
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
-    data.forEach(row => {
-      let createdDate = parseInt(row.createdAt); 
-      let nextDate = createdDate + 86400000;
-      if(currentDate > createdDate && currentDate < nextDate){
-        row.newTag = true;
-      }
-      else{
-        row.newTag = false;
-      }
-    });
-    let newTrueData = data.filter(item => item.newTag == true);
-    newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
-    let newFalseData = data.filter(item => item.newTag == false);
-    Array.prototype.push.apply(newTrueData, newFalseData); 
-    return newTrueData;
+    if(data.length > 0){
+      data.forEach(row => {
+        let createdDate = parseInt(row.createdAt); 
+        let nextDate = createdDate + 86400000;
+        if(currentDate > createdDate && currentDate < nextDate){
+          row.newTag = true;
+        }
+        else{
+          row.newTag = false;
+        }
+      });
+      let newTrueData = data.filter(item => item.newTag == true);
+      newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
+      let newFalseData = data.filter(item => item.newTag == false);
+      Array.prototype.push.apply(newTrueData, newFalseData); 
+      return newTrueData;
+    }
+    else{
+      return data;
+    }
   }
 
   importDrivers(clearInput: any){ 
@@ -309,6 +317,7 @@ export class DriverManagementComponent implements OnInit {
     console.log("Parse excel driver:: ", driverAPIData)
     let finalList: any = this.validateFields(driverAPIData);
     this.rejectedDriverList = finalList.invalidDriverList;
+    this.newDriverCount = 0;
     console.log("Validated driver:: ", finalList)
     if(finalList.validDriverList.length > 0){
       let objData = [
@@ -320,6 +329,7 @@ export class DriverManagementComponent implements OnInit {
       this.driverService.importDrivers(objData).subscribe((importDrvList: any) => {
         if(importDrvList && importDrvList.length > 0){
           let filterPassDrv: any = importDrvList.filter(item => item.status == 'PASS');
+          this.newDriverCount = filterPassDrv.length; //-- New driver list
           let filterFailDrv: any = importDrvList.filter(item => item.status == 'FAIL');
           if(filterFailDrv && filterFailDrv.length > 0){ //- Fail drivers added
             Array.prototype.push.apply(this.rejectedDriverList, filterFailDrv); 
@@ -336,7 +346,7 @@ export class DriverManagementComponent implements OnInit {
       this.importDriverPopup = true;
       clearInput.clear();
     }
-    this.newDriverCount = (this.filelist.length - this.rejectedDriverList.length); // new = (total - rejected)
+    //this.newDriverCount = (this.filelist.length - this.rejectedDriverList.length); // new = (total - rejected)
   }
 
   validateFields(driverList: any){

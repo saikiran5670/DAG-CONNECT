@@ -24,8 +24,10 @@ export class EditViewVehicleComponent implements OnInit {
   ngOnInit(){
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.vehicleForm = this._formBuilder.group({
-      vehicleName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
-      registrationNumber: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
+      // vehicleName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
+      // registrationNumber: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
+      vehicleName: ['', [CustomValidators.noWhitespaceValidatorWithoutRequired]],
+      registrationNumber: ['', [CustomValidators.noWhitespaceValidatorWithoutRequired]],
       vin: new FormControl({value: null, disabled: true}),
       vehicleModel: new FormControl({value: null, disabled: true}),
       associatedGroups: new FormControl({value: null, disabled: true}),
@@ -69,7 +71,10 @@ export class EditViewVehicleComponent implements OnInit {
   }
 
   getBreadcum() {
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / ${this.translationData.lblVehicleManagement ? this.translationData.lblVehicleManagement : "Vehicle Management"} / ${this.translationData.lblVehicleDetails ? this.translationData.lblVehicleDetails : 'Vehicle Details'}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
+    ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
+    ${this.translationData.lblVehicleManagement ? this.translationData.lblVehicleManagement : "Vehicle Management"} / 
+    ${(this.actionType == 'edit') ? (this.translationData.lblEditVehicleDetails ? this.translationData.lblEditVehicleDetails : 'Edit Vehicle Details') : (this.translationData.lblViewVehicleDetails ? this.translationData.lblViewVehicleDetails : 'View Vehicle Details') }`;
   }
 
   onCancel(){
@@ -123,7 +128,7 @@ export class EditViewVehicleComponent implements OnInit {
       if (this.translationData.lblVehicleUpdatedSuccessfully)
         return this.translationData.lblVehicleUpdatedSuccessfully.replace('$', vehName);
       else
-        return ("Vehicle '$' Updated Successfully").replace('$', vehName);
+        return ("Vehicle $ Updated Successfully").replace('$', (vehName != '' ? vehName : ''));
     }
     else{
       return '';

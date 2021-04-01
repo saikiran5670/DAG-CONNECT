@@ -1,13 +1,12 @@
-<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+<div *ngIf="actionType == 'view'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <span>{{ breadcumMsg }}</span>
     </div>
-    <div  fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
         <span class='custom-font' (click)="toBack()">
             <span>
-                <&nbsp;
-            </span>
-            <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
+                <&nbsp;</span>
+                    <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
         </span>
     </div>
 </div>
@@ -51,7 +50,7 @@
                     </mat-label>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
-                            <input maxlength="50" placeholder="{{ translationData.lblEnterPackageName || 'Enter New Package Name' }}" matInput
+                            <input maxlength="50" placeholder="{{ translationData.lblEnterPackageName || 'Enter Package Name' }}" matInput
                                 formControlName="name">
                         </mat-form-field>
                         <mat-error *ngIf="packageFormGroup.get('name').hasError('required')">
@@ -133,17 +132,18 @@
                 <div fxLayout="column" fxLayoutAlign="left">
                     <div fxLayout="row" fxLayoutAlign='center center'>
                         <mat-icon class='margin-right-10'>info</mat-icon>
-                        <span>{{ actionType == 'create' ? (translationData.lblPackgeHintMessage || 'You can select multiple Features from below list to map with this Package') : (translationData.lblEditPackageHintMessage || 'You can select multiple Features from below list to map with this Package') }}</span>
+                        <span>{{ translationData.lblHintMessage || 'You can select  multiple features from below list to map with this Package. Feature selection is mandatory'}}<span class='mandatoryColor'>*</span></span>
                     </div>
                 </div>
                 <div fxLayout="column" fxLayoutAlign="end">
-                    <div fxLayout="row">
-                      <button class='margin-right-10' mat-raised-button color="primary"
-                            (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
-                      <button class='margin-right-10'  mat-raised-button color="primary" *ngIf="actionType == 'edit'"
-                              (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
-                      <button class='no-margin' [disabled]="!packageFormGroup.valid" mat-raised-button color="primary"
-                            (click)='onCreate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm || 'Confirm') }}</button>   
+                    <div fxLayout="row" class='areaWidth'>
+                        <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{
+                            translationData.lblCancel || 'Cancel' }}</button>
+                        <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" *ngIf="actionType == 'edit'"
+                            (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
+                        <button class='no-margin' [disabled]="!packageFormGroup.valid || selectionForFeatures.selected.length == 0" mat-raised-button color="primary"
+                            (click)='onCreate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
+                            (translationData.lblConfirm || 'Confirm') }}</button>
                     </div>
                 </div>
             </div> 
@@ -151,8 +151,8 @@
                 <mat-divider></mat-divider>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
-                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'view' ? (translationData.lblSelectedFeatures || 'Selected Features'):(translationData.lblSelectFeatures || 'Select Features') }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+                <div fxLayout="column" fxLayoutAlign="start">
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'view' ? (translationData.lblSelectedFeatures || 'Selected Features'):(translationData.lblSelectFeatures || 'Select Features')}}</span>
                 </div>
             </div>
            <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
@@ -175,8 +175,11 @@
                                 <mat-slide-toggle color="primary" (change)='$event ? masterToggleForFeatures() : null;' 
                                   [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
                                   [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
-                                  [aria-label]='checkboxLabelForFeatures()' [disabled]="actionType == 'view'">{{ translationData.lblExclude || 'Exclude'}}
+                                  [aria-label]='checkboxLabelForFeatures()' [disabled]="actionType == 'view'">
                                 </mat-slide-toggle>
+                                <span style="margin: 5px 0px 0px 5px;"
+                                    [ngClass]="{'opacity-0-5': actionType == 'view'}">{{ translationData.lblInclude ||
+                                    'Include'}}</span>
                               </mat-header-cell>
                               <mat-cell *matCellDef="let row">
                                 <mat-slide-toggle color="primary" (click)='$event.stopPropagation()'
@@ -185,9 +188,6 @@
                                   [aria-label]='checkboxLabelForFeatures(row)' [disabled]="actionType == 'view'"> 
                                 </mat-slide-toggle>
                               </mat-cell>
-                              <!-- <mat-error *ngIf="packageFormGroup.get('featureIds').hasError('required')">
-                                {{ translationData.lblPleaseselectpackagetype || 'Please Select Package Type'}}
-                            </mat-error> -->
                         </ng-container> 
                         <mat-header-row *matHeaderRowDef="featureDisplayedColumns"></mat-header-row>
                         <mat-row *matRowDef="let row; columns: featureDisplayedColumns;">

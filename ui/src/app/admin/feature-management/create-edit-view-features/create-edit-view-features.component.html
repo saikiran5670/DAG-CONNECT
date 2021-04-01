@@ -27,12 +27,14 @@
                         <div>{{ translationData.lblDataAttributeSetName || 'Data Attribute Set Name' }}
                         <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
                         <span *ngIf="actionType != 'view'">
-                            <mat-icon style="padding-left: 7px; font-size: 15px; padding-top: 3px;">info</mat-icon>
+                            <mat-icon matTooltip="{{ translationData.lblToolTipTextDataAttrSetName || 'New Feature will auto create same as Data Attribute set name' }}" style="padding-left: 7px; font-size: 15px; padding-top: 3px;">info</mat-icon>
                         </span>
                         </div>
                         <span *ngIf="actionType != 'view'">{{ translationData.lbl250CharMax || '250 characters max'
                         }}</span>
                     </mat-label>
+                    <mat-error *ngIf="duplicateEmailMsg">{{translationData.lblDuplicateDataAttributeSetName || 'Duplicate Data Attribute Set
+                        Name' }}</mat-error>
                     <div *ngIf="actionType != 'view'">
                         <mat-form-field appearance="outline" class="full-width">
                             <input maxlength="250"
@@ -65,6 +67,7 @@
                     <mat-label style='display: flex; place-content: space-between;'>
                         <span>{{ translationData.lblDataAttributeDescription || 'Data Attribute Description' }}
                             <mat-icon *ngIf="actionType != 'view'"
+                            matTooltip="{{ translationData.lblToolTipTextDataAttrDescription || 'New Feature description will auto create same as Data Attribute description' }}"
                                 style="padding-left: 7px; font-size: 15px; padding-top: 4px; vertical-align: middle;">
                                 info</mat-icon>
                         </span>

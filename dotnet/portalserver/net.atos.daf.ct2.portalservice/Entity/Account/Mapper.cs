@@ -65,7 +65,7 @@ namespace net.atos.daf.ct2.portalservice.Account
 
             response.Id = request.Id;
             response.Email = request.Email;
-            response.Name = request.Name;
+            response.Name = request.Name ?? string.Empty; 
             response.OrganizationId = request.OrganizationId;
             response.AccountIds = request.AccountIds;
             response.AccountGroupId= request.AccountGroupId;
@@ -80,7 +80,7 @@ namespace net.atos.daf.ct2.portalservice.Account
             response.AccountGroupId = request.AccountGroupId;
             response.VehicleGroupId = request.VehicleGroupId;
             response.RoleId = request.RoleId;
-            response.Name = request.Name;
+            response.Name = request.Name ?? string.Empty; 
             return response;
         }
         public List<AccountDetailsResponse> ToAccountDetailsResponse(AccountBusinessService.AccountDetailsResponse request)
@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.portalservice.Account
                 accountDetails.EmailId = account.EmailId;
                 accountDetails.Salutation = account.Salutation;
                 accountDetails.FirstName = account.FirstName;
-                accountDetails.LastName = account.LastName;
+                accountDetails.LastName = account.LastName ?? string.Empty;
                 if (!string.IsNullOrEmpty(account.Type)) accountDetails.Type = account.Type;
                 accountDetails.OrganizationId = account.OrganizationId;
                 accountDetails.DriverId = account.DriverId;
@@ -170,8 +170,8 @@ namespace net.atos.daf.ct2.portalservice.Account
             AccountBusinessService.AccountGroupRequest group = new AccountBusinessService.AccountGroupRequest();
 
             group.Id = request.Id;
-            group.Name = request.Name;
-            group.Description = request.Description;            
+            group.Name = request.Name ?? string.Empty;
+            group.Description = request.Description ?? string.Empty;            
             group.OrganizationId = request.OrganizationId;
             group.RefId = request.RefId;            
             if (!string.IsNullOrEmpty(request.GroupType))
@@ -199,11 +199,11 @@ namespace net.atos.daf.ct2.portalservice.Account
             if (request.AccountGroup == null) return group;
 
             group.Id = request.AccountGroup.Id;
-            group.Name = request.AccountGroup.Name;
-            group.Description = request.AccountGroup.Description;
+            group.Name = request.AccountGroup.Name ?? string.Empty;
+            group.Description = request.AccountGroup.Description ?? string.Empty; 
             group.RefId = request.AccountGroup.RefId;
             group.OrganizationId = request.AccountGroup.OrganizationId;
-            // group type
+            // group typec
             if (!string.IsNullOrEmpty(request.AccountGroup.GroupType))
             {
                 group.GroupType = request.AccountGroup.GroupType;
@@ -328,7 +328,7 @@ namespace net.atos.daf.ct2.portalservice.Account
             if (request != null)
             {
                 accessRelationship.Id = request.Id;
-                accessRelationship.Name = request.Name;
+                accessRelationship.Name = request.Name ?? string.Empty;
                 accessRelationship.IsGroup = request.IsGroup;
                 accessRelationship.Count = request.Count;
                 accessRelationship.AccessType = request.AccessType;
@@ -349,7 +349,7 @@ namespace net.atos.daf.ct2.portalservice.Account
             if (request != null)
             {
                 accessRelationship.Id = request.Id;
-                accessRelationship.Name = request.Name;
+                accessRelationship.Name = request.Name ?? string.Empty;
                 accessRelationship.IsGroup = request.IsGroup;                
             }
             return accessRelationship;
@@ -360,7 +360,7 @@ namespace net.atos.daf.ct2.portalservice.Account
             if (request != null)
             {
                 accessRelationship.Id = request.Id;
-                accessRelationship.Name = request.Name;
+                accessRelationship.Name = request.Name ?? string.Empty; 
                 accessRelationship.IsGroup = request.IsGroup;
                 accessRelationship.Count = request.Count;
             }
@@ -408,7 +408,7 @@ namespace net.atos.daf.ct2.portalservice.Account
             if (request != null)
             {
                 accessRelationship.Id = request.Id;
-                accessRelationship.Name = request.Name;
+                accessRelationship.Name = request.Name ?? string.Empty;
                 accessRelationship.IsGroup = request.IsGroup;
                 accessRelationship.Count = request.Count;
             }
@@ -421,7 +421,7 @@ namespace net.atos.daf.ct2.portalservice.Account
                 if (request != null)
                 {
                     accessRelationship.Id = request.Id;
-                    accessRelationship.Name = request.Name;
+                    accessRelationship.Name = request.Name ?? string.Empty;
                     accessRelationship.IsGroup = request.IsGroup;
                     accessRelationship.Count = request.Count;
                 }

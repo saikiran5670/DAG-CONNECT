@@ -138,6 +138,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var responce = await _featureclient.CreateAsync(FeatureObj);
                 if (responce.Code == Responcecode.Success)
                 {
+                    if (responce.Message == "Feature name allready exists")
+                    {
+                        return StatusCode(409, responce.Message)
+;                    }
                     return Ok(responce);
                 }
                 else
@@ -193,11 +197,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var responce = await _featureclient.UpdateAsync(FeatureObj);
                 if (responce.Code == Responcecode.Success)
                 {
+                    if (responce.Message == "Feature name allready exists")
+                    {
+                        return StatusCode(409, responce.Message)
+;
+                    }
                     return Ok(responce);
                 }
                 else
                 {
-                    return StatusCode(500, "Internal Server Error.");
+                    return StatusCode(400, "Error in feature update.");
                 }
             }
             catch (Exception ex)
@@ -296,6 +305,43 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                
                 FeatureObj.Id = FeatureId;
                 var feature = await _featureclient.DeleteAsync(FeatureObj);
+                //List<FeatureResponce> featureList = new List<FeatureResponce>();
+                //foreach (var featureitem in feature.Features)
+                //{
+                //    FeatureResponce obj = new FeatureResponce();
+                //    obj.I = featureitem.Id;
+                //    obj.CreatedBy = featureitem.Createdby;
+                //    obj.FeatureName = featureitem.Name;
+                //    obj.Description = featureitem.Description;
+                //    obj.RoleId = featureitem.RoleId;
+                //    obj.OrganizationId = featureitem.Organization_Id;
+                //    obj.FeatureType = featureitem.Type;
+                //    featureList.Add(obj);
+                //}
+
+                return Ok(feature);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, "Internal Server Error.");
+            }
+        }
+
+        [HttpPost]
+        [Route("featurestate/update")]
+
+        public async Task<IActionResult> ChangeFeatureState([FromQuery] int FeatureId, FeatureState featurestate)
+        {
+            try
+            {
+
+
+                FeatureStateRequest FeatureObj = new FeatureStateRequest();
+
+                FeatureObj.Featureid = FeatureId;
+                FeatureObj.FeatureState = featurestate == FeatureState.Active ? "A" : "I";
+                var feature = await _featureclient.ChangeFeatureStateAsync(FeatureObj);
                 //List<FeatureResponce> featureList = new List<FeatureResponce>();
                 //foreach (var featureitem in feature.Features)
                 //{
