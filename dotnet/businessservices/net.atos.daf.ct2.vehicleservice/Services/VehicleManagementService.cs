@@ -630,7 +630,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
 
                 return await Task.FromResult(new VehicleGroupRefResponce
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = "Exception " + ex.StackTrace + ex.Message,
                     Code = Responcecode.Failed
                 });
             }
