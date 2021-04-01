@@ -110,11 +110,11 @@ export class CustomValidators {
   static specialCharValidationForName(name) {
     return (formGroup: FormGroup) => {
       const NAME = formGroup.controls[name];
-      var regex = /[^!@#\$%&*]+$/;
+      var regex = /[!@#\$%&*]/;
 
       if (!NAME.value) {
         NAME.setErrors({ required: true });
-      } else if (!regex.test(NAME.value)) {
+      } else if (regex.test(NAME.value)) {
         NAME.setErrors({ specialCharsNotAllowed: true });
       }
     };
@@ -123,10 +123,10 @@ export class CustomValidators {
   static specialCharValidationForNameWithoutRequired(name: any) {
     return (formGroup: FormGroup) => {
       const NAME = formGroup.controls[name];
-      var regex = /[^!@#\$%&*]+$/;
+      var regex = /[!@#\$%&*]/;
 
       if(NAME.value.length > 0){
-        if (!regex.test(NAME.value)) {
+        if (regex.test(NAME.value)) {
           NAME.setErrors({ specialCharsNotAllowed: true });
         }
       }
@@ -136,11 +136,11 @@ export class CustomValidators {
   static numberValidationForName(name) {
     return (formGroup: FormGroup) => {
       const NAME = formGroup.controls[name];
-      var regex = /[^0-9]+$/;
+      var regex = /[0-9]/;
 
       if (!NAME.value) {
         NAME.setErrors({ required: true });
-      } else if (!regex.test(NAME.value)) {
+      } else if (regex.test(NAME.value)) {
         NAME.setErrors({ numberNotAllowed: true });
       }
     };
@@ -149,9 +149,9 @@ export class CustomValidators {
   static numberValidationForNameWithoutRequired(name: any) {
     return (formGroup: FormGroup) => {
       const NAME = formGroup.controls[name];
-      var regex = /[^0-9]+$/;
+      var regex = /[0-9]/;
       if(NAME.value.length > 0){
-        if (!regex.test(NAME.value)) {
+        if (regex.test(NAME.value)) {
           NAME.setErrors({ numberNotAllowed: true });
         }
       }

@@ -208,44 +208,44 @@ export class EditUserRoleDetailsComponent implements OnInit {
   }
 
   onCheckboxChange(event: any, row: any){
-    if(event.checked){  
-      if(row.featureName.includes(" _fullAccess")){
-        this.dataSource.data.forEach(item => {
-          if(item.featureName.includes(row.featureName.split(" _")[0])){
-            this.selectionForFeatures.select(item);
-          }
-        })
-      }
-      else if(row.featureName.includes(" _create") || row.featureName.includes(" _edit") || row.featureName.includes(" _delete") ){
-        this.dataSource.data.forEach(item => {
-          if(item.featureName.includes(row.featureName.split(" _")[0]+" _view")){
-            this.selectionForFeatures.select(item);
-          }
-        })
-      }
-    }
-    else {
-      if(row.featureName.includes(" _fullAccess")){
-        this.dataSource.data.forEach(item => {
-          if(item.featureName.includes(row.featureName.split(" _")[0])){
-            this.selectionForFeatures.deselect(item);
-          }
-        })
-      }
-      else if(row.featureName.includes(" _view")){
-        this.dataSource.data.forEach(item => {
-          if(item.featureName.includes(row.featureName.split(" _")[0])){
-            this.selectionForFeatures.deselect(item);
-          }
-        })
-      }
-      else if(!row.featureName.includes(" _fullAccess")){
-        this.dataSource.data.forEach(item => {
-          if(item.featureName.includes(row.featureName.split(" _")[0]+" _fullAccess")){
-            this.selectionForFeatures.deselect(item);
-          }
-        })
-      }
-    }
+    // if(event.checked){  
+    //   if(row.name.includes(" _fullAccess")){
+    //     this.dataSource.data.forEach(item => {
+    //       if(item.name.includes(row.name.split(" _")[0])){
+    //         this.selectionForFeatures.select(item);
+    //       }
+    //     })
+    //   }
+    //   else if(row.name.includes(" _create") || row.name.includes(" _edit") || row.name.includes(" _delete") ){
+    //     this.dataSource.data.forEach(item => {
+    //       if(item.name.includes(row.name.split(" _")[0]+" _view")){
+    //         this.selectionForFeatures.select(item);
+    //       }
+    //     })
+    //   }
+    // }
+    // else {
+    //   if(row.name.includes(" _fullAccess")){
+    //     this.dataSource.data.forEach(item => {
+    //       if(item.name.includes(row.name.split(" _")[0])){
+    //         this.selectionForFeatures.deselect(item);
+    //       }
+    //     })
+    //   }
+    //   else if(row.name.includes(" _view")){
+    //     this.dataSource.data.forEach(item => {
+    //       if(item.name.includes(row.name.split(" _")[0])){
+    //         this.selectionForFeatures.deselect(item);
+    //       }
+    //     })
+    //   }
+    //   else if(!row.name.includes(" _fullAccess")){
+    //     this.dataSource.data.forEach(item => {
+    //       if(item.name.includes(row.name.split(" _")[0]+" _fullAccess")){
+    //         this.selectionForFeatures.deselect(item);
+    //       }
+    //     })
+    //   }
+    // }
   }
 }
