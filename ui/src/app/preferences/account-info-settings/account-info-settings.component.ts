@@ -87,7 +87,8 @@ export class AccountInfoSettingsComponent implements OnInit {
       firstName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       lastName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       loginEmail: new FormControl({value: null, disabled: true}), //['', [Validators.required, Validators.email]],
-      organization: new FormControl({value: null, disabled: true})
+      organization: new FormControl({value: null, disabled: true}),
+      driverId: new  FormControl({value: null, disabled: true})
     },{
       validator : [
         CustomValidators.specialCharValidationForName('firstName'),
@@ -176,6 +177,7 @@ export class AccountInfoSettingsComponent implements OnInit {
     this.accountSettingsForm.get('lastName').setValue(this.accountInfo.length > 0 ? this.accountInfo[0].lastName : '');
     this.accountSettingsForm.get('loginEmail').setValue(this.accountInfo.length > 0 ? this.accountInfo[0].emailId : '');
     this.accountSettingsForm.get('organization').setValue(this.orgName);
+    this.accountSettingsForm.get('driverId').setValue(this.accountInfo.length > 0 ? this.accountInfo[0].driverId : '');
   }
 
   setDefaultGeneralSetting(){
