@@ -874,7 +874,10 @@ namespace net.atos.daf.ct2.organization.repository
                         strquery = $"{strquery} and id=@id";
                         break;
                     default:
-                        return objOrganizationNameandID;
+                        parameter.Add("@id", objOrganizationByID.id);
+                        strquery = $"{strquery} and id=@id";
+                        break;
+                        //return objOrganizationNameandID;
                 }
                 
                 var data = await dataAccess.QueryAsync<OrganizationNameandID>(strquery, parameter);
