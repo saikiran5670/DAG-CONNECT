@@ -272,7 +272,7 @@ export class UserManagementComponent implements OnInit {
       this.filterFlag = true;
       this.hideloader();
       this.initData = this.makeRoleAccountGrpList(usrlist);
-      this.initData = this.getNewTagData(usrlist);
+      this.initData = this.getNewTagData(this.initData);
       this.dataSource = new MatTableDataSource(this.initData);
       setTimeout(()=>{
         this.dataSource.paginator = this.paginator;
@@ -361,8 +361,8 @@ export class UserManagementComponent implements OnInit {
       this.successMsgBlink(item.msg);
     }
     if(item.tableData){
-      this.initData = this.getNewTagData(item.tableData);
-      this.initData = this.makeRoleAccountGrpList(this.initData);
+      this.initData = this.makeRoleAccountGrpList(item.tableData);
+      this.initData = this.getNewTagData(this.initData);
     }
     setTimeout(()=>{
       this.dataSource = new MatTableDataSource(this.initData);
