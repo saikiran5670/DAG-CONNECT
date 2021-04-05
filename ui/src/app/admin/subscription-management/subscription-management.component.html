@@ -20,8 +20,8 @@
         </div>
         <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
           <mat-form-field appearance="outline" class="full-width">
-            <mat-select placeholder="{{ translationData.lblSelectOrganisation || 'Select Organisation' }}" (selectionChange)="applyFilterOnOrganization($event.value)">
-              <mat-option *ngFor="let options of organizationList" [value]="options.id">
+            <mat-select placeholder="{{ translationData.lblSelectOrganisation || 'Select Organisation' }}" (selectionChange)="applyFilterOnOrganization($event.value)" >
+              <mat-option *ngFor="let options of organizationList" [value]="options.id" [disabled] = "organizationList.length == 1">
                 {{options.name}}
               </mat-option>
             </mat-select>
@@ -94,7 +94,7 @@
                   <!-- <button mat-stroked-button color="primary" class='actionBtn' *ngIf="row.status == 'Expired' ? true : false ">
                      shop
                   </button>  -->
-                  <button type="button" class="btn btn-outline-primary btn-sm" *ngIf="row.isActive == false ? true : false " [disabled]="!adminAccessType.adminReadOnlyAccess">Shop</button>           
+                  <button type="button" class="btn btn-outline-primary btn-sm" *ngIf="row.isActive ? false : true " [disabled]="!adminAccessType.adminReadOnlyAccess"><span>{{row.isActive ? '-' : 'Shop'}}</span></button>           
                </mat-cell>
               </ng-container>
               <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

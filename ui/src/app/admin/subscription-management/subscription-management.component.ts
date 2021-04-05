@@ -36,6 +36,7 @@ export class SubscriptionManagementComponent implements OnInit {
   localStLanguage: any;
   dataSource: any; 
   orgID: any;
+  roleID: any;
   changedOrgId: any;
   translationData: any;
   createEditViewSubscriptionFlag: boolean = false;
@@ -87,7 +88,7 @@ export class SubscriptionManagementComponent implements OnInit {
 
   setDate(date : any){
     if (date === 0) {
-      return 0;
+      return "-";
     } else {
       var newdate = new Date(date);
       var day = newdate.getDate();
@@ -100,7 +101,7 @@ export class SubscriptionManagementComponent implements OnInit {
   ngOnInit() { 
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    this.orgID = parseInt(localStorage.getItem('accountOrganizationId'));
+    this.roleID = parseInt(localStorage.getItem('accountRoleId'));
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -118,7 +119,7 @@ export class SubscriptionManagementComponent implements OnInit {
 
   loadSubscriptionData(){
     this.showLoadingIndicator = true;
-    this.subscriptionService.getSubscriptions(this.orgID).subscribe((data : any) => {
+    this.subscriptionService.getSubscriptions(this.accountOrganizationId).subscribe((data : any) => {
       this.initData = data["subscriptionList"];
       this.hideloader();
       this.getOrgListData();
@@ -132,7 +133,11 @@ export class SubscriptionManagementComponent implements OnInit {
   }
   
   getOrgListData(){
-    this.subscriptionService.getOrganizations().subscribe((data: any) => {
+    let inputData = {
+      "id" : this.accountOrganizationId,
+      "roleid": this.roleID
+    }
+    this.subscriptionService.getOrganizations(inputData).subscribe((data: any) => {
       if(data){
         this.organizationList = data["organizationList"];
       }
