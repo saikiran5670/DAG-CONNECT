@@ -44,9 +44,10 @@ import { RemoveDuplicatesPipe } from './pipes/remove-duplicates.pipe';
 import { CustomPaginationComponent } from './custom-pagination/custom-pagination.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { ActiveInactiveDailogComponent } from './active-inactive-dailog/active-inactive-dailog.component';
+import { CommonImportComponent } from './common-import/common-import.component';
 
 @NgModule({
-  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, CustomPaginationComponent, SpinnerComponent, ActiveInactiveDailogComponent],
+  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, CustomPaginationComponent, SpinnerComponent, ActiveInactiveDailogComponent, CommonImportComponent],
   imports: [
     CommonModule,
     FlexLayoutModule,
@@ -131,7 +132,8 @@ import { ActiveInactiveDailogComponent } from './active-inactive-dailog/active-i
     MaterialFileInputModule,
     CommonFilterComponent,
     RemoveDuplicatesPipe,
-    SpinnerComponent
+    SpinnerComponent,
+    CommonImportComponent
   ],
   providers: [{ provide: MatPaginatorIntl, useClass: CustomPaginationComponent}],
 })

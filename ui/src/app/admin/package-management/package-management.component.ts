@@ -35,7 +35,7 @@ export class PackageManagementComponent implements OnInit {
   showLoadingIndicator: any = false;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
-
+  importClicked :boolean =false;
   constructor(
       private translationService: TranslationService,
       private packageService: PackageService, 
@@ -249,5 +249,10 @@ export class PackageManagementComponent implements OnInit {
   hideloader() {
     // Setting display of spinner
     this.showLoadingIndicator = false;
+  }
+
+  updateImportView(_event){
+    this.importClicked = _event;
+    console.log(_event)
   }
 }
