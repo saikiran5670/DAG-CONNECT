@@ -874,13 +874,13 @@ namespace net.atos.daf.ct2.organization.repository
                         strquery = $"{strquery} and id=@id";
                         break;
                     default:
-                        return null;
+                        return objOrganizationNameandID;
                 }
                 
                 var data = await dataAccess.QueryAsync<OrganizationNameandID>(strquery, parameter);
                 if (data == null)
-                {
-                    return null;
+                { 
+                    return objOrganizationNameandID;
                 }
                 return data.ToList();
             }
