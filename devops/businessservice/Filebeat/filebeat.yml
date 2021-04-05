@@ -16,12 +16,12 @@ filebeat.inputs:
 
 # ------------------------------ Logstash Output -------------------------------
 output.logstash:
-   hosts: ["dafct-lan1-d-euwe-cdp-elk-ls-vm2.daf.internal:5044"]
+   hosts: ["dafct-lan1-d-euwe-cdp-elk-ls-vm1.daf.internal:5044","dafct-lan1-d-euwe-cdp-elk-ls-vm2.daf.internal:5044"]
    loadbalance: true
 
   # Optional SSL. By default is off.
   # List of root certificates for HTTPS server verifications
-   ssl.certificate_authorities: ["/certs/dafct-lan1-d-euwe-cdp-elk-ls-vm2.crt"]
+   ssl.certificate_authorities: ["/certs/dafct-lan1-d-euwe-cdp-elk-ls-vm1.crt","/certs/dafct-lan1-d-euwe-cdp-elk-ls-vm2.crt"]
    ssl.verification_mode: none
    
 # ================================= Processors =================================
