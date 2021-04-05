@@ -74,6 +74,7 @@ export class NewUserStepComponent implements OnInit {
   croppedImageTemp= '';
   @Input() privilegeAccess: any;
   prefId: any = 0;
+  orgDefaultFlag: any;
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -136,6 +137,16 @@ export class NewUserStepComponent implements OnInit {
         value: 'S'
       }
     ];
+    this.orgDefaultFlag = {
+      language: false,
+      timeZone: false,
+      unit: false,
+      currency: false,
+      dateFormat: false,
+      vehDisplay: false,
+      timeFormat: false,
+      landingPage: false
+    }
     this.roleDataSource = new MatTableDataSource(this.roleData);
     this.userGrpDataSource = new MatTableDataSource(this.userGrpData);
     this.firstFormGroup.get('userType').setValue(this.userTypeList[0].value); //-- default portal
@@ -630,6 +641,47 @@ export class NewUserStepComponent implements OnInit {
         });
       });
     });
+  }
+
+  onLanguageChange(event: any, value: any){
+    switch(value){
+      case "language":{
+        this.orgDefaultFlag.language = false;
+        break;
+      }
+      case "timeZone":{
+        this.orgDefaultFlag.timeZone = false;
+        break;
+      }
+      case "unit":{
+        this.orgDefaultFlag.unit = false;
+        break;
+      }
+      case "currency":{
+        this.orgDefaultFlag.currency = false;
+        break;
+      }
+      case "dateFormat":{
+        this.orgDefaultFlag.dateFormat = false;
+        break;
+      }
+      case "timeFormat":{
+        this.orgDefaultFlag.timeFormat = false;
+        break;
+      }
+      case "vehDisplay":{
+        this.orgDefaultFlag.vehDisplay = false;
+        break;
+      }
+      case "landingPage":{
+        this.orgDefaultFlag.landingPage = false;
+        break;
+      }
+    }
+  }
+
+  onOpenChange(event: any){
+    //console.log("event:: ", event);
   }
   
 }

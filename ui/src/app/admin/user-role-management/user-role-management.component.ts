@@ -203,7 +203,7 @@ export class UserRoleManagementComponent implements OnInit {
 
   getDeletMsg(roleName: any){
     if(this.translationData.lblUseraccountwassuccessfullydeleted)
-      return this.translationData.lblUserRoleDelete.replace('$', roleName);
+      return this.translationData.lblUseraccountwassuccessfullydeleted.replace('$', roleName);
     else
       return ("User role '$' was successfully deleted").replace('$', roleName);
   }
