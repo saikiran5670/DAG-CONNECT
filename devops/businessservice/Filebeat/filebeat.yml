@@ -10,6 +10,7 @@ filebeat.inputs:
     - /tmp/log/Info/*
   fields:
     ENV: DEV01
+    ServiceName: ${serviceName}
   fields_under_root: true
   ignore_older: 72h  
 
