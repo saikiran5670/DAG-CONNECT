@@ -24,6 +24,6 @@ output.logstash:
    ssl.verification_mode: none
    
 # ================================= Processors =================================
-processors:
-  - drop_fields:
-      fields: ["agent", "log", "input", "ecs" ]
+#processors:
+  #- drop_fields:
+      #fields: ["agent", "log", "input", "ecs" ]
