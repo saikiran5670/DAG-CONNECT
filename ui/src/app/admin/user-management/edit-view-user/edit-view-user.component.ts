@@ -125,7 +125,10 @@ export class EditViewUserComponent implements OnInit {
   }
 
   getBreadcum(val: any){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblUserManagement ? this.translationData.lblUserManagement : "User Management"} / ${this.translationData.lblUserDetails ? this.translationData.lblUserDetails : 'User Details'}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / 
+    ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / 
+    ${this.translationData.lblAccountManagement ? this.translationData.lblAccountManagement : "Account Management"} / 
+    ${this.translationData.lblAccountDetails ? this.translationData.lblAccountDetails : 'Account Details'}`;
   }
 
   loadRoleTable(){

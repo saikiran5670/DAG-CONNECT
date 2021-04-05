@@ -6,6 +6,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { SelectionModel } from '@angular/cdk/collections';
 import { PackageService } from 'src/app/services/package.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -23,7 +24,9 @@ export class PackageManagementComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   titleVisible : boolean = false;
+  exportFlag = true;
   packageCreatedMsg : any = '';
+  selectedPackages = new SelectionModel(true, []);
   createEditViewPackageFlag: boolean = false;
   translationData: any;
   dataSource: any;
@@ -32,7 +35,7 @@ export class PackageManagementComponent implements OnInit {
   accountOrganizationId: any = 0;
   localStLanguage: any;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
-  showLoadingIndicator: any;
+  showLoadingIndicator: any = false;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
 
@@ -54,7 +57,6 @@ export class PackageManagementComponent implements OnInit {
       lblNewPackage: "New Package",
       lblNoRecordFound: "No Record Found",
       lblPackageCode: "Package Code",
-
       lblView: "View",
       lblEdit: "Edit",
       lblDelete: "Delete",
@@ -65,7 +67,6 @@ export class PackageManagementComponent implements OnInit {
       lblStatus : "Status",
       lblActive : "Active",
       lblAction : "Action"
-
     }
   }
 
@@ -80,7 +81,7 @@ export class PackageManagementComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
@@ -92,16 +93,21 @@ export class PackageManagementComponent implements OnInit {
       filter: "",
       menuId: 3 //-- for user mgnt
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.loadPackageData();
     });
-    this.loadPackageData();
   }
 
   loadPackageData(){
+    this.showLoadingIndicator = true;
     this.packageService.getPackages().subscribe((data : any) => {
-      this.initData = data["pacakageList"]
+      this.initData = data["pacakageList"];
+      this.hideloader();
+      this.updatedTableData(this.initData);
+    }, (error) => {
+      this.initData = [];
+      this.hideloader();
       this.updatedTableData(this.initData);
     });
   }
@@ -117,21 +123,26 @@ export class PackageManagementComponent implements OnInit {
 
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
-    data.forEach(row => {
-      let createdDate = parseInt(row.createdAt); 
-      let nextDate = createdDate + 86400000;
-      if(currentDate > createdDate && currentDate < nextDate){
-        row.newTag = true;
-      }
-      else{
-        row.newTag = false;
-      }
-    });
-    let newTrueData = data.filter(item => item.newTag == true);
-    newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
-    let newFalseData = data.filter(item => item.newTag == false);
-    Array.prototype.push.apply(newTrueData, newFalseData); 
-    return newTrueData;
+    if(data.length > 0){
+      data.forEach(row => {
+        let createdDate = parseInt(row.createdAt); 
+        let nextDate = createdDate + 86400000;
+        if(currentDate > createdDate && currentDate < nextDate){
+          row.newTag = true;
+        }
+        else{
+          row.newTag = false;
+        }
+      });
+      let newTrueData = data.filter(item => item.newTag == true);
+      newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
+      let newFalseData = data.filter(item => item.newTag == false);
+      Array.prototype.push.apply(newTrueData, newFalseData); 
+      return newTrueData;
+    }
+    else{
+      return data;
+    }
   }
 
   createNewPackage(){
@@ -160,17 +171,19 @@ export class PackageManagementComponent implements OnInit {
     dialogConfig.data = options;
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
-      if(res){ 
+      if(res == true){ 
         // TODO: change status with latest grid data
-        console.log(rowData);
         let updatePackageParams = {
           "packageId": rowData.id,
           "status":rowData.status === "Active" ? "I" : "A"
         }
-        console.log(updatePackageParams);
         this.packageService.updateChangedStatus(updatePackageParams).subscribe((data) => {
           this.loadPackageData();
+          let successMsg = "Updated Successfully!";
+          this.successMsgBlink(successMsg);
         })
+      }else {
+        this.loadPackageData();
       }
     });
   }
@@ -224,6 +237,28 @@ export class PackageManagementComponent implements OnInit {
     this.titleVisible = false;
   }
 
+  masterToggleForPackage() {
+    this.isAllSelectedForPackege()
+      ? this.selectedPackages.clear()
+      : this.dataSource.data.forEach((row) =>
+        this.selectedPackages.select(row)
+      );
+  }
+
+  isAllSelectedForPackege() {
+    const numSelected = this.selectedPackages.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForPackage(row?: any): string {
+    if (row)
+      return `${this.isAllSelectedForPackege() ? 'select' : 'deselect'} all`;
+    else
+      return `${this.selectedPackages.isSelected(row) ? 'deselect' : 'select'
+        } row`;
+  }
+
   checkCreationForPackage(item: any){
     // this.createEditViewPackageFlag = !this.createEditViewPackageFlag;
     this.createEditViewPackageFlag = item.stepFlag;
@@ -238,6 +273,12 @@ export class PackageManagementComponent implements OnInit {
 
   hideloader() {
     // Setting display of spinner
-      this.showLoadingIndicator=false;
+    this.showLoadingIndicator = false;
+  }
+
+  getexportedValues(dataSource){
+    this.dataSource = dataSource;
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 }

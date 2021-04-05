@@ -41,7 +41,7 @@ export class EditDriverDetailsComponent implements OnInit {
         CustomValidators.numberValidationForNameWithoutRequired('lastName') // numberValidationForName
       ]
     });
-    this.breadcumMsg = this.getBreadcum(this.actionType);
+    this.breadcumMsg = this.getBreadcum();
     this.setDefaultData();
   }
 
@@ -53,8 +53,11 @@ export class EditDriverDetailsComponent implements OnInit {
     this.selectedConsentType = this.driverData.status;
   }
 
-  getBreadcum(actionType: any){
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / ${this.translationData.lblAdmin ? this.translationData.lblAdmin : 'Admin'} / ${this.translationData.lblDriverManagement ? this.translationData.lblDriverManagement : "Driver Management"} / ${this.translationData.lblDriverDetails ? this.translationData.lblDriverDetails : 'Driver Details'}`;
+  getBreadcum(){
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home' } / 
+    ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
+    ${this.translationData.lblDriverManagement ? this.translationData.lblDriverManagement : "Driver Management"} / 
+    ${(this.actionType == 'edit') ? (this.translationData.lblEditDriverDetails ? this.translationData.lblEditDriverDetails : 'Edit Driver Details') : (this.translationData.lblViewDriverDetails ? this.translationData.lblViewDriverDetails : 'View Driver Details')}`;
   }
 
   myFilter = (d: Date | null): boolean => {

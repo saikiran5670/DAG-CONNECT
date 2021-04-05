@@ -10,6 +10,7 @@ import { DataSource, SelectionModel } from '@angular/cdk/collections';
 import { SubscriptionService } from 'src/app/services/subscription.service';
 import { CompileIdentifierMetadata } from '@angular/compiler';
 import { UserDetailTableComponent } from '../../admin/user-management/new-user-step/user-detail-table/user-detail-table.component';
+import { table } from 'console';
 
 @Component({
   selector: 'app-subscription-management',
@@ -65,6 +66,7 @@ export class SubscriptionManagementComponent implements OnInit {
       value: '2'
     }
   ];
+  showLoadingIndicator: any = true;
 
   constructor(
     private translationService: TranslationService,
@@ -111,25 +113,34 @@ export class SubscriptionManagementComponent implements OnInit {
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
         this.processTranslation(data);
         this.loadSubscriptionData();
-      });
-      this.loadSubscriptionData();
+    });
   }
 
   loadSubscriptionData(){
+    this.showLoadingIndicator = true;
     this.subscriptionService.getSubscriptions(this.orgID).subscribe((data : any) => {
       this.initData = data["subscriptionList"];
+      this.hideloader();
+      this.getOrgListData();
+      this.updatedTableData(this.initData);
+    }, (error) => {
+      this.hideloader();
+      this.initData = [];
+      this.getOrgListData();
       this.updatedTableData(this.initData);
     });
-
+  }
+  
+  getOrgListData(){
     this.subscriptionService.getOrganizations().subscribe((data: any) => {
-      if(data)
-      {
+      if(data){
         this.organizationList = data["organizationList"];
       }
     });
   }
 
   updatedTableData(tableData : any) {
+    this.initData = tableData;
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
@@ -207,18 +218,22 @@ export class SubscriptionManagementComponent implements OnInit {
    }
   
    applyFilterOnStatus(data: any, status: any){
-    this.subscriptionService.getSubscriptionByStatus(this.changedOrgId ? this.changedOrgId : this.orgID, status).subscribe((data : any) => {
-    this.initData = data["subscriptionList"];
-    this.updatedTableData(this.initData);
-  });
- }
+      this.subscriptionService.getSubscriptionByStatus(this.changedOrgId ? this.changedOrgId : this.orgID, status).subscribe((data : any) => {
+      this.initData = data["subscriptionList"];
+      this.updatedTableData(this.initData);
+    });
+  }
 
- applyFilterOnType(data: any, type: any){
-  this.subscriptionService.getSubscriptionByType(this.changedOrgId ? this.changedOrgId : this.orgID, type).subscribe((data : any) => {
-  this.initData = data["subscriptionList"];
-  this.updatedTableData(this.initData);
-});
+  applyFilterOnType(data: any, type: any){
+    this.subscriptionService.getSubscriptionByType(this.changedOrgId ? this.changedOrgId : this.orgID, type).subscribe((data : any) => {
+      this.initData = data["subscriptionList"];
+      this.updatedTableData(this.initData);
+    });
+  }
+
+  hideloader() {
+    // Setting display of spinner
+    this.showLoadingIndicator = false;
+  }
+
 }
-}
-
-

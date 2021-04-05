@@ -80,7 +80,7 @@
           </div>
           <div *ngIf="disCol == 'accessType'">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames[colIndex] }}</mat-header-cell>
-            <mat-cell *matCellDef="let element">{{ (element[disCol].accessType == 'F') ? (translationData.lblFullAccess || 'Full Access') : (translationData.lblViewOnly || 'View Only') }} </mat-cell>
+            <mat-cell *matCellDef="let element">{{ (element[disCol] == 'F') ? (translationData.lblFullAccess || 'Full Access') : (translationData.lblViewOnly || 'View Only') }} </mat-cell>
           </div>
           <div *ngIf="disCol == 'associatedAccount'">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames[colIndex] }}</mat-header-cell>

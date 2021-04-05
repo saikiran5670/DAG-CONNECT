@@ -18,39 +18,33 @@
                 <span matPrefix><mat-icon>search</mat-icon></span>
             </mat-form-field>
         </div>
-  
         <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Organisation</mat-label>
-            <mat-select (selectionChange)="applyFilterOnOrganization($event.value)">
+            <mat-select placeholder="{{ translationData.lblSelectOrganisation || 'Select Organisation' }}" (selectionChange)="applyFilterOnOrganization($event.value)">
               <mat-option *ngFor="let options of organizationList" [value]="options.id">
                 {{options.name}}
               </mat-option>
             </mat-select>
           </mat-form-field>
         </div>
-    <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Select Status</mat-label>
-        <mat-select (selectionChange)="applyFilterOnStatus(1,$event.value)">
-          <mat-option *ngFor="let options of StatusList" [value]="options.value">
-            {{options.name}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-    <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Select Type</mat-label>
-        <mat-select (selectionChange)="applyFilterOnType(1,$event.value)">
-          <mat-option *ngFor="let options of TypeList" [value]="options.value">
-            {{options.name}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-    
-
+        <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-select placeholder="{{ translationData.lblSelectType || 'Select Type' }}" (selectionChange)="applyFilterOnType(1,$event.value)">
+              <mat-option *ngFor="let options of TypeList" [value]="options.value">
+                {{options.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      <div class="areaWidth min-width-10-per" fxLayoutAlign="right">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select placeholder="{{ translationData.lblSelectStatus || 'Select Status' }}" (selectionChange)="applyFilterOnStatus(1,$event.value)">
+            <mat-option *ngFor="let options of StatusList" [value]="options.value">
+              {{options.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
     </div>
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
     <div *ngIf='initData.length > 0'>
@@ -109,5 +103,6 @@
         </mat-table>
         <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
     </div>
+    <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
   </mat-card>
 </div>

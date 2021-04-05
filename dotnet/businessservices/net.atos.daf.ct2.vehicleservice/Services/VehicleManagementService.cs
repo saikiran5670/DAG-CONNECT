@@ -576,14 +576,17 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     // Get group reference
                     foreach (Group.Group vGroup in vehicleGroups)
                     {
-                        foreach (Group.GroupRef groupRef in vGroup.GroupRef)
+                        if (vGroup.GroupRef != null)
                         {
-                            if (groupRef.Ref_Id > 0)
-                                if (VehicleIdList.Length > 0)
-                                {
-                                    VehicleIdList.Append(",");
-                                }
-                            VehicleIdList.Append(groupRef.Ref_Id);
+                            foreach (Group.GroupRef groupRef in vGroup.GroupRef)
+                            {
+                                if (groupRef.Ref_Id > 0)
+                                    if (VehicleIdList.Length > 0)
+                                    {
+                                        VehicleIdList.Append(",");
+                                    }
+                                VehicleIdList.Append(groupRef.Ref_Id);
+                            }
                         }
                     }
                 }
@@ -603,8 +606,8 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         ObjGroupRef.Name = item.Name == null ? "" : item.Name;
                         ObjGroupRef.LicensePlateNumber = item.License_Plate_Number == null ? "" : item.License_Plate_Number;
                         ObjGroupRef.VIN = item.VIN == null ? "" : item.VIN;
-                        ObjGroupRef.ModelId = item.ModelId;
-                        ObjGroupRef.OrganizationId = item.Organization_Id;
+                        ObjGroupRef.ModelId = item.ModelId == null ? "" : item.ModelId;
+                        ObjGroupRef.OrganizationId = item.Organization_Id == null ? 0 : item.Organization_Id;
                         response.GroupRefDetails.Add(ObjGroupRef);
                     }
                 }
@@ -630,7 +633,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
 
                 return await Task.FromResult(new VehicleGroupRefResponce
                 {
-                    Message = "Exception " + ex.Message,
+                    Message = "Exception " + ex.ToString(),
                     Code = Responcecode.Failed
                 });
             }

@@ -15,10 +15,11 @@
         <mat-card-content>
             <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddPackage || 'Add New Package') : actionType == 'edit' ? (translationData.lblEditPackage || 'Edit Package Details') : (translationData.lblViewPacakge|| 'View Package Details') }}<mat-icon *ngIf="actionType == 'view'" (click)="editPackage()" style="cursor: pointer;">edit</mat-icon></span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblAddPackage || 'Add New Package') : actionType == 'edit' ? (translationData.lblEditPackage || 'Edit Package Details') : (translationData.lblViewPacakge|| 'View Package Details') }}
+                    <mat-icon *ngIf="actionType == 'view' && selectedElementData.status == 'Active'" (click)="editPackage()" style="cursor: pointer;" [disabled]="selectedElementData.status == 'Inactive'">edit</mat-icon></span>
                 </div>
             </div>
-            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
                 <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label><span>{{ translationData.lblPackageCode || 'Package Code' }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
                     <div *ngIf="actionType != 'view'">
@@ -91,7 +92,7 @@
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
-                <div class='areaWidth min-width-10-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
+                <div class='areaWidth min-width-20-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
                     <mat-label>
                         <span>{{ translationData.lblType || 'Select Type' }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
                     </mat-label>                    
@@ -127,6 +128,7 @@
                         <span style='font-weight: 500!important;'>{{ selectedElementData.status === "Active" ? "Active" : "Inactive" }}</span>
                     </div>
                 </div>
+                <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left"></div>
             </div>
             <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="space-between center">
                 <div fxLayout="column" fxLayoutAlign="left">

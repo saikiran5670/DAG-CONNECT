@@ -264,7 +264,6 @@ export class OrganisationRelationshipComponent implements OnInit {
       message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
       cancelText: this.translationData.lblNo || "No",
       confirmText: this.translationData.lblYes || "Yes",
-      // status: rowData.status == 'Active' ? 'Inactive' : 'Active' ,
       status: rowData.allowChain == true ? 'Inactive' : 'Active' ,
       name: rowData.relationshipName
     };
@@ -275,19 +274,16 @@ export class OrganisationRelationshipComponent implements OnInit {
     dialogConfig.data = options;
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
-      if(res){ 
-        // console.log(rowData);
-        // let objData = {
-        //   "orgRelationID": rowData.id,
-        //   "allowChaining": !rowData.allowChain 
-        // }
-        // console.log(objData);
-        // this.organizationService.updateAllowChain(objData).subscribe((data) => {
-        //   this.loadInitData();
-        // })
+      if(res == true){ 
+        let objData = {
+          "orgRelationID": rowData.id,
+          "allowChaining": !rowData.allowChain 
+        }
+        this.organizationService.updateAllowChain(objData).subscribe((data) => {
+          this.loadInitData();
+        })
       }
     });
-      
   }
     
   }

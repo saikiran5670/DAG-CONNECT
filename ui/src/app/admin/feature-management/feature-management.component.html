@@ -46,7 +46,7 @@
         <ng-container matColumnDef="isExclusive">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttributeSetType || 'Data
             Attribute Set Type' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ row.isExclusive ? "Exclusive" : "Inclusive" }}</mat-cell>
+          <mat-cell *matCellDef="let row">{{ row.isExclusive ? 'Exclusive' : 'Inclusive' }}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="state">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}

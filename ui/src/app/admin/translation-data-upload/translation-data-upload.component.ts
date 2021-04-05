@@ -83,23 +83,24 @@ export class TranslationDataUploadComponent implements OnInit {
   }
 
   loadInitData(){
-    this.translationService.getTranslationUploadDetails().subscribe(data => {
+    this.showLoadingIndicator = true;
+    this.translationService.getTranslationUploadDetails().subscribe((data: any) => {
+      this.hideloader();
       if(data){
-        data["translationupload"].forEach(element => {
+        data.forEach(element => {
           var date = new Date(element.createdAt);
           var year = date.getFullYear();
           var month = ("0" + (date.getMonth() + 1)).slice(-2);
           var day = ("0" + date.getDate()).slice(-2);
-      
-         element.createdAt= `${day}/${month}/${year}`;   
+          element.createdAt= `${day}/${month}/${year}`;   
         });
-        
-
-        this.initData = data["translationupload"];
+        this.initData = data;
         this.updateGridData(this.initData);
       }
     }, (error) => {
-
+      this.hideloader();
+      this.initData = [];
+      this.updateGridData(this.initData);
     })
   }
 
@@ -338,7 +339,7 @@ export class TranslationDataUploadComponent implements OnInit {
 
   hideloader() {
     // Setting display of spinner
-      this.showLoadingIndicator=false;
+    this.showLoadingIndicator = false;
   }
 
 

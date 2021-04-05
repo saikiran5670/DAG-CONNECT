@@ -79,7 +79,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     }
     this.packageService.getFeatures(objData).subscribe((data) => {
       var tempdata = data;
-      
+      this.initData = data;
       if (this.actionType == "view") {
         let selectedFeatureList: any = [];
         tempdata.forEach((row: any) => {
@@ -91,7 +91,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
         this.dataSource = selectedFeatureList;
         this.updateDataSource(selectedFeatureList);
         this.featureDisplayedColumns = ['name'] ;
-      } else {
+      } else if (this.actionType == "edit" || this.actionType == "create") {
         setTimeout(()=>{
           this.dataSource = new MatTableDataSource(data);
           this.dataSource.paginator = this.paginator;
@@ -113,7 +113,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
 
   selectTableRows() {
     this.dataSource.data.forEach((row: any) => {
-      let search = this.selectedElementData.featureIds.filter((item: any) => item.id == row.id);
+      let search = this.selectedElementData.featureIds.includes(row.id);
       if (search.length > 0) {
         this.selectionForFeatures.select(row);
       }
@@ -123,6 +123,23 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   editPackage(){
     this.actionType = "edit";
     this.editPackageFlag = true;
+    this.featureDisplayedColumns = ['name','select'] ;
+    this.selectTableRows();
+    this.updateDataSource(this.initData);
+    this.featuresSelected = this.selectedElementData.featureIds;
+    this.dataSource.data.forEach(row => {
+      if(this.featuresSelected){
+        for(let selectedFeature of this.featuresSelected){
+          if(selectedFeature == row.id){
+            this.selectionForFeatures.select(row);
+            break;
+          }
+          else{
+            this.selectionForFeatures.deselect(row);
+          }
+        }
+      }
+    })
     this.breadcumMsg = this.getBreadcum(this.actionType);
   }
 
@@ -167,9 +184,9 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   
   onCreate(){
     let featureIds = [];
-        this.selectionForFeatures.selected.forEach(feature => {
-          featureIds.push(feature.id);
-        })
+    this.selectionForFeatures.selected.forEach(feature => {
+        featureIds.push(feature.id);
+    })
     let createPackageParams = {
       "id": 0,
       "code": this.packageFormGroup.controls.code.value,
@@ -194,7 +211,6 @@ export class CreateEditPackageDetailsComponent implements OnInit {
         this.createViewEditPackageEmit.emit(emitObj); 
     });
   },(err) => {
-
     if (err.status == 409) {
       this.duplicateMsg = true;
     }
@@ -223,6 +239,11 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       }    
       this.createViewEditPackageEmit.emit(emitObj); 
       });
+    },(err) => {
+
+      if (err.status == 409) {
+        this.duplicateMsg = true;
+      }
     })
   }
 }

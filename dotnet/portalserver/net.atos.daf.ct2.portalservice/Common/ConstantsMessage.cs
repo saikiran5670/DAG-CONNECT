@@ -14,6 +14,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             public const string InvalidAccountType = "The account type is not valid";
             public const string ErrorMessage = "There is an error creating account.";
             public const string EmailSendingFailedMessage = "There is an error while sending account confirmation email to the account user.";
+            public const string EmailUpdateNotAllowed = "EmailId is not allowed to update.";
         }
         public static class ExceptionKeyWord
         {

@@ -146,7 +146,7 @@ namespace net.atos.daf.ct2.subscription.repository
                             return objSubscriptionResponse;
                         }
                     }
-                    else if (responce == null && string.IsNullOrEmpty(responce.subscription_id))
+                    else if (responce == null || string.IsNullOrEmpty(responce.subscription_id))
                     {//Subscription does'nt exists for this scenerio
                         SubscriptionId = Guid.NewGuid().ToString();
                         var parameter = new DynamicParameters();

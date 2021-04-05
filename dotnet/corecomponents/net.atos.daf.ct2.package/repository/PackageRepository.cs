@@ -66,7 +66,7 @@ namespace net.atos.daf.ct2.package.repository
         {
             try
             {
-                var isPackageUpdate = CheckPackageCodeForUpdate(package.Code);
+                var isPackageUpdate = CheckPackageCodeForUpdate(package.Code, package.Id);
 
                 if (isPackageUpdate)
                 {
@@ -167,12 +167,18 @@ namespace net.atos.daf.ct2.package.repository
             var codeExists = packages.Result.Any(t => t.Code == packageCode);
             return codeExists;
         }
-        private bool CheckPackageCodeForUpdate(string packageCode)
+        private bool CheckPackageCodeForUpdate(string packageCode, int packageId)
         {
             var packageFilter = new PackageFilter();
             var packages = Get(packageFilter);
-            var codeExists = packages.Result.Where(t => t.Code == packageCode).Count();
-            return codeExists > 1 ? false : true;
+            var codeExistsForUpdate = packages.Result.Where(t => t.Code == packageCode && t.Id == packageId).Count();
+            var codeExists = packages.Result.Any(t => t.Code == packageCode);
+            if (codeExistsForUpdate == 0 && codeExists)
+                return false;
+            else if (codeExistsForUpdate == 0 && !codeExists)
+                return true;
+            else
+                return codeExistsForUpdate == 1 ? true : false;
         }
 
         public async Task<List<Package>> Get(PackageFilter filter)

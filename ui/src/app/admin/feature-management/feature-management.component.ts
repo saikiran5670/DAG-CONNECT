@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -34,7 +34,7 @@ export class FeatureManagementComponent implements OnInit {
   actionType: any;
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   showLoadingIndicator: any = false;
-
+  
   constructor(private translationService: TranslationService,
     private featureService: FeatureService,
     private dialogService: ConfirmDialogService,
@@ -54,7 +54,9 @@ export class FeatureManagementComponent implements OnInit {
       lblDelete: "Delete",
       lblExclude: "Exclude",
       lblInclude: "Include",
-      lblDuplicateDataAttributeSetName: "Duplicate Data Attribute Set Name"
+      lblDuplicateDataAttributeSetName: "Duplicate Data Attribute Set Name",
+      lblToolTipTextDataAttrSetName : "New Feature will auto create same as Data Attribute set name",
+      lblToolTipTextDataAttrDescription: "New Feature description will auto create same as Data Attribute description"
     }
   }
 
@@ -157,6 +159,7 @@ export class FeatureManagementComponent implements OnInit {
       status: rowData.state == 0 ? 'Inactive' : 'Active' ,
       name: rowData.name
     };
+    
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
@@ -165,7 +168,6 @@ export class FeatureManagementComponent implements OnInit {
     this.dialogRef.afterClosed().subscribe((res: any) => {
       if(res){ 
               // TODO: change status with latest grid data
-
               let updatedFeatureParams = {
                     id: rowData.id,
                     name: rowData.name,
@@ -176,7 +178,7 @@ export class FeatureManagementComponent implements OnInit {
                       id: rowData.dataAttribute.dataAttributeSetId,
                       name: "",
                       isActive: true,
-                      is_Exclusive: true,
+                      is_Exclusive: rowData.isExclusive,
                       description: "",
                       status: 0
                     },
@@ -187,8 +189,14 @@ export class FeatureManagementComponent implements OnInit {
                   }
 
               this.featureService.updateFeature(updatedFeatureParams).subscribe((dataUpdated: any) => {
+                let successMsg = "Status updated successfully."
+                this.successMsgBlink(successMsg);
                 this.loadFeatureData();
               });
+      }
+      else {
+        this.loadFeatureData();
+        // this.updatedTableData(this.initData);
       }
     });
   }
@@ -236,6 +244,7 @@ export class FeatureManagementComponent implements OnInit {
     if(item.tableData) {
       this.initData = item.tableData;
     }
+    this.loadFeatureData();
     this.updatedTableData(this.initData);
   }
 

@@ -234,7 +234,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // Validation                 
                 if (relationshipId <= 0)
                 {
-                    return StatusCode(400, "OrgRelationship id is required.");
+                    return StatusCode(400, "Relationship id is required.");
                 }
                 var relationshipRequest = new RelationshipDeleteRequest();
                 relationshipRequest.Id = relationshipId;
