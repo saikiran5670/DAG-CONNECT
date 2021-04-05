@@ -105,9 +105,12 @@
                         }}<span class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-select placeholder="{{ translationData.lblSelectLevel || 'Select Level' }}" formControlName="level">
-                            <mat-option *ngFor="let level of levels" [value]="level">
+                        <mat-select formControlName="levels" placeholder="{{ translationData.lblSelectLevel || 'Select Level' }}" formControlName="level">
+                            <!-- <mat-option *ngFor="let level of levels" [value]="level">
                                 {{level}}
+                            </mat-option> -->
+                            <mat-option *ngFor="let options of levelList" [value]="options.id">
+                                {{ options.name }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -118,9 +121,12 @@
                             class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-select placeholder="{{ translationData.lblSelectCode || 'Select Code' }}" formControlName="code">
-                            <mat-option *ngFor="let code of codes" [value]="code">
+                        <mat-select formControlName="codes" placeholder="{{ translationData.lblSelectCode || 'Select Code' }}" formControlName="code">
+                            <!-- <mat-option *ngFor="let code of codes" [value]="code">
                                 {{code}}
+                            </mat-option> -->
+                            <mat-option *ngFor="let options of codeList" [value]="options.name">
+                                {{ options.name }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
