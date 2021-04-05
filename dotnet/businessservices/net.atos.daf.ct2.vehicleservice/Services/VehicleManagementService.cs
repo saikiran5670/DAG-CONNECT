@@ -576,14 +576,17 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     // Get group reference
                     foreach (Group.Group vGroup in vehicleGroups)
                     {
-                        foreach (Group.GroupRef groupRef in vGroup.GroupRef)
+                        if (vGroup.GroupRef != null)
                         {
-                            if (groupRef.Ref_Id > 0)
-                                if (VehicleIdList.Length > 0)
-                                {
-                                    VehicleIdList.Append(",");
-                                }
-                            VehicleIdList.Append(groupRef.Ref_Id);
+                            foreach (Group.GroupRef groupRef in vGroup.GroupRef)
+                            {
+                                if (groupRef.Ref_Id > 0)
+                                    if (VehicleIdList.Length > 0)
+                                    {
+                                        VehicleIdList.Append(",");
+                                    }
+                                VehicleIdList.Append(groupRef.Ref_Id);
+                            }
                         }
                     }
                 }
