@@ -39,6 +39,7 @@ message OrganizationprimaryFieldsListResponse{
 
 message OrganizationByID{
  int32 id = 1;
+  int32 roleId = 2;
 }
 
 message OrganizationprimaryFieldsResponse{

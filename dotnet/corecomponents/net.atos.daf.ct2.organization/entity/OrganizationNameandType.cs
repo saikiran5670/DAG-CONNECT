@@ -10,5 +10,6 @@ namespace net.atos.daf.ct2.organization.entity
     public class OrganizationByID
     {
         public int id { get; set; }
+        public int roleId { get; set; }
     }
 }

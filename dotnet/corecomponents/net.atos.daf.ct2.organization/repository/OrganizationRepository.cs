@@ -857,17 +857,31 @@ namespace net.atos.daf.ct2.organization.repository
             log.Info("Get Organization method called in repository");
             try
             {
+                int level = await GetLevelByRoleId(objOrganizationByID.id, objOrganizationByID.roleId);
+                string strquery = string.Empty;
                 List<OrganizationNameandID> objOrganizationNameandID = new List<OrganizationNameandID>();
                 var parameter = new DynamicParameters();
                 parameter.Add("@is_active", true);
-                var query = @"SELECT id,name FROM master.organization where is_active=@is_active";
-                if (objOrganizationByID.id > 0)
+                strquery = @"SELECT id,name FROM master.organization where is_active=@is_active";
+                switch (level)
                 {
-                    parameter.Add("@id", objOrganizationByID.id);
-                    query = $"{query} and id=@id";
+                    case 10:
+                    case 20:
+                        break;
+                    case 30:
+                    case 40:
+                        parameter.Add("@id", objOrganizationByID.id);
+                        strquery = $"{strquery} and id=@id";
+                        break;
+                    default:
+                        return null;
                 }
                 
-                var data = await dataAccess.QueryAsync<OrganizationNameandID>(query, parameter);
+                var data = await dataAccess.QueryAsync<OrganizationNameandID>(strquery, parameter);
+                if (data == null)
+                {
+                    return null;
+                }
                 return data.ToList();
             }
             catch (Exception ex)
@@ -877,6 +891,19 @@ namespace net.atos.daf.ct2.organization.repository
                 throw ex;
             }
         }
+
+       async Task<int> GetLevelByRoleId(int orgId, int roleId)
+        {
+            var parameter = new DynamicParameters();
+            parameter.Add("@id", roleId);
+            parameter.Add("@organization_id", orgId);
+            var data = await dataAccess.ExecuteScalarAsync
+                             (@"select level from master.Role where id=@id and organization_id=@organization_id",
+                            parameter);
+            int level = data != null ? Convert.ToInt32(data) : 0;
+            return level;
+        }
+
         public async Task<int> IsOwnerRelationshipExist(int VehicleID)
         {
             try

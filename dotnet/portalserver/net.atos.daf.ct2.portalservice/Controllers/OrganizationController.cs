@@ -799,7 +799,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 logger.LogInformation("Organization GetAllOrganizations function called ");
-                
+                if (objOrganizationByID.RoleId == 0)
+                {
+                    var request = Request;
+                    var Headers = request.Headers;
+                    objOrganizationByID.RoleId = Convert.ToInt32(Headers["roleid"]);
+                }
                 var data = await organizationClient.GetAllOrganizationsAsync(objOrganizationByID);
                 return Ok(data);
             }
