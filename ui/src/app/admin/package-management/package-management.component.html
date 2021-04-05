@@ -21,6 +21,7 @@
             <span matPrefix><mat-icon>search</mat-icon></span>
         </mat-form-field>
     </div>
+    <app-common-export *ngIf="exportFlag" (exportValues)="getexportedValues($event)" [initData]='initData' [translationData]='translationData'></app-common-export>
     <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
         <button mat-flat-button color="primary" (click)="createNewPackage()">
         <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewPackage || 'New Package' }}
@@ -30,6 +31,24 @@
 <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
 <div *ngIf='initData.length > 0'>
   <mat-table [dataSource]="dataSource" class="table-items" matSort>
+    <!-- <ng-container matColumnDef="select">
+      <mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)='$event ? masterToggleForPackage() : null'
+          [checked]='selectedPackages.hasValue() && isAllSelectedForPackege()'
+          [indeterminate]='selectedPackages.hasValue() && !isAllSelectedForPackege()'
+          [aria-label]='checkboxLabelForPackage()'>
+        </mat-checkbox>
+        <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
+        <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+        <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
+        <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedPackages.toggle(row) : null'
+          [checked]='selectedPackages.isSelected(row)' [aria-label]='checkboxLabelForPackage(row)'>
+        </mat-checkbox>
+      </mat-cell>
+    </ng-container> -->
     <ng-container matColumnDef="code">
       <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPackageCode || 'Package Code' }}</mat-header-cell>
       <mat-cell *matCellDef="let row">
