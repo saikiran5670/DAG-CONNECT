@@ -21,8 +21,8 @@
             <span matPrefix><mat-icon>search</mat-icon></span>
         </mat-form-field>
     </div>
-    <app-common-import (showImportCSV)="updateImportView()"></app-common-import>
-    <app-common-export *ngIf="exportFlag" (exportValues)="getexportedValues($event)" [initData]='initData' [translationData]='translationData'></app-common-export>
+    <!-- <app-common-import (showImportCSV)="updateImportView()"></app-common-import>
+    <app-common-export *ngIf="exportFlag" (exportValues)="getexportedValues($event)" [initData]='initData' [translationData]='translationData'></app-common-export> -->
     <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
         <button mat-flat-button color="primary" (click)="createNewPackage()">
         <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewPackage || 'New Package' }}
