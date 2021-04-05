@@ -92,7 +92,7 @@
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
-                <div class='areaWidth min-width-10-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
+                <div class='areaWidth min-width-20-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
                     <mat-label>
                         <span>{{ translationData.lblType || 'Select Type' }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
                     </mat-label>                    
@@ -112,11 +112,11 @@
                         <span style='font-weight: 500!important;'>{{ selectedElementData.type }}</span>
                     </div>
                 </div> 
-                <div class='areaWidth min-width-10-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
+                <div class='areaWidth min-width-60-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
                     <mat-label>
                         {{ translationData.lblStatus|| 'Select Status' }}
                     </mat-label>
-                    <div *ngIf="actionType != 'view'" class='margin-top-10'>
+                    <div *ngIf="actionType != 'view'" class='margin-top-5'>
                         <mat-radio-group (change)='onStatusChange($event)' >
                             <mat-radio-button [checked]="selectedStatus ===  'Active' ? true : false" style='margin-right: 20px;' value="Active">{{ translationData.lblActive || 'Active' }}
                             </mat-radio-button>

@@ -6,6 +6,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { SelectionModel } from '@angular/cdk/collections';
 import { PackageService } from 'src/app/services/package.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -23,7 +24,9 @@ export class PackageManagementComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   titleVisible : boolean = false;
+  exportFlag = true;
   packageCreatedMsg : any = '';
+  selectedPackages = new SelectionModel(true, []);
   createEditViewPackageFlag: boolean = false;
   translationData: any;
   dataSource: any;
@@ -234,6 +237,28 @@ export class PackageManagementComponent implements OnInit {
     this.titleVisible = false;
   }
 
+  masterToggleForPackage() {
+    this.isAllSelectedForPackege()
+      ? this.selectedPackages.clear()
+      : this.dataSource.data.forEach((row) =>
+        this.selectedPackages.select(row)
+      );
+  }
+
+  isAllSelectedForPackege() {
+    const numSelected = this.selectedPackages.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForPackage(row?: any): string {
+    if (row)
+      return `${this.isAllSelectedForPackege() ? 'select' : 'deselect'} all`;
+    else
+      return `${this.selectedPackages.isSelected(row) ? 'deselect' : 'select'
+        } row`;
+  }
+
   checkCreationForPackage(item: any){
     // this.createEditViewPackageFlag = !this.createEditViewPackageFlag;
     this.createEditViewPackageFlag = item.stepFlag;
@@ -254,5 +279,10 @@ export class PackageManagementComponent implements OnInit {
   updateImportView(_event){
     this.importClicked = _event;
     console.log(_event)
+  }
+  getexportedValues(dataSource){
+    this.dataSource = dataSource;
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 }
