@@ -28,3 +28,7 @@ output.logstash:
 processors:
   - drop_fields:
       fields: ["agent", "log", "input", "ecs" ]
+
+# ================================== Logging ===================================
+
+logging.level: warning
