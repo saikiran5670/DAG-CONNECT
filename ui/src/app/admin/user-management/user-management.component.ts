@@ -99,8 +99,8 @@ export class UserManagementComponent implements OnInit {
       lblSelectedVehicleGroupsVehicles: "Selected Vehicle Groups/Vehicles",
       lblNew: "New",
       lblDeleteAccount: "Delete Account",
-      lblNo: "No",
-      lblYes: "Yes",
+      //lblCancel: "Cancel",
+      lblDelete: "Delete",
       lblBack: "Back",
       lblConfirm: "Confirm",
       lblAlldetailsaremandatory: "All details are mandatory",
@@ -191,8 +191,8 @@ export class UserManagementComponent implements OnInit {
     const options = {
       title: this.translationData.lblDeleteAccount || "Delete Account",
       message: this.translationData.lblAreyousureyouwanttodeleteuseraccount || "Are you sure you want to delete '$' user account?",
-      cancelText: this.translationData.lblNo || "No",
-      confirmText: this.translationData.lblYes || "Yes"
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: this.translationData.lblDelete || "Delete"
     };
     this.OpenDialog(options, 'delete', item);
   }
