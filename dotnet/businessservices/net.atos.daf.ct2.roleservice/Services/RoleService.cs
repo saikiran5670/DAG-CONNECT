@@ -86,6 +86,7 @@ namespace net.atos.daf.ct2.roleservice
                 roleMaster.Name = request.RoleName;
                 roleMaster.Id = request.RoleID;
                 roleMaster.Updatedby = request.UpdatedBy;
+                roleMaster.Description = request.Description;
                 roleMaster.FeatureSet = new FeatureSet();
                 //ObjRole.FeatureSet = new FeatureSet();
                 roleMaster.FeatureSet.Features = new List<Feature>();
