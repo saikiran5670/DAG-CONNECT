@@ -56,7 +56,12 @@ namespace net.atos.daf.ct2.organizationservice
 
                 net.atos.daf.ct2.organization.entity.OrganizationByID objOrganizationEntity = new organization.entity.OrganizationByID();
                 objOrganizationEntity.id = request.Id;
+                objOrganizationEntity.roleId = request.RoleId;
                 var data = await organizationtmanager.Get(objOrganizationEntity);
+                if (data == null)
+                {
+                    return null;
+                }
                 foreach (var item in data)
                 {
                     OrganizationprimaryFieldsResponse objOrganizationprimaryFieldsResponse = new OrganizationprimaryFieldsResponse();

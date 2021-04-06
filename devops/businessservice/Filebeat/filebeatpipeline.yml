@@ -36,6 +36,23 @@ variables:
   - group: ACC03-Build-Variables
   
 steps:
+- task: replacetokens@3
+  inputs:
+    targetFiles: 'devops/businessservice/Filebeat/filebeat.yml'
+    encoding: 'auto'
+    writeBOM: true
+    actionOnMissing: 'warn'
+    keepToken: false
+    tokenPrefix: '#{'
+    tokenSuffix: '}#'
+    useLegacyPattern: false
+    enableTelemetry: true
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      cat devops/businessservice/Filebeat/filebeat.yml
+
 - task: Docker@0
   displayName: 'Build an image'
   inputs:

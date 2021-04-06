@@ -362,7 +362,7 @@
                       <mat-header-cell *matHeaderCellDef>{{ translationData.Services || 'Services' }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">  
                         <span *ngIf='row.featureIds.length > 0'>
-                          <span *ngFor='let item of [].constructor(row.featureIds.length); let i = index'>
+                          <span *ngFor='let item of [].constructor(row.featureIds.length > 4 ? 4 : row.featureIds.length); let i = index'>
                             <img title="{{ i > 7 ? servicesIcon[0] : servicesIcon[i] }}" src="assets/images/icons/services/{{ i > 7 ? servicesIcon[0] : servicesIcon[i] }}.svg" style="width: 20px; height: 20px;"/>&nbsp;
                           </span>
                         </span>

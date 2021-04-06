@@ -39,12 +39,14 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   featuresSelected = [];
   featuresData = [];
   organizationId: number;
-  levels= [10, 20, 30];
-  codes= ['Code 1', 'Code 2', 'Code 3'];
+  // levels= [10, 20, 30];
+  // codes= ['Code 1', 'Code 2', 'Code 3'];
   titleText: string;
   rowsData: any;
   editFlag: boolean = false;
   editFromRelationship: boolean = false;
+  levelList: any = [];
+  codeList: any =[];
 
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService, private organizationService: OrganizationService, private router: Router) { }
 
@@ -63,7 +65,10 @@ export class CreateViewEditRelationshipComponent implements OnInit {
       organization_Id: this.organizationId
     }
 
+    this.organizationService.getLevelcode().subscribe((obj: any)=>{
     this.roleService.getFeatures(objData).subscribe((data) => {
+      this.levelList = obj["levels"];
+      this.codeList = obj["codes"];
       setTimeout(()=>{
         this.dataSource = new MatTableDataSource(data);
         this.dataSource.paginator = this.paginator;
@@ -73,6 +78,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
         }
       });
       this.featuresData = data;
+    });
     }, (error) => { });
 
     this.doneFlag = this.createStatus ? false : true;
@@ -177,6 +183,8 @@ export class CreateViewEditRelationshipComponent implements OnInit {
           featuresetId: 0,
           name : this.relationshipFormGroup.controls.relationshipName.value,
           description:this.relationshipFormGroup.controls.relationshipDescription.value,
+          // level: this.relationshipFormGroup.controls.level.value,
+          // code: this.relationshipFormGroup.controls.code.value,
           level: this.relationshipFormGroup.controls.level.value,
           code: this.relationshipFormGroup.controls.code.value,
           id: 0,
