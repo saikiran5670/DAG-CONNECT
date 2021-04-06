@@ -70,7 +70,17 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                             {
                                 return StatusCode(400, string.Empty);
                             }
+
+                            if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Model != null)
+                            {
+                                if (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Model.ID))
+                                {
+                                    return StatusCode(400, string.Empty);
+                                }
+                            }
                         }
+
+                        
 
                         if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure != null)
                         {

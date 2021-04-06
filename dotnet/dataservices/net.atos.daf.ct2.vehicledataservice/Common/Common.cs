@@ -28,9 +28,9 @@ namespace net.atos.daf.ct2.vehicledataservice.Common
         public static bool IsValidDate(string dateTime)
         {
 
-            string dateformat = "yyyy-mm-dd";
+            string dateformat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss";
             DateTime parsedatetime;            
-                bool validDate = (DateTime.TryParseExact(Convert.ToString(dateTime), dateformat, CultureInfo.InvariantCulture,DateTimeStyles.None, out parsedatetime));
+                bool validDate = (DateTime.TryParseExact(Convert.ToString(dateTime), dateformat, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedatetime));
             if (validDate)
                 return true;
             else
