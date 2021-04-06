@@ -57,7 +57,8 @@ export class RelationshipManagementComponent implements OnInit {
    
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
-    if(this.organizationId == 1 || this.organizationId == 2)
+    // if(this.organizationId == 1 || this.organizationId == 2)
+    if(this.userType == 'Admin#Platform' || this.userType == 'Admin#Global')
     {
       this.relationshipDisplayedColumns = ['name', 'features', 'level', 'code', 'description', 'action'];
     }
@@ -97,7 +98,7 @@ export class RelationshipManagementComponent implements OnInit {
       this.hideloader();
       if(data){
         this.initData = data["relationshipList"];
-        this.initData = this.getNewTagData(this.initData)
+        // this.initData = this.getNewTagData(this.initData)
        this.updateDataSource(this.initData);
       }
     }, 
@@ -111,7 +112,7 @@ export class RelationshipManagementComponent implements OnInit {
   updateDataSource(tableData: any){
     this.initData = this.getNewTagData(tableData);
     this.initData.map(obj =>{   //temporary
-      obj.level = obj.level === 10? 'PlatformAdmin': obj.level=== 20 ? 'GlobalAdmin': obj.level=== 30 ? 'OrgAdmin' :obj.level=== 40? 'Account' : '';
+      obj.levelVal = obj.level === 10? 'PlatformAdmin': obj.level=== 20 ? 'GlobalAdmin': obj.level=== 30 ? 'OrgAdmin' :obj.level=== 40? 'Account' : '';
     })
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(()=>{
