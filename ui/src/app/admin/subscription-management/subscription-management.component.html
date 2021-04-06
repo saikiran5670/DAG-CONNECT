@@ -94,7 +94,8 @@
                   <!-- <button mat-stroked-button color="primary" class='actionBtn' *ngIf="row.status == 'Expired' ? true : false ">
                      shop
                   </button>  -->
-                  <button type="button" class="btn btn-outline-primary btn-sm" *ngIf="row.isActive ? false : true " [disabled]="!adminAccessType.adminReadOnlyAccess"><span>{{row.isActive ? '-' : 'Shop'}}</span></button>           
+                  <span *ngIf = "row.isActive">-</span>
+                  <button type="button" class="btn btn-outline-primary btn-sm" *ngIf="row.isActive ? false : true " [disabled]="!adminAccessType.adminReadOnlyAccess">Shop</button>           
                </mat-cell>
               </ng-container>
               <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
