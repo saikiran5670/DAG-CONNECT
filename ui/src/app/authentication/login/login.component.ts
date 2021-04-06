@@ -58,6 +58,8 @@ export class LoginComponent implements OnInit {
 
     if (this.loginForm.valid) {
       //console.log("values:: ", values)
+      if(this.loginClicks == 0){
+        this.loginClicks = 1;
        this.authService.signIn(this.loginForm.value).subscribe((data:any) => {
          //console.log("data:: ", data)
          if(data.status === 200){
@@ -72,7 +74,7 @@ export class LoginComponent implements OnInit {
               name: "",
               accountGroupId: 0
             }
-            if(this.loginClicks == 0){
+            
               this.accountService.getAccount(loginObj).subscribe(resp => {
                 if(resp[0].preferenceId != 0){
                   this.accountService.getAccountPreference(resp[0].preferenceId).subscribe(accPref => {
@@ -83,18 +85,20 @@ export class LoginComponent implements OnInit {
                   this.showOrganizationRolePopup(data.body, resp[0], "");  
                 } 
               }, (error) => {});
-            }
-            this.loginClicks = 1;
          }
          else if(data.status === 401){
           this.invalidUserMsg = true;
+          this.loginClicks = 0;
         }
+        
        },
        (error)=> {
+         this.loginClicks = 0;
           console.log("Error: " + error);
           this.invalidUserMsg = true;
           //this.cookiesFlag = false;
         })
+      }
 
        //--------- For Mock------//
       //  if(this.loginForm.value.username === 'testuser@atos.net' && this.loginForm.value.password === '123456'){
