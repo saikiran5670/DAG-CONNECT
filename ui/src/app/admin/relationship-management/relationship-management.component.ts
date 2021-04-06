@@ -173,8 +173,8 @@ export class RelationshipManagementComponent implements OnInit {
     const options = {
       title: this.translationData.lblDelete || 'Delete',
       message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Are you sure you want to delete '$' relationship?",
-      cancelText: this.translationData.lblNo || 'No',
-      confirmText: this.translationData.lblYes || 'Yes'
+      cancelText: this.translationData.lblCancel || 'Cancel',
+      confirmText: this.translationData.lblDelete || 'Delete'
     };
     let name = row.name;
     this.dialogService.DeleteModelOpen(options, name);

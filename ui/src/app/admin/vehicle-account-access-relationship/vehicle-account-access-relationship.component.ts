@@ -179,8 +179,8 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     const options = {
       title: this.translationData.lblDelete || "Delete",
       message: this.translationData.lblAreyousureyouwanttodeleteAssociationRelationship || "Are you sure you want to delete '$' Association Relationship?",
-      cancelText: this.translationData.lblNo || "No",
-      confirmText: this.translationData.lblYes || "Yes"
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: this.translationData.lblDelete || "Delete"
     };
     this.dialogService.DeleteModelOpen(options, element.name);
     this.dialogService.confirmedDel().subscribe((res) => {

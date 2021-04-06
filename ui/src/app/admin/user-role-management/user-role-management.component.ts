@@ -48,8 +48,8 @@ export class UserRoleManagementComponent implements OnInit {
       lblSearch: "Search",
       lblReset: "Reset",
       lblConfirm: "Confirm",
-      lblNo: "No",
-      lblYes: "Yes",
+      //lblCancel: "Cancel",
+      lblDelete: "Delete",
       lblBack: "Back",
       lblAction: "Action",
       lblUserRoleManagement: "User Role Management",
@@ -184,8 +184,8 @@ export class UserRoleManagementComponent implements OnInit {
     const options = {
       title: this.translationData.lblDeleteRole || 'Delete Role',
       message: this.translationData.lblAreyousureyouwanttodeleterole || "Are you sure you want to delete '$' role?",
-      cancelText: this.translationData.lblNo || 'No',
-      confirmText: this.translationData.lblYes || 'Yes'
+      cancelText: this.translationData.lblCancel || 'Cancel',
+      confirmText: this.translationData.lblDelete || 'Delete'
     };
     let name = row.roleName;
     this.dialogService.DeleteModelOpen(options, name);
@@ -202,8 +202,8 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   getDeletMsg(roleName: any){
-    if(this.translationData.lblUseraccountwassuccessfullydeleted)
-      return this.translationData.lblUseraccountwassuccessfullydeleted.replace('$', roleName);
+    if(this.translationData.lblUserRoleDelete)
+      return this.translationData.lblUserRoleDelete.replace('$', roleName);
     else
       return ("User role '$' was successfully deleted").replace('$', roleName);
   }

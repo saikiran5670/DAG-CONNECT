@@ -539,8 +539,8 @@ export class DriverManagementComponent implements OnInit {
     const options = {
       title: this.translationData.lblDeleteDriver || "Delete Driver",
       message: this.translationData.lblAreyousureyouwanttodeletedriver || "Are you sure you want to delete driver '$'? ",
-      cancelText: this.translationData.lblNo || "No",
-      confirmText: this.translationData.lblYes || "Yes"
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: this.translationData.lblDelete || "Delete"
     };
    
     let name = `${row.firstName} ${row.lastName}`;

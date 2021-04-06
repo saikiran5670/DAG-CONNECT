@@ -72,13 +72,13 @@ export class SubscriptionService {
       .pipe(catchError(this.handleError));
   }
 
-  getOrganizations(): Observable<any[]> {
+  getOrganizations(data): Observable<any[]> {
     let headerObj = this.generateHeader();
-    const headers = {
-      headers: new HttpHeaders({ headerObj }),
-    };
+    const headers = new HttpHeaders({ headerObj });
+    
+    const options =  { params: new HttpParams(data), headers: headers };
     return this.httpClient
-      .get<any[]>(`${this.organizationUrl}/getallorganizations`,headers)
+      .get<any[]>(`${this.organizationUrl}/getallorganizations?id=${data.id}&roleid=${data.roleid}`,options)
       .pipe(catchError(this.handleError));
   }
 
