@@ -223,14 +223,14 @@ export class SubscriptionManagementComponent implements OnInit {
    }
   
    applyFilterOnStatus(data: any, status: any){
-      this.subscriptionService.getSubscriptionByStatus(this.changedOrgId ? this.changedOrgId : this.orgID, status).subscribe((data : any) => {
+      this.subscriptionService.getSubscriptionByStatus(this.changedOrgId ? this.changedOrgId : this.accountOrganizationId, status).subscribe((data : any) => {
       this.initData = data["subscriptionList"];
       this.updatedTableData(this.initData);
     });
   }
 
   applyFilterOnType(data: any, type: any){
-    this.subscriptionService.getSubscriptionByType(this.changedOrgId ? this.changedOrgId : this.orgID, type).subscribe((data : any) => {
+    this.subscriptionService.getSubscriptionByType(this.changedOrgId ? this.changedOrgId : this.accountOrganizationId, type).subscribe((data : any) => {
       this.initData = data["subscriptionList"];
       this.updatedTableData(this.initData);
     });
