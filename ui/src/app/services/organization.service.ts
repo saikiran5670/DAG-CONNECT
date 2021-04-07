@@ -36,6 +36,16 @@ export class OrganizationService {
     return getHeaderObj;
   }
   
+  getOrganizationPreference(id: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.organizationServiceUrl}/preference/get?organizationId=${id}`,headers)
+      .pipe(catchError(this.handleError));
+  }
+
   getOrganizationDetails(id: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {

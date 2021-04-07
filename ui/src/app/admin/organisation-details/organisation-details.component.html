@@ -1,9 +1,305 @@
 <div class="bgtrans">
-    <mat-card class='margin-top-lg border-none bg-none no-padding full-width margin-top-40 mat-elevation-z' fxLayout="column" fxLayoutAlign="start start">
-    <mat-card-content class="full-width">
-      <div fxLayout="row" fxLayoutAlign="space-around" fxLayoutGap="25px">
-        <p style="color: darkgray; font-size: 2em">This screen is part of services feature</p>
-      </div>
-    </mat-card-content>
-  </mat-card>
+    <div *ngIf='titleVisible' fxLayout="row" fxLayoutAlign="center center"
+        style='padding:10px; color:#fff; background: #5dc24e;'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+            {{ OrgDetailsMsg }}
+        </div>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+            <mat-icon (click)='onCloseMsg()' style='cursor: pointer;'>close</mat-icon>
+        </div>
+    </div>
+    <mat-card class='mat-elevation-z'>
+        <mat-card-content>
+
+            <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Organisation Details
+                    </span>
+                </div>
+            </div>
+            <div *ngIf="organisationData">
+                <div fxLayout="row" class="full-width margin-bottom-xlg">
+                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label><span>{{ translationData.lblID || 'ID' }}</span></mat-label>
+                        <div>
+                            <span style='font-weight: 500!important;'>{{organisationData.organizationId}}</span>
+                        </div>
+                    </div>
+                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label style='display: flex;'>
+                            <span>{{ translationData.lblPackageName || 'Package Name' }}</span>
+                        </mat-label>
+                        <div>
+                            <span style='font-weight: 500!important;'>{{organisationData.name}}</span>
+                        </div>
+                    </div>
+                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label style='display: flex; place-content: space-between;'>
+                            <span class="text-truncate">{{ translationData.lblDescription || 'Description' }}</span>
+                        </mat-label>
+                        <div>
+                            <span style='font-weight: 500!important;'>{{organisationData.description}}.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div fxLayout="row" class="full-width margin-bottom-xlg">
+                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label><span>{{ translationData.lblStreetName || 'Street Name' }}</span></mat-label>
+                        <div>
+                            <span style='font-weight: 500!important;'>{{organisationData.addressStreet}}</span>
+                        </div>
+                    </div>
+                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label style='display: flex;'>
+                            <span>{{ translationData.lblStreetNumber || 'Street Number' }}</span>
+                        </mat-label>
+                        <div>
+                            <span style='font-weight: 500!important;'>{{organisationData.addressStreetNumber}}</span>
+                        </div>
+                    </div>
+                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label style='display: flex; place-content: space-between;'>
+                            <span>{{ translationData.lblPostalCode || 'Postal Code' }}</span>
+                        </mat-label>
+                        <div>
+                            <span style='font-weight: 500!important;'>{{organisationData.postalCode}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div fxLayout="row" class="full-width margin-bottom-xlg">
+                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label><span>{{ translationData.lblCity || 'City' }}</span></mat-label>
+                        <div>
+                            <span style='font-weight: 500!important;'>{{organisationData.city}}</span>
+                        </div>
+                    </div>
+                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label style='display: flex;'>
+                            <span>{{ translationData.lblCountry || 'Country' }}</span>
+                        </mat-label>
+                        <div>
+                            <span style='font-weight: 500!important;'>{{organisationData.country}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style='padding: 20px; position: relative;'>
+                <mat-divider></mat-divider>
+            </div>
+            <div *ngIf="organisationPreferenceData">
+                <form [formGroup]="orgDetailsPreferenceForm">
+                    <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+                        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+                            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Preferences Settings
+                                <mat-icon (click)="onPreferenceEdit()" style="cursor: pointer;">edit</mat-icon>
+                            </span>
+                        </div>
+                    </div>
+                    <!-- <div *ngFor="let orgPreferenceData of organisationPreferenceData.organizationPreference"> -->
+                    <div>
+                        <div fxLayout="row" class="full-width margin-bottom-xlg">
+                            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                <mat-label><span>{{ translationData.lblLanguage || 'Language' }}</span></mat-label>
+                                <div *ngIf="!editPrefereneceFlag">
+                                    <span style='font-weight: 500!important;'>{{organisationPreferenceData.language}}</span>
+                                </div>
+                                <div *ngIf="editPrefereneceFlag">
+                                    <mat-form-field appearance="outline" class="full-width">
+                                        <mat-select (selectionChange)="languageChange($event)"
+                                            placeholder="{{ translationData.lblLanguageENGB || 'English GB' }}"
+                                            formControlName="language" required>
+                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
+                          {{ rer.name }}
+                        </mat-option> -->
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-error *ngIf="orgDetailsPreferenceForm.get('language').hasError('required')">
+                                        {{ translationData.lblPleasechooselanguageType || 'Please choose language type'
+                                        }}
+                                    </mat-error>
+                                </div>
+                            </div>
+                            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                <mat-label style='display: flex;'>
+                                    <span>{{ translationData.lblTimeZone || 'Time Zone' }}</span>
+                                </mat-label>
+                                <div *ngIf="!editPrefereneceFlag">
+                                    <span class="text-align" style='font-weight: 500!important;'>{{organisationPreferenceData.timezone}}</span>
+                                </div>
+                                <div *ngIf="editPrefereneceFlag">
+                                    <mat-form-field appearance="outline" class="full-width">
+                                        <mat-select (selectionChange)="languageChange($event)"
+                                            placeholder="{{ translationData.lblTimeZone || 'Time Zone' }}"
+                                            formControlName="timeZone" required>
+                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
+                          {{ rer.name }}
+                        </mat-option> -->
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-error *ngIf="orgDetailsPreferenceForm.get('timeZone').hasError('required')">
+                                        {{ translationData.lblPleasechooseTimeZoneType || 'Please choose Time Zone type'
+                                        }}
+                                    </mat-error>
+                                </div>
+                            </div>
+                            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                <mat-label style='display: flex; place-content: space-between;'>
+                                    <span class="text-truncate">{{ translationData.lblUnit || 'Unit' }}</span>
+                                </mat-label>
+                                <div *ngIf="!editPrefereneceFlag">
+                                    <span style='font-weight: 500!important;'>{{organisationPreferenceData.unit}}</span>
+                                </div>
+                                <div *ngIf="editPrefereneceFlag">
+                                    <mat-form-field appearance="outline" class="full-width">
+                                        <mat-select (selectionChange)="languageChange($event)"
+                                            placeholder="{{ translationData.lblUnit || 'Unit' }}" formControlName="unit"
+                                            required>
+                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
+                          {{ rer.name }}
+                        </mat-option> -->
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-error *ngIf="orgDetailsPreferenceForm.get('unit').hasError('required')">
+                                        {{ translationData.lblPleasechooseUnit || 'Please choose Unit type' }}
+                                    </mat-error>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" class="full-width margin-bottom-xlg">
+                            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                <mat-label><span>{{ translationData.lblCurrency || 'Currency' }}</span></mat-label>
+                                <div *ngIf="!editPrefereneceFlag">
+                                    <span style='font-weight: 500!important;'>{{organisationPreferenceData.currency}}</span>
+                                </div>
+                                <div *ngIf="editPrefereneceFlag">
+                                    <mat-form-field appearance="outline" class="full-width">
+                                        <mat-select (selectionChange)="languageChange($event)"
+                                            placeholder="{{ translationData.lblCurrency || 'Currency' }}"
+                                            formControlName="currency" required>
+                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
+                          {{ rer.name }}
+                        </mat-option> -->
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-error *ngIf="orgDetailsPreferenceForm.get('currency').hasError('required')">
+                                        {{ translationData.lblPleasechooseCurrency|| 'Please choose Currency type' }}
+                                    </mat-error>
+                                </div>
+                            </div>
+
+                            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                <mat-label style='display: flex; place-content: space-between;'>
+                                    <span>{{ translationData.lblDateFormat || 'DateFormat' }}</span>
+                                </mat-label>
+                                <div *ngIf="!editPrefereneceFlag">
+                                    <span style='font-weight: 500!important;'>{{organisationPreferenceData.dateFormat}}</span>
+                                </div>
+                                <div *ngIf="editPrefereneceFlag">
+                                    <mat-form-field appearance="outline" class="full-width">
+                                        <mat-select (selectionChange)="languageChange($event)"
+                                            placeholder="{{ translationData.lblDateFormat || 'DateFormat' }}"
+                                            formControlName="dateFormat" required>
+                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
+                          {{ rer.name }}
+                        </mat-option> -->
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-error *ngIf="orgDetailsPreferenceForm.get('dateFormat').hasError('required')">
+                                        {{ translationData.lblPleasechooseDateFormat|| 'Please choose Date Format type'
+                                        }}
+                                    </mat-error>
+                                </div>
+                            </div>
+                            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                <mat-label style='display: flex; place-content: space-between;'>
+                                    <span>{{ translationData.lblTimeFormat || 'Time Format' }}</span>
+                                </mat-label>
+                                <div *ngIf="!editPrefereneceFlag">
+                                    <span style='font-weight: 500!important;'>{{organisationPreferenceData.timeFormat}}</span>
+                                </div>
+                                <div *ngIf="editPrefereneceFlag">
+                                    <mat-form-field appearance="outline" class="full-width">
+                                        <mat-select (selectionChange)="languageChange($event)"
+                                            placeholder="{{ translationData.lblTimeFormat || 'Time Format' }}"
+                                            formControlName="timeformat" required>
+                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
+                          {{ rer.name }}
+                        </mat-option> -->
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-error *ngIf="orgDetailsPreferenceForm.get('timeformat').hasError('required')">
+                                        {{ translationData.lblPleasechooseTimeFormat|| 'Please choose Time Format type'
+                                        }}
+                                    </mat-error>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" class="full-width margin-bottom-xlg">
+                            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                <mat-label><span>{{ translationData.lblVehicleDefaultStatus || 'Vehicle Default Status'
+                                        }}</span></mat-label>
+                                <div *ngIf="!editPrefereneceFlag">
+                                    <span style='font-weight: 500!important;'>{{organisationPreferenceData.vehicleDefaultStatus}}</span>
+                                </div>
+                                <div *ngIf="editPrefereneceFlag">
+                                    <mat-form-field appearance="outline" class="full-width">
+                                        <mat-select (selectionChange)="languageChange($event)" placeholder="{{ translationData.lblVehicleDefaultStatus || 'Vehicle Default Status'
+                                }}" formControlName="vehicleDefaultStatus" required>
+                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
+                          {{ rer.name }}
+                        </mat-option> -->
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-error
+                                        *ngIf="orgDetailsPreferenceForm.get('vehicleDefaultStatus').hasError('required')">
+                                        {{ translationData.lblPleasechoosevehicleStatus || 'Please choose Vehicle
+                                        Default Status type' }}
+                                    </mat-error>
+                                </div>
+                            </div>
+                            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                <mat-label style='display: flex;'>
+                                    <span>{{ translationData.lblDriverDefaultStatus || 'Driver Default Status' }}</span>
+                                </mat-label>
+                                <div *ngIf="!editPrefereneceFlag">
+                                    <span style='font-weight: 500!important;'>{{organisationPreferenceData.driverDefaultStatus}}</span>
+                                </div>
+                                <div *ngIf="editPrefereneceFlag">
+                                    <mat-form-field appearance="outline" class="full-width">
+                                        <mat-select (selectionChange)="languageChange($event)" placeholder="{{ translationData.lblVehicleDefaultStatus || 'Vehicle Default Status'
+                                }}" formControlName="driverDefaultStatus" required>
+                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
+                          {{ rer.name }}
+                        </mat-option> -->
+                                        </mat-select>
+                                    </mat-form-field>
+                                    <mat-error
+                                        *ngIf="orgDetailsPreferenceForm.get('driverDefaultStatus').hasError('required')">
+                                        {{ translationData.lblPleasechooseDriverDefaultStatus || 'Please choose Driver
+                                        Default Status type' }}
+                                    </mat-error>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <mat-card-actions class='no-margin no-padding'>
+                        <div *ngIf="editPrefereneceFlag" fxLayout="column" fxLayoutAlign="center flex-end">
+                            <div fxLayout="row" class='areaWidth'>
+                                <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
+                                    (click)='onCancel()'>Cancel</button>
+                                <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button
+                                    color="primary" (click)='onReset()'>Reset</button>
+                                <button class='no-margin' [disabled]="!orgDetailsPreferenceForm.valid" mat-raised-button
+                                    color="primary" (click)='onCreateUpdate()'>Confirm</button>
+                            </div>
+                        </div>
+                    </mat-card-actions>
+                </form>
+            </div>
+        </mat-card-content>
+    </mat-card>
 </div>
