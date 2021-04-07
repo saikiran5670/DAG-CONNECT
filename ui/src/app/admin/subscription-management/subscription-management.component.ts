@@ -8,9 +8,8 @@ import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dail
 import { MatDialog, MatDialogConfig, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DataSource, SelectionModel } from '@angular/cdk/collections';
 import { SubscriptionService } from 'src/app/services/subscription.service';
-import { CompileIdentifierMetadata } from '@angular/compiler';
 import { UserDetailTableComponent } from '../../admin/user-management/new-user-step/user-detail-table/user-detail-table.component';
-import { table } from 'console';
+import { MatTableExporterDirective } from 'mat-table-exporter';
 
 @Component({
   selector: 'app-subscription-management',
@@ -30,6 +29,7 @@ export class SubscriptionManagementComponent implements OnInit {
   titleVisible : boolean = false;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   initData: any = [];
   vehicleData: any = [];
   accountOrganizationId: any = 0;
@@ -84,6 +84,10 @@ export class SubscriptionManagementComponent implements OnInit {
       lblSubscriptionRelationshipDetails: "Subscription Relationship Details",
       lblNoRecordFound: "No Record Found",
     }
+  }
+
+  ExportAsCSV(){
+      this.matTableExporter.exportTable('csv', {fileName:'Subscription_Data', sheet: 'sheet_name'});
   }
 
   setDate(date : any){

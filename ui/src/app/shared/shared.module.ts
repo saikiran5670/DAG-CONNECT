@@ -21,6 +21,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTableExporterModule } from 'mat-table-exporter';
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSliderModule } from '@angular/material/slider';
@@ -45,11 +46,10 @@ import { CustomPaginationComponent } from './custom-pagination/custom-pagination
 import { SpinnerComponent } from './spinner/spinner.component';
 import { ActiveInactiveDailogComponent } from './active-inactive-dailog/active-inactive-dailog.component';
 import { CommonImportComponent } from './common-import/common-import.component';
-import { CommonExportComponent } from './common-export/common-export.component';
 
 
 @NgModule({
-  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, CustomPaginationComponent, SpinnerComponent, ActiveInactiveDailogComponent, CommonExportComponent,CommonImportComponent],
+  declarations: [CommonFilterComponent, RemoveDuplicatesPipe, CustomPaginationComponent, SpinnerComponent, ActiveInactiveDailogComponent,CommonImportComponent],
   imports: [
     CommonModule,
     FlexLayoutModule,
@@ -91,7 +91,8 @@ import { CommonExportComponent } from './common-export/common-export.component';
     MatFormFieldModule,
     DragDropModule,
     MaterialFileInputModule,
-    NgxDropzoneModule
+    NgxDropzoneModule,
+    MatTableExporterModule
   ],
   entryComponents:[],
   exports: [
@@ -133,7 +134,6 @@ import { CommonExportComponent } from './common-export/common-export.component';
     DragDropModule,
     MaterialFileInputModule,
     CommonFilterComponent,
-    CommonExportComponent,
     RemoveDuplicatesPipe,
     SpinnerComponent,
     CommonImportComponent

@@ -10,6 +10,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { PackageService } from 'src/app/services/package.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { MatTableExporterDirective } from 'mat-table-exporter';
 
 @Component({
   selector: 'app-package-management',
@@ -24,6 +25,7 @@ export class PackageManagementComponent implements OnInit {
   features: any = [];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   titleVisible : boolean = false;
   exportFlag = true;
   packageCreatedMsg : any = '';
@@ -145,6 +147,10 @@ export class PackageManagementComponent implements OnInit {
     else{
       return data;
     }
+  }
+
+  ExportAsCSV(){
+    this.matTableExporter.exportTable('csv', {fileName:'Package_Data', sheet: 'sheet_name'});
   }
 
   createNewPackage(){

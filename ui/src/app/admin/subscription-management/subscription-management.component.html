@@ -45,10 +45,11 @@
           </mat-select>
         </mat-form-field>
       </div>
+      <button *ngIf='initData.length > 0' mat-button (click)="ExportAsCSV()">Export<mat-icon>file_upload</mat-icon></button>
     </div>
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
     <div *ngIf='initData.length > 0'>
-        <mat-table [dataSource]="dataSource" class="table-items" matSort>
+        <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
             <ng-container matColumnDef="subscriptionId">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOrderId || 'Order ID' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">

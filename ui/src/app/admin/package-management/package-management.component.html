@@ -21,13 +21,14 @@
             <span matPrefix><mat-icon>search</mat-icon></span>
         </mat-form-field>
     </div>
-    <router-outlet></router-outlet>
     <!-- <div>
       <button mat-flat-button (click)="importPackageCSV()">
         {{ translationData.lblImport || 'Import' }}<mat-icon>download</mat-icon> 
       </button>
     </div> -->
-    <!--<app-common-export *ngIf="exportFlag" (exportValues)="getexportedValues($event)" [initData]='initData' [translationData]='translationData'></app-common-export> -->
+    <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
+      <button *ngIf='initData.length > 0' mat-button (click)="ExportAsCSV()" >Export<mat-icon>file_upload</mat-icon></button>
+    </div>
     <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
         <button mat-flat-button color="primary" (click)="createNewPackage()">
         <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewPackage || 'New Package' }}
@@ -36,7 +37,7 @@
 </div>
 <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
 <div *ngIf='initData.length > 0'>
-  <mat-table [dataSource]="dataSource" class="table-items" matSort>
+  <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
     <!-- <ng-container matColumnDef="select">
       <mat-header-cell *matHeaderCellDef>
         <mat-checkbox (change)='$event ? masterToggleForPackage() : null'
