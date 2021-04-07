@@ -43,8 +43,8 @@
                   <mat-label class='custom-font'>{{ accountInfoData.emailId ? accountInfoData.emailId : '--' }}</mat-label>
                 </div>
                 <div *ngIf='privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblUserType || 'User Type' }}</mat-label>
-                  <mat-label class='custom-font'>{{ accountInfoData.type ? (accountInfoData.type == 'P' ? (translationData.lblPortalUser || 'Portal User') : (translationData.lblSystemUser || 'System User')) : '--' }}</mat-label>
+                  <mat-label>{{ translationData.lblUserType || 'Account Type' }}</mat-label>
+                  <mat-label class='custom-font'>{{ accountInfoData.type ? (accountInfoData.type == 'P' ? (translationData.lblPortalUser || 'Portal Account') : (translationData.lblSystemUser || 'System Account')) : '--' }}</mat-label>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
@@ -160,9 +160,9 @@
                     </mat-error>
                   </div>
                   <div *ngIf='privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblUserType || 'User Type' }}<span class='mandatoryColor'>*</span></mat-label>
+                    <mat-label>{{ translationData.lblUserType || 'Account Type' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                      <mat-select placeholder="{{ translationData.lblUserType || 'User Type' }}" formControlName="userType">
+                      <mat-select placeholder="{{ translationData.lblUserType || 'Account Type' }}" formControlName="userType">
                         <mat-option *ngFor="let rer of userTypeList" [value]="rer.value">
                           {{ rer.name }}
                         </mat-option>
@@ -196,7 +196,7 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
             <div>
-              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting || 'User General Setting' }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }})</span></span>
+              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting || 'Account General Setting' }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }})</span></span>
               <!-- <button *ngIf="fromEdit == 'edit'" class='actionBtn' mat-flat-button  matTooltip="Edit">
                 <mat-icon *ngIf='!editGeneralSettingsFlag' style="cursor: pointer;" (click)="editGeneralSettings()">create</mat-icon>
               </button> -->
@@ -344,7 +344,7 @@
   <mat-card-content>
       <div fxLayout="row">
           <div class='full-width' [ngClass]="{'margin-bottom-sm': selectedRoleDataSource.filteredData.length > 0 }">
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectedUserRoles || 'Selected User Roles' }} -
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectedUserRoles || 'Selected Account Roles' }} -
                   ({{ selectedRoleDataSource.filteredData.length }})</span>    
                   <button *ngIf="fromEdit == 'edit'" (click)="editRoleData()" class='actionBtn' mat-flat-button  matTooltip="{{ translationData.lblEdit || 'Edit' }}">
                       <mat-icon>create</mat-icon>
@@ -355,7 +355,7 @@
           <div fxLayout="column" class='full-width'>
               <mat-table [dataSource]="selectedRoleDataSource" matSort>
                  <ng-container matColumnDef="roleName">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserRole || 'User Role' }}</mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserRole || 'Account Role' }}</mat-header-cell>
                       <mat-cell *matCellDef="let row"> {{ row.roleName }} </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="featureIds">
@@ -382,7 +382,7 @@
   <mat-card-content>
       <div fxLayout="row">
           <div class='full-width'  [ngClass]="{'margin-bottom-sm': selecteUserGrpDataSource.filteredData.length > 0 }">
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectedUserGroups || 'Selected User Groups' }} -
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectedUserGroups || 'Selected Account Groups' }} -
                   ({{ selecteUserGrpDataSource.filteredData.length }})</span>    
                   <button *ngIf="fromEdit == 'edit'" (click)="editUserGroupData()" class='actionBtn' mat-flat-button  matTooltip="{{ translationData.lblEdit || 'Edit' }}">
                       <mat-icon>create</mat-icon>
@@ -397,7 +397,7 @@
                       <mat-cell *matCellDef="let row">{{ row.accountGroupName }}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="accountCount">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Users' }}</mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Accounts' }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">
                         <span (click)="row.accountCount > 0 ? viewUserGrpDetails(row) : ''" [ngClass]="{'row-hover': row.accountCount > 0}">{{ row.accountCount }}</span>
                       </mat-cell>

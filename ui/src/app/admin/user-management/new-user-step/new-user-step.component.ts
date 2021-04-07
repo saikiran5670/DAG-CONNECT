@@ -129,11 +129,11 @@ export class NewUserStepComponent implements OnInit {
     });
     this.userTypeList = [
       {
-        name: this.translationData.lblPortalUser || 'Portal User',
+        name: this.translationData.lblPortalUser || 'Portal Account',
         value: 'P'
       },
       {
-        name: this.translationData.lblSystemUser || 'System User',
+        name: this.translationData.lblSystemUser || 'System Account',
         value: 'S'
       }
     ];
@@ -451,12 +451,12 @@ export class NewUserStepComponent implements OnInit {
       if(this.translationData.lblNewUserAccountCreatedSuccessfully)
         return this.translationData.lblNewUserAccountCreatedSuccessfully.replace('$', this.userName);
       else
-        return ("New User Account '$' Created Successfully").replace('$', this.userName);
+        return ("New Account '$' Created Successfully").replace('$', this.userName);
     }else{
       if(this.translationData.lblUserAccountUpdatedSuccessfully)
         return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', this.userName);
       else
-        return ("User Account '$' Updated Successfully").replace('$', this.userName);
+        return ("Account '$' Updated Successfully").replace('$', this.userName);
     }
   }
 
@@ -591,8 +591,8 @@ export class NewUserStepComponent implements OnInit {
     dialogConfig.data = {
       tableData: tableData,
       colsList: ['firstName','emailId','roles'],
-      colsName: [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'],
-      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers || 'Users'}`
+      colsName: [this.translationData.lblUserName || 'Account Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'Account Role'],
+      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers || 'Accounts'}`
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }

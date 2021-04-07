@@ -14,7 +14,7 @@
     </div>  
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserDetails || 'All User Details' }}</span>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserDetails || 'All Account Details' }}</span>
       </div>
     </div>
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
@@ -26,7 +26,7 @@
       </div>
       <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
         <button mat-flat-button color="primary" (click)="newUser()">
-          <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUser || 'New User' }}
+          <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUser || 'New Account' }}
         </button>
       </div>
     </div>
@@ -50,7 +50,7 @@
           <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}"><span class="text-truncate">{{ row.roles.length > 0 ? row.roleList : '&nbsp; &nbsp; -' }}</span></mat-cell>
         </ng-container>
         <ng-container matColumnDef="accountGroups">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserGroup || 'User Group' }}</mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserGroup || 'Account Group' }}</mat-header-cell>
           <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}"><span class="text-truncate">{{ row.accountGroups.length > 0 ? row.accountGroupList : '&nbsp; &nbsp; -' }}</span></mat-cell>
         </ng-container>
         <ng-container matColumnDef="action">

@@ -10,7 +10,7 @@
 <mat-horizontal-stepper [linear]="isLinear" labelPosition="bottom" #stepper>
   <mat-step [stepControl]="firstFormGroup">
     <form [formGroup]="firstFormGroup">
-      <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 1: {{ ( translationData.lblAddNewUser || 'Add New User') }}</ng-template>
+      <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 1: {{ ( translationData.lblAddNewUser || 'Add New Account') }}</ng-template>
       <mat-card class='mat-elevation-z margin-bottom-xlg'>
         <mat-card-content>
           <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
@@ -132,16 +132,16 @@
                   </mat-error>
                 </div>
                 <div *ngIf='privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblUserType || 'User Type' }}<span class='mandatoryColor'>*</span></mat-label>
+                  <mat-label>{{ translationData.lblUserType || 'Account Type' }}<span class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline" class="full-width">
-                    <mat-select placeholder="{{ translationData.lblUserType || 'User Type' }}" formControlName="userType">
+                    <mat-select placeholder="{{ translationData.lblUserType || 'Account Type' }}" formControlName="userType">
                       <mat-option *ngFor="let rer of userTypeList" [value]="rer.value">
                         {{ rer.name }}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
                   <!-- <mat-error *ngIf="firstFormGroup.get('userType').hasError('required')">
-                    {{ translationData.lblPleasechooseusertype || 'Please choose user type' }}
+                    {{ translationData.lblPleasechooseusertype || 'Please choose account type' }}
                   </mat-error> -->
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -159,7 +159,7 @@
           </div>
           <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
             <div fxLayout="column" fxLayoutAlign="start">
-              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting || 'User General Setting' }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }})</span></span>
+              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting || 'Account General Setting' }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }})</span></span>
             </div>
           </div>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
@@ -263,7 +263,7 @@
   </mat-step>
   <mat-step [stepControl]="secondFormGroup">
     <form [formGroup]="secondFormGroup">
-      <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 2: {{ translationData.lblSelectUserRole || 'Select User Role' }}</ng-template>
+      <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 2: {{ translationData.lblSelectUserRole || 'Select Account Role' }}</ng-template>
       <mat-card>
         <mat-card-content>
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
@@ -294,7 +294,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="roleName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserRole || 'User Role' }}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserRole || 'Account Role' }}</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.roleName }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="featureIds">
@@ -327,7 +327,7 @@
   </mat-step>
   <mat-step [stepControl]="thirdFormGroup">
     <form [formGroup]="thirdFormGroup">
-      <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 3: {{ translationData.lblSelectUserGroup || 'Select User Group' }}</ng-template>
+      <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 3: {{ translationData.lblSelectUserGroup || 'Select Account Group' }}</ng-template>
       <mat-card>
         <mat-card-content>
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
@@ -363,7 +363,7 @@
                   <mat-cell *matCellDef="let row">{{ row.accountGroupName }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="accountCount">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Users' }}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Accounts' }}</mat-header-cell>
                   <mat-cell *matCellDef="let row">
                     <span (click)="row.accountCount > 0 ? viewUserGrpDetails(row) : ''" [ngClass]="{'row-hover': row.accountCount > 0}">{{ row.accountCount }}</span>
                   </mat-cell>

@@ -30,7 +30,7 @@
                       <mat-label class='custom-font'>{{ confirmAccountInfoData.loginEmailData }}</mat-label>
                     </div>
                     <div *ngIf='privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                        <mat-label>{{ translationData.lblUserType || 'User Type' }}</mat-label>
+                        <mat-label>{{ translationData.lblUserType || 'Account Type' }}</mat-label>
                         <mat-label class='custom-font'>{{ confirmAccountInfoData.userTypeData }}</mat-label>
                     </div>
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -46,7 +46,7 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
             <div>
-                <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting || 'User General Setting' }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }})</span></span>
+                <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting || 'Account General Setting' }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }})</span></span>
             </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
@@ -94,7 +94,7 @@
     <mat-card-content>
         <div fxLayout="row">
             <div class='full-width' [ngClass]="{'margin-bottom-sm': selectedRoleDataSource.filteredData.length > 0 }">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectedUserRoles || 'Selected User Roles' }} -
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectedUserRoles || 'Selected Account Roles' }} -
                     ({{ selectedRoleDataSource.filteredData.length }})</span>    
             </div>
         </div>
@@ -102,7 +102,7 @@
             <div fxLayout="column" class='full-width'>
                 <mat-table [dataSource]="selectedRoleDataSource" matSort>
                    <ng-container matColumnDef="roleName">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserRole || 'User Role' }}</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserRole || 'Account Role' }}</mat-header-cell>
                         <mat-cell *matCellDef="let row">{{ row.roleName }}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="featureIds">
@@ -129,7 +129,7 @@
     <mat-card-content>
         <div fxLayout="row">
             <div class='full-width' [ngClass]="{'margin-bottom-sm': selecteUserGrpDataSource.filteredData.length > 0 }">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectedUserGroups || 'Selected User Groups' }} -
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectedUserGroups || 'Selected Account Groups' }} -
                     ({{ selecteUserGrpDataSource.filteredData.length }})</span>    
             </div>
         </div>
@@ -141,7 +141,7 @@
                         <mat-cell *matCellDef="let row">{{ row.accountGroupName }}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="accountCount">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Users' }}</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Accounts' }}</mat-header-cell>
                         <mat-cell *matCellDef="let row">{{ row.accountCount }}</mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumnsUserGrpConfirm"></mat-header-row>

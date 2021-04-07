@@ -190,7 +190,7 @@ export class UserManagementComponent implements OnInit {
   deleteUser(item: any) {
     const options = {
       title: this.translationData.lblDeleteAccount || "Delete Account",
-      message: this.translationData.lblAreyousureyouwanttodeleteuseraccount || "Are you sure you want to delete '$' user account?",
+      message: this.translationData.lblAreyousureyouwanttodeleteuseraccount || "Are you sure you want to delete '$' account?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
@@ -346,7 +346,7 @@ export class UserManagementComponent implements OnInit {
     if(this.translationData.lblUseraccountwassuccessfullydeleted)
       return this.translationData.lblUseraccountwassuccessfullydeleted.replace('$', userName);
     else
-      return ("User account '$' was successfully deleted").replace('$', userName);
+      return ("Account '$' was successfully deleted").replace('$', userName);
   }
 
   onClose(){
