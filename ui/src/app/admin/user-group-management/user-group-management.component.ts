@@ -93,11 +93,11 @@ export class UserGroupManagementComponent implements OnInit {
       lblSelectedVehicleGroupsVehicles: "Selected Vehicle Groups/Vehicles",
       lblBack: "Back",
       lblReset: "Reset",
-      lblNew: "New",
+      lblNew: "New", 
       lblDeleteGroup: "Delete Group",
       lblAreyousureyouwanttodeleteusergroup: "Are you sure you want to delete '$' user group?",
-      lblNo: "No",
-      lblYes: "Yes",
+      //lblCancel: "Cancel",
+      lblDelete: "Delete",
       lblUserGroupalreadyexists: "User Group already exists",
       lblPleaseenterUserGroupname: "Please enter User Group name",
       lblSpecialcharactersnotallowed: "Special characters not allowed",
@@ -154,8 +154,8 @@ export class UserGroupManagementComponent implements OnInit {
     const options = {
       title: this.translationData.lblDeleteGroup || "Delete Group",
       message: this.translationData.lblAreyousureyouwanttodeleteusergroup || "Are you sure you want to delete '$' user group?",
-      cancelText: this.translationData.lblNo || "No",
-      confirmText: this.translationData.lblYes || "Yes"
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: this.translationData.lblDelete || "Delete"
     };
     this.openDeleteDialog(options, item);
   }

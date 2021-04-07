@@ -32,15 +32,16 @@
                         }}</mat-label>
                 </div>
             </div>
-            <div *ngIf="organizationId == 1 || organizationId == 2" fxLayout="row" fxLayoutAlign="start"
+            <!-- <div *ngIf="organizationId == 1 || organizationId == 2" fxLayout="row" fxLayoutAlign="start"
+                class="full-width margin-bottom-sm" fxLayoutGap="50px"> -->
+                <div *ngIf="userType == 'Admin#Platform' || userType == 'Admin#Global'" fxLayout="row" fxLayoutAlign="start"
                 class="full-width margin-bottom-sm" fxLayoutGap="50px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblLevelOnlyForDAFPlatformAdmin || 'Level(Only for DAF/platform
-                        admin)' }}</mat-label>
-                    <mat-label class='custom-font'>{{ this.gridData[0].level }}</mat-label>
+                    <mat-label>{{ translationData.lblLevel || 'Level' }}</mat-label>
+                    <mat-label class='custom-font'>{{ this.gridData[0].levelVal }}</mat-label>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblCodeOnlyForDAFPlatformAdmin || 'Code(Only for DAF/platform admin)'
+                    <mat-label>{{ translationData.lblCode || 'Code'
                         }}</mat-label>
                     <mat-label class='custom-font'>{{ this.gridData[0].code }}</mat-label>
                 </div>
@@ -97,11 +98,14 @@
                     </mat-error>
                 </div>
             </div><br>
-            <div *ngIf="organizationId == 1 || organizationId == 2" fxLayout="row" fxLayoutAlign="start"
+            <!-- <div *ngIf="organizationId == 1 || organizationId == 2" fxLayout="row" fxLayoutAlign="start" -->
+                <!-- <div *ngIf="organizationId == 1 || organizationId == 2" fxLayout="row" fxLayoutAlign="start"
+                class="full-width" fxLayoutGap="50px"> -->
+                <div *ngIf="userType == 'Admin#Platform' || userType == 'Admin#Global'" fxLayout="row" fxLayoutAlign="start"
                 class="full-width" fxLayoutGap="50px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>
-                        {{ translationData.lblLevelOnlyForDAFPlatformAdmin || 'Level (Only for DAF/platform admin)'
+                        {{ translationData.lblLevel || 'Level'
                         }}<span class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
@@ -117,7 +121,7 @@
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>
-                        {{ translationData.lblCodeOnlyForDAFPlatformAdmin || 'Code(Only for DAF/platform admin)' }}<span
+                        {{ translationData.lblCode || 'Code' }}<span
                             class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
