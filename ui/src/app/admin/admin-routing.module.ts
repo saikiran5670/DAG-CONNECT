@@ -16,6 +16,7 @@ import { OrganisationRelationshipComponent } from './organisation-relationship/o
 import { ReadKeyExpr } from '@angular/compiler';
 import { VehicleGroupManagementComponent } from '../configuration/vehicle-group-management/vehicle-group-management.component';
 import { ConfigurationComponent } from '../configuration/configuration.component';
+import { CommonImportComponent } from '../shared/common-import/common-import.component'
 
 const routes: Routes = [
   {
@@ -44,7 +45,9 @@ const routes: Routes = [
       // { path: 'organisationrelationship', component: OrganisationRelationshipComponent },
       // { path: 'organisationrelationship/relationshipmanagement', component: RelationshipManagementComponent, data:{ id:'1', name:'orgRelationship',viewviewRelationshipFromOrg:true}}
       { path: 'organisationrelationshipmanagement', component: OrganisationRelationshipComponent },
-      { path: 'organisationrelationshipmanagement/relationshipmanagement', component: RelationshipManagementComponent, data:{ id:'1', name:'orgRelationship',viewviewRelationshipFromOrg:true}}
+      { path: 'organisationrelationshipmanagement/relationshipmanagement', component: RelationshipManagementComponent, data:{ id:'1', name:'orgRelationship',viewviewRelationshipFromOrg:true}},
+      { path: 'import', component: CommonImportComponent}
+      
     ],
   },
 ];
