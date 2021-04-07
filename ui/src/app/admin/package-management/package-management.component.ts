@@ -9,6 +9,7 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { SelectionModel } from '@angular/cdk/collections';
 import { PackageService } from 'src/app/services/package.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-package-management',
@@ -44,7 +45,8 @@ export class PackageManagementComponent implements OnInit {
       private packageService: PackageService, 
       private dialogService: ConfirmDialogService, 
       private dialog: MatDialog,
-      private _snackBar: MatSnackBar
+      private _snackBar: MatSnackBar,
+      private route:Router
     ) { 
     this.defaultTranslation();
   }
@@ -284,5 +286,9 @@ export class PackageManagementComponent implements OnInit {
     this.dataSource = dataSource;
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+  }
+  importPackageCSV(){
+    this.importClicked = true;
+    //this.route.navigate(["import"]);
   }
 }

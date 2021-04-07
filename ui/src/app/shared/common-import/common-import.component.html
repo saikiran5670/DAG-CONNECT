@@ -1,56 +1,58 @@
-<div style="width:100%;" class="full-width">
-<div  fxLayoutAlign="end" class='margin-bottom-sm clickPointer' (click)="importPackageCSV()">
-    Import <mat-icon>download</mat-icon>
-</div>
-</div>
-<div class='bgtrans' *ngIf = "importClicked">
-<mat-card class='mat-elevation-z margin-bottom-xlg' *ngIf = "importClicked">
+
+<div class='bgtrans'>
+<mat-card class='mat-elevation-z margin-bottom-xlg'>
     <form [formGroup]="importPackageFormGroup">
-        <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
+        <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="space-between">
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>'Import New Drivers' </span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Import New Package</span>
             </div>
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                <button mat-flat-button (click)="closeImport()">
+                    <mat-icon>arrow_back_ios</mat-icon>
+                 </button>
+            </div>
+      
         </div>
         <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="15px">
             <div style='width: 60%' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <span style='display: flex; align-items: center;'>
                     <img matTooltip='Download Excel' src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 30px; height: 30px;" />&nbsp;
-                    <a  class='cursor-pointer'
-                        style='font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>{{ 'Download a Template' }}</a>
+                    <a  (click)='downloadPackageTemplate()' class='cursor-pointer'
+                        style='font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>Download a Template</a>
                 </span>
-                <span>{{ 'You can enter multiple driver records. New Driver IDs records will be added and existing Driver ID records will be updated. Only Driver ID is mandatory, rest all fields are optional. See the template for details on valid input criteria for each field. All the fields (with the exception of the Driver ID) can be edited later from the Driver Management screen shown below.'}}</span>
+                <span>Downlaod template from here and upload it again with updated details</span>
             </div>
-            <!-- <div *ngIf="!adminAccessType.adminReadOnlyAccess" style='width: 90%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="end">
+            <div style='width: 90%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="end">
                 <div style='padding: 30px;' fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="start">
                     <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                         <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                             <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                                <mat-label>{{ 'Upload updated Excel file' }} <span class='mandatoryColor'>*</span></mat-label>
+                                <mat-label>Select Updated File <span class='mandatoryColor'>*</span></mat-label>
                                 <mat-form-field appearance="outline">
-                                    <ngx-mat-file-input #removableInput (change)="addfile($event)" [accept]="'.xlsx'" formControlName="uploadFile" placeholder="Upload Excel File" ></ngx-mat-file-input>
+                                    <ngx-mat-file-input #removableInput (change)="addfile($event)" [accept]="'.csv'" formControlName="uploadFile" placeholder="Upload CSV File" ></ngx-mat-file-input>
                                     <button mat-flat-button color="primary" matSuffix>{{ 'Browse' }}</button>
                                 </mat-form-field>
-                                <mat-error *ngIf="importDriverFormGroup.get('uploadFile').hasError('required')">
+                                <mat-error *ngIf="importPackageFormGroup.get('uploadFile').hasError('required')">
                                     {{ 'Please select a file' }}
                                 </mat-error>
-                                <mat-error *ngIf="importDriverFormGroup.get('uploadFile').hasError('maxContentSize')">
-                                    The total size must not exceed {{importDriverFormGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{importDriverFormGroup.get('uploadFile')?.getError('maxContentSize').actualSize
+                                <mat-error *ngIf="importPackageFormGroup.get('uploadFile').hasError('maxContentSize')">
+                                    The total size must not exceed {{importPackageFormGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{importPackageFormGroup.get('uploadFile')?.getError('maxContentSize').actualSize
                                     | byteFormat}}).
-                                </mat-error>
-                                <mat-error *ngIf="excelEmptyMsg">
+                                </mat-error> 
+                               <mat-error *ngIf="excelEmptyMsg">
                                     {{ 'Empty File' }}
-                                </mat-error>
+                                </mat-error> 
                             </div>
-                            <div fxLayout="column" fxLayoutAlign="space-around" class='margin-bottom-sm'>
-                                <button style='color: #fff;' [disabled]="!importDriverFormGroup.valid || importDriverPopup || excelEmptyMsg" [ngStyle]="{'margin-top': importDriverFormGroup.get('uploadFile').hasError('required') || excelEmptyMsg ? '9px' : '29px' }" mat-flat-button color="primary"
-                                    (click)="importDrivers(removableInput)">
-                                    <mat-icon>arrow_circle_up</mat-icon> {{ 'Import Driver(s)' }}
+                            <div fxLayout="column" fxLayoutAlign="end" class='margin-bottom-sm'>
+                                <button style='color: #fff;' [disabled]="!importPackageFormGroup.valid || excelEmptyMsg" [ngStyle]="{'margin-top': importPackageFormGroup.get('uploadFile').hasError('required') }" mat-flat-button color="primary"
+                                    (click)="importPackage(removableInput)">
+                                    <mat-icon>arrow_circle_up</mat-icon> Upload Package 
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div> -->
+            </div> 
         </div>
     </form>
 </mat-card>
