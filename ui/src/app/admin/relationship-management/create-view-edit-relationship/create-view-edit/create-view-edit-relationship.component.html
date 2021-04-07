@@ -3,7 +3,7 @@
         <span>{{ breadcumMsg }}</span>
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
-        <span class='custom-font' (click)="onCancel()">
+        <span class='custom-font' (click)="toBack()">
             <span><&nbsp;</span>
             <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
     </div>
@@ -190,7 +190,7 @@
                             <mat-checkbox (change)='$event ? masterToggleForFeatures() : null'
                                 [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
                                 [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
-                                [aria-label]='checkboxLabelForFeatures()'>
+                                [aria-label]='checkboxLabelForFeatures()' [disabled]="viewFlag">
                             </mat-checkbox>
                             <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
                         </mat-header-cell>
@@ -198,7 +198,7 @@
                             <mat-checkbox (click)='$event.stopPropagation()'
                                 (change)='$event ? selectionForFeatures.toggle(row) : null'
                                 [checked]='selectionForFeatures.isSelected(row)'
-                                [aria-label]='checkboxLabelForFeatures(row)'>
+                                [aria-label]='checkboxLabelForFeatures(row)' [disabled]="viewFlag">
                             </mat-checkbox>
                         </mat-cell>
                     </ng-container>

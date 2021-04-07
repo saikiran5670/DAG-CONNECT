@@ -105,7 +105,8 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   }
 
     backToOrgRelationPage= function () {
-    this.router.navigate(['/admin/organisationrelationship']);
+    // this.router.navigate(['/admin/organisationrelationship']);
+    this.router.navigate(['/admin/organisationrelationshipmanagement']);
 };
 
   getBreadcum(){
@@ -113,7 +114,25 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   }
 
   onCancel() {
+    if(this.viewRelationshipFromOrg)
+    {
+      this.viewFlag =false;
+      this.editFlag =false;
+      this.backToOrgRelationPage();
+    }
+    else{
     this.backToPage.emit({ viewFlag: false, editFlag: false, editText: 'cancel' });
+    }
+  }
+
+  toBack(){
+    if(this.viewRelationshipFromOrg)
+    {
+      this.backToOrgRelationPage();
+    }
+    else{
+    this.backToPage.emit({ viewFlag: false, editFlag: false, editText: 'cancel' });
+    }  
   }
 
   editRelationship(row: any){
