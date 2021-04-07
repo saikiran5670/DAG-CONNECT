@@ -221,7 +221,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   deleteRow(rowData){
     let selectedOptions = [rowData.id];
     const options = {
-      title: this.translationData.lblDeleteAccount || 'Delete Account',
+      title: this.translationData.lblDeleteAccount || 'Delete',
       message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Do you want to end '$' relationship?",
       cancelText: this.translationData.lblNo || 'No',
       confirmText: this.translationData.lblYes || 'Yes'
@@ -291,7 +291,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   deleteOrgRelationship(){
     let selectedOptions = this.selectedOrgRelations.selected.map(item=>item.id);
     const options = {
-      title: this.translationData.lblDeleteAccount || 'Delete Account',
+      title: this.translationData.lblDelete || 'Delete',
       message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Do you want to end  '$' relationship?",
       cancelText: this.translationData.lblNo || 'No',
       confirmText: this.translationData.lblYes || 'Yes'
