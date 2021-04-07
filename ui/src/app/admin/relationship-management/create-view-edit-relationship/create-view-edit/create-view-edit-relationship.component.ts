@@ -75,23 +75,24 @@ export class CreateViewEditRelationshipComponent implements OnInit {
       {
       this.setDefaultValue();
       }
-      // if(this.viewFlag)
-      // {
-      //   let selectedFeatureList: any = [];
-      //   data.forEach((row: any) => {
-      //   let search = this.featuresSelected.filter((item: any) => item == row.id);
-      //       if (search.length > 0) {
-      //         selectedFeatureList.push(row);
-      //       }
-      //     });
-      //       data = selectedFeatureList;
-      //       this.featureDisplayedColumns = ['name'];
-      // }
+      if(this.viewFlag)
+      {
+        let selectedFeatureList: any = [];
+        data.forEach((row: any) => {
+          let search = this.gridData[0].featureIds.includes(row.id);
+        // let search = this.featuresSelected.filter((item: any) => item == row.id);
+            if (search) {
+              selectedFeatureList.push(row);
+            }
+          });
+            data = selectedFeatureList;
+            this.featureDisplayedColumns = ['name'];
+      }
       setTimeout(()=>{
         this.dataSource = new MatTableDataSource(data);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-        if(!this.createStatus || this.viewFlag){
+        if(!this.createStatus){
         // if(this.editFlag){
           this.onReset();
         }
