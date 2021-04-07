@@ -80,4 +80,14 @@ export class FeatureService {
         );
     }
 
+    updateFeatureState(data): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+     return this.httpClient
+        .post<any>(`${this.featureServiceUrl}/featurestate/update?FeatureId=${data.id}&featurestate=${data.state}`, data ,headers)
+        .pipe(catchError(this.handleError));
+    }
+
 }
