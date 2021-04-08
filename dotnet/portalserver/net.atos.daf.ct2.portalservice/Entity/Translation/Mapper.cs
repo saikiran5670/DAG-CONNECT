@@ -16,7 +16,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
             {
                 foreach (var item in request.Dropdownname)
                 {
-                    response.Dropdownname.Add(new DropdownName() { Dropdownname = item });
+                    if (item != null)
+                    {
+                        response.Dropdownname.Add(new DropdownName() { Dropdownname = item });
+                    }
                 }
             }
             response.Languagecode = request.Languagecode;
@@ -44,6 +47,23 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
             return response;
 
         }
+        public TranslationsRequest MapGetTranslations (TranslationRequest request)
+        {
+            TranslationsRequest response = new TranslationsRequest();
+            if (request == null) return response;
+            if (request != null)
+            {
+                response.Id = request.Id;
+                response.Code = request.Code;
+                response.Type = request.Type;
+                response.Name = request.Name;
+                response.Value = request.Value;
+                response.Filter = request.Filter;
+                response.MenuId = request.MenuId;
+            }
+            return response;
+        }
+
 
     }
 }

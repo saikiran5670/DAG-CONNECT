@@ -39,10 +39,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("menutranslations")]
-        public async Task<IActionResult> GetTranslations(TranslationsRequest request)
+        public async Task<IActionResult> GetTranslations(TranslationRequest request)
         {
             try
             {
+                if (request.Code == null || request.Type == null)
+                {
+                    return StatusCode(400, "Language code and type required..");
+                }
                 if (string.IsNullOrEmpty(request.Code.Trim()) || string.IsNullOrEmpty(request.Type.Trim()))
                 {
                     return StatusCode(400, "Language code and type required..");
@@ -58,7 +62,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 
                 _logger.LogInformation("Get translation Menu  method get " + request.Code + " " + request.MenuId);
 
-                TranslationsResponce translationsResponce = await _translationServiceClient.GetTranslationsAsync(request);
+                TranslationsRequest obj = new TranslationsRequest();
+                obj = _mapper.MapGetTranslations(request);
+
+                TranslationsResponce translationsResponce = await _translationServiceClient.GetTranslationsAsync(obj);
 
                 if (translationsResponce != null
                   && translationsResponce.Message == "There is an error In GetTranslation.")
@@ -230,6 +237,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         }
 
+       // [AllowAnonymous]
         [HttpPost]
         [Route("multipledropdowns")]
         public async Task<IActionResult> GetTranslationsFormultipleDropDowns(DropdownRequest request)
@@ -239,6 +247,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (string.IsNullOrEmpty(request.Languagecode.Trim()))
                 {
                     return StatusCode(400, "Language code and dropdown  required..");
+                }
+
+                for (int i = 0; i < request.Dropdownname.Count; i++)
+                {
+                    if (request.Dropdownname[i] == null || request.Dropdownname[i] == "")
+                    {
+                        return StatusCode(400, "Dropdownname is required it cant be null.");
+                    }
                 }
 
                 dropdownarrayRequest transdropdown = new dropdownarrayRequest();
@@ -320,10 +336,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPost]
         [Route("Import")]
+       // [AllowAnonymous]
         public async Task<IActionResult> InsertTranslationFileDetails(FileUploadRequest request)
         {
             _logger.LogInformation("InsertTranslationFileDetails Method post");
-            if (request.file_name == "" || request.file_name == "" || request.file_size <= 0)
+            if (request.file_name == "" || request.file_name == null || request.file_size <= 0)
             {
                 return StatusCode(400, "File name and valid file size is required.");
             }
@@ -331,6 +348,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 return StatusCode(400, "File translations data is required.");
             }
+            // request.file[0].code
+            for (int i=0 ; i < request.file.Count ; i++)
+            {
+                if (request.file[i].code == null || request.file[i].code == "")
+                {
+                    return StatusCode(400, "File Code is required.");
+                }
+            }
+
             TranslationUploadRequest transupload = new TranslationUploadRequest();
             transupload = _mapper.MapFileDetailRequest(request);
 
@@ -351,6 +377,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
 
         }
+
+       // [AllowAnonymous]
         [HttpGet]
         [Route("getUploadDetails")]
         public async Task<IActionResult> GetFileUploadDetails([FromQuery] FileUploadDetailsRequest request)
