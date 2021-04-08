@@ -245,8 +245,8 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
 
   showAccountPopup(row: any){
     const colsList = ['firstName','emailId','roles'];
-    const colsName = [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'];
-    const tableTitle = `${row.name} - ${this.translationData.lblUsers || 'Users'}`;
+    const colsName = [this.translationData.lblUserName || 'Account Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'Account Role'];
+    const tableTitle = `${row.name} - ${this.translationData.lblUsers || 'Accounts'}`;
     let accountObj = {
       accountId: 0,
       organizationId: this.accountOrganizationId,
