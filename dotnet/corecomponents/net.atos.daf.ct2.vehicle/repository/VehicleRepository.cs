@@ -276,10 +276,26 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             if (vehicle.Tcu_Id == null || vehicle.Tcu_Id.Length == 0 || vehicle.Tcu_Id == "string")
             {
+                vehicle = await VehicleNameExists(vehicle);
+                vehicle = await VehicleLicensePlateNumberExists(vehicle);
+
+                // duplicate vehicle Name
+                if (vehicle.VehicleNameExists)
+                {
+                    return vehicle;
+                }
+
+                // duplicate License Plate Number
+                if (vehicle.VehicleLicensePlateNumberExists)
+                {
+                    return vehicle;
+                }
+
                 var QueryStatement = @" UPDATE master.vehicle
                                         SET 
                                          name=@name                                        
         	                            ,license_plate_number=@license_plate_number
+                                        ,modified_at=@modified_at
                                         WHERE id = @id
                                          RETURNING id;";
 
@@ -289,7 +305,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@name", vehicle.Name);
                 // parameter.Add("@vin", vehicle.VIN);
                 parameter.Add("@license_plate_number", vehicle.License_Plate_Number);
-                // parameter.Add("@status", (char)vehicle.Status);
+                parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 // parameter.Add("@status_changed_date", vehicle.Status_Changed_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Status_Changed_Date.ToString()) : 0);
                 // parameter.Add("@termination_date", vehicle.Termination_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Termination_Date.ToString()) : 0);
                 int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
@@ -834,6 +850,91 @@ namespace net.atos.daf.ct2.vehicle.repository
                 throw ex;
             }
         }
+
+
+        private async Task<Vehicle> VehicleNameExists(Vehicle vehicle)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                var query = @"select id from master.vehicle where 1=1 ";
+                if (vehicle != null)
+                {
+
+                    // id
+                    if (Convert.ToInt32(vehicle.ID) > 0)
+                    {
+                        parameter.Add("@id", vehicle.ID);
+                        query = query + " and id!=@id";
+                    }
+                    // name
+                    parameter.Add("@name", vehicle.Name);
+                    query = query + " and name=@name and (name!=null Or name!='')";
+
+                    // License Plate Number
+                    //if (!string.IsNullOrEmpty(vehicle.License_Plate_Number))
+                    //{
+                    //    parameter.Add("@license_plate_number", vehicle.License_Plate_Number);
+                    //    query = query + " or license_plate_number=@license_plate_number";
+                    //}
+
+                    //organization id filter
+                    if (vehicle.Organization_Id > 0)
+                    {
+                        parameter.Add("@organization_id", vehicle.Organization_Id);
+                        query = query + " and organization_id=@organization_id ";
+                    }
+                }
+                var vehicleid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                if (vehicleid > 0)
+                {
+                    vehicle.VehicleNameExists = true;
+                    vehicle.ID = vehicleid;
+                }
+                return vehicle;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private async Task<Vehicle> VehicleLicensePlateNumberExists(Vehicle vehicle)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                var query = @"select id from master.vehicle where 1=1 ";
+                if (vehicle != null)
+                {
+
+                    // id
+                    if (Convert.ToInt32(vehicle.ID) > 0)
+                    {
+                        parameter.Add("@id", vehicle.ID);
+                        query = query + " and id!=@id";
+                    }
+                    // License Plate Number
+
+                    parameter.Add("@license_plate_number", vehicle.License_Plate_Number);
+                    query = query + " and license_plate_number=@license_plate_number and (license_plate_number!=null Or license_plate_number!='')";
+
+
+                }
+                var vehicleid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                if (vehicleid > 0)
+                {
+                    vehicle.VehicleLicensePlateNumberExists = true;
+                    vehicle.ID = vehicleid;
+                }
+                return vehicle;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
 
         #endregion
 

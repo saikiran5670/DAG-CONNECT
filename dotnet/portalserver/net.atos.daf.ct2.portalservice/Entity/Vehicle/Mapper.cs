@@ -14,6 +14,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
             vehicle.Id = request.ID;
             vehicle.Name = request.Name;
             vehicle.LicensePlateNumber = request.License_Plate_Number;
+            vehicle.OrganizationId = request.Organization_Id;
             return vehicle;
 
         }
@@ -24,6 +25,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
             vehicle.ID = request.Id;
             vehicle.Name = request.Name;
             vehicle.License_Plate_Number = request.LicensePlateNumber;
+            vehicle.Organization_Id = request.OrganizationId;
             return vehicle;
 
         }
