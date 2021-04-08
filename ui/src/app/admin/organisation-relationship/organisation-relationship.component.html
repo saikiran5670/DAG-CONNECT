@@ -116,7 +116,7 @@
                         <!-- <button type="button" class="btn btn-primary-outline pull-right" (click)="btnClick();"><i class="fa fa-plus"></i> Add</button> -->
                         </mat-cell>
                     </ng-container>
-                    <ng-container matColumnDef="vehicleGroup">
+                    <ng-container matColumnDef="vehicleGroupName">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group'}}</mat-header-cell>
                         <mat-cell *matCellDef="let row" class="text-truncate"  matTooltip="{{row.vehicleGroupName}}">{{row.vehicleGroupName}} </mat-cell>
                     </ng-container>
@@ -124,7 +124,7 @@
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblLevel || 'Level'}}</mat-header-cell>
                         <mat-cell *matCellDef="let row">{{row.level}} </mat-cell>
                     </ng-container> -->
-                    <ng-container matColumnDef="targetOrg">
+                    <ng-container matColumnDef="organizationName">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblTargetOrganisation || 'Target Organisation'}}</mat-header-cell>
                         <mat-cell *matCellDef="let row">{{row.organizationName}} </mat-cell>
                     </ng-container>

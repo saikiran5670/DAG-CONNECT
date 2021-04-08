@@ -259,6 +259,10 @@ export class FeatureManagementComponent implements OnInit {
 
   updatedTableData(tableData : any) {
     this.initData = tableData;
+    this.initData.map(obj =>{   //temporary
+      obj.statusVal = obj.state === 0? 'active': obj.state === 1 ? 'inactive': '';
+      obj.isExclusiveVal = obj.isExclusive === true ? 'exclusive' : obj.isExclusive === false ? 'inclusive': '';
+    })
     // this.initData = this.getNewTagData(this.initData);
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(()=>{

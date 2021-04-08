@@ -20,7 +20,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   @Output() createViewEditPackageEmit = new EventEmitter<object>();
   dataSource: any;
-  orgrelationshipDisplayedColumns: string[]= ['select', 'relationshipName', 'vehicleGroup', 'targetOrg', 'startDate', 'endDate','allowChain', 'endRelationship'];
+  orgrelationshipDisplayedColumns: string[]= ['select', 'relationshipName', 'vehicleGroupName', 'organizationName', 'startDate', 'endDate','allowChain', 'endRelationship'];
   editFlag: boolean = false;
   viewFlag: boolean = false;
   initData: any = [];
