@@ -153,7 +153,7 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   newUserRole() {
-    this.titleText = this.translationData.lblCreateNewUserRole || "Create New User Role";
+    this.titleText = this.translationData.lblCreateNewUserRole || "Create New Account Role";
     this.rowsData = [];
     this.rowsData = this.initData; 
     this.editFlag = true;
@@ -165,7 +165,7 @@ export class UserRoleManagementComponent implements OnInit {
     if(action == 'duplicate'){
       this.duplicateFlag = true;
     }
-    this.titleText = this.duplicateFlag ? this.translationData.lblCreateNewUserRole || "Create New User Role" : this.translationData.lblEditUserRoleDetails || "Edit User Role Details";
+    this.titleText = this.duplicateFlag ? this.translationData.lblCreateNewUserRole || "Create New Account Role" : this.translationData.lblEditUserRoleDetails || "Edit Account Role Details";
     this.rowsData = [];
     this.rowsData.push(row);
     this.editFlag = true;
@@ -173,7 +173,7 @@ export class UserRoleManagementComponent implements OnInit {
   }
 
   viewUserRole(row: any){
-    this.titleText = this.translationData.lblViewUserRole || "View User Role";
+    this.titleText = this.translationData.lblViewUserRole || "View Account Role";
     this.editFlag = true;
     this.viewFlag = true;
     this.rowsData = [];
@@ -205,7 +205,7 @@ export class UserRoleManagementComponent implements OnInit {
     if(this.translationData.lblUserRoleDelete)
       return this.translationData.lblUserRoleDelete.replace('$', roleName);
     else
-      return ("User role '$' was successfully deleted").replace('$', roleName);
+      return ("Account role '$' was successfully deleted").replace('$', roleName);
   }
 
   successMsgBlink(msg: any){
@@ -227,13 +227,13 @@ export class UserRoleManagementComponent implements OnInit {
       if(this.translationData.lblUserRoleCreatedSuccessfully)
         return this.translationData.lblUserRoleCreatedSuccessfully.replace('$', name);
       else
-        return ("User Role '$' Created Successfully").replace('$', name);
+        return ("Account Role '$' Created Successfully").replace('$', name);
     }
     else if(editText == 'edit'){
       if(this.translationData.lblUserRoledetailssuccessfullyupdated)
         return this.translationData.lblUserRoledetailssuccessfullyupdated.replace('$', name);
       else
-        return ("User Role '$' details successfully updated").replace('$', name);
+        return ("Account Role '$' details successfully updated").replace('$', name);
     }
   }
 
