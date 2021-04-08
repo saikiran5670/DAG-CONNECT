@@ -41,7 +41,8 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountAccessRelationshipFormGroup = this._formBuilder.group({
       accountGroup: ['', [Validators.required]],
-      accessType: ['', [Validators.required]]
+      accessType: ['', [Validators.required]],
+      gridSearch: ['']
     });
     this.accessTypeList = [
       {
@@ -64,6 +65,10 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
   setDropdownValue(){
     this.accountAccessRelationshipFormGroup.get('accountGroup').setValue(this.selectedElementData.id);
     this.accountAccessRelationshipFormGroup.get('accessType').setValue(this.selectedElementData.accessType);
+    this.accountAccessRelationshipFormGroup.get('gridSearch').setValue('');
+    this.dataSource.filter = '';
+    this.selectedViewType = 'both';
+    this.onListChange({value: this.selectedViewType});
   }
 
   loadGridData(tableData: any){
@@ -147,6 +152,7 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
 
   onListChange(event: any){
     let data: any = [];
+    this.selectedViewType = event.value;
     switch(event.value){
       case "group":{
         data = this.initData.filter((item: any) => item.isGroup == true);
