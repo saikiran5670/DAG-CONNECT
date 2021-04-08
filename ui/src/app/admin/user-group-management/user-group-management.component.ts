@@ -57,29 +57,29 @@ export class UserGroupManagementComponent implements OnInit {
 
   defaultTranslation() {
     this.translationData = {
-      lblUserGroupManagement: "User Group Management",
+      lblUserGroupManagement: "Account Group Management",
       lblGroupDetails: "Group Details",
-      lblNewUserGroup: "New User Group",
+      lblNewUserGroup: "New Account Group",
       lblGroupName: "Group Name",
       lblVehicles: "Vehicles",
-      lblUsers: "Users",
+      lblUsers: "Accounts",
       lblAction: "Action",
-      lblNewUserGroupName: "New User Group Name",
+      lblNewUserGroupName: "New Account Group Name",
       lblCreate: "Create",
       lblCreateContinue: "Create & Continue",
       lblNewUserGroupPopupInfo: "For adding more details click on Create and Continue' button.",
-      lblUserGroupCreatedSuccessfully: "User Group '$' Created Successfully",
+      lblUserGroupCreatedSuccessfully: "Account Group '$' Created Successfully",
       lblCancel: "Cancel",
       lblNext: "Next",
       lblPrevious: "Previous",
       lblSearch: "Search",
       lblAll: "All",
-      lblUserRole: "User Role",
+      lblUserRole: "Account Role",
       lblServices: "Services",
       lblServicesName: "Services Name",
       lblType: "Type",
       lblStep: "Step",
-      lblSelectUserRole: "Select User Role",
+      lblSelectUserRole: "Select Account Role",
       lblSelectVehicleGroupVehicle: "Select Vehicle Group/Vehicle",
       lblSummary: "Summary",
       lblVehicleGroup: "Vehicle Group",
@@ -89,35 +89,33 @@ export class UserGroupManagementComponent implements OnInit {
       lblVehicleName: "Vehicle Name",
       lblGroup: "Group",
       lblBoth: "Both",
-      lblSelectedUserRoles: "Selected User Roles",
+      lblSelectedUserRoles: "Selected Account Roles",
       lblSelectedVehicleGroupsVehicles: "Selected Vehicle Groups/Vehicles",
       lblBack: "Back",
       lblReset: "Reset",
       lblNew: "New", 
       lblDeleteGroup: "Delete Group",
-      lblAreyousureyouwanttodeleteusergroup: "Are you sure you want to delete '$' user group?",
-      //lblCancel: "Cancel",
+      lblAreyousureyouwanttodeleteusergroup: "Are you sure you want to delete '$' account group?",
       lblDelete: "Delete",
-      lblUserGroupalreadyexists: "User Group already exists",
-      lblPleaseenterUserGroupname: "Please enter User Group name",
+      lblUserGroupalreadyexists: "Account Group already exists",
+      lblPleaseenterUserGroupname: "Please enter Account Group name",
       lblSpecialcharactersnotallowed: "Special characters not allowed",
-      lblCreateUserGroupAPIFailedMessage: "Error encountered in creating new User Group '$'",
-      lblUserGroupDelete: "User Group '$' was successfully deleted.",
-      lblDeleteUserGroupAPIFailedMessage: "Error deleting User Group '$'",
+      lblCreateUserGroupAPIFailedMessage: "Error encountered in creating new Account Group '$'",
+      lblUserGroupDelete: "Account Group '$' was successfully deleted.",
+      lblDeleteUserGroupAPIFailedMessage: "Error deleting Account Group '$'",
       lblFilter: "Filter",
       lblConfirm: "Confirm",
       lblUpdate: "Update",
-      lblUserGroupName: "User Group Name",
-      lblSelectUser: "Select User",
-      lblEnterNewUserGroupName: "Enter New User Group Name",
-      lblErrorUserGroupName: "Please enter any User Group name",
-      lblUserGroupDescription: "User Group Description (Optional)",
-      lblUserGroupDescriptionOptional: "User Group Description",
+      lblUserGroupName: "Account Group Name",
+      lblSelectUser: "Select Account",
+      lblEnterNewUserGroupName: "Enter New Account Group Name",
+      lblErrorUserGroupName: "Please enter any Account Group name",
+      lblUserGroupDescription: "Account Group Description (Optional)",
+      lblUserGroupDescriptionOptional: "Account Group Description",
       lbl120CharMax: "120 characters max",
       lblEnterAboutGroupPlaceholder: "Enter About Group",
-      lblUserGroupManagementInfo: "You can select User from below list to map with this User Group",
+      lblUserGroupManagementInfo: "You can select Account from below list to map with this Account Group",
       lblOptional: "(Optional)"
-
     }
   }
 
@@ -153,7 +151,7 @@ export class UserGroupManagementComponent implements OnInit {
   deleteGroup(item: any) {
     const options = {
       title: this.translationData.lblDeleteGroup || "Delete Group",
-      message: this.translationData.lblAreyousureyouwanttodeleteusergroup || "Are you sure you want to delete '$' user group?",
+      message: this.translationData.lblAreyousureyouwanttodeleteusergroup || "Are you sure you want to delete '$' account group?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
@@ -161,7 +159,7 @@ export class UserGroupManagementComponent implements OnInit {
   }
 
   onNewUserGroup() {
-    this.titleText = this.translationData.lblNewUserGroupName || "New User Group Name";
+    this.titleText = this.translationData.lblNewUserGroupName || "New Account Group Name";
     this.actionType = 'create';
     this.createViewEditStatus = true;
   }
@@ -237,7 +235,7 @@ export class UserGroupManagementComponent implements OnInit {
     if(this.translationData.lblUserGroupDelete)
       return this.translationData.lblUserGroupDelete.replace('$', grpName);
     else
-      return ("User Group '$' was successfully deleted").replace('$', grpName);
+      return ("Account Group '$' was successfully deleted").replace('$', grpName);
   }
 
   onBackToPage(objData: any) {
@@ -261,8 +259,8 @@ export class UserGroupManagementComponent implements OnInit {
 
   onUserClick(data: any) {
     const colsList = ['firstName', 'emailId', 'roles'];
-    const colsName = [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'];
-    const tableTitle = `${data.accountGroupName} - ${this.translationData.lblUsers || 'Users'}`;
+    const colsName = [this.translationData.lblUserName || 'Account Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'Account Role'];
+    const tableTitle = `${data.accountGroupName} - ${this.translationData.lblUsers || 'Accounts'}`;
     let obj: any = {
       accountId: 0,
       organizationId: data.organizationId,
