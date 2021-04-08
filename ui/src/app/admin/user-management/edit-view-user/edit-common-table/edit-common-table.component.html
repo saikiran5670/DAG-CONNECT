@@ -52,7 +52,7 @@
                             </mat-cell>
                         </div>
                         <div *ngIf="disCol != 'select'">
-                            <mat-header-cell *matHeaderCellDef> {{ data.colsName[colIndex] }}</mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef mat-sort-header> {{ data.colsName[colIndex] }}</mat-header-cell>
                             <mat-cell *matCellDef="let element "> {{ element[disCol] }}
                             </mat-cell>
                         </div>
