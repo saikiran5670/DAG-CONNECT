@@ -216,19 +216,20 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
     let msg: any = '';
     if(this.actionType == 'create'){ //-- create
       if(this.translationData.lblAccessRelationshipcreatedsuccessfully){
-        msg = this.translationData.lblAccessRelationshipcreatedsuccessfully.replace('$', curObj.name ? curObj.name : '');
+        msg = this.translationData.lblAccessRelationshipcreatedsuccessfully.replace('$', curObj[0].name ? curObj[0].name : '');
       }
       else{
-        msg = ("'$' Access Relationship created successfully").replace('$', curObj.name ? curObj.name : '');
+        msg = ("'$' Access Relationship created successfully").replace('$', curObj[0].name ? curObj[0].name : '');
       }
     }else{ //-- update
       if(this.translationData.lblAccessRelationshipupdatedsuccessfully){
-        msg = this.translationData.lblAccessRelationshipupdatedsuccessfully.replace('$', curObj.name ? curObj.name : '');
+        msg = this.translationData.lblAccessRelationshipupdatedsuccessfully.replace('$', curObj[0].name ? curObj[0].name : '');
       }
       else{
-        msg = ("'$' Access Relationship updated successfully").replace('$', curObj.name ? curObj.name : '');
+        msg = ("'$' Access Relationship updated successfully").replace('$', curObj[0].name ? curObj[0].name : '');
       }
     }
+    return msg;
   }
 
   onReset(){
