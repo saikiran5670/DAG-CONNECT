@@ -84,7 +84,7 @@
         </div>
       </div>
     </mat-card-content>
-    <mat-card-actions class='no-margin no-padding'>
+    <mat-card-actions class='no-margin no-padding' *ngIf="actionType != 'view'">
       <div fxLayout="row" fxLayoutAlign="space-between center">
         <div fxLayout="column" fxLayoutAlign="left">
           <div *ngIf='showUserList' fxLayout="row" fxLayoutAlign='center center'>
@@ -93,7 +93,7 @@
               Account Group' }}</span>
           </div>
         </div>
-        <div fxLayout="column" fxLayoutAlign="end" *ngIf="actionType != 'view'">
+        <div fxLayout="column" fxLayoutAlign="end">
           <div fxLayout="row" class='areaWidth'>
             <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
             <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
