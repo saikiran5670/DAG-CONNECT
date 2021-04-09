@@ -22,31 +22,31 @@
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <img [src]="croppedImage" style="display: block; margin: auto; width: 120px; height: 120px; border-radius: 50%;" />
           </div>
-          <div class="areaWidth min-width-75-per" fxLayout="column" fxLayoutAlign="left">
+          <div class="areaWidth min-width-75-per wordWrap" fxLayout="column" fxLayoutAlign="left">
             <div *ngIf="!editAccountInfoFlag" fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblSalutation || 'Salutation' }}</mat-label>
                 <mat-label class='custom-font'>{{ accountInfoData.salutation ? accountInfoData.salutation : '--' }}</mat-label>
               </div>
-              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblFirstName || 'First Name'}}</mat-label>
                   <mat-label class='custom-font'>{{ accountInfoData.firstName ? accountInfoData.firstName : '--' }}</mat-label>
                 </div>
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblLastName || 'Last Name' }}</mat-label>
                   <mat-label class='custom-font'>{{ accountInfoData.lastName ? accountInfoData.lastName : '--' }}</mat-label>
                 </div>
             </div>  
             <div *ngIf="!editAccountInfoFlag" fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}</mat-label>
                   <mat-label class='custom-font'>{{ accountInfoData.emailId ? accountInfoData.emailId : '--' }}</mat-label>
                 </div>
-                <div *ngIf='privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div *ngIf='privilegeAccess' style="width: 30%;" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblUserType || 'Account Type' }}</mat-label>
                   <mat-label class='custom-font'>{{ accountInfoData.type ? (accountInfoData.type == 'P' ? (translationData.lblPortalUser || 'Portal Account') : (translationData.lblSystemUser || 'System Account')) : '--' }}</mat-label>
                 </div>
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
                   <mat-label class='custom-font'>{{ accountInfoData.organization ? accountInfoData.organization : '--' }}</mat-label>
                 </div>
@@ -94,9 +94,9 @@
                 </div>
               </div>
             </div>
-            <div class="areaWidth min-width-75-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-75-per wordWrap" fxLayout="column" fxLayoutAlign="left">
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-                  <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblSalutation || 'Salutation' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                       <mat-select placeholder="{{ translationData.lblSalutation || 'Salutation' }}" formControlName="salutation" required>
@@ -109,7 +109,7 @@
                       {{ translationData.lblPleasechoosesalutation || 'Please choose salutation' }}
                     </mat-error>
                   </div>
-                  <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblFirstName || 'First Name' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                       <input maxlength="30" placeholder="{{ translationData.lblFirstName || 'First Name' }}" matInput formControlName="firstName" required>
@@ -127,7 +127,7 @@
                       {{ translationData.lblFirstNamecannotcontainonlywhitespace || 'First Name cannot contain only whitespace' }}
                      </mat-error>
                   </div>
-                  <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblLastName || 'Last Name' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                       <input maxlength="20" placeholder="{{ translationData.lblLastName || 'Last Name' }}" matInput formControlName="lastName" required>
@@ -147,7 +147,7 @@
                   </div>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
-                  <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                       <input maxlength="50" placeholder="{{ translationData.lblLoginEmail || 'Login Email' }}" matInput formControlName="loginEmail" pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z0-9.-_]{2,}[.]{1}[a-zA-Z]{2,}" required>
@@ -159,7 +159,7 @@
                       {{ translationData.lblPleaseentervalidemailID || 'Please enter valid email ID' }}
                     </mat-error>
                   </div>
-                  <div *ngIf='privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <div *ngIf='privilegeAccess' style="width: 30%;" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblUserType || 'Account Type' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                       <mat-select placeholder="{{ translationData.lblUserType || 'Account Type' }}" formControlName="userType">
@@ -172,7 +172,7 @@
                       {{ translationData.lblPleasechooseusertype || 'Please choose user type' }}
                     </mat-error> -->
                   </div>
-                  <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <div class="areaWidth min-width-30-per"style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                       <input placeholder="{{ translationData.lblOrganisation || 'Organisation' }}" matInput value="DAF Connect" formControlName="organization">
