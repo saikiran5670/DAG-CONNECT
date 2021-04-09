@@ -240,8 +240,8 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
 
   onReset(){
     this.selectionForVehicleGrp.clear();
-    this.selectTableRows();
     this.setDropdownValue();
+    this.selectTableRows();
   }
 
   showVehiclePopup(row: any){

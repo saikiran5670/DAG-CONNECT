@@ -18,6 +18,7 @@ export class EditViewVehicleComponent implements OnInit {
   vehicleForm: FormGroup;
   breadcumMsg: any = '';
   duplicateVehicleMsg: boolean = false;
+  duplicateRegistrationNumber: boolean = false;
   vehicleStatus: any = '';
   constructor(private _formBuilder: FormBuilder, private vehicleService: VehicleService) { }
 
@@ -90,10 +91,13 @@ export class EditViewVehicleComponent implements OnInit {
   }
 
   onUpdateVehicle(){ //-- update
+    this.duplicateVehicleMsg = false;
+    this.duplicateRegistrationNumber = false;
     let updateVehObj = {
       id: this.selectedRowData.id, //-- vehicle id
       name: this.vehicleForm.controls.vehicleName.value, 
-      license_Plate_Number: this.vehicleForm.controls.registrationNumber.value
+      license_Plate_Number: this.vehicleForm.controls.registrationNumber.value,
+      organization_Id: this.accountOrganizationId
     }
     this.vehicleService.updateVehicle(updateVehObj).subscribe((updatedVehData: any) => {
       this.getVehicleGridData();
@@ -101,6 +105,7 @@ export class EditViewVehicleComponent implements OnInit {
       //console.error(error);
       if(error.status == 409) {
         this.duplicateVehicleMsg = true;
+        //this.duplicateRegistrationNumber = true;
       }
     });
   }
