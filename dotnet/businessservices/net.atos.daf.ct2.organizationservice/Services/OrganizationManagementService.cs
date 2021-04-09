@@ -474,6 +474,19 @@ namespace net.atos.daf.ct2.organizationservice
             }
             return await Task.FromResult(response);
         }
+
+        public override async Task<OrgDetailResponse> GetOrganizationDetails(IdRequest request, ServerCallContext context)
+        {
+            net.atos.daf.ct2.organization.entity.OrganizationDetailsResponse organization = new net.atos.daf.ct2.organization.entity.OrganizationDetailsResponse();
+            OrgDetailResponse response = new OrgDetailResponse();
+            _logger.LogInformation("Get Organization Details .");
+            organization = await organizationtmanager.GetOrganizationDetails(request.Id);
+            if (organization.id > 0)
+            {
+                response = _mapper.ToOrganizationDetailsResponse(organization);
+            }
+            return await Task.FromResult(response);
+        }
         public override async Task<GetAllOrgResponse> GetAll(IdRequest request, ServerCallContext context)
         {
             var organization = new OrganizationResponse();

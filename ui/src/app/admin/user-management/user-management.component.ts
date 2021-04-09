@@ -411,4 +411,9 @@ export class UserManagementComponent implements OnInit {
       this.showLoadingIndicator=false;
   }
 
+  pageSizeUpdated(_event){
+    setTimeout(() => {
+      document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
+    }, 100);
+  }
 }

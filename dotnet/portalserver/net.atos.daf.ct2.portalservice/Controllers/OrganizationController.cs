@@ -401,6 +401,30 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
+        [Route("GetOrganizationInfo")]
+        public async Task<IActionResult> GetOrganizationInfo(int organizationId)
+        {
+            try
+            {
+                OrganizationBusinessService.IdRequest idRequest = new OrganizationBusinessService.IdRequest();
+                idRequest.Id = organizationId;
+                logger.LogInformation("Organization get details function called ");
+                if (organizationId < 1)
+                {
+                    return StatusCode(400, "Please provide organization ID:");
+                }
+                OrganizationBusinessService.OrgDetailResponse orgResponse = await organizationClient.GetOrganizationDetailsAsync(idRequest);
+
+                return Ok(orgResponse);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpGet]
         [Route("getall")]
         public async Task<IActionResult> GetAll(int organizationId)
         {

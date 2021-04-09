@@ -241,6 +241,72 @@ namespace net.atos.daf.ct2.organization.repository
                 throw ex;
             }
         }
+        public async Task<OrganizationDetailsResponse> GetOrganizationDetails(int organizationId)
+        {
+            log.Info("Get Organization details method called in repository");
+            try
+            {            
+                var parameter = new DynamicParameters();
+                var query = @"SELECT
+                              o.id ,
+                              o.org_id ,
+                              o.name ,
+                              o.description ,
+                              o.city ,                             
+                              o.street ,
+                              o.street_number ,
+                              o.postal_code ,
+                              o.country_code,
+                              o.vehicle_default_opt_in ,
+                              o.driver_default_opt_in ,
+                              c.name currency,
+                              t.name timezone ,
+                              tf.name timeformat,                            
+                              df.name DateFormatType,
+                              l.name LanguageName,
+                              u.name unit
+                            FROM master.organization o
+                            left join  master.accountpreference a on o.id=a.id
+                            left join  master.currency c on c.id=a.currency_id
+                            left join  master.timezone t on t.id=a.timezone_id
+                            left join  master.timeformat tf on tf.id=a.time_format_id
+                            left join  master.dateformat df on df.id=a.date_format_id
+                            left join  master.unit u on u.id=a.unit_id
+                            left join  translation.language l on l.id=a.language_id
+                            where o.id=@Id";
+                parameter.Add("@Id", organizationId);
+                IEnumerable<OrganizationDetailsResponse> OrgDetails = await dataAccess.QueryAsync<OrganizationDetailsResponse>(query, parameter);
+                OrganizationDetailsResponse OrgDetailsResponse = new OrganizationDetailsResponse();
+                foreach (var item in OrgDetails)
+                {
+                    OrgDetailsResponse.id = item.id;
+                    OrgDetailsResponse.org_id = item.org_id;
+                    OrgDetailsResponse.name = item.name;
+                    OrgDetailsResponse.description = item.description;
+                    OrgDetailsResponse.city = item.city;
+                    OrgDetailsResponse.country_code = item.country_code;
+                    OrgDetailsResponse.street = item.street;
+                    OrgDetailsResponse.street_number = item.street_number;
+                    OrgDetailsResponse.postal_code = item.postal_code;
+                    OrgDetailsResponse.vehicle_default_opt_in = item.vehicle_default_opt_in;
+                    OrgDetailsResponse.driver_default_opt_in = item.driver_default_opt_in;
+
+                    OrgDetailsResponse.LanguageName = item.LanguageName;
+                    OrgDetailsResponse.Timezone = item.Timezone;
+                    OrgDetailsResponse.TimeFormat = item.TimeFormat;
+                    OrgDetailsResponse.Currency = item.Currency;
+                    OrgDetailsResponse.Unit = item.Unit;
+                    OrgDetailsResponse.DateFormatType = item.DateFormatType;
+                }
+                return OrgDetailsResponse;
+            }
+            catch (Exception ex)
+            {
+                log.Info("Get Organization preference method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }
 
         public async Task<PreferenceResponse> GetPreference(int organizationId)
         {
