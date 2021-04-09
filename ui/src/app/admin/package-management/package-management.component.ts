@@ -297,4 +297,10 @@ export class PackageManagementComponent implements OnInit {
     this.importClicked = true;
     //this.route.navigate(["import"]);
   }
+
+  pageSizeUpdated(_event){
+    setTimeout(() => {
+      document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
+    }, 100);
+  }
 }
