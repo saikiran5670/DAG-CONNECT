@@ -84,7 +84,9 @@ export class LoginComponent implements OnInit {
                 else{
                   this.showOrganizationRolePopup(data.body, resp[0], "");  
                 } 
-              }, (error) => {});
+              }, (error) => {
+                this.loginClicks = 0;
+              });
          }
          else if(data.status === 401){
           this.invalidUserMsg = true;

@@ -626,21 +626,30 @@ export class NewUserStepComponent implements OnInit {
           vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value ? this.firstFormGroup.controls.vehDisplay.value : this.defaultSetting.vehicleDisplayDropdownData[0].id,
           landingPageDisplayId: this.firstFormGroup.controls.landingPage.value ? this.firstFormGroup.controls.landingPage.value : this.defaultSetting.landingPageDisplayDropdownData[0].id
         }
-        this.accountService.updateAccountPreference(prefObj).subscribe((data) => {
-          if(linkStatus){
-            this.updateTableData(linkStatus);
-          }
-          else{
-            this.userCreatedMsg = this.getUserCreatedMessage(true);
-            this.grpTitleVisible = true;
-            setTimeout(() => {  
-              this.grpTitleVisible = false;
-            }, 5000);
-            this.stepper.next();
-          }
-        });
+        if(this.prefId != 0){
+          this.accountService.updateAccountPreference(prefObj).subscribe((data) => {
+            this.linkStatusStepper(linkStatus);
+          });
+        }
+        else{ //if prefId == 0
+          this.linkStatusStepper(linkStatus);
+        }
       });
     });
+  }
+
+  linkStatusStepper(linkStatus: any){
+    if(linkStatus){
+      this.updateTableData(linkStatus);
+    }
+    else{
+      this.userCreatedMsg = this.getUserCreatedMessage(true);
+      this.grpTitleVisible = true;
+      setTimeout(() => {  
+        this.grpTitleVisible = false;
+      }, 5000);
+      this.stepper.next();
+    }
   }
 
   onLanguageChange(event: any, value: any){

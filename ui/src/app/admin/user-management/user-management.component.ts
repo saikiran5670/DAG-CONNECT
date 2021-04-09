@@ -240,20 +240,28 @@ export class UserManagementComponent implements OnInit {
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
       this.userGrpData = allAccountGroupData;
       this.selectedRoleData = element.roles;
-        this.accountService.getAccountPreference(element.preferenceId).subscribe(accountPrefData => {
-          this.userDataForEdit = element;
-          this.selectedPreference = accountPrefData;
-            let reflectArray: any = [];
-            if(element.accountGroups.length > 0){
-              element.accountGroups.forEach((elem: any) => {
-                reflectArray.push({groupId: elem.id, accountGroupName: elem.name});
-              });
-            }
-            this.selectedUserGrpData = reflectArray;
+      this.userDataForEdit = element;
+      let reflectArray: any = [];
+      if(element.accountGroups.length > 0){
+        element.accountGroups.forEach((elem: any) => {
+          reflectArray.push({groupId: elem.id, accountGroupName: elem.name});
+        });
+      }
+      this.selectedUserGrpData = reflectArray;
+        if(element.preferenceId != 0){
+          this.accountService.getAccountPreference(element.preferenceId).subscribe(accountPrefData => {
+            this.selectedPreference = accountPrefData;
             this.editFlag = (type == 'edit') ? true : false;
             this.viewFlag = (type == 'view') ? true : false;
             this.isCreateFlag = false;
-        }, (error)=> {});
+          }, (error)=> {});
+        }
+        else{
+          this.selectedPreference = {};
+          this.editFlag = (type == 'edit') ? true : false;
+          this.viewFlag = (type == 'view') ? true : false;
+          this.isCreateFlag = false;
+        }
     }, (error)=> {});
    }, (error)=> {});
   }

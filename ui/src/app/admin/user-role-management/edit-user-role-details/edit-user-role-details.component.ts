@@ -54,8 +54,9 @@ export class EditUserRoleDetailsComponent implements OnInit {
     }
 
     this.roleService.getFeatures(objData).subscribe((data) => {
+      let initData = data.filter(item => item.state == 0);
       setTimeout(()=>{
-        this.dataSource = new MatTableDataSource(data);
+        this.dataSource = new MatTableDataSource(initData);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         if(!this.createStatus || this.duplicateFlag || this.viewFlag){
