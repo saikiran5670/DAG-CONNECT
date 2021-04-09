@@ -109,11 +109,11 @@ export class EditViewUserComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.userTypeList = [
       {
-        name: this.translationData.lblPortalUser || 'Portal User',
+        name: this.translationData.lblPortalUser || 'Portal Account',
         value: 'P'
       },
       {
-        name: this.translationData.lblSystemUser || 'System User',
+        name: this.translationData.lblSystemUser || 'System Account',
         value: 'S'
       }
     ];
@@ -317,17 +317,17 @@ export class EditViewUserComponent implements OnInit {
 
   editRoleData(){
     let type= "role";
-    let tableHeader: any = this.translationData.lblSelectedUserRoles || 'Selected User Roles';
+    let tableHeader: any = this.translationData.lblSelectedUserRoles || 'Selected Account Roles';
     let colsList: any = ['select', 'roleName', 'featureIds'];
-    let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lblUserRole || 'User Role', this.translationData.lblServices || 'Services'];
+    let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lblUserRole || 'Account Role', this.translationData.lblServices || 'Services'];
     this.callCommonTableToEdit(this.accountInfoData, type, colsList, colsName, tableHeader, this.selectedRoleData, this.allRoleData);
   }
 
   editUserGroupData(){
     let type= "userGroup";
-    let tableHeader: any = this.translationData.lblSelectedUserGroups || 'Selected User Groups';
+    let tableHeader: any = this.translationData.lblSelectedUserGroups || 'Selected Account Groups';
     let colsList: any = ['select', 'accountGroupName', 'accountCount'];
-    let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lblGroupName || 'Group Name', this.translationData.lblUsers || 'Users'];
+    let colsName: any = [this.translationData.lblAll || 'All', this.translationData.lblGroupName || 'Group Name', this.translationData.lblUsers || 'Accounts'];
     this.callCommonTableToEdit(this.accountInfoData, type, colsList, colsName, tableHeader, this.selectedUserGrpData, this.allUserGrpData);
   }
 
@@ -478,8 +478,8 @@ export class EditViewUserComponent implements OnInit {
     dialogConfig.data = {
       tableData: tableData,
       colsList: ['firstName','emailId','roles'],
-      colsName: [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'],
-      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers || 'Users'}`
+      colsName: [this.translationData.lblUserName || 'Account Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'Account Role'],
+      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers || 'Accounts'}`
     }
     this.dialogRefForView = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }

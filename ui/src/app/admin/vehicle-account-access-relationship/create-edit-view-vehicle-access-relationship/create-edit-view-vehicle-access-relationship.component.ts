@@ -40,7 +40,8 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.vehicleAccessRelationshipFormGroup = this._formBuilder.group({
       vehicleGroup: ['', [Validators.required]],
-      accessType: ['', [Validators.required]]
+      accessType: ['', [Validators.required]],
+      gridSearch: ['']
     });
     this.accessTypeList = [
       {
@@ -63,6 +64,10 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
   setDropdownValue(){
     this.vehicleAccessRelationshipFormGroup.get('vehicleGroup').setValue(this.selectedElementData.id);
     this.vehicleAccessRelationshipFormGroup.get('accessType').setValue(this.selectedElementData.accessType);
+    this.vehicleAccessRelationshipFormGroup.get('gridSearch').setValue('');
+    this.dataSource.filter = '';
+    this.selectedViewType = 'both';
+    this.onListChange({value: this.selectedViewType});
   }
 
   loadGridData(tableData: any){
@@ -146,6 +151,7 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
 
   onListChange(event: any){
     let data: any = [];
+    this.selectedViewType = event.value;
     switch(event.value){
       case "group":{
         data = this.initData.filter((item: any) => item.isGroup == true);
@@ -215,31 +221,32 @@ export class CreateEditViewVehicleAccessRelationshipComponent implements OnInit 
     let msg: any = '';
     if(this.actionType == 'create'){ //-- create
       if(this.translationData.lblAccessRelationshipcreatedsuccessfully){
-        msg = this.translationData.lblAccessRelationshipcreatedsuccessfully.replace('$', curObj.name ? curObj.name : '');
+        msg = this.translationData.lblAccessRelationshipcreatedsuccessfully.replace('$', curObj[0].name ? curObj[0].name : '');
       }
       else{
-        msg = ("'$' Access Relationship created successfully").replace('$', curObj.name ? curObj.name : '');
+        msg = ("'$' Access Relationship created successfully").replace('$', curObj[0].name ? curObj[0].name : '');
       }
     }else{ //-- update
       if(this.translationData.lblAccessRelationshipupdatedsuccessfully){
-        msg = this.translationData.lblAccessRelationshipupdatedsuccessfully.replace('$', curObj.name ? curObj.name : '');
+        msg = this.translationData.lblAccessRelationshipupdatedsuccessfully.replace('$', curObj[0].name ? curObj[0].name : '');
       }
       else{
-        msg = ("'$' Access Relationship updated successfully").replace('$', curObj.name ? curObj.name : '');
+        msg = ("'$' Access Relationship updated successfully").replace('$', curObj[0].name ? curObj[0].name : '');
       }
     }
+    return msg;
   }
 
   onReset(){
     this.selectionForAccountGrp.clear();
-    this.selectTableRows();
     this.setDropdownValue();
+    this.selectTableRows();
   }
 
   showAccountPopup(row: any){
     const colsList = ['firstName','emailId','roles'];
-    const colsName = [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'];
-    const tableTitle = `${row.name} - ${this.translationData.lblUsers || 'Users'}`;
+    const colsName = [this.translationData.lblUserName || 'Account Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'Account Role'];
+    const tableTitle = `${row.name} - ${this.translationData.lblUsers || 'Accounts'}`;
     let accountObj = {
       accountId: 0,
       organizationId: this.accountOrganizationId,

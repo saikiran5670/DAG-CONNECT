@@ -55,7 +55,7 @@
         </div>
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
       </div>
-      <div fxLayout="row" fxLayoutAlign="space-between center">
+      <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="space-between center">
         <div fxLayout="column" fxLayoutAlign="left">
             <div fxLayout="row" fxLayoutAlign='center center'>
                 <mat-icon class='margin-right-10'>info</mat-icon>
@@ -68,13 +68,13 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectAccountGroupAccount || 'Select Account Group/Account' }}</span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedAccountGroupAccount || 'Selected Account Group/Account') : (translationData.lblSelectAccountGroupAccount || 'Select Account Group/Account') }}</span>
         </div>
       </div>
       <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
         <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
           <mat-form-field appearance="outline">
-              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}" formControlName="gridSearch">
               <span matPrefix><mat-icon>search</mat-icon></span>
           </mat-form-field>
         </div>
@@ -98,7 +98,7 @@
         <mat-table [dataSource]="dataSource" class="table-items" matSort>
           <ng-container matColumnDef="select">
             <div>
-              <mat-header-cell *matHeaderCellDef>
+              <mat-header-cell [ngClass]="{'max-width-15-per': actionType != 'view'}" *matHeaderCellDef>
                 <mat-checkbox (change)='$event ? masterToggleForAccountGrp() : null'
                   [checked]='selectionForAccountGrp.hasValue() && isAllSelectedForAccountGrp()'
                   [indeterminate]='selectionForAccountGrp.hasValue() && !isAllSelectedForAccountGrp()'
@@ -106,7 +106,7 @@
                 </mat-checkbox>
                 <span style="margin: 5px 0px 0px 5px;" [ngClass]="{'opacity-0-5': actionType == 'view'}">{{ translationData.lblAll || 'All' }}</span>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">
+              <mat-cell [ngClass]="{'max-width-15-per': actionType != 'view'}" *matCellDef="let row">
                 <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectionForAccountGrp.toggle(row) : null'
                   [checked]='selectionForAccountGrp.isSelected(row)' [aria-label]='checkboxLabelForAccountGrp(row)' [disabled]="actionType == 'view'">
                 </mat-checkbox>
@@ -135,7 +135,7 @@
         <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
           (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
         <button [disabled]="!vehicleAccessRelationshipFormGroup.valid" mat-raised-button color="primary"
-          (click)='onConfirm()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
+          (click)='onConfirm()'>{{ (actionType == 'create') ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm || 'Confirm') }}</button>
       </div>
     </mat-card-content>
   </mat-card>

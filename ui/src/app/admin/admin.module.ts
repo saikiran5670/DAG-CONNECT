@@ -41,6 +41,7 @@ import { OrganisationRelationshipComponent } from './organisation-relationship/o
 import { CreateEditViewOrganisationRelationshipComponent } from './organisation-relationship/create-edit-view-organisation-relationship/create-edit-view-organisation-relationship.component';
 import { LinkOrgPopupComponent } from './user-management/new-user-step/link-org-popup/link-org-popup.component';
 import { LanguageSelectionComponent } from './translation-data-upload/language-selection/language-selection.component'
+import { MatTableExporterModule } from 'mat-table-exporter';
 
 @NgModule({
   declarations: [
@@ -85,7 +86,8 @@ import { LanguageSelectionComponent } from './translation-data-upload/language-s
       SharedModule,
       ChartsModule,
       ImageCropperModule,
-      DirectivesModule
+      DirectivesModule,
+      MatTableExporterModule
     ],
     providers: [ConfirmDialogService, AccountService, VehicleService],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]

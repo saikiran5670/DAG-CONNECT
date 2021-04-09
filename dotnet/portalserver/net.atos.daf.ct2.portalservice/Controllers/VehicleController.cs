@@ -105,6 +105,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The VehicleId is required.");
                 }
+
+                if (request.Organization_Id <= 0)
+                {
+                    return StatusCode(400, "The organization id is required.");
+                }
                 var vehicleRequest = _mapper.ToVehicle(request);
                 VehicleBusinessService.VehicleResponce vehicleResponse = await _vehicleClient.UpdateAsync(vehicleRequest);
                 var response = _mapper.ToVehicle(vehicleResponse.Vehicle);
@@ -113,6 +118,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                      && vehicleResponse.Message == "There is an error updating vehicle.")
                 {
                     return StatusCode(500, "There is an error creating account.");
+                }
+                else if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Conflict)
+                {
+                    return StatusCode(409, vehicleResponse.Message);
                 }
                 else if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Success)
                 {
@@ -517,7 +526,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(404, "vehicle group details are found.");
+                        return StatusCode(404, "vehicle group details are not found.");
                     }
                 }
                 else

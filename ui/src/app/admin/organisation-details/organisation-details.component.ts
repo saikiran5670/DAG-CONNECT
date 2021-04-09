@@ -1,72 +1,74 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslationService } from '../../services/translation.service';
-import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { OrganizationService } from '../../services/organization.service';
-import { AccountService } from '../../services/account.service';
-import { UserDetailTableComponent } from '../user-management/new-user-step/user-detail-table/user-detail-table.component';
-import { VehicleService } from '../../services/vehicle.service';
 
 @Component({
   selector: 'app-organisation-details',
   templateUrl: './organisation-details.component.html',
-  styleUrls: ['./organisation-details.component.less'],
+  styleUrls: ['./organisation-details.component.less']
 })
-
 export class OrganisationDetailsComponent implements OnInit {
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
-  displayedColumns: string[] = ['vehicleGroupName', 'userCount'];
-  dialogRef: MatDialogRef<UserDetailTableComponent>;
-  organizationId: any;
-  dataSource: any = new MatTableDataSource([]);
-  translationData: any;
+  // viewFlag: any = true;
+  editPrefereneceFlag: boolean = false;
   initData: any = [];
+  dataSource: any;
+  translationData: any;
+  accountOrganizationId: any = 0;
   localStLanguage: any;
-  showLoadingIndicator: any;
+  orgDetailsPreferenceForm: FormGroup;
+  titleVisible : boolean = false;
+  OrgDetailsMsg : any = '';
+  organisationData: any;
+  organisationPreferenceData: any;
+  // private _formBuilder: any;
+ 
 
-  constructor(
-    private translationService: TranslationService,
-    private orgService: OrganizationService,
-    private accountService: AccountService,
-    private vehicleService: VehicleService,
-    private dialog: MatDialog
-  ) {
+  constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private organizationService: OrganizationService) { 
     this.defaultTranslation();
   }
-
-  defaultTranslation() {
+  defaultTranslation(){
     this.translationData = {
-      lblFilter: 'Filter',
-      lblSearch: 'Search',
-      lblVehicleGroup: 'Vehicle Group',
-      lblVehicle: 'Vehicle',
-      lblUsers: 'Users',
-      lblVehicleName: 'Vehicle Name',
-      lblVIN: 'VIN',
-      lblRegistrationNumber: 'Registration Number',
-      lblUserRole: 'User Role',
-      lblOrganisationDetails: 'Organisation Details',
-      lblUsersList: 'Users List',
-      lblUserEmail: 'User Email',
-      lblUserName: 'User Name',
-    };
-
+      lblCountry :'Country',
+      lblCity : 'City',
+      lblPostalCode : 'Postal Code',
+      lblStreetNumber : 'Street Number',
+      lblStreetName: 'Street Name',
+      lblDescription: 'Description',
+      lblPackageName: 'Package Name',
+      lblID: 'ID',
+      lblLanguage: 'Language',
+      lblTimeZone:'Time Zone',
+      lblUnit: 'Unit',
+      lblCurrency: 'Currency',
+      lblDateFormat: 'DateFormat',
+      lblTimeFormat: 'Time Format',
+      lblVehicleDefaultStatus: 'Vehicle Default Status',
+      lblLanguageENGB: 'English GB',
+      lblPleasechooselanguageType: 'Please choose language type',
+      lblPleasechooseTimeZoneType: 'Please choose Time Zone type',
+      lblPleasechooseUnit: 'Please choose Unit type' ,
+      lblPleasechooseCurrency: 'Please choose Currency type',
+      lblPleasechooseDateFormat: 'Please choose Date Format type',
+      lblPleasechooseTimeFormat: 'Please choose Time Format type',
+      lblPleasechoosevehicleStatus: 'Please choose Vehicle Default Status type',
+      lblPleasechooseDriverDefaultStatus: 'Please choose Driver Default Status type'
+    }
   }
-
-  updateDataSource(data: any) {
-    setTimeout(() => {
-      this.dataSource = new MatTableDataSource(data);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
-  }
-
-  ngOnInit() {
-    this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+  ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.orgDetailsPreferenceForm = this._formBuilder.group({
+      language: ['', [Validators.required]],
+      timeZone: ['', [Validators.required]],
+      unit: ['', [Validators.required]],
+      currency: ['', [Validators.required]],
+      dateFormat: ['', [Validators.required]],
+      timeformat: ['', [Validators.required]],
+      vehicleDefaultStatus: ['', [Validators.required]],
+      driverDefaultStatus: ['', [Validators.required]]
+    });
+    
     let translationObj = {
       id: 0,
       code: this.localStLanguage.code,
@@ -74,113 +76,61 @@ export class OrganisationDetailsComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 23 //-- for org details
+      menuId: 3 //-- for user mgnt
     }
-    // this.translationService.getMenuTranslations(translationObj).subscribe((data) => {
-    //   this.processTranslation(data);
-    //   this.loadOrgData();
-    // });
-  }
-
-  loadOrgData() {
-    this.showLoadingIndicator = true;
-    this.orgService.getOrganizationDetails(this.organizationId).subscribe(
-      (_data) => {
-        this.hideloader();
-        this.initData = _data;
-        this.updateDataSource(this.initData);
-      },
-      (error) => {
-        this.hideloader();
-        console.error(' error : ' + error);
-      }
-    );
-  }
-
-  onUserClick(row: any){
-    const colsList = ['firstName','emailId','roles'];
-    const colsName = [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'];
-    const tableTitle = `${row.vehicleGroupName} - ${this.translationData.lblUsers || 'Users'}`;
-    
-    let obj: any = {
-      accountId: 0,
-      organizationId: this.organizationId,
-      accountGroupId: 0,
-      vehicleGroupId: row.vehicleGroupId,
-      roleId: 0,
-      name: ""
-    }
-
-    this.accountService.getAccountDetails(obj).subscribe((data)=>{
-      data = this.makeRoleAccountGrpList(data);
-      this.callToCommonTable(data,colsList,colsName,tableTitle);
+    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+      this.processTranslation(data);
+      this.loadOrganisationdata();
+      this.loadOrgPreferenceData();
     });
   }
 
-  onVehClick(row:any){
-    const colsList = ['name','vin','licensePlateNumber'];
-    const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
-    const tableTitle =`${row.vehicleGroupName} - ${this.translationData.lblVehicles || 'Vehicles'}`;
-    this.vehicleService.getVehicleListById(row.vehicleGroupId).subscribe((data)=>{
-      this.callToCommonTable(data, colsList, colsName, tableTitle);
+  loadOrganisationdata(){
+    this.organizationService.getOrganizationDetails(this.accountOrganizationId).subscribe((orgData: any) => {
+      this.organisationData = orgData;
+      console.log("---orgData---",this.organisationData)
+    });
+  }
+  loadOrgPreferenceData() {
+    this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPreferenceData: any) => {
+      this.organisationPreferenceData = orgPreferenceData.organizationPreference;
+      console.log("---orgPrefrenceData---",this.organisationPreferenceData)
     });
   }
 
-  callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any){
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.disableClose = true;
-    dialogConfig.autoFocus = true;
-    dialogConfig.data = {
-      tableData: tableData,
-      colsList: colsList,
-      colsName:colsName,
-      tableTitle: tableTitle
-    }
-    this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
+  languageChange(event:any) {
+
   }
 
-  makeRoleAccountGrpList(initdata){
-    initdata.forEach((element, index) => {
-      let roleTxt: any = '';
-      let accGrpTxt: any = '';
-      element.roles.forEach(resp => {
-        roleTxt += resp.name + ', ';
-      });
-      element.accountGroups.forEach(resp => {
-        accGrpTxt += resp.name + ', ';
-      });
+  onPreferenceEdit() {
+    this.editPrefereneceFlag = true;
 
-      if(roleTxt != ''){
-        roleTxt = roleTxt.slice(0, -2);
-      }
-      if(accGrpTxt != ''){
-        accGrpTxt = accGrpTxt.slice(0, -2);
-      }
-
-      initdata[index].roleList = roleTxt; 
-      initdata[index].accountGroupList = accGrpTxt;
-    });
-    
-    return initdata;
+  }
+  onCloseMsg(){
+    this.titleVisible = false;
   }
 
-  processTranslation(transData: any) {
-    this.translationData = transData.reduce(
-      (acc, cur) => ({ ...acc, [cur.name]: cur.value }),
-      {}
-    );
+  onCancel() {
+    this.editPrefereneceFlag = false;
+  }
+  onReset() {
+
+  }
+  onCreateUpdate() {
+    let successMsg = "Organisation Details Updated Successfully!"
+    this.successMsgBlink(successMsg);
+  }
+  processTranslation(transData: any){
+    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
   }
 
-  applyFilter(filterValue: string) {
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    this.dataSource.filter = filterValue;
+  successMsgBlink(msg: any){
+    this.titleVisible = true;
+    this.editPrefereneceFlag = false;
+    this.OrgDetailsMsg = msg;
+    setTimeout(() => {  
+      this.titleVisible = false;
+    }, 5000);
   }
-
-  hideloader() {
-    // Setting display of spinner
-      this.showLoadingIndicator=false;
-  }
-
 }

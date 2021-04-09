@@ -15,7 +15,7 @@ import { CustomValidators } from 'src/app/shared/custom.validators';
 
 export class EditUserRoleDetailsComponent implements OnInit {
   breadcumMsg: any = '';
-  loggedInUser : string = 'admin';
+ // loggedInUser : string = 'admin';
   userRoleFormGroup: FormGroup;
   @Output() backToPage = new EventEmitter<any>();
   featureDisplayedColumns: string[] = ['name', 'select'];
@@ -54,8 +54,9 @@ export class EditUserRoleDetailsComponent implements OnInit {
     }
 
     this.roleService.getFeatures(objData).subscribe((data) => {
+      let initData = data.filter(item => item.state == 0);
       setTimeout(()=>{
-        this.dataSource = new MatTableDataSource(data);
+        this.dataSource = new MatTableDataSource(initData);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         if(!this.createStatus || this.duplicateFlag || this.viewFlag){
@@ -85,7 +86,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
       this.userRoleFormGroup.patchValue({
         userRoleName: this.gridData[0].roleName,
         userRoleDescription: this.gridData[0].description,
-        roleType: (this.loggedInUser == 'admin'? (this.gridData[0].organizationId==0? 'Global' : 'Regular') : 'Regular')
+        roleType: ((this.organizationId == 1 || this.organizationId == 2) ? (this.gridData[0].organizationId==0? 'Global' : 'Regular') : 'Regular')
       })
       
       this.dataSource.data.forEach(row => {

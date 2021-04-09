@@ -65,6 +65,9 @@
             <!-- <mat-error *ngIf="!vehicleForm.get('registrationNumber').hasError('required')  && vehicleForm.get('registrationNumber').hasError('whitespace')">
               {{ translationData.lblRegistrationNumbercannotcontainonlywhitespace || 'Registration Number cannot contain only whitespace' }}
             </mat-error> -->
+            <mat-error *ngIf="duplicateRegistrationNumber">
+              {{ translationData.lblDuplicateRegistrationNumber || 'Duplicate Registration Number' }}
+            </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
             <span style='font-weight: 500!important;'>{{ selectedRowData.licensePlateNumber ? selectedRowData.licensePlateNumber : '--' }}</span>

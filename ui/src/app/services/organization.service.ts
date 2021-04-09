@@ -36,6 +36,16 @@ export class OrganizationService {
     return getHeaderObj;
   }
   
+  getOrganizationPreference(id: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.organizationServiceUrl}/preference/get?organizationId=${id}`,headers)
+      .pipe(catchError(this.handleError));
+  }
+
   getOrganizationDetails(id: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -70,13 +80,19 @@ export class OrganizationService {
    }
 
    createRelationship(data: any): Observable<any> {
-    let headerObj = this.generateHeader();
-    const headers = {
-      headers: new HttpHeaders({ headerObj }),
-    };
-    return this.httpClient
-      .post<any>(`${this.organizationServiceUrl}/relationship/create`, data, headers)
-      .pipe(catchError(this.handleError));
+    // let headerObj = this.generateHeader();
+    // const headers = {
+    //   headers: new HttpHeaders({ headerObj }),
+    // };
+    // return this.httpClient
+    //   .post<any>(`${this.organizationServiceUrl}/relationship/create`, data, headers)
+    //   .pipe(catchError(this.handleError));
+    const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
+    return this.httpClient.post<any[]>(
+      `${this.organizationServiceUrl}/relationship/create`, 
+       data , 
+      { headers, responseType: 'text' as 'json'}
+    ).pipe(catchError(this.handleError));
   }
 
   deleteRelationship(id: number): Observable<void> {
@@ -104,6 +120,16 @@ export class OrganizationService {
        data , 
       { headers, responseType: 'text' as 'json'}
     ).pipe(catchError(this.handleError));
+  }
+
+  getLevelcode(): Observable<any[]> {
+   let headerObj = this.generateHeader();
+   const headers = {
+    headers: new HttpHeaders({ headerObj }),
+  };
+    return this.httpClient
+      .get<any[]>(`${this.organizationServiceUrl}/relationship/getlevelcode`,headers)
+      .pipe(catchError(this.handleError));
   }
 
   getOrgRelationshipDetailsLandingPage(): Observable<any[]> {

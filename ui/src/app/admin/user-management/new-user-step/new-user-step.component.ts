@@ -74,6 +74,7 @@ export class NewUserStepComponent implements OnInit {
   croppedImageTemp= '';
   @Input() privilegeAccess: any;
   prefId: any = 0;
+  orgDefaultFlag: any;
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -128,14 +129,24 @@ export class NewUserStepComponent implements OnInit {
     });
     this.userTypeList = [
       {
-        name: this.translationData.lblPortalUser || 'Portal User',
+        name: this.translationData.lblPortalUser || 'Portal Account',
         value: 'P'
       },
       {
-        name: this.translationData.lblSystemUser || 'System User',
+        name: this.translationData.lblSystemUser || 'System Account',
         value: 'S'
       }
     ];
+    this.orgDefaultFlag = {
+      language: false,
+      timeZone: false,
+      unit: false,
+      currency: false,
+      dateFormat: false,
+      vehDisplay: false,
+      timeFormat: false,
+      landingPage: false
+    }
     this.roleDataSource = new MatTableDataSource(this.roleData);
     this.userGrpDataSource = new MatTableDataSource(this.userGrpData);
     this.firstFormGroup.get('userType').setValue(this.userTypeList[0].value); //-- default portal
@@ -440,12 +451,12 @@ export class NewUserStepComponent implements OnInit {
       if(this.translationData.lblNewUserAccountCreatedSuccessfully)
         return this.translationData.lblNewUserAccountCreatedSuccessfully.replace('$', this.userName);
       else
-        return ("New User Account '$' Created Successfully").replace('$', this.userName);
+        return ("New Account '$' Created Successfully").replace('$', this.userName);
     }else{
       if(this.translationData.lblUserAccountUpdatedSuccessfully)
         return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', this.userName);
       else
-        return ("User Account '$' Updated Successfully").replace('$', this.userName);
+        return ("Account '$' Updated Successfully").replace('$', this.userName);
     }
   }
 
@@ -580,8 +591,8 @@ export class NewUserStepComponent implements OnInit {
     dialogConfig.data = {
       tableData: tableData,
       colsList: ['firstName','emailId','roles'],
-      colsName: [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'],
-      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers || 'Users'}`
+      colsName: [this.translationData.lblUserName || 'Account Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'Account Role'],
+      tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers || 'Accounts'}`
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
@@ -615,21 +626,71 @@ export class NewUserStepComponent implements OnInit {
           vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value ? this.firstFormGroup.controls.vehDisplay.value : this.defaultSetting.vehicleDisplayDropdownData[0].id,
           landingPageDisplayId: this.firstFormGroup.controls.landingPage.value ? this.firstFormGroup.controls.landingPage.value : this.defaultSetting.landingPageDisplayDropdownData[0].id
         }
-        this.accountService.updateAccountPreference(prefObj).subscribe((data) => {
-          if(linkStatus){
-            this.updateTableData(linkStatus);
-          }
-          else{
-            this.userCreatedMsg = this.getUserCreatedMessage(true);
-            this.grpTitleVisible = true;
-            setTimeout(() => {  
-              this.grpTitleVisible = false;
-            }, 5000);
-            this.stepper.next();
-          }
-        });
+        if(this.prefId != 0){
+          this.accountService.updateAccountPreference(prefObj).subscribe((data) => {
+            this.linkStatusStepper(linkStatus);
+          });
+        }
+        else{ //if prefId == 0
+          this.linkStatusStepper(linkStatus);
+        }
       });
     });
+  }
+
+  linkStatusStepper(linkStatus: any){
+    if(linkStatus){
+      this.updateTableData(linkStatus);
+    }
+    else{
+      this.userCreatedMsg = this.getUserCreatedMessage(true);
+      this.grpTitleVisible = true;
+      setTimeout(() => {  
+        this.grpTitleVisible = false;
+      }, 5000);
+      this.stepper.next();
+    }
+  }
+
+  onLanguageChange(event: any, value: any){
+    switch(value){
+      case "language":{
+        this.orgDefaultFlag.language = false;
+        break;
+      }
+      case "timeZone":{
+        this.orgDefaultFlag.timeZone = false;
+        break;
+      }
+      case "unit":{
+        this.orgDefaultFlag.unit = false;
+        break;
+      }
+      case "currency":{
+        this.orgDefaultFlag.currency = false;
+        break;
+      }
+      case "dateFormat":{
+        this.orgDefaultFlag.dateFormat = false;
+        break;
+      }
+      case "timeFormat":{
+        this.orgDefaultFlag.timeFormat = false;
+        break;
+      }
+      case "vehDisplay":{
+        this.orgDefaultFlag.vehDisplay = false;
+        break;
+      }
+      case "landingPage":{
+        this.orgDefaultFlag.landingPage = false;
+        break;
+      }
+    }
+  }
+
+  onOpenChange(event: any){
+    //console.log("event:: ", event);
   }
   
 }

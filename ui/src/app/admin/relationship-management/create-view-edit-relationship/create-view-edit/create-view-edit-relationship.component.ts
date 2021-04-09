@@ -39,12 +39,15 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   featuresSelected = [];
   featuresData = [];
   organizationId: number;
-  levels= [10, 20, 30];
-  codes= ['Code 1', 'Code 2', 'Code 3'];
+  // levels= [10, 20, 30];
+  // codes= ['Code 1', 'Code 2', 'Code 3'];
   titleText: string;
   rowsData: any;
   editFlag: boolean = false;
   editFromRelationship: boolean = false;
+  levelList: any = [];
+  codeList: any =[];
+  userType: any;
 
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService, private organizationService: OrganizationService, private router: Router) { }
 
@@ -52,27 +55,50 @@ export class CreateViewEditRelationshipComponent implements OnInit {
 
   ngOnInit() {
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    this.userType = localStorage.getItem("userType");
     this.relationshipFormGroup = this._formBuilder.group({
       relationshipName: ['', [Validators.required, Validators.maxLength(60),CustomValidators.noWhitespaceValidator]],
       relationshipDescription: ['',[CustomValidators.noWhitespaceValidatorforDesc]],
-      level: ['Regular', [Validators.required]],
-      code: ['Regular', [Validators.required]]
+      level: [],
+      code: []
     });
 
     let objData = {
       organization_Id: this.organizationId
     }
 
+    this.organizationService.getLevelcode().subscribe((obj: any)=>{
     this.roleService.getFeatures(objData).subscribe((data) => {
+      this.levelList = obj["levels"];
+      this.codeList = obj["codes"];
+      if(this.createStatus)
+      {
+      this.setDefaultValue();
+      }
+      if(this.viewFlag)
+      {
+        let selectedFeatureList: any = [];
+        data.forEach((row: any) => {
+          let search = this.gridData[0].featureIds.includes(row.id);
+        // let search = this.featuresSelected.filter((item: any) => item == row.id);
+            if (search) {
+              selectedFeatureList.push(row);
+            }
+          });
+            data = selectedFeatureList;
+            this.featureDisplayedColumns = ['name'];
+      }
       setTimeout(()=>{
         this.dataSource = new MatTableDataSource(data);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-        if(!this.createStatus || this.viewFlag){
+        if(!this.createStatus){
+        // if(this.editFlag){
           this.onReset();
         }
       });
       this.featuresData = data;
+    });
     }, (error) => { });
 
     this.doneFlag = this.createStatus ? false : true;
@@ -80,7 +106,8 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   }
 
     backToOrgRelationPage= function () {
-    this.router.navigate(['/admin/organisationrelationship']);
+    // this.router.navigate(['/admin/organisationrelationship']);
+    this.router.navigate(['/admin/organisationrelationshipmanagement']);
 };
 
   getBreadcum(){
@@ -88,7 +115,25 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   }
 
   onCancel() {
+    if(this.viewRelationshipFromOrg)
+    {
+      this.viewFlag =false;
+      this.editFlag =false;
+      this.backToOrgRelationPage();
+    }
+    else{
     this.backToPage.emit({ viewFlag: false, editFlag: false, editText: 'cancel' });
+    }
+  }
+
+  toBack(){
+    if(this.viewRelationshipFromOrg)
+    {
+      this.backToOrgRelationPage();
+    }
+    else{
+    this.backToPage.emit({ viewFlag: false, editFlag: false, editText: 'cancel' });
+    }  
   }
 
   editRelationship(row: any){
@@ -170,19 +215,18 @@ export class CreateViewEditRelationshipComponent implements OnInit {
         this.selectionForFeatures.selected.forEach(feature => {
           featureIds.push(feature.id);
         })
-        
+
         let objData = {
           organizationId: this.organizationId,
           featureIds: featureIds,
           featuresetId: 0,
           name : this.relationshipFormGroup.controls.relationshipName.value,
           description:this.relationshipFormGroup.controls.relationshipDescription.value,
-          level: this.relationshipFormGroup.controls.level.value,
-          code: this.relationshipFormGroup.controls.code.value,
+          level: (this.userType == "Admin#Platform" || this.userType == "Admin#Global") ? this.relationshipFormGroup.controls.level.value : 40,
+          code: (this.userType == "Admin#Platform" || this.userType == "Admin#Global") ? this.relationshipFormGroup.controls.code.value : "Owner",
           id: 0,
           isActive: true
         }
-
         this.organizationService.createRelationship(objData).subscribe((res) => {
           this.backToPage.emit({ editFlag: false, editText: 'create',  name: this.relationshipFormGroup.controls.relationshipName.value });
         }, (error) => { 
@@ -191,6 +235,12 @@ export class CreateViewEditRelationshipComponent implements OnInit {
           }
         });
       }
+  }
+
+  setDefaultValue(){
+    console.log(this.levelList);
+    this.relationshipFormGroup.get("level").setValue( this.levelList[0].id);
+    this.relationshipFormGroup.get("code").setValue(this.codeList[0].name);
   }
 
   updateRelationship(){  
@@ -209,8 +259,10 @@ export class CreateViewEditRelationshipComponent implements OnInit {
       organizationId: this.gridData[0].organizationId,
       featuresetId: this.gridData[0].featuresetid,
       name : this.relationshipFormGroup.controls.relationshipName.value,
-      level: this.relationshipFormGroup.controls.level.value,
-      code: this.relationshipFormGroup.controls.code.value,
+      // level: (this.organizationId == 1 || this.organizationId == 2) ? this.relationshipFormGroup.controls.level.value : 40,
+      // code: (this.organizationId == 1 || this.organizationId == 2) ? this.relationshipFormGroup.controls.code.value : "Owner",
+      level: (this.userType == "Admin#Platform" || this.userType == "Admin#Global") ? this.relationshipFormGroup.controls.level.value : 40,
+      code: (this.userType == "Admin#Platform" || this.userType == "Admin#Global") ? this.relationshipFormGroup.controls.code.value : "Owner",
       description:this.relationshipFormGroup.controls.relationshipDescription.value,
       featureIds: featureIds,
       isActive: this.gridData[0].isActive

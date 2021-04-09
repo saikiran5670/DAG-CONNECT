@@ -3,7 +3,7 @@
         <span>{{ breadcumMsg }}</span>
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
-        <span class='custom-font' (click)="onCancel()">
+        <span class='custom-font' (click)="toBack()">
             <span><&nbsp;</span>
             <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
     </div>
@@ -32,15 +32,16 @@
                         }}</mat-label>
                 </div>
             </div>
-            <div *ngIf="organizationId == 1 || organizationId == 2" fxLayout="row" fxLayoutAlign="start"
+            <!-- <div *ngIf="organizationId == 1 || organizationId == 2" fxLayout="row" fxLayoutAlign="start"
+                class="full-width margin-bottom-sm" fxLayoutGap="50px"> -->
+                <div *ngIf="userType == 'Admin#Platform' || userType == 'Admin#Global'" fxLayout="row" fxLayoutAlign="start"
                 class="full-width margin-bottom-sm" fxLayoutGap="50px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblLevelOnlyForDAFPlatformAdmin || 'Level(Only for DAF/platform
-                        admin)' }}</mat-label>
-                    <mat-label class='custom-font'>{{ this.gridData[0].level }}</mat-label>
+                    <mat-label>{{ translationData.lblLevel || 'Level' }}</mat-label>
+                    <mat-label class='custom-font'>{{ this.gridData[0].levelVal }}</mat-label>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblCodeOnlyForDAFPlatformAdmin || 'Code(Only for DAF/platform admin)'
+                    <mat-label>{{ translationData.lblCode || 'Code'
                         }}</mat-label>
                     <mat-label class='custom-font'>{{ this.gridData[0].code }}</mat-label>
                 </div>
@@ -97,30 +98,39 @@
                     </mat-error>
                 </div>
             </div><br>
-            <div *ngIf="organizationId == 1 || organizationId == 2" fxLayout="row" fxLayoutAlign="start"
+            <!-- <div *ngIf="organizationId == 1 || organizationId == 2" fxLayout="row" fxLayoutAlign="start" -->
+                <!-- <div *ngIf="organizationId == 1 || organizationId == 2" fxLayout="row" fxLayoutAlign="start"
+                class="full-width" fxLayoutGap="50px"> -->
+                <div *ngIf="userType == 'Admin#Platform' || userType == 'Admin#Global'" fxLayout="row" fxLayoutAlign="start"
                 class="full-width" fxLayoutGap="50px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>
-                        {{ translationData.lblLevelOnlyForDAFPlatformAdmin || 'Level (Only for DAF/platform admin)'
+                        {{ translationData.lblLevel || 'Level'
                         }}<span class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-select placeholder="{{ translationData.lblSelectLevel || 'Select Level' }}" formControlName="level">
-                            <mat-option *ngFor="let level of levels" [value]="level">
+                        <mat-select formControlName="levels" placeholder="{{ translationData.lblSelectLevel || 'Select Level' }}" formControlName="level">
+                            <!-- <mat-option *ngFor="let level of levels" [value]="level">
                                 {{level}}
+                            </mat-option> -->
+                            <mat-option *ngFor="let options of levelList" [value]="options.id">
+                                {{ options.name }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>
-                        {{ translationData.lblCodeOnlyForDAFPlatformAdmin || 'Code(Only for DAF/platform admin)' }}<span
+                        {{ translationData.lblCode || 'Code' }}<span
                             class='mandatoryColor'>*</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <mat-select placeholder="{{ translationData.lblSelectCode || 'Select Code' }}" formControlName="code">
-                            <mat-option *ngFor="let code of codes" [value]="code">
+                        <mat-select formControlName="codes" placeholder="{{ translationData.lblSelectCode || 'Select Code' }}" formControlName="code">
+                            <!-- <mat-option *ngFor="let code of codes" [value]="code">
                                 {{code}}
+                            </mat-option> -->
+                            <mat-option *ngFor="let options of codeList" [value]="options.name">
+                                {{ options.name }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -180,7 +190,7 @@
                             <mat-checkbox (change)='$event ? masterToggleForFeatures() : null'
                                 [checked]='selectionForFeatures.hasValue() && isAllSelectedForFeatures()'
                                 [indeterminate]='selectionForFeatures.hasValue() && !isAllSelectedForFeatures()'
-                                [aria-label]='checkboxLabelForFeatures()'>
+                                [aria-label]='checkboxLabelForFeatures()' [disabled]="viewFlag">
                             </mat-checkbox>
                             <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
                         </mat-header-cell>
@@ -188,7 +198,7 @@
                             <mat-checkbox (click)='$event.stopPropagation()'
                                 (change)='$event ? selectionForFeatures.toggle(row) : null'
                                 [checked]='selectionForFeatures.isSelected(row)'
-                                [aria-label]='checkboxLabelForFeatures(row)'>
+                                [aria-label]='checkboxLabelForFeatures(row)' [disabled]="viewFlag">
                             </mat-checkbox>
                         </mat-cell>
                     </ng-container>

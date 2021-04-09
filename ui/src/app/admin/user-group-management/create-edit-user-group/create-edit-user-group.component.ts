@@ -252,12 +252,12 @@ export class CreateEditUserGroupComponent implements OnInit {
       if(this.translationData.lblUserGroupCreatedSuccessfully)
         return this.translationData.lblUserGroupCreatedSuccessfully.replace('$', userName);
       else
-        return ("User Group '$' Created Successfully").replace('$', userName);
+        return ("Account Group '$' Created Successfully").replace('$', userName);
     }else if(this.actionType == 'edit') {
       if (this.translationData.lblUserGroupUpdatedSuccessfully)
         return this.translationData.lblUserGroupUpdatedSuccessfully.replace('$', userName);
       else
-        return ("User Group '$' Updated Successfully").replace('$', userName);
+        return ("Account Group '$' Updated Successfully").replace('$', userName);
     }
     else{
       return '';

@@ -168,31 +168,40 @@ export class FeatureManagementComponent implements OnInit {
     this.dialogRef.afterClosed().subscribe((res: any) => {
       if(res){ 
               // TODO: change status with latest grid data
-              let updatedFeatureParams = {
-                    id: rowData.id,
-                    name: rowData.name,
-                    description: "",
-                    type: "D",
-                    IsFeatureActive: true,
-                    dataattributeSet: {
-                      id: rowData.dataAttribute.dataAttributeSetId,
-                      name: "",
-                      isActive: true,
-                      is_Exclusive: rowData.isExclusive,
-                      description: "",
-                      status: 0
-                    },
-                    key: "",
-                    dataAttributeIds: rowData.dataAttribute.dataAttributeIDs,
-                    level: 0,
-                    featureState: parseInt(rowData.state) == 1 ? 0 : 1
-                  }
+              // let updatedFeatureParams = {
+              //       id: rowData.id,
+              //       name: rowData.name,
+              //       description: "",
+              //       type: "D",
+              //       IsFeatureActive: true,
+              //       dataattributeSet: {
+              //         id: rowData.dataAttribute.dataAttributeSetId,
+              //         name: "",
+              //         isActive: true,
+              //         is_Exclusive: rowData.isExclusive,
+              //         description: "",
+              //         status: 0
+              //       },
+              //       key: "",
+              //       dataAttributeIds: rowData.dataAttribute.dataAttributeIDs,
+              //       level: 0,
+              //       featureState: parseInt(rowData.state) == 1 ? 0 : 1
+              //     }
 
-              this.featureService.updateFeature(updatedFeatureParams).subscribe((dataUpdated: any) => {
+              // this.featureService.updateFeature(updatedFeatureParams).subscribe((dataUpdated: any) => {
+              //   let successMsg = "Status updated successfully."
+              //   this.successMsgBlink(successMsg);
+              //   this.loadFeatureData();
+              // });
+              let objData ={
+                    id: rowData.id,
+                    state: rowData.state === 0 ? 1 : 0
+              }
+              this.featureService.updateFeatureState(objData).subscribe((data) => {
                 let successMsg = "Status updated successfully."
                 this.successMsgBlink(successMsg);
                 this.loadFeatureData();
-              });
+              })
       }
       else {
         this.loadFeatureData();
@@ -205,8 +214,8 @@ export class FeatureManagementComponent implements OnInit {
     const options = {
       title: this.translationData.lblDelete || "Delete",
       message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
-      cancelText: this.translationData.lblNo || "No",
-      confirmText: this.translationData.lblYes || "Yes"
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: this.translationData.lblDelete || "Delete"
     };
     this.dialogService.DeleteModelOpen(options, rowData.name);
     this.dialogService.confirmedDel().subscribe((res) => {
@@ -250,6 +259,10 @@ export class FeatureManagementComponent implements OnInit {
 
   updatedTableData(tableData : any) {
     this.initData = tableData;
+    this.initData.map(obj =>{   //temporary
+      obj.statusVal = obj.state === 0? 'active': obj.state === 1 ? 'inactive': '';
+      obj.isExclusiveVal = obj.isExclusive === true ? 'exclusive' : obj.isExclusive === false ? 'inclusive': '';
+    })
     // this.initData = this.getNewTagData(this.initData);
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(()=>{

@@ -449,7 +449,7 @@ export class DriverManagementComponent implements OnInit {
 
   driveIdValidation(value: any){
     let obj: any = { status: true, reason: 'correct data'};
-    const regx = /[A-Z]{1,1}[A-Z\s]{1,1}[\s]{1,1}[A-Z0-9]{16,16}/;
+    const regx = /[A-Z]{1,1}[A-Z\s]{1,1}[\s]{1,1}[A-Z0-9]{13,13}[0-9]{3,3}/;
     if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
       obj.reason = this.translationData.lblDriverIDismandatoryinput || 'Driver ID is mandatory input';
@@ -539,8 +539,8 @@ export class DriverManagementComponent implements OnInit {
     const options = {
       title: this.translationData.lblDeleteDriver || "Delete Driver",
       message: this.translationData.lblAreyousureyouwanttodeletedriver || "Are you sure you want to delete driver '$'? ",
-      cancelText: this.translationData.lblNo || "No",
-      confirmText: this.translationData.lblYes || "Yes"
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: this.translationData.lblDelete || "Delete"
     };
    
     let name = `${row.firstName} ${row.lastName}`;

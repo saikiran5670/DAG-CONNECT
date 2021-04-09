@@ -99,6 +99,7 @@ message VehicleRequest {
   int32 Id=1;
   string Name = 2;
   string LicensePlateNumber=3;
+  int32 Organization_Id=4;
 }
 
 // The response message containing the greetings.
@@ -106,6 +107,7 @@ message VehicleResponce {
   Responcecode code=1;
   string message = 2;
   VehicleRequest vehicle=3;
+  bool Exists=4;
 }
 
 message VehicleCreateResponce {

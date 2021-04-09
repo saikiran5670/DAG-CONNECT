@@ -15,6 +15,8 @@ using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.portalservice.Entity.Relationship;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -33,12 +35,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly VehicleBusinessService.VehicleService.VehicleServiceClient _vehicleClient;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-
+        public IConfiguration Configuration { get; }
         public OrganizationController(ILogger<OrganizationController> _logger,
                                       OrganizationService.OrganizationServiceClient _organizationClient,
                                       AccountBusinessService.AccountService.AccountServiceClient accountClient,
                                       FeatureService.FeatureServiceClient featureclient,
-                                      VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient)
+                                      VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient,
+                                      IConfiguration configuration)
         {
             logger = _logger;
             organizationClient = _organizationClient;
@@ -47,6 +50,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _relationshipMapper = new RelationshipMapper();
             _featureSetMapper = new FeatureSetMapper(featureclient);
             _vehicleClient = vehicleClient;
+            Configuration = configuration;
         }
 
 
@@ -397,6 +401,30 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
+        [Route("GetOrganizationInfo")]
+        public async Task<IActionResult> GetOrganizationInfo(int organizationId)
+        {
+            try
+            {
+                OrganizationBusinessService.IdRequest idRequest = new OrganizationBusinessService.IdRequest();
+                idRequest.Id = organizationId;
+                logger.LogInformation("Organization get details function called ");
+                if (organizationId < 1)
+                {
+                    return StatusCode(400, "Please provide organization ID:");
+                }
+                OrganizationBusinessService.OrgDetailResponse orgResponse = await organizationClient.GetOrganizationDetailsAsync(idRequest);
+
+                return Ok(orgResponse);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpGet]
         [Route("getall")]
         public async Task<IActionResult> GetAll(int organizationId)
         {
@@ -731,14 +759,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         OrganizationName = item.Name
                     });
                 }
+                int OwnerRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value);
+                int OEMRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OEMRelationship").Value);
                 foreach (var item in RelationList.RelationshipList)
                 {
                     
-                    details.RelationShipData.Add(new RelationshipData
+                    if (item.Id != OwnerRelationship && item.Id != OEMRelationship)
                     {
-                        RelationId = Convert.ToInt32(item.Id),
-                        RelationName = item.Name
-                    });
+                        details.RelationShipData.Add(new RelationshipData
+                        {
+                            RelationId = Convert.ToInt32(item.Id),
+                            RelationName = item.Name
+                        });
+                    }
+                    
                 }
                 return Ok(details);
 
@@ -789,7 +823,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 logger.LogInformation("Organization GetAllOrganizations function called ");
-                
+                if (objOrganizationByID.RoleId == 0)
+                {
+                    var request = Request;
+                    var Headers = request.Headers;
+                    objOrganizationByID.RoleId = Convert.ToInt32(Headers["roleid"]);
+                }
                 var data = await organizationClient.GetAllOrganizationsAsync(objOrganizationByID);
                 return Ok(data);
             }

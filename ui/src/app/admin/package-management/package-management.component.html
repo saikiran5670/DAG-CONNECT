@@ -1,4 +1,4 @@
-<div class='bgtrans'>
+<div class='bgtrans' *ngIf="!importClicked">
   <div *ngIf='titleVisible' fxLayout="row" fxLayoutAlign="center center"
       style='padding:10px; color:#fff; background: #5dc24e;'>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
@@ -21,15 +21,49 @@
             <span matPrefix><mat-icon>search</mat-icon></span>
         </mat-form-field>
     </div>
-    <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-        <button mat-flat-button color="primary" (click)="createNewPackage()">
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+      <div fxLayout="row" class='areaWidth'>
+      <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
+        <!-- <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="exportAsPdf()">PDF (as snapshot)</button>
+          <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
+        </mat-menu> -->
+      </div>
+      <!-- <div>
+        <button mat-flat-button (click)="importPackageCSV()">
+          {{ translationData.lblImport || 'Import' }}<mat-icon>file_download</mat-icon>
+        </button>
+      </div> -->
+      <div  *ngIf="!adminAccessType.adminReadOnlyAccess" >
+      <button mat-flat-button color="primary" (click)="createNewPackage()">
         <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewPackage || 'New Package' }}
         </button>
+      </div>
+      </div>
     </div>
 </div>
 <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
-<div *ngIf='initData.length > 0'>
-  <mat-table [dataSource]="dataSource" class="table-items" matSort>
+<div *ngIf='initData.length > 0' id="packageData">
+  <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
+    <!-- <ng-container matColumnDef="select">
+      <mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)='$event ? masterToggleForPackage() : null'
+          [checked]='selectedPackages.hasValue() && isAllSelectedForPackege()'
+          [indeterminate]='selectedPackages.hasValue() && !isAllSelectedForPackege()'
+          [aria-label]='checkboxLabelForPackage()'>
+        </mat-checkbox>
+        <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
+        <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+        <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
+        <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedPackages.toggle(row) : null'
+          [checked]='selectedPackages.isSelected(row)' [aria-label]='checkboxLabelForPackage(row)'>
+        </mat-checkbox>
+      </mat-cell>
+    </ng-container> -->
     <ng-container matColumnDef="code">
       <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPackageCode || 'Package Code' }}</mat-header-cell>
       <mat-cell *matCellDef="let row">
@@ -74,9 +108,13 @@
   <mat-row *matRowDef="let row; columns: displayedColumns;">
   </mat-row>
   </mat-table>
-  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
 </div>
 <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
 </mat-card>
 <app-create-edit-package-details *ngIf='createEditViewPackageFlag' [translationData]='translationData' [actionType]='actionType' [selectedElementData]='selectedElementData' (createViewEditPackageEmit)='checkCreationForPackage($event)'></app-create-edit-package-details>
+</div>
+
+<div class='bgtrans' *ngIf = "importClicked">
+<app-common-import (showImportCSV)="updateImportView($event)"></app-common-import>
 </div>

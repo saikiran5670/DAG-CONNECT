@@ -47,6 +47,7 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             vehicle.Tcu_Version = null;
             vehicle.Is_Tcu_Register = false;
             vehicle.Reference_Date = null;
+            vehicle.Organization_Id = request.OrganizationId;
             return vehicle;
         }
 

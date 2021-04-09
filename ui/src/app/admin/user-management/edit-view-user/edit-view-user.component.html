@@ -22,31 +22,31 @@
           <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
             <img [src]="croppedImage" style="display: block; margin: auto; width: 120px; height: 120px; border-radius: 50%;" />
           </div>
-          <div class="areaWidth min-width-75-per" fxLayout="column" fxLayoutAlign="left">
+          <div class="areaWidth min-width-75-per wordWrap" fxLayout="column" fxLayoutAlign="left">
             <div *ngIf="!editAccountInfoFlag" fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblSalutation || 'Salutation' }}</mat-label>
                 <mat-label class='custom-font'>{{ accountInfoData.salutation ? accountInfoData.salutation : '--' }}</mat-label>
               </div>
-              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblFirstName || 'First Name'}}</mat-label>
                   <mat-label class='custom-font'>{{ accountInfoData.firstName ? accountInfoData.firstName : '--' }}</mat-label>
                 </div>
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblLastName || 'Last Name' }}</mat-label>
                   <mat-label class='custom-font'>{{ accountInfoData.lastName ? accountInfoData.lastName : '--' }}</mat-label>
                 </div>
             </div>  
             <div *ngIf="!editAccountInfoFlag" fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}</mat-label>
                   <mat-label class='custom-font'>{{ accountInfoData.emailId ? accountInfoData.emailId : '--' }}</mat-label>
                 </div>
-                <div *ngIf='privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblUserType || 'User Type' }}</mat-label>
-                  <mat-label class='custom-font'>{{ accountInfoData.type ? (accountInfoData.type == 'P' ? (translationData.lblPortalUser || 'Portal User') : (translationData.lblSystemUser || 'System User')) : '--' }}</mat-label>
+                <div *ngIf='privilegeAccess' style="width: 30%;" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label>{{ translationData.lblUserType || 'Account Type' }}</mat-label>
+                  <mat-label class='custom-font'>{{ accountInfoData.type ? (accountInfoData.type == 'P' ? (translationData.lblPortalUser || 'Portal Account') : (translationData.lblSystemUser || 'System Account')) : '--' }}</mat-label>
                 </div>
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
                   <mat-label class='custom-font'>{{ accountInfoData.organization ? accountInfoData.organization : '--' }}</mat-label>
                 </div>
@@ -94,9 +94,9 @@
                 </div>
               </div>
             </div>
-            <div class="areaWidth min-width-75-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-75-per wordWrap" fxLayout="column" fxLayoutAlign="left">
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-                  <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblSalutation || 'Salutation' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                       <mat-select placeholder="{{ translationData.lblSalutation || 'Salutation' }}" formControlName="salutation" required>
@@ -109,7 +109,7 @@
                       {{ translationData.lblPleasechoosesalutation || 'Please choose salutation' }}
                     </mat-error>
                   </div>
-                  <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblFirstName || 'First Name' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                       <input maxlength="30" placeholder="{{ translationData.lblFirstName || 'First Name' }}" matInput formControlName="firstName" required>
@@ -127,7 +127,7 @@
                       {{ translationData.lblFirstNamecannotcontainonlywhitespace || 'First Name cannot contain only whitespace' }}
                      </mat-error>
                   </div>
-                  <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblLastName || 'Last Name' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                       <input maxlength="20" placeholder="{{ translationData.lblLastName || 'Last Name' }}" matInput formControlName="lastName" required>
@@ -147,7 +147,7 @@
                   </div>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
-                  <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <div class="areaWidth min-width-30-per" style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                       <input maxlength="50" placeholder="{{ translationData.lblLoginEmail || 'Login Email' }}" matInput formControlName="loginEmail" pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z0-9.-_]{2,}[.]{1}[a-zA-Z]{2,}" required>
@@ -159,10 +159,10 @@
                       {{ translationData.lblPleaseentervalidemailID || 'Please enter valid email ID' }}
                     </mat-error>
                   </div>
-                  <div *ngIf='privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblUserType || 'User Type' }}<span class='mandatoryColor'>*</span></mat-label>
+                  <div *ngIf='privilegeAccess' style="width: 30%;" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblUserType || 'Account Type' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                      <mat-select placeholder="{{ translationData.lblUserType || 'User Type' }}" formControlName="userType">
+                      <mat-select placeholder="{{ translationData.lblUserType || 'Account Type' }}" formControlName="userType">
                         <mat-option *ngFor="let rer of userTypeList" [value]="rer.value">
                           {{ rer.name }}
                         </mat-option>
@@ -172,7 +172,7 @@
                       {{ translationData.lblPleasechooseusertype || 'Please choose user type' }}
                     </mat-error> -->
                   </div>
-                  <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <div class="areaWidth min-width-30-per"style="width: 30%;" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
                     <mat-form-field appearance="outline" class="full-width">
                       <input placeholder="{{ translationData.lblOrganisation || 'Organisation' }}" matInput value="DAF Connect" formControlName="organization">
@@ -196,7 +196,7 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
             <div>
-              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting || 'User General Setting' }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }})</span></span>
+              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUserGeneralSetting || 'Account General Setting' }}</span> <span style='font: 200 16px/32px Roboto, "Helvetica Neue", sans-serif;'> ({{ translationData.lblOrganisationbasedsettings || 'Organisation based settings' }})</span></span>
               <!-- <button *ngIf="fromEdit == 'edit'" class='actionBtn' mat-flat-button  matTooltip="Edit">
                 <mat-icon *ngIf='!editGeneralSettingsFlag' style="cursor: pointer;" (click)="editGeneralSettings()">create</mat-icon>
               </button> -->
@@ -344,7 +344,7 @@
   <mat-card-content>
       <div fxLayout="row">
           <div class='full-width' [ngClass]="{'margin-bottom-sm': selectedRoleDataSource.filteredData.length > 0 }">
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectedUserRoles || 'Selected User Roles' }} -
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectedUserRoles || 'Selected Account Roles' }} -
                   ({{ selectedRoleDataSource.filteredData.length }})</span>    
                   <button *ngIf="fromEdit == 'edit'" (click)="editRoleData()" class='actionBtn' mat-flat-button  matTooltip="{{ translationData.lblEdit || 'Edit' }}">
                       <mat-icon>create</mat-icon>
@@ -355,14 +355,14 @@
           <div fxLayout="column" class='full-width'>
               <mat-table [dataSource]="selectedRoleDataSource" matSort>
                  <ng-container matColumnDef="roleName">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserRole || 'User Role' }}</mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserRole || 'Account Role' }}</mat-header-cell>
                       <mat-cell *matCellDef="let row"> {{ row.roleName }} </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="featureIds">
                       <mat-header-cell *matHeaderCellDef>{{ translationData.Services || 'Services' }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">  
                         <span *ngIf='row.featureIds.length > 0'>
-                          <span *ngFor='let item of [].constructor(row.featureIds.length); let i = index'>
+                          <span *ngFor='let item of [].constructor(row.featureIds.length > 4 ? 4 : row.featureIds.length); let i = index'>
                             <img title="{{ i > 7 ? servicesIcon[0] : servicesIcon[i] }}" src="assets/images/icons/services/{{ i > 7 ? servicesIcon[0] : servicesIcon[i] }}.svg" style="width: 20px; height: 20px;"/>&nbsp;
                           </span>
                         </span>
@@ -382,7 +382,7 @@
   <mat-card-content>
       <div fxLayout="row">
           <div class='full-width'  [ngClass]="{'margin-bottom-sm': selecteUserGrpDataSource.filteredData.length > 0 }">
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectedUserGroups || 'Selected User Groups' }} -
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSelectedUserGroups || 'Selected Account Groups' }} -
                   ({{ selecteUserGrpDataSource.filteredData.length }})</span>    
                   <button *ngIf="fromEdit == 'edit'" (click)="editUserGroupData()" class='actionBtn' mat-flat-button  matTooltip="{{ translationData.lblEdit || 'Edit' }}">
                       <mat-icon>create</mat-icon>
@@ -397,7 +397,7 @@
                       <mat-cell *matCellDef="let row">{{ row.accountGroupName }}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="accountCount">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Users' }}</mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Accounts' }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">
                         <span (click)="row.accountCount > 0 ? viewUserGrpDetails(row) : ''" [ngClass]="{'row-hover': row.accountCount > 0}">{{ row.accountCount }}</span>
                       </mat-cell>

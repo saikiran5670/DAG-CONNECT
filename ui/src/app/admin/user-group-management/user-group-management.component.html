@@ -28,7 +28,7 @@
       </div>
       <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
         <button mat-flat-button color="primary" (click)="onNewUserGroup()">
-          <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUserGroup || 'New User Group' }}
+          <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUserGroup || 'New Account Group' }}
         </button>
       </div>
     </div>
@@ -52,7 +52,7 @@
               (click)="row.vehicleCount !=0 ? onVehicleClick(row) : ''">{{row.vehicleCount}}</span></mat-cell>
         </ng-container>
         <ng-container matColumnDef="accountCount">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Users'}}</mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUsers || 'Accounts'}}</mat-header-cell>
           <mat-cell *matCellDef="let row" matTooltip={{row.accountCount}}> <span [ngClass]="row.accountCount !=0 ? 'row-hover' : '' "
               (click)="row.accountCount !=0 ? onUserClick(row) : ''">{{row.accountCount}}</span> </mat-cell>
         </ng-container>

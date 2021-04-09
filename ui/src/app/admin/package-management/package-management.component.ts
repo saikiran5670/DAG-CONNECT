@@ -6,8 +6,13 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { SelectionModel } from '@angular/cdk/collections';
 import { PackageService } from 'src/app/services/package.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { MatTableExporterDirective } from 'mat-table-exporter';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-package-management',
@@ -22,8 +27,11 @@ export class PackageManagementComponent implements OnInit {
   features: any = [];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   titleVisible : boolean = false;
+  exportFlag = true;
   packageCreatedMsg : any = '';
+  selectedPackages = new SelectionModel(true, []);
   createEditViewPackageFlag: boolean = false;
   translationData: any;
   dataSource: any;
@@ -35,13 +43,14 @@ export class PackageManagementComponent implements OnInit {
   showLoadingIndicator: any = false;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
-
+  importClicked :boolean =false;
   constructor(
       private translationService: TranslationService,
       private packageService: PackageService, 
       private dialogService: ConfirmDialogService, 
       private dialog: MatDialog,
-      private _snackBar: MatSnackBar
+      private _snackBar: MatSnackBar,
+      private route:Router
     ) { 
     this.defaultTranslation();
   }
@@ -142,6 +151,28 @@ export class PackageManagementComponent implements OnInit {
     }
   }
 
+  exportAsCSV(){
+    this.matTableExporter.exportTable('csv', {fileName:'Package_Data', sheet: 'sheet_name'});
+  }
+
+  exportAsPdf() {
+    let DATA = document.getElementById('packageData');
+      
+    html2canvas(DATA).then(canvas => {
+        
+        let fileWidth = 208;
+        let fileHeight = canvas.height * fileWidth / canvas.width;
+        
+        const FILEURI = canvas.toDataURL('image/png')
+        let PDF = new jsPDF('p', 'mm', 'a4');
+        let position = 0;
+        PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+        
+        PDF.save('package_Data.pdf');
+        PDF.output('dataurlnewwindow');
+    });     
+  }
+
   createNewPackage(){
     this.actionType = 'create';
     this.createEditViewPackageFlag = true;
@@ -190,17 +221,17 @@ export class PackageManagementComponent implements OnInit {
     const options = {
       title: this.translationData.lblDelete || "Delete",
       message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
-      cancelText: this.translationData.lblNo || "No",
-      confirmText: this.translationData.lblYes || "Yes"
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: this.translationData.lblDelete || "Delete"
     };
-    this.dialogService.DeleteModelOpen(options, rowData.name);
+    this.dialogService.DeleteModelOpen(options, rowData.code);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
       this.packageService.deletePackage(packageId).subscribe((data) => {
         this.openSnackBar('Item delete', 'dismiss');
         this.loadPackageData();
       })
-        this.successMsgBlink(this.getDeletMsg(rowData.name));
+        this.successMsgBlink(this.getDeletMsg(rowData.code));
       }
     });
   }
@@ -215,11 +246,11 @@ export class PackageManagementComponent implements OnInit {
     });
   }
 
-  getDeletMsg(PackageName: any){
+  getDeletMsg(PackageCode: any){
     if(this.translationData.lblPackagewassuccessfullydeleted)
-      return this.translationData.lblPackagewassuccessfullydeleted.replace('$', PackageName);
+      return this.translationData.lblPackagewassuccessfullydeleted.replace('$', PackageCode);
     else
-      return ("Package '$' was successfully deleted").replace('$', PackageName);
+      return ("Package '$' was successfully deleted").replace('$', PackageCode);
   }
 
   successMsgBlink(msg: any){
@@ -232,6 +263,28 @@ export class PackageManagementComponent implements OnInit {
 
   onClose(){
     this.titleVisible = false;
+  }
+
+  masterToggleForPackage() {
+    this.isAllSelectedForPackege()
+      ? this.selectedPackages.clear()
+      : this.dataSource.data.forEach((row) =>
+        this.selectedPackages.select(row)
+      );
+  }
+
+  isAllSelectedForPackege() {
+    const numSelected = this.selectedPackages.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForPackage(row?: any): string {
+    if (row)
+      return `${this.isAllSelectedForPackege() ? 'select' : 'deselect'} all`;
+    else
+      return `${this.selectedPackages.isSelected(row) ? 'deselect' : 'select'
+        } row`;
   }
 
   checkCreationForPackage(item: any){
@@ -249,5 +302,25 @@ export class PackageManagementComponent implements OnInit {
   hideloader() {
     // Setting display of spinner
     this.showLoadingIndicator = false;
+  }
+
+  updateImportView(_event){
+    this.importClicked = _event;
+    console.log(_event)
+  }
+  getexportedValues(dataSource){
+    this.dataSource = dataSource;
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+  importPackageCSV(){
+    this.importClicked = true;
+    //this.route.navigate(["import"]);
+  }
+
+  pageSizeUpdated(_event){
+    setTimeout(() => {
+      document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
+    }, 100);
   }
 }

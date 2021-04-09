@@ -543,7 +543,7 @@ footer{
             top: 0.45em !important;
         }
         .mat-form-field-wrapper {
-            margin: 0.25em 0 0.15em 0 !important
+            margin: 0.25em 0 0.15em 0 !important;
         }
     }
     .mat-radio-label{
@@ -1035,4 +1035,32 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
 
 .mat-sort-header-content{
     text-align: left !important;
+}
+
+.orgGrayDefault {
+    .mat-form-field-appearance-outline{
+        .mat-form-field-wrapper {
+            background: lightgray !important;
+        }
+    }
+}
+
+//For Popup scrollable content_UserGroupManagement
+.contentInpopup {
+    max-height: 500px;
+    overflow: auto;
+
+    .header_sticky {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+}
+.contentInpopup__paginator {
+    bottom: 0;
+    width: 100%;
+}
+
+.wordWrap {
+    word-wrap: break-word;
 }

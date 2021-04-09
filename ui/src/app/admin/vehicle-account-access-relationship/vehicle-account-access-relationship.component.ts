@@ -179,8 +179,8 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     const options = {
       title: this.translationData.lblDelete || "Delete",
       message: this.translationData.lblAreyousureyouwanttodeleteAssociationRelationship || "Are you sure you want to delete '$' Association Relationship?",
-      cancelText: this.translationData.lblNo || "No",
-      confirmText: this.translationData.lblYes || "Yes"
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: this.translationData.lblDelete || "Delete"
     };
     this.dialogService.DeleteModelOpen(options, element.name);
     this.dialogService.confirmedDel().subscribe((res) => {
@@ -350,8 +350,8 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
 
   showAccountPopup(row: any){
     const colsList = ['firstName','emailId','roles'];
-    const colsName = [this.translationData.lblUserName || 'User Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'User Role'];
-    const tableTitle = `${row.name} - ${this.translationData.lblUsers || 'Users'}`;
+    const colsName = [this.translationData.lblUserName || 'Account Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'Account Role'];
+    const tableTitle = `${row.name} - ${this.translationData.lblUsers || 'Accounts'}`;
     let accountObj = {
       accountId: 0,
       organizationId: this.accountOrganizationId,

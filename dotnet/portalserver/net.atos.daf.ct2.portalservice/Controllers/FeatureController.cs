@@ -16,6 +16,9 @@ using net.atos.daf.ct2.portalservice.Entity.Feature;
 using FeatuseBusinessService = net.atos.daf.ct2.featureservice;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using log4net;
+using System.Reflection;
+using Microsoft.AspNetCore.Http;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -26,26 +29,39 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     {
 
         #region Private Variable
-        private readonly ILogger<AccountController> _logger;
+        //private readonly ILogger<AccountController> _logger;
+        private ILog _logger;
         private readonly FeatuseBusinessService.FeatureService.FeatureServiceClient _featureclient;
         private readonly Mapper _mapper;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private IMemoryCacheProvider _cache;
         private readonly PortalCacheConfiguration _cachesettings;
+        private readonly Dictionary<string, string> headers;
 
         #endregion
 
         #region Constructor
-        public FeatureController(FeatuseBusinessService.FeatureService.FeatureServiceClient Featureclient, ILogger<AccountController> logger, IMemoryCacheProvider cache, IOptions<PortalCacheConfiguration> cachesettings)
+        public FeatureController(FeatuseBusinessService.FeatureService.FeatureServiceClient Featureclient,  IMemoryCacheProvider cache, IOptions<PortalCacheConfiguration> cachesettings)
         {
             _featureclient = Featureclient;
-            _logger = logger;
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType); ;
             _mapper = new Mapper();
             _cache = cache;
             _cachesettings = cachesettings.Value;
+            //headers = GetHeaders(Request.Headers);
         }
         #endregion
+
+        private Dictionary<string, string> GetHeaders(IHeaderDictionary headers)
+        {
+            return new Dictionary<string, string>()
+            {
+                { "RoleId", headers["roleId"] },
+                { "RoleId", headers["roleId"] },
+                { "RoleId", headers["roleId"] }
+            };
+        }
 
 
         [HttpPost]
@@ -54,7 +70,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Create method in FeatureSet API called.");
+                _logger.Info("Create method in FeatureSet API called.");
 
 
                 if (string.IsNullOrEmpty(featureSetRequest.Name))
@@ -77,14 +93,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 var responce = await _featureclient.CreateFeatureSetAsync(featureset);
                 featureset.FeatureSetID = ObjResponse.FeatureSetID;
-                _logger.LogInformation("Feature Set created with id." + ObjResponse.FeatureSetID);
+                _logger.Info("Feature Set created with id." + ObjResponse.FeatureSetID);
 
                 //await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Feature Component", "Feature Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "CreateFeatureSet method in Feature manager", ObjResponse.FeatureSetID, ObjResponse.FeatureSetID, JsonConvert.SerializeObject(ObjResponse.FeatureSetID));
                 return Ok(featureSetRequest);
             }
             catch (Exception ex)
             {
-                _logger.LogError("FeatureSet Service:Create : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null,ex);
 
                 if (ex.Message.Contains(FK_Constraint))
                 {
@@ -100,7 +116,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Create method in FeatureSet API called.");
+                _logger.Info("Create method in FeatureSet API called.");
 
 
                 if (string.IsNullOrEmpty(featureRequest.Name))
@@ -146,13 +162,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
+                    _logger.Error(responce.Message);
                     return StatusCode(500, "Internal Server Error.");
                 }
             }
             catch (Exception ex)
             {
                 //throw;
-                _logger.LogInformation("Create method in FeatureSet API called failed." + ex.Message);
+                _logger.Error(null,ex);
                 return StatusCode(500, "Internal Server Error.");
             }
 
@@ -165,7 +182,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Create method in FeatureSet API called.");
+                _logger.Info("Create method in FeatureSet API called.");
 
 
                 if (string.IsNullOrEmpty(featureRequest.Name))
@@ -206,13 +223,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
+                    _logger.Error(responce);
                     return StatusCode(400, "Error in feature update.");
                 }
             }
             catch (Exception ex)
             {
                 //throw;
-                _logger.LogInformation("Create method in FeatureSet API called failed." + ex.Message);
+                _logger.Error(featureRequest, ex);
                 return StatusCode(500, "Internal Server Error.");
             }
 
@@ -244,7 +262,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
 
                 //throw;
-                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error(ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, "Internal Server Error. Exception - " + ex.ToString());
             }
         }
@@ -287,7 +305,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error(ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, "Internal Server Error. Exception - " + ex.Message);
             }
         }
@@ -323,7 +341,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error(ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -360,7 +378,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error(ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, "Internal Server Error.");
             }
         }

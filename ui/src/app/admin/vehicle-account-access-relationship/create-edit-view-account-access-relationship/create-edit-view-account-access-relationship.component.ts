@@ -41,7 +41,8 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountAccessRelationshipFormGroup = this._formBuilder.group({
       accountGroup: ['', [Validators.required]],
-      accessType: ['', [Validators.required]]
+      accessType: ['', [Validators.required]],
+      gridSearch: ['']
     });
     this.accessTypeList = [
       {
@@ -64,6 +65,10 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
   setDropdownValue(){
     this.accountAccessRelationshipFormGroup.get('accountGroup').setValue(this.selectedElementData.id);
     this.accountAccessRelationshipFormGroup.get('accessType').setValue(this.selectedElementData.accessType);
+    this.accountAccessRelationshipFormGroup.get('gridSearch').setValue('');
+    this.dataSource.filter = '';
+    this.selectedViewType = 'both';
+    this.onListChange({value: this.selectedViewType});
   }
 
   loadGridData(tableData: any){
@@ -147,6 +152,7 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
 
   onListChange(event: any){
     let data: any = [];
+    this.selectedViewType = event.value;
     switch(event.value){
       case "group":{
         data = this.initData.filter((item: any) => item.isGroup == true);
@@ -216,25 +222,26 @@ export class CreateEditViewAccountAccessRelationshipComponent implements OnInit 
     let msg: any = '';
     if(this.actionType == 'create'){ //-- create
       if(this.translationData.lblAccessRelationshipcreatedsuccessfully){
-        msg = this.translationData.lblAccessRelationshipcreatedsuccessfully.replace('$', curObj.name ? curObj.name : '');
+        msg = this.translationData.lblAccessRelationshipcreatedsuccessfully.replace('$', curObj[0].name ? curObj[0].name : '');
       }
       else{
-        msg = ("'$' Access Relationship created successfully").replace('$', curObj.name ? curObj.name : '');
+        msg = ("'$' Access Relationship created successfully").replace('$', curObj[0].name ? curObj[0].name : '');
       }
     }else{ //-- update
       if(this.translationData.lblAccessRelationshipupdatedsuccessfully){
-        msg = this.translationData.lblAccessRelationshipupdatedsuccessfully.replace('$', curObj.name ? curObj.name : '');
+        msg = this.translationData.lblAccessRelationshipupdatedsuccessfully.replace('$', curObj[0].name ? curObj[0].name : '');
       }
       else{
-        msg = ("'$' Access Relationship updated successfully").replace('$', curObj.name ? curObj.name : '');
+        msg = ("'$' Access Relationship updated successfully").replace('$', curObj[0].name ? curObj[0].name : '');
       }
     }
+    return msg;
   }
 
   onReset(){
     this.selectionForVehicleGrp.clear();
-    this.selectTableRows();
     this.setDropdownValue();
+    this.selectTableRows();
   }
 
   showVehiclePopup(row: any){

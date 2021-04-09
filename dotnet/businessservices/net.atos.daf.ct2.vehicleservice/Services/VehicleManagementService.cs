@@ -101,8 +101,27 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             try
             {
                 Vehicle Objvehicle = new Vehicle();
+                VehicleResponce response = new VehicleResponce();
+                response.Vehicle = new VehicleRequest();
+
                 Objvehicle = _mapper.ToVehicleEntity(request);
                 Objvehicle = await _vehicelManager.Update(Objvehicle);
+
+                if (Objvehicle.VehicleNameExists)
+                {
+                    response.Exists = true;
+                    response.Message = "Duplicate vehicle Name";
+                    response.Code = Responcecode.Conflict;
+                    return response;
+                }
+                if (Objvehicle.VehicleLicensePlateNumberExists)
+                {
+                    response.Exists = true;
+                    response.Message = "Duplicate vehicle License Plate Number";
+                    response.Code = Responcecode.Conflict;
+                    return response;
+                }
+
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "vehicle Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Update method in vehicle service", 1, 2, JsonConvert.SerializeObject(request));
                 _logger.LogInformation("Update method in vehicle service called.");
                 return await Task.FromResult(new VehicleResponce

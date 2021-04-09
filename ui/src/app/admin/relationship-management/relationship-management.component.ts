@@ -5,6 +5,7 @@ import { MatSort } from '@angular/material/sort';
 import { TranslationService } from 'src/app/services/translation.service';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { OrganizationService } from 'src/app/services/organization.service';
+import { ThrowStmt } from '@angular/compiler';
 
 @Component({
   selector: 'app-relationship-management',
@@ -32,7 +33,7 @@ export class RelationshipManagementComponent implements OnInit {
   userType: any = localStorage.getItem("userType");
   viewRelationshipFromOrg: boolean;
   selectedRowFromRelationship: any = {};
-
+  
   constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private organizationService: OrganizationService) {
     this.defaultTranslation();
    }
@@ -46,6 +47,7 @@ export class RelationshipManagementComponent implements OnInit {
       let relationShipId = history.state.rowData.relationShipId;
       let newData = {};
       this.organizationService.getRelationshipByRelationID(relationShipId).subscribe((data) => {
+        this.hideloader();
         if(data){
           this.initData = data["relationshipList"];
           newData= this.initData;
@@ -55,7 +57,8 @@ export class RelationshipManagementComponent implements OnInit {
    
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
-    if(this.organizationId == 1 || this.organizationId == 2)
+    // if(this.organizationId == 1 || this.organizationId == 2)
+    if(this.userType == 'Admin#Platform' || this.userType == 'Admin#Global')
     {
       this.relationshipDisplayedColumns = ['name', 'features', 'level', 'code', 'description', 'action'];
     }
@@ -95,17 +98,22 @@ export class RelationshipManagementComponent implements OnInit {
       this.hideloader();
       if(data){
         this.initData = data["relationshipList"];
-        this.updateDataSource(this.initData);
+        // this.initData = this.getNewTagData(this.initData)
+       this.updateDataSource(this.initData);
       }
-    }, (error) => {
+    }, 
+    (error) => {
       this.hideloader();
       this.initData = [];
       this.updateDataSource(this.initData);
-    }); 
+    });
   }
 
   updateDataSource(tableData: any){
     this.initData = this.getNewTagData(tableData);
+    this.initData.map(obj =>{   //temporary
+      obj.levelVal = obj.level === 10? 'PlatformAdmin': obj.level=== 20 ? 'GlobalAdmin': obj.level=== 30 ? 'OrgAdmin' :obj.level=== 40? 'Account' : '';
+    })
     this.dataSource = new MatTableDataSource(this.initData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
@@ -166,8 +174,8 @@ export class RelationshipManagementComponent implements OnInit {
     const options = {
       title: this.translationData.lblDelete || 'Delete',
       message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Are you sure you want to delete '$' relationship?",
-      cancelText: this.translationData.lblNo || 'No',
-      confirmText: this.translationData.lblYes || 'Yes'
+      cancelText: this.translationData.lblCancel || 'Cancel',
+      confirmText: this.translationData.lblDelete || 'Delete'
     };
     let name = row.name;
     this.dialogService.DeleteModelOpen(options, name);

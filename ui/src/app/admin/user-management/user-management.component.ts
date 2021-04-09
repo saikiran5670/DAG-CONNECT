@@ -99,8 +99,8 @@ export class UserManagementComponent implements OnInit {
       lblSelectedVehicleGroupsVehicles: "Selected Vehicle Groups/Vehicles",
       lblNew: "New",
       lblDeleteAccount: "Delete Account",
-      lblNo: "No",
-      lblYes: "Yes",
+      //lblCancel: "Cancel",
+      lblDelete: "Delete",
       lblBack: "Back",
       lblConfirm: "Confirm",
       lblAlldetailsaremandatory: "All details are mandatory",
@@ -190,9 +190,9 @@ export class UserManagementComponent implements OnInit {
   deleteUser(item: any) {
     const options = {
       title: this.translationData.lblDeleteAccount || "Delete Account",
-      message: this.translationData.lblAreyousureyouwanttodeleteuseraccount || "Are you sure you want to delete '$' user account?",
-      cancelText: this.translationData.lblNo || "No",
-      confirmText: this.translationData.lblYes || "Yes"
+      message: this.translationData.lblAreyousureyouwanttodeleteuseraccount || "Are you sure you want to delete '$' account?",
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: this.translationData.lblDelete || "Delete"
     };
     this.OpenDialog(options, 'delete', item);
   }
@@ -240,20 +240,28 @@ export class UserManagementComponent implements OnInit {
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
       this.userGrpData = allAccountGroupData;
       this.selectedRoleData = element.roles;
-        this.accountService.getAccountPreference(element.preferenceId).subscribe(accountPrefData => {
-          this.userDataForEdit = element;
-          this.selectedPreference = accountPrefData;
-            let reflectArray: any = [];
-            if(element.accountGroups.length > 0){
-              element.accountGroups.forEach((elem: any) => {
-                reflectArray.push({groupId: elem.id, accountGroupName: elem.name});
-              });
-            }
-            this.selectedUserGrpData = reflectArray;
+      this.userDataForEdit = element;
+      let reflectArray: any = [];
+      if(element.accountGroups.length > 0){
+        element.accountGroups.forEach((elem: any) => {
+          reflectArray.push({groupId: elem.id, accountGroupName: elem.name});
+        });
+      }
+      this.selectedUserGrpData = reflectArray;
+        if(element.preferenceId != 0){
+          this.accountService.getAccountPreference(element.preferenceId).subscribe(accountPrefData => {
+            this.selectedPreference = accountPrefData;
             this.editFlag = (type == 'edit') ? true : false;
             this.viewFlag = (type == 'view') ? true : false;
             this.isCreateFlag = false;
-        }, (error)=> {});
+          }, (error)=> {});
+        }
+        else{
+          this.selectedPreference = {};
+          this.editFlag = (type == 'edit') ? true : false;
+          this.viewFlag = (type == 'view') ? true : false;
+          this.isCreateFlag = false;
+        }
     }, (error)=> {});
    }, (error)=> {});
   }
@@ -272,7 +280,7 @@ export class UserManagementComponent implements OnInit {
       this.filterFlag = true;
       this.hideloader();
       this.initData = this.makeRoleAccountGrpList(usrlist);
-      this.initData = this.getNewTagData(usrlist);
+      this.initData = this.getNewTagData(this.initData);
       this.dataSource = new MatTableDataSource(this.initData);
       setTimeout(()=>{
         this.dataSource.paginator = this.paginator;
@@ -346,7 +354,7 @@ export class UserManagementComponent implements OnInit {
     if(this.translationData.lblUseraccountwassuccessfullydeleted)
       return this.translationData.lblUseraccountwassuccessfullydeleted.replace('$', userName);
     else
-      return ("User account '$' was successfully deleted").replace('$', userName);
+      return ("Account '$' was successfully deleted").replace('$', userName);
   }
 
   onClose(){
@@ -361,8 +369,8 @@ export class UserManagementComponent implements OnInit {
       this.successMsgBlink(item.msg);
     }
     if(item.tableData){
-      this.initData = this.getNewTagData(item.tableData);
-      this.initData = this.makeRoleAccountGrpList(this.initData);
+      this.initData = this.makeRoleAccountGrpList(item.tableData);
+      this.initData = this.getNewTagData(this.initData);
     }
     setTimeout(()=>{
       this.dataSource = new MatTableDataSource(this.initData);
@@ -403,4 +411,9 @@ export class UserManagementComponent implements OnInit {
       this.showLoadingIndicator=false;
   }
 
+  pageSizeUpdated(_event){
+    setTimeout(() => {
+      document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
+    }, 100);
+  }
 }

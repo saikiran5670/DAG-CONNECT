@@ -86,6 +86,7 @@ namespace net.atos.daf.ct2.roleservice
                 roleMaster.Name = request.RoleName;
                 roleMaster.Id = request.RoleID;
                 roleMaster.Updatedby = request.UpdatedBy;
+                roleMaster.Description = request.Description;
                 roleMaster.FeatureSet = new FeatureSet();
                 //ObjRole.FeatureSet = new FeatureSet();
                 roleMaster.FeatureSet.Features = new List<Feature>();
@@ -149,6 +150,7 @@ namespace net.atos.daf.ct2.roleservice
                 ObjroleFilter.RoleId= request.RoleId;
                 ObjroleFilter.Organization_Id = request.OrganizationId;
                 ObjroleFilter.Is_Active= request.Active;
+                ObjroleFilter.IsGlobal = request.IsGlobal;
                 ObjroleFilter.LangaugeCode = request.LangaugeCode;
                 var role = _RoleManagement.GetRoles(ObjroleFilter).Result;
                  foreach (var item in role)

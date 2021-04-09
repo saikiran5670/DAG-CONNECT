@@ -12,7 +12,7 @@
         <mat-card class='mat-elevation-z'>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserRoleDetails || 'All User Role Details' }}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllUserRoleDetails || 'All Account Role Details' }}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
@@ -24,7 +24,7 @@
                 </div>
                 <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                     <button mat-flat-button color="primary" (click)="newUserRole()">
-                        <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUserRole || 'New User Role'}}
+                        <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUserRole || 'New Account Role'}}
                     </button>
                 </div>
             </div>
