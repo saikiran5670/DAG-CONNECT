@@ -4,7 +4,8 @@ import { FileValidator } from 'ngx-material-file-input';
 import * as FileSaver from 'file-saver';
 import { Workbook } from 'exceljs';
 import * as XLSX from 'xlsx';
-import { packageModel } from '../../models/package.model'
+import { packageModel } from '../../models/package.model';
+import { PackageService } from '../../services/package.service'
 
 @Component({
   selector: 'app-common-import',
@@ -24,7 +25,7 @@ export class CommonImportComponent implements OnInit {
   arrayBuffer: any;
   filelist: any = [];
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder, private packageService: PackageService) { }
 
   ngOnInit(): void {
     this.importPackageFormGroup = this._formBuilder.group({
@@ -47,7 +48,7 @@ export class CommonImportComponent implements OnInit {
 
     const header = ['PackageCode','PackageName','Description','PackageType','PackageStatus','FeatureId'];
     const data = [
-      ['P100', 'Package1', "Package Template", "VIN", "Active","10075, 1"]
+      ['PTest100', 'Package1', "Package Template", "VIN", "Active","Dashboard, Report"]
     ];
     let workbook = new Workbook();
     let worksheet = workbook.addWorksheet('Package Template');
@@ -116,7 +117,7 @@ export class CommonImportComponent implements OnInit {
           {
             "id": 0,
             "code": this.filelist[i]["PackageCode"],
-            "featureSetID" : 24,
+            "featureSetID" : 0,
             "features": this.filelist[i]["FeatureId"].split(","),
             "name": this.filelist[i]["PackageName"],
             "type": this.filelist[i]["PackageType"] === "VIN" ? "V" : "O",
@@ -127,6 +128,9 @@ export class CommonImportComponent implements OnInit {
           }
         )
       }
+      this.packageService.importPackage(packagesToImport).subscribe(res=>{
+        console.log(res)
+      })
     console.log(packagesToImport)
     }
     else{
