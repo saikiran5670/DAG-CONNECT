@@ -11,6 +11,8 @@ import { PackageService } from 'src/app/services/package.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MatTableExporterDirective } from 'mat-table-exporter';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-package-management',
@@ -149,8 +151,26 @@ export class PackageManagementComponent implements OnInit {
     }
   }
 
-  ExportAsCSV(){
+  exportAsCSV(){
     this.matTableExporter.exportTable('csv', {fileName:'Package_Data', sheet: 'sheet_name'});
+  }
+
+  exportAsPdf() {
+    let DATA = document.getElementById('packageData');
+      
+    html2canvas(DATA).then(canvas => {
+        
+        let fileWidth = 208;
+        let fileHeight = canvas.height * fileWidth / canvas.width;
+        
+        const FILEURI = canvas.toDataURL('image/png')
+        let PDF = new jsPDF('p', 'mm', 'a4');
+        let position = 0;
+        PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+        
+        PDF.save('package_Data.pdf');
+        PDF.output('dataurlnewwindow');
+    });     
   }
 
   createNewPackage(){
@@ -204,14 +224,14 @@ export class PackageManagementComponent implements OnInit {
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
-    this.dialogService.DeleteModelOpen(options, rowData.name);
+    this.dialogService.DeleteModelOpen(options, rowData.code);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
       this.packageService.deletePackage(packageId).subscribe((data) => {
         this.openSnackBar('Item delete', 'dismiss');
         this.loadPackageData();
       })
-        this.successMsgBlink(this.getDeletMsg(rowData.name));
+        this.successMsgBlink(this.getDeletMsg(rowData.code));
       }
     });
   }
@@ -226,11 +246,11 @@ export class PackageManagementComponent implements OnInit {
     });
   }
 
-  getDeletMsg(PackageName: any){
+  getDeletMsg(PackageCode: any){
     if(this.translationData.lblPackagewassuccessfullydeleted)
-      return this.translationData.lblPackagewassuccessfullydeleted.replace('$', PackageName);
+      return this.translationData.lblPackagewassuccessfullydeleted.replace('$', PackageCode);
     else
-      return ("Package '$' was successfully deleted").replace('$', PackageName);
+      return ("Package '$' was successfully deleted").replace('$', PackageCode);
   }
 
   successMsgBlink(msg: any){
