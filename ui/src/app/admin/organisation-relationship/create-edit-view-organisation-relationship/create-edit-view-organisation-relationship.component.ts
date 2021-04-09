@@ -180,7 +180,8 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
 
     this.organizationService.createOrgRelationship(objData).subscribe((res) => {
       this.organizationService.getOrgRelationshipDetailsLandingPage().subscribe((getData: any) => {
-        let name = getData.relationshipName;
+        var tempdata = getData["orgRelationshipMappingList"];;
+        let name = tempdata.find(x => x.id === res.relationship[0]).relationshipName; 
         this.userCreatedMsg = this.getUserCreatedMessage(name);
         let emitObj = {
           stepFlag: false,
