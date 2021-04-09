@@ -291,7 +291,7 @@ namespace net.atos.daf.ct2.account
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@email", emailId);
-                var query = @"select id, email, salutation, first_name, last_name from master.account where email = @email and is_active=true";
+                var query = @"select id, email, salutation, first_name, last_name from master.account where email = @email and state='A'";
 
                 dynamic result = await dataAccess.QuerySingleAsync<dynamic>(query, parameter);
 
@@ -309,7 +309,7 @@ namespace net.atos.daf.ct2.account
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@accountId", accountId);
-                var query = @"select id, email, salutation, first_name, last_name from master.account where id = @accountId and is_active=true";
+                var query = @"select id, email, salutation, first_name, last_name from master.account where id = @accountId and state='A'";
 
                 dynamic result = await dataAccess.QuerySingleAsync<dynamic>(query, parameter);
 
@@ -1193,23 +1193,23 @@ namespace net.atos.daf.ct2.account
 	                    --Account Route
 	                    SELECT f.id
 	                    FROM master.Account acc
-	                    INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.id = @account_id AND ar.organization_id = @organization_id AND ar.role_id = @role_id AND acc.is_active = True
-	                    INNER JOIN master.Role r ON ar.role_id = r.id AND r.is_active = True
-	                    INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.is_active = True
+	                    INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.id = @account_id AND ar.organization_id = @organization_id AND ar.role_id = @role_id AND acc.state = 'A'
+	                    INNER JOIN master.Role r ON ar.role_id = r.id AND r.state = 'A'
+	                    INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.state = 'A'
  	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
-	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True AND f.type <> 'D' AND f.name not like 'api.%'
+	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' AND f.name not like 'api.%'
 	                    INTERSECT
 	                    --Subscription Route
 	                    SELECT f.id
 	                    FROM master.Subscription s
-	                    INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @organization_id AND s.is_active = True AND pkg.is_active = True
-	                    INNER JOIN master.FeatureSet fset ON pkg.feature_set_id = fset.id AND fset.is_active = True
+	                    INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @organization_id AND s.state = 'A' AND pkg.state = 'A'
+	                    INNER JOIN master.FeatureSet fset ON pkg.feature_set_id = fset.id AND fset.state = 'A'
  	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
-	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True AND f.type <> 'D' AND f.name not like 'api.%'
+	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' AND f.name not like 'api.%'
                     ) fsets
-                    INNER JOIN master.Feature f ON f.id = fsets.id AND f.is_active = True AND f.type <> 'D' AND f.name not like 'api.%'
-                    LEFT JOIN master.Menu mn ON mn.feature_id = f.id AND mn.is_active = True AND mn.id <> 0
-                    LEFT JOIN master.Menu mn2 ON mn.parent_id = mn2.id AND mn2.is_active = True AND mn2.id <> 0
+                    INNER JOIN master.Feature f ON f.id = fsets.id AND f.state = 'A' AND f.type <> 'D' AND f.name not like 'api.%'
+                    LEFT JOIN master.Menu mn ON mn.feature_id = f.id AND mn.state = 'A' AND mn.id <> 0
+                    LEFT JOIN master.Menu mn2 ON mn.parent_id = mn2.id AND mn2.state = 'A' AND mn2.id <> 0
                     LEFT JOIN translation.translation tl ON tl.name = mn.key AND tl.code = @code
                     ORDER BY MenuId, MenuSeqNo";
 
