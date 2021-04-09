@@ -121,6 +121,28 @@ namespace net.atos.daf.ct2.organizationservice.entity
             objResponse.VehicleDefaultOptIn=request.VehicleDefaultOptIn; 
             objResponse.DriverDefaultOptIn=request.DriverDefaultOptIn; 
             return objResponse;          
-        }               
+        }
+        public net.atos.daf.ct2.organizationservice.OrgDetailResponse ToOrganizationDetailsResponse(net.atos.daf.ct2.organization.entity.OrganizationDetailsResponse request)
+        {
+            net.atos.daf.ct2.organizationservice.OrgDetailResponse objResponse = new OrgDetailResponse();
+            objResponse.Id = request.id;
+            objResponse.OrganizationId = request.org_id;
+            objResponse.OrganizationName = request.name;
+            objResponse.AddressStreet = request.street;
+            objResponse.AddressStreetNumber = request.street_number;
+            objResponse.PostalCode = request.postal_code;
+            objResponse.City = request.city;
+            objResponse.Country = request.country_code;
+            objResponse.VehicleOptIn = request.vehicle_default_opt_in;
+            objResponse.DriverOptIn = request.driver_default_opt_in;
+            objResponse.Currency = request.Currency;
+            objResponse.Timezone = request.Timezone;
+            objResponse.TimeFormat = request.TimeFormat;
+            objResponse.DateFormat = request.DateFormatType;
+            objResponse.LanguageName = request.LanguageName;
+            objResponse.Unit = request.Unit;
+            return objResponse;
+        }
+
     }
 }
