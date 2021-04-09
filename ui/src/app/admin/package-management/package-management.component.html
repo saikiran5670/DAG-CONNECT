@@ -21,11 +21,6 @@
             <span matPrefix><mat-icon>search</mat-icon></span>
         </mat-form-field>
     </div>
-    <!-- <div>
-      <button mat-flat-button (click)="importPackageCSV()">
-        {{ translationData.lblImport || 'Import' }}<mat-icon>download</mat-icon> 
-      </button>
-    </div> -->
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
       <div fxLayout="row" class='areaWidth'>
       <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
@@ -35,6 +30,11 @@
           <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
         </mat-menu> -->
       </div>
+      <!-- <div>
+        <button mat-flat-button (click)="importPackageCSV()">
+          {{ translationData.lblImport || 'Import' }}<mat-icon>file_download</mat-icon>
+        </button>
+      </div> -->
       <div  *ngIf="!adminAccessType.adminReadOnlyAccess" >
       <button mat-flat-button color="primary" (click)="createNewPackage()">
         <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewPackage || 'New Package' }}
@@ -108,7 +108,7 @@
   <mat-row *matRowDef="let row; columns: displayedColumns;">
   </mat-row>
   </mat-table>
-  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
 </div>
 <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
 </mat-card>

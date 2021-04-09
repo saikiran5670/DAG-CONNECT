@@ -12,7 +12,8 @@ service OrganizationService {
   rpc Update (OrgUpdateRequest) returns (OrganizationUpdateData);
  // rpc Delete (IdRequest) returns (OrganizationResponse);
   rpc Get (IdRequest) returns (OrganizationGetData); 
-   rpc GetAll(IdRequest)returns(GetAllOrgResponse);
+  rpc GetOrganizationDetails (IdRequest) returns (OrgDetailResponse); 
+  rpc GetAll(IdRequest)returns(GetAllOrgResponse);
 
   // Account Preference Mthod
   rpc CreatePreference (AccountPreference) returns (AccountPreferenceResponse);
@@ -288,3 +289,23 @@ message OrganizationGetData {
      string Message = 2;
      OrganizationPreference OrganizationPreference= 3;      
     }
+
+    message OrgDetailResponse {  
+    int32 Id=1;
+    string OrganizationId= 2;   
+    google.protobuf.StringValue OrganizationName=3;   
+    google.protobuf.StringValue OrganizationDescription=4;   
+    google.protobuf.StringValue AddressStreet=5;
+    google.protobuf.StringValue AddressStreetNumber=6; 
+    google.protobuf.StringValue PostalCode=7;    
+    google.protobuf.StringValue City=8;
+    google.protobuf.StringValue Country=9;     
+    google.protobuf.StringValue VehicleOptIn=10;
+    google.protobuf.StringValue DriverOptIn=11;   
+    google.protobuf.StringValue LanguageName =12;
+    google.protobuf.StringValue Timezone =13;
+    google.protobuf.StringValue Currency =14;
+    google.protobuf.StringValue Unit = 15;   
+    google.protobuf.StringValue DateFormat =16;
+    google.protobuf.StringValue TimeFormat=17;   
+}
