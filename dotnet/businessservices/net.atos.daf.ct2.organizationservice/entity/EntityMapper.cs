@@ -1,5 +1,7 @@
 using Preference = net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.organization.entity;
+using static net.atos.daf.ct2.utilities.CommonEnums;
+
 namespace net.atos.daf.ct2.organizationservice.entity
 {
     public class EntityMapper
@@ -79,7 +81,7 @@ namespace net.atos.daf.ct2.organizationservice.entity
             objResponse.Referenced=request.reference_date; 
             objResponse.VehicleOptIn=request.vehicle_default_opt_in;
             objResponse.DriverOptIn=request.driver_default_opt_in;
-            objResponse.IsActive = request.is_active;
+            objResponse.IsActive = request.state == (char)State.Active ? true : false;
             return objResponse;          
         }
 

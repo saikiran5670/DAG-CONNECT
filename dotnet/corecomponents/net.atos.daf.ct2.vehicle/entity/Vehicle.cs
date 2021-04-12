@@ -48,5 +48,6 @@ namespace net.atos.daf.ct2.vehicle.entity
         public string Fuel { get; set; }
         public bool VehicleNameExists { get; set; }
         public bool VehicleLicensePlateNumberExists { get; set; }
+        public bool IPPS { get; set; } = false;
     }
 }

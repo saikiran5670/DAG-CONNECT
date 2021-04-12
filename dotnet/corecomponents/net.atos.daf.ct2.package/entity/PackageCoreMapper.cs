@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.package.entity
             Package package = new Package();
             package.Id = record.id;
             package.Code = !string.IsNullOrEmpty(record.packagecode) ? record.packagecode : string.Empty;
-            package.IsActive = record.is_active;
+            package.State = !string.IsNullOrEmpty(record.state) ? MapCharToPackageStatus(record.state) : string.Empty;
             package.Status = !string.IsNullOrEmpty(record.status) ? MapCharToPackageStatus(record.status) : string.Empty;
             package.Type = !string.IsNullOrEmpty(record.type) ? MapCharToPackageType(record.type) : string.Empty;
             package.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;

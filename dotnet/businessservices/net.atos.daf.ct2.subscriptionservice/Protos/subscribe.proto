@@ -15,7 +15,7 @@ message SubscriptionDetails{
     string package_code = 4;
     int64 subscription_start_date = 5;
     int64 subscription_end_date = 6;
-    bool is_active = 7;
+    string state = 7;
     int32 count = 8;
     string orgName = 9;
 }
@@ -26,10 +26,10 @@ message SubscribeListResponce  {
 message SubscriptionDetailsRequest{
     int32 organization_id =1;
     string type = 2;
-    StatusType is_active = 3;
+    StatusType state = 3;
 }
 enum StatusType	{
 		None = 0;
-		True = 1;
-		False = 2;
+		A = 1;
+		I = 2;
 }

@@ -100,10 +100,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         {
             try
             {
-                Vehicle Objvehicle = new Vehicle();
                 VehicleResponce response = new VehicleResponce();
                 response.Vehicle = new VehicleRequest();
-
+                Vehicle Objvehicle = new Vehicle();
+               
                 Objvehicle = _mapper.ToVehicleEntity(request);
                 Objvehicle = await _vehicelManager.Update(Objvehicle);
 
@@ -578,6 +578,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 accessFilter.VehicleGroupId = 0;
                 // get account group and vehicle group access relationship.
                 var accessResult = await accountmanager.GetAccessRelationship(accessFilter);
+
+                VehicleGroupRefResponce response = new VehicleGroupRefResponce();
+                List<Vehicle> ObjVehicleList = new List<Vehicle>();
+                
                 if (Convert.ToInt32(accessResult.Count) > 0)
                 {
                     List<int> vehicleGroupIds = new List<int>();
@@ -607,10 +611,58 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                                 VehicleIdList.Append(groupRef.Ref_Id);
                             }
                         }
+                        else
+                        {
+                            if (vGroup.GroupType == Group.GroupType.Dynamic && vGroup.FunctionEnum == Group.FunctionEnum.OwnedVehicles)
+                            {
+                                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.GetDynamicOwnedVehicle(request.OrganizationId, 0, 0);
+                                foreach (var item in ObjRetrieveVehicleList)
+                                {
+                                    VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
+                                    ObjGroupRef.Id = item.ID;
+                                    ObjGroupRef.Name = item.Name == null ? "" : item.Name;
+                                    ObjGroupRef.LicensePlateNumber = item.License_Plate_Number == null ? "" : item.License_Plate_Number;
+                                    ObjGroupRef.VIN = item.VIN == null ? "" : item.VIN;
+                                    ObjGroupRef.ModelId = item.ModelId == null ? "" : item.ModelId;
+                                    ObjGroupRef.OrganizationId = item.Organization_Id == null ? 0 : item.Organization_Id;
+                                    response.GroupRefDetails.Add(ObjGroupRef);
+                                }
+                            }
+                            else if (vGroup.GroupType == Group.GroupType.Dynamic && vGroup.FunctionEnum == Group.FunctionEnum.VisibleVehicles)
+                            {
+                                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.GetDynamicVisibleVehicle(request.OrganizationId, 0, 0);
+                                foreach (var item in ObjRetrieveVehicleList)
+                                {
+                                    VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
+                                    ObjGroupRef.Id = item.ID;
+                                    ObjGroupRef.Name = item.Name == null ? "" : item.Name;
+                                    ObjGroupRef.LicensePlateNumber = item.License_Plate_Number == null ? "" : item.License_Plate_Number;
+                                    ObjGroupRef.VIN = item.VIN == null ? "" : item.VIN;
+                                    ObjGroupRef.ModelId = item.ModelId == null ? "" : item.ModelId;
+                                    ObjGroupRef.OrganizationId = item.Organization_Id == null ? 0 : item.Organization_Id;
+                                    response.GroupRefDetails.Add(ObjGroupRef);
+                                }
+                            }
+                            else
+                            {
+                                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.GetDynamicAllVehicle(request.OrganizationId, 0, 0);
+                                foreach (var item in ObjRetrieveVehicleList)
+                                {
+                                    VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
+                                    ObjGroupRef.Id = item.ID;
+                                    ObjGroupRef.Name = item.Name == null ? "" : item.Name;
+                                    ObjGroupRef.LicensePlateNumber = item.License_Plate_Number == null ? "" : item.License_Plate_Number;
+                                    ObjGroupRef.VIN = item.VIN == null ? "" : item.VIN;
+                                    ObjGroupRef.ModelId = item.ModelId == null ? "" : item.ModelId;
+                                    ObjGroupRef.OrganizationId = item.Organization_Id == null ? 0 : item.Organization_Id;
+                                    response.GroupRefDetails.Add(ObjGroupRef);
+                                }
+
+                            }
+                        }
                     }
                 }
-                VehicleGroupRefResponce response = new VehicleGroupRefResponce();
-                List<Vehicle> ObjVehicleList = new List<Vehicle>();
+                
                 if (VehicleIdList.Length > 0)
                 {
                     VehicleFilter ObjVehicleFilter = new VehicleFilter();
@@ -620,14 +672,19 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                   
                     foreach (var item in ObjRetrieveVehicleList)
                     {
-                        VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
-                        ObjGroupRef.Id = item.ID;
-                        ObjGroupRef.Name = item.Name == null ? "" : item.Name;
-                        ObjGroupRef.LicensePlateNumber = item.License_Plate_Number == null ? "" : item.License_Plate_Number;
-                        ObjGroupRef.VIN = item.VIN == null ? "" : item.VIN;
-                        ObjGroupRef.ModelId = item.ModelId == null ? "" : item.ModelId;
-                        ObjGroupRef.OrganizationId = item.Organization_Id == null ? 0 : item.Organization_Id;
-                        response.GroupRefDetails.Add(ObjGroupRef);
+                        if (!response.GroupRefDetails.Any(a => a.Id == item.ID))
+                        {
+                            //You have your value.
+
+                            VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
+                            ObjGroupRef.Id = item.ID;
+                            ObjGroupRef.Name = item.Name == null ? "" : item.Name;
+                            ObjGroupRef.LicensePlateNumber = item.License_Plate_Number == null ? "" : item.License_Plate_Number;
+                            ObjGroupRef.VIN = item.VIN == null ? "" : item.VIN;
+                            ObjGroupRef.ModelId = item.ModelId == null ? "" : item.ModelId;
+                            ObjGroupRef.OrganizationId = item.Organization_Id == null ? 0 : item.Organization_Id;
+                            response.GroupRefDetails.Add(ObjGroupRef);
+                        }
                     }
                 }
 

@@ -14,6 +14,7 @@ using net.atos.daf.ct2.organizationservice.entity;
 using System.Linq;
 using net.atos.daf.ct2.relationship;
 using net.atos.daf.ct2.relationship.entity;
+using static net.atos.daf.ct2.utilities.CommonEnums;
 
 namespace net.atos.daf.ct2.organizationservice
 {
@@ -509,7 +510,7 @@ namespace net.atos.daf.ct2.organizationservice
                                         Referenced = x.reference_date,
                                         VehicleOptIn = x.vehicle_default_opt_in,
                                         DriverOptIn = x.driver_default_opt_in,
-                                        IsActive = x.is_active
+                                        IsActive = x.state == (char)State.Active ? true : false
                                     }).ToList());
 
 
