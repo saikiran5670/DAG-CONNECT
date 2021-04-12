@@ -57,7 +57,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 SubscriptionBusinessService.SubscriptionDetailsRequest objBusinessEntity = new SubscriptionBusinessService.SubscriptionDetailsRequest();
                 objBusinessEntity.OrganizationId = objSubscriptionDetailsRequest.organization_id; 
                 objBusinessEntity.Type = objSubscriptionDetailsRequest.type == null ? string.Empty : objSubscriptionDetailsRequest.type;
-                objBusinessEntity.State = objSubscriptionDetailsRequest.state;
+                objBusinessEntity.State = (SubscriptionBusinessService.StatusType)objSubscriptionDetailsRequest.state;
                 var data = await _subscribeClient.GetAsync(objBusinessEntity);
 
                 return Ok(data);

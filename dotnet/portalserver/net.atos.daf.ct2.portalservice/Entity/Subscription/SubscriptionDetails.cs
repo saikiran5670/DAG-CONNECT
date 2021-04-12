@@ -1,4 +1,3 @@
-using net.atos.daf.ct2.subscriptionservice;
 
 namespace net.atos.daf.ct2.subscription.entity
 {
@@ -17,13 +16,13 @@ namespace net.atos.daf.ct2.subscription.entity
 	{
 		public int organization_id { get; set; }
 		public string type { get; set; }
-		public StatusType state { get; set; }
+		public ActiveState state { get; set; }
 		
 	}
-	//public enum ActiveState
-	//{
-	//	None = 0,
-	//	A = 1,
-	//	I = 2
-	//}
+    public enum ActiveState
+    {
+        None = 0,
+        A = 1,
+        I = 2
+    }
 }
