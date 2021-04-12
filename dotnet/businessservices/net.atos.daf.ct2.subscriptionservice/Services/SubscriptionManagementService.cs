@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.subscriptionservice
                 net.atos.daf.ct2.subscription.entity.SubscriptionDetailsRequest objentityRequest = new net.atos.daf.ct2.subscription.entity.SubscriptionDetailsRequest();
                 objentityRequest.organization_id = objSubscriptionDetailsRequest.OrganizationId;
                 objentityRequest.type = objSubscriptionDetailsRequest.Type;
-                objentityRequest.is_active = (net.atos.daf.ct2.subscription.entity.StatusType)objSubscriptionDetailsRequest.IsActive;
+                objentityRequest.state = (net.atos.daf.ct2.subscription.entity.StatusType)objSubscriptionDetailsRequest.State;
 
                 SubscribeListResponce objSubscribeListResponce = new SubscribeListResponce();
                 
@@ -41,7 +41,7 @@ namespace net.atos.daf.ct2.subscriptionservice
                     objSubscriptionDetails.PackageCode = item.package_code == null ? string.Empty : item.package_code;
                     objSubscriptionDetails.SubscriptionStartDate = item.subscription_start_date;
                     objSubscriptionDetails.SubscriptionEndDate = item.subscription_end_date;
-                    objSubscriptionDetails.IsActive = item.is_active;
+                    objSubscriptionDetails.State = item.state == null ? string.Empty : item.state;
                     objSubscriptionDetails.Count = item.count;
                     objSubscriptionDetails.OrgName = item.orgname == null ? string.Empty : item.orgname;
                     objSubscribeListResponce.SubscriptionList.Add(objSubscriptionDetails);
