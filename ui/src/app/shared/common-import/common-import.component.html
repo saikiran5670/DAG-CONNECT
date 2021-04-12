@@ -43,7 +43,7 @@
                                     {{ 'Empty File' }}
                                 </mat-error> 
                             </div>
-                            <div fxLayout="column" fxLayoutAlign="end" class='margin-bottom-sm'>
+                            <div fxLayout="column" class='margin-top-adjust'>
                                 <button style='color: #fff;' [disabled]="!importPackageFormGroup.valid || excelEmptyMsg" [ngStyle]="{'margin-top': importPackageFormGroup.get('uploadFile').hasError('required') }" mat-flat-button color="primary"
                                     (click)="importPackage(removableInput)">
                                     <mat-icon>arrow_circle_up</mat-icon> Upload Package 
@@ -55,6 +55,29 @@
             </div> 
         </div>
     </form>
+</mat-card>
+
+<!-- import status -->
+<mat-card *ngIf="showImportStatus" style='border: 1px solid #d0d0d0;' class='mat-elevation-z margin-bottom-xlg'>
+    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+        <div style='width:95%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ 'Imported file details' }} ( {{filelist.length}} )</span>
+        </div>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+            <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+        </div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="start space-between">
+        <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <span>{{ 'Imported' }} <span style='color: green'>{{importedPackagesCount}} {{ 'new packages'}}</span></span>
+        </div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="start space-between">
+        <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <span>{{ 'Rejected' }} <span [ngClass]="{'cursor-pointer': rejectedPackagesCount > 0}" (click)="(rejectedPackagesCount > 0) ? showRejectedPopup(rejectedPackageList) : ''" style='color: red; text-decoration-line: underline;'>{{ rejectedPackagesCount }} {{ 'packages' }}</span></span>
+
+        </div>
+    </div>
 </mat-card>
 </div>
 
