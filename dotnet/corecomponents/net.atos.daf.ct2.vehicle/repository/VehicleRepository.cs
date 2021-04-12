@@ -607,7 +607,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                             Inner join master.orgrelationship ors
                             on ors.id=orm.relationship_id
                             where  1=1
-                            and ors.is_active=true
+                            and ors.state='A'
                             and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
                             else COALESCE(end_date,0) =0 end ";
             var parameter = new DynamicParameters();
@@ -673,7 +673,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                             Inner join master.orgrelationship ors
                             on ors.id=orm.relationship_id
                             where 1=1
-                            and ors.is_active=true
+                            and ors.state='A'
                             and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
                             else COALESCE(end_date,0) =0 end ";
             var parameter = new DynamicParameters();
@@ -738,7 +738,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                             Inner join master.orgrelationship ors
                             on ors.id=orm.relationship_id
                              where 1=1  
-                            and ors.is_active=true
+                            and ors.state='A'
                             and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
                             else COALESCE(end_date,0) =0 end ";
 
