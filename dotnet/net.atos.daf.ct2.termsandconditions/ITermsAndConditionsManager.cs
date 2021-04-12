@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace net.atos.daf.ct2.termsandconditions.repository
+namespace net.atos.daf.ct2.termsandconditions
 {
-    public interface ITermsAndConditionsRepository
+    public interface ITermsAndConditionsManager
     {
         Task<AccountTermsCondition> AddUserAcceptedTermCondition(AccountTermsCondition accountTermsCondition);
         Task<TermsAndConditions> GetAcceptedTermConditionByUser(int AccountId);
