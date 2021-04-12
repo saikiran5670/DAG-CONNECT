@@ -24,14 +24,14 @@ namespace net.atos.daf.ct2.role.repository
         {
 
             var RoleQueryStatement = @" INSERT INTO master.role
-                                    (organization_id,name,is_active,created_at,created_by,description,feature_set_id,level) 
-	                                VALUES (@organization_id,@name,@is_active,@created_at,@created_by,@description,@feature_set_id,@level)
+                                    (organization_id,name,state,created_at,created_by,description,feature_set_id,level) 
+	                                VALUES (@organization_id,@name,@state,@created_at,@created_by,@description,@feature_set_id,@level)
 	                                RETURNING id";
 
             var Roleparameter = new DynamicParameters();
             Roleparameter.Add("@organization_id", roleMaster.Organization_Id == 0 ?null : roleMaster.Organization_Id);
             Roleparameter.Add("@name", roleMaster.Name);
-            Roleparameter.Add("@is_active", true);
+            Roleparameter.Add("@state", 'A');
             Roleparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
             Roleparameter.Add("@created_by", roleMaster.Created_by);
             Roleparameter.Add("@description", roleMaster.Description);
@@ -83,12 +83,12 @@ namespace net.atos.daf.ct2.role.repository
 
             var parameter = new DynamicParameters();
             parameter.Add("@roleid", roleid);
-            parameter.Add("@is_active", false);
+            parameter.Add("@state", 'I');
             parameter.Add("@updated_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
             parameter.Add("@updated_by", Accountid);
 
             var RoleQueryStatement = @"UPDATE master.role
-                                    SET is_active = @is_active
+                                    SET state = @state
                                     ,modified_at = @modified_at
                                     ,modified_by = @modified_by
                                     WHERE id = @roleid
@@ -130,7 +130,7 @@ namespace net.atos.daf.ct2.role.repository
             var QueryStatement= @"SELECT role.id, 
                                 role.organization_id, 
                                 role.name, 
-                                role.is_active, 
+                                role.state, 
                                 role.description,
                                 role.created_at, 
                                 role.created_by, 
@@ -139,7 +139,7 @@ namespace net.atos.daf.ct2.role.repository
                                 role.feature_set_id,
                                 role.level
 	                            FROM master.role role
-								WHERE  is_active = true";
+								WHERE state = 'A'";
 
 
             var parameter = new DynamicParameters();
@@ -158,7 +158,7 @@ namespace net.atos.daf.ct2.role.repository
                 if(roleFilter.IsGlobal == true)
                 {
                     parameter.Add("@id", roleFilter.RoleId);
-                    QueryStatement = QueryStatement + " or (organization_id  is null and is_active =true)";
+                    QueryStatement = QueryStatement + " or (organization_id  is null and state = 'A')";
 
                 }
 
@@ -220,7 +220,7 @@ namespace net.atos.daf.ct2.role.repository
         {
             var QueryStatement = @" SELECT CASE WHEN id IS NULL THEN 0 ELSE id END
                                     FROM master.role 
-                                    WHERE is_active=true
+                                    WHERE state='A'
                                     AND LOWER(name) = LOWER(@roleName) and (organization_id = @organization_id or organization_id is null)";
            var parameter = new DynamicParameters();
             if(roleid>0)
