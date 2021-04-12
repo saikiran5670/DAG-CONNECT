@@ -137,21 +137,24 @@ export class NewUserStepComponent implements OnInit {
         value: 'S'
       }
     ];
-    this.orgDefaultFlag = {
-      language: false,
-      timeZone: false,
-      unit: false,
-      currency: false,
-      dateFormat: false,
-      vehDisplay: false,
-      timeFormat: false,
-      landingPage: false
-    }
     this.roleDataSource = new MatTableDataSource(this.roleData);
     this.userGrpDataSource = new MatTableDataSource(this.userGrpData);
     this.firstFormGroup.get('userType').setValue(this.userTypeList[0].value); //-- default portal
     //call to organization/preference/get to get org default preferences and pass the res to below function
     this.setDefaultSetting();
+  }
+
+  setDefaultOrgVal(){
+    this.orgDefaultFlag = {
+      language: true,
+      timeZone: true,
+      unit: true,
+      currency: true,
+      dateFormat: true,
+      vehDisplay: true,
+      timeFormat: true,
+      landingPage: true
+    }
   }
 
    setDefaultSetting(prefObj?: any){
@@ -174,6 +177,7 @@ export class NewUserStepComponent implements OnInit {
       this.firstFormGroup.get('vehDisplay').setValue(this.defaultSetting.vehicleDisplayDropdownData[0].id);
       this.firstFormGroup.get('timeFormat').setValue(this.defaultSetting.timeFormatDropdownData[0].id);
       this.firstFormGroup.get('landingPage').setValue(this.defaultSetting.landingPageDisplayDropdownData[0].id);
+      this.setDefaultOrgVal();
     }
    }
 
@@ -208,7 +212,7 @@ export class NewUserStepComponent implements OnInit {
         driverId: ""
       }
 
-      this.accountService.createAccount(objData).subscribe((res)=>{
+      this.accountService.createAccount(objData).subscribe((res: any) => {
         this.userData = res;
         let preferenceObj = {
           id: 0,
@@ -222,20 +226,23 @@ export class NewUserStepComponent implements OnInit {
           vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : this.defaultSetting.vehicleDisplayDropdownData[0].id,
           landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : this.defaultSetting.landingPageDisplayDropdownData[0].id
         }
-        
-        this.accountService.createPreference(preferenceObj).subscribe(()=>{
-          if(createStatus){
-            this.updateTableData(createStatus);
+
+        let createPrefFlag = false;
+        for (const [key, value] of Object.entries(this.orgDefaultFlag)) {
+          if(!value){
+            createPrefFlag = true;
+            break;
           }
-          else{
-            this.userCreatedMsg = this.getUserCreatedMessage(true);
-            this.grpTitleVisible = true;
-            setTimeout(() => {  
-              this.grpTitleVisible = false;
-            }, 5000);
-            this.stepper.next();
-          }
-        });
+        }
+
+        if(createPrefFlag){ //--- pref created
+          this.accountService.createPreference(preferenceObj).subscribe((prefData: any) => {
+            this.goForword(createStatus);
+          });
+        }else{ //--- pref not created
+          this.goForword(createStatus);
+        }
+
         if(this.croppedImage != ''){
           let objData = {
             "blobId": this.userData.blobId,
@@ -244,10 +251,8 @@ export class NewUserStepComponent implements OnInit {
             "image": this.croppedImage.split(",")[1]
           }
       
-          this.accountService.saveAccountPicture(objData).subscribe(data => {
-            if(data){
-              
-            }
+          this.accountService.saveAccountPicture(objData).subscribe((data: any) => {
+            if(data){ }
           }, (error) => {
             this.imageError= "Something went wrong. Please try again!";
           })
@@ -263,6 +268,20 @@ export class NewUserStepComponent implements OnInit {
           }
         }
        });
+  }
+
+  goForword(_createStatus: any){
+    if(_createStatus){
+      this.updateTableData(_createStatus);
+    }
+    else{
+      this.userCreatedMsg = this.getUserCreatedMessage(true);
+      this.grpTitleVisible = true;
+      setTimeout(() => {  
+        this.grpTitleVisible = false;
+      }, 5000);
+      this.stepper.next();
+    }
   }
 
   callToLinkPopup(linkAccountInfo: any){
@@ -652,7 +671,7 @@ export class NewUserStepComponent implements OnInit {
     }
   }
 
-  onLanguageChange(event: any, value: any){
+  onDropdownChange(event: any, value: any){
     switch(value){
       case "language":{
         this.orgDefaultFlag.language = false;
@@ -689,8 +708,8 @@ export class NewUserStepComponent implements OnInit {
     }
   }
 
-  onOpenChange(event: any){
+  onOpenChange(event: any, value: any){
     //console.log("event:: ", event);
   }
-  
+
 }

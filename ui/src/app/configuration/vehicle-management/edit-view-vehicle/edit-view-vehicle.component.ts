@@ -95,8 +95,8 @@ export class EditViewVehicleComponent implements OnInit {
     this.duplicateRegistrationNumber = false;
     let updateVehObj = {
       id: this.selectedRowData.id, //-- vehicle id
-      name: this.vehicleForm.controls.vehicleName.value, 
-      license_Plate_Number: this.vehicleForm.controls.registrationNumber.value,
+      name: this.vehicleForm.controls.vehicleName.value.trim(), 
+      license_Plate_Number: this.vehicleForm.controls.registrationNumber.value.trim(),
       organization_Id: this.accountOrganizationId
     }
     this.vehicleService.updateVehicle(updateVehObj).subscribe((updatedVehData: any) => {

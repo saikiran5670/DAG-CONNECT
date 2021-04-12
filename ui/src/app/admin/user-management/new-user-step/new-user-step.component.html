@@ -166,7 +166,7 @@
             <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.language}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblLanguage || 'Language' }}</mat-label>
               <mat-form-field appearance="outline" class="full-width">
-                <mat-select (openedChange)="onOpenChange($event)" (selectionChange)="onLanguageChange($event, 'language')" placeholder="{{ translationData.lblLanguage || 'Language' }}" formControlName="language">
+                <mat-select (openedChange)="onOpenChange($event, 'language')" (selectionChange)="onDropdownChange($event, 'language')" placeholder="{{ translationData.lblLanguage || 'Language' }}" formControlName="language">
                   <mat-option *ngFor="let rer of defaultSetting.languageDropdownData" [value]="rer.id">
                     {{ rer.value }}
                   </mat-option>
@@ -176,7 +176,7 @@
             <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.timeZone}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblTimeZone || 'Time Zone' }}</mat-label>
               <mat-form-field appearance="outline" class="full-width">
-                <mat-select (openedChange)="onOpenChange($event)" (selectionChange)="onLanguageChange($event, 'timeZone')" placeholder="{{ translationData.lblTimeZone || 'Time Zone' }}" formControlName="timeZone">
+                <mat-select (openedChange)="onOpenChange($event, 'timeZone')" (selectionChange)="onDropdownChange($event, 'timeZone')" placeholder="{{ translationData.lblTimeZone || 'Time Zone' }}" formControlName="timeZone">
                   <mat-option *ngFor="let rer of defaultSetting.timezoneDropdownData" [value]="rer.id">
                     {{ rer.value }}
                   </mat-option>
@@ -186,7 +186,7 @@
             <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.unit}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblUnit || 'Unit' }}</mat-label>
               <mat-form-field appearance="outline" class="full-width">
-                <mat-select (openedChange)="onOpenChange($event)" (selectionChange)="onLanguageChange($event, 'unit')" placeholder="{{ translationData.lblUnit || 'Unit' }}" formControlName="unit">
+                <mat-select (openedChange)="onOpenChange($event, 'unit')" (selectionChange)="onDropdownChange($event, 'unit')" placeholder="{{ translationData.lblUnit || 'Unit' }}" formControlName="unit">
                   <mat-option *ngFor="let rer of defaultSetting.unitDropdownData" [value]="rer.id">
                     {{ rer.value }}
                   </mat-option>
@@ -199,7 +199,7 @@
               <!-- <mat-label>{{ translationData.lblCurrency }}</mat-label> -->
               <mat-label>{{ translationData.lblCurrency || 'Currency' }}</mat-label>
               <mat-form-field appearance="outline" class="full-width">
-                <mat-select (openedChange)="onOpenChange($event)" (selectionChange)="onLanguageChange($event, 'currency')" placeholder="{{ translationData.lblCurrency || 'Currency' }}" formControlName="currency">
+                <mat-select (openedChange)="onOpenChange($event, 'currency')" (selectionChange)="onDropdownChange($event, 'currency')" placeholder="{{ translationData.lblCurrency || 'Currency' }}" formControlName="currency">
                   <mat-option *ngFor="let rer of defaultSetting.currencyDropdownData" [value]="rer.id">
                     {{ rer.value }}
                   </mat-option>
@@ -209,7 +209,7 @@
             <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.dateFormat}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblDateFormat || 'Date Format' }}</mat-label>
               <mat-form-field appearance="outline" class="full-width">
-                <mat-select (openedChange)="onOpenChange($event)" (selectionChange)="onLanguageChange($event, 'dateFormat')" placeholder="{{ translationData.lblDateFormat || 'Date Format' }}" formControlName="dateFormat">
+                <mat-select (openedChange)="onOpenChange($event, 'dateFormat')" (selectionChange)="onDropdownChange($event, 'dateFormat')" placeholder="{{ translationData.lblDateFormat || 'Date Format' }}" formControlName="dateFormat">
                   <mat-option *ngFor="let rer of defaultSetting.dateFormatDropdownData" [value]="rer.id">
                     {{ rer.value }}
                   </mat-option>
@@ -219,7 +219,7 @@
             <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.timeFormat}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblTimeFormat || 'Time Format' }}</mat-label>
               <mat-form-field appearance="outline" class="full-width">
-                <mat-select (openedChange)="onOpenChange($event)" (selectionChange)="onLanguageChange($event, 'timeFormat')" placeholder="{{ translationData.lblTimeFormat || 'Time Format' }}" formControlName="timeFormat">
+                <mat-select (openedChange)="onOpenChange($event, 'timeFormat')" (selectionChange)="onDropdownChange($event, 'timeFormat')" placeholder="{{ translationData.lblTimeFormat || 'Time Format' }}" formControlName="timeFormat">
                   <mat-option *ngFor="let rer of defaultSetting.timeFormatDropdownData" [value]="rer.id">
                     {{ rer.value }}
                   </mat-option>
@@ -231,7 +231,7 @@
             <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.vehDisplay}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display (Default)' }}</mat-label>
               <mat-form-field appearance="outline" class="full-width">
-                <mat-select (openedChange)="onOpenChange($event)" (selectionChange)="onLanguageChange($event, 'vehDisplay')" placeholder="{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display (Default)' }}" formControlName="vehDisplay">
+                <mat-select (openedChange)="onOpenChange($event, 'vehDisplay')" (selectionChange)="onDropdownChange($event, 'vehDisplay')" placeholder="{{ translationData.lblVehicleDisplayDefault || 'Vehicle Display (Default)' }}" formControlName="vehDisplay">
                   <mat-option *ngFor="let rer of defaultSetting.vehicleDisplayDropdownData" [value]="rer.id">
                     {{ rer.value }}
                   </mat-option>
@@ -241,7 +241,7 @@
             <div [ngClass]="{'orgGrayDefault': orgDefaultFlag.landingPage}" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display (Default)' }}</mat-label>
               <mat-form-field appearance="outline" class="full-width">
-                <mat-select (openedChange)="onOpenChange($event)" (selectionChange)="onLanguageChange($event, 'landingPage')" placeholder="{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display (Default)' }}" formControlName="landingPage">
+                <mat-select (openedChange)="onOpenChange($event, 'landingPage')" (selectionChange)="onDropdownChange($event, 'landingPage')" placeholder="{{ translationData.lblLandingPageDisplayDefault || 'Landing Page Display (Default)' }}" formControlName="landingPage">
                   <mat-option *ngFor="let rer of defaultSetting.landingPageDisplayDropdownData" [value]="rer.id">
                     {{ rer.value }}
                   </mat-option>
