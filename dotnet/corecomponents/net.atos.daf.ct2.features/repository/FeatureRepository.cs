@@ -284,7 +284,7 @@ namespace net.atos.daf.ct2.features.repository
 
         public async Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int feature_set_id,string Langaugecode)
          {
-             var QueryStatement = @"Select f.id,f.name,t.value,f.type,f.is_active,f.data_attribute_set_id,f.key,f.level,fs.feature_set_id from master.feature f
+             var QueryStatement = @"Select f.id,f.name,t.value,f.type,f.state,f.data_attribute_set_id,f.key,f.level,fs.feature_set_id from master.feature f
 	                                Left join master.featuresetfeature fS
 	                                on f.id=fs.feature_id
                                     Left join translation.translation t

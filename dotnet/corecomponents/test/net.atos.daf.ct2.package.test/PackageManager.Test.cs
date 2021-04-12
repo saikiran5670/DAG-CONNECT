@@ -51,7 +51,7 @@ namespace net.atos.daf.ct2.package.test
                 Name = "Standard",
                 Type = "O",
                 Description = "Package with default featureset",
-                IsActive = false
+                State = "A"
             };
             var resultPackage = _packageManager.Create(ObjPackage).Result;
             Assert.IsNotNull(resultPackage);
@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.package.test
                 Code = "PKG008",
                 FeatureSetID = 4,
                 Status = "I",
-                IsActive = true,
+                State = "A",
                 Name = "Standard Update",
                 Type = "V",
                 Description = "Package with default featureset",
@@ -107,7 +107,7 @@ namespace net.atos.daf.ct2.package.test
         [TestMethod]
         public void DeletePackage()
         {
-            var result = _packageManager.Delete(1).Result;
+            var result = _packageManager.Delete(2).Result;
             Console.WriteLine(result);
             Assert.IsTrue(result);
         }
