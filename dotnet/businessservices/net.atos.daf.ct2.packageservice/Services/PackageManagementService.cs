@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.packageservice
                 package.Name = request.Name;
                 package.Type = request.Type;
                 package.Description = request.Description;
-                package.IsActive = request.IsActive;
+                package.State = request.State;
                 package = _packageManager.Create(package).Result;
                 if (package.Id == -1)
                 {
@@ -80,7 +80,7 @@ namespace net.atos.daf.ct2.packageservice
                 package.Name = request.Name;
                 package.Type = request.Type;
                 package.Description = request.Description;
-                package.IsActive = request.IsActive;
+                package.State = request.State;
 
                 package = _packageManager.Update(package).Result;
 
@@ -166,7 +166,7 @@ namespace net.atos.daf.ct2.packageservice
                                          Name = x.Name,
                                          FeatureSetID = x.FeatureSetID,
                                          Status = x.Status,
-                                         IsActive = x.IsActive,
+                                         State = x.State,
                                          CreatedAt = x.CreatedAt,
                                          Type = x.Type
                                      }).ToList());
@@ -201,7 +201,7 @@ namespace net.atos.daf.ct2.packageservice
                     Name = x.Name,
                     Status = x.Status,
                     Type = x.Type,
-                    IsActive = x.IsActive
+                    State = x.State
                 }).ToList());
 
                 var packageImported = await _packageManager.Import(packages);
@@ -215,7 +215,7 @@ namespace net.atos.daf.ct2.packageservice
                                          FeatureSetID = x.FeatureSetID,
                                          Status = x.Status,
                                          Type = x.Type,
-                                         IsActive = x.IsActive,
+                                         State = x.State,
                                          CreatedAt = x.CreatedAt
                                      }).ToList());
 

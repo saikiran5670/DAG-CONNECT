@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.package
 
         Task<int> Create(FeatureSet featureSet);// required clarification on return type
                                                 //  Task<int> Update(FeatureSet featureSet);// required clarification on return type
-        Task<IEnumerable<FeatureSet>> GetFeatureSet(int featureSetId, bool is_active); // required is_active parameter
+        Task<IEnumerable<FeatureSet>> GetFeatureSet(int featureSetId, char state); // required is_active parameter
 
 
     }

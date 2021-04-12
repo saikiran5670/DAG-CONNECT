@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.subscription.entity
 {
@@ -21,10 +19,10 @@ namespace net.atos.daf.ct2.subscription.entity
 		public ActiveState state { get; set; }
 		
 	}
-	public enum ActiveState
-	{
-		None = 0,
-		A = 1,
-		I = 2
-	}
+    public enum ActiveState
+    {
+        None = 0,
+        A = 1,
+        I = 2
+    }
 }

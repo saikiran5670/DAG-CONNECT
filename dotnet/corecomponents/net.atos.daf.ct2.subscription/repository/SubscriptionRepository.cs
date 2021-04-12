@@ -121,7 +121,7 @@ namespace net.atos.daf.ct2.subscription.repository
                     }
 
                     string SubscriptionId = string.Empty;
-                    //return subscriptionid and is_active from subscription table
+                    //return subscriptionid and state from subscription table
                     var responce  = await SubscriptionExits(orgid, data.id);
                     if (responce != null && !string.IsNullOrEmpty(responce.subscription_id) && responce.state.ToUpper() == "A")
                     {// Subscription exists and Active
@@ -146,7 +146,7 @@ namespace net.atos.daf.ct2.subscription.repository
                     }
                     else if (responce == null || string.IsNullOrEmpty(responce.subscription_id))
                     {//Subscription does'nt exists for this scenerio
-                        SubscriptionId = await GetTopOrderId(); //Guid.NewGuid().ToString();
+                        SubscriptionId = Guid.NewGuid().ToString();
                         var parameter = new DynamicParameters();
                         parameter.Add("@organization_id", orgid);
                         parameter.Add("@subscription_id", SubscriptionId);
@@ -158,7 +158,7 @@ namespace net.atos.daf.ct2.subscription.repository
                         parameter.Add("@vehicle_id", null);
                         parameter.Add("@state", "A");
                         parameter.Add("@is_zuora_package", true);
-                        string queryInsert = "insert into master.subscription(organization_id, subscription_id, type, package_code, package_id, vehicle_id, subscription_start_date, subscription_end_date, is_active,is_zuora_package) " +
+                        string queryInsert = "insert into master.subscription(organization_id, subscription_id, type, package_code, package_id, vehicle_id, subscription_start_date, subscription_end_date, state,is_zuora_package) " +
                                      "values(@organization_id, @subscription_id, @type, @package_code, @package_id, @vehicle_id, @subscription_start_date, @subscription_end_date, @state,@is_zuora_package) RETURNING id";
 
                         int subid = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
@@ -222,8 +222,7 @@ namespace net.atos.daf.ct2.subscription.repository
                         }
 
                         string SubscriptionId = string.Empty;
-                        SubscriptionId = await GetTopOrderId();
-                            //Guid.NewGuid().ToString();
+                        SubscriptionId = Guid.NewGuid().ToString();
                         var parameter = new DynamicParameters();
                         parameter.Add("@organization_id", orgid);
                         parameter.Add("@subscription_id", SubscriptionId);
@@ -258,13 +257,7 @@ namespace net.atos.daf.ct2.subscription.repository
             }
         }
 
-        private async Task<string> GetTopOrderId()
-        {
-            var data = dataAccess.ExecuteScalarAsync(@"select subscription_id, state from master.subscription where organization_Id =@organization_Id and package_id=@package_id").ToString();
-            return data;
-        }
-
-        public async Task<SubscriptionResponse> Unsubscribe(UnSubscription objUnSubscription)
+       public async Task<SubscriptionResponse> Unsubscribe(UnSubscription objUnSubscription)
         {
             log.Info("Unsubscribe Subscription method called in repository");
             try
@@ -329,7 +322,7 @@ namespace net.atos.daf.ct2.subscription.repository
                             var vinExist = await dataAccess.QueryFirstOrDefaultAsync<UnSubscribeVin>
                                 (query, parameterToGetVehicleId);
                             if (vinExist == null || vinExist.id == 0 || vinExist.state.ToUpper() == "I")
-                            {//return Bad Request if vin does not exits and is_active is already false in Subscription table
+                            {//return Bad Request if vin does not exits and state is already false in Subscription table
                                 return null;
                             }
                            
@@ -442,7 +435,7 @@ namespace net.atos.daf.ct2.subscription.repository
                               LEFT JOIN master.vehicle veh on sub.vehicle_id = veh.id
                               LEFT JOIN master.organization org on sub.organization_id = org.id
                               GROUP BY sub.subscription_id,org.name,sub.package_code,pak.name,sub.type,
-                                     sub.subscription_start_date,sub.subscription_end_date,sub.is_active,sub.organization_id
+                                     sub.subscription_start_date,sub.subscription_end_date,sub.state,sub.organization_id
                               HAVING 1=1";
 
                     var parameter = new DynamicParameters();

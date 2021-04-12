@@ -24,6 +24,10 @@ export class CommonImportComponent implements OnInit {
   file: any;
   arrayBuffer: any;
   filelist: any = [];
+  rejectedPackageList : any = [];
+  importedPackagesCount : number = 0;
+  rejectedPackagesCount : number = 0;
+  showImportStatus : boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private packageService: PackageService) { }
 
@@ -110,32 +114,259 @@ export class CommonImportComponent implements OnInit {
   importPackage(removableInput){
     if(this.filelist.length > 0){
       this.excelEmptyMsg = false;
-      let featureIdArray : [] = [];
-      let packagesToImport = [];//new packageModel().importPackage;
-      for(let i = 0; i < this.filelist.length ; i++){
-        packagesToImport.push(
-          {
-            "id": 0,
-            "code": this.filelist[i]["PackageCode"],
-            "featureSetID" : 0,
-            "features": this.filelist[i]["FeatureId"].split(","),
-            "name": this.filelist[i]["PackageName"],
-            "type": this.filelist[i]["PackageType"] === "VIN" ? "V" : "O",
-            "description": this.filelist[i]["Description"],
-            "isActive": true,
-            "status": this.filelist[i]["Status"]=== "Inactive" ? "I" : "A",
-            "createdAt":0
-          }
-        )
-      }
-      this.packageService.importPackage(packagesToImport).subscribe(res=>{
-        console.log(res)
-      })
-    console.log(packagesToImport)
+      this.prepareDataToImport(removableInput);
+      //removableInput.clear();
     }
     else{
       this.excelEmptyMsg = true;
+      removableInput.clear();
     }
   }
 
+  prepareDataToImport(removableInput){
+    let packagesToImport = [];//new packageModel().importPackage;
+    for(let i = 0; i < this.filelist.length ; i++){
+      packagesToImport.push(
+        {
+          "id": 0,
+          "code": this.filelist[i]["PackageCode"],
+          "featureSetID" : 0,
+          "features": this.filelist[i]["FeatureId"],
+          "name": this.filelist[i]["PackageName"],
+          "type": this.filelist[i]["PackageType"], //=== "VIN" ? "V" : "O"
+          "description": this.filelist[i]["Description"],
+          "isActive": true,
+          "status": this.filelist[i]["PackageStatus"], //=== "Inactive" ? "I" : "A",
+          "createdAt":0
+        }
+      )
+    }
+    //console.log(packagesToImport)
+    this.validateImportData(packagesToImport)
+  }
+
+  validateImportData(packagesToImport){
+    let validData: any = [];
+    let invalidData: any = [];
+    let codeFlag : boolean;
+    let nameFlag : boolean;
+    let typeFlag : boolean;
+    let statFlag : boolean;
+    let descFlag : boolean;
+    let featureFlag : boolean;
+    packagesToImport.forEach((item: any) => {
+      for (const [key, value] of Object.entries(item)) {
+        switch (key) {
+          case 'code':{
+            let objData: any = this.codeValidation(value); 
+            codeFlag = objData.status;
+            if(!codeFlag){
+              item.returnMessage = objData.reason;
+            }
+            break;
+          }
+          case 'features':{
+            let objData: any = this.featureValidation(value); 
+            featureFlag = objData.status;
+            if(!featureFlag){
+              item.returnMessage = objData.reason;
+            }
+            item.features = objData.featureArray;
+            break;
+          }
+            case 'name':{
+              let objData: any = this.nameValidation(value,50,'packagename');  
+              nameFlag = objData.status;
+              if(!nameFlag){
+                item.returnMessage = objData.reason;
+              }
+              break;
+            }
+            case 'type':{
+              let objData: any = this.typeValidation(value,'type');  
+              typeFlag = objData.status;
+              if(!typeFlag){
+                item.returnMessage = objData.reason;
+              }
+              else{
+                item.type = value === "VIN" ? "V" : "O";
+              }
+              break;
+            }
+            case 'description':{
+              let objData: any = this.descValidation(value);  
+              descFlag = objData.status;
+              if(!descFlag){
+                item.returnMessage = objData.reason;
+              }
+              break;
+            }
+            case 'status':{
+              let objData: any = this.typeValidation(value,'status');  
+              statFlag = objData.status;
+              if(!statFlag){
+                item.returnMessage = objData.reason;
+              }
+              else{
+                item.status = value === "Inactive" ? "I" : "A";
+              }
+              break;
+            }
+          default:
+            break;
+        }
+      }
+      
+    if(statFlag && codeFlag && descFlag && nameFlag && typeFlag && featureFlag){
+      validData.push(item);
+    }
+    else{
+      invalidData.push(item);
+    }
+    });
+    this.callImportAPI(validData,invalidData)
+  
+    //console.log(validData , invalidData)
+   // return { validDriverList: validData, invalidDriverList: invalidData };
+   
+  }
+
+  callImportAPI(validData,invalidData){
+    this.rejectedPackageList = invalidData;
+    this.rejectedPackagesCount = invalidData.length;
+    this.importedPackagesCount = validData.length;
+    this.showImportStatus = true;
+    if(validData.length > 0){
+        this.packageService.importPackage(validData).subscribe((resultData)=>{
+            console.log(resultData)
+        })
+    }
+  }
+
+  onClose(){
+    this.showImportStatus = false;
+  }
+
+  codeValidation(value: any){
+    let obj: any = { status: true, reason: 'correct data'};
+    const regx = /[A-Z]{1,1}[A-Z\s]{1,1}[\s]{1,1}[A-Z0-9]{13,13}[0-9]{3,3}/;
+    if(!value || value == '' || value.trim().length == 0){
+      obj.status = false;
+      obj.reason = 'Package Code is mandatory input';
+      return obj;  
+    }
+    return obj;
+  }
+
+ 
+  nameValidation(value: any, maxLength: any, type: any){
+    let obj: any = { status: true, reason: 'correct data'};
+    let numberRegex = /[^0-9]+$/;
+    let SpecialCharRegex = /[^!@#\$%&*]+$/;
+   
+    if(!value || value == '' || value.trim().length == 0){ 
+      obj.status = false;
+      obj.reason = 'Package Name is mandatory input';
+      return obj; 
+    }
+    else{
+
+      if(value.length > maxLength){
+        obj.status = false;
+        obj.reason = this.getValidateMsg(type, "'$' exceeds maximum allowed length of '#' chars", maxLength) 
+        return obj;
+      }
+      if(!SpecialCharRegex.test(value)){
+        obj.status = false;
+        obj.reason = this.getValidateMsg(type,  "Special characters not allowed in '$'");
+        return obj;
+      }
+      return obj;
+    }
+  }
+
+  descValidation(value:any){
+    let obj: any = { status: true, reason: 'correct data'};
+    if(value.length > 100){
+      obj.status = false;
+      obj.reason = 'Package Description cannot exceed 100 characters';
+
+    }
+    return obj;
+  }
+
+  typeValidation(value: any, type:any){
+    let obj: any = { status: true, reason: 'correct data'};
+    if(!value || value == '' || value.trim().length == 0){ 
+      obj.status = false;
+      if(type === 'type')
+      obj.reason = 'Package Type is mandatory input';
+      if(type === 'status')
+      obj.reason = 'Package Status is mandatory input';
+      return obj; 
+    }
+    else{
+      switch (type) {
+        case 'type':
+          if(value.toLowerCase() != "vin"){
+            if(value.toLowerCase() != "organization" ){
+              obj.status = false;
+              obj.reason = 'Package type should be VIN or Organization';
+
+            }
+          }
+          break;
+          case 'status':
+          if(value.toLowerCase() != "active" ){
+            if(value.toLowerCase() != "inactive"){
+            obj.status = false;
+            obj.reason = 'Package status can be Active or Inactive';
+            }
+          }
+          break;
+        default:
+          break;
+      }
+      return obj; 
+    }
+
+  }
+
+  featureValidation(value: any){
+    let obj: any = { status: true, reason: 'correct data',featureArray : []};
+    let featureArray = [];
+    if(!value || value == '' || value.trim().length == 0){ 
+      obj.status = false;
+      obj.reason = "Features should be comma separated and cannot be empty.";
+      obj.featureArray = [];
+    }
+    else{
+      featureArray = value.split(",");
+      for(var i in featureArray){
+        if(featureArray[i] === null || featureArray[i] === undefined || featureArray[i].trim() === ''){ 
+          obj.status = false;
+          obj.reason = "Feature is not valid.";
+        }
+      }
+      obj.featureArray = featureArray;
+
+    }
+    return obj;
+  }
+
+  getValidateMsg(type: any, typeTrans: any, maxLength?: any){
+    if(typeTrans){
+      if(maxLength){
+        typeTrans = typeTrans.replace('$', type); 
+        return typeTrans.replace('#', maxLength)
+      }
+      else{
+        return typeTrans.replace('$', type);
+      }
+    }
+  }
+
+  showRejectedPopup(rejectedPackageList){
+
+  }
 }
