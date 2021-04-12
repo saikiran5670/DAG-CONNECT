@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.features
     public interface IFeatureManager
     {
         Task<int> AddFeatureSet(FeatureSet featureSet);
-        Task<IEnumerable<FeatureSet>> GetFeatureSet(int FeatureSetId,bool Active);
+        Task<IEnumerable<FeatureSet>> GetFeatureSet(int FeatureSetId, char state);
          Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, int FeatureId, int level, char? Featuretype, string Langaugecode);
         Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int GetFeatureIdsForFeatureSet, string Langaugecode);
         Task<DataAttributeSet> GetDataAttributeset(int DataAttributeSetID);

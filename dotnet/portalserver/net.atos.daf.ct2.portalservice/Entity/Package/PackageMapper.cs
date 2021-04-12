@@ -25,7 +25,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                 Description = request.Description,
                 Status = request.Status,
                 Type = request.Type,
-                IsActive = request.IsActive
+                State = request.State
 
             };
             createPackagerequest.FeatureIds.AddRange(request.FeatureIds.Select(x => x));
@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                         Name = x.Name,
                         Status = x.Status,
                         Type = x.Type,
-                        IsActive = x.IsActive
+                        State = x.State
                     };
                     packageRequest.Packages.Add(pkgRequest);
                 }

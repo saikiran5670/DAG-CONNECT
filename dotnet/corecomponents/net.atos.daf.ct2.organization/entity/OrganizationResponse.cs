@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using static net.atos.daf.ct2.utilities.CommonEnums;
 
 namespace net.atos.daf.ct2.organization.entity
 {
@@ -16,7 +17,7 @@ namespace net.atos.daf.ct2.organization.entity
         public string city { get; set; }  
         public string country_code { get; set; }  
         public  string  reference_date { get; set; }   
-        public bool is_active  { get; set; }  
+        public char state  { get; set; }  
         public int preference_id { get; set; }
         public string vehicle_default_opt_in { get; set; }
         public string driver_default_opt_in { get; set; }

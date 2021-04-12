@@ -40,12 +40,12 @@ namespace net.atos.daf.ct2.package.repository
                     parameter.Add("@name", package.Name);
                     parameter.Add("@type", Convert.ToChar(package.Type));
                     parameter.Add("@description", package.Description);
-                    parameter.Add("@is_active", package.IsActive);
+                    parameter.Add("@state", Convert.ToChar(package.State));
                     parameter.Add("@status", Convert.ToChar(package.Status));
                     parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
 
-                    string query = @"insert into master.package(packagecode,feature_set_id,name,type,description,is_active,status,created_at) " +
-                                  "values(@packagecode,@feature_set_id,@name,@type,@description,@is_active,@status,@created_at) RETURNING id";
+                    string query = @"insert into master.package(packagecode,feature_set_id,name,type,description,status,created_at,state) " +
+                                  "values(@packagecode,@feature_set_id,@name,@type,@description,@status,@created_at,@state) RETURNING id";
 
                     var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                     package.Id = id;
@@ -77,7 +77,7 @@ namespace net.atos.daf.ct2.package.repository
                     parameter.Add("@name", package.Name);
                     parameter.Add("@type", Convert.ToChar(package.Type));
                     parameter.Add("@description", package.Description);
-                    parameter.Add("@is_active", package.IsActive);
+                    parameter.Add("@state", Convert.ToChar(package.State));
                     parameter.Add("@status", Convert.ToChar(package.Status));
                     //   parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                     string query = @"update master.package set packagecode=@packagecode, 
@@ -85,7 +85,7 @@ namespace net.atos.daf.ct2.package.repository
                                                            name=@name,
                                                            type=@type,
                                                            description=@description,                                
-                                                           is_active=@is_active,
+                                                           state=@state,
                                                            status=@status                                                          
                                                            where id = @Id RETURNING id";
                     package.Id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
@@ -127,11 +127,11 @@ namespace net.atos.daf.ct2.package.repository
                             parameter.Add("@name", package.Name);
                             parameter.Add("@type", package.Type.Length > 1 ? _packageCoreMapper.MapPackageType(package.Type) : Convert.ToChar(package.Type));
                             parameter.Add("@description", package.Description);
-                            parameter.Add("@is_active", package.IsActive);
+                            parameter.Add("@state", Convert.ToChar(package.State));
                             parameter.Add("@status", Convert.ToChar(package.Status));
                             parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                            query = @"insert into master.package(packagecode,feature_set_id,name,type,description,is_active,status,created_at) " +
-                                    "values(@packagecode,@feature_set_id,@name,@type,@description,@is_active,@status,@created_at) RETURNING id";
+                            query = @"insert into master.package(packagecode,feature_set_id,name,type,description,status,created_at,state) " +
+                                    "values(@packagecode,@feature_set_id,@name,@type,@description,@status,@created_at,@state) RETURNING id";
                             var pkgId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                             package.Id = pkgId;
                             if (pkgId > 0)
@@ -189,7 +189,7 @@ namespace net.atos.daf.ct2.package.repository
                 List<Package> packages = new List<Package>();
                 string query = string.Empty;
 
-                query = @"select id,packagecode,feature_set_id,name,type,description,is_active,status,created_at from master.package pkg where id !=1 and is_active = true ";
+                query = @"select id,packagecode,feature_set_id,name,type,description,state,status,created_at from master.package pkg where id !=1 and state = 'A' ";
 
                 if (filter != null)
                 {
@@ -251,7 +251,7 @@ namespace net.atos.daf.ct2.package.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", packageId);
-                var query = @"update master.package set is_active=false where id=@id";
+                var query = @"update master.package set state='I' where id=@id";
                 int isdelete = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
             }

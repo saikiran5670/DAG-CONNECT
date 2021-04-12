@@ -22,7 +22,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
         public string Type { get; set; }
         [StringLength(100)]
         public string Description { get; set; }
-        public bool IsActive { get; set; }
+        [StringLength(1)]
+        public string State { get; set; }
         [Required]
         [StringLength(1)]
         public string Status { get; set; }

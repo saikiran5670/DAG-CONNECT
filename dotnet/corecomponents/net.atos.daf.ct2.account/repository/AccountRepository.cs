@@ -37,8 +37,8 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@driver_id", account.DriverId);
                 parameter.Add("@created_at", account.CreatedAt.Value);
 
-                string query = @"insert into master.account(email,salutation,first_name,last_name,type,driver_id,is_active,preference_id,blob_id,created_at) " +
-                              "values(@email,@salutation,@first_name,@last_name,@type,@driver_id,true,null,null,@created_at) RETURNING id";
+                string query = @"insert into master.account(email,salutation,first_name,last_name,type,driver_id,state,preference_id,blob_id,created_at) " +
+                              "values(@email,@salutation,@first_name,@last_name,@type,@driver_id,'A',null,null,@created_at) RETURNING id";
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 account.Id = id;
@@ -55,11 +55,11 @@ namespace net.atos.daf.ct2.account
                     {
                         parameter.Add("@end_date", null);
                     }
-                    parameter.Add("@is_active", true);
+                    parameter.Add("@state", "A");
                     parameter.Add("@account_id", account.Id);
                     parameter.Add("@organization_Id", account.Organization_Id);
-                    query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,is_active)  
-                                   values(@account_id,@organization_Id,@start_date,@end_date,@is_active) RETURNING id";
+                    query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,state)  
+                                   values(@account_id,@organization_Id,@start_date,@end_date,@state) RETURNING id";
                     var AccountOrgId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
             }
@@ -110,7 +110,7 @@ namespace net.atos.daf.ct2.account
                     query = @"delete from master.groupref gr
                          using master.group g,master.accountorg ao 
                          where gr.ref_id = @id and ao.organization_id = @organization_id 
-                         and g.id=gr.group_id and ao.is_active=true";
+                         and g.id=gr.group_id and ao.state='A'";
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
                     // Delete account role
@@ -118,21 +118,21 @@ namespace net.atos.daf.ct2.account
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
                     // disable account with organization
-                    query = @"update master.accountorg set is_active=false where account_id = @id and organization_id = @organization_id";
+                    query = @"update master.accountorg set state='I' where account_id = @id and organization_id = @organization_id";
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                     transactionScope.Complete();
                 }
                 // check if account associated with multiple organization
-                query = @"select count(1) from master.accountorg where is_active=true and account_id = @id";
+                query = @"select count(1) from master.accountorg where state='A' and account_id = @id";
                 result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (result <= 0)
                 {
                     // disable preference
-                    query = @"update master.accountpreference set is_active=false from master.account where master.accountpreference.id=master.account.preference_id and master.account.id=@id;";
-                    //query += @"delete from master.accountblob ab using master.account a where a.id = @id and a.blob_id = ab.id and a.is_active = true;";
+                    query = @"update master.accountpreference set state='I' from master.account where master.accountpreference.id=master.account.preference_id and master.account.id=@id;";
+                    //query += @"delete from master.accountblob ab using master.account a where a.id = @id and a.blob_id = ab.id and a.state = 'A';";
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                     // disable account 
-                    query = @"update master.account set is_active=false where id = @id;";
+                    query = @"update master.account set state='I' where id = @id;";
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
                 return true;
@@ -152,8 +152,8 @@ namespace net.atos.daf.ct2.account
             try
             {
                 query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.driver_id,a.type as accounttype,ag.organization_id as 
-                Organization_Id,a.preference_id,a.blob_id,a.created_at from master.account a join master.accountorg ag on a.id = ag.account_id and a.is_active=true 
-                and ag.is_active=true where 1=1 ";
+                Organization_Id,a.preference_id,a.blob_id,a.created_at from master.account a join master.accountorg ag on a.id = ag.account_id and a.state='A' 
+                and ag.state='A' where 1=1 ";
 
                 // organization id filter
                 if (filter.OrganizationId > 0)
@@ -178,8 +178,8 @@ namespace net.atos.daf.ct2.account
                 if (account == null)
                 {
                     query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.driver_id,a.type as accounttype,ag.organization_id as 
-                    Organization_Id,a.preference_id,a.blob_id,a.created_at from master.account a join master.accountorg ag on a.id = ag.account_id and a.is_active=true 
-                    and ag.is_active=true where 1=1 ";
+                    Organization_Id,a.preference_id,a.blob_id,a.created_at from master.account a join master.accountorg ag on a.id = ag.account_id and a.state='A' 
+                    and ag.state='A' where 1=1 ";
 
                     // email id filter
                     if (!string.IsNullOrEmpty(filter.Email))
@@ -213,8 +213,8 @@ namespace net.atos.daf.ct2.account
                 List<Account> accounts = new List<Account>();
                 string query = string.Empty;
                 query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.driver_id,a.type as accounttype,ag.organization_id as 
-                Organization_Id,a.preference_id,a.blob_id,a.created_at from master.account a join master.accountorg ag on a.id = ag.account_id and a.is_active=true 
-                and ag.is_active=true where 1=1 ";
+                Organization_Id,a.preference_id,a.blob_id,a.created_at from master.account a join master.accountorg ag on a.id = ag.account_id and a.state='A' 
+                and ag.state='A' where 1=1 ";
 
                 if (filter != null)
                 {
@@ -328,8 +328,8 @@ namespace net.atos.daf.ct2.account
                 var parameter = new DynamicParameters();
                 string query = string.Empty;
                 int count = 0;
-                query = @"select count(1) from master.account a join master.accountorg ag on a.id = ag.account_id and a.is_active=true 
-                and ag.is_active=true where ag.organization_id=@organization_id";
+                query = @"select count(1) from master.account a join master.accountorg ag on a.id = ag.account_id and a.state='A' 
+                and ag.state='A' where ag.organization_id=@organization_id";
                 parameter.Add("@organization_id", organization_id);
                 count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
@@ -356,8 +356,8 @@ namespace net.atos.daf.ct2.account
                 {
                     parameter.Add("@end_date", null);
                 }
-                query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,is_active)  
-                                   values(@account_id,@organization_Id,@start_date,@end_date,true) RETURNING id";
+                query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,state)  
+                                   values(@account_id,@organization_Id,@start_date,@end_date,'A') RETURNING id";
                 var AccountOrgId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 account.Id = AccountOrgId;
 
@@ -1023,11 +1023,11 @@ namespace net.atos.daf.ct2.account
                     @"SELECT EXISTS 
                 (
                     SELECT 1 FROM master.account acc
-                    INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.email = @email AND acc.is_active = True
-                    INNER JOIN master.Role r ON r.id = ar.role_id AND r.is_active = True
-                    INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.is_active = True
+                    INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.email = @email AND acc.state = 'A'
+                    INNER JOIN master.Role r ON r.id = ar.role_id AND r.state = 'A'
+                    INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.state = 'A'
                     INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
-                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.is_active = True AND f.name = @feature
+                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.name = @feature
                 )";
                 return await dataAccess.ExecuteScalarAsync<bool>(query, parameter);
             }
@@ -1052,7 +1052,7 @@ namespace net.atos.daf.ct2.account
                 if (accountId > 0)
                 {
                     parameter.Add("@account_id", accountId);
-                    query = @"select o.id,o.name from master.organization o inner join master.accountorg ao on o.id=ao.organization_id and ao.is_active=true where ao.account_id=@account_id";
+                    query = @"select o.id,o.name from master.organization o inner join master.accountorg ao on o.id=ao.organization_id and ao.state='A' where ao.account_id=@account_id";
                     IEnumerable<KeyValue> result = await dataAccess.QueryAsync<KeyValue>(query, parameter);
                     keyValueList = result.ToList();
                 }
@@ -1073,7 +1073,7 @@ namespace net.atos.daf.ct2.account
                 if (accountId > 0)
                 {
                     parameter.Add("@account_id", accountId);
-                    query = @"select r.id,r.name,r.id,ac.organization_id as Organization_Id from master.role r inner join master.accountrole ac on r.id=ac.role_id and r.is_active=true where ac.account_id=@account_id";
+                    query = @"select r.id,r.name,r.id,ac.organization_id as Organization_Id from master.role r inner join master.accountrole ac on r.id=ac.role_id and r.state='A' where ac.account_id=@account_id";
                     IEnumerable<AccountOrgRole> result = await dataAccess.QueryAsync<AccountOrgRole>(query, parameter);
                     AccountOrgRoleList = result.ToList();
                 }

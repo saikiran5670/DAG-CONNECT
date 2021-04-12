@@ -1,18 +1,16 @@
-
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Npgsql;
+
 namespace net.atos.daf.ct2.data
 {
-    /// <summary>
-    /// Class to create a Sql Executor
-    /// </summary>
-    public class PgSQLDataAccess : IDataAccess
+    public class PgSQLDataMartDataAccess : IDataAccess
     {
+
         #region Members
 
         /// <summary>
@@ -21,20 +19,20 @@ namespace net.atos.daf.ct2.data
         private readonly IDbConnection connection;
 
         #endregion Members
-
-        /// <summary>
-        /// Constructor for the SQL Executor
-        /// </summary>
-        /// <param name="connection"></param>
-        public PgSQLDataAccess(IDbConnection dbconnection)
+        public PgSQLDataMartDataAccess()
         {
-             connection=dbconnection;
+
         }
 
-        public PgSQLDataAccess(string connectionString)
+        public PgSQLDataMartDataAccess(IDbConnection dbconnection)
         {
-             connection = new NpgsqlConnection(connectionString);
+            connection = dbconnection;
         }
+        public PgSQLDataMartDataAccess(string connectionString)
+        {
+            connection = new NpgsqlConnection(connectionString);
+        }
+
 
         #region Sync Methods
 
@@ -855,5 +853,6 @@ namespace net.atos.daf.ct2.data
         }
 
         #endregion Implementation of IDisposable
+
     }
 }

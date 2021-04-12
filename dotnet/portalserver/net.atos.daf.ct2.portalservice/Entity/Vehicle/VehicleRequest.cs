@@ -11,7 +11,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
         public string Name { get; set; }
         public string License_Plate_Number { get; set; }
         public int Organization_Id { get; set; }
-
     }
 
     public class VehicleCreateRequest
