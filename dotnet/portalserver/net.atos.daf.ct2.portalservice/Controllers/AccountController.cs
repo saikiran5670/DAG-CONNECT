@@ -155,10 +155,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "The EmailId address, first name, last name and organization id should be valid.");
                 }
                 // The account type should be single character
-                if (request.Type.Length > 1)
+                if (string.IsNullOrEmpty(request.Type) || request.Type.Length > 1)
                 {
                     return StatusCode(400, PortalConstants.AccountValidation.InvalidAccountType);
                 }
+                request.Type = request.Type.ToUpper();
                 // validate account type
                 char accountType = Convert.ToChar(request.Type);
                 if (!EnumValidator.ValidateAccountType(accountType))

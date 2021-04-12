@@ -204,7 +204,7 @@ namespace net.atos.daf.ct2.accountservice
             {
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
                 account = _mapper.ToAccountEntity(request);
-                account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
+                account.AccountType = (AccountComponent.ENUM.AccountType)request?.Type[0];
                 account = await accountmanager.Update(account);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Account Create", 1, 2, account.EmailId);
                 // response 
