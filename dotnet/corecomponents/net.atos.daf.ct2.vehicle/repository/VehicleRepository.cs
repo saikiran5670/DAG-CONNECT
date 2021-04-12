@@ -28,12 +28,6 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         }
 
-        //public VehicleRepository(Func<DataAccessEnum, IDataAccess> serviceResolver)
-        //{
-        //    dataAccess = serviceResolver();
-        //    dataAccess = serviceResolver("A");
-        //}
-
 
         #region Vehicle component methods
 
