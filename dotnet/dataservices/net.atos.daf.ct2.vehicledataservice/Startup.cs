@@ -33,9 +33,10 @@ using System.Security.Cryptography;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 
 namespace net.atos.daf.ct2.vehicledataservice
-{
+{  
     public class Startup
     {
+        //public delegate IDataAccess ServiceResolver(DataAccessEnum type = DataAccessEnum.DAF);
         private readonly string swaggerBasePath = "vehicle-data";
         public Startup(IConfiguration configuration)
         {
@@ -55,8 +56,31 @@ namespace net.atos.daf.ct2.vehicledataservice
                 };
             });
             var connectionString = Configuration.GetConnectionString("ConnectionString");
-            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);           
-            services.AddSingleton(dataAccess); 
+            var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
+            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
+            IDataAccess dataMartdataAccess = new PgSQLDataMartDataAccess(DataMartconnectionString);
+            services.AddSingleton(dataMartdataAccess);
+            services.AddSingleton(dataAccess);
+            
+
+            //services.AddSingleton<PgSQLDataAccess>();
+            //services.AddSingleton<PgSQLDataMartDataAccess>();
+
+            //services.AddTransient<ServiceResolver>(serviceProvider => type =>
+            //{
+            //    switch (type)
+            //    {
+            //        case DataAccessEnum.DAF:
+            //            return serviceProvider.GetService<PgSQLDataAccess>();
+            //        case DataAccessEnum.DataMart:
+            //            return serviceProvider.GetService<PgSQLDataMartDataAccess>();
+            //        default:
+            //            throw new KeyNotFoundException(); // or maybe return null, up to you
+            //    }
+            //});
+
+            //services.AddSingleton<IVehicleRepository>(new VehicleRepository(dataAccess, DataMartdataAccess));
+
             services.AddTransient<IAuditTraillib,AuditTraillib>(); 
             services.AddTransient<IAuditLogRepository, AuditLogRepository>(); 
             services.AddTransient<IVehicleManager, VehicleManager>();
