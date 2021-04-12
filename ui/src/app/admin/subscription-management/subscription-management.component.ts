@@ -23,7 +23,7 @@ export class SubscriptionManagementComponent implements OnInit {
 
   options=['Select Status','All','Active','Expired'];
   subscriptionRestData: any = [];
-  displayedColumns = ['subscriptionId','packageCode', 'name', 'orgName', 'type', 'count', 'subscriptionStartDate', 'subscriptionEndDate', 'isActive', 'action'];
+  displayedColumns = ['subscriptionId','packageCode', 'name', 'orgName', 'type', 'count', 'subscriptionStartDate', 'subscriptionEndDate', 'state', 'action'];
   vehicleDiaplayColumns = ['name', 'vin', 'licensePlateNumber'];
   openVehicleFlag: boolean = false;
   selectedElementData: any;
