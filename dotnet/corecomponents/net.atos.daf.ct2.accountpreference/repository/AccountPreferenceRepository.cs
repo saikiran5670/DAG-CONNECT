@@ -39,7 +39,7 @@ namespace net.atos.daf.ct2.accountpreference
                 if (preference.PreferenceType == PreferenceType.Account)
                 {
                     // check if preference does not exists 
-                    queryCheck = "select preference_id from master.account where is_active=true and id=@ref_id";
+                    queryCheck = "select preference_id from master.account where state='A' and id=@ref_id";
                     PreferenceId = await dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
                     if (PreferenceId > 0)
                     {
@@ -47,7 +47,7 @@ namespace net.atos.daf.ct2.accountpreference
                         return preference;
                     }
                     // in valid account preference
-                    queryCheck = "select a.id from master.account a join master.accountorg ag on a.id = ag.account_id and ag.is_active=true where a.id=@ref_id";
+                    queryCheck = "select a.id from master.account a join master.accountorg ag on a.id = ag.account_id and ag.state='A' where a.id=@ref_id";
                     Id = await dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
                     if (Id <= 0)
                     {
@@ -59,7 +59,7 @@ namespace net.atos.daf.ct2.accountpreference
                 if (preference.PreferenceType == PreferenceType.Organization)
                 {
                     // check if preference does not exists 
-                    queryCheck = "select preference_id from master.organization where is_active=true and id=@ref_id";
+                    queryCheck = "select preference_id from master.organization where state='A' and id=@ref_id";
                     PreferenceId = await dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
                     if (PreferenceId > 0)
                     {
@@ -67,7 +67,7 @@ namespace net.atos.daf.ct2.accountpreference
                         return preference;
                     }
                     // invalid organization
-                    queryCheck = "select id from master.organization where is_active=true and id=@ref_id";
+                    queryCheck = "select id from master.organization where state='A' and id=@ref_id";
                     Id = await dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
                     if (Id <= 0)
                     {
@@ -78,9 +78,9 @@ namespace net.atos.daf.ct2.accountpreference
 
                 string query = @"insert into master.accountpreference
                                 (type,language_id,timezone_id,
-                                currency_id,unit_id,vehicle_display_id,date_format_id,is_active,time_format_id,landing_page_display_id) 
+                                currency_id,unit_id,vehicle_display_id,date_format_id,state,time_format_id,landing_page_display_id) 
                                 values (@type,@language_id,@timezone_id,
-                                @currency_id,@unit_id,@vehicle_display_id,@date_format_id,true,@time_format_id,@landing_page_display_id) RETURNING id";
+                                @currency_id,@unit_id,@vehicle_display_id,@date_format_id,'A',@time_format_id,@landing_page_display_id) RETURNING id";
 
                 var preferenceId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 // Update preference id for account or organization
@@ -124,7 +124,7 @@ namespace net.atos.daf.ct2.accountpreference
                 var query = @"update master.accountpreference set language_id=@language_id,
                             timezone_id=@timezone_id,currency_id=@currency_id,unit_id=@unit_id,
                             vehicle_display_id=@vehicle_display_id,
-                            date_format_id=@date_format_id,is_active=true,time_format_id=@time_format_id,landing_page_display_id=@landing_page_display_id
+                            date_format_id=@date_format_id,state='A',time_format_id=@time_format_id,landing_page_display_id=@landing_page_display_id
 	                        WHERE id=@id RETURNING id;";
                 var Id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
@@ -144,12 +144,12 @@ namespace net.atos.daf.ct2.accountpreference
                 string checkPreferenceQuery = string.Empty;
                 int id = 0;
                 parameter.Add("@id", preferenceID);
-                checkPreferenceQuery = @"select id from master.accountpreference where id=@id and is_active=true";
+                checkPreferenceQuery = @"select id from master.accountpreference where id=@id and state='A'";
                 id = await dataAccess.ExecuteScalarAsync<int>(checkPreferenceQuery, parameter);
                 if (id == 0) return false;                
                 //using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 //{
-                    query.Append("update master.accountpreference set is_active=false where id=@id");
+                    query.Append("update master.accountpreference set state='I' where id=@id");
                     //result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);                    
                     // Update preference id for account or organization
                     if (preferenceType == PreferenceType.Account)
@@ -177,7 +177,7 @@ namespace net.atos.daf.ct2.accountpreference
                 var parameter = new DynamicParameters();
                 List<AccountPreference> entity = new List<AccountPreference>();
                 parameter.Add("@id", filter.Id);
-                var query = @"select id,type,language_id,timezone_id,currency_id,unit_id,vehicle_display_id,date_format_id,time_format_id,vehicle_display_id,is_active,landing_page_display_id from master.accountpreference where is_active=true and id= @id order by 1 desc limit 1";
+                var query = @"select id,type,language_id,timezone_id,currency_id,unit_id,vehicle_display_id,date_format_id,time_format_id,vehicle_display_id,state,landing_page_display_id from master.accountpreference where state='A' and id= @id order by 1 desc limit 1";
                 // if (filter != null)
                 // {
                 //     // id filter
@@ -228,7 +228,7 @@ namespace net.atos.daf.ct2.accountpreference
             //if (Convert.ToString(record.driver_id) != null) entity.DriverId = record.driver_id;
             entity.TimeFormatId = record.time_format_id;
             entity.LandingPageDisplayId = record.landing_page_display_id;
-            record.isActive = record.is_active;
+            //record.isActive = record.state;
             return entity;
         }
 
