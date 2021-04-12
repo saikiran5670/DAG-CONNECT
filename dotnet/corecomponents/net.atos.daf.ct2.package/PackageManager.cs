@@ -47,9 +47,9 @@ namespace net.atos.daf.ct2.package
             return await _featureManager.AddFeatureSet(featureSet);
         }
        
-        public async Task<IEnumerable<FeatureSet>> GetFeatureSet(int featureSetId, bool is_active) // required is_active parameter
+        public async Task<IEnumerable<FeatureSet>> GetFeatureSet(int featureSetId, char state) // required is_active parameter
         {
-            return await _featureManager.GetFeatureSet(featureSetId, is_active);
+            return await _featureManager.GetFeatureSet(featureSetId, state);
         }
 
         public async Task<Package> UpdatePackageStatus(Package package)
