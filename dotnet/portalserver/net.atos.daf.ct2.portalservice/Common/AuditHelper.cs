@@ -21,8 +21,8 @@ namespace net.atos.daf.ct2.portalservice.Common
             _logger = logger;
 
         }
-
-        public async Task<int> AddLogs(DateTime Created_at, DateTime Performed_at, int Performed_by, string Component_name, string Service_name, AuditTrailEnum.Event_type Event_type, AuditTrailEnum.Event_status Event_status, string Message, int Sourceobject_id, int Targetobject_id, string Updated_data, HttpRequest request)
+       
+        public async Task<int> AddLogs(DateTime Created_at, DateTime Performed_at,  string Component_name, string Service_name, AuditTrailEnum.Event_type Event_type, AuditTrailEnum.Event_status Event_status, string Message, int Sourceobject_id, int Targetobject_id, string Updated_data, HttpRequest request)
         {
             var Headers = request.Headers;
             int roleid = 0;
@@ -38,14 +38,14 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
             if (Headers.Any(item => item.Key == "accountid"))
             {
-                Accountid = AuditHelper.ToInt32(Headers["accountid"]);
+                Accountid = AuditHelper.ToInt32(Headers["accountid"]);               
             }
             AuditRecord logs = new AuditRecord();            
             
-            //logs.PerformedAt = DateTime.Now.Ticks;
+            //logs.PerformedAt = DateTime.Now.Ticks;            
             logs.PerformedBy = Accountid;
             logs.ComponentName = Component_name;
-            logs.ServiceName = Service_name;
+            logs.ServiceName = Service_name;            
             //logs.Event_type = (AuditTrailEnum.Event_type)Enum.Parse(typeof(AuditTrailEnum.Event_type), Type.ToString().ToUpper());
             //logs.Event_status = (AuditTrailEnum.Event_status)Enum.Parse(typeof(AuditTrailEnum.Event_status), request.Status.ToString().ToUpper());
             // logs.Event_type=  AuditTrailEnum.Event_type.CREATE; // (AuditTrailEnum.Event_type)Enum.Parse(typeof(AuditTrailEnum.Event_type), request.Type.ToString().ToUpper());

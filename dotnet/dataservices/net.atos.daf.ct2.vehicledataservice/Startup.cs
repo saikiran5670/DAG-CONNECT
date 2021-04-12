@@ -33,9 +33,10 @@ using System.Security.Cryptography;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 
 namespace net.atos.daf.ct2.vehicledataservice
-{
+{  
     public class Startup
     {
+       
         private readonly string swaggerBasePath = "vehicle-data";
         public Startup(IConfiguration configuration)
         {
@@ -55,8 +56,12 @@ namespace net.atos.daf.ct2.vehicledataservice
                 };
             });
             var connectionString = Configuration.GetConnectionString("ConnectionString");
-            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);           
-            services.AddSingleton(dataAccess); 
+            var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
+            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
+            IDataAccess dataMartdataAccess = new PgSQLDataMartDataAccess(DataMartconnectionString);
+            services.AddSingleton(dataMartdataAccess);
+            services.AddSingleton(dataAccess);
+
             services.AddTransient<IAuditTraillib,AuditTraillib>(); 
             services.AddTransient<IAuditLogRepository, AuditLogRepository>(); 
             services.AddTransient<IVehicleManager, VehicleManager>();
