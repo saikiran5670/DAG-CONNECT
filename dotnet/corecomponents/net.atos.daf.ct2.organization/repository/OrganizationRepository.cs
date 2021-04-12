@@ -135,7 +135,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", organizationId);
-                var query = @"update master.organization set is_active=false where id=@id";
+                var query = @"update master.organization set state='I' where id=@id";
                 int isdelete = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
             }
@@ -205,8 +205,8 @@ namespace net.atos.daf.ct2.organization.repository
             try
             {
                 var parameter = new DynamicParameters();
-                var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date, is_active,vehicle_default_opt_in,driver_default_opt_in
-	                        FROM master.organization where id=@Id and is_active=true";
+                var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date, state,vehicle_default_opt_in,driver_default_opt_in
+	                        FROM master.organization where id=@Id and state='A'";
                 parameter.Add("@Id", organizationId);
                 IEnumerable<OrganizationResponse> OrganizationDetails = await dataAccess.QueryAsync<OrganizationResponse>(query, parameter);
                 OrganizationResponse objOrganization = new OrganizationResponse();               
@@ -222,7 +222,7 @@ namespace net.atos.daf.ct2.organization.repository
                     objOrganization.postal_code = item.postal_code;
                     objOrganization.city = item.city;
                     objOrganization.country_code = item.country_code;
-                    objOrganization.is_active = item.is_active;
+                    objOrganization.state = item.state;
                     objOrganization.reference_date = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(item.reference_date), "America/New_York", "yyyy-MM-ddTHH:mm:ss");
                     objOrganization.vehicle_default_opt_in = item.vehicle_default_opt_in;
                     objOrganization.driver_default_opt_in = item.driver_default_opt_in;                   
@@ -832,8 +832,8 @@ namespace net.atos.daf.ct2.organization.repository
             try
             {
                 var parameter = new DynamicParameters();
-                var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date, is_active,vehicle_default_opt_in,driver_default_opt_in
-	                        FROM master.organization org where  org.is_active=true";
+                var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date, state,vehicle_default_opt_in,driver_default_opt_in
+	                        FROM master.organization org where  org.state='A'";
                 if (organizationId > 0)
                 {
                     parameter.Add("@id", organizationId);
@@ -872,7 +872,7 @@ namespace net.atos.daf.ct2.organization.repository
             orgResponse.city = record.city;
             orgResponse.country_code = record.country_code;
             orgResponse.org_id = record.org_id;
-            orgResponse.is_active = record.is_active;
+            orgResponse.state = record.state;
             orgResponse.reference_date = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(record.reference_date), "America/New_York", "yyyy-MM-ddTHH:mm:ss");
             orgResponse.vehicle_default_opt_in = record.vehicle_default_opt_in;
             orgResponse.driver_default_opt_in = record.driver_default_opt_in;
@@ -927,8 +927,8 @@ namespace net.atos.daf.ct2.organization.repository
                 string strquery = string.Empty;
                 List<OrganizationNameandID> objOrganizationNameandID = new List<OrganizationNameandID>();
                 var parameter = new DynamicParameters();
-                parameter.Add("@is_active", true);
-                strquery = @"SELECT id,name FROM master.organization where is_active=@is_active";
+                parameter.Add("@state", 'A');
+                strquery = @"SELECT id,name FROM master.organization where state=@state";
                 switch (level)
                 {
                     case 10:

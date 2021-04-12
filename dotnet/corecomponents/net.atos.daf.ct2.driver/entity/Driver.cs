@@ -1,4 +1,5 @@
 using System;
+using static net.atos.daf.ct2.utilities.CommonEnums;
 
 namespace net.atos.daf.ct2.driver.entity
 {
@@ -12,7 +13,7 @@ namespace net.atos.daf.ct2.driver.entity
         public string last_name { get; set; }
      //   public long DateOfBith { get; set; }
         public string Status { get; set; }
-        public Boolean IsActive { get; set; }
+        public State state { get; set; }
         public string opt_in { get; set; }
         public long modified_at { get; set; }
         public int modified_by { get; set; }

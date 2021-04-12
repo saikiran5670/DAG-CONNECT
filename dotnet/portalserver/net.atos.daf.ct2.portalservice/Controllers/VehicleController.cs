@@ -526,7 +526,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(404, "vehicle group details are not found.");
+                        return StatusCode(404, "vehicle details are not found.");
                     }
                 }
                 else
