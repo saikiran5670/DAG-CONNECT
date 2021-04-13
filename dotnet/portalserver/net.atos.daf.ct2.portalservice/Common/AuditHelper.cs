@@ -28,6 +28,10 @@ namespace net.atos.daf.ct2.portalservice.Common
             int roleid = 0;
             int organizationid = 0;
             int Accountid = 0;
+            if (Headers.Any(item => item.Key == "headerObj")) { 
+            
+            
+            }
             if (Headers.Any(item=>item.Key == "roleid"))
             {
                 roleid = AuditHelper.ToInt32(Headers["roleid"]);

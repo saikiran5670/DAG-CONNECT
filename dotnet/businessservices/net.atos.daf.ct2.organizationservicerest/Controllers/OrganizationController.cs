@@ -320,7 +320,7 @@ namespace net.atos.daf.ct2.organizationservicerest.Controllers
                 }
                 var result = await preferencemanager.Delete(accountId);
                 //var auditResult = await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Preference Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Preference", 1, 2, Convert.ToString(accountId));
-               
+
                 return Ok(result);
             }
             catch (Exception ex)
