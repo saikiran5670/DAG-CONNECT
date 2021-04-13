@@ -38,5 +38,7 @@ namespace net.atos.daf.ct2.account
         Task<Response> ResetPasswordInvalidate(Guid ResetToken);
         Task<IEnumerable<MenuFeatureDto>> GetMenuFeatures(int accountId, int roleId, int organizationId, string languageCode);
         Task<bool> CheckForFeatureAccessByEmailId(string emailId, string featureName);
+        Task<PasswordPolicyAccount> GetPasswordPolicyAccount(int id);
+        Task<int> UpsertPasswordPolicyAccount(PasswordPolicyAccount passwordPolicyBlockAccount);
     }
 }

@@ -9,6 +9,10 @@ using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.account.ENUM;
 using net.atos.daf.ct2.utilities;
 using System.Net;
+using Microsoft.Extensions.Configuration;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.Enum;
+using net.atos.daf.ct2.identity.entity;
 
 namespace net.atos.daf.ct2.account
 {
@@ -20,7 +24,13 @@ namespace net.atos.daf.ct2.account
         IAccountManager accountManager;
         IdentitySessionComponent.IAccountSessionManager accountSessionManager;
         IdentitySessionComponent.IAccountTokenManager accountTokenManager;
-        public AccountIdentityManager(IdentityComponent.ITokenManager _tokenManager, IdentityComponent.IAccountAuthenticator _autheticator, IAccountManager _accountManager, IdentitySessionComponent.IAccountSessionManager _accountSessionManager, IdentitySessionComponent.IAccountTokenManager _accountTokenManager, IdentityComponent.IAccountManager _identityAccountManager)
+        private readonly IConfiguration configuration;
+        private readonly IAuditTraillib auditlog;
+
+        public AccountIdentityManager(IdentityComponent.ITokenManager _tokenManager, IdentityComponent.IAccountAuthenticator _autheticator,
+                                    IAccountManager _accountManager, IAuditTraillib _auditlog,
+                                    IdentitySessionComponent.IAccountSessionManager _accountSessionManager, IdentitySessionComponent.IAccountTokenManager _accountTokenManager,
+                                    IdentityComponent.IAccountManager _identityAccountManager, IConfiguration _configuration)
         {
             autheticator = _autheticator;
             tokenManager = _tokenManager;
@@ -28,24 +38,50 @@ namespace net.atos.daf.ct2.account
             accountSessionManager = _accountSessionManager;
             accountTokenManager = _accountTokenManager;
             identityAccountManager = _identityAccountManager;
+            configuration = _configuration;
+            auditlog = _auditlog;
         }
         public async Task<AccountIdentity> Login(IdentityEntity.Identity user)
         {
             AccountIdentity accIdentity = new AccountIdentity();
             accIdentity.tokenIdentifier = string.Empty;
+            accIdentity.ErrorMessage = "Account is not configured.";
+            accIdentity.StatusCode = 1;
             IdentityEntity.AccountToken accToken = new IdentityEntity.AccountToken();
             Account account = GetAccountByEmail(user.UserName);
             if (account != null && account.Id > 0)
             {
+                //Check if the user id blocked
+                //1. Get Password Policy by Account Id
+                var passwordPolicyAccount = await accountManager.GetPasswordPolicyAccount(account.Id);
+
+                //2. Check isBlock = true, then return with error msg as contact to admin
+                if (passwordPolicyAccount != null && passwordPolicyAccount.IsBlocked)
+                {
+                    accIdentity.ErrorMessage = "Account is blocked, please contact DAF System Admin.";
+                    accIdentity.StatusCode = 5;//TO Do: once fix the ResponceCode class we have change this accordingly. Applicable all the below lines in the method
+                    return await Task.FromResult(accIdentity);
+                }
+                //3. Check if LockedUntil > Now date, Same as defual msg of failer
+                if (passwordPolicyAccount != null && CheckLockedUntil(passwordPolicyAccount.LockedUntil))
+                {
+                    accIdentity.ErrorMessage = $"Login failed. Please try with proper credentials after {configuration["AccountPolicy:AccountUnlockDurationInMinutes"]} minutes.";
+                    accIdentity.StatusCode = 5;
+                    return await Task.FromResult(accIdentity);
+                }
+
                 accToken = await PrepareSaveToken(user, account);
                 if (accToken != null && accToken.statusCode == HttpStatusCode.OK)
                 {
+                    passwordPolicyAccount = await CaptureUserLastLogin(account);
+
                     IdentityEntity.AccountIDPClaim accIDPclaims = tokenManager.DecodeToken(accToken.AccessToken);
 
                     accIdentity.tokenIdentifier = accIDPclaims.Id;
                     accIdentity.accountInfo = account;
                     accIdentity.AccountOrganization = accountManager.GetAccountOrg(account.Id).Result;
                     accIdentity.AccountRole = accountManager.GetAccountRole(account.Id).Result;
+                    #region commneted code
                     //accIdentity.AccountToken=accToken;
                     // int accountId= GetAccountByEmail(user.UserName);
                     // if(accountId>0)
@@ -61,10 +97,68 @@ namespace net.atos.daf.ct2.account
                     //    break; //get only first preference
                     //}
                     // }
+                    #endregion
+                }//if check password max days expird
+                else if (accToken?.statusCode == HttpStatusCode.BadRequest && CheckIsPasswordExpired(accToken?.message))
+                {
+                    //Generate Reset token with 302 response code
+                    var identityResult = await GetResetToken(user);                    
+                    accIdentity.StatusCode = (int)identityResult?.StatusCode;
+                    if (identityResult?.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        accIdentity.StatusCode = 3;
+                        accIdentity.ErrorMessage = AccountConstants.Error_Reset_Token_NotFound;
+                    }
+                    if (identityResult?.StatusCode == HttpStatusCode.Redirect)
+                        accIdentity.Token = new ExpiryToken(Convert.ToString(identityResult?.Result));
+                }
+                else
+                {
+                    //Implement Account lock logic
+                    //Pre-Condition to Check, if PasswordPolicy not exist then upseting                    
+                    passwordPolicyAccount = await accountManager.GetPasswordPolicyAccount(account.Id);
+                    if (passwordPolicyAccount == null)
+                    {
+                        passwordPolicyAccount = new PasswordPolicyAccount();
+                        passwordPolicyAccount.AccountId = account.Id;
+                        await accountManager.UpsertPasswordPolicyAccount(passwordPolicyAccount);
+                    }
+                    //1. Increament to FailedLoginAttempts by one
+                    passwordPolicyAccount.FailedLoginAttempts += 1;
+                    //Calculate AccountLockAttempts
+
+                    if (passwordPolicyAccount.FailedLoginAttempts % Convert.ToInt32(configuration["AccountPolicy:LoginAttemptThresholdLimit"]) == 0)
+                    {
+                        passwordPolicyAccount.LockedUntil = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(Convert.ToInt32(configuration["AccountPolicy:AccountUnlockDurationInMinutes"])));
+                        passwordPolicyAccount.AccountLockAttempts += 1;
+                        passwordPolicyAccount.FailedLoginAttempts = 0;
+                    }
+                    // check in db to set proper not null - Not required
+
+                    //2. Check if AccountLockAttempts < Config[AccountLockThresholdLimit]  
+                    if (passwordPolicyAccount.AccountLockAttempts < Convert.ToInt32(configuration["AccountPolicy:AccountLockThresholdLimit"]))
+                    {
+                        await accountManager.UpsertPasswordPolicyAccount(passwordPolicyAccount);
+                        accIdentity.ErrorMessage = "Login failed. Please try with proper credentials.";
+                        await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Identity Component", "Account Identity Manager", AuditTrailEnum.Event_type.LOGIN, AuditTrailEnum.Event_status.FAILED, $"Incorrect login attempted count - {passwordPolicyAccount.FailedLoginAttempts} and Account Lock Attempts count - {passwordPolicyAccount.AccountLockAttempts}", 1, 2, account.EmailId);
+                        accIdentity.StatusCode = 401;
+                        return await Task.FromResult(accIdentity);
+                    }
+                    else
+                    {
+                        //Block
+                        passwordPolicyAccount.IsBlocked = true;
+                        await accountManager.UpsertPasswordPolicyAccount(passwordPolicyAccount);
+                        await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Identity Component", "Account Identity Manager", AuditTrailEnum.Event_type.LOGIN, AuditTrailEnum.Event_status.FAILED, $"Incorrect login attempts, Account is locked.", 1, 2, account.EmailId);
+                        accIdentity.ErrorMessage = "Account is blocked, please contact DAF System Admin.";
+                        accIdentity.StatusCode = 5;
+                        return await Task.FromResult(accIdentity);
+                    }
                 }
             }
             return await Task.FromResult(accIdentity);
         }
+
         public async Task<AccountIdentity> LoginOld(IdentityEntity.Identity user)
         {
             AccountIdentity accIdentity = new AccountIdentity();
@@ -129,7 +223,7 @@ namespace net.atos.daf.ct2.account
                 result = await VerifyAccountToken(token);
 
             return await Task.FromResult(result);
-        }        
+        }
         public async Task<bool> LogoutByJwtToken(string token)
         {
             bool isLogout = false;
@@ -149,9 +243,9 @@ namespace net.atos.daf.ct2.account
                         //no token belong to this session hence delete the token
                         int sessionid = await accountSessionManager.DeleteSession(accIDPclaims.Sessionstate);
                         //sign out account from IDP by using username
-                        IdentityEntity.Identity identity= new IdentityEntity.Identity();
+                        IdentityEntity.Identity identity = new IdentityEntity.Identity();
                         identity.UserName = accIDPclaims.Email;
-                        IdentityEntity.Response response=await identityAccountManager.LogOut(identity);
+                        IdentityEntity.Response response = await identityAccountManager.LogOut(identity);
                     }
                     isLogout = true;
                 }
@@ -231,9 +325,9 @@ namespace net.atos.daf.ct2.account
             if (accIDPclaims != null && !string.IsNullOrEmpty(accIDPclaims.Id))
             {
                 int accountid = 0;
-                int sessionid= 0;
+                int sessionid = 0;
                 //check token is available in account token 
-                IEnumerable <IdentitySessionComponent.entity.AccountToken> tokenlst = await accountTokenManager.GetTokenDetails(accIDPclaims.Id);
+                IEnumerable<IdentitySessionComponent.entity.AccountToken> tokenlst = await accountTokenManager.GetTokenDetails(accIDPclaims.Id);
                 foreach (var item in tokenlst)
                 {
                     accountid = item.AccountId;
@@ -388,6 +482,43 @@ namespace net.atos.daf.ct2.account
                 break;//get only first account id
             }
             return account;
+        }
+
+        private async Task<Response> GetResetToken(Identity user)
+        {
+            try
+            {
+                var result = await accountManager.ResetPasswordInitiate(user.UserName, false);
+                result.StatusCode = result.StatusCode == HttpStatusCode.OK ? HttpStatusCode.Redirect : HttpStatusCode.NotFound;
+                return result;
+            }
+            catch (Exception e)
+            {
+                return new Response { StatusCode = HttpStatusCode.NotFound };
+            }
+        }
+
+        private bool CheckIsPasswordExpired(string message)
+        {
+            var identityResponseContent = JsonConvert.DeserializeObject<IdentityResponse>(message);
+            return identityResponseContent.Error == AccountConstants.Error_Invalid_Grant &&
+                    identityResponseContent.Error_Description == AccountConstants.Error_Pwd_Expired;
+        }
+
+        private async Task<PasswordPolicyAccount> CaptureUserLastLogin(Account account)
+        {
+            PasswordPolicyAccount passwordPolicyAccount = new PasswordPolicyAccount();
+            passwordPolicyAccount.AccountId = account.Id;
+            passwordPolicyAccount.LastLogin = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            await accountManager.UpsertPasswordPolicyAccount(passwordPolicyAccount);
+            return passwordPolicyAccount;
+        }
+
+        private bool CheckLockedUntil(long? lockedUntil)
+        {
+            if (lockedUntil != null && lockedUntil >= UTCHandling.GetUTCFromDateTime(DateTime.Now))
+                return true;
+            return false;
         }
     }
 }

@@ -548,6 +548,15 @@ namespace net.atos.daf.ct2.account
             return true;
         }
 
+        public async Task<PasswordPolicyAccount> GetPasswordPolicyAccount(int id)
+        {
+            return await repository.GetPasswordPolicyAccount(id);
+        }
+
+        public async Task<int> UpsertPasswordPolicyAccount(PasswordPolicyAccount passwordPolicyAccount)
+        {
+            return await repository.UpsertPasswordPolicyAccount(passwordPolicyAccount);
+        }
         #endregion
     }
 }

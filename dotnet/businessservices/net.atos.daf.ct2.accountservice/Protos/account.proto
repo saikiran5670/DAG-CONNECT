@@ -78,6 +78,8 @@ enum AccountType
       NotFound = 3;
       BadRequest = 4;
       Forbidden = 5;
+      Unauthorized = 401;
+      FoundRedirect = 302;
     }
 // common response 
 message AccountResponse {
@@ -148,6 +150,10 @@ message ResetPasswordRequest {
 
 message ResetPasswordInvalidateRequest {
     string ResetToken=1;
+}
+
+message ResetPasswordExpiryResponse {
+    string ProcessToken=1;
 }
 
 message ResetPasswordResponse {
@@ -395,6 +401,7 @@ message AccountIdentityResponse {
     repeated AccountIdentityOrg AccOrganization = 4;
     repeated AccountIdentityRole AccountRole=5;
     AccountRequest accountInfo=6;
+    ResetPasswordExpiryResponse resetPasswordExpiryResponse=7;
 }
 message AccountIdentityOrg
 {
