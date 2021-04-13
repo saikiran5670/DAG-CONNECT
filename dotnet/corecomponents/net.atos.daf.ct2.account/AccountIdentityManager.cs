@@ -125,7 +125,7 @@ namespace net.atos.daf.ct2.account
             }
             return await Task.FromResult(result);
         }
-        public async Task<ValidTokenResponse> ValidatTokeneGuid(string token)
+        public async Task<ValidTokenResponse> ValidateTokenGuid(string token)
         {
             ValidTokenResponse response = await ValidateAndFetchTokenDetails(token);
             return response;

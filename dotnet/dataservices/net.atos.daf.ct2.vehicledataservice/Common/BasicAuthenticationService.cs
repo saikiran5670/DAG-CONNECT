@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Common
         }
         public async Task<string> ValidatTokeneGuid(string token)
         {
-            ValidTokenResponse response = await accountIdentityManager.ValidatTokeneGuid(token);
+            ValidTokenResponse response = await accountIdentityManager.ValidateTokenGuid(token);
             if (response != null && !string.IsNullOrEmpty(response.Email))
                 return response.Email;
             else
