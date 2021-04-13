@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.subscription.entity
 
 	public class subscriptionIdStatus
 	{
-		public string subscription_id { get; set; }
+		public long subscription_id { get; set; }
 		public string state { get; set; }
 	}
 	public class UnSubscribeVin
