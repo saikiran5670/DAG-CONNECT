@@ -8,6 +8,6 @@ namespace net.atos.daf.ct2.vehicledataservice.Common
 {
    public interface IBasicAuthenticationService
     {
-        Task<string> ValidatTokeneGuid(string token);
+        Task<string> ValidateTokenGuid(string token);
     }
 }

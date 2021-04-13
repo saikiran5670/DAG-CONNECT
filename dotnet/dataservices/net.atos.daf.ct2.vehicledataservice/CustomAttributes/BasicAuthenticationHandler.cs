@@ -53,9 +53,7 @@ namespace net.atos.daf.ct2.vehicledataservice.CustomAttributes
             {
                 string token = Convert.ToString(headerValue);
                 token = token.Replace(AuthorizationHeaderType,"");
-                email = await _authenticationService.ValidatTokeneGuid(token);
-            
-            
+                email = await _authenticationService.ValidateTokenGuid(token);
             }
             catch (Exception)
             {

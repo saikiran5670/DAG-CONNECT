@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Common
             accountIdentityManager = _accountIdentityManager;
             logger = _logger;
         }
-        public async Task<string> ValidatTokeneGuid(string token)
+        public async Task<string> ValidateTokenGuid(string token)
         {
             ValidTokenResponse response = await accountIdentityManager.ValidateTokenGuid(token);
             if (response != null && !string.IsNullOrEmpty(response.Email))
