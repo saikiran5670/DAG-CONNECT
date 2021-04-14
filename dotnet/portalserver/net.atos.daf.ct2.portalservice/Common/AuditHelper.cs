@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using net.atos.daf.ct2.auditservice;
 using net.atos.daf.ct2.portalservice.Entity.Audit;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace net.atos.daf.ct2.portalservice.Common
 {
@@ -28,22 +30,26 @@ namespace net.atos.daf.ct2.portalservice.Common
             int roleid = 0;
             int organizationid = 0;
             int Accountid = 0;
-            if (Headers.Any(item => item.Key == "headerObj")) { 
-            
-            
+            if (Headers.Any(item => item.Key == "headerObj")) {
+
+              var headerData=  JsonConvert.DeserializeObject<HeaderObj>(Headers["headerObj"]);
+                roleid = headerData.roleId;
+                organizationid = headerData.orgId;
+                Accountid = headerData.accountId;
+
             }
-            if (Headers.Any(item=>item.Key == "roleid"))
-            {
-                roleid = AuditHelper.ToInt32(Headers["roleid"]);
-            }
-            if (Headers.Any(item => item.Key == "organizationid"))
-            {
-                organizationid = AuditHelper.ToInt32(Headers["organizationid"]);
-            }
-            if (Headers.Any(item => item.Key == "accountid"))
-            {
-                Accountid = AuditHelper.ToInt32(Headers["accountid"]);               
-            }
+            //if (Headers.Any(item=>item.Key == "roleid"))
+            //{
+            //    roleid = AuditHelper.ToInt32(Headers["roleid"]);
+            //}
+            //if (Headers.Any(item => item.Key == "organizationid"))
+            //{
+            //    organizationid = AuditHelper.ToInt32(Headers["organizationid"]);
+            //}
+            //if (Headers.Any(item => item.Key == "accountid"))
+            //{
+            //    Accountid = AuditHelper.ToInt32(Headers["accountid"]);               
+            //}
             AuditRecord logs = new AuditRecord();            
             
             //logs.PerformedAt = DateTime.Now.Ticks;            
@@ -71,5 +77,11 @@ namespace net.atos.daf.ct2.portalservice.Common
                 return 0;
             return int.Parse(value, (IFormatProvider)CultureInfo.CurrentCulture);
         }
+    }
+    public class HeaderObj {
+        public int roleId { get; set; }
+        public int accountId { get; set; }
+        public int orgId { get; set; }
+
     }
 }
