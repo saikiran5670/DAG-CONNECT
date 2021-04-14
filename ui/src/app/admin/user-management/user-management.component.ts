@@ -147,7 +147,7 @@ export class UserManagementComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
       id: 0,
-      code: this.localStLanguage.code,
+      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
       type: "Menu",
       name: "",
       value: "",
@@ -163,6 +163,7 @@ export class UserManagementComponent implements OnInit {
 
   getUserSettingsDropdownValues(){
     let languageCode = this.localStLanguage.code;
+    let accountNavMenu = localStorage.getItem("accountNavMenu") ? JSON.parse(localStorage.getItem("accountNavMenu")) : [];
     this.translationService.getPreferences(languageCode).subscribe(data => {
       this.defaultSetting = {
         languageDropdownData: data.language,
@@ -172,7 +173,7 @@ export class UserManagementComponent implements OnInit {
         dateFormatDropdownData: data.dateformat,
         timeFormatDropdownData: data.timeformat,
         vehicleDisplayDropdownData: data.vehicledisplay,
-        landingPageDisplayDropdownData: data.landingpagedisplay
+        landingPageDisplayDropdownData: accountNavMenu
       }
     });
   }
@@ -219,8 +220,8 @@ export class UserManagementComponent implements OnInit {
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
       this.userGrpData = allAccountGroupData;
       this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((data: any)=>{
-        this.orgPreference = {};
-        //this.orgPreference = data;
+        this.orgPreference = data;
+        this.orgPreference.landingPageDisplay = this.defaultSetting.landingPageDisplayDropdownData[0].id; //-- set landing page value for org
         this.stepFlag = true;
       });
     }, (error)=> {});
@@ -263,14 +264,15 @@ export class UserManagementComponent implements OnInit {
         else{
           this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((data: any) => {
             this.selectedPreference = {
-              currencyId: data.organizationPreference.currency,
-              dateFormatTypeId: data.organizationPreference.dateFormat,
-              landingPageDisplayId: data.organizationPreference.landingPageDisplay,
               languageId: data.organizationPreference.language,
-              timeFormatId: data.organizationPreference.timeFormat,
               timezoneId: data.organizationPreference.timezone,
               unitId: data.organizationPreference.unit,
-              vehicleDisplayId: data.organizationPreference.vehicleDisplay
+              currencyId: data.organizationPreference.currency,
+              dateFormatTypeId: data.organizationPreference.dateFormat,
+              timeFormatId: data.organizationPreference.timeFormat,
+              vehicleDisplayId: data.organizationPreference.vehicleDisplay,
+              landingPageDisplayId: this.defaultSetting.landingPageDisplayDropdownData[0].id
+              //landingPageDisplayId: data.organizationPreference.landingPageDisplay
             };
             this.goForword(type);
           });
