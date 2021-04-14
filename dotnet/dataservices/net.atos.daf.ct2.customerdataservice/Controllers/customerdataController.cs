@@ -17,6 +17,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using net.atos.daf.ct2.customerdataservice.CustomAttributes;
 
+
 namespace net.atos.daf.ct2.customerdataservice.Controllers
 {
     [ApiController]
@@ -78,29 +79,58 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                         {                         
                             if (customer.CompanyUpdatedEvent.Company.Address != null)
                             {
-                                customerRequest.AddressType = customer.CompanyUpdatedEvent.Company.Address.Type;
-                                customerRequest.Street = customer.CompanyUpdatedEvent.Company.Address.Street;
-                                customerRequest.StreetNumber = customer.CompanyUpdatedEvent.Company.Address.StreetNumber;
-                                customerRequest.PostalCode = customer.CompanyUpdatedEvent.Company.Address.PostalCode;
-                                customerRequest.City = customer.CompanyUpdatedEvent.Company.Address.City;
-                                customerRequest.CountryCode = customer.CompanyUpdatedEvent.Company.Address.CountryCode;
-
-                                //Length validation
-                                if (((customerRequest.AddressType.Trim().Length > 50))
-                                || ((customerRequest.Street.Trim().Length > 50))
-                                || ((customerRequest.StreetNumber.Trim().Length > 50))
-                                || ((customerRequest.PostalCode.Trim().Length > 15))
-                                || ((customerRequest.City.Trim().Length > 50))
-                                || ((customerRequest.CountryCode.Trim().Length > 20)))
+                                if (customer.CompanyUpdatedEvent.Company.Address.Type!=null)
                                 {
-                                    return StatusCode(400, string.Empty);
+                                    customerRequest.AddressType = customer.CompanyUpdatedEvent.Company.Address.Type;
+                                    if (customerRequest.AddressType.Trim().Length > 50)
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
                                 }
-                                else
+                                if (customer.CompanyUpdatedEvent.Company.Address.Street != null)
                                 {
-                                    await organizationtmanager.UpdateCustomer(customerRequest);
-                                    logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
-                                    return Ok();
+                                    customerRequest.Street = customer.CompanyUpdatedEvent.Company.Address.Street;
+                                    if (customerRequest.Street.Trim().Length > 50)
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
                                 }
+                                if (customer.CompanyUpdatedEvent.Company.Address.StreetNumber != null)
+                                {
+                                    customerRequest.StreetNumber = customer.CompanyUpdatedEvent.Company.Address.StreetNumber;
+                                    if (customerRequest.StreetNumber.Trim().Length > 50)
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                }
+                                if (customer.CompanyUpdatedEvent.Company.Address.PostalCode != null)
+                                {
+                                    customerRequest.PostalCode = customer.CompanyUpdatedEvent.Company.Address.PostalCode;
+                                    if (customerRequest.PostalCode.Trim().Length > 15)
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                }
+                                if (customer.CompanyUpdatedEvent.Company.Address.City != null)
+                                {
+                                    customerRequest.City = customer.CompanyUpdatedEvent.Company.Address.City;
+                                    if (customerRequest.City.Trim().Length > 15)
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                }
+                                if (customer.CompanyUpdatedEvent.Company.Address.CountryCode != null)
+                                {
+                                    customerRequest.CountryCode = customer.CompanyUpdatedEvent.Company.Address.CountryCode;
+                                    if (customerRequest.CountryCode.Trim().Length > 20)
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                }                            
+                               
+                               await organizationtmanager.UpdateCustomer(customerRequest);
+                               logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
+                               return Ok();                                
                             }
                             else
                             {
@@ -182,24 +212,66 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                                 objHandOver.City = keyHandOver.KeyHandOverEvent.EndCustomer.Address.City;
                                 objHandOver.CountryCode = keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode;
 
-                                //Length validation
-                                if (!(
-                                (objHandOver.Type.Trim().Length > 50)
-                                ||(objHandOver.Street.Trim().Length > 50)
-                                ||(objHandOver.StreetNumber.Trim().Length > 50)
-                                ||(objHandOver.PostalCode.Trim().Length > 15)
-                                ||(objHandOver.City.Trim().Length > 50)
-                                ||(objHandOver.CountryCode.Trim().Length > 20)
-                                ||(objHandOver.CustomerName.Trim().Length > 100)
-                                ))                                
+                                if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.Type!=null)
                                 {
-                                    await organizationtmanager.KeyHandOverEvent(objHandOver);
-                                    return Ok();
+                                    objHandOver.Type = keyHandOver.KeyHandOverEvent.EndCustomer.Address.Type;
+                                    if (objHandOver.Type.Trim().Length > 50)
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
                                 }
-                                else
+
+                                if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.Street != null)
                                 {
-                                    return StatusCode(400, string.Empty);
+                                    objHandOver.Street = keyHandOver.KeyHandOverEvent.EndCustomer.Address.Street;
+                                    if (objHandOver.Street.Trim().Length > 50)
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
                                 }
+                                if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.StreetNumber != null)
+                                {
+                                    objHandOver.StreetNumber = keyHandOver.KeyHandOverEvent.EndCustomer.Address.StreetNumber;
+                                    if (objHandOver.StreetNumber.Trim().Length > 50)
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                }
+                                if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.PostalCode != null)
+                                {
+                                    objHandOver.PostalCode = keyHandOver.KeyHandOverEvent.EndCustomer.Address.PostalCode;
+                                    if (objHandOver.PostalCode.Trim().Length > 15)
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                }
+                                if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.City != null)
+                                {
+                                    objHandOver.City = keyHandOver.KeyHandOverEvent.EndCustomer.Address.City;
+                                    if (objHandOver.City.Trim().Length > 50)
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                }
+                                if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode != null)
+                                {
+                                    objHandOver.CountryCode = keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode;
+                                    if (objHandOver.CountryCode.Trim().Length > 20)
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                }
+                                if (objHandOver.CustomerName != null)
+                                {                                   
+                                    if (objHandOver.CountryCode.Trim().Length > 100)
+                                    {
+                                        return StatusCode(400, string.Empty);
+                                    }
+                                }                                     
+                                
+                               await organizationtmanager.KeyHandOverEvent(objHandOver);
+                               return Ok();                          
+                                
                             }
                             else
                             {
