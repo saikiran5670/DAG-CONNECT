@@ -197,8 +197,10 @@ export class PackageManagementComponent implements OnInit {
     const options = {
       title: this.translationData.lblAlert || "Alert",
       message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
-      cancelText: this.translationData.lblNo || "No",
-      confirmText: this.translationData.lblYes || "Yes",
+      // cancelText: this.translationData.lblNo || "No",
+      // confirmText: this.translationData.lblYes || "Yes",
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: (rowData.status == 'Active') ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
       status: rowData.status == 'Active' ? 'Inactive' : 'Active' ,
       name: rowData.name
     };

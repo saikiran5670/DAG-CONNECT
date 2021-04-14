@@ -154,8 +154,10 @@ export class FeatureManagementComponent implements OnInit {
     const options = {
       title: this.translationData.lblAlert || "Alert",
       message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
-      cancelText: this.translationData.lblNo || "No",
-      confirmText: this.translationData.lblYes || "Yes",
+      // cancelText: this.translationData.lblNo || "No",
+      // confirmText: this.translationData.lblYes || "Yes",
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: (rowData.state == 0) ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
       status: rowData.state == 0 ? 'Inactive' : 'Active' ,
       name: rowData.name
     };
