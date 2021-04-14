@@ -314,8 +314,8 @@ namespace net.atos.daf.ct2.organization.repository
             try
             {
                 var parameter = new DynamicParameters();
-                var query = @"SELECT o.id OrganizatioId,a.id PreferenceId, c.name currency,t.name timezone ,tf.name timeformat,vd.name vehicledisplay,
-                            df.name DateFormatType,lp.name landingpagedisplay,l.name LanguageName, u.name unit
+                var query = @"SELECT o.id OrganizatioId,a.id PreferenceId, c.id currency,t.id timezone ,tf.id timeformat,vd.id vehicledisplay,
+                            df.id DateFormatType,l.id LanguageName, u.id unit
                             FROM master.organization o
                             left join  master.accountpreference a on o.id=a.id
                             left join  master.currency c on c.id=a.currency_id
@@ -323,7 +323,6 @@ namespace net.atos.daf.ct2.organization.repository
                             left join  master.timeformat tf on tf.id=a.time_format_id
                             left join  master.vehicledisplay vd on vd.id=a.vehicle_display_id
                             left join  master.dateformat df on df.id=a.date_format_id
-                            left join  master.landingpagedisplay lp on lp.id=a.landing_page_display_id
                             left join  master.unit u on u.id=a.unit_id
                             left join  translation.language l on l.id=a.language_id
                             where o.id=@Id";
@@ -341,8 +340,6 @@ namespace net.atos.daf.ct2.organization.repository
                     preferenceResponse.Unit = item.Unit;
                     preferenceResponse.VehicleDisplay = item.VehicleDisplay;
                     preferenceResponse.DateFormatType = item.DateFormatType;
-                    preferenceResponse.LandingPageDisplay = item.LandingPageDisplay;
-
                 }
                 return preferenceResponse;
             }
