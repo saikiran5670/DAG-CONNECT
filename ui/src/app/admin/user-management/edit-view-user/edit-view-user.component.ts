@@ -179,7 +179,7 @@ export class EditViewUserComponent implements OnInit {
     }
   }
 
-  setDefaultGeneralSetting(selectedPreference){
+  setDefaultGeneralSetting(selectedPreference: any){
     this.filterDefaultGeneralSetting(selectedPreference);
     if(this.defaultSetting){
       setTimeout(()=>{
@@ -196,14 +196,14 @@ export class EditViewUserComponent implements OnInit {
   }
 
   filterDefaultGeneralSetting(accountPreferenceData: any){
-    this.languageData = this.defaultSetting.languageDropdownData.filter(resp => resp.id === (accountPreferenceData.languageId ? accountPreferenceData.languageId : this.defaultSetting.languageDropdownData[0].id));
-    this.timezoneData = this.defaultSetting.timezoneDropdownData.filter(resp => resp.id === (accountPreferenceData.timezoneId ? accountPreferenceData.timezoneId : this.defaultSetting.timezoneDropdownData[0].id));
-    this.unitData = this.defaultSetting.unitDropdownData.filter(resp => resp.id === (accountPreferenceData.unitId ? accountPreferenceData.unitId : this.defaultSetting.unitDropdownData[0].id));
-    this.currencyData = this.defaultSetting.currencyDropdownData.filter(resp => resp.id === (accountPreferenceData.currencyId ? accountPreferenceData.currencyId : this.defaultSetting.currencyDropdownData[0].id));
-    this.dateFormatData = this.defaultSetting.dateFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.dateFormatTypeId ? accountPreferenceData.dateFormatTypeId : this.defaultSetting.dateFormatDropdownData[0].id));
-    this.timeFormatData = this.defaultSetting.timeFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.timeFormatId ? accountPreferenceData.timeFormatId : this.defaultSetting.timeFormatDropdownData[0].id));
-    this.vehicleDisplayData = this.defaultSetting.vehicleDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.vehicleDisplayId ? accountPreferenceData.vehicleDisplayId : this.defaultSetting.vehicleDisplayDropdownData[0].id));
-    this.landingPageDisplayData = this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.landingPageDisplayId ? accountPreferenceData.landingPageDisplayId : this.defaultSetting.landingPageDisplayDropdownData[0].id));
+    this.languageData = this.defaultSetting.languageDropdownData.filter(resp => resp.id === ((accountPreferenceData.languageId && accountPreferenceData.languageId != '') ? accountPreferenceData.languageId : this.defaultSetting.languageDropdownData[0].id));
+    this.timezoneData = this.defaultSetting.timezoneDropdownData.filter(resp => resp.id === ((accountPreferenceData.timezoneId && accountPreferenceData.timezoneId != '') ? accountPreferenceData.timezoneId : this.defaultSetting.timezoneDropdownData[0].id));
+    this.unitData = this.defaultSetting.unitDropdownData.filter(resp => resp.id === ((accountPreferenceData.unitId && accountPreferenceData.unitId != '') ? accountPreferenceData.unitId : this.defaultSetting.unitDropdownData[0].id));
+    this.currencyData = this.defaultSetting.currencyDropdownData.filter(resp => resp.id === ((accountPreferenceData.currencyId && accountPreferenceData.currencyId != '') ? accountPreferenceData.currencyId : this.defaultSetting.currencyDropdownData[0].id));
+    this.dateFormatData = this.defaultSetting.dateFormatDropdownData.filter(resp => resp.id === ((accountPreferenceData.dateFormatTypeId && accountPreferenceData.dateFormatTypeId != '') ? accountPreferenceData.dateFormatTypeId : this.defaultSetting.dateFormatDropdownData[0].id));
+    this.timeFormatData = this.defaultSetting.timeFormatDropdownData.filter(resp => resp.id === ((accountPreferenceData.timeFormatId && accountPreferenceData.timeFormatId != '') ? accountPreferenceData.timeFormatId : this.defaultSetting.timeFormatDropdownData[0].id));
+    this.vehicleDisplayData = this.defaultSetting.vehicleDisplayDropdownData.filter(resp => resp.id === ((accountPreferenceData.vehicleDisplayId && accountPreferenceData.vehicleDisplayId != '') ? accountPreferenceData.vehicleDisplayId : this.defaultSetting.vehicleDisplayDropdownData[0].id));
+    this.landingPageDisplayData = this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === ((accountPreferenceData.landingPageDisplayId && accountPreferenceData.landingPageDisplayId != '') ? accountPreferenceData.landingPageDisplayId : this.defaultSetting.landingPageDisplayDropdownData[0].id));
   }
 
   toBack(){
