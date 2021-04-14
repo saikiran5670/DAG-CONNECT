@@ -8,6 +8,7 @@ import { AccountService } from '../../services/account.service';
 import { TranslationService } from '../../services/translation.service';
 import { DataInterchangeService } from 'src/app/services/data-interchange.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { OrganizationService } from '../../services/organization.service';
 
 @Component({
   selector: 'app-account-info-settings',
@@ -71,6 +72,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   ];
   orgDefaultFlag: any;
   createPrefFlag = false;
+  orgDefaultPreference: any = {}
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -80,7 +82,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService,
-              private domSanitizer: DomSanitizer) { }
+              private domSanitizer: DomSanitizer, private organizationService: OrganizationService) { }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -185,7 +187,19 @@ export class AccountInfoSettingsComponent implements OnInit {
         }, (error) => {  });
       }
       else{ //--- default org pref
-        this.goForword({});
+        this.organizationService.getOrganizationPreference(this.organizationId).subscribe((data: any) => {
+          this.orgDefaultPreference = {
+            currencyId: data.organizationPreference.currency,
+            dateFormatTypeId: data.organizationPreference.dateFormat,
+            landingPageDisplayId: data.organizationPreference.landingPageDisplay,
+            languageId: data.organizationPreference.language,
+            timeFormatId: data.organizationPreference.timeFormat,
+            timezoneId: data.organizationPreference.timezone,
+            unitId: data.organizationPreference.unit,
+            vehicleDisplayId: data.organizationPreference.vehicleDisplay
+          };
+          this.goForword(this.orgDefaultPreference);
+        });
       }
     }, (error) => {  });
   }
@@ -339,7 +353,7 @@ export class AccountInfoSettingsComponent implements OnInit {
           this.savePrefSetting(prefData);
         }, (error) => { });
       }else{ //--- pref not created
-        this.savePrefSetting({});
+        this.savePrefSetting(this.orgDefaultPreference); //-- org default pref
       }
     }
   }

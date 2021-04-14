@@ -17,14 +17,21 @@ namespace net.atos.daf.ct2.vehicle.repository
     {
 
         private readonly IDataAccess dataAccess;
-        private readonly IDataAccess DataMartdataAccess;
+        private readonly IDataMartDataAccess DataMartdataAccess;
         private static readonly log4net.ILog log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public VehicleRepository(IEnumerable<IDataAccess> _dataAccess)
+        //public VehicleRepository(IEnumerable<IDataAccess> _dataAccess)
+        //{
+        //    DataMartdataAccess = _dataAccess.Where(x => x is PgSQLDataMartDataAccess).First();
+        //    dataAccess = _dataAccess.Where(x => x is PgSQLDataAccess).First();
+
+        //}
+
+        public VehicleRepository(IDataAccess _dataAccess, IDataMartDataAccess _DataMartdataAccess)
         {
-            DataMartdataAccess = _dataAccess.Where(x => x is PgSQLDataMartDataAccess).First();
-            dataAccess = _dataAccess.Where(x => x is PgSQLDataAccess).First();
+            DataMartdataAccess = _DataMartdataAccess;
+            dataAccess = _dataAccess;
 
         }
 

@@ -416,4 +416,9 @@ namespace net.atos.daf.ct2.data
 
         #endregion Async Methods
     }
+
+    public interface IDataMartDataAccess:IDataAccess
+    {
+        
+    }
 }

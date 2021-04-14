@@ -265,7 +265,7 @@ namespace net.atos.daf.ct2.translation.repository
             Entity.Name = record.name;
             Entity.Value = record.value;
             Entity.Filter = record.filter;
-           // Entity.MenuId = record.MenuId;
+            // Entity.MenuId = record.MenuId;
             return Entity;
         }
 
@@ -401,7 +401,7 @@ namespace net.atos.daf.ct2.translation.repository
 
         }
 
-        public async Task<translationStatus> InsertTranslationFileData(Translations translationdata,List<Translations> TranslationsList)
+        public async Task<translationStatus> InsertTranslationFileData(Translations translationdata, List<Translations> TranslationsList)
         {
             try
             {
@@ -409,10 +409,10 @@ namespace net.atos.daf.ct2.translation.repository
                 var parameter = new DynamicParameters();
                 string query = string.Empty;
                 //TranslationsList = GetAllTranslations(translationdata.Name, translationdata.Code);
-                
+
                 var translationcodeList = TranslationsList.Where(I => I.Name == translationdata.Name).ToList();
 
-                
+
                 if (translationcodeList != null && translationcodeList.Count > 0)
                 {
                     var type = translationcodeList.FirstOrDefault().Type;
@@ -422,7 +422,7 @@ namespace net.atos.daf.ct2.translation.repository
                         parameter = new DynamicParameters();
                         parameter.Add("@id", translationobjdata.Id);
                         parameter.Add("@Code", translationobjdata.Code);
-                        parameter.Add("@Type", type == null ? "L":type);
+                        parameter.Add("@Type", type == null ? "L" : type);
                         parameter.Add("@Name", translationobjdata.Name);
                         parameter.Add("@Value", translationobjdata.Value);
                         //parameter.Add("@Created_at", translationdata.created_at);
@@ -452,9 +452,9 @@ namespace net.atos.daf.ct2.translation.repository
                 {
                     return translationStatus.Failed;
                 }
-                
 
-               
+
+
 
             }
             catch (Exception ex)
@@ -535,9 +535,132 @@ namespace net.atos.daf.ct2.translation.repository
 
                 Entity.updated_count = 0; ;
             }
-            
+
             Entity.created_by = record.created_by;
             return Entity;
         }
+
+        public async Task<List<DTCwarning>> ImportDTCWarningData( List<DTCwarning> dtcwarningList)
+        {
+            try
+            {
+                var dtcwarningLists = new List<DTCwarning>();
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+
+                    foreach (DTCwarning item in dtcwarningList)
+                    {
+                        var iconID = GetIcocIDFromIcon(item.warning_class, item.number);
+
+                        //DTCwarning dtcwarning = new DTCwarning();
+                        var InsertWarningDataQueryStatement = @"INSERT INTO master.dtcwarning(
+                                                              code, type, veh_type, class, number, description, advice, expires_at,icon_id, created_at, created_by)
+                                                          VALUES(@code, @type, @veh_type, @class, @number, @description, @advice, @expires_at, @icon_id, @created_at, @created_by)
+                                                             RETURNING id";
+
+                        var parameter = new DynamicParameters();
+                        parameter.Add("@code", item.code);
+                        parameter.Add("@type", item.type);
+                        parameter.Add("@veh_type", item.veh_type);
+                        parameter.Add("@class", item.warning_class);
+                        parameter.Add("@number", item.number);
+                        parameter.Add("@description", item.description);
+                        parameter.Add("@advice", item.advice);
+                        parameter.Add("@expires_at", item.expires_at);
+                        parameter.Add("@icon_id", iconID);
+                        parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                        parameter.Add("@created_by", item.created_by);
+
+
+                        int InsertedFileUploadID = await dataAccess.ExecuteScalarAsync<int>(InsertWarningDataQueryStatement, parameter);
+                        if (InsertedFileUploadID > 0)
+                        {
+                            item.id = InsertedFileUploadID;
+                            dtcwarningLists.Add(item);
+                        }
+                    }
+
+                    transactionScope.Complete();
+
+                   
+                }
+                return dtcwarningLists;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<int> GetIcocIDFromIcon(int WarningClass, int Number)
+        {
+                try
+                {
+                    var QueryStatement = @" select icon_id from master.dtcwarning
+                                    where class = @class AND number= @number 
+                                     ";
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@class", WarningClass);
+                    parameter.Add("@number", Number);
+                    int iconID = dataAccess.ExecuteScalar<int>(QueryStatement, parameter);
+                    return iconID;
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+
+            
+        }
+
+        public async Task<IEnumerable<DTCwarning>> GetDTCWarningData(string LanguageCode)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                List<DTCwarning> dtcWarninglist = new List<DTCwarning>();
+                string GetDTCWarningDataQueryStatement = string.Empty;
+              
+                parameter.Add("@LanguageCode", LanguageCode);
+                GetDTCWarningDataQueryStatement = @"SELECT id, code, type, veh_type, class, number, description, advice, expires_at,icon_id, created_at, created_by, modified_at, modified_by
+                                                                FROM master.dtcwarning
+                                                                  where 1=1";
+                GetDTCWarningDataQueryStatement = GetDTCWarningDataQueryStatement + " and code=@LanguageCode";
+
+               
+                dynamic result = await dataAccess.QueryAsync<dynamic>(GetDTCWarningDataQueryStatement, parameter);
+                foreach (dynamic record in result)
+                {
+                    dtcWarninglist.Add(MapWarningDetails(record));
+                }
+               
+                return dtcWarninglist;
+
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+        private DTCwarning MapWarningDetails(dynamic record)
+        {
+            DTCwarning Entity = new DTCwarning();
+            Entity.id = record.id;
+            Entity.code = record.code;
+            Entity.type = record.type;
+            Entity.veh_type = record.veh_type;
+            Entity.warning_class = record.warning_class;
+            Entity.number = record.number;
+            Entity.description = record.description;
+            Entity.advice = record.advice;
+            Entity.expires_at = record.expires_at;
+            Entity.icon_id = record.icon_id;
+            Entity.created_at = record.created_at;
+            Entity.created_by = record.created_by;
+            return Entity;
+        }
+
     }
 }

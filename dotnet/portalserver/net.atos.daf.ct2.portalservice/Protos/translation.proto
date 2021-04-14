@@ -18,6 +18,8 @@ rpc GetTranslationsPreferencDropDowns(PreferenceRequest) returns (PreferenceResp
 rpc GetAllLanguagecodes(Request) returns (TranslationListResponce);
 rpc InsertTranslationFileDetails (TranslationUploadRequest) returns (TranslationUploadResponse);
 rpc GetFileUploadDetails (FileUploadDetailsRequest) returns (FileUploadDetailsResponse);
+rpc ImportDTCWarningData (WarningDataRequest) returns (WarningDataResponse);
+rpc GetDTCWarningData (WarningGetRequest)returns (WarningGetResponse);
 }
 
 enum TranslationType{
@@ -226,9 +228,51 @@ message TranslationUpload
 
 }
 
-  message TranslationRecordResponce
+message TranslationRecordResponce
 {
    int32 Failed = 1;
     int32    Updated = 2;
      int32   Added = 3;
+}
+
+message WarningDataRequest
+{
+ repeated dtcwarning dtcData =1;
+}
+message dtcwarning
+{
+     int32 id =1;
+     string code =2;
+     string type =3;
+     string veh_type=4;
+     int32 warning_class =5;
+     int32 number =6;
+     string description =7;
+     string advice =8;
+     int32 icon_id =9;
+     int64 expires_at =10;
+     int64 created_at =11;
+     int32 created_by =12;
+     int64 modify_at =13;
+     int32 modify_by =14;
+}
+
+message WarningDataResponse
+{
+
+    Responcecode code=1;
+    string message = 2;
+    repeated dtcwarning dtcDataResponse =3;
+}
+
+message WarningGetRequest
+{
+    string LanguageCode=1;
+}
+
+message WarningGetResponse
+{
+     Responcecode code=1;
+    string message = 2;
+    repeated dtcwarning dtcGetDataResponse =3;
 }
