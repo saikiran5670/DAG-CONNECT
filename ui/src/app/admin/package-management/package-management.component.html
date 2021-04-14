@@ -30,11 +30,11 @@
           <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
         </mat-menu>
       </div>
-      <!-- <div>
+      <div>
         <button mat-flat-button (click)="importPackageCSV()">
           {{ translationData.lblImport || 'Import' }}<mat-icon>file_download</mat-icon>
         </button>
-      </div> -->
+      </div>
       <div  *ngIf="!adminAccessType.adminReadOnlyAccess" >
       <button mat-flat-button color="primary" (click)="createNewPackage()">
         <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewPackage || 'New Package' }}
@@ -116,5 +116,8 @@
 </div>
 
 <div class='bgtrans' *ngIf = "importClicked">
-<app-common-import (showImportCSV)="updateImportView($event)"></app-common-import>
+<app-common-import [importFileComponent]="'package'" (showImportCSV)="updateImportView($event)"  [importTranslationData] = "importTranslationData" 
+                    [templateTitle]="templateTitle" [templateValue] ="templateValue" [tableColumnList] = "tableColumnList" [tableColumnName]="tableColumnName"
+                    [tableTitle]='tableTitle'
+></app-common-import>
 </div>
