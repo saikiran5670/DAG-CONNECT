@@ -26,6 +26,6 @@ namespace net.atos.daf.ct2.subscription.entity
 	{
 		None = 0,
 		A = 1,
-		I = 2
+		D = 2
 	}
 }
