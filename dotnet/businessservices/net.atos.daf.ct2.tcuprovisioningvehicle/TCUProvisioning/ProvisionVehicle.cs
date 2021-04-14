@@ -35,6 +35,7 @@ namespace TCUProvisioning
         private string consumergroup ;
         private string topic ;
         private string psqlconnstring ;
+        private string datamartpsqlconnstring;
         private string cacertlocation ;
         IConfiguration config = null;
         IAuditTraillib _auditlog;
@@ -50,6 +51,7 @@ namespace TCUProvisioning
            topic = config.GetSection("EH_NAME").Value;
            psqlconnstring = config.GetSection("psqlconnstring").Value;
            cacertlocation = config.GetSection("CA_CERT_LOCATION").Value;
+            datamartpsqlconnstring = config.GetSection("psqlconnstring").Value;
         }
 
         public async Task readTCUProvisioningData()
@@ -317,7 +319,8 @@ namespace TCUProvisioning
         private VehicleManager getVehicleManager(string psqlConnString)
         {
             IDataAccess dataacess = new PgSQLDataAccess(psqlConnString);
-            IVehicleRepository vehiclerepo = new VehicleRepository(dataacess);
+            IDataMartDataAccess datamartDataacess = new PgSQLDataMartDataAccess(datamartpsqlconnstring);
+            IVehicleRepository vehiclerepo = new VehicleRepository(dataacess, datamartDataacess);
             IAuditLogRepository auditrepo = new AuditLogRepository(dataacess);
             IAuditTraillib audit = new AuditTraillib(auditrepo);
             VehicleManager vehicleManager = new VehicleManager(vehiclerepo, audit);
