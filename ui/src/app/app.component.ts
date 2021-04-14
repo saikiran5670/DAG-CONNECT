@@ -226,6 +226,7 @@ export class AppComponent {
 
     this.dataInterchangeService.dataInterface$.subscribe(data => {
       this.isLogedIn = data;
+      localStorage.setItem("isUserLogin", this.isLogedIn.toString());
       this.getTranslationLabels();
       //this.getAccountInfo();
       this.openTermsConditionsPopup();
@@ -272,10 +273,15 @@ export class AppComponent {
         this.pageName = PageName;
         this.subpage = val.url.split('/')[2];
 
+        let userLoginStatus = localStorage.getItem("isUserLogin");
         if(val.url == "/auth/login" || val.url.includes("/auth/createpassword/") || val.url.includes("/auth/resetpassword/") || val.url.includes("/auth/resetpasswordinvalidate/")) {
           this.isLogedIn = false;
         } else if (val.url == "/") {
           this.isLogedIn = false;
+        }else{
+          if(!userLoginStatus){
+            this.logOut();
+          }
         }
 
         if(this.isLogedIn) {
