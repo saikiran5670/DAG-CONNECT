@@ -7,6 +7,7 @@ import { TranslationService } from '../../services/translation.service';
 import { CommonTableComponent } from '../.././shared/common-table/common-table.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { AccountService } from '../../services/account.service';
+import { OrganizationService } from '../../services/organization.service';
 import { RoleService } from '../../services/role.service';
 
 @Component({
@@ -44,13 +45,15 @@ export class UserManagementComponent implements OnInit {
   dialogRef: MatDialogRef<CommonTableComponent>;
   showLoadingIndicator: any;
   privilegeAccess: boolean = true; //-- false
+  orgPreference: any = {};
 
   constructor(
     private dialogService: ConfirmDialogService,
     private translationService: TranslationService,
     private dialog: MatDialog,
     private accountService: AccountService,
-    private roleService: RoleService
+    private roleService: RoleService,
+    private organizationService: OrganizationService
   ) {
     this.defaultTranslation();
   }
@@ -151,7 +154,7 @@ export class UserManagementComponent implements OnInit {
       filter: "",
       menuId: 3 //-- for user mgnt
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.loadUsersData();
       this.getUserSettingsDropdownValues();
@@ -211,12 +214,15 @@ export class UserManagementComponent implements OnInit {
       roleId: 0,
       name: ""
    }
-
    this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
     this.roleData = allRoleData;
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
       this.userGrpData = allAccountGroupData;
-      this.stepFlag = true;
+      this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((data: any)=>{
+        this.orgPreference = {};
+        //this.orgPreference = data;
+        this.stepFlag = true;
+      });
     }, (error)=> {});
    }, (error)=> {});
   }
@@ -251,19 +257,32 @@ export class UserManagementComponent implements OnInit {
         if(element.preferenceId != 0){
           this.accountService.getAccountPreference(element.preferenceId).subscribe(accountPrefData => {
             this.selectedPreference = accountPrefData;
-            this.editFlag = (type == 'edit') ? true : false;
-            this.viewFlag = (type == 'view') ? true : false;
-            this.isCreateFlag = false;
+            this.goForword(type);
           }, (error)=> {});
         }
         else{
-          this.selectedPreference = {};
-          this.editFlag = (type == 'edit') ? true : false;
-          this.viewFlag = (type == 'view') ? true : false;
-          this.isCreateFlag = false;
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((data: any) => {
+            this.selectedPreference = {
+              currencyId: data.organizationPreference.currency,
+              dateFormatTypeId: data.organizationPreference.dateFormat,
+              landingPageDisplayId: data.organizationPreference.landingPageDisplay,
+              languageId: data.organizationPreference.language,
+              timeFormatId: data.organizationPreference.timeFormat,
+              timezoneId: data.organizationPreference.timezone,
+              unitId: data.organizationPreference.unit,
+              vehicleDisplayId: data.organizationPreference.vehicleDisplay
+            };
+            this.goForword(type);
+          });
         }
     }, (error)=> {});
    }, (error)=> {});
+  }
+
+  goForword(type: any){
+    this.editFlag = (type == 'edit') ? true : false;
+    this.viewFlag = (type == 'view') ? true : false;
+    this.isCreateFlag = false;
   }
 
   loadUsersData(){

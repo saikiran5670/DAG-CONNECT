@@ -5,7 +5,11 @@ import * as FileSaver from 'file-saver';
 import { Workbook } from 'exceljs';
 import * as XLSX from 'xlsx';
 import { packageModel } from '../../models/package.model';
-import { PackageService } from '../../services/package.service'
+import { PackageService } from '../../services/package.service';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { CommonTableComponent } from '../.././shared/common-table/common-table.component';
+
+
 
 @Component({
   selector: 'app-common-import',
@@ -28,8 +32,11 @@ export class CommonImportComponent implements OnInit {
   importedPackagesCount : number = 0;
   rejectedPackagesCount : number = 0;
   showImportStatus : boolean = false;
+  packageCodeError : boolean = false;
+  packageCodeErrorMsg : string = "";
+  driverDialogRef: MatDialogRef<CommonTableComponent>;
 
-  constructor(private _formBuilder: FormBuilder, private packageService: PackageService) { }
+  constructor(private _formBuilder: FormBuilder, private packageService: PackageService ,private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.importPackageFormGroup = this._formBuilder.group({
@@ -135,23 +142,24 @@ export class CommonImportComponent implements OnInit {
           "name": this.filelist[i]["PackageName"],
           "type": this.filelist[i]["PackageType"], //=== "VIN" ? "V" : "O"
           "description": this.filelist[i]["Description"],
-          "isActive": true,
+          "state": this.filelist[i]["PackageStatus"],
           "status": this.filelist[i]["PackageStatus"], //=== "Inactive" ? "I" : "A",
           "createdAt":0
         }
       )
     }
     //console.log(packagesToImport)
-    this.validateImportData(packagesToImport)
+    this.validateImportData(packagesToImport,removableInput)
   }
 
-  validateImportData(packagesToImport){
+  validateImportData(packagesToImport,removableInput){
     let validData: any = [];
     let invalidData: any = [];
     let codeFlag : boolean;
     let nameFlag : boolean;
     let typeFlag : boolean;
     let statFlag : boolean;
+    let stateFlag : boolean;
     let descFlag : boolean;
     let featureFlag : boolean;
     packagesToImport.forEach((item: any) => {
@@ -201,6 +209,17 @@ export class CommonImportComponent implements OnInit {
               }
               break;
             }
+            case 'state':{
+              let objData: any = this.typeValidation(value,'status');  
+              stateFlag = objData.status;
+              if(!stateFlag){
+                item.returnMessage = objData.reason;
+              }
+              else{
+                item.state = value === "Inactive" ? "I" : "A";
+              }
+              break;
+            }
             case 'status':{
               let objData: any = this.typeValidation(value,'status');  
               statFlag = objData.status;
@@ -217,28 +236,42 @@ export class CommonImportComponent implements OnInit {
         }
       }
       
-    if(statFlag && codeFlag && descFlag && nameFlag && typeFlag && featureFlag){
+    if(statFlag && codeFlag && descFlag && nameFlag && typeFlag && featureFlag && stateFlag){
       validData.push(item);
     }
     else{
       invalidData.push(item);
     }
     });
-    this.callImportAPI(validData,invalidData)
+    this.callImportAPI(validData,invalidData,removableInput)
   
     //console.log(validData , invalidData)
-   // return { validDriverList: validData, invalidDriverList: invalidData };
+    return { validDriverList: validData, invalidDriverList: invalidData };
    
   }
 
-  callImportAPI(validData,invalidData){
+  callImportAPI(validData,invalidData,removableInput){
     this.rejectedPackageList = invalidData;
     this.rejectedPackagesCount = invalidData.length;
     this.importedPackagesCount = validData.length;
-    this.showImportStatus = true;
+    this.packageCodeError = false;
     if(validData.length > 0){
         this.packageService.importPackage(validData).subscribe((resultData)=>{
-            console.log(resultData)
+          this.showImportStatus = true;
+          removableInput.clear();
+          if(resultData){
+            this.importedPackagesCount = resultData.packageList.length;
+          }
+        },
+        (err)=>{
+          this.showImportStatus = true;
+
+          if(err.status === 500){
+            this.rejectedPackageList = this.rejectedPackageList + this.importedPackagesCount;
+            this.importedPackagesCount = 0
+            this.packageCodeError = true;
+            this.packageCodeErrorMsg = "Package code already exists.";
+          }
         })
     }
   }
@@ -347,6 +380,9 @@ export class CommonImportComponent implements OnInit {
           obj.status = false;
           obj.reason = "Feature is not valid.";
         }
+        else{
+          featureArray[i] = featureArray[i].trim();
+        }
       }
       obj.featureArray = featureArray;
 
@@ -367,6 +403,29 @@ export class CommonImportComponent implements OnInit {
   }
 
   showRejectedPopup(rejectedPackageList){
-
+    let populateRejectedList=[]
+    for(var i in this.rejectedPackageList){
+      populateRejectedList.push(
+        {
+          "packageCode":this.rejectedPackageList[i]["code"],
+          "packageName": this.rejectedPackageList[i]["name"],
+          "packageDescription" :this.rejectedPackageList[i]["description"],
+          "packageType" : this.rejectedPackageList[i]["type"],
+          "packageStatus" :this.rejectedPackageList[i]["status"],
+          "packageFeature" :this.rejectedPackageList[i]["features"],
+          "returnMessage" :this.rejectedPackageList[i]["returnMessage"]
+        }
+      )
+    }
+      const dialogConfig = new MatDialogConfig();
+      dialogConfig.disableClose = true;
+      dialogConfig.autoFocus = true;
+      dialogConfig.data = {
+        tableData: populateRejectedList,
+        colsList: ['packageCode','packageName','packageDescription','packageType','packageStatus','packageFeature','returnMessage'],
+        colsName: ['Package Code','Package Name','Package Description','Package Type','Package Status','Package Feature','Fail Reason'],
+        tableTitle: 'Rejected Driver Details'
+      }
+      this.driverDialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
   }
 }
