@@ -124,7 +124,7 @@ export class UserGroupManagementComponent implements OnInit {
     this.OrgId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
       id: 0,
-      code: this.localStLanguage.code,
+      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
       type: "Menu",
       name: "",
       value: "",

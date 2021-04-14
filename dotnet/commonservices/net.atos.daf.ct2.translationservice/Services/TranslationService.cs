@@ -529,5 +529,103 @@ namespace net.atos.daf.ct2.translationservice
             }
         }
 
+        public override async Task<WarningDataResponse> ImportDTCWarningData(WarningDataRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("ImportDTCWarningData Method");
+                var dtcWarning = new List<DTCwarning>();
+                var response = new WarningDataResponse();
+
+
+                dtcWarning.AddRange(request.DtcData.Select(x => new DTCwarning()
+                {
+                    code = x.Code,
+                    type = x.Type,
+                    veh_type = x.VehType,
+                    warning_class = x.WarningClass,
+                    number = x.Number,
+                    description = x.Description,
+                    advice = x.Advice,
+                    icon_id = x.IconId,
+                    expires_at = x.ExpiresAt
+
+                }).ToList());
+
+                var DTCData = await translationmanager.ImportDTCWarningData(dtcWarning);
+               
+
+                response.DtcDataResponse.AddRange(DTCData
+                                   .Select(x => new dtcwarning()
+                                   {
+                                       Id = x.id,
+                                       Code = x.code,
+                                       Type = x.type,
+                                       VehType = x.veh_type,
+                                       WarningClass = x.warning_class,
+                                       Number = x.number,
+                                       Description = x.description,
+                                       Advice = x.advice,
+                                       IconId = x.icon_id,
+                                       ExpiresAt = x.expires_at,
+                                       CreatedBy =x.created_by
+                                   }).ToList());
+
+                response.Code = Responcecode.Success;
+                response.Message = "DTC warning Data imported successfully.";
+                return await Task.FromResult(response);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Translation Service:ImportDTCWarningData : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new WarningDataResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "ImportDTCWarningData Faile due to - " + ex.Message
+                });
+            }
+
+        }
+        public async override Task<WarningGetResponse> GetDTCWarningData(WarningGetRequest request, ServerCallContext context)
+        {
+            try
+            {
+
+                var dtcData = await translationmanager.GetDTCWarningData( request.LanguageCode);
+
+                WarningGetResponse getResponseList = new WarningGetResponse();
+                foreach (var item in dtcData)
+                {
+                    var WarnData = new dtcwarning();
+                    WarnData.Id = item.id;
+                    WarnData.Code = item.code;
+                    WarnData.Type = item.type;
+                    WarnData.VehType = item.veh_type;
+                    WarnData.WarningClass = item.warning_class;
+                    WarnData.Number = item.number;
+                    WarnData.Description = item.description;
+                    WarnData.Advice = item.advice;
+                    WarnData.IconId = item.icon_id;
+                    WarnData.ExpiresAt = item.expires_at;
+                    WarnData.CreatedBy = item.created_by;
+                    getResponseList.DtcGetDataResponse.Add(WarnData);
+                }
+                return await Task.FromResult(getResponseList);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Translation Service:GetDTCWarningData : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new WarningGetResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "GetTranslationsForDropDowns Faile due to - " + ex.Message
+                });
+            }
+        }
+
+
+
     }
 }

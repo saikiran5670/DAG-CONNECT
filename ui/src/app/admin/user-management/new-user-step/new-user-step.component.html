@@ -390,12 +390,12 @@
     <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 4: {{ translationData.lblSummary || 'Summary' }}</ng-template>
     <ng-template matStepLabel></ng-template>
     <app-summary-step *ngIf='summaryStepFlag' [defaultSetting]='defaultSetting' [profilePath]='croppedImage' [translationData]='translationData' [accountInfoData]='firstFormGroup.controls' [selectedRoleData]='selectionForRole.selected' [selectedUserGrpData]='selectionForUserGrp.selected' [privilegeAccess]='privilegeAccess'></app-summary-step>
-    <mat-card class='bg-theme mat-elevation-z'>
+    <mat-card class='bg-theme mat-elevation-z' class='background-transparent no-padding'>
       <mat-card-actions fxLayoutAlign="end end">
         <div fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
-          <button class='margin-right-10 resetCancelBtnColor' mat-raised-button color="primary" (click)='onCancel(true)'>{{ translationData.lblCancel || 'Cancel' }}</button>
+          <button class='resetCancelBtnColor' mat-raised-button color="primary" (click)='onCancel(true)'>{{ translationData.lblCancel || 'Cancel' }}</button>
           <button class='margin-right-10' mat-raised-button color="primary" (click)='backFromSummaryStep()'>{{ translationData.lblPrevious || 'Previous' }}</button>
-          <button mat-raised-button color="primary" (click)="onUpdateUserData()">{{ translationData.lblConfirm || 'Confirm' }}</button>
+          <button class='no-margin' mat-raised-button color="primary" (click)="onUpdateUserData()">{{ translationData.lblConfirm || 'Confirm' }}</button>
         </div>
       </mat-card-actions>
     </mat-card>

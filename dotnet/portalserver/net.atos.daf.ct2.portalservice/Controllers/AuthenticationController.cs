@@ -115,10 +115,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
 
                             return Ok(accIdentity);
-                        }
-                        else if (response != null && response.Code == AccountBusinessService.Responcecode.Failed)
+                        }//To Do: Need to fix once we stream line the responceCode class in gRPC Account service.
+                        else if (response != null && (response.Code == AccountBusinessService.Responcecode.FoundRedirect))
                         {
-                            return StatusCode(500, response.Message);
+                            return StatusCode((int)response.Code, response.ResetPasswordExpiryResponse);
+                        }
+                        else if (response != null && (response.Code == AccountBusinessService.Responcecode.Unauthorized))
+                        {
+                            return StatusCode((int)response.Code, response.Message);
+                        }
+                        else if (response != null && response.Code == AccountBusinessService.Responcecode.Forbidden)
+                        {
+                            return StatusCode(403, response.Message);
+                        }
+                        else if (response != null && response.Code == AccountBusinessService.Responcecode.NotFound)
+                        {
+                            return StatusCode(404, response.Message);
                         }
                         else if (response != null && response.Code == AccountBusinessService.Responcecode.Failed)
                         {
@@ -126,7 +138,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         }
                         else
                         {
-                            return StatusCode(500, "Please contact system administrator.");
+                            return StatusCode(500, "Unknown :- Please contact system administrator.");
                         }
                     }
             }
@@ -137,6 +149,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch(Exception ex)
             {
+                _logger.LogError(ex.Message +" " +ex.StackTrace);                
 
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Authentication Component",
             "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.FAILED,

@@ -12,54 +12,20 @@ namespace net.atos.daf.ct2.driver
     public class DriverRepository : IDriverRepository
     {
         private readonly IDataAccess dataAccess;
+        private readonly IDataMartDataAccess dataMartdataAccess;
         private static readonly log4net.ILog log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public DriverRepository(IDataAccess _dataAccess)
+        public DriverRepository(IDataAccess _dataAccess, IDataMartDataAccess _DataMartdataAccess)
         {
             dataAccess = _dataAccess;
+            dataMartdataAccess = _DataMartdataAccess;             
         }
 
         public Task<int> UploadDriverTemplate()
         {
             throw new NotImplementedException();
-        }
-
-       
-
-        // public async Task<DriverTemplate> DownloadDriverTemplate(string languageCode)
-        // {
-        //     var QueryStatement = @" SELECT drivertemplateid
-        //                                     , name
-        //                                     , templatepath
-        //                                     , createddate
-        //                                     , createdby
-        //                                     , updateddate
-        //                                     , updatedby
-        //                             from dafconnectmaster.drivertemplate
-        //                             where isactive=true
-        //                             and (languagecode=@languageCode)";
-
-        //     var parameter = new DynamicParameters();
-        //     parameter.Add("@languagecode", languageCode);
-        //     DriverTemplate DriverTemplateDetails = await dataAccess.QueryFirstOrDefault(QueryStatement, parameter);
-        //     return DriverTemplateDetails;
-        // }
-
-       
-
-        // public async Task<string> ShowConsentForm(string languageCode,int OrganizationId)
-        // {
-        //     var QueryStatement = @" SELECT name
-        //                             from dafconnectmaster.keyvaluecategorymaster
-        //                             where isactive=true
-        //                             and (languagecode=@languageCode and parentcategoryid=0) or (languagecode=@languageCode and parentcategoryid=@OrganizationId)";
-
-        //     var parameter = new DynamicParameters();
-        //     parameter.Add("@languagecode", languageCode);
-        //     string ConsentMessage = await dataAccess.QueryFirstAsync(QueryStatement, parameter);
-        //     return ConsentMessage;
-        // }
+        }      
 
        
         public async Task<IEnumerable<Driver>> GetDriver(int OrganizatioId, int driverId)
@@ -115,6 +81,14 @@ namespace net.atos.daf.ct2.driver
                 var queryUpdate = @"update master.driver set  first_name=@first_name, last_name=@last_name, email=@email,opt_in=@opt_in,status=@status,
              modified_at=@modified_at,modified_by=@modified_by WHERE id= @id and organization_id=@organization_id and state='A' RETURNING id;";
                 int drvID = await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameter);
+               
+                DriverDatamart driverdatamart = new DriverDatamart();
+                driverdatamart.DriverID = driver.Driver_id_ext;
+                driverdatamart.FirstName = driver.first_name;
+                driverdatamart.LastName = driver.last_name;
+                driverdatamart.OrganizationId = driver.Organization_id;
+                await CreateAndUpdateDriverInDataMart(driverdatamart);
+
                 return driver;
             }
             catch (Exception ex)
@@ -262,6 +236,12 @@ namespace net.atos.daf.ct2.driver
                             objDriver.Status = "PASS";
                         }
 
+                        DriverDatamart driverdatamart = new DriverDatamart();
+                        driverdatamart.DriverID = item.Driver_id_ext;
+                        driverdatamart.FirstName = item.first_name;
+                        driverdatamart.LastName = item.last_name;
+                        driverdatamart.OrganizationId = orgid;
+                        await CreateAndUpdateDriverInDataMart(driverdatamart);
                     }
                     catch (Exception ex)
                     {
@@ -285,6 +265,60 @@ namespace net.atos.daf.ct2.driver
                 // dicMessage.Add(ErrorMessage,ex.Message);
             }
             return lstdrivers;
+        }
+
+        public async Task<DriverDatamart> CreateAndUpdateDriverInDataMart(DriverDatamart driver)
+        {
+            try
+            {
+                var parameterduplicate = new DynamicParameters();
+                parameterduplicate.Add("@driver_id", driver.DriverID);
+                parameterduplicate.Add("@organization_id", driver.OrganizationId);
+                var query = @"SELECT id FROM master.driver where driver_id=@driver_id and organization_id=@organization_id";
+                int driverDataMartID = await dataMartdataAccess.ExecuteScalarAsync<int>(query, parameterduplicate);
+                var QueryStatement = "";
+
+                var parameter = new DynamicParameters();
+                parameter.Add("@driver_id", driver.DriverID);
+                parameter.Add("@first_name",driver.FirstName);
+                parameter.Add("@last_name", driver.LastName);
+                parameter.Add("@organization_id", driver.OrganizationId);      
+
+                if (driverDataMartID == 0)
+                {
+                    QueryStatement = @"INSERT INTO master.driver
+                                      (
+                                        driver_id
+                                       ,first_name
+                                       ,last_name
+                                       ,organization_id 
+                                       ) 
+                            	VALUES(
+                                        @driver_id
+                                       ,@first_name
+                                       ,@last_name
+                                       ,@organization_id                                      
+                                      ) RETURNING id";
+                }
+                else if (driverDataMartID >0)
+                {
+                    parameter.Add("@driver_id", driver.DriverID);
+                    QueryStatement = @" UPDATE master.driver
+                                    SET                                  
+                                    first_name=@first_name
+                                    ,last_name=@last_name
+                                    ,organization_id=@organization_id                                    
+                                     WHERE driver_id = @driver_id
+                                     RETURNING id;";
+                }                
+
+                int driverID = await dataMartdataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);               
+                return driver;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

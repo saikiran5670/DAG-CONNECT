@@ -8,6 +8,7 @@ import { AccountService } from '../../services/account.service';
 import { TranslationService } from '../../services/translation.service';
 import { DataInterchangeService } from 'src/app/services/data-interchange.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { OrganizationService } from '../../services/organization.service';
 
 @Component({
   selector: 'app-account-info-settings',
@@ -71,6 +72,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   ];
   orgDefaultFlag: any;
   createPrefFlag = false;
+  orgDefaultPreference: any = {}
 
   myFilter = (d: Date | null): boolean => {
     const date = (d || new Date());
@@ -80,7 +82,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService,
-              private domSanitizer: DomSanitizer) { }
+              private domSanitizer: DomSanitizer, private organizationService: OrganizationService) { }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -168,6 +170,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   loadGeneralSettingData(){
     let languageCode = this.localStLanguage.code;
     let preferenceId = this.accountInfo[0]["preferenceId"];
+    let accountNavMenu = localStorage.getItem("accountNavMenu") ? JSON.parse(localStorage.getItem("accountNavMenu")) : [];
     this.translationService.getPreferences(languageCode).subscribe((data: any) => {
       let dropDownData = data;
       this.languageDropdownData = dropDownData.language;
@@ -177,7 +180,8 @@ export class AccountInfoSettingsComponent implements OnInit {
       this.dateFormatDropdownData = dropDownData.dateformat;
       this.timeFormatDropdownData = dropDownData.timeformat;
       this.vehicleDisplayDropdownData = dropDownData.vehicledisplay;
-      this.landingPageDisplayDropdownData = dropDownData.landingpagedisplay;
+      this.landingPageDisplayDropdownData = accountNavMenu;
+      //this.landingPageDisplayDropdownData = dropDownData.landingpagedisplay;
       if(preferenceId > 0){ //-- account pref
         this.accountService.getAccountPreference(preferenceId).subscribe(resp => {
           this.accountPreferenceData = resp;
@@ -185,7 +189,20 @@ export class AccountInfoSettingsComponent implements OnInit {
         }, (error) => {  });
       }
       else{ //--- default org pref
-        this.goForword({});
+        this.organizationService.getOrganizationPreference(this.organizationId).subscribe((data: any) => {
+          this.orgDefaultPreference = {
+            currencyId: data.organizationPreference.currency,
+            dateFormatTypeId: data.organizationPreference.dateFormat,
+            languageId: data.organizationPreference.language,
+            timeFormatId: data.organizationPreference.timeFormat,
+            timezoneId: data.organizationPreference.timezone,
+            unitId: data.organizationPreference.unit,
+            vehicleDisplayId: data.organizationPreference.vehicleDisplay,
+            landingPageDisplayId: this.landingPageDisplayDropdownData[0].id //-- set default landing page for org
+            //landingPageDisplayId: data.organizationPreference.landingPageDisplay
+          };
+          this.goForword(this.orgDefaultPreference);
+        });
       }
     }, (error) => {  });
   }
@@ -339,7 +356,7 @@ export class AccountInfoSettingsComponent implements OnInit {
           this.savePrefSetting(prefData);
         }, (error) => { });
       }else{ //--- pref not created
-        this.savePrefSetting({});
+        this.savePrefSetting(this.orgDefaultPreference); //-- org default pref
       }
     }
   }

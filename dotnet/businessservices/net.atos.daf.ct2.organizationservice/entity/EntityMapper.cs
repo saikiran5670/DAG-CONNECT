@@ -28,39 +28,16 @@ namespace net.atos.daf.ct2.organizationservice.entity
         {
             OrganizationPreference objResponse=new OrganizationPreference();
             objResponse.Id = request.PreferenceId;
-            objResponse.OrgId = request.OrganizatioId;   
-            if (!(string.IsNullOrEmpty(request.Currency)))
-            {
-                 objResponse.Currency= request.Currency;
-            }
-            if (!(string.IsNullOrEmpty(request.LanguageName)))
-            {
-                 objResponse.Language = request.LanguageName;
-            }
-             if (!(string.IsNullOrEmpty(request.TimeFormat)))
-            {
-                objResponse.TimeFormat = request.TimeFormat;
-            }
-             if (!(string.IsNullOrEmpty(request.DateFormatType)))
-            {
-                  objResponse.DateFormat = request.DateFormatType;
-            }           
-            if (!(string.IsNullOrEmpty(request.VehicleDisplay)))
-            {
-                  objResponse.VehicleDisplay = request.VehicleDisplay;
-            }
-              if (!(string.IsNullOrEmpty(request.LandingPageDisplay)))
-            {
-                   objResponse.LandingPageDisplay = request.LandingPageDisplay;
-            }
-            if (!(string.IsNullOrEmpty(request.Unit)))
-            {
-                  objResponse.Unit = request.Unit;
-            }
-            if (!(string.IsNullOrEmpty(request.Timezone)))
-            {
-                   objResponse.Timezone = request.Timezone;         
-            }
+            objResponse.OrgId = request.OrganizatioId;
+            objResponse.Currency = request.Currency;
+            objResponse.Language = request.LanguageName;
+            objResponse.TimeFormat = request.TimeFormat;
+            objResponse.DateFormat = request.DateFormatType;
+            objResponse.VehicleDisplay = request.VehicleDisplay;
+            objResponse.Unit = request.Unit;
+            objResponse.Timezone = request.Timezone;
+
+           
             return objResponse;
         }
 

@@ -60,7 +60,7 @@ namespace net.atos.daf.ct2.vehicledataservice
             var connectionString = Configuration.GetConnectionString("ConnectionString");
             var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
-            IDataAccess dataMartdataAccess = new PgSQLDataMartDataAccess(DataMartconnectionString);
+            IDataMartDataAccess dataMartdataAccess = new PgSQLDataMartDataAccess(DataMartconnectionString);
             services.AddSingleton(dataMartdataAccess);
             services.AddSingleton(dataAccess);
 

@@ -74,6 +74,8 @@ export class EditViewUserComponent implements OnInit {
   croppedImageTemp= '';
   servicesIcon: any = ['service-icon-daf-connect', 'service-icon-eco-score', 'service-icon-open-platform', 'service-icon-open-platform-inactive', 'service-icon-daf-connect-inactive', 'service-icon-eco-score-inactive', 'service-icon-open-platform-1', 'service-icon-open-platform-inactive-1'];
   @Input() privilegeAccess: any;
+  createPrefFlag = false;
+  orgDefaultFlag: any;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer) { }
 
@@ -122,6 +124,19 @@ export class EditViewUserComponent implements OnInit {
     this.loadRoleTable();
     this.loadAccountGroupTable();
     this.breadcumMsg = this.getBreadcum(this.fromEdit);
+  }
+
+  setDefaultOrgVal(flag: any){
+    this.orgDefaultFlag = {
+      language: flag,
+      timeZone: flag,
+      unit: flag,
+      currency: flag,
+      dateFormat: flag,
+      vehDisplay: flag,
+      timeFormat: flag,
+      landingPage: flag
+    }
   }
 
   getBreadcum(val: any){
@@ -179,7 +194,7 @@ export class EditViewUserComponent implements OnInit {
     }
   }
 
-  setDefaultGeneralSetting(selectedPreference){
+  setDefaultGeneralSetting(selectedPreference: any){
     this.filterDefaultGeneralSetting(selectedPreference);
     if(this.defaultSetting){
       setTimeout(()=>{
@@ -192,18 +207,24 @@ export class EditViewUserComponent implements OnInit {
         this.generalSettingForm.get('vehDisplay').setValue(this.vehicleDisplayData.length > 0 ? this.vehicleDisplayData[0].id : this.defaultSetting.vehicleDisplayDropdownData[0].id);
         this.generalSettingForm.get('landingPage').setValue(this.landingPageDisplayData.length > 0 ? this.landingPageDisplayData[0].id : this.defaultSetting.landingPageDisplayDropdownData[0].id);
       });
+      if(this.accountInfoData.preferenceId > 0){
+        this.setDefaultOrgVal(false); //-- normal color
+      }
+      else{
+        this.setDefaultOrgVal(true); //-- light-grey color
+      }
     }
   }
 
   filterDefaultGeneralSetting(accountPreferenceData: any){
-    this.languageData = this.defaultSetting.languageDropdownData.filter(resp => resp.id === (accountPreferenceData.languageId ? accountPreferenceData.languageId : this.defaultSetting.languageDropdownData[0].id));
-    this.timezoneData = this.defaultSetting.timezoneDropdownData.filter(resp => resp.id === (accountPreferenceData.timezoneId ? accountPreferenceData.timezoneId : this.defaultSetting.timezoneDropdownData[0].id));
-    this.unitData = this.defaultSetting.unitDropdownData.filter(resp => resp.id === (accountPreferenceData.unitId ? accountPreferenceData.unitId : this.defaultSetting.unitDropdownData[0].id));
-    this.currencyData = this.defaultSetting.currencyDropdownData.filter(resp => resp.id === (accountPreferenceData.currencyId ? accountPreferenceData.currencyId : this.defaultSetting.currencyDropdownData[0].id));
-    this.dateFormatData = this.defaultSetting.dateFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.dateFormatTypeId ? accountPreferenceData.dateFormatTypeId : this.defaultSetting.dateFormatDropdownData[0].id));
-    this.timeFormatData = this.defaultSetting.timeFormatDropdownData.filter(resp => resp.id === (accountPreferenceData.timeFormatId ? accountPreferenceData.timeFormatId : this.defaultSetting.timeFormatDropdownData[0].id));
-    this.vehicleDisplayData = this.defaultSetting.vehicleDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.vehicleDisplayId ? accountPreferenceData.vehicleDisplayId : this.defaultSetting.vehicleDisplayDropdownData[0].id));
-    this.landingPageDisplayData = this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === (accountPreferenceData.landingPageDisplayId ? accountPreferenceData.landingPageDisplayId : this.defaultSetting.landingPageDisplayDropdownData[0].id));
+    this.languageData = this.defaultSetting.languageDropdownData.filter(resp => resp.id === ((accountPreferenceData.languageId && accountPreferenceData.languageId != '') ? accountPreferenceData.languageId : this.defaultSetting.languageDropdownData[0].id));
+    this.timezoneData = this.defaultSetting.timezoneDropdownData.filter(resp => resp.id === ((accountPreferenceData.timezoneId && accountPreferenceData.timezoneId != '') ? accountPreferenceData.timezoneId : this.defaultSetting.timezoneDropdownData[0].id));
+    this.unitData = this.defaultSetting.unitDropdownData.filter(resp => resp.id === ((accountPreferenceData.unitId && accountPreferenceData.unitId != '') ? accountPreferenceData.unitId : this.defaultSetting.unitDropdownData[0].id));
+    this.currencyData = this.defaultSetting.currencyDropdownData.filter(resp => resp.id === ((accountPreferenceData.currencyId && accountPreferenceData.currencyId != '') ? accountPreferenceData.currencyId : this.defaultSetting.currencyDropdownData[0].id));
+    this.dateFormatData = this.defaultSetting.dateFormatDropdownData.filter(resp => resp.id === ((accountPreferenceData.dateFormatTypeId && accountPreferenceData.dateFormatTypeId != '') ? accountPreferenceData.dateFormatTypeId : this.defaultSetting.dateFormatDropdownData[0].id));
+    this.timeFormatData = this.defaultSetting.timeFormatDropdownData.filter(resp => resp.id === ((accountPreferenceData.timeFormatId && accountPreferenceData.timeFormatId != '') ? accountPreferenceData.timeFormatId : this.defaultSetting.timeFormatDropdownData[0].id));
+    this.vehicleDisplayData = this.defaultSetting.vehicleDisplayDropdownData.filter(resp => resp.id === ((accountPreferenceData.vehicleDisplayId && accountPreferenceData.vehicleDisplayId != '') ? accountPreferenceData.vehicleDisplayId : this.defaultSetting.vehicleDisplayDropdownData[0].id));
+    this.landingPageDisplayData = this.defaultSetting.landingPageDisplayDropdownData.filter(resp => resp.id === ((accountPreferenceData.landingPageDisplayId && accountPreferenceData.landingPageDisplayId != '') ? accountPreferenceData.landingPageDisplayId : this.defaultSetting.landingPageDisplayDropdownData[0].id));
   }
 
   toBack(){
@@ -244,7 +265,7 @@ export class EditViewUserComponent implements OnInit {
 
   onGeneralSettingsUpdate(){ 
     let objData: any = {
-      id: 0,
+      id: this.accountInfoData.preferenceId > 0 ? this.accountInfoData.preferenceId : 0,
       refId: this.accountInfoData.id,
       languageId: this.generalSettingForm.controls.language.value ? this.generalSettingForm.controls.language.value : this.defaultSetting.languageDropdownData[0].id,
       timezoneId: this.generalSettingForm.controls.timeZone.value ? this.generalSettingForm.controls.timeZone.value : this.defaultSetting.timezoneDropdownData[0].id,
@@ -256,11 +277,34 @@ export class EditViewUserComponent implements OnInit {
       landingPageDisplayId: this.generalSettingForm.controls.landingPage.value ? this.generalSettingForm.controls.landingPage.value : this.defaultSetting.landingPageDisplayDropdownData[0].id
     }
 
-    this.accountService.updateAccountPreference(objData).subscribe((data) => {
-      this.selectedPreference = [data];
-      this.setDefaultGeneralSetting(this.selectedPreference);
-      this.editGeneralSettingsFlag = false;
-    }); 
+    if(this.accountInfoData.preferenceId > 0){ //-- update pref
+      this.accountService.updateAccountPreference(objData).subscribe((data) => {
+        this.selectedPreference = data;
+        this.goForword();
+      });
+    } 
+    else{ //-- create pref
+      for (const [key, value] of Object.entries(this.orgDefaultFlag)) {
+        if(!value){
+          this.createPrefFlag = true;
+          break;
+        }
+      }
+      if(this.createPrefFlag){ //-- pref created
+        this.accountService.createPreference(objData).subscribe((prefData: any) => {
+          this.selectedPreference = prefData;
+          this.accountInfoData.preferenceId = prefData.id;
+          this.goForword();
+        });
+      }else{
+        this.goForword();
+      }
+    }
+  }
+
+  goForword(){
+    this.setDefaultGeneralSetting(this.selectedPreference);
+    this.editGeneralSettingsFlag = false;
   }
 
   editAccountInfo(){
@@ -299,7 +343,7 @@ export class EditViewUserComponent implements OnInit {
         organizationId: this.accountInfoData.organizationId,
         driverId: ""
     }
-    this.accountService.updateAccount(objData).subscribe((data)=>{
+    this.accountService.updateAccount(objData).subscribe((data: any)=>{
       this.accountInfoData = data;
       this.accountInfoData.organization = localStorage.getItem("organizationName");
       this.setDefaultAccountInfo();
@@ -482,6 +526,43 @@ export class EditViewUserComponent implements OnInit {
       tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers || 'Accounts'}`
     }
     this.dialogRefForView = this.dialog.open(UserDetailTableComponent, dialogConfig);
+  }
+
+  onDropdownChange(event: any, value: any){
+    switch(value){
+      case "language":{
+        this.orgDefaultFlag.language = false;
+        break;
+      }
+      case "timeZone":{
+        this.orgDefaultFlag.timeZone = false;
+        break;
+      }
+      case "unit":{
+        this.orgDefaultFlag.unit = false;
+        break;
+      }
+      case "currency":{
+        this.orgDefaultFlag.currency = false;
+        break;
+      }
+      case "dateFormat":{
+        this.orgDefaultFlag.dateFormat = false;
+        break;
+      }
+      case "timeFormat":{
+        this.orgDefaultFlag.timeFormat = false;
+        break;
+      }
+      case "vehDisplay":{
+        this.orgDefaultFlag.vehDisplay = false;
+        break;
+      }
+      case "landingPage":{
+        this.orgDefaultFlag.landingPage = false;
+        break;
+      }
+    } 
   }
 
 }

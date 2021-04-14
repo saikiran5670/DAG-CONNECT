@@ -394,6 +394,37 @@ namespace net.atos.daf.ct2.account
             }
         }
 
+        public async Task<int> UpsertPasswordPolicyAccount(PasswordPolicyAccount passwordPolicyForAccount)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@account_id", passwordPolicyForAccount.AccountId);
+                parameter.Add("@failed_login_attempts", passwordPolicyForAccount.FailedLoginAttempts);
+                parameter.Add("@locked_until", passwordPolicyForAccount.LockedUntil);
+                parameter.Add("@account_lock_attempts", passwordPolicyForAccount.AccountLockAttempts);
+                parameter.Add("@is_blocked", passwordPolicyForAccount.IsBlocked);
+                parameter.Add("@last_login", passwordPolicyForAccount.LastLogin);
+
+                string query =
+                    @"INSERT INTO master.passwordpolicy (account_id, failed_login_attempts,locked_until,account_lock_attempts,is_blocked,last_login)
+                        VALUES(@account_id, @failed_login_attempts,@locked_until,@account_lock_attempts,@is_blocked,@last_login) 
+                        ON CONFLICT (account_id) 
+                        DO 
+                        UPDATE SET failed_login_attempts = @failed_login_attempts,
+                            locked_until = @locked_until, account_lock_attempts = @account_lock_attempts,
+                            is_blocked = @is_blocked, last_login=@last_login
+                        RETURNING id";
+
+                return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public async Task<long?> GetPasswordModifiedDate(int accountId)
         {
             try
@@ -413,6 +444,24 @@ namespace net.atos.daf.ct2.account
                 throw ex;
             }
         }
+
+        public async Task<PasswordPolicyAccount> GetPasswordPolicyAccount(int accountId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();                
+                parameter.Add("@account_id", accountId);
+
+                string query =
+                    @"SELECT account_id as AccountId,failed_login_attempts as FailedLoginAttempts,locked_until as LockedUntil,account_lock_attempts as AccountLockAttempts,is_blocked as IsBlocked,last_login as LastLogin from master.passwordpolicy where account_id = @account_id";
+
+                return await dataAccess.QueryFirstOrDefaultAsync<PasswordPolicyAccount>(query, parameter);                
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }        
         #endregion
 
         #region AccountBlob
@@ -1232,6 +1281,18 @@ namespace net.atos.daf.ct2.account
             accountBlob.Image = record.image;
             return accountBlob;
 
+        }
+
+        private PasswordPolicyAccount TopasswordPolicyBlockAccount(dynamic item)
+        {
+            var passwordPolicyBlockAccount = new PasswordPolicyAccount();
+            passwordPolicyBlockAccount.AccountId = item.account_id;
+            passwordPolicyBlockAccount.FailedLoginAttempts = item.failed_login_attempts;
+            passwordPolicyBlockAccount.LockedUntil = item.locked_until;
+            passwordPolicyBlockAccount.AccountLockAttempts = item.account_lock_attempts;
+            passwordPolicyBlockAccount.IsBlocked = item.is_blocked;
+            passwordPolicyBlockAccount.LastLogin = item.last_login;
+            return passwordPolicyBlockAccount;
         }
 
         private Account MapAccount(dynamic record)

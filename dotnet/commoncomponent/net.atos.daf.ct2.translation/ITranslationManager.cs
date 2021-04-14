@@ -18,5 +18,7 @@ namespace net.atos.daf.ct2.translation
           Task<IEnumerable<Translations>> GetTranslationsForDropDowns(string Dropdownname, string langagugecode);
         Task<TranslationDataStatus> InsertTranslationFileDetails(Translationupload translationupload);
         Task<IEnumerable<Translationupload>> GetFileUploadDetails(int FileID);
+        Task<List<DTCwarning>> ImportDTCWarningData(List<DTCwarning> dtcwarningList);
+        Task<IEnumerable<DTCwarning>> GetDTCWarningData(string LanguageCode);
     }
 }

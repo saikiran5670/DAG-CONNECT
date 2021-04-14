@@ -226,6 +226,7 @@ export class AppComponent {
 
     this.dataInterchangeService.dataInterface$.subscribe(data => {
       this.isLogedIn = data;
+      localStorage.setItem("isUserLogin", this.isLogedIn.toString());
       this.getTranslationLabels();
       //this.getAccountInfo();
       this.openTermsConditionsPopup();
@@ -272,10 +273,15 @@ export class AppComponent {
         this.pageName = PageName;
         this.subpage = val.url.split('/')[2];
 
+        let userLoginStatus = localStorage.getItem("isUserLogin");
         if(val.url == "/auth/login" || val.url.includes("/auth/createpassword/") || val.url.includes("/auth/resetpassword/") || val.url.includes("/auth/resetpasswordinvalidate/")) {
           this.isLogedIn = false;
         } else if (val.url == "/") {
           this.isLogedIn = false;
+        }else{
+          if(!userLoginStatus){
+            this.logOut();
+          }
         }
 
         if(this.isLogedIn) {
@@ -320,34 +326,42 @@ export class AppComponent {
 
   getNavigationMenu() {
     let parseLanguageCode = JSON.parse(localStorage.getItem("language"))
-
-    //accessing getmenufeature api from account
-    
-  //   let featureMenuObj = {
-  //     "accountId": 336,
-  //     "roleId": 161,
-  //     "organizationId": 1,
-  //     "languageCode": "EN-GB"
-  // }
+    //--- accessing getmenufeature api from account --//
+    // let featureMenuObj = {
+    //  "accountId": 336,
+    //  "roleId": 161,
+    //  "organizationId": 1,
+    //  "languageCode": "EN-GB"
+    // }
     let featureMenuObj = {
       "accountId": parseInt(localStorage.getItem("accountId")),
       "roleId": parseInt(localStorage.getItem("accountRoleId")),
       "organizationId": parseInt(localStorage.getItem("accountOrganizationId")),
       "languageCode": parseLanguageCode.code
-}
+    }
     this.accountService.getMenuFeatures(featureMenuObj).subscribe((result : any) => {
-
       this.menuPages = result;
-
-        // This will handle externalLink and Icons for Navigation Menu
+        //-- This will handle externalLink and Icons for Navigation Menu --//
+        let landingPageMenus: any = [];
         this.menuPages.menus.forEach(elem => {
-            elem.externalLink = this.menuStatus[elem.url].externalLink ;
+            elem.externalLink = this.menuStatus[elem.url].externalLink;
             elem.icon = this.menuStatus[elem.url].icon;
             if(elem.externalLink){
               elem.link = this.menuStatus[elem.url].link;
             }
+            if(elem.subMenus.length > 0){ //-- If subMenus
+              elem.subMenus.forEach(subMenuItem => {
+                landingPageMenus.push({ id: subMenuItem.menuId, value: `${elem.translatedName}.${subMenuItem.translatedName}` });  
+              });
+            }else{
+              if(!elem.externalLink){ //-- external link not added
+                landingPageMenus.push({ id: elem.menuId, value: `${elem.translatedName}` });
+              }
+            }
         })
-       // For checking Access of the User
+        //console.log("accountNavMenu:: ", landingPageMenus)
+        localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
+       //-- For checking Access of the User --//
        let accessNameList = [];
        this.menuPages.features.forEach((obj: any) => {
            accessNameList.push(obj.name)
@@ -378,13 +392,7 @@ export class AppComponent {
            this.userType = "Admin#Account";
          }
          localStorage.setItem("userType", this.userType);
-       
-   
-
- 
-     }
-     );
-  
+    });
 
       // // For checking Access of the User
       // let accessNameList = [];

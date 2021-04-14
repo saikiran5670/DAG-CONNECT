@@ -19,6 +19,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class PackageController : ControllerBase
     {
+        private readonly AuditHelper _auditHelper;
         private readonly ILogger<PackageController> _logger;
         private readonly PackageService.PackageServiceClient _packageClient;
         private readonly FeatureService.FeatureServiceClient _featureclient;
@@ -27,13 +28,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         public PackageController(PackageService.PackageServiceClient packageClient,
             FeatureService.FeatureServiceClient featureclient,
-            ILogger<PackageController> logger)
+            ILogger<PackageController> logger, AuditHelper auditHelper)
         {
             _packageClient = packageClient;
             _featureclient = featureclient;
             _logger = logger;
             _featureSetMapper = new FeatureSetMapper(featureclient);
             _packageMapper = new PackageMapper(_featureclient);
+            _auditHelper = auditHelper;
 
         }
 
@@ -41,6 +43,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("create")]
         public async Task<IActionResult> Create(PackagePortalRequest request)
         {
+            var packageResponse = new PackageResponse();
             try
             {
 
@@ -57,7 +60,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     var createPackageRequest = _packageMapper.ToCreatePackage(request);
 
-                    var packageResponse = await _packageClient.CreateAsync(createPackageRequest);
+                     packageResponse = await _packageClient.CreateAsync(createPackageRequest);
 
                     if (packageResponse.PackageId == -1 && packageResponse.Code == Responsecode.Conflict)
                     {
@@ -78,11 +81,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                     else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
                     {
+                            await _auditHelper.AddLogs(DateTime.Now, DateTime.Now,  "Package Component",
+                                               "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                               "Create method in Package controller", 0, packageResponse.PackageId, JsonConvert.SerializeObject(request),
+
+                                                Request);
+
                         return Ok(packageResponse);
                     }
                     else
                     {
-                        return StatusCode(500, "packageResponse is null");
+                       
+                         return StatusCode(500, "packageResponse is null");
                     }
                 }
                 else
@@ -93,12 +103,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
+                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                             "Create method in Package controller", 0, 0, JsonConvert.SerializeObject(request),
+                                              Request);
+                                              
                 _logger.LogError("Package Service:Create : " + ex.Message + " " + ex.StackTrace);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, PortalConstants.ExceptionKeyWord.FK_Constraint);
                 }
                 return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
+
+
             }
         }
 
@@ -108,6 +126,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("update")]
         public async Task<IActionResult> Update(PackagePortalRequest request)
         {
+             var packageResponse = new PackageResponse();
             try
             {
                 _logger.LogInformation("Update method in package API called.");
@@ -136,7 +155,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     var createPackageRequest = _packageMapper.ToCreatePackage(request);
 
-                    var packageResponse = await _packageClient.UpdateAsync(createPackageRequest);
+                        packageResponse = await _packageClient.UpdateAsync(createPackageRequest);
 
                     if (packageResponse.PackageId == -1 && packageResponse.Code == Responsecode.Conflict)
                     {
@@ -150,16 +169,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
                     {
+                          await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
+                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                             "Update method in Package controller",request.Id, packageResponse.PackageId, JsonConvert.SerializeObject(request),
+                                              Request);
+
                         return Ok(packageResponse);
                     }
                     else
                     {
+                  
                         return StatusCode(500, "packageResponse is null");
                     }
                 }
                 else
                 {
-
+                
                     return StatusCode(500, "Featureset id not created");
 
                 }
@@ -167,6 +192,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+
+                ////
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
+                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                             "Update method in Package controller", 0, packageResponse.PackageId, JsonConvert.SerializeObject(request),
+                                              Request);
+
                 _logger.LogError("Package Service:Update : " + ex.Message + " " + ex.StackTrace);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -247,6 +279,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 response.PackageDeleteRequest = packageRequest;
                 if (response != null && response.Code == Responsecode.Success)
                     return Ok(response);
+                                  
                 else
                     return StatusCode(404, "Package not configured.");
             }

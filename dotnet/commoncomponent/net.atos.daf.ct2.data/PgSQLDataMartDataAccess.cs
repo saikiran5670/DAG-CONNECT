@@ -8,7 +8,7 @@ using Npgsql;
 
 namespace net.atos.daf.ct2.data
 {
-    public class PgSQLDataMartDataAccess : IDataAccess
+    public class PgSQLDataMartDataAccess : IDataMartDataAccess
     {
 
         #region Members
