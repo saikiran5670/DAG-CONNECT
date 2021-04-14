@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Resources;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.email.entity;
 using net.atos.daf.ct2.email.Entity;
 using net.atos.daf.ct2.email.Enum;
 using SendGrid;
@@ -53,10 +56,20 @@ namespace net.atos.daf.ct2.email
             msg.AddContent(mimeType, content);
         }
 
-        public static string GetTemplateHtmlString(EmailTemplateType templateType)
+        public static string GetEmailContent(EmailTemplate emailTemplate)
         {
-            ResourceManager rs = new ResourceManager("net.atos.daf.ct2.email.Templates", Assembly.GetExecutingAssembly());
-            return rs.GetString(templateType.ToString(), CultureInfo.CurrentCulture);
+            //ResourceManager rs = new ResourceManager("net.atos.daf.ct2.email.Templates", Assembly.GetExecutingAssembly());
+            //return rs.GetString(eventType.ToString(), CultureInfo.CurrentCulture);
+            var replacedContent = emailTemplate.Description;
+            Regex regex = new Regex(@"\[(.*?)\]");
+
+            foreach (Match match in regex.Matches(emailTemplate.Description))
+            {
+                replacedContent = replacedContent.Replace(match.Value, 
+                    emailTemplate.TemplateLabels
+                    .Where(x => x.LabelKey.Equals(match.Groups[1].Value)).FirstOrDefault()?.TranslatedValue);
+            }
+            return replacedContent;
         }
     }
 }

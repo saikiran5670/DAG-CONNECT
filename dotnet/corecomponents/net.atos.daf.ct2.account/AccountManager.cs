@@ -16,6 +16,7 @@ using net.atos.daf.ct2.email.Entity;
 using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.identity.entity;
 using System.Net;
+using net.atos.daf.ct2.translation;
 
 namespace net.atos.daf.ct2.account
 {
@@ -26,8 +27,9 @@ namespace net.atos.daf.ct2.account
         IAuditTraillib auditlog;
         private readonly EmailConfiguration emailConfiguration;
         private readonly IConfiguration configuration;
+        private readonly ITranslationManager translationManager;
 
-        public AccountManager(IAccountRepository _repository, IAuditTraillib _auditlog, Identity.IAccountManager _identity, IConfiguration _configuration)
+        public AccountManager(IAccountRepository _repository, IAuditTraillib _auditlog, Identity.IAccountManager _identity, IConfiguration _configuration, ITranslationManager _translationManager)
         {
             repository = _repository;
             auditlog = _auditlog;
@@ -35,6 +37,7 @@ namespace net.atos.daf.ct2.account
             configuration = _configuration;
             emailConfiguration = new EmailConfiguration();
             configuration.GetSection("EmailConfiguration").Bind(emailConfiguration);
+            translationManager = _translationManager;
         }
         public async Task<Account> Create(Account account)
         {
@@ -160,7 +163,7 @@ namespace net.atos.daf.ct2.account
                         await repository.UpsertPasswordModifiedDate(account.Id, UTCHandling.GetUTCFromDateTime(DateTime.Now));
 
                         //Send confirmation email
-                        await TriggerSendEmailRequest(account, EmailTemplateType.ChangeResetPasswordSuccess);
+                        await TriggerSendEmailRequest(account, EmailEventType.ChangeResetPasswordSuccess);
                     }
                     return identityResult;
                 }
@@ -354,7 +357,7 @@ namespace net.atos.daf.ct2.account
                         bool isSent = false;
                         //Send activation email based on flag
                         if (canSendEmail)
-                            isSent = await TriggerSendEmailRequest(account, EmailTemplateType.ResetPassword, processToken);
+                            isSent = await TriggerSendEmailRequest(account, EmailEventType.ResetPassword, processToken);
 
                         if ((canSendEmail && isSent) || !canSendEmail)
                         {
@@ -407,7 +410,7 @@ namespace net.atos.daf.ct2.account
                         await repository.Update(resetPasswordToken.Id, ResetTokenStatus.Used);
 
                         //Send confirmation email
-                        await TriggerSendEmailRequest(account, EmailTemplateType.ChangeResetPasswordSuccess);
+                        await TriggerSendEmailRequest(account, EmailEventType.ChangeResetPasswordSuccess);
                     }
                     return identityresult;
                 }
@@ -468,11 +471,11 @@ namespace net.atos.daf.ct2.account
                 var result = await repository.GetAccountOrg(account.Id);
                 account.OrgName = result.FirstOrDefault().Name;
                 //Send account confirmation email
-                return await TriggerSendEmailRequest(account, EmailTemplateType.CreateAccount, (Guid)response.Result);
+                return await TriggerSendEmailRequest(account, EmailEventType.CreateAccount, (Guid)response.Result);
             }
         }
 
-        private async Task<bool> TriggerSendEmailRequest(Account account, EmailTemplateType templateType, Guid? tokenSecret = null)
+        private async Task<bool> TriggerSendEmailRequest(Account account, EmailEventType templateType, Guid? tokenSecret = null, EmailContentType contentType = EmailContentType.Html)
         {
             var messageRequest = new MessageRequest();
             messageRequest.Configuration = emailConfiguration;
@@ -482,7 +485,7 @@ namespace net.atos.daf.ct2.account
             };
             try
             {
-                if (FillEmailTemplate(account, messageRequest, templateType, tokenSecret))
+                if (await FillEmailTemplate(account, messageRequest, templateType, contentType, tokenSecret))
                     return await EmailHelper.SendEmail(messageRequest);
             }
             catch (Exception ex)
@@ -493,41 +496,52 @@ namespace net.atos.daf.ct2.account
             return false;
         }
 
-        private bool FillEmailTemplate(Account account, MessageRequest messageRequest, EmailTemplateType templateType, Guid? tokenSecret = null)
+        private async Task<bool> FillEmailTemplate(Account account, MessageRequest messageRequest, EmailEventType eventType, EmailContentType contentType, Guid? tokenSecret)
         {
-            StringBuilder sb = new StringBuilder();
-            Uri baseUrl = new Uri(emailConfiguration.PortalUIBaseUrl);
-            var templateString = EmailHelper.GetTemplateHtmlString(templateType);
-
-            if (string.IsNullOrEmpty(templateString))
-                return false;
-
-            switch (templateType)
+            var emailContent = string.Empty;
+            try
             {
-                case EmailTemplateType.CreateAccount:
-                    Uri setUrl = new Uri(baseUrl, $"#/auth/createpassword/{ tokenSecret }");
+                Uri baseUrl = new Uri(emailConfiguration.PortalUIBaseUrl);
+                Uri logoUrl = new Uri(baseUrl, "images/logo.png");
 
-                    sb.Append(string.Format(templateString, account.FullName, account.OrgName, setUrl.AbsoluteUri));
-                    break;
-                case EmailTemplateType.ResetPassword:
-                    Uri resetUrl = new Uri(baseUrl, $"#/auth/resetpassword/{ tokenSecret }");
-                    Uri resetInvalidateUrl = new Uri(baseUrl, $"#/auth/resetpasswordinvalidate/{ tokenSecret }");
+                var languageCode = await GetLanguageCodePreference(account.EmailId);
+                var emailTemplate = await translationManager.GetEmailTemplateTranslations(eventType, contentType, languageCode);
+                var emailTemplateContent = EmailHelper.GetEmailContent(emailTemplate);
 
-                    sb.Append(string.Format(templateString, account.FullName, resetUrl.AbsoluteUri, resetInvalidateUrl.AbsoluteUri));
-                    break;
-                case EmailTemplateType.ChangeResetPasswordSuccess:
-                    sb.Append(string.Format(templateString, account.FullName));
-                    break;
-                default:
-                    messageRequest.Subject = string.Empty;
-                    break;
+                if (string.IsNullOrEmpty(emailTemplateContent))
+                    return false;
+
+                switch (eventType)
+                {
+                    case EmailEventType.CreateAccount:
+                        Uri setUrl = new Uri(baseUrl, $"#/auth/createpassword/{ tokenSecret }");
+
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, account.FullName, account.OrgName, setUrl.AbsoluteUri);
+                        break;
+                    case EmailEventType.ResetPassword:
+                        Uri resetUrl = new Uri(baseUrl, $"#/auth/resetpassword/{ tokenSecret }");
+                        Uri resetInvalidateUrl = new Uri(baseUrl, $"#/auth/resetpasswordinvalidate/{ tokenSecret }");
+
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, account.FullName, resetUrl.AbsoluteUri, resetInvalidateUrl.AbsoluteUri);
+                        break;
+                    case EmailEventType.ChangeResetPasswordSuccess:
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, account.FullName);
+                        break;
+                    default:
+                        messageRequest.Subject = string.Empty;
+                        break;
+                }
+
+                messageRequest.Subject = emailTemplate.TemplateLabels.Where(x => x.LabelKey.EndsWith("_Subject")).First().TranslatedValue;
+                messageRequest.Content = emailContent;
+                messageRequest.ContentMimeType = contentType == EmailContentType.Html ? MimeType.Html : MimeType.Text;
+
+                return true;
             }
-
-            messageRequest.Subject = EnumExtension.GetAttribute<SubjectAttribute>(templateType).Title;
-            messageRequest.Content = sb.ToString();
-            messageRequest.ContentMimeType = EnumExtension.GetAttribute<MimeTypeAttribute>(templateType).Name;
-
-            return true;
+            catch (Exception ex)
+            {
+                throw ex;
+            }            
         }
 
         private async Task<bool> CheckForMinPasswordAge(Account account)
@@ -556,6 +570,11 @@ namespace net.atos.daf.ct2.account
         public async Task<int> UpsertPasswordPolicyAccount(PasswordPolicyAccount passwordPolicyAccount)
         {
             return await repository.UpsertPasswordPolicyAccount(passwordPolicyAccount);
+        }
+
+        public async Task<string> GetLanguageCodePreference(string emailId)
+        {
+            return await repository.GetLanguageCodePreference(emailId.ToLower());
         }
         #endregion
     }
