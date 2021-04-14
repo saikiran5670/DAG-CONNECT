@@ -573,7 +573,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
 
                 objResponse = await organizationClient.GetPreferenceAsync(idRequest);
-                return Ok(objResponse);
+                return Ok(objResponse.OrganizationPreference);
             }
             catch (Exception ex)
             {
