@@ -26,19 +26,17 @@ namespace net.atos.daf.ct2.accountservice
         private readonly AccountComponent.IAccountManager accountmanager;
         private readonly Preference.IPreferenceManager preferencemanager;
         private readonly Group.IGroupManager groupmanager;
-        private readonly IAuditTraillib auditlog;
         private readonly Mapper _mapper;
         private readonly AccountComponent.IAccountIdentityManager accountIdentityManager;
 
         #region Constructor
-        public AccountManagementService(ILogger<AccountManagementService> logger, AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, AccountComponent.IAccountIdentityManager _accountIdentityManager, IAuditTraillib _auditlog)
+        public AccountManagementService(ILogger<AccountManagementService> logger, AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, AccountComponent.IAccountIdentityManager _accountIdentityManager)
         {
             _logger = logger;
             accountmanager = _accountmanager;
             preferencemanager = _preferencemanager;
             groupmanager = _groupmanager;
             accountIdentityManager = _accountIdentityManager;
-            auditlog = _auditlog;
             _mapper = new Mapper();
         }
         #endregion
@@ -89,18 +87,19 @@ namespace net.atos.daf.ct2.accountservice
                 }
                 if (accIdentity != null && string.IsNullOrEmpty(accIdentity.tokenIdentifier))
                 {
-                    _logger.LogInformation("account is not authenticated", accIdentity);
-                    _logger.LogError("account is not authenticated", accIdentity);
+
+                    _logger.LogError(accIdentity.ErrorMessage, accIdentity);
+
                     return Task.FromResult(new AccountIdentityResponse
                     {
                         //Account not present  in IDP or IDP related error
-                        Code = Responcecode.Failed,
-                        Message = "Account is not configured.",
-                    });
+                        Code = (Responcecode)accIdentity.StatusCode,
+                        Message = accIdentity.ErrorMessage,
+                        ResetPasswordExpiryResponse = new ResetPasswordExpiryResponse { ProcessToken = accIdentity.Token != null ? accIdentity.Token?.ProcessToken : string.Empty }
+                    }); ;
                 }
                 else
                 {
-                    _logger.LogError("account is not authenticated", accIdentity);
                     _logger.LogError("account is not authenticated", accIdentity);
                     return Task.FromResult(new AccountIdentityResponse
                     {
@@ -127,11 +126,11 @@ namespace net.atos.daf.ct2.accountservice
             LogoutResponse response = new LogoutResponse();
             try
             {
-                bool result= accountIdentityManager.LogoutByTokenId(request.TokenId).Result;
+                bool result = accountIdentityManager.LogoutByTokenId(request.TokenId).Result;
                 if (result)
                 {
                     _logger.LogInformation("account is logged out", request.TokenId);
-                    response.Success = true;                    
+                    response.Success = true;
                 }
                 else
                 {
@@ -141,7 +140,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.ToString() + " "+ request.TokenId);
+                _logger.LogError(ex.ToString() + " " + request.TokenId);
                 response.Success = false;
             }
             return Task.FromResult(response);
@@ -157,9 +156,8 @@ namespace net.atos.daf.ct2.accountservice
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
                 account = _mapper.ToAccountEntity(request);
                 account = await accountmanager.Create(account);
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Account Create", 1, 2, account.EmailId);
                 // response 
-                AccountData response = new AccountData();                
+                AccountData response = new AccountData();
                 if (account.isDuplicate || account.isDuplicateInOrg)
                 {
                     response.Message = "The duplicate account.";
@@ -206,7 +204,6 @@ namespace net.atos.daf.ct2.accountservice
                 account = _mapper.ToAccountEntity(request);
                 account.AccountType = (AccountComponent.ENUM.AccountType)request?.Type[0];
                 account = await accountmanager.Update(account);
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Account Create", 1, 2, account.EmailId);
                 // response 
                 AccountData response = new AccountData();
                 response.Code = Responcecode.Success;
@@ -239,7 +236,6 @@ namespace net.atos.daf.ct2.accountservice
                 if (request.StartDate > 0) account.StartDate = request.StartDate;
                 if (request.EndDate > 0) account.EndDate = request.EndDate;
                 var result = await accountmanager.Delete(account);
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Service", "Account Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Account Delete", 1, 2, account.Id.ToString());
                 // response 
                 AccountResponse response = new AccountResponse();
                 response.Code = Responcecode.Success;
@@ -269,7 +265,6 @@ namespace net.atos.daf.ct2.accountservice
                 AccountResponse response = new AccountResponse();
                 if (identityResult.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Password Change", 1, 2, account.Id.ToString());
                     response.Code = Responcecode.Success;
                     response.Message = "Password has been changed.";
                 }
@@ -278,16 +273,16 @@ namespace net.atos.daf.ct2.accountservice
                     IdentityResponse responseContent = null;
                     try
                     {
-                         responseContent = JsonConvert.DeserializeObject<IdentityResponse>(identityResult.Result.ToString());
+                        responseContent = JsonConvert.DeserializeObject<IdentityResponse>(identityResult.Result.ToString());
                     }
-                    catch(Exception e)
+                    catch (Exception)
                     { }
                     if (responseContent != null && responseContent.Error.Equals("invalidPasswordHistoryMessage"))
                     {
                         response.Code = Responcecode.BadRequest;
                         response.Message = "Password must not be equal to any of last 6 passwords.";
                     }
-                    else if(responseContent != null && responseContent.Error.Equals("InValidPassword"))
+                    else if (responseContent != null && responseContent.Error.Equals("InValidPassword"))
                     {
                         response.Code = Responcecode.BadRequest;
                         response.Message = responseContent.Error_Description;
@@ -417,7 +412,6 @@ namespace net.atos.daf.ct2.accountservice
                 if (request.StartDate > 0) account.StartDate = request.StartDate;
                 if (request.StartDate > 0) account.StartDate = request.StartDate;
                 var result = await accountmanager.AddAccountToOrg(account);
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Service", "Account Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Account Delete", 1, 2, account.Id.ToString());
                 // response
                 response.Code = Responcecode.Success;
                 response.Message = "Account Added to organization.";
@@ -627,19 +621,16 @@ namespace net.atos.daf.ct2.accountservice
                 if (identityResult.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     response.Code = Responcecode.Success;
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Password Reset Initiate", 1, 2, request.EmailId);
                     response.Message = "Reset password process is initiated.";
                 }
                 else if (identityResult.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
                     response.Code = Responcecode.NotFound;
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Initiate: Account not configured", 1, 2, request.EmailId);
                     response.Message = "Account not configured";
                 }
                 else
                 {
                     response.Code = Responcecode.Failed;
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Initiate Failed", 1, 2, request.EmailId);
                 }
 
                 return await Task.FromResult(response);
@@ -667,34 +658,41 @@ namespace net.atos.daf.ct2.accountservice
                 ResetPasswordResponse response = new ResetPasswordResponse();
                 if (identityResult.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Password Reset with Token", 1, 2, request.ProcessToken);
                     response.Code = Responcecode.Success;
                     response.Message = "Password has been reset successfully.";
                 }
                 else if (identityResult.StatusCode == System.Net.HttpStatusCode.BadRequest)
                 {
-                    var responseContent = JsonConvert.DeserializeObject<IdentityResponse>(identityResult.Result.ToString());
+                    IdentityResponse responseContent = null;
+                    try
+                    {
+                        responseContent = JsonConvert.DeserializeObject<IdentityResponse>(identityResult.Result.ToString());
+                    }
+                    catch (Exception)
+                    { }
+
                     if (responseContent != null && responseContent.Error.Equals("invalidPasswordHistoryMessage"))
                     {
-                        await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset: Invalid Password History", 1, 2, request.ProcessToken);
                         response.Code = Responcecode.BadRequest;
                         response.Message = "Password must not be equal to any of last 6 passwords.";
                     }
+                    else if (responseContent != null && responseContent.Error.Equals("InValidPassword"))
+                    {
+                        response.Code = Responcecode.BadRequest;
+                        response.Message = responseContent.Error_Description;
+                    }
                     else
                     {
-                        await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Failed", 1, 2, request.ProcessToken);
                         response.Code = Responcecode.Failed;
                     }
                 }
                 else if (identityResult.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset: Token Expired/Invalidated", 1, 2, request.ProcessToken);
                     response.Code = Responcecode.NotFound;
                     response.Message = "Email activation link is either Expired or Invalidated.";
                 }
                 else
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Failed", 1, 2, request.ProcessToken);
                     response.Code = Responcecode.Failed;
                 }
                 return await Task.FromResult(response);
@@ -718,19 +716,16 @@ namespace net.atos.daf.ct2.accountservice
                 ResetPasswordResponse response = new ResetPasswordResponse();
                 if (identityResult.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Password Reset Invalidate", 1, 2, request.ResetToken);
                     response.Code = Responcecode.Success;
                     response.Message = "Reset token has been invalidated.";
                 }
                 else if (identityResult.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Invalidate: Token Expired/Invalidated", 1, 2, request.ResetToken);
                     response.Code = Responcecode.NotFound;
                     response.Message = "Email activation link is either Expired or already Invalidated.";
                 }
                 else
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Invalidate Failed", 1, 2, request.ResetToken);
                     response.Code = Responcecode.Failed;
                 }
                 return await Task.FromResult(response);
@@ -755,14 +750,12 @@ namespace net.atos.daf.ct2.accountservice
                 MenuFeatureResponse response = new MenuFeatureResponse();
                 if (result.Count() > 0)
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.SUCCESS, "Get Menu Features", 1, 2, request.AccountId.ToString());
                     response.Code = Responcecode.Success;
                     response.Message = "Menu items and features fetched successfully.";
                     response.MenuFeatures = MapMenuFeatureDtoToList(result.ToList());
                 }
                 else
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.FAILED, "Get Menu Features", 1, 2, request.AccountId.ToString());
                     response.Code = Responcecode.NotFound;
                     response.Message = "No menu items and features found for the provided account details.";
                 }
@@ -793,7 +786,6 @@ namespace net.atos.daf.ct2.accountservice
                 var accountResponse = await accountmanager.CreateBlob(accountBlob);
                 request = _mapper.AccountBlob(accountResponse);
                 response.BlobId = request.Id;
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Account Blob Create", 1, 2, accountBlob.AccountId.ToString());
                 // response 
                 response.Message = "Account Profile Picture Updated.";
                 response.Code = Responcecode.Success;
@@ -825,7 +817,6 @@ namespace net.atos.daf.ct2.accountservice
                 }
                 response.BlobId = accountResponse.Id;
                 response.Image = ByteString.CopyFrom(accountResponse.Image);
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Account Blob Create", 1, 2, accountBlob.AccountId.ToString());
                 // response 
                 response.Message = "Account Profile Picture Updated.";
                 response.Code = Responcecode.Success;
@@ -1078,7 +1069,6 @@ namespace net.atos.daf.ct2.accountservice
                         }
                     }
                 }
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Vehicle Access Relationship Created", 1, 2, request.Id.ToString());
                 response.Code = Responcecode.Success;
                 response.Message = "Created";
                 return response;
@@ -1147,7 +1137,6 @@ namespace net.atos.daf.ct2.accountservice
                         }
                     }
                 }
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Vehicle Access Relationship Updated", 1, 2, request.Id.ToString());
                 response.Code = Responcecode.Success;
                 response.Message = "Created";
                 return response;
@@ -1198,7 +1187,6 @@ namespace net.atos.daf.ct2.accountservice
                 {
                     response.Code = Responcecode.Failed;
                 }
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Vehicle Access Relationship Deleted", 1, 2, request.Id.ToString());
                 response.Message = "Deleted";
                 return response;
             }
@@ -1262,7 +1250,6 @@ namespace net.atos.daf.ct2.accountservice
                         }
                     }
                 }
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Account Access Relationship Created", 1, 2, request.Id.ToString());
                 response.Code = Responcecode.Success;
                 response.Message = "Created";
                 return response;
@@ -1332,7 +1319,6 @@ namespace net.atos.daf.ct2.accountservice
                         }
                     }
                 }
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Account Access Relationship Updated", 1, 2, request.Id.ToString());
                 response.Code = Responcecode.Success;
                 response.Message = "Created";
                 return response;
@@ -1378,7 +1364,6 @@ namespace net.atos.daf.ct2.accountservice
                 if (result) response.Code = Responcecode.Success;
                 else response.Code = Responcecode.Failed;
 
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Account Access Relationship Delete", 1, 2, request.Id.ToString());
                 response.Message = "Deleted";
                 return response;
             }
@@ -1477,7 +1462,6 @@ namespace net.atos.daf.ct2.accountservice
                 preference = _mapper.ToPreference(request);
                 preference.Exists = false;
                 preference = await preferencemanager.Create(preference);
-                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Preference", 1, 2, Convert.ToString(preference.Id)).Result;
                 if (preference.Id.HasValue) request.Id = preference.Id.Value;
                 // response 
                 AccountPreferenceResponse response = new AccountPreferenceResponse();
@@ -1505,7 +1489,6 @@ namespace net.atos.daf.ct2.accountservice
                 preference = _mapper.ToPreference(request);
                 preference.Exists = false;
                 preference = await preferencemanager.Update(preference);
-                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Update Preference", 1, 2, Convert.ToString(preference.Id)).Result;
                 if (preference.Id.HasValue) request.Id = preference.Id.Value;
                 // response 
                 AccountPreferenceResponse response = new AccountPreferenceResponse();
@@ -1530,7 +1513,6 @@ namespace net.atos.daf.ct2.accountservice
             try
             {
                 var result = await preferencemanager.Delete(request.Id, Preference.PreferenceType.Account);
-                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Preference", 1, 2, Convert.ToString(request.Id)).Result;
                 // response 
                 AccountPreferenceResponse response = new AccountPreferenceResponse();
                 if (result)
@@ -1622,7 +1604,6 @@ namespace net.atos.daf.ct2.accountservice
                 }
                 request.Id = group.Id;
                 request.CreatedAt = group.CreatedAt.Value;
-                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Account Group ", 1, 2, Convert.ToString(group.Id)).Result;
                 _logger.LogInformation("Group Created:" + Convert.ToString(group.Name));
                 return await Task.FromResult(new AccountGroupResponce
                 {
@@ -1675,7 +1656,6 @@ namespace net.atos.daf.ct2.accountservice
                     }
                 }
                 _logger.LogInformation("Update Account Group :" + Convert.ToString(entity.Name));
-                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Update Account Group ", 1, 2, Convert.ToString(entity.Id)).Result;
                 return await Task.FromResult(new AccountGroupResponce
                 {
                     Message = "Account group updated for id: " + entity.Id,
@@ -1698,7 +1678,6 @@ namespace net.atos.daf.ct2.accountservice
             try
             {
                 bool result = await groupmanager.Delete(request.Id, Group.ObjectType.AccountGroup);
-                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Account Group ", 1, 2, Convert.ToString(request.Id)).Result;
                 return await Task.FromResult(new AccountGroupResponce
                 {
                     Message = "Account Group deleted.",
@@ -1736,7 +1715,6 @@ namespace net.atos.daf.ct2.accountservice
                         result = groupmanager.AddRefToGroups(group.GroupRef).Result;
                     }
                 }
-                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Account Group ", 1, 2, "").Result;
                 if (result)
                 {
                     response.Code = Responcecode.Success;
@@ -1768,7 +1746,6 @@ namespace net.atos.daf.ct2.accountservice
                 AccountGroupResponce response = new AccountGroupResponce();
                 bool result = false;
                 result = await groupmanager.RemoveRefByRefId(request.Id);
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Acccount Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Account Group References", 1, 2, "");
                 if (result)
                 {
                     response.Code = Responcecode.Success;
@@ -1925,7 +1902,6 @@ namespace net.atos.daf.ct2.accountservice
                     role.EndDate = null;
                     var result = accountmanager.AddRole(role).Result;
                 }
-                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Add Roles accoount id", 1, 2, Convert.ToString(request.AccountId)).Result;
                 response.Message = "Roles added to account";
                 response.Code = Responcecode.Success;
                 return await Task.FromResult(response);
@@ -1954,7 +1930,6 @@ namespace net.atos.daf.ct2.accountservice
                     accountRole.AccountId = request.AccountId;
                 }
                 var result = await accountmanager.RemoveRole(accountRole);
-                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Remove Roles from accoount id", 1, 2, Convert.ToString(request.AccountId)).Result;
                 response.Message = "Deleted Account roles.";
                 response.Code = Responcecode.Success;
                 return await Task.FromResult(response);

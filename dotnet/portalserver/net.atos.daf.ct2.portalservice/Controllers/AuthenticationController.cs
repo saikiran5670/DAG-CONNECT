@@ -102,10 +102,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
                            // }
                             return Ok(accIdentity);
-                        }
-                        else if (response != null && response.Code == AccountBusinessService.Responcecode.Failed)
+                        }//To Do: Need to fix once we stream line the responceCode class in gRPC Account service.
+                        else if (response != null && (response.Code == AccountBusinessService.Responcecode.FoundRedirect))
                         {
-                            return StatusCode(500, response.Message);
+                            return StatusCode((int)response.Code, response.ResetPasswordExpiryResponse);
+                        }
+                        else if (response != null && (response.Code == AccountBusinessService.Responcecode.Unauthorized))
+                        {
+                            return StatusCode((int)response.Code, response.Message);
+                        }
+                        else if (response != null && response.Code == AccountBusinessService.Responcecode.Forbidden)
+                        {
+                            return StatusCode(403, response.Message);
+                        }
+                        else if (response != null && response.Code == AccountBusinessService.Responcecode.NotFound)
+                        {
+                            return StatusCode(404, response.Message);
                         }
                         else if (response != null && response.Code == AccountBusinessService.Responcecode.Failed)
                         {
@@ -113,7 +125,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         }
                         else
                         {
-                            return StatusCode(500, "Please contact system administrator.");
+                            return StatusCode(500, "Unknown :- Please contact system administrator.");
                         }
                     }
             }
@@ -124,7 +136,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex.Message +" " +ex.StackTrace);
+                _logger.LogError(ex.Message +" " +ex.StackTrace);                
                 return StatusCode(500,"Please contact system administrator. "+ ex.Message );
             }            
         }
