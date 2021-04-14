@@ -31,5 +31,5 @@ message SubscriptionDetailsRequest{
 enum StatusType	{
 		None = 0;
 		A = 1;
-		I = 2;
+		D = 2;
 }

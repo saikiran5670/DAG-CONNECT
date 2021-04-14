@@ -46,4 +46,12 @@ namespace net.atos.daf.ct2.driver.entity
         public string ReturnMessage { get; set; }
          public string Status { get; set; }
     }
+
+    public class DriverDatamart
+    {
+        public string DriverID { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public int OrganizationId { get; set; }
+    }
 }

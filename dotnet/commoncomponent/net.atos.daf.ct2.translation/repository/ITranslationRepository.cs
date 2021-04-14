@@ -19,6 +19,10 @@ namespace net.atos.daf.ct2.translation.repository
         Task<Translationupload> InsertTranslationFileDetails(Translationupload translationupload);
         Task<IEnumerable<Translationupload>> GetFileUploadDetails(int FileID);
         Task<translationStatus> InsertTranslationFileData(Translations translationdata, List<Translations> TranslationsList);
+       Task<List<Translations>> GetAllTranslations();
+        Task<List<DTCwarning>> ImportDTCWarningData(List<DTCwarning> dtcwarningList);
+        Task<IEnumerable<DTCwarning>> GetDTCWarningData(string LanguageCode);
+
         Task<List<Translations>> GetAllTranslations();
         Task<EmailTemplate> GetEmailTemplateTranslations(EmailEventType eventType, EmailContentType contentType, string languageCode);
     }

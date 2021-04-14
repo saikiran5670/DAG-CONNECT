@@ -64,6 +64,33 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
             return response;
         }
 
+             public WarningDataRequest ToImportDTCWarning(DTCWarningImportRequest request)
+        {
+
+            var dtcRequests = new WarningDataRequest();
+            //id,code , type,veh_type,class,number,description,advice, expires_at,icon_id,created_by,
+            foreach (var x in request.dtcWarningToImport)
+            {
+                    var dtcRequest = new dtcwarning()
+                    {
+                        Code = x.code,
+                        Type = x.type,
+                        VehType = x.veh_type,
+                        WarningClass = x.warning_class,
+                        Number = x.number,
+                        Description = x.description,
+                        Advice = x.advice,
+                        ExpiresAt= x.expires_at,
+                        IconId = x.icon_id,
+                        CreatedBy = x.created_by
+                    };
+                dtcRequests.DtcData.Add(dtcRequest);
+                
+            }
+            return dtcRequests;
+
+        }
+
 
     }
 }

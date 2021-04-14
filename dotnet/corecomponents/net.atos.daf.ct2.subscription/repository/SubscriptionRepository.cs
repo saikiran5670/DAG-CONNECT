@@ -133,7 +133,7 @@ namespace net.atos.daf.ct2.subscription.repository
                     {// Subscription exists and Active
                         return null;
                     }
-                    else if (responce != null && responce.subscription_id != 0 && responce.state.ToUpper() == "I")
+                    else if (responce != null && responce.subscription_id != 0 && responce.state.ToUpper() == "D")
                     {// Subscription exists and InActive
                         var parameterStatus = new DynamicParameters();
                         parameterStatus.Add("@state", "A");
@@ -201,7 +201,7 @@ namespace net.atos.daf.ct2.subscription.repository
                             {
                                 return null;
                             }
-                            else if (response != null && response.subscription_id !=0 && response.state.ToUpper() == "I")
+                            else if (response != null && response.subscription_id !=0 && response.state.ToUpper() == "D")
                             {
                                 // Subscription exists and InActive
                                 var parameterStatus = new DynamicParameters();
@@ -296,7 +296,7 @@ namespace net.atos.daf.ct2.subscription.repository
                         parameter.Add("@subscription_id", objUnSubscription.OrderID);
                         parameter.Add("@subscription_end_date", objUnSubscription.EndDateTime);
                         parameter.Add("@organization_id", orgid);
-                        string queryUpdate = @"update master.subscription set state=I, subscription_end_date=@subscription_end_date where subscription_id=@subscription_id and organization_id=@organization_id";
+                        string queryUpdate = @"update master.subscription set state=D, subscription_end_date=@subscription_end_date where subscription_id=@subscription_id and organization_id=@organization_id";
                         int roweffected = await dataAccess.ExecuteAsync
                             (queryUpdate, parameter);
                         objSubscriptionResponse.orderId = objUnSubscription.OrderID;
@@ -327,7 +327,7 @@ namespace net.atos.daf.ct2.subscription.repository
                                              AND  sub.organization_id = @organization_id";
                             var vinExist = await dataAccess.QueryFirstOrDefaultAsync<UnSubscribeVin>
                                 (query, parameterToGetVehicleId);
-                            if (vinExist == null || vinExist.id == 0 || vinExist.state.ToUpper() == "I")
+                            if (vinExist == null || vinExist.id == 0 || vinExist.state.ToUpper() == "D")
                             {//return Bad Request if vin does not exits and state is already false in Subscription table
                                 return null;
                             }
@@ -337,7 +337,7 @@ namespace net.atos.daf.ct2.subscription.repository
                         }
                         var parameter = new DynamicParameters();
                         parameter.Add("@subscription_end_date", objUnSubscription.EndDateTime);
-                        parameter.Add("@state", "I"); 
+                        parameter.Add("@state", "D"); 
                             //This Condition to insert only if all the VIN exits in Vehicle Table
                             foreach (var item in objvinList)
                         {
@@ -373,7 +373,7 @@ namespace net.atos.daf.ct2.subscription.repository
                     objSubscriptionResponse.orderId = response.subscription_id.ToString();
                     return objSubscriptionResponse;
                 }
-                else if (response != null && response.subscription_id != 0 && response.state.ToUpper() == "I")
+                else if (response != null && response.subscription_id != 0 && response.state.ToUpper() == "D")
                 {
                     var parameterStatus = new DynamicParameters();
                     parameterStatus.Add("@state", "A");

@@ -35,7 +35,13 @@ export class CommonImportComponent implements OnInit {
   packageCodeError : boolean = false;
   packageCodeErrorMsg : string = "";
   driverDialogRef: MatDialogRef<CommonTableComponent>;
-
+  @Input() importTranslationData : any;
+  @Input() importFileComponent : string;
+  @Input() templateTitle : any;
+  @Input() templateValue : any;
+  @Input() tableColumnList : any;
+  @Input() tableColumnName : any;
+  @Input() tableTitle : string;
   constructor(private _formBuilder: FormBuilder, private packageService: PackageService ,private dialog: MatDialog) { }
 
   ngOnInit(): void {
@@ -55,14 +61,12 @@ export class CommonImportComponent implements OnInit {
     this.showImportCSV.emit(false);
   }
 
-  downloadPackageTemplate(){
-
-    const header = ['PackageCode','PackageName','Description','PackageType','PackageStatus','FeatureId'];
-    const data = [
-      ['PTest100', 'Package1', "Package Template", "VIN", "Active","Dashboard, Report"]
-    ];
+  downloadTemplate(){
+    const header = this.templateTitle;//['PackageCode','PackageName','Description','PackageType','PackageStatus','FeatureId'];
+    const data = this.templateValue;
+    
     let workbook = new Workbook();
-    let worksheet = workbook.addWorksheet('Package Template');
+    let worksheet = workbook.addWorksheet('Template');
     //Add Header Row
     let headerRow = worksheet.addRow(header);
     // Cell Style : Fill and Border
@@ -96,6 +100,7 @@ export class CommonImportComponent implements OnInit {
       let blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
       FileSaver.saveAs(blob, this.templateFileName);
     });
+    
   }
 
   addfile(event: any){ 
@@ -118,10 +123,12 @@ export class CommonImportComponent implements OnInit {
     }    
   }
   
-  importPackage(removableInput){
+  importNewFile(removableInput){
     if(this.filelist.length > 0){
       this.excelEmptyMsg = false;
-      this.prepareDataToImport(removableInput);
+      if(this.importFileComponent === 'package'){
+        this.preparePackageDataToImport(removableInput);
+      }
       //removableInput.clear();
     }
     else{
@@ -130,7 +137,7 @@ export class CommonImportComponent implements OnInit {
     }
   }
 
-  prepareDataToImport(removableInput){
+  preparePackageDataToImport(removableInput){
     let packagesToImport = [];//new packageModel().importPackage;
     for(let i = 0; i < this.filelist.length ; i++){
       packagesToImport.push(
@@ -270,7 +277,7 @@ export class CommonImportComponent implements OnInit {
             this.rejectedPackageList = this.rejectedPackageList + this.importedPackagesCount;
             this.importedPackagesCount = 0
             this.packageCodeError = true;
-            this.packageCodeErrorMsg = "Package code already exists.";
+            this.packageCodeErrorMsg = this.importTranslationData.existError;
           }
         })
     }
@@ -285,7 +292,7 @@ export class CommonImportComponent implements OnInit {
     const regx = /[A-Z]{1,1}[A-Z\s]{1,1}[\s]{1,1}[A-Z0-9]{13,13}[0-9]{3,3}/;
     if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
-      obj.reason = 'Package Code is mandatory input';
+      obj.reason = this.importTranslationData.input1mandatoryReason;
       return obj;  
     }
     return obj;
@@ -299,19 +306,19 @@ export class CommonImportComponent implements OnInit {
    
     if(!value || value == '' || value.trim().length == 0){ 
       obj.status = false;
-      obj.reason = 'Package Name is mandatory input';
+      obj.reason = this.importTranslationData.input2mandatoryReason;
       return obj; 
     }
     else{
 
       if(value.length > maxLength){
         obj.status = false;
-        obj.reason = this.getValidateMsg(type, "'$' exceeds maximum allowed length of '#' chars", maxLength) 
+        obj.reason = this.getValidateMsg(type, this.importTranslationData.maxAllowedLengthReason, maxLength) 
         return obj;
       }
       if(!SpecialCharRegex.test(value)){
         obj.status = false;
-        obj.reason = this.getValidateMsg(type,  "Special characters not allowed in '$'");
+        obj.reason = this.getValidateMsg(type,  this.importTranslationData.specialCharNotAllowedReason);
         return obj;
       }
       return obj;
@@ -322,7 +329,7 @@ export class CommonImportComponent implements OnInit {
     let obj: any = { status: true, reason: 'correct data'};
     if(value.length > 100){
       obj.status = false;
-      obj.reason = 'Package Description cannot exceed 100 characters';
+      obj.reason = this.importTranslationData.packageDescriptionCannotExceedReason;
 
     }
     return obj;
@@ -333,9 +340,9 @@ export class CommonImportComponent implements OnInit {
     if(!value || value == '' || value.trim().length == 0){ 
       obj.status = false;
       if(type === 'type')
-      obj.reason = 'Package Type is mandatory input';
+      obj.reason = this.importTranslationData.packageTypeMandateReason;
       if(type === 'status')
-      obj.reason = 'Package Status is mandatory input';
+      obj.reason = this.importTranslationData.packageStatusMandateReason;
       return obj; 
     }
     else{
@@ -344,7 +351,7 @@ export class CommonImportComponent implements OnInit {
           if(value.toLowerCase() != "vin"){
             if(value.toLowerCase() != "organization" ){
               obj.status = false;
-              obj.reason = 'Package type should be VIN or Organization';
+              obj.reason = this.importTranslationData.packageTypeReason;
 
             }
           }
@@ -353,7 +360,7 @@ export class CommonImportComponent implements OnInit {
           if(value.toLowerCase() != "active" ){
             if(value.toLowerCase() != "inactive"){
             obj.status = false;
-            obj.reason = 'Package status can be Active or Inactive';
+            obj.reason = this.importTranslationData.packageStatusReason;
             }
           }
           break;
@@ -370,7 +377,7 @@ export class CommonImportComponent implements OnInit {
     let featureArray = [];
     if(!value || value == '' || value.trim().length == 0){ 
       obj.status = false;
-      obj.reason = "Features should be comma separated and cannot be empty.";
+      obj.reason = this.importTranslationData.featureemptyReason;
       obj.featureArray = [];
     }
     else{
@@ -378,7 +385,7 @@ export class CommonImportComponent implements OnInit {
       for(var i in featureArray){
         if(featureArray[i] === null || featureArray[i] === undefined || featureArray[i].trim() === ''){ 
           obj.status = false;
-          obj.reason = "Feature is not valid.";
+          obj.reason =  this.importTranslationData.featureinvalidReason;
         }
         else{
           featureArray[i] = featureArray[i].trim();
@@ -403,29 +410,37 @@ export class CommonImportComponent implements OnInit {
   }
 
   showRejectedPopup(rejectedPackageList){
-    let populateRejectedList=[]
-    for(var i in this.rejectedPackageList){
-      populateRejectedList.push(
-        {
-          "packageCode":this.rejectedPackageList[i]["code"],
-          "packageName": this.rejectedPackageList[i]["name"],
-          "packageDescription" :this.rejectedPackageList[i]["description"],
-          "packageType" : this.rejectedPackageList[i]["type"],
-          "packageStatus" :this.rejectedPackageList[i]["status"],
-          "packageFeature" :this.rejectedPackageList[i]["features"],
-          "returnMessage" :this.rejectedPackageList[i]["returnMessage"]
-        }
-      )
-    }
-      const dialogConfig = new MatDialogConfig();
-      dialogConfig.disableClose = true;
-      dialogConfig.autoFocus = true;
-      dialogConfig.data = {
-        tableData: populateRejectedList,
-        colsList: ['packageCode','packageName','packageDescription','packageType','packageStatus','packageFeature','returnMessage'],
-        colsName: ['Package Code','Package Name','Package Description','Package Type','Package Status','Package Feature','Fail Reason'],
-        tableTitle: 'Rejected Driver Details'
+    let populateRejectedList=[];
+    if(this.importFileComponent === 'package'){
+      for(var i in rejectedPackageList){
+        populateRejectedList.push(
+          {
+            "packageCode":this.rejectedPackageList[i]["code"],
+            "packageName": this.rejectedPackageList[i]["name"],
+            "packageDescription" :this.rejectedPackageList[i]["description"],
+            "packageType" : this.rejectedPackageList[i]["type"],
+            "packageStatus" :this.rejectedPackageList[i]["status"],
+            "packageFeature" :this.rejectedPackageList[i]["features"],
+            "returnMessage" :this.rejectedPackageList[i]["returnMessage"]
+          }
+        )
       }
-      this.driverDialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
+    }
+    this.displayPopup(populateRejectedList);
+    
+     
+  }
+
+  displayPopup(populateRejectedList){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      tableData: populateRejectedList,
+      colsList: this.tableColumnList,
+      colsName: this.tableColumnName,
+      tableTitle: this.tableTitle
+    }
+    this.driverDialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
   }
 }
