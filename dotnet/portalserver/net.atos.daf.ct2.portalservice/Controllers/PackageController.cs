@@ -82,7 +82,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                     else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
                     {
-                            await _auditHelper.AddLogs(DateTime.Now, DateTime.Now,  "Package Component",
+                             await _auditHelper.AddLogs(DateTime.Now, DateTime.Now,  "Package Component",
                                                "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                                "Create method in Package controller", 0, packageResponse.PackageId, JsonConvert.SerializeObject(request),
 
@@ -105,9 +105,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
 
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
+                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
                                              "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                             "Create method in Package controller", 0, 0, JsonConvert.SerializeObject(request),
+                                             "Create method in Package controller", 0, packageResponse.PackageId, JsonConvert.SerializeObject(request),
                                               Request);
                                               
                 _logger.LogError("Package Service:Create : " + ex.Message + " " + ex.StackTrace);
@@ -171,7 +171,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
                     {
                           await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
-                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                              "Update method in Package controller",request.Id, packageResponse.PackageId, JsonConvert.SerializeObject(request),
                                               Request);
 
@@ -194,10 +194,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
 
-                ////
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
-                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                             "Update method in Package controller", 0, packageResponse.PackageId, JsonConvert.SerializeObject(request),
+                
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
+                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                             "Update method in Package controller", request.Id, packageResponse.PackageId, JsonConvert.SerializeObject(request),
                                               Request);
 
                 _logger.LogError("Package Service:Update : " + ex.Message + " " + ex.StackTrace);
@@ -267,6 +267,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("delete")]
         public async Task<IActionResult> Delete(int packageId)
         {
+            var  packageRequest = new PackageDeleteRequest();
             try
             {
                 // Validation                 
@@ -274,18 +275,30 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Package id is required.");
                 }
-                var packageRequest = new PackageDeleteRequest();
+                 packageRequest = new PackageDeleteRequest();
                 packageRequest.Id = packageId;
                 var response = await _packageClient.DeleteAsync(packageRequest);
                 response.PackageDeleteRequest = packageRequest;
                 if (response != null && response.Code == Responsecode.Success)
-                    return Ok(response);
+                  {
+                      await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
+                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                             "Delete method in Package controller",packageRequest.Id, packageRequest.Id, JsonConvert.SerializeObject(packageId),
+                                              Request);
+                   
+                        return Ok(response);
+                  }    
                                   
                 else
                     return StatusCode(404, "Package not configured.");
             }
             catch (Exception ex)
             {
+                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
+                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                             "Delete method in Package controller",packageRequest.Id, packageRequest.Id, JsonConvert.SerializeObject(packageId),
+                                              Request);
+
                 _logger.LogError("Error in Package service:delete Package with exception - " + ex.Message + ex.StackTrace);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -319,6 +332,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     else if (packageResponse != null && packageResponse.Code == Responsecode.Success &&
                              packageResponse.PackageList != null && packageResponse.PackageList.Count > 0)
                     {
+                        await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
+                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                             "Import method in Package controller",0, 0, JsonConvert.SerializeObject(request),
+                                              Request);
 
                         return Ok(packageResponse);
                     }
@@ -340,6 +357,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
            }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
+                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                             "Import method in Package controller", 0, 0, JsonConvert.SerializeObject(request),
+                                              Request);
+
                 _logger.LogError("Package Service:Import : " + ex.Message + " " + ex.StackTrace);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -379,6 +401,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
+                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                             "UpdatePackageStatus method in Package controller", 0, 0, JsonConvert.SerializeObject(request),
+                                              Request);
+
                     return Ok(packageResponse);
                 }
                 else
@@ -388,6 +415,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
+                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                             "UpdatePackageStatus method in Package controller", 0, 0, JsonConvert.SerializeObject(request),
+                                              Request);
+
                 _logger.LogError("Package Service:Update : " + ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
