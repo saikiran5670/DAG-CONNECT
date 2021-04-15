@@ -107,7 +107,7 @@ export class AppComponent {
         dashboard: 'Dashboard'
       }
     },
-    livefleet : {
+    fleetoverview : {
       open: false,
       icon: "info",
       externalLink: false,
