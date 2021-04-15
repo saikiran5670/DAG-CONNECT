@@ -69,7 +69,7 @@ namespace net.atos.daf.ct2.relationship.test
         [TestMethod]
         public void GetRelationship_Manager()
         {
-            var relationship = new Relationship() { Id = 2 };
+            var relationship = new RelationshipFilter() { Id = 2 };
             var result = _relationshipManager.GetRelationship(relationship).Result;
             Assert.IsTrue(result != null);
         }

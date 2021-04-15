@@ -16,6 +16,9 @@ using net.atos.daf.ct2.translation.entity;
 using net.atos.daf.ct2.translationservice.Entity;
 using static net.atos.daf.ct2.translationservice.Entity.Mapper;
 using System.Collections;
+using net.atos.daf.ct2.termsandconditions.entity;
+using net.atos.daf.ct2.termsandconditions;
+using Google.Protobuf;
 
 namespace net.atos.daf.ct2.translationservice
 {
@@ -25,12 +28,14 @@ namespace net.atos.daf.ct2.translationservice
         //private readonly IAuditTraillib auditlog;
         private readonly ITranslationManager translationmanager;
         private readonly Mapper _mapper;
+        private readonly ITermsAndConditionsManager termsandconditionsmanager;
 
-        public TranslationManagementService(ILogger<TranslationManagementService> logger,ITranslationManager _TranslationManager)
+        public TranslationManagementService(ILogger<TranslationManagementService> logger,ITranslationManager _TranslationManager, ITermsAndConditionsManager _termsandconditionsmanager)
         {
             _logger = logger;
             translationmanager=_TranslationManager;
             // auditlog = _auditlog;
+            termsandconditionsmanager = _termsandconditionsmanager;
             _mapper = new Mapper();
         }
 
@@ -541,7 +546,7 @@ namespace net.atos.daf.ct2.translationservice
                 dtcWarning.AddRange(request.DtcData.Select(x => new DTCwarning()
                 {
                     code = x.Code,
-                    type = (translation.Enum.WarningType)x.Type,
+                    type = x.Type,
                     veh_type = x.VehType,
                     warning_class = x.WarningClass,
                     number = x.Number,
@@ -560,7 +565,7 @@ namespace net.atos.daf.ct2.translationservice
                                    {
                                        Id = x.id,
                                        Code = x.code,
-                                       Type = (WarningType)x.type,
+                                       Type = x.type,
                                        VehType = x.veh_type,
                                        WarningClass = x.warning_class,
                                        Number = x.number,
@@ -600,7 +605,7 @@ namespace net.atos.daf.ct2.translationservice
                     var WarnData = new dtcwarning();
                     WarnData.Id = item.id;
                     WarnData.Code = item.code;
-                    WarnData.Type = (WarningType)item.type;
+                    WarnData.Type = item.type;
                     WarnData.VehType = item.veh_type;
                     WarnData.WarningClass = item.warning_class;
                     WarnData.Number = item.number;
@@ -637,7 +642,7 @@ namespace net.atos.daf.ct2.translationservice
                 dtcWarning.AddRange(request.DtcData.Select(x => new DTCwarning()
                 {
                     code = x.Code,
-                    type = (translation.Enum.WarningType)x.Type,
+                    type = x.Type,
                     veh_type = x.VehType,
                     warning_class = x.WarningClass,
                     number = x.Number,
@@ -656,7 +661,7 @@ namespace net.atos.daf.ct2.translationservice
                                    {
                                        Id = x.id,
                                        Code = x.code,
-                                       Type = (WarningType)x.type,
+                                       Type = x.type,
                                        VehType = x.veh_type,
                                        WarningClass = x.warning_class,
                                        Number = x.number,
@@ -684,36 +689,133 @@ namespace net.atos.daf.ct2.translationservice
 
         }
 
-        //public async override Task<int> DeleteDTCWarningData(WarningDeleteRequest request, ServerCallContext context)
-        //{
-        //    try
-        //    {
-        //        var result = translationmanager.DeleteDTCWarningData(request).Result;
-        //        var response = new WarningDeleteResponse();
-        //        if (result)
-        //        {
-        //            response.Code = Responcecode.Success;
-        //            response.Message = "DTC code Deleted.";
-        //        }
-        //        else
-        //        {
-        //            response.Code = Responcecode.NotFound;
-        //            response.Message = "DTC code Not Found.";
-        //        }
+        #region Terms And Conditions
 
-        //        return Task.FromResult(response);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError("Error in translation DTC service:delete DTC code with exception - " + ex.Message + ex.StackTrace);
-        //        return await Task.FromResult(new WarningDeleteResponse
-        //        {
-        //            Code = Responcecode.Failed,
-        //            Message = "Package Deletion Faile due to - " + ex.Message,
+        public override async Task<AcceptedTermConditionResponse> AddUserAcceptedTermCondition(AcceptedTermConditionRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("AddUserAcceptedTermCondition method ");
+                AccountTermsCondition ObjAccountTermsCondition = new AccountTermsCondition();
 
-        //        });
-        //    }
-        //}
+                ObjAccountTermsCondition = _mapper.ToAcceptedTermConditionEntity(request);
+
+                var result = await termsandconditionsmanager.AddUserAcceptedTermCondition(ObjAccountTermsCondition);
+                _logger.LogInformation("AddUserAcceptedTermCondition service called.");
+                return await Task.FromResult(new AcceptedTermConditionResponse
+                {
+                    Message = "Terms and condition accepted by user",
+                    Code = Responcecode.Success,
+                    AcceptedTermCondition = _mapper.ToAcceptedTermConditionRequestEntity(result)
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Translation Service:AddUserAcceptedTermCondition : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new AcceptedTermConditionResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "AddUserAcceptedTermCondition Faile due to - " + ex.Message
+                });
+            }
+        }
+
+        public override async Task<VersionNoResponse> GetAllVersionNo(VersionNoRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("GetAllVersionNo method ");
+                var result = await termsandconditionsmanager.GetAllVersionNo();
+                _logger.LogInformation("GetAllVersionNo service called.");
+                VersionNoResponse response = new VersionNoResponse();
+                foreach (var item in result)
+                {
+                    response.VersionNos.Add(item);
+                }
+                response.Message = "All version retrived.";
+                response.Code = Responcecode.Success;
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Translation Service:GetAllVersionNo : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new VersionNoResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "GetAllVersionNo Failed due to - " + ex.Message
+                });
+            }
+        }
+
+        public override async Task<TermCondDetailsReponse> GetTermConditionForVersionNo(VersionNoRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("GetTermConditionForVersionNo method ");
+                var result = await termsandconditionsmanager.GetTermConditionForVersionNo(request.VersionNo,request.Languagecode);
+                _logger.LogInformation("GetTermConditionForVersionNo service called.");
+
+                TermCondDetailsReponse Response = new TermCondDetailsReponse();
+                foreach (var item in result)
+                {
+                    var tramcond = new TermConditionReponse();
+                    tramcond.Id = item.Id;                    
+                    tramcond.Code = item.Code;
+                    tramcond.Versionno = item.version_no;
+                    tramcond.Description = ByteString.CopyFrom(item.Description);
+                    tramcond.StartDate = item.StartDate.ToString();
+                    Response.TermCondition.Add(tramcond);
+                }
+                Response.Code = Responcecode.Success;
+                Response.Message = "Terms and condition details retrived for version no.";
+                return await Task.FromResult(Response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Translation Service:GetTermConditionForVersionNo : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new TermCondDetailsReponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "GetTermConditionForVersionNo Failed due to - " + ex.Message
+                });
+            }
+        }
+
+        public override async Task<TermCondDetailsReponse> GetAcceptedTermConditionByUser(UserAcceptedTermConditionRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("GetAcceptedTermConditionByUser method ");
+                var result = await termsandconditionsmanager.GetAcceptedTermConditionByUser(request.AccountId, request.OrganizationId);
+                _logger.LogInformation("GetAcceptedTermConditionByUser service called.");
+
+                TermCondDetailsReponse Response = new TermCondDetailsReponse();
+                foreach (var item in result)
+                {
+                    var tramcond = new TermConditionReponse();
+                    tramcond.Id = item.Id;
+                    tramcond.Code = item.Code;
+                    tramcond.Versionno = item.version_no;
+                    tramcond.Description = ByteString.CopyFrom(item.Description);
+                    tramcond.StartDate = item.StartDate.ToString();
+                    Response.TermCondition.Add(tramcond);
+                }
+                Response.Code = Responcecode.Success;
+                Response.Message = "Terms and condition details retrived for version no.";
+                return await Task.FromResult(Response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Translation Service:GetAcceptedTermConditionByUser : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new TermCondDetailsReponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "GetAcceptedTermConditionByUser Failed due to - " + ex.Message
+                });
+            }
+        }
+
+        #endregion
 
     }
 }
