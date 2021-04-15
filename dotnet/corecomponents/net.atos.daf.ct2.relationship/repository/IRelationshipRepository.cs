@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.relationship.repository
         Task<Relationship> CreateRelationship(Relationship relationship);
         Task<Relationship> UpdateRelationship(Relationship relationship);
         Task<bool> DeleteRelationship(int relationshipId);
-        Task<List<Relationship>> GetRelationship(Relationship filter);
+        Task<List<Relationship>> GetRelationship(RelationshipFilter filter);
         Task<RelationshipLevelCode> GetRelationshipLevelCode();
         Task<int> CreateRelationShipMapping(OrganizationRelationShip relationshipMapping);
         Task<int> EndRelationShipMapping(int OrgRelationId);

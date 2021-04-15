@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.package
         Task<List<Package>> Import(List<Package> packageList);
         Task<bool> Delete(int packageId);
 
-        Task<Package> UpdatePackageStatus(Package package);
+        Task<Package> UpdatePackageState(Package package);
 
 
         Task<int> Create(FeatureSet featureSet);// required clarification on return type

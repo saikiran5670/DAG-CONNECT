@@ -15,14 +15,39 @@ namespace net.atos.daf.ct2.termsandconditions
             termsAndConditionsRepository = _termsAndConditionsRepository;
         }
 
-        public Task<AccountTermsCondition> AddUserAcceptedTermCondition(AccountTermsCondition accountTermsCondition)
+        public async Task<AccountTermsCondition> AddUserAcceptedTermCondition(AccountTermsCondition accountTermsCondition)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await termsAndConditionsRepository.AddUserAcceptedTermCondition(accountTermsCondition);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
 
-        public Task<TermsAndConditions> GetAcceptedTermConditionByUser(int AccountId)
+        public async Task<List<TermsAndConditions>> GetAcceptedTermConditionByUser(int AccountId, int OrganizationId)
         {
-            throw new NotImplementedException();
+            return await termsAndConditionsRepository.GetAcceptedTermConditionByUser(AccountId, OrganizationId);
         }
+
+        public async Task<List<string>> GetAllVersionNo()
+        {
+            return await termsAndConditionsRepository.GetAllVersionNo();
+        }
+
+        public async Task<TermsAndConditions> GetLatestTermCondition(int AccountId, int OrganizationId)
+        {
+            return await termsAndConditionsRepository.GetLatestTermCondition(AccountId, OrganizationId);
+        }
+
+        public async Task<List<TermsAndConditions>> GetTermConditionForVersionNo(string VersionNo, string LanguageCode)
+        {
+            return await termsAndConditionsRepository.GetTermConditionForVersionNo(VersionNo,LanguageCode);
+        }
+
+
     }
 }

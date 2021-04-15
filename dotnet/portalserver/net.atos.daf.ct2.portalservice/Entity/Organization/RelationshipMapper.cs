@@ -16,7 +16,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
                 Code = request.Code,
                 Description = request.Description,
                 Featuresetid = request.FeaturesetId,
-                IsActive = request.IsActive,
+                State = request.State,
                 Level = request.Level,
                 Name = request.Name,
                 OrganizationId = request.OrganizationId
