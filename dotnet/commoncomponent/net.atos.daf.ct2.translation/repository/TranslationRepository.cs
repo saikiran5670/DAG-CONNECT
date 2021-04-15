@@ -41,6 +41,7 @@ namespace net.atos.daf.ct2.translation.repository
         public TranslationRepository(IDataAccess _dataAccess)
         {
             dataAccess = _dataAccess;
+            _translationCoreMapper = new TranslationCoreMapper();
         }
 
         public async Task<IEnumerable<Langauge>> GetAllLanguageCode()

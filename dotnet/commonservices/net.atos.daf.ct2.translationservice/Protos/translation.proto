@@ -299,7 +299,7 @@ message WarningDeleteResponse
      string message = 2;
      int32 id =3;
 }
-}
+
 
 message AcceptedTermConditionRequest{
   int32 Id =1;
