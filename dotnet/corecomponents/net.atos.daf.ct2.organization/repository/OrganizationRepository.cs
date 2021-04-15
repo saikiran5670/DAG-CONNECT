@@ -987,41 +987,25 @@ namespace net.atos.daf.ct2.organization.repository
             }
         }
 
-        //public async Task<List<Organization>> GetAllOrganizations()
-        //{
-        //    log.Info("GetAllOrganizations method called in repository");
-        //    try
-        //    {
-        //        var parameter = new DynamicParameters();
-        //        var query = @"Select distinct om.owner_org_id id,o.name from master.organization o
-        //                       left join master.orgrelationshipmapping om on om.target_org_id=o.id
-        //                        where o.state='A'";
 
-        //        var OrganizationDetails = await dataAccess.QueryAsync<dynamic>(query, parameter);
-        //       // var objOrganization = new Organization();
-        //        List<Organization> lstOrganization = new List<Organization>();
-        //        // lstOrganization.Add()
-
-        //        foreach (Organization organization in OrganizationDetails)
-        //        {
-        //            lstOrganization.Add(organization);
-        //        }
-
-        //        return OrganizationList;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        log.Info("GetAllOrganizations method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
-        //        log.Error(ex.ToString());
-        //        throw ex;
-        //    }
-        //}
-        private Organization MapOrgDetails(dynamic record)
+       public async Task<IEnumerable<Organization>> GetAllOrganizations(int OrganizationID)
         {
-            var orgResponse = new Organization();
-            orgResponse.Id = record.id;            
-            orgResponse.Name = record.name;           
-            return orgResponse;
-        }
+            log.Info("GetAllOrganizations method called in repository");
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", OrganizationID);
+                var query = @"Select distinct om.owner_org_id id,o.name from master.organization o
+                               left join master.orgrelationshipmapping om on om.target_org_id=o.id
+                                where o.id=@id and o.state='A'";
+                return await dataAccess.QueryAsync<Organization>(query, parameter);
+            }
+            catch (Exception ex)
+            {
+                log.Info("GetAllOrganizations method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }        
     }
 }

@@ -640,5 +640,28 @@ namespace net.atos.daf.ct2.organizationservice
                 });
             }
         }
+
+        public override async Task<ListOfOrganization> GetOrganizations(IdRequest request, ServerCallContext context)
+        {
+            net.atos.daf.ct2.organization.entity.Organization organization = new net.atos.daf.ct2.organization.entity.Organization();
+            ListOfOrganization response = new ListOfOrganization();
+            _logger.LogInformation("GetAllOrganizations .");
+            var result = await organizationtmanager.GetAllOrganizations(request.Id);           
+            if (result.Count() > 0)
+            {
+                foreach (net.atos.daf.ct2.organization.entity.Organization entity in result)
+                {
+                    response.Organizations.Add(_mapper.ToListOfOrganizationResponse(entity));
+                }
+                response.Code = Responcecode.Success;
+                response.Message = "Get";
+            }
+            else
+            {
+                response.Code = Responcecode.NotFound;
+                response.Message = "Organization not found.";
+            }
+            return await Task.FromResult(response);            
+        }
     }
 }
