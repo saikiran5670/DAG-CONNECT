@@ -145,5 +145,43 @@ namespace net.atos.daf.ct2.translation
                 throw ex;
             }
         }
+
+        public async Task<List<DTCwarning>> ImportDTCWarningData(List<DTCwarning> dtcwarningList)
+        {
+             try
+            {
+                var result = await Translationrepository.ImportDTCWarningData(dtcwarningList);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<DTCwarning>> GetDTCWarningData(string LanguageCode)
+        {
+            try
+            {
+                var result = await Translationrepository.GetDTCWarningData(LanguageCode);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<List<DTCwarning>> UpdateDTCWarningData(List<DTCwarning> dtcwarningList)
+        {
+            var result = await Translationrepository.UpdateDTCWarningData(dtcwarningList);
+            return result;
+        }
+
+        //public async Task<int> DeleteDTCWarningData(int id)
+        //{
+        //    var result = await Translationrepository.DeleteDTCWarningData(id);
+        //    return result;
+        //}
     }
 }

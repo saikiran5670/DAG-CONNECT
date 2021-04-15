@@ -16,6 +16,7 @@ using static net.atos.daf.ct2.translation.Enum.translationenum;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Transactions;
+using net.atos.daf.ct2.translation.Enum;
 
 namespace net.atos.daf.ct2.translation.repository
 {
@@ -265,7 +266,7 @@ namespace net.atos.daf.ct2.translation.repository
             Entity.Name = record.name;
             Entity.Value = record.value;
             Entity.Filter = record.filter;
-           // Entity.MenuId = record.MenuId;
+            // Entity.MenuId = record.MenuId;
             return Entity;
         }
 
@@ -401,7 +402,7 @@ namespace net.atos.daf.ct2.translation.repository
 
         }
 
-        public async Task<translationStatus> InsertTranslationFileData(Translations translationdata,List<Translations> TranslationsList)
+        public async Task<translationStatus> InsertTranslationFileData(Translations translationdata, List<Translations> TranslationsList)
         {
             try
             {
@@ -409,10 +410,10 @@ namespace net.atos.daf.ct2.translation.repository
                 var parameter = new DynamicParameters();
                 string query = string.Empty;
                 //TranslationsList = GetAllTranslations(translationdata.Name, translationdata.Code);
-                
+
                 var translationcodeList = TranslationsList.Where(I => I.Name == translationdata.Name).ToList();
 
-                
+
                 if (translationcodeList != null && translationcodeList.Count > 0)
                 {
                     var type = translationcodeList.FirstOrDefault().Type;
@@ -422,7 +423,7 @@ namespace net.atos.daf.ct2.translation.repository
                         parameter = new DynamicParameters();
                         parameter.Add("@id", translationobjdata.Id);
                         parameter.Add("@Code", translationobjdata.Code);
-                        parameter.Add("@Type", type == null ? "L":type);
+                        parameter.Add("@Type", type == null ? "L" : type);
                         parameter.Add("@Name", translationobjdata.Name);
                         parameter.Add("@Value", translationobjdata.Value);
                         //parameter.Add("@Created_at", translationdata.created_at);
@@ -452,9 +453,9 @@ namespace net.atos.daf.ct2.translation.repository
                 {
                     return translationStatus.Failed;
                 }
-                
 
-               
+
+
 
             }
             catch (Exception ex)
@@ -535,9 +536,291 @@ namespace net.atos.daf.ct2.translation.repository
 
                 Entity.updated_count = 0; ;
             }
-            
+
             Entity.created_by = record.created_by;
             return Entity;
         }
+
+        public async Task<List<DTCwarning>> ImportDTCWarningData(List<DTCwarning> dtcwarningList)
+        {
+            try
+            {
+                var dtcwarningLists = new List<DTCwarning>();
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+
+                    foreach (DTCwarning item in dtcwarningList)
+                    {
+                        // If warning data is already exist then update specific record 
+                        int WarningId = CheckDtcWarningClassExist(item.warning_class, item.number);
+                        var iconID = GetIcocIDFromIcon(item.warning_class, item.number);
+
+                        if (WarningId == 0)
+                        {
+                            // Insert
+
+                            //DTCwarning dtcwarning = new DTCwarning();
+                            var InsertWarningDataQueryStatement = @"INSERT INTO master.dtcwarning(
+                                                              code, type, veh_type, class, number, description, advice, expires_at, icon_id, created_at, created_by)
+                                                          VALUES(@code, @type, @veh_type, @class, @number, @description, @advice, @expires_at, @icon_id, @created_at, @created_by)
+                                                             RETURNING id";
+
+                            var parameter = new DynamicParameters();
+                            parameter.Add("@code", item.code);
+                            parameter.Add("@type", item.type == 0 ? WarningType.DTC : WarningType.DM);
+                            parameter.Add("@veh_type", item.veh_type);
+                            parameter.Add("@class", item.warning_class);
+                            parameter.Add("@number", item.number);
+                            parameter.Add("@description", item.description);
+                            parameter.Add("@advice", item.advice);
+                            parameter.Add("@expires_at", item.expires_at);
+                            parameter.Add("@icon_id", iconID);
+                            parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                            parameter.Add("@created_by", item.created_by);
+
+
+                            int InsertedDTCUploadID = await dataAccess.ExecuteScalarAsync<int>(InsertWarningDataQueryStatement, parameter);
+                            if (InsertedDTCUploadID > 0)
+                            {
+                                item.id = InsertedDTCUploadID;
+                                dtcwarningLists.Add(item);
+                            }
+                        }
+                        else
+                        {
+                            //Update
+
+                            
+                            var UpdateWarningDataQueryStatement = @"UPDATE master.dtcwarning
+                                                              SET code=@code, 
+                                                                  type=@type, 
+                                                                  veh_type=@veh_type,
+                                                                  class=@class,
+                                                                  number=@number, 
+                                                                  description=@description, 
+                                                                  advice=@advice,
+                                                                  expires_at=@expires_at,
+                                                                  icon_id=@icon_id,
+                                                                  modified_at=@modified_at,
+                                                                  modified_by=@modified_by
+                                                           WHERE code = @code and number = @number ";
+
+                            var parameter = new DynamicParameters();
+                            parameter.Add("@code", item.code);
+                            parameter.Add("@type", item.type == 0 ? WarningType.DTC : WarningType.DM);
+                            parameter.Add("@veh_type", item.veh_type);
+                            parameter.Add("@class", item.warning_class);
+                            parameter.Add("@number", item.number);
+                            parameter.Add("@description", item.description);
+                            parameter.Add("@advice", item.advice);
+                            parameter.Add("@expires_at", item.expires_at);
+                            parameter.Add("@icon_id", iconID);
+                            parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                            parameter.Add("@modified_by", item.modify_by);
+
+                            int UpdateDTCUploadID = await dataAccess.ExecuteScalarAsync<int>(UpdateWarningDataQueryStatement, parameter);
+                            if (UpdateDTCUploadID > 0)
+                            {
+                                item.id = UpdateDTCUploadID;
+                                dtcwarningLists.Add(item);
+                            }
+
+                        }
+
+                    }
+                    transactionScope.Complete();
+                }
+                return dtcwarningLists;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public int GetIcocIDFromIcon(int WarningClass, int Number)
+        {
+            try
+            {
+                var QueryStatement = @" select id from master.icon
+                                   where warning_class = @class AND warning_number= @number
+                                     ";
+                var parameter = new DynamicParameters();
+                parameter.Add("@class", WarningClass);
+                parameter.Add("@number", Number);
+                int iconID = dataAccess.ExecuteScalar<int>(QueryStatement, parameter);
+                return iconID;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+
+        }
+
+        public async Task<IEnumerable<DTCwarning>> GetDTCWarningData(string LanguageCode)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                List<DTCwarning> dtcWarninglist = new List<DTCwarning>();
+                string GetDTCWarningDataQueryStatement = string.Empty;
+
+                parameter.Add("@LanguageCode", LanguageCode);
+                GetDTCWarningDataQueryStatement = @"SELECT id, code, type, veh_type, class, number, description, advice, expires_at,icon_id, created_at, created_by, modified_at, modified_by
+                                                                FROM master.dtcwarning
+                                                                  where 1=1";
+                GetDTCWarningDataQueryStatement = GetDTCWarningDataQueryStatement + " and code=@LanguageCode";
+
+
+                dynamic result = await dataAccess.QueryAsync<dynamic>(GetDTCWarningDataQueryStatement, parameter);
+                foreach (dynamic record in result)
+                {
+                    dtcWarninglist.Add(MapWarningDetails(record));
+                }
+
+                return dtcWarninglist;
+
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+        private DTCwarning MapWarningDetails(dynamic record)
+        {
+            DTCwarning Entity = new DTCwarning();
+            Entity.id = record.id;
+            Entity.code = record.code;
+            Entity.type = record.type;
+            Entity.veh_type = record.veh_type;
+            Entity.warning_class = record.warning_class;
+            Entity.number = record.number;
+            Entity.description = record.description;
+            Entity.advice = record.advice;
+            Entity.expires_at = record.expires_at;
+            Entity.icon_id = record.icon_id;
+            Entity.created_at = record.created_at;
+            Entity.created_by = record.created_by;
+            return Entity;
+        }
+
+        public int CheckDtcWarningClassExist(int WarningClass, int WarningNumber)
+        {
+            var QueryStatement = @"select id 
+                                    from master.dtcwarning
+                                   where class=@class and number=@number";
+            var parameter = new DynamicParameters();
+
+            parameter.Add("@class", WarningClass);
+            parameter.Add("@number", WarningNumber);
+
+            int resultWarningId = dataAccess.ExecuteScalar<int>(QueryStatement, parameter);
+            return resultWarningId;
+
+        }
+
+        public async Task<List<DTCwarning>> UpdateDTCWarningData(List<DTCwarning> dtcwarningList)
+        {
+            try
+            {
+                var dtcwarningLists = new List<DTCwarning>();
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+
+                    foreach (DTCwarning item in dtcwarningList)
+                    {
+                        // If warning data is already exist then update specific record 
+                        int WarningId = CheckDtcWarningClassExist(item.warning_class, item.number);
+                        // Get Icon id from Icon table
+                        var iconID = GetIcocIDFromIcon(item.warning_class, item.number);
+
+                        if (WarningId > 0)
+                        {
+                            // Update
+
+                            var UpdateWarningDataQueryStatement = @"UPDATE master.dtcwarning
+                                                              SET code=@code, 
+                                                                  type=@type, 
+                                                                  veh_type=@veh_type,
+                                                                  class=@class,
+                                                                  number=@number, 
+                                                                  description=@description, 
+                                                                  advice=@advice,
+                                                                  expires_at=@expires_at,
+                                                                  icon_id=@icon_id,
+                                                                  modified_at=@modified_at,
+                                                                  modified_by=@modified_by
+                                                           WHERE code = @code and number = @number ";
+
+                            var parameter = new DynamicParameters();
+                            parameter.Add("@code", item.code);
+                            parameter.Add("@type", item.type == 0 ? WarningType.DTC : WarningType.DM);
+                            parameter.Add("@veh_type", item.veh_type);
+                            parameter.Add("@class", item.warning_class);
+                            parameter.Add("@number", item.number);
+                            parameter.Add("@description", item.description);
+                            parameter.Add("@advice", item.advice);
+                            parameter.Add("@expires_at", item.expires_at);
+                            parameter.Add("@icon_id", iconID);
+                            parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                            parameter.Add("@modified_by", item.modify_by);
+
+                            int UpdateDTCUploadID = await dataAccess.ExecuteScalarAsync<int>(UpdateWarningDataQueryStatement, parameter);
+                            if (UpdateDTCUploadID > 0)
+                            {
+                                item.id = UpdateDTCUploadID;
+                                dtcwarningLists.Add(item);
+                            }
+
+                        }
+                    }
+                    
+                    transactionScope.Complete();
+                }
+                return dtcwarningLists;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<int> DeleteDTCWarningData(int id)
+        {
+            try
+            {
+                var dtcwarningLists = new List<DTCwarning>();
+                int DeleteDTCID=0;
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                        if (id != 0)
+                        {
+                            // Delete
+
+                            var UpdateWarningDataQueryStatement = @"DELETE FROM master.dtcwarning
+                                                                   WHERE id = @id ";
+
+                            var parameter = new DynamicParameters();
+                            parameter.Add("@id", id);
+
+                            DeleteDTCID = await dataAccess.ExecuteScalarAsync<int>(UpdateWarningDataQueryStatement, parameter);
+
+                        }
+                    
+
+                    transactionScope.Complete();
+                }
+                return DeleteDTCID;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 }

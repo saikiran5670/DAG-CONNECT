@@ -44,8 +44,10 @@ namespace net.atos.daf.ct2.accountservice
             }));
 
             var connectionString = Configuration.GetConnectionString("ConnectionString");
+            var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
-            // Identity configuration
+            IDataMartDataAccess dataMartdataAccess = new PgSQLDataMartDataAccess(DataMartconnectionString);
+            services.AddSingleton(dataMartdataAccess);
             services.AddSingleton(dataAccess);
             services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
 
