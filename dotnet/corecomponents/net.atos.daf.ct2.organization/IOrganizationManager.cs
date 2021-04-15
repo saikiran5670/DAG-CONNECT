@@ -20,5 +20,6 @@ namespace net.atos.daf.ct2.organization
 
         Task<List<OrganizationNameandID>> Get(OrganizationByID objOrganizationByID);
         Task<int> IsOwnerRelationshipExist(int VehicleID);
+        Task<IEnumerable<Organization>> GetAllOrganizations(int OrganizationID);
     }
 }

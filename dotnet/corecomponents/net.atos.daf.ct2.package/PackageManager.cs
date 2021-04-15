@@ -52,9 +52,9 @@ namespace net.atos.daf.ct2.package
             return await _featureManager.GetFeatureSet(featureSetId, state);
         }
 
-        public async Task<Package> UpdatePackageStatus(Package package)
+        public async Task<Package> UpdatePackageState(Package package)
         {
-            return await _packageRepository.UpdatePackageStatus(package);
+            return await _packageRepository.UpdatePackageState(package);
         }
     }
 }

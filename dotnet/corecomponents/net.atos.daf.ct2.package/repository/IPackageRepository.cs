@@ -14,6 +14,6 @@ namespace net.atos.daf.ct2.package.repository
 
 
         Task<List<Package>> Import(List<Package> packageList);
-        Task<Package> UpdatePackageStatus(Package package);
+        Task<Package> UpdatePackageState(Package package);
     }
 }
