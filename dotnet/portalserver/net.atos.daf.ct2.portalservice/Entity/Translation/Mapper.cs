@@ -91,6 +91,18 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
 
         }
 
+        public AcceptedTermConditionRequest ToAcceptedTermConditionRequestEntity(AccountTermsCondition request)
+        {
+            AcceptedTermConditionRequest acceptedTermConditionRequest = new AcceptedTermConditionRequest();
+            acceptedTermConditionRequest.Id = request.Id;
+            acceptedTermConditionRequest.AccountId = request.Account_Id;
+            acceptedTermConditionRequest.OrganizationId = request.Organization_Id;
+            acceptedTermConditionRequest.VersionNo = request.version_no;
+            acceptedTermConditionRequest.TermsAndConditionId = request.Terms_And_Condition_Id;
+            return acceptedTermConditionRequest;
+        }
+
+   
 
     }
 }

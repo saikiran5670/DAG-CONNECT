@@ -132,7 +132,7 @@ message RelationshipGetRequest{
     string code=6;
     repeated int32 featureIds=7;    
     int32 featuresetid =8; 
-    bool isActive=9;
+    string state=9;
     int64 CreatedAt=10;
 }
 message RelationshipGetResponse{
@@ -149,7 +149,7 @@ message RelationshipCreateRequest{
     string code=6;
     repeated int32 featureIds=7;
     int32 featuresetid =8; 
-    bool isActive=9;
+    string state=9;
     int64 CreatedAt=10;
 }
 

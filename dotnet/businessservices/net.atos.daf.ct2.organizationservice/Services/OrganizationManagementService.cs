@@ -92,7 +92,7 @@ namespace net.atos.daf.ct2.organizationservice
                 relationship.Level = request.Level;
                 relationship.FeaturesetId = request.Featuresetid;
                 relationship.Description = request.Description;
-                relationship.IsActive = request.IsActive;
+                relationship.State = request.State;
 
                 relationship = await _relationshipManager.CreateRelationship(relationship);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Relationship Component", "Relationship Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Create", 1, 2, relationship.Id.ToString());
@@ -127,7 +127,7 @@ namespace net.atos.daf.ct2.organizationservice
                 relationship.Level = request.Level;
                 relationship.FeaturesetId = request.Featuresetid;
                 relationship.Description = request.Description;
-                relationship.IsActive = request.IsActive;
+                relationship.State = request.State;
 
                 relationship = await _relationshipManager.UpdateRelationship(relationship);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Relationship Component", "Organization Relationship Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Updated", 1, 2, relationship.Id.ToString());
@@ -155,15 +155,15 @@ namespace net.atos.daf.ct2.organizationservice
             try
             {
                 var response = new RelationshipGetResponse();
-                var relationshipFilter = new Relationship();
+                var relationshipFilter = new RelationshipFilter();
                 relationshipFilter.Id = request.Id;
                 relationshipFilter.OrganizationId = request.OrganizationId;
                 relationshipFilter.Code = request.Code;
                 relationshipFilter.FeaturesetId = request.Featuresetid;
                 relationshipFilter.Level = request.Level;
-                relationshipFilter.Name = request.Name;
-                relationshipFilter.Description = request.Description;
-                relationshipFilter.IsActive = request.IsActive;
+                //relationshipFilter.Name = request.Name;
+                //relationshipFilter.Description = request.Description;
+                //relationshipFilter.State = request.State;
                 var orgRelationships = _relationshipManager.GetRelationship(relationshipFilter).Result;
                 response.RelationshipList.AddRange(orgRelationships
                                      .Select(x => new RelationshipGetRequest()
@@ -175,7 +175,7 @@ namespace net.atos.daf.ct2.organizationservice
                                          Name = x.Name,
                                          Featuresetid = x.FeaturesetId,
                                          Level = x.Level,
-                                         IsActive = x.IsActive,
+                                         State = x.State,
                                          CreatedAt = x.CreatedAt
 
                                      }).ToList());

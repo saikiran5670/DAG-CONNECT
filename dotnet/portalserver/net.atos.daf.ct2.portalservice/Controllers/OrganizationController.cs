@@ -175,11 +175,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("relationship/get")]
-        public async Task<IActionResult> GetRelationship([FromQuery] RelationshipCreateRequest request)
+        public async Task<IActionResult> GetRelationship([FromQuery] RelationshipFilter filterRequest)
         {
             try
             {
                 logger.LogInformation("Organization relationship get function called ");
+
+
+                var request = new RelationshipCreateRequest()
+                {
+                    Id = filterRequest.Id,
+                    Featuresetid = filterRequest.FeaturesetId,
+                    OrganizationId = filterRequest.OrganizationId,
+                    Level = filterRequest.Level,
+                    Code = filterRequest.Code == null ? string.Empty : filterRequest.Code
+                };
                 var orgResponse = await organizationClient.GetRelationshipAsync(request);
                 orgResponse.RelationshipList.Where(S => S.Featuresetid > 0)
                                                .Select(S => { S.FeatureIds.AddRange(_featureSetMapper.GetFeatureIds(S.Featuresetid).Result); return S; }).ToList();
@@ -680,7 +690,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Select atleast 1 organization");
                 }
-              
+
                 var UpdateResponce = await organizationClient.AllowChainingAsync(request);
                 if (UpdateResponce.Code == OrganizationBusinessService.Responcecode.Success)
                 {
@@ -725,14 +735,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 VehicleBusinessService.OrganizationIdRequest OrganizationIdRequest = new VehicleBusinessService.OrganizationIdRequest();
                 OrganizationIdRequest.OrganizationId = Convert.ToInt32(OrganizationId);
                 VehicleBusinessService.OrgVehicleGroupListResponse Vehicleresponse = await _vehicleClient.GetOrganizationVehicleGroupdetailsAsync(OrganizationIdRequest);
-               
-                
+
+
                 //get Organizations List
                 var idRequest = new IdRequest();
                 idRequest.Id = 0;
                 var OrganizationList = await organizationClient.GetAllAsync(idRequest);
-               
-                
+
+
                 // Get Relations
                 RelationshipCreateRequest request = new RelationshipCreateRequest();
                 var RelationList = await organizationClient.GetRelationshipAsync(request);
@@ -743,16 +753,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 details.VehicleGroup = new List<VehileGroupData>();
                 details.OrganizationData = new List<OrganizationData>();
                 details.RelationShipData = new List<RelationshipData>();
-                foreach (var item in Vehicleresponse.OrgVehicleGroupList.Where(I=> I.IsGroup == true))
+                foreach (var item in Vehicleresponse.OrgVehicleGroupList.Where(I => I.IsGroup == true))
                 {
-                    
+
                     details.VehicleGroup.Add(new VehileGroupData
-                        { VehiclegroupID = Convert.ToInt32(item.VehicleGroupId == null ? 0 : item.VehicleGroupId),
-                            GroupName=item.VehicleGroupName});
+                    {
+                        VehiclegroupID = Convert.ToInt32(item.VehicleGroupId == null ? 0 : item.VehicleGroupId),
+                        GroupName = item.VehicleGroupName
+                    });
                 }
                 foreach (var item in OrganizationList.OrganizationList)
                 {
-                    
+
                     details.OrganizationData.Add(new OrganizationData
                     {
                         OrganizationId = Convert.ToInt32(item.Id),
@@ -763,7 +775,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 int OEMRelationship = Convert.ToInt32(Configuration.GetSection("DefaultSettings").GetSection("OEMRelationship").Value);
                 foreach (var item in RelationList.RelationshipList)
                 {
-                    
+
                     if (item.Id != OwnerRelationship && item.Id != OEMRelationship)
                     {
                         details.RelationShipData.Add(new RelationshipData
@@ -772,7 +784,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             RelationName = item.Name
                         });
                     }
-                    
+
                 }
                 return Ok(details);
 
