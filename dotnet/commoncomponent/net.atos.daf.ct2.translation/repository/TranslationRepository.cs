@@ -23,6 +23,7 @@ namespace net.atos.daf.ct2.translation.repository
     public class TranslationRepository : ITranslationRepository
     {
         private readonly IConfiguration _config;
+        private readonly TranslationCoreMapper _translationCoreMapper;
 
         //     private readonly IDataAccess dataAccess;
 
@@ -40,6 +41,7 @@ namespace net.atos.daf.ct2.translation.repository
         public TranslationRepository(IDataAccess _dataAccess)
         {
             dataAccess = _dataAccess;
+            _translationCoreMapper = new TranslationCoreMapper();
         }
 
         public async Task<IEnumerable<Langauge>> GetAllLanguageCode()
@@ -567,7 +569,7 @@ namespace net.atos.daf.ct2.translation.repository
 
                             var parameter = new DynamicParameters();
                             parameter.Add("@code", item.code);
-                            parameter.Add("@type", item.type == 0 ? WarningType.DTC : WarningType.DM);
+                            parameter.Add("@type", item.type );
                             parameter.Add("@veh_type", item.veh_type);
                             parameter.Add("@class", item.warning_class);
                             parameter.Add("@number", item.number);
@@ -607,7 +609,8 @@ namespace net.atos.daf.ct2.translation.repository
 
                             var parameter = new DynamicParameters();
                             parameter.Add("@code", item.code);
-                            parameter.Add("@type", item.type == 0 ? WarningType.DTC : WarningType.DM);
+                            parameter.Add("@type", item.type );
+                            //parameter.Add("@type", (char)_packageCoreMapper.ToPackageType(filter.Type), DbType.AnsiStringFixedLength, ParameterDirection.Input, 1)
                             parameter.Add("@veh_type", item.veh_type);
                             parameter.Add("@class", item.warning_class);
                             parameter.Add("@number", item.number);
@@ -677,7 +680,7 @@ namespace net.atos.daf.ct2.translation.repository
                 dynamic result = await dataAccess.QueryAsync<dynamic>(GetDTCWarningDataQueryStatement, parameter);
                 foreach (dynamic record in result)
                 {
-                    dtcWarninglist.Add(MapWarningDetails(record));
+                    dtcWarninglist.Add(_translationCoreMapper.MapCharToDTCType(record));
                 }
 
                 return dtcWarninglist;
@@ -690,23 +693,7 @@ namespace net.atos.daf.ct2.translation.repository
             }
 
         }
-        private DTCwarning MapWarningDetails(dynamic record)
-        {
-            DTCwarning Entity = new DTCwarning();
-            Entity.id = record.id;
-            Entity.code = record.code;
-            Entity.type = record.type;
-            Entity.veh_type = record.veh_type;
-            Entity.warning_class = record.warning_class;
-            Entity.number = record.number;
-            Entity.description = record.description;
-            Entity.advice = record.advice;
-            Entity.expires_at = record.expires_at;
-            Entity.icon_id = record.icon_id;
-            Entity.created_at = record.created_at;
-            Entity.created_by = record.created_by;
-            return Entity;
-        }
+       
 
         public int CheckDtcWarningClassExist(int WarningClass, int WarningNumber)
         {
@@ -758,7 +745,7 @@ namespace net.atos.daf.ct2.translation.repository
 
                             var parameter = new DynamicParameters();
                             parameter.Add("@code", item.code);
-                            parameter.Add("@type", item.type == 0 ? WarningType.DTC : WarningType.DM);
+                            parameter.Add("@type", item.type );
                             parameter.Add("@veh_type", item.veh_type);
                             parameter.Add("@class", item.warning_class);
                             parameter.Add("@number", item.number);

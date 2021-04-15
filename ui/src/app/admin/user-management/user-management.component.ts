@@ -264,15 +264,15 @@ export class UserManagementComponent implements OnInit {
         else{
           this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((data: any) => {
             this.selectedPreference = {
-              languageId: data.organizationPreference.language,
-              timezoneId: data.organizationPreference.timezone,
-              unitId: data.organizationPreference.unit,
-              currencyId: data.organizationPreference.currency,
-              dateFormatTypeId: data.organizationPreference.dateFormat,
-              timeFormatId: data.organizationPreference.timeFormat,
-              vehicleDisplayId: data.organizationPreference.vehicleDisplay,
+              languageId: data.language,
+              timezoneId: data.timezone,
+              unitId: data.unit,
+              currencyId: data.currency,
+              dateFormatTypeId: data.dateFormat,
+              timeFormatId: data.timeFormat,
+              vehicleDisplayId: data.vehicleDisplay,
               landingPageDisplayId: this.defaultSetting.landingPageDisplayDropdownData[0].id
-              //landingPageDisplayId: data.organizationPreference.landingPageDisplay
+              //landingPageDisplayId: data.landingPageDisplay
             };
             this.goForword(type);
           });
