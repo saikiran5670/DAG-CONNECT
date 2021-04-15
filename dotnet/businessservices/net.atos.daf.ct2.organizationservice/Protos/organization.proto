@@ -14,6 +14,8 @@ service OrganizationService {
   rpc Get (IdRequest) returns (OrganizationGetData); 
   rpc GetOrganizationDetails (IdRequest) returns (OrgDetailResponse); 
   rpc GetAll(IdRequest)returns(GetAllOrgResponse);
+  rpc GetOrganizations(IdRequest)returns(OrganizationList);
+  
 
   // Account Preference Mthod
   rpc CreatePreference (AccountPreference) returns (AccountPreferenceResponse);
@@ -308,3 +310,13 @@ message OrganizationGetData {
     google.protobuf.StringValue DateFormat =16;
     google.protobuf.StringValue TimeFormat=17;   
 }
+
+message OrganizationList {
+  Responcecode Code=0;
+  string Message = 1;
+  repeated Organization Organizations = 2;
+}
+message Organization{
+    int32 organizationId=0;
+    google.protobuf.StringValue OrganizationName = 1; 
+    }
