@@ -178,6 +178,14 @@ export class CommonImportComponent implements OnInit {
             if(!codeFlag){
               item.returnMessage = objData.reason;
             }
+            if(validData.length > 0){
+              for(var i in validData){
+                if(validData[i]["code"] === value){
+                  codeFlag = false;
+                  item.returnMessage = "Duplicate Package Code"
+                }
+              }
+            }
             break;
           }
           case 'features':{
@@ -273,7 +281,7 @@ export class CommonImportComponent implements OnInit {
         (err)=>{
           this.showImportStatus = true;
 
-          if(err.status === 500){
+          if(err.status === 409){
             this.rejectedPackageList = this.rejectedPackageList + this.importedPackagesCount;
             this.importedPackagesCount = 0
             this.packageCodeError = true;
