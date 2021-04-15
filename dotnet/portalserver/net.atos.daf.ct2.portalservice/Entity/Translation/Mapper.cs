@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
                     var dtcRequest = new dtcwarning()
                     {
                         Code = x.code,
-                        Type = (translationservice.WarningType)x.type,
+                        Type = x.type,
                         VehType = x.veh_type,
                         WarningClass = x.warning_class,
                         Number = x.number,
