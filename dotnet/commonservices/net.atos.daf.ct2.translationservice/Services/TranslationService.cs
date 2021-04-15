@@ -560,21 +560,21 @@ namespace net.atos.daf.ct2.translationservice
                 var DTCData = await translationmanager.ImportDTCWarningData(dtcWarning);
                
 
-                response.DtcDataResponse.AddRange(DTCData
-                                   .Select(x => new dtcwarning()
-                                   {
-                                       Id = x.id,
-                                       Code = x.code,
-                                       Type = x.type,
-                                       VehType = x.veh_type,
-                                       WarningClass = x.warning_class,
-                                       Number = x.number,
-                                       Description = x.description,
-                                       Advice = x.advice,
-                                       IconId = x.icon_id,
-                                       ExpiresAt = x.expires_at,
-                                       CreatedBy =x.created_by
-                                   }).ToList());
+                //response.DtcDataResponse.AddRange(DTCData
+                //                   .Select(x => new dtcwarning()
+                //                   {
+                //                       Id = x.id,
+                //                       Code = x.code,
+                //                       Type = x.type,
+                //                       VehType = x.veh_type,
+                //                       WarningClass = x.warning_class,
+                //                       Number = x.number,
+                //                       Description = x.description,
+                //                       Advice = x.advice,
+                //                       IconId = x.icon_id,
+                //                       ExpiresAt = x.expires_at,
+                //                       CreatedBy =x.created_by
+                //                   }).ToList());
 
                 response.Code = Responcecode.Success;
                 response.Message = "DTC warning Data imported successfully.";
@@ -605,7 +605,7 @@ namespace net.atos.daf.ct2.translationservice
                     var WarnData = new dtcwarning();
                     WarnData.Id = item.id;
                     WarnData.Code = item.code;
-                    WarnData.Type = item.type;
+                    WarnData.Type = item.Warning_type;
                     WarnData.VehType = item.veh_type;
                     WarnData.WarningClass = item.warning_class;
                     WarnData.Number = item.number;

@@ -420,7 +420,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPost]
         [Route("ImportdtcWarning")]
-        // [AllowAnonymous]
+         [AllowAnonymous]
         public async Task<IActionResult> ImportDTCWarningData(DTCWarningImportRequest request)
         {
             try
@@ -439,20 +439,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         return StatusCode(500, "There is an error importing  dtc Warning Data..");
                     }
-                    else if (DTCResponse != null && DTCResponse.Code == Responcecode.Success &&
-                             DTCResponse.DtcDataResponse != null && DTCResponse.DtcDataResponse.Count > 0)
+                    else if (DTCResponse != null && DTCResponse.Code == Responcecode.Success )
                     {
-
                         return Ok(DTCResponse);
                     }
                     else
                     {
-                        if (DTCResponse.DtcDataResponse.Count == 0)
-                            return StatusCode(500, "Warning code already exists");
-                        else
-                        {
                             return StatusCode(500, "Warning response is null");
-                        }
                     }
                
             }
@@ -470,13 +463,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("getdtcWarningDetails")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetDTCWarningData([FromQuery] WarningGetRequest Request)
         {
             try
             {
 
                 // The package type should be single character
-                if (!string.IsNullOrEmpty(Request.LanguageCode) )
+                if (string.IsNullOrEmpty(Request.LanguageCode) )
                 {
                     return StatusCode(400, "Language Code is Required");
                 }
@@ -505,6 +499,50 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.LogError("Error in package service:get DTC warning Details with exception - " + ex.Message + ex.StackTrace);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
+        }
+
+        [HttpPost]
+        [Route("UpdatedtcWarning")]
+        [AllowAnonymous]
+        public async Task<IActionResult> UpdateDTCWarningData(DTCWarningImportRequest request)
+        {
+            try
+            {
+                //Validation
+                if (request.dtcWarningToImport.Count <= 0)
+                {
+                    return StatusCode(400, "DTC Warning Data is required.");
+                }
+
+                var dtcRequest = _mapper.ToImportDTCWarning(request);
+                var DTCResponse = await _translationServiceClient.UpdateDTCWarningDataAsync(dtcRequest);
+
+                if (DTCResponse != null
+                   && DTCResponse.Message == "There is an error updating dtc Warning Data.")
+                {
+                    return StatusCode(500, "There is an error updating  dtc Warning Data..");
+                }
+                else if (DTCResponse != null && DTCResponse.Code == Responcecode.Success )
+                {
+
+                    return Ok(DTCResponse);
+                }
+                else
+                {
+                        return StatusCode(500, "Warning response is null");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Translation Service:UpdateDTCWarning : " + ex.Message + " " + ex.StackTrace);
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
+                return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
+            }
+
         }
 
         #region  Terms And Conditions

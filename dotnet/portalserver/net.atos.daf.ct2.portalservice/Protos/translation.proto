@@ -20,6 +20,8 @@ rpc InsertTranslationFileDetails (TranslationUploadRequest) returns (Translation
 rpc GetFileUploadDetails (FileUploadDetailsRequest) returns (FileUploadDetailsResponse);
 rpc ImportDTCWarningData (WarningDataRequest) returns (WarningDataResponse);
 rpc GetDTCWarningData (WarningGetRequest)returns (WarningGetResponse);
+rpc UpdateDTCWarningData (WarningDataRequest) returns (WarningDataResponse);
+//rpc DeleteDTCWarningData (WarningDeleteRequest) returns (WarningDeleteResponse);
 
 rpc AddUserAcceptedTermCondition (AcceptedTermConditionRequest)returns (AcceptedTermConditionResponse);
 rpc GetAllVersionNo (VersionNoRequest)returns (VersionNoResponse);
@@ -253,7 +255,7 @@ message dtcwarning
 {
      int32 id =1;
      string code =2;
-     WarningType type =3;
+     string type =3;
      string veh_type=4;
      int32 warning_class =5;
      int32 number =6;
@@ -286,6 +288,18 @@ message WarningGetResponse
     string message = 2;
     repeated dtcwarning dtcGetDataResponse =3;
 }
+message WarningDeleteRequest
+{
+    string id=1;
+}
+
+message WarningDeleteResponse
+{
+     Responcecode code=1;
+     string message = 2;
+     int32 id =3;
+}
+
 
 message AcceptedTermConditionRequest{
   int32 Id =1;
@@ -296,20 +310,20 @@ message AcceptedTermConditionRequest{
 }
 
 message AcceptedTermConditionResponse{
-Responcecode code=1;
-string message = 2;
+ Responcecode code=1;
+ string message = 2;
  AcceptedTermConditionRequest acceptedTermCondition=3;
 }
 
 message VersionNoRequest{
-string VersionNo =1;
-google.protobuf.StringValue Languagecode=2;
+ string VersionNo =1;
+ google.protobuf.StringValue Languagecode=2;
 }
 
 message VersionNoResponse{
-Responcecode code=1;
-string message = 2;
-repeated string version_nos =3;
+ Responcecode code=1;
+ string message = 2;
+ repeated string version_nos =3;
 }
 
 message TermConditionReponse
@@ -334,7 +348,7 @@ message TermConditionReponse
      repeated TermConditionReponse TermCondition =3;
     }
 
-    message UserAcceptedTermConditionRequest
+   message UserAcceptedTermConditionRequest
    {
      int32 AccountId=1;
      int32 OrganizationId=2;
