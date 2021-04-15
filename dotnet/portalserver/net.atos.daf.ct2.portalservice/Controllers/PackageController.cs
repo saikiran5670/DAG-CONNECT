@@ -10,6 +10,7 @@ using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.portalservice.Entity.Package;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {

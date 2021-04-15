@@ -546,7 +546,7 @@ namespace net.atos.daf.ct2.translationservice
                 dtcWarning.AddRange(request.DtcData.Select(x => new DTCwarning()
                 {
                     code = x.Code,
-                    type = x.Type,
+                    type = (translation.Enum.WarningType)x.Type,
                     veh_type = x.VehType,
                     warning_class = x.WarningClass,
                     number = x.Number,
@@ -565,7 +565,7 @@ namespace net.atos.daf.ct2.translationservice
                                    {
                                        Id = x.id,
                                        Code = x.code,
-                                       Type = x.type,
+                                       Type = (WarningType)x.type,
                                        VehType = x.veh_type,
                                        WarningClass = x.warning_class,
                                        Number = x.number,
@@ -605,7 +605,7 @@ namespace net.atos.daf.ct2.translationservice
                     var WarnData = new dtcwarning();
                     WarnData.Id = item.id;
                     WarnData.Code = item.code;
-                    WarnData.Type = item.type;
+                    WarnData.Type = (WarningType)item.type;
                     WarnData.VehType = item.veh_type;
                     WarnData.WarningClass = item.warning_class;
                     WarnData.Number = item.number;
@@ -628,6 +628,65 @@ namespace net.atos.daf.ct2.translationservice
                     Message = "GetTranslationsForDropDowns Faile due to - " + ex.Message
                 });
             }
+        }
+
+        public override async Task<WarningDataResponse> UpdateDTCWarningData(WarningDataRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("UpdateDTCWarningData Method");
+                var dtcWarning = new List<DTCwarning>();
+                var response = new WarningDataResponse();
+
+
+                dtcWarning.AddRange(request.DtcData.Select(x => new DTCwarning()
+                {
+                    code = x.Code,
+                    type = (translation.Enum.WarningType)x.Type,
+                    veh_type = x.VehType,
+                    warning_class = x.WarningClass,
+                    number = x.Number,
+                    description = x.Description,
+                    advice = x.Advice,
+                    icon_id = x.IconId,
+                    expires_at = x.ExpiresAt
+
+                }).ToList());
+
+                var DTCData = await translationmanager.UpdateDTCWarningData(dtcWarning);
+
+
+                response.DtcDataResponse.AddRange(DTCData
+                                   .Select(x => new dtcwarning()
+                                   {
+                                       Id = x.id,
+                                       Code = x.code,
+                                       Type = (WarningType)x.type,
+                                       VehType = x.veh_type,
+                                       WarningClass = x.warning_class,
+                                       Number = x.number,
+                                       Description = x.description,
+                                       Advice = x.advice,
+                                       IconId = x.icon_id,
+                                       ExpiresAt = x.expires_at,
+                                       CreatedBy = x.created_by
+                                   }).ToList());
+
+                response.Code = Responcecode.Success;
+                response.Message = "DTC warning Data updated successfully.";
+                return await Task.FromResult(response);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Translation Service:UpdateDTCWarningData : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new WarningDataResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "UpdateDTCWarningData Faile due to - " + ex.Message
+                });
+            }
+
         }
 
         #region Terms And Conditions

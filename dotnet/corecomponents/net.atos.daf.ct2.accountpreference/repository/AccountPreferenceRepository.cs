@@ -149,7 +149,7 @@ namespace net.atos.daf.ct2.accountpreference
                 if (id == 0) return false;                
                 //using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 //{
-                    query.Append("update master.accountpreference set state='I' where id=@id");
+                    query.Append("update master.accountpreference set state='D' where id=@id");
                     //result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);                    
                     // Update preference id for account or organization
                     if (preferenceType == PreferenceType.Account)

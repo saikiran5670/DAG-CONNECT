@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.relationship
             return await _relationshipRepository.DeleteRelationship(orgRelationshipId);
         }
 
-        public async Task<List<Relationship>> GetRelationship(Relationship orgRelationship)
+        public async Task<List<Relationship>> GetRelationship(RelationshipFilter orgRelationship)
         {
             return await _relationshipRepository.GetRelationship(orgRelationship);
         }
