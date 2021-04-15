@@ -20,6 +20,11 @@ rpc InsertTranslationFileDetails (TranslationUploadRequest) returns (Translation
 rpc GetFileUploadDetails (FileUploadDetailsRequest) returns (FileUploadDetailsResponse);
 rpc ImportDTCWarningData (WarningDataRequest) returns (WarningDataResponse);
 rpc GetDTCWarningData (WarningGetRequest)returns (WarningGetResponse);
+
+rpc AddUserAcceptedTermCondition (AcceptedTermConditionRequest)returns (AcceptedTermConditionResponse);
+rpc GetAllVersionNo (VersionNoRequest)returns (VersionNoResponse);
+rpc GetTermConditionForVersionNo (VersionNoRequest)returns (TermCondDetailsReponse);
+rpc GetAcceptedTermConditionByUser (UserAcceptedTermConditionRequest)returns (TermCondDetailsReponse);
 }
 
 enum TranslationType{
@@ -276,3 +281,56 @@ message WarningGetResponse
     string message = 2;
     repeated dtcwarning dtcGetDataResponse =3;
 }
+
+message AcceptedTermConditionRequest{
+  int32 Id =1;
+  int32 OrganizationId =2;
+  int32 AccountId =3;
+  int32 TermsAndConditionId=4;
+  string version_no =5;
+}
+
+message AcceptedTermConditionResponse{
+Responcecode code=1;
+string message = 2;
+ AcceptedTermConditionRequest acceptedTermCondition=3;
+}
+
+message VersionNoRequest{
+string VersionNo =1;
+google.protobuf.StringValue Languagecode=2;
+}
+
+message VersionNoResponse{
+Responcecode code=1;
+string message = 2;
+repeated string version_nos =3;
+}
+
+message TermConditionReponse
+{
+ int32 Id =1;
+ string versionno =2;
+ string Code =3;
+ bytes Description =4;
+ string State =5;
+ string StartDate =6;
+ string EndDate =7;
+ string CreatedAt =8;
+ int32 CreatedBy =9;
+ string ModifiedAt =10;
+ int32 ModifiedBy =11;
+}
+
+    message TermCondDetailsReponse
+    {
+     Responcecode code =1;
+     string message = 2;
+     repeated TermConditionReponse TermCondition =3;
+    }
+
+    message UserAcceptedTermConditionRequest
+   {
+     int32 AccountId=1;
+     int32 OrganizationId=2;
+   }
