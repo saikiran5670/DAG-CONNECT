@@ -20,6 +20,8 @@ rpc InsertTranslationFileDetails (TranslationUploadRequest) returns (Translation
 rpc GetFileUploadDetails (FileUploadDetailsRequest) returns (FileUploadDetailsResponse);
 rpc ImportDTCWarningData (WarningDataRequest) returns (WarningDataResponse);
 rpc GetDTCWarningData (WarningGetRequest)returns (WarningGetResponse);
+rpc UpdateDTCWarningData (WarningDataRequest) returns (WarningDataResponse);
+//rpc DeleteDTCWarningData (WarningDeleteRequest) returns (WarningDeleteResponse);
 }
 
 enum TranslationType{
@@ -40,6 +42,11 @@ enum TranslationType{
     Dropdown = 1;
     Image =2;
   }
+  enum WarningType
+{
+    DTC = 0;
+    DM = 1;
+}
   message TranslationsRequest
     {
      int32 Id =1;
@@ -243,7 +250,7 @@ message dtcwarning
 {
      int32 id =1;
      string code =2;
-     string type =3;
+     WarningType type =3;
      string veh_type=4;
      int32 warning_class =5;
      int32 number =6;
@@ -275,4 +282,15 @@ message WarningGetResponse
      Responcecode code=1;
     string message = 2;
     repeated dtcwarning dtcGetDataResponse =3;
+}
+message WarningDeleteRequest
+{
+    string id=1;
+}
+
+message WarningDeleteResponse
+{
+     Responcecode code=1;
+     string message = 2;
+     int32 id =3;
 }
