@@ -502,7 +502,7 @@ namespace net.atos.daf.ct2.account
             try
             {
                 Uri baseUrl = new Uri(emailConfiguration.PortalUIBaseUrl);
-                Uri logoUrl = new Uri(baseUrl, "images/logo.png");
+                Uri logoUrl = new Uri(baseUrl, "assets/logo.png");
 
                 var languageCode = await GetLanguageCodePreference(account.EmailId);
                 var emailTemplate = await translationManager.GetEmailTemplateTranslations(eventType, contentType, languageCode);

@@ -18,6 +18,8 @@ using net.atos.daf.ct2.audit.repository;
 using AccountComponent = net.atos.daf.ct2.account;
 using Identity = net.atos.daf.ct2.identity;
 using AccountPreferenceComponent = net.atos.daf.ct2.accountpreference;
+using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.translation;
 
 namespace net.atos.daf.ct2.authenticationservice
 {
@@ -64,8 +66,10 @@ namespace net.atos.daf.ct2.authenticationservice
             // services.AddTransient<IGroupRepository, GroupRepository>();
             
             services.AddTransient<AccountComponent.IAccountRepository,AccountComponent.AccountRepository>();
-            services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();            
-         
+            services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();
+            services.AddTransient<ITranslationRepository, TranslationRepository>();
+            services.AddTransient<ITranslationManager, TranslationManager>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
