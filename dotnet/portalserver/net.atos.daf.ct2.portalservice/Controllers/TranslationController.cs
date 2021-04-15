@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Audit;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -369,6 +370,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
             {
+                await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                   "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                   "InsertTranslationFileDetails  method in Translation controller", 0, 0, JsonConvert.SerializeObject(transupload),
+                    Request);
+
+
                 return Ok(ResponseList);
             }
             else
@@ -500,5 +507,161 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        #region  Terms And Conditions
+
+        [HttpPost]
+        [Route("adduseracceptedtermcondition")]
+        // [AllowAnonymous]
+        public async Task<IActionResult> AddUserAcceptedTermCondition(AccountTermsCondition request)
+        {
+            try
+            {
+                //Validation
+                if (request.Account_Id <= 0)
+                {
+                    return StatusCode(400, "Account Id is required.");
+                }
+
+                if (request.Organization_Id <= 0)
+                {
+                    return StatusCode(400, "Organization Id is required.");
+                }
+
+                if (request.Terms_And_Condition_Id <= 0)
+                {
+                    return StatusCode(400, "Terms And Conditions Id is required.");
+                }
+
+                var termsAndCondRequest = _mapper.ToAcceptedTermConditionRequestEntity(request);
+                var termsAndCondResponse = await _translationServiceClient.AddUserAcceptedTermConditionAsync(termsAndCondRequest);
+
+                if (termsAndCondResponse != null
+                   && termsAndCondResponse.Message == "There is an error in Terms And Conditions Data.")
+                {
+                    return StatusCode(500, "There is an error importing Terms And Conditions..");
+                }
+                else if (termsAndCondResponse != null && termsAndCondResponse.Code == Responcecode.Success)
+                {
+
+                    return Ok(termsAndCondResponse);
+                }
+                else
+                {
+                    return StatusCode(500, "Terms And Conditions response is null");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Translation Service:AddUserAcceptedTermCondition : " + ex.Message + " " + ex.StackTrace);
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
+                return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
+            }
+
+        }
+
+        [HttpGet]
+        [Route("getversionnos")]
+      
+        public async Task<IActionResult> GetAllVersionNo()
+        {
+            try
+            {
+                VersionNoRequest versionNoRequest = new VersionNoRequest();
+                versionNoRequest.VersionNo = "V1.0";
+               var response = await _translationServiceClient.GetAllVersionNoAsync(versionNoRequest);
+                TermsAndConditions termsAndConditions = new TermsAndConditions();
+                //termsAndConditions=_mapper.
+
+                if (response != null && response.Code == Responcecode.Success)
+                {
+                    if (response.VersionNos != null && response.VersionNos.Count > 0)
+                    {
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        return StatusCode(404, "version nos details are not found.");
+                    }
+                }
+                else
+                {
+                    return StatusCode(500, response.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in Translation service:GetAllVersionNo Details with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpGet]
+        [Route("gettermconditionforversionno")]
+        public async Task<IActionResult> GetTermConditionForVersionNo(string VersionNo,string languageCode)
+        {
+            try
+            {
+
+                VersionNoRequest request = new VersionNoRequest();
+                request.VersionNo = VersionNo;
+                request.Languagecode = languageCode;
+                TermCondDetailsReponse response = await _translationServiceClient.GetTermConditionForVersionNoAsync(request);
+                if (response.TermCondition != null && response.Code == translationservice.Responcecode.Failed)
+                {
+                    return StatusCode(500, "There is an error fetching Terms and condition.");
+                }
+                else if (response.TermCondition.Count()>0 && response.Code == translationservice.Responcecode.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(500, "Terms and condition is null");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in Translation service:AddUserAcceptedTermCondition Details with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpGet]
+        [Route("getacceptedtermconditionbyuser")]
+        public async Task<IActionResult> GetAcceptedTermConditionByUser(int AccountId, int OrganizationId)
+        {
+            try
+            {
+
+                UserAcceptedTermConditionRequest request = new UserAcceptedTermConditionRequest();
+                request.AccountId = AccountId;
+                request.OrganizationId = OrganizationId;
+                TermCondDetailsReponse response = await _translationServiceClient.GetAcceptedTermConditionByUserAsync(request);
+                if (response.TermCondition != null && response.Code == translationservice.Responcecode.Failed)
+                {
+                    return StatusCode(500, "There is an error fetching Terms and condition.");
+                }
+                else if (response.TermCondition.Count() > 0 && response.Code == translationservice.Responcecode.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(500, "Terms and condition is null");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in Translation service:AddUserAcceptedTermCondition Details with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+
+        #endregion
     }
 }

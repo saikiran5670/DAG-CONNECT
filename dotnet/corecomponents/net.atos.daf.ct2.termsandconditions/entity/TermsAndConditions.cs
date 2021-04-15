@@ -9,8 +9,8 @@ namespace net.atos.daf.ct2.termsandconditions.entity
         public int Id { get; set; }
         public string version_no { get; set; }
         public string Code { get; set; }
-        public string Description { get; set; }
-        public bool State { get; set; }
+        public byte[] Description { get; set; }
+        public char State { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public DateTime Created_At { get; set; }

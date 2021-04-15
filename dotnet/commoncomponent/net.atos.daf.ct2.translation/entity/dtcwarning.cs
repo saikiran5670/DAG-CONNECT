@@ -1,4 +1,5 @@
-﻿using System;
+﻿using net.atos.daf.ct2.translation.Enum;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;

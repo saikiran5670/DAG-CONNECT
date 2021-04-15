@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
         public string code { get; set; }
         [Required]
         [StringLength(1)]
-        public string type { get; set; }
+        public WarningType type { get; set; }
         [Required]
         [StringLength(1)]
         public string veh_type { get; set; }
@@ -39,6 +39,14 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
         [Required]
         public List<DTCwarning> dtcWarningToImport { get; set; }
     }
+
+    public enum WarningType
+    {
+        DTC = 'D',
+        DM = 'M'
+
+    }
+
 }
 
 

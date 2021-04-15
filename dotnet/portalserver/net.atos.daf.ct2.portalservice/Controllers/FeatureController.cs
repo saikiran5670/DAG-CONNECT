@@ -73,6 +73,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> CreateFeatureSet(FeatureSet featureSetRequest)
         {
             FeatureSet ObjResponse = new FeatureSet();
+            FetureSetRequest featureset = new FetureSetRequest();
             try
             {
                 _logger.Info("Create method in FeatureSet API called.");
@@ -86,7 +87,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(401, "invalid FeatureSet Description : Feature Description is Empty.");
                 }
-                FetureSetRequest featureset = new FetureSetRequest();
+             
                 featureset.Name = featureSetRequest.Name; // "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds()
                 //featureset. = featureSetRequest.description;
                 featureset.CreatedBy = featureSetRequest.created_by;
@@ -101,7 +102,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
                     "Feature service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                    "CreateFeatureSet method in Feature manager", 0, ObjResponse.FeatureSetID, JsonConvert.SerializeObject(ObjResponse),
+                    "CreateFeatureSet method in Feature manager", 0, ObjResponse.FeatureSetID, JsonConvert.SerializeObject(featureset),
                      Request);
                 return Ok(featureSetRequest);
             }
@@ -110,7 +111,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
                    "Feature service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                   "CreateFeatureSet method in Feature manager",0, ObjResponse.FeatureSetID, JsonConvert.SerializeObject(ObjResponse),
+                   "CreateFeatureSet method in Feature manager",0, ObjResponse.FeatureSetID, JsonConvert.SerializeObject(featureset),
                     Request);
                 _logger.Error(null, ex);
 
