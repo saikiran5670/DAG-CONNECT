@@ -149,7 +149,7 @@ namespace net.atos.daf.ct2.roleservice
                 ObjroleFilter.AccountId=request.AccountId;
                 ObjroleFilter.RoleId= request.RoleId;
                 ObjroleFilter.Organization_Id = request.OrganizationId;
-                ObjroleFilter.Is_Active= request.Active;
+                ObjroleFilter.State= request.Active? "A" : "I";
                 ObjroleFilter.IsGlobal = request.IsGlobal;
                 ObjroleFilter.LangaugeCode = request.LangaugeCode;
                 var role = _RoleManagement.GetRoles(ObjroleFilter).Result;
