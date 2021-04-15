@@ -35,7 +35,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> Login()
         {
             AccountBusinessService.IdentityRequest identityRequest = new AccountBusinessService.IdentityRequest();
-            AccountBusinessService.AccountIdentityResponse response = new AccountBusinessService.AccountIdentityResponse();
             try 
             {
                 if (!string.IsNullOrEmpty(Request.Headers["Authorization"]))  
@@ -53,9 +52,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                       
+                     
                         identityRequest.UserName = arrUsernamePassword[0];
                         identityRequest.Password = arrUsernamePassword[1];
+                        AccountBusinessService.AccountIdentityResponse response = new AccountBusinessService.AccountIdentityResponse();
+
                         response = await _accountClient.AuthAsync(identityRequest).ResponseAsync;
                         if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                         {
@@ -153,7 +154,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Authentication Component",
             "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-            "RemoveRoles  method in Authentication controller", 0, response.AccountInfo.Id, JsonConvert.SerializeObject(identityRequest),
+            "RemoveRoles  method in Authentication controller", 0, 0, JsonConvert.SerializeObject(identityRequest),
              Request);
                 _logger.LogError(ex.Message +" " +ex.StackTrace);
                 return StatusCode(500,"Please contact system administrator. "+ ex.Message );
@@ -174,11 +175,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                    
                     request.TokenId = sessionid;
                     await _accountClient.LogoutAsync(request);
-                }
-                //     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Authentication Component",
-                //"Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                //"RemoveRoles  method in Authentication controller", 0, 0, JsonConvert.SerializeObject(request),
-                // Request);
+                }               
                 return Ok(new { Message = "You are logged out" });
             }
             catch (Exception ex)
