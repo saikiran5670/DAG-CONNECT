@@ -118,7 +118,7 @@ namespace net.atos.daf.ct2.account
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
                     // disable account with organization
-                    query = @"update master.accountorg set state='I' where account_id = @id and organization_id = @organization_id";
+                    query = @"update master.accountorg set state='D' where account_id = @id and organization_id = @organization_id";
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                     transactionScope.Complete();
                 }
@@ -128,11 +128,11 @@ namespace net.atos.daf.ct2.account
                 if (result <= 0)
                 {
                     // disable preference
-                    query = @"update master.accountpreference set state='I' from master.account where master.accountpreference.id=master.account.preference_id and master.account.id=@id;";
+                    query = @"update master.accountpreference set state='D' from master.account where master.accountpreference.id=master.account.preference_id and master.account.id=@id;";
                     //query += @"delete from master.accountblob ab using master.account a where a.id = @id and a.blob_id = ab.id and a.state = 'A';";
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                     // disable account 
-                    query = @"update master.account set state='I' where id = @id;";
+                    query = @"update master.account set state='D' where id = @id;";
                     result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
                 return true;
