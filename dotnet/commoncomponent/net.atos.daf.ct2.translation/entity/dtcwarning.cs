@@ -1,4 +1,5 @@
-﻿using System;
+﻿using net.atos.daf.ct2.translation.Enum;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -13,7 +14,7 @@ namespace net.atos.daf.ct2.translation.entity
         public string code { get; set; }
         [Required]
         [StringLength(1)]
-        public string type { get; set; }
+        public WarningType type { get; set; }
         [Required]
         [StringLength(1)]
         public string veh_type { get; set; }

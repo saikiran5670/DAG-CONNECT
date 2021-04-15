@@ -11,6 +11,10 @@ using net.atos.daf.ct2.portalservice.Entity.Package;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Newtonsoft.Json;
+<<<<<<< HEAD
+=======
+
+>>>>>>> cbbc65ec5caf43ab6fcaade40334648494257aa7
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
 
@@ -170,7 +174,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
                     {
                           await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
-                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                              "Update method in Package controller",request.Id, packageResponse.PackageId, JsonConvert.SerializeObject(request),
                                               Request);
 
@@ -195,7 +199,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
-                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                              "Update method in Package controller", request.Id, packageResponse.PackageId, JsonConvert.SerializeObject(request),
                                               Request);
 

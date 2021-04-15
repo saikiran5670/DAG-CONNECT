@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Audit;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -369,6 +370,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
             {
+                await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                   "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                   "InsertTranslationFileDetails  method in Translation controller", 0, 0, JsonConvert.SerializeObject(transupload),
+                    Request);
+
+
                 return Ok(ResponseList);
             }
             else

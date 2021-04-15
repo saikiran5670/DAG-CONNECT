@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
             try
             {
                 CustomerRequest customerRequest = new CustomerRequest();
-                customerRequest.CompanyType = customer.CompanyUpdatedEvent.Company.type;
+               // customerRequest.CompanyType = customer.CompanyUpdatedEvent.Company.type;
                 customerRequest.CustomerID = customer.CompanyUpdatedEvent.Company.ID;
                 customerRequest.CustomerName = customer.CompanyUpdatedEvent.Company.Name;              
                 customerRequest.ReferenceDateTime = customer.CompanyUpdatedEvent.Company.ReferenceDateTime;
@@ -62,21 +62,28 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 // Configuarable values   
                 customerRequest.OrgCreationPackage = Configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value;
 
-                if (customerRequest.ReferenceDateTime != null && (customerRequest.CompanyType != null) && (customerRequest.CompanyType.Trim().Length>0) && (customerRequest.CustomerID != null) && (customerRequest.CustomerID.Trim().Length>0)
+                if (customerRequest.ReferenceDateTime != null && (customerRequest.CustomerID != null) && (customerRequest.CustomerID.Trim().Length>0)
                     && (customerRequest.CustomerName != null) && (customerRequest.CustomerName.Trim().Length>0)
                     && (customerRequest.ReferenceDateTime).ToUniversalTime() < System.DateTime.Now.ToUniversalTime())
-                {                  
-
+                  {                  
                     string dateformat = "yyyy-mm-ddThh:mm:ss";
                     DateTime parsed;
                     if (!(DateTime.TryParseExact(Convert.ToString(customerRequest.ReferenceDateTime), dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed)))
                     {                      
-                        if (!((customerRequest.CompanyType.Trim().Length > 50)
-                            || (customerRequest.CustomerID.Trim().Length > 100)
-                            || (customerRequest.CustomerName.Trim().Length > 100))                        
+                        if (!((customerRequest.CustomerID.Trim().Length > 100)
+                            || (customerRequest.CustomerName.Trim().Length > 100)                        
                             || (customerRequest.ReferenceDateTime == new DateTime())
-                            )
-                        {                         
+                            ))
+                        {
+                            if (customer.CompanyUpdatedEvent.Company.type != null)
+                            {
+                                customerRequest.CompanyType = customer.CompanyUpdatedEvent.Company.type;
+                                if (customerRequest.CompanyType.Trim().Length > 50)
+                                {
+                                    return StatusCode(400, string.Empty);
+                                }
+                            }
+
                             if (customer.CompanyUpdatedEvent.Company.Address != null)
                             {
                                 if (customer.CompanyUpdatedEvent.Company.Address.Type!=null)
@@ -126,9 +133,9 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                                     {
                                         return StatusCode(400, string.Empty);
                                     }
-                                }                            
-                               
-                               await organizationtmanager.UpdateCustomer(customerRequest);
+                                }                               
+
+                                await organizationtmanager.UpdateCustomer(customerRequest);
                                logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
                                return Ok();                                
                             }

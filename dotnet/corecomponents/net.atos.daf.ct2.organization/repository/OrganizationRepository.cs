@@ -135,7 +135,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", organizationId);
-                var query = @"update master.organization set state='I' where id=@id";
+                var query = @"update master.organization set state='D' where id=@id";
                 int isdelete = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
             }
@@ -273,7 +273,7 @@ namespace net.atos.daf.ct2.organization.repository
                             left join  master.dateformat df on df.id=a.date_format_id
                             left join  master.unit u on u.id=a.unit_id
                             left join  translation.language l on l.id=a.language_id
-                            where o.id=@Id";
+                            where o.id=@Id and o.state='A'";
                 parameter.Add("@Id", organizationId);
                 IEnumerable<OrganizationDetailsResponse> OrgDetails = await dataAccess.QueryAsync<OrganizationDetailsResponse>(query, parameter);
                 OrganizationDetailsResponse OrgDetailsResponse = new OrganizationDetailsResponse();
@@ -314,8 +314,8 @@ namespace net.atos.daf.ct2.organization.repository
             try
             {
                 var parameter = new DynamicParameters();
-                var query = @"SELECT o.id OrganizatioId,a.id PreferenceId, c.name currency,t.name timezone ,tf.name timeformat,vd.name vehicledisplay,
-                            df.name DateFormatType,lp.name landingpagedisplay,l.name LanguageName, u.name unit
+                var query = @"SELECT o.id OrganizatioId,a.id PreferenceId, c.id currency,t.id timezone ,tf.id timeformat,vd.id vehicledisplay,
+                            df.id DateFormatType,l.id LanguageName, u.id unit
                             FROM master.organization o
                             left join  master.accountpreference a on o.id=a.id
                             left join  master.currency c on c.id=a.currency_id
@@ -323,7 +323,6 @@ namespace net.atos.daf.ct2.organization.repository
                             left join  master.timeformat tf on tf.id=a.time_format_id
                             left join  master.vehicledisplay vd on vd.id=a.vehicle_display_id
                             left join  master.dateformat df on df.id=a.date_format_id
-                            left join  master.landingpagedisplay lp on lp.id=a.landing_page_display_id
                             left join  master.unit u on u.id=a.unit_id
                             left join  translation.language l on l.id=a.language_id
                             where o.id=@Id";
@@ -341,8 +340,6 @@ namespace net.atos.daf.ct2.organization.repository
                     preferenceResponse.Unit = item.Unit;
                     preferenceResponse.VehicleDisplay = item.VehicleDisplay;
                     preferenceResponse.DateFormatType = item.DateFormatType;
-                    preferenceResponse.LandingPageDisplay = item.LandingPageDisplay;
-
                 }
                 return preferenceResponse;
             }
@@ -988,6 +985,43 @@ namespace net.atos.daf.ct2.organization.repository
                 log.Error(ex.ToString());
                 throw ex;
             }
+        }
+
+        //public async Task<List<Organization>> GetAllOrganizations()
+        //{
+        //    log.Info("GetAllOrganizations method called in repository");
+        //    try
+        //    {
+        //        var parameter = new DynamicParameters();
+        //        var query = @"Select distinct om.owner_org_id id,o.name from master.organization o
+        //                       left join master.orgrelationshipmapping om on om.target_org_id=o.id
+        //                        where o.state='A'";
+
+        //        var OrganizationDetails = await dataAccess.QueryAsync<dynamic>(query, parameter);
+        //       // var objOrganization = new Organization();
+        //        List<Organization> lstOrganization = new List<Organization>();
+        //        // lstOrganization.Add()
+
+        //        foreach (Organization organization in OrganizationDetails)
+        //        {
+        //            lstOrganization.Add(organization);
+        //        }
+
+        //        return OrganizationList;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        log.Info("GetAllOrganizations method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+        //        log.Error(ex.ToString());
+        //        throw ex;
+        //    }
+        //}
+        private Organization MapOrgDetails(dynamic record)
+        {
+            var orgResponse = new Organization();
+            orgResponse.Id = record.id;            
+            orgResponse.Name = record.name;           
+            return orgResponse;
         }
     }
 }

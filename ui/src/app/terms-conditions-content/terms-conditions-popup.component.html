@@ -9,7 +9,8 @@
   </div>
 
   <div style="overflow-y: scroll; max-height: 350px; margin: 20px;">
-    <app-terms-conditions-content></app-terms-conditions-content>
+    <!-- <app-terms-conditions-content></app-terms-conditions-content> -->
+    <iframe class= "webPage" [src]='fileURL' name="abc.pdf" width="100%" height="350px" frameborder="0"></iframe>
   </div>
   <div fxLayout="row" fxLayoutAlign="end end" class="full-width" style="padding: 10px 20px;">
     <button type="button" class='margin-right-10' mat-raised-button color="warn" (click)='disagree()'

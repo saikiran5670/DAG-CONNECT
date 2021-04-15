@@ -18,6 +18,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
         public string Description { get; set; }
         [Required]
         public List<int> FeatureIds { get; set; }
-        public bool IsActive { get; set; }
+        [StringLength(1)]
+        public string State { get; set; }
     }
 }
