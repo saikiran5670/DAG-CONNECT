@@ -32,11 +32,11 @@ namespace net.atos.daf.ct2.packageservice
                 var package = new Package();
                 package.Code = request.Code;
                 package.FeatureSetID = request.FeatureSetID;
-                package.Status = request.Status;
+             //   package.Status = request.Status;
                 package.Name = request.Name;
                 package.Type = request.Type;
                 package.Description = request.Description;
-                package.IsActive = request.IsActive;
+                package.State = request.State;
                 package = _packageManager.Create(package).Result;
                 if (package.Id == -1)
                 {
@@ -76,11 +76,11 @@ namespace net.atos.daf.ct2.packageservice
                 package.Id = request.Id;
                 package.Code = request.Code;
                 package.FeatureSetID = request.FeatureSetID;
-                package.Status = request.Status;
+              //  package.Status = request.Status;
                 package.Name = request.Name;
                 package.Type = request.Type;
                 package.Description = request.Description;
-                package.IsActive = request.IsActive;
+                package.State = request.State;
 
                 package = _packageManager.Update(package).Result;
 
@@ -154,7 +154,7 @@ namespace net.atos.daf.ct2.packageservice
                 packageFilter.Id = request.Id;
                 packageFilter.Code = request.Code;
                 packageFilter.FeatureSetId = request.FeatureSetID;
-                packageFilter.Status = request.Status;              
+                packageFilter.State = request.State;              
                 packageFilter.Type = request.Type;
                 var packages = _packageManager.Get(packageFilter).Result;
                 response.PacakageList.AddRange(packages
@@ -165,8 +165,8 @@ namespace net.atos.daf.ct2.packageservice
                                          Description = x.Description,
                                          Name = x.Name,
                                          FeatureSetID = x.FeatureSetID,
-                                         Status = x.Status,
-                                         IsActive = x.IsActive,
+                                      //   Status = x.Status,
+                                         State = x.State,
                                          CreatedAt = x.CreatedAt,
                                          Type = x.Type
                                      }).ToList());
@@ -199,9 +199,9 @@ namespace net.atos.daf.ct2.packageservice
                     Description = x.Description,
                     FeatureSetID = x.FeatureSetID,
                     Name = x.Name,
-                    Status = x.Status,
+                  //  Status = x.Status,
                     Type = x.Type,
-                    IsActive = x.IsActive
+                    State = x.State
                 }).ToList());
 
                 var packageImported = await _packageManager.Import(packages);
@@ -213,9 +213,9 @@ namespace net.atos.daf.ct2.packageservice
                                          Description = x.Description,
                                          Name = x.Name,
                                          FeatureSetID = x.FeatureSetID,
-                                         Status = x.Status,
+                                        // Status = x.Status,
                                          Type = x.Type,
-                                         IsActive = x.IsActive,
+                                         State = x.State,
                                          CreatedAt = x.CreatedAt
                                      }).ToList());
 
@@ -238,23 +238,23 @@ namespace net.atos.daf.ct2.packageservice
 
 
         //Update Package Status
-        public override Task<UpdatePackageStatusResponse> UpdatePackageStatus(UpdatePackageStatusRequest request, ServerCallContext context)
+        public override Task<UpdatePackageStateResponse> UpdatePackageState(UpdatePackageStateRequest request, ServerCallContext context)
         {
             try
             {
                 var package = new Package();
                 package.Id = request.PackageId;              
-                package.Status = request.Status;
-                package = _packageManager.UpdatePackageStatus(package).Result;
-                    return Task.FromResult(new UpdatePackageStatusResponse
+                package.State = request.State;
+                package = _packageManager.UpdatePackageState(package).Result;
+                    return Task.FromResult(new UpdatePackageStateResponse
                     {
-                        Message = "Package status Updated ",
-                        PackageStatusResponse = request
+                        Message = "Package state Updated ",
+                        PackageStateResponse = request
                     });               
             }
             catch (Exception ex)
             {
-                return Task.FromResult(new UpdatePackageStatusResponse
+                return Task.FromResult(new UpdatePackageStateResponse
                 {
                     Message = "Exception " + ex.Message
                 });

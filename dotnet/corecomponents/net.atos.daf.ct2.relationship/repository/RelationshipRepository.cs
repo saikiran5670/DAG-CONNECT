@@ -44,10 +44,10 @@ namespace net.atos.daf.ct2.relationship.repository
                     parameter.Add("@Level", relationship.Level != 0 ? relationship.Level : defaultLevelCode);
                     parameter.Add("@Description", relationship.Description);
                     parameter.Add("@FeatureSetId", relationship.FeaturesetId);
-                    parameter.Add("@Is_active", relationship.IsActive);
+                    parameter.Add("@state", Convert.ToChar(relationship.State));
                     parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-                    string queryInsert = "insert into master.orgrelationship(organization_id, feature_set_id, name, description, code, is_active, level,created_at) " +
-                                          "values(@OrganizationId,@FeatureSetId, @Name, @Description, @Code,@Is_active, @Level,@created_at) RETURNING id";
+                    string queryInsert = "insert into master.orgrelationship(organization_id, feature_set_id, name, description, code, level,created_at, state) " +
+                                          "values(@OrganizationId,@FeatureSetId, @Name, @Description, @Code, @Level,@created_at,@state) RETURNING id";
                     var orgid = await _dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
                     relationship.Id = orgid;
                 }
@@ -82,14 +82,14 @@ namespace net.atos.daf.ct2.relationship.repository
                     parameter.Add("@Level", relationship.Level);
                     parameter.Add("@Description", relationship.Description);
                     parameter.Add("@FeatureSetId", relationship.FeaturesetId);
-                    parameter.Add("@Is_active", relationship.IsActive);
+                    parameter.Add("@state", Convert.ToChar(relationship.State));
 
                     var queryUpdate = @"update master.orgrelationship set organization_id=@OrganizationId,
                                                                           feature_set_id=@FeatureSetId,
                                                                           name=@Name,
                                                                           description=@Description,
                                                                           code=@Code,
-                                                                          is_active=@Is_active,
+                                                                          state=@state,
                                                                           level =@Level            
 	                                 WHERE id = @Id RETURNING id;";
 
@@ -126,7 +126,7 @@ namespace net.atos.daf.ct2.relationship.repository
                 {
                     var parameter = new DynamicParameters();
                     parameter.Add("@id", relationshipId);
-                    var deletequery = @"update master.orgrelationship set is_active=false where id=@id";
+                    var deletequery = @"update master.orgrelationship set state ='D' where id=@id";
                     int isdelete = await _dataAccess.ExecuteScalarAsync<int>(deletequery, parameter);
                     return true;
                 }
@@ -140,7 +140,7 @@ namespace net.atos.daf.ct2.relationship.repository
         }
 
 
-        public async Task<List<Relationship>> GetRelationship(Relationship filter)
+        public async Task<List<Relationship>> GetRelationship(RelationshipFilter filter)
         {
             try
             {
@@ -148,7 +148,7 @@ namespace net.atos.daf.ct2.relationship.repository
                 var relationships = new List<Relationship>();
                 string query = string.Empty;
 
-                query = @"select id, organization_id, feature_set_id, name, description, code, is_active, level,created_at from master.orgrelationship relationship where is_active = true ";
+                query = @"select id, organization_id, feature_set_id, name, description, code, state, level,created_at from master.orgrelationship relationship where state != 'D' ";
 
                 if (filter != null)
                 {
@@ -171,16 +171,16 @@ namespace net.atos.daf.ct2.relationship.repository
                         query = query + " and LOWER(relationship.Code) = @code ";
                     }
 
-                    if (!string.IsNullOrEmpty(filter.Name))
-                    {
-                        parameter.Add("@name", filter.Name + "%");
-                        query = query + " and relationship.name like @name ";
-                    }
-                    if (!string.IsNullOrEmpty(filter.Description))
-                    {
-                        parameter.Add("@description", filter.Description + "%");
-                        query = query + " and relationship.description like @description ";
-                    }
+                    //if (!string.IsNullOrEmpty(filter.Name))
+                    //{
+                    //    parameter.Add("@name", filter.Name + "%");
+                    //    query = query + " and relationship.name like @name ";
+                    //}
+                    //if (!string.IsNullOrEmpty(filter.Description))
+                    //{
+                    //    parameter.Add("@description", filter.Description + "%");
+                    //    query = query + " and relationship.description like @description ";
+                    //}
 
                     if (filter.FeaturesetId > 0)
                     {
@@ -221,9 +221,27 @@ namespace net.atos.daf.ct2.relationship.repository
             relationship.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;
             relationship.FeaturesetId = record.feature_set_id != null ? record.feature_set_id : 0;
             relationship.OrganizationId = record.organization_id != null ? record.organization_id : 0;
-            relationship.IsActive = record.is_active;
+            relationship.State = !string.IsNullOrEmpty(record.state) ? MapCharToState(record.state) : string.Empty;
             relationship.CreatedAt = record.created_at;
             return relationship;
+        }
+        public string MapCharToState(string state)
+        {
+            var ptype = string.Empty;
+            switch (state)
+            {
+                case "A":
+                    ptype = "Active";
+                    break;
+                case "I":
+                    ptype = "Inactive";
+                    break;
+                case "D":
+                    ptype = "Delete";
+                    break;
+            }
+            return ptype;
+
         }
         public async Task<RelationshipLevelCode> GetRelationshipLevelCode()
         {

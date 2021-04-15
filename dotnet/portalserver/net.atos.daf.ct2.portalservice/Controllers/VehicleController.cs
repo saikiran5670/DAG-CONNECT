@@ -10,6 +10,7 @@ using System.Text;
 using net.atos.daf.ct2.portalservice.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -23,12 +24,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly Mapper _mapper;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-
-        public VehicleController(ILogger<VehicleController> logger, VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient)
+        private readonly AuditHelper _auditHelper;
+        public VehicleController(ILogger<VehicleController> logger, VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient, AuditHelper auditHelper)
         {
             _logger = logger;
             _vehicleClient = vehicleClient;
             _mapper = new Mapper();
+            _auditHelper = auditHelper;
         }
 
 
@@ -96,6 +98,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("update")]
         public async Task<IActionResult> Update(VehicleRequest request)
         {
+            var vehicleRequest = new VehicleBusinessService.VehicleRequest();
             try
             {
                 _logger.LogInformation("Create method in vehicle API called.");
@@ -110,7 +113,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The organization id is required.");
                 }
-                var vehicleRequest = _mapper.ToVehicle(request);
+                vehicleRequest = _mapper.ToVehicle(request);
                 VehicleBusinessService.VehicleResponce vehicleResponse = await _vehicleClient.UpdateAsync(vehicleRequest);
                 var response = _mapper.ToVehicle(vehicleResponse.Vehicle);
 
@@ -125,6 +128,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Success)
                 {
+
+
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                  "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                  "Update  method in Vehicle controller", vehicleRequest.Id, vehicleResponse.Vehicle.Id, JsonConvert.SerializeObject(vehicleRequest),
+                   Request);
+
                     return Ok(response);
                 }
                 else
@@ -135,6 +145,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                 "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 "Update  method in Vehicle controller", 0, 0, JsonConvert.SerializeObject(vehicleRequest),
+                  Request);
                 _logger.LogError("Vehicle Service:Update : " + ex.Message + " " + ex.StackTrace);
                 // check for fk violation
                 if (ex.Message.Contains(FK_Constraint))
@@ -193,6 +207,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("group/create")]
         public async Task<IActionResult> CreateGroup(VehicleGroupRequest group)
         {
+            VehicleBusinessService.VehicleGroupRequest accountGroupRequest = new VehicleBusinessService.VehicleGroupRequest();
             try
             {
                 _logger.LogInformation("Create Group method in vehicle API called.");
@@ -215,11 +230,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
 
 
-                VehicleBusinessService.VehicleGroupRequest accountGroupRequest = new VehicleBusinessService.VehicleGroupRequest();
+               
                 accountGroupRequest = _mapper.ToVehicleGroup(group);
                 VehicleBusinessService.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(accountGroupRequest);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                   "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                   "CreateGroup  method in Vehicle controller", 0, response.VehicleGroup.Id, JsonConvert.SerializeObject(accountGroupRequest),
+                    Request);
                     return Ok(_mapper.ToVehicleGroup(response));
                 }
                 else if (response != null && response.Code == VehicleBusinessService.Responcecode.Conflict)
@@ -234,6 +253,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                      "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                      "CreateGroup  method in Vehicle controller", 0, 0, JsonConvert.SerializeObject(accountGroupRequest), Request);
                 _logger.LogError("Error in vehicle service:create vehicle group with exception - " + ex.Message + ex.StackTrace);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -526,7 +548,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(404, "vehicle group details are not found.");
+                        return StatusCode(404, "vehicle details are not found.");
                     }
                 }
                 else

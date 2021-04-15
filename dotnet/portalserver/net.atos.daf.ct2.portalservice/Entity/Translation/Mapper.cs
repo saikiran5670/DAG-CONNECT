@@ -64,6 +64,45 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
             return response;
         }
 
+             public WarningDataRequest ToImportDTCWarning(DTCWarningImportRequest request)
+        {
+
+            var dtcRequests = new WarningDataRequest();
+            //id,code , type,veh_type,class,number,description,advice, expires_at,icon_id,created_by,
+            foreach (var x in request.dtcWarningToImport)
+            {
+                    var dtcRequest = new dtcwarning()
+                    {
+                        Code = x.code,
+                        Type = (translationservice.WarningType)x.type,
+                        VehType = x.veh_type,
+                        WarningClass = x.warning_class,
+                        Number = x.number,
+                        Description = x.description,
+                        Advice = x.advice,
+                        ExpiresAt= x.expires_at,
+                        IconId = x.icon_id,
+                        CreatedBy = x.created_by
+                    };
+                dtcRequests.DtcData.Add(dtcRequest);
+                
+            }
+            return dtcRequests;
+
+        }
+
+        public AcceptedTermConditionRequest ToAcceptedTermConditionRequestEntity(AccountTermsCondition request)
+        {
+            AcceptedTermConditionRequest acceptedTermConditionRequest = new AcceptedTermConditionRequest();
+            acceptedTermConditionRequest.Id = request.Id;
+            acceptedTermConditionRequest.AccountId = request.Account_Id;
+            acceptedTermConditionRequest.OrganizationId = request.Organization_Id;
+            acceptedTermConditionRequest.VersionNo = request.version_no;
+            acceptedTermConditionRequest.TermsAndConditionId = request.Terms_And_Condition_Id;
+            return acceptedTermConditionRequest;
+        }
+
+   
 
     }
 }

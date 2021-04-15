@@ -10,17 +10,17 @@ service PackageService{
     rpc Delete (PackageDeleteRequest) returns (PackageResponse);
     rpc Get (GetPackageRequest) returns (GetPackageResponce);   
     rpc Import (ImportPackageRequest) returns (ImportPackageResponce);     
-    rpc UpdatePackageStatus(UpdatePackageStatusRequest) returns (UpdatePackageStatusResponse);
+    rpc UpdatePackageState(UpdatePackageStateRequest) returns (UpdatePackageStateResponse);
 }
-message UpdatePackageStatusRequest{
+message UpdatePackageStateRequest{
 int32 PackageId=1;
-string Status=2;
+string State=2;
 }
 
-message UpdatePackageStatusResponse{
+message UpdatePackageStateResponse{
   Responsecode Code=1;
   string Message = 2;
-  UpdatePackageStatusRequest PackageStatusResponse=3;
+  UpdatePackageStateRequest PackageStateResponse=3;
 }
 message PackageResponse {
   Responsecode Code=1;
@@ -49,9 +49,9 @@ message PackageCreateRequest {
     string Name=5;
     string Type =6;
     string Description=7;    
-    bool IsActive =8;
-    string Status =9;
-    int64 createdAt=10; 
+    string State =8;
+   // string Status =9;
+    int64 createdAt=9; 
   }
 
   message PackageUpdateRequest { 
@@ -62,9 +62,9 @@ message PackageCreateRequest {
     string Name=5;
     string Type =6;
     string Description=7;    
-    bool IsActive =8;
-    string Status =9;
-    int64 createdAt=10; 
+    string State =8;
+  //  string Status =9;
+    int64 createdAt=9; 
   }
    message PackageDeleteRequest {
     int32 Id = 1;  
@@ -77,9 +77,9 @@ message PackageCreateRequest {
     string Name=5;
     string Type =6;
     string Description=7; 
-    bool IsActive =8;
-    string Status =9;
-    int64 createdAt=10; 
+    string State =8;
+    //string Status =9;
+    int64 createdAt=9; 
 }
 message GetPackageResponce { 
    Responsecode code=1;  
@@ -97,6 +97,7 @@ message GetPackageResponce {
         None = 0;
         Inactive = 1;
         Active =2;
+        Delete=3;
        
     }
     enum PackageType

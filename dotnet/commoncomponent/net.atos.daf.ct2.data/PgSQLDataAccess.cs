@@ -30,6 +30,7 @@ namespace net.atos.daf.ct2.data
         {
              connection=dbconnection;
         }
+
         public PgSQLDataAccess(string connectionString)
         {
              connection = new NpgsqlConnection(connectionString);

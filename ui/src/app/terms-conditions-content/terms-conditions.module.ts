@@ -15,7 +15,7 @@ import { TermsConditionsPopupComponent } from './terms-conditions-popup.componen
     TermsConditionsRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    ChartsModule
+    ChartsModule,
   ]
 })
 export class TermsConditionsModule { }

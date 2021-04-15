@@ -9,6 +9,10 @@ using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.account.ENUM;
 using net.atos.daf.ct2.utilities;
 using System.Net;
+using Microsoft.Extensions.Configuration;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.Enum;
+using net.atos.daf.ct2.identity.entity;
 
 namespace net.atos.daf.ct2.account
 {
@@ -20,7 +24,13 @@ namespace net.atos.daf.ct2.account
         IAccountManager accountManager;
         IdentitySessionComponent.IAccountSessionManager accountSessionManager;
         IdentitySessionComponent.IAccountTokenManager accountTokenManager;
-        public AccountIdentityManager(IdentityComponent.ITokenManager _tokenManager, IdentityComponent.IAccountAuthenticator _autheticator, IAccountManager _accountManager, IdentitySessionComponent.IAccountSessionManager _accountSessionManager, IdentitySessionComponent.IAccountTokenManager _accountTokenManager, IdentityComponent.IAccountManager _identityAccountManager)
+        private readonly IConfiguration configuration;
+        private readonly IAuditTraillib auditlog;
+
+        public AccountIdentityManager(IdentityComponent.ITokenManager _tokenManager, IdentityComponent.IAccountAuthenticator _autheticator,
+                                    IAccountManager _accountManager, IAuditTraillib _auditlog,
+                                    IdentitySessionComponent.IAccountSessionManager _accountSessionManager, IdentitySessionComponent.IAccountTokenManager _accountTokenManager,
+                                    IdentityComponent.IAccountManager _identityAccountManager, IConfiguration _configuration)
         {
             autheticator = _autheticator;
             tokenManager = _tokenManager;
@@ -28,24 +38,51 @@ namespace net.atos.daf.ct2.account
             accountSessionManager = _accountSessionManager;
             accountTokenManager = _accountTokenManager;
             identityAccountManager = _identityAccountManager;
+            configuration = _configuration;
+            auditlog = _auditlog;
         }
+
         public async Task<AccountIdentity> Login(IdentityEntity.Identity user)
         {
             AccountIdentity accIdentity = new AccountIdentity();
             accIdentity.tokenIdentifier = string.Empty;
+            accIdentity.ErrorMessage = "Account is not configured.";
+            accIdentity.StatusCode = 1;
             IdentityEntity.AccountToken accToken = new IdentityEntity.AccountToken();
             Account account = GetAccountByEmail(user.UserName);
             if (account != null && account.Id > 0)
             {
+                //Check if the user id blocked
+                //1. Get Password Policy by Account Id
+                var passwordPolicyAccount = await accountManager.GetPasswordPolicyAccount(account.Id);
+
+                //2. Check isBlock = true, then return with error msg as contact to admin
+                if (passwordPolicyAccount != null && passwordPolicyAccount.IsBlocked)
+                {
+                    accIdentity.ErrorMessage = "Account is blocked, please contact DAF System Admin.";
+                    accIdentity.StatusCode = 5;//TO Do: once fix the ResponceCode class we have change this accordingly. Applicable all the below lines in the method
+                    return await Task.FromResult(accIdentity);
+                }
+                //3. Check if LockedUntil > Now date, Same as defual msg of failer
+                if (passwordPolicyAccount != null && CheckLockedUntil(passwordPolicyAccount.LockedUntil))
+                {
+                    accIdentity.ErrorMessage = $"Login failed. Please try with proper credentials after {configuration["AccountPolicy:AccountUnlockDurationInMinutes"]} minutes.";
+                    accIdentity.StatusCode = 5;
+                    return await Task.FromResult(accIdentity);
+                }
+
                 accToken = await PrepareSaveToken(user, account);
                 if (accToken != null && accToken.statusCode == HttpStatusCode.OK)
                 {
+                    passwordPolicyAccount = await CaptureUserLastLogin(account);
+
                     IdentityEntity.AccountIDPClaim accIDPclaims = tokenManager.DecodeToken(accToken.AccessToken);
 
                     accIdentity.tokenIdentifier = accIDPclaims.Id;
                     accIdentity.accountInfo = account;
                     accIdentity.AccountOrganization = accountManager.GetAccountOrg(account.Id).Result;
                     accIdentity.AccountRole = accountManager.GetAccountRole(account.Id).Result;
+                    #region commneted code
                     //accIdentity.AccountToken=accToken;
                     // int accountId= GetAccountByEmail(user.UserName);
                     // if(accountId>0)
@@ -61,10 +98,68 @@ namespace net.atos.daf.ct2.account
                     //    break; //get only first preference
                     //}
                     // }
+                    #endregion
+                }//if check password max days expird
+                else if (accToken?.statusCode == HttpStatusCode.BadRequest && CheckIsPasswordExpired(accToken?.message))
+                {
+                    //Generate Reset token with 302 response code
+                    var identityResult = await GetResetToken(user);                    
+                    accIdentity.StatusCode = (int)identityResult?.StatusCode;
+                    if (identityResult?.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        accIdentity.StatusCode = 3;
+                        accIdentity.ErrorMessage = AccountConstants.Error_Reset_Token_NotFound;
+                    }
+                    if (identityResult?.StatusCode == HttpStatusCode.Redirect)
+                        accIdentity.Token = new ExpiryToken(Convert.ToString(identityResult?.Result));
+                }
+                else
+                {
+                    //Implement Account lock logic
+                    //Pre-Condition to Check, if PasswordPolicy not exist then upseting                    
+                    passwordPolicyAccount = await accountManager.GetPasswordPolicyAccount(account.Id);
+                    if (passwordPolicyAccount == null)
+                    {
+                        passwordPolicyAccount = new PasswordPolicyAccount();
+                        passwordPolicyAccount.AccountId = account.Id;
+                        await accountManager.UpsertPasswordPolicyAccount(passwordPolicyAccount);
+                    }
+                    //1. Increament to FailedLoginAttempts by one
+                    passwordPolicyAccount.FailedLoginAttempts += 1;
+                    //Calculate AccountLockAttempts
+
+                    if (passwordPolicyAccount.FailedLoginAttempts % Convert.ToInt32(configuration["AccountPolicy:LoginAttemptThresholdLimit"]) == 0)
+                    {
+                        passwordPolicyAccount.LockedUntil = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(Convert.ToInt32(configuration["AccountPolicy:AccountUnlockDurationInMinutes"])));
+                        passwordPolicyAccount.AccountLockAttempts += 1;
+                        passwordPolicyAccount.FailedLoginAttempts = 0;
+                    }
+                    // check in db to set proper not null - Not required
+
+                    //2. Check if AccountLockAttempts < Config[AccountLockThresholdLimit]  
+                    if (passwordPolicyAccount.AccountLockAttempts < Convert.ToInt32(configuration["AccountPolicy:AccountLockThresholdLimit"]))
+                    {
+                        await accountManager.UpsertPasswordPolicyAccount(passwordPolicyAccount);
+                        accIdentity.ErrorMessage = "Login failed. Please try with proper credentials.";
+                        await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Identity Component", "Account Identity Manager", AuditTrailEnum.Event_type.LOGIN, AuditTrailEnum.Event_status.FAILED, $"Incorrect login attempted count - {passwordPolicyAccount.FailedLoginAttempts} and Account Lock Attempts count - {passwordPolicyAccount.AccountLockAttempts}", 1, 2, account.EmailId);
+                        accIdentity.StatusCode = 401;
+                        return await Task.FromResult(accIdentity);
+                    }
+                    else
+                    {
+                        //Block
+                        passwordPolicyAccount.IsBlocked = true;
+                        await accountManager.UpsertPasswordPolicyAccount(passwordPolicyAccount);
+                        await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Identity Component", "Account Identity Manager", AuditTrailEnum.Event_type.LOGIN, AuditTrailEnum.Event_status.FAILED, $"Incorrect login attempts, Account is locked.", 1, 2, account.EmailId);
+                        accIdentity.ErrorMessage = "Account is blocked, please contact DAF System Admin.";
+                        accIdentity.StatusCode = 5;
+                        return await Task.FromResult(accIdentity);
+                    }
                 }
             }
             return await Task.FromResult(accIdentity);
         }
+
         public async Task<AccountIdentity> LoginOld(IdentityEntity.Identity user)
         {
             AccountIdentity accIdentity = new AccountIdentity();
@@ -72,8 +167,6 @@ namespace net.atos.daf.ct2.account
             Account account = GetAccountByEmail(user.UserName);
             if (account != null && account.Id > 0)
             {
-                //int accountId = account.Id;
-                //accIdentity.AccountId= account.Id;
                 accIdentity.accountInfo = account;
                 IdentityEntity.Response idpResponse = await autheticator.AccessToken(user);
                 if (idpResponse.StatusCode == System.Net.HttpStatusCode.OK)
@@ -84,28 +177,13 @@ namespace net.atos.daf.ct2.account
                     accIDPclaims.TokenExpiresIn = token.expires_in;
 
                     IdentityEntity.AccountToken accToken = tokenManager.CreateToken(accIDPclaims);
-                    //accIdentity.tokenIdentifier = true;
-                    //accIdentity.AccountToken=accToken;
-                    // int accountId= GetAccountByEmail(user.UserName);
-                    // if(accountId>0)
-                    // {
-                    //AccountPreferenceFilter filter=new AccountPreferenceFilter();
-                    //filter.Ref_Id=account.Id;
-                    ////filter.Ref_Id =PreferenceType.Ref_id;
-                    //filter.PreferenceType=PreferenceType.Account;
-                    //IEnumerable<AccountPreference> preferences = preferenceManager.Get(filter).Result;
-                    //foreach(var pref in preferences) 
-                    //{
-                    //    accIdentity.AccountPreference=pref;
-                    //    break; //get only first preference
-                    //}
                     accIdentity.AccountOrganization = accountManager.GetAccountOrg(account.Id).Result;
                     accIdentity.AccountRole = accountManager.GetAccountRole(account.Id).Result;
-                    // }
                 }
             }
             return await Task.FromResult(accIdentity);
         }
+
         public async Task<IdentityEntity.AccountToken> GenerateToken(IdentityEntity.Identity user)
         {
             IdentityEntity.AccountToken accToken = new IdentityEntity.AccountToken();
@@ -117,19 +195,50 @@ namespace net.atos.daf.ct2.account
             else
             {
                 accToken.statusCode = System.Net.HttpStatusCode.NotFound;
-                accToken.message = "Account is not present in database";
+                accToken.message = "Account is not present";
             }
             return accToken;
         }
+        public async Task<IdentityEntity.AccountToken> GenerateTokenGUID(IdentityEntity.Identity user)
+        {
+            string tokenIdentifier = string.Empty;
+            IdentityEntity.AccountToken accToken = new IdentityEntity.AccountToken();
+            Account account = GetAccountByEmail(user.UserName);
+            if (account != null && account.Id > 0)
+            {
+                accToken = await PrepareSaveToken(user, account);
+                if (accToken != null && accToken.statusCode == HttpStatusCode.OK)
+                {
+                    IdentityEntity.AccountIDPClaim accIDPclaims = tokenManager.DecodeToken(accToken.AccessToken);
+                    //replacing jwt access token with guid based access token
+                    accToken.AccessToken = accIDPclaims.Id;
+                }
+            }
+            else
+            {
+                accToken.statusCode = System.Net.HttpStatusCode.NotFound;
+                accToken.message = "Account is not present";
+            }
+            return accToken;
+        }
+
         public async Task<bool> ValidateToken(string token)
         {
             bool result = false;
             result = await tokenManager.ValidateToken(token);
             if (result)
-                result = await VerifyAccountToken(token);
-
+            {
+                ValidTokenResponse response = await ValidateJwtToken(token);
+                result = response.Valid;
+            }
             return await Task.FromResult(result);
-        }        
+        }
+        public async Task<ValidTokenResponse> ValidateTokenGuid(string token)
+        {
+            ValidTokenResponse response = await ValidateAndFetchTokenDetails(token);
+            return response;
+        }
+
         public async Task<bool> LogoutByJwtToken(string token)
         {
             bool isLogout = false;
@@ -149,9 +258,9 @@ namespace net.atos.daf.ct2.account
                         //no token belong to this session hence delete the token
                         int sessionid = await accountSessionManager.DeleteSession(accIDPclaims.Sessionstate);
                         //sign out account from IDP by using username
-                        IdentityEntity.Identity identity= new IdentityEntity.Identity();
+                        IdentityEntity.Identity identity = new IdentityEntity.Identity();
                         identity.UserName = accIDPclaims.Email;
-                        IdentityEntity.Response response=await identityAccountManager.LogOut(identity);
+                        IdentityEntity.Response response = await identityAccountManager.LogOut(identity);
                     }
                     isLogout = true;
                 }
@@ -166,15 +275,7 @@ namespace net.atos.daf.ct2.account
                 await accountTokenManager.DeleteTokenbyAccountId(accountId);
                 await accountSessionManager.DeleteSessionByAccountId(accountId);
 
-                string emailid = string.Empty;
-                AccountFilter filter = new AccountFilter();
-                filter.Id = accountId;
-                IEnumerable<Account> accounts = await accountManager.Get(filter);
-                foreach (var account in accounts)
-                {
-                    emailid = account.EmailId;
-                    break;
-                }
+                string emailid = await GetEmailByAccountId(accountId);
                 if (!string.IsNullOrEmpty(emailid))
                 {   //sign out account from IDP using email
                     IdentityEntity.Identity identity = new IdentityEntity.Identity();
@@ -184,8 +285,8 @@ namespace net.atos.daf.ct2.account
                 isLogout = true;
             }
             return await Task.FromResult(isLogout);
-
         }
+
         public async Task<bool> LogoutByTokenId(string tokenid)
         {
             bool isLogout = false;
@@ -205,62 +306,67 @@ namespace net.atos.daf.ct2.account
             }
             return await Task.FromResult(isLogout);
         }
-        private async Task LogoutFromIDP(int accountId)
+        private async Task<ValidTokenResponse> ValidateJwtToken(string token)
         {
-            string emailid = string.Empty;
-            AccountFilter filter = new AccountFilter();
-            filter.Id = accountId;
-            IEnumerable<Account> accounts = await accountManager.Get(filter);
-            foreach (var account in accounts)
+            ValidTokenResponse response = new ValidTokenResponse();
+            response.Valid = false;
+            //decode token to extract token identifier, sessoin state and email
+            IdentityEntity.AccountIDPClaim accIDPclaims = tokenManager.DecodeToken(token);
+            if (accIDPclaims != null && !string.IsNullOrEmpty(accIDPclaims.Id))
             {
-                emailid = account.EmailId;
+                response = await ValidateAndFetchTokenDetails(accIDPclaims.Id);
+            }
+            else
+                response.Valid = false;
+            return response;
+        }
+        private async Task<ValidTokenResponse> ValidateAndFetchTokenDetails(string tokenGuid)
+        {
+            ValidTokenResponse response = new ValidTokenResponse();
+            response.Valid = false;
+            int accountid = 0;
+            int sessionid = 0;
+            response.TokenIdentifier = tokenGuid;
+            //check token is available in account token 
+            IEnumerable<IdentitySessionComponent.entity.AccountToken> tokenlst = await accountTokenManager.GetTokenDetails(tokenGuid);
+            foreach (var item in tokenlst)
+            {
+                accountid = item.AccountId;
+                response.AccountId = item.AccountId;
                 break;
             }
+            //check session is available in account session
+            if (accountid > 0)
+            {
+                IEnumerable<IdentitySessionComponent.entity.AccountSession> sessionlst = await accountSessionManager.GetAccountSession(accountid);
+                foreach (var item in tokenlst)
+                {
+                    sessionid = item.Session_Id;
+                    response.SessionId = item.Session_Id;
+                    break;
+                }
+                if (sessionid > 0)
+                {
+                    response.Valid = true;
+                    response.Email = await GetEmailByAccountId(accountid);
+                }
+                else
+                    response.Valid = false;
+            }
+            else
+                response.Valid = false;
+
+            return response;
+        }
+        private async Task LogoutFromIDP(int accountId)
+        {
+            string emailid = await GetEmailByAccountId(accountId);
             if (!string.IsNullOrEmpty(emailid))
             {   //sign out account from IDP using email
                 IdentityEntity.Identity identity = new IdentityEntity.Identity();
                 identity.UserName = emailid;
                 IdentityEntity.Response response = await identityAccountManager.LogOut(identity);
             }
-        }
-        private async Task<bool> VerifyAccountToken(string token)
-        {
-            bool isAvailable = false;
-            //decode token to extract token identifier, sessoin state and email
-            IdentityEntity.AccountIDPClaim accIDPclaims = tokenManager.DecodeToken(token);
-            if (accIDPclaims != null && !string.IsNullOrEmpty(accIDPclaims.Id))
-            {
-                int accountid = 0;
-                int sessionid= 0;
-                //check token is available in account token 
-                IEnumerable <IdentitySessionComponent.entity.AccountToken> tokenlst = await accountTokenManager.GetTokenDetails(accIDPclaims.Id);
-                foreach (var item in tokenlst)
-                {
-                    accountid = item.AccountId;
-                    break;
-                }
-                //check session is available in account account
-                if (accountid > 0)
-                {
-                    IEnumerable<IdentitySessionComponent.entity.AccountSession> sessionlst = await accountSessionManager.GetAccountSession(accountid);
-                    foreach (var item in tokenlst)
-                    {
-                        sessionid = item.Session_Id;
-                        break;
-                    }
-                    if (sessionid > 0)
-                    {
-                        isAvailable = true;
-                    }
-                    else
-                        isAvailable = false;
-                }
-                else
-                    isAvailable = false;
-            }
-            else
-                isAvailable = false;
-            return await Task.FromResult(isAvailable);
         }
         private async Task<IdentityEntity.AccountToken> PrepareSaveToken(IdentityEntity.Identity user, Account account)
         {
@@ -388,6 +494,56 @@ namespace net.atos.daf.ct2.account
                 break;//get only first account id
             }
             return account;
+        }
+
+        private async Task<Response> GetResetToken(Identity user)
+        {
+            try
+            {
+                var result = await accountManager.ResetPasswordInitiate(user.UserName, false);
+                result.StatusCode = result.StatusCode == HttpStatusCode.OK ? HttpStatusCode.Redirect : HttpStatusCode.NotFound;
+                return result;
+            }
+            catch (Exception e)
+            {
+                return new Response { StatusCode = HttpStatusCode.NotFound };
+            }
+        }
+
+        private bool CheckIsPasswordExpired(string message)
+        {
+            var identityResponseContent = JsonConvert.DeserializeObject<IdentityResponse>(message);
+            return identityResponseContent.Error == AccountConstants.Error_Invalid_Grant &&
+                    identityResponseContent.Error_Description == AccountConstants.Error_Pwd_Expired;
+        }
+
+        private async Task<PasswordPolicyAccount> CaptureUserLastLogin(Account account)
+        {
+            PasswordPolicyAccount passwordPolicyAccount = new PasswordPolicyAccount();
+            passwordPolicyAccount.AccountId = account.Id;
+            passwordPolicyAccount.LastLogin = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+            await accountManager.UpsertPasswordPolicyAccount(passwordPolicyAccount);
+            return passwordPolicyAccount;
+        }
+
+        private bool CheckLockedUntil(long? lockedUntil)
+        {
+            if (lockedUntil != null && lockedUntil >= UTCHandling.GetUTCFromDateTime(DateTime.Now))
+                return true;
+            return false;
+        }
+        private async Task<string> GetEmailByAccountId(int accountId)
+        {
+            string emailid = string.Empty;
+            AccountFilter filter = new AccountFilter();
+            filter.Id = accountId;
+            IEnumerable<Account> accounts = await accountManager.Get(filter);
+            foreach (var account in accounts)
+            {
+                emailid = account.EmailId;
+                break;
+            }
+            return emailid;
         }
     }
 }

@@ -11,6 +11,8 @@ import { PackageService } from 'src/app/services/package.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MatTableExporterDirective } from 'mat-table-exporter';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-package-management',
@@ -42,6 +44,15 @@ export class PackageManagementComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
   importClicked :boolean =false;
+  importTranslationData : any = {};
+  templateTitle = ['PackageCode','PackageName','Description','PackageType','PackageStatus','FeatureId'];
+  templateValue = [
+    ['PTest100', 'Package1', "Package Template", "VIN", "Active","Dashboard, Report"]
+  ];
+  tableColumnList = ['packageCode','packageName','packageDescription','packageType','packageStatus','packageFeature','returnMessage'];
+  tableColumnName = ['Package Code','Package Name','Package Description','Package Type','Package Status','Package Feature','Fail Reason'];
+  tableTitle = 'Rejected Driver Details';
+
   constructor(
       private translationService: TranslationService,
       private packageService: PackageService, 
@@ -149,8 +160,26 @@ export class PackageManagementComponent implements OnInit {
     }
   }
 
-  ExportAsCSV(){
+  exportAsCSV(){
     this.matTableExporter.exportTable('csv', {fileName:'Package_Data', sheet: 'sheet_name'});
+  }
+
+  exportAsPdf() {
+    let DATA = document.getElementById('packageData');
+      
+    html2canvas(DATA).then(canvas => {
+        
+        let fileWidth = 208;
+        let fileHeight = canvas.height * fileWidth / canvas.width;
+        
+        const FILEURI = canvas.toDataURL('image/png')
+        let PDF = new jsPDF('p', 'mm', 'a4');
+        let position = 0;
+        PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+        
+        PDF.save('package_Data.pdf');
+        PDF.output('dataurlnewwindow');
+    });     
   }
 
   createNewPackage(){
@@ -168,8 +197,10 @@ export class PackageManagementComponent implements OnInit {
     const options = {
       title: this.translationData.lblAlert || "Alert",
       message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
-      cancelText: this.translationData.lblNo || "No",
-      confirmText: this.translationData.lblYes || "Yes",
+      // cancelText: this.translationData.lblNo || "No",
+      // confirmText: this.translationData.lblYes || "Yes",
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: (rowData.status == 'Active') ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
       status: rowData.status == 'Active' ? 'Inactive' : 'Active' ,
       name: rowData.name
     };
@@ -204,14 +235,14 @@ export class PackageManagementComponent implements OnInit {
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
-    this.dialogService.DeleteModelOpen(options, rowData.name);
+    this.dialogService.DeleteModelOpen(options, rowData.code);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
       this.packageService.deletePackage(packageId).subscribe((data) => {
         this.openSnackBar('Item delete', 'dismiss');
         this.loadPackageData();
       })
-        this.successMsgBlink(this.getDeletMsg(rowData.name));
+        this.successMsgBlink(this.getDeletMsg(rowData.code));
       }
     });
   }
@@ -226,11 +257,11 @@ export class PackageManagementComponent implements OnInit {
     });
   }
 
-  getDeletMsg(PackageName: any){
+  getDeletMsg(PackageCode: any){
     if(this.translationData.lblPackagewassuccessfullydeleted)
-      return this.translationData.lblPackagewassuccessfullydeleted.replace('$', PackageName);
+      return this.translationData.lblPackagewassuccessfullydeleted.replace('$', PackageCode);
     else
-      return ("Package '$' was successfully deleted").replace('$', PackageName);
+      return ("Package '$' was successfully deleted").replace('$', PackageCode);
   }
 
   successMsgBlink(msg: any){
@@ -295,6 +326,53 @@ export class PackageManagementComponent implements OnInit {
   }
   importPackageCSV(){
     this.importClicked = true;
+    this.processTranslationForImport();
     //this.route.navigate(["import"]);
+  }
+
+  pageSizeUpdated(_event){
+    setTimeout(() => {
+      document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
+    }, 100);
+  }
+
+  processTranslationForImport(){
+    if(this.translationData){
+      this.importTranslationData.importTitle = this.translationData.lblImportNewPackage || 'Import New Package';
+      this.importTranslationData.downloadTemplate = this.translationData.lbldownloadTemplate|| 'Download a Template';
+      this.importTranslationData.downloadTemplateInstruction = this.translationData.lbldownloadTemplateInstruction || 'Download template from here and upload it again with updated details';
+      this.importTranslationData.selectUpdatedFile = this.translationData.lblselectUpdatedFile|| 'Select Updated File';
+      this.importTranslationData.browse= this.translationData.lblbrowse || 'Browse';
+      this.importTranslationData.uploadButtonText= this.translationData.lbluploadPackage || 'Upload Package';
+      this.importTranslationData.selectFile= this.translationData.lblPleaseSelectAFile || 'Please select a file';
+      this.importTranslationData.totalSizeMustNotExceed= this.translationData.lblTotalSizeMustNotExceed || 'The total size must not exceed';
+      this.importTranslationData.emptyFile= this.translationData.lblEmptyFile || 'Empty File';
+      this.importTranslationData.importedFileDetails= this.translationData.lblImportedFileDetails || 'Imported file details';
+      this.importTranslationData.new= this.translationData.lblNew || 'new';
+      this.importTranslationData.fileType= this.translationData.lblPackage || 'package';
+      this.importTranslationData.fileTypeMultiple= this.translationData.lblPackage || 'packages';
+      this.importTranslationData.imported= this.translationData.lblimport || 'Imported';
+      this.importTranslationData.rejected= this.translationData.lblrejected|| 'Rejected';
+      this.importTranslationData.existError = this.translationData.lblPackagecodealreadyexists  || 'Package code already exists';
+      this.importTranslationData.input1mandatoryReason = this.translationData.lblPackageCodeMandatoryReason || 'Package Code is mandatory input';
+      this.importTranslationData.input2mandatoryReason = this.translationData.lblPackageNameMandatoryReason || 'Package Name is mandatory input';
+      this.importTranslationData.maxAllowedLengthReason = this.translationData.lblExceedMaxLength || "'$' exceeds maximum allowed length of '#' chars";
+      this.importTranslationData.specialCharNotAllowedReason = this.translationData.lblSpecialCharNotAllowed || "Special characters not allowed in '$'";
+      this.importTranslationData.packageDescriptionCannotExceedReason = this.translationData.lblPackageDescriptionCannotExceed || 'Package Description cannot exceed 100 characters';
+      this.importTranslationData.packageTypeMandateReason = this.translationData.lblPackageTypeMandate|| 'Package Type is mandatory input';
+      this.importTranslationData.packageStatusMandateReason = this.translationData.lblPackageStatusMandate|| 'Package Status is mandatory input';
+      this.importTranslationData.packageTypeReason = this.translationData.lblPackageTypeValue || 'Package type should be VIN or Organization';
+      this.importTranslationData.packageStatusReason = this.translationData.lblPackageStatusValue || 'Package status can be Active or Inactive';
+      this.importTranslationData.featureemptyReason = this.translationData.lblFeatureCannotbeEmpty|| "Features should be comma separated and cannot be empty";
+      this.importTranslationData.featureinvalidReason = this.translationData.lblFeatureInvalid|| "Feature is invalid";
+      this.tableTitle = this.translationData.lblTableTitle || 'Rejected Driver Details';
+      this.tableColumnName = [this.translationData.lblPackageCode || 'Package Code',
+                              this.translationData.lblPackageName ||'Package Name',
+                              this.translationData.lblPackageDescription || 'Package Description',
+                              this.translationData.lblPackageType || 'Package Type',
+                              this.translationData.lblPackageStatus ||'Package Status',
+                              this.translationData.lblPackageFeature ||'Package Feature',
+                              this.translationData.lblFailReason || 'Fail Reason'];
+    }
   }
 }

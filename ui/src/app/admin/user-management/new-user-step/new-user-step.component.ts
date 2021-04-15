@@ -25,6 +25,7 @@ export class NewUserStepComponent implements OnInit {
   @Input() userGrpData: any;
   @Input() translationData: any;
   @Input() userDataForEdit: any;
+  @Input() orgPreference: any;
   @Output() userCreate = new EventEmitter<object>();
   @ViewChild('stepper') stepper;
   roleDataSource: any = [];
@@ -137,21 +138,23 @@ export class NewUserStepComponent implements OnInit {
         value: 'S'
       }
     ];
-    this.orgDefaultFlag = {
-      language: false,
-      timeZone: false,
-      unit: false,
-      currency: false,
-      dateFormat: false,
-      vehDisplay: false,
-      timeFormat: false,
-      landingPage: false
-    }
     this.roleDataSource = new MatTableDataSource(this.roleData);
     this.userGrpDataSource = new MatTableDataSource(this.userGrpData);
     this.firstFormGroup.get('userType').setValue(this.userTypeList[0].value); //-- default portal
-    //call to organization/preference/get to get org default preferences and pass the res to below function
     this.setDefaultSetting();
+  }
+
+  setDefaultOrgVal(){
+    this.orgDefaultFlag = {
+      language: true,
+      timeZone: true,
+      unit: true,
+      currency: true,
+      dateFormat: true,
+      vehDisplay: true,
+      timeFormat: true,
+      landingPage: true
+    }
   }
 
    setDefaultSetting(prefObj?: any){
@@ -165,15 +168,16 @@ export class NewUserStepComponent implements OnInit {
       this.firstFormGroup.get('timeFormat').setValue(prefObj.timeFormatId);
       this.firstFormGroup.get('landingPage').setValue(prefObj.landingPageDisplayId);
     }
-    else{ //-- Set default setting
-      this.firstFormGroup.get('language').setValue(this.defaultSetting.languageDropdownData[0].id);
-      this.firstFormGroup.get('timeZone').setValue(this.defaultSetting.timezoneDropdownData[0].id);
-      this.firstFormGroup.get('unit').setValue(this.defaultSetting.unitDropdownData[0].id);
-      this.firstFormGroup.get('currency').setValue(this.defaultSetting.currencyDropdownData[0].id);
-      this.firstFormGroup.get('dateFormat').setValue(this.defaultSetting.dateFormatDropdownData[0].id);
-      this.firstFormGroup.get('vehDisplay').setValue(this.defaultSetting.vehicleDisplayDropdownData[0].id);
-      this.firstFormGroup.get('timeFormat').setValue(this.defaultSetting.timeFormatDropdownData[0].id);
-      this.firstFormGroup.get('landingPage').setValue(this.defaultSetting.landingPageDisplayDropdownData[0].id);
+    else{ //-- set org default setting
+      this.firstFormGroup.get('language').setValue((this.orgPreference.language && this.orgPreference.language != '') ? this.orgPreference.language : this.defaultSetting.languageDropdownData[0].id);
+      this.firstFormGroup.get('timeZone').setValue((this.orgPreference.timezone && this.orgPreference.timezone != '') ? this.orgPreference.timezone : this.defaultSetting.timezoneDropdownData[0].id);
+      this.firstFormGroup.get('unit').setValue((this.orgPreference.unit && this.orgPreference.unit != '') ? this.orgPreference.unit : this.defaultSetting.unitDropdownData[0].id);
+      this.firstFormGroup.get('currency').setValue((this.orgPreference.currency && this.orgPreference.currency != '') ? this.orgPreference.currency : this.defaultSetting.currencyDropdownData[0].id);
+      this.firstFormGroup.get('dateFormat').setValue((this.orgPreference.dateFormat && this.orgPreference.dateFormat != '') ? this.orgPreference.dateFormat : this.defaultSetting.dateFormatDropdownData[0].id);
+      this.firstFormGroup.get('vehDisplay').setValue((this.orgPreference.vehicleDisplay && this.orgPreference.vehicleDisplay != '') ? this.orgPreference.vehicleDisplay : this.defaultSetting.vehicleDisplayDropdownData[0].id);
+      this.firstFormGroup.get('timeFormat').setValue((this.orgPreference.timeFormat && this.orgPreference.timeFormat != '') ? this.orgPreference.timeFormat : this.defaultSetting.timeFormatDropdownData[0].id);
+      this.firstFormGroup.get('landingPage').setValue((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id);
+      this.setDefaultOrgVal();
     }
    }
 
@@ -208,34 +212,37 @@ export class NewUserStepComponent implements OnInit {
         driverId: ""
       }
 
-      this.accountService.createAccount(objData).subscribe((res)=>{
+      this.accountService.createAccount(objData).subscribe((res: any) => {
         this.userData = res;
         let preferenceObj = {
           id: 0,
           refId: this.userData.id,
-          languageId: this.firstFormGroup.controls.language.value != '' ? this.firstFormGroup.controls.language.value : this.defaultSetting.languageDropdownData[0].id,
-          timezoneId: this.firstFormGroup.controls.timeZone.value != '' ?  this.firstFormGroup.controls.timeZone.value : this.defaultSetting.timezoneDropdownData[0].id,
-          unitId: this.firstFormGroup.controls.unit.value != '' ?  this.firstFormGroup.controls.unit.value : this.defaultSetting.unitDropdownData[0].id,
-          currencyId: this.firstFormGroup.controls.currency.value != '' ?  this.firstFormGroup.controls.currency.value : this.defaultSetting.currencyDropdownData[0].id,
-          dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value != '' ?  this.firstFormGroup.controls.dateFormat.value : this.defaultSetting.dateFormatDropdownData[0].id,
-          timeFormatId: this.firstFormGroup.controls.timeFormat.value != '' ?  this.firstFormGroup.controls.timeFormat.value : this.defaultSetting.timeFormatDropdownData[0].id,
-          vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : this.defaultSetting.vehicleDisplayDropdownData[0].id,
-          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : this.defaultSetting.landingPageDisplayDropdownData[0].id
+          languageId: this.firstFormGroup.controls.language.value != '' ? this.firstFormGroup.controls.language.value : ((this.orgPreference.language && this.orgPreference.language != '') ? this.orgPreference.language : this.defaultSetting.languageDropdownData[0].id),
+          timezoneId: this.firstFormGroup.controls.timeZone.value != '' ?  this.firstFormGroup.controls.timeZone.value : ((this.orgPreference.timezone && this.orgPreference.timezone != '') ? this.orgPreference.timezone : this.defaultSetting.timezoneDropdownData[0].id),
+          unitId: this.firstFormGroup.controls.unit.value != '' ?  this.firstFormGroup.controls.unit.value : ((this.orgPreference.unit && this.orgPreference.unit != '') ? this.orgPreference.unit : this.defaultSetting.unitDropdownData[0].id),
+          currencyId: this.firstFormGroup.controls.currency.value != '' ?  this.firstFormGroup.controls.currency.value : ((this.orgPreference.currency && this.orgPreference.currency != '') ? this.orgPreference.currency : this.defaultSetting.currencyDropdownData[0].id),
+          dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value != '' ?  this.firstFormGroup.controls.dateFormat.value : ((this.orgPreference.dateFormat && this.orgPreference.dateFormat != '') ? this.orgPreference.dateFormat : this.defaultSetting.dateFormatDropdownData[0].id),
+          timeFormatId: this.firstFormGroup.controls.timeFormat.value != '' ?  this.firstFormGroup.controls.timeFormat.value : ((this.orgPreference.timeFormat && this.orgPreference.timeFormat != '') ? this.orgPreference.timeFormat : this.defaultSetting.timeFormatDropdownData[0].id),
+          vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : ((this.orgPreference.vehicleDisplay && this.orgPreference.vehicleDisplay != '') ? this.orgPreference.vehicleDisplay : this.defaultSetting.vehicleDisplayDropdownData[0].id),
+          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : ((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id)
         }
-        
-        this.accountService.createPreference(preferenceObj).subscribe(()=>{
-          if(createStatus){
-            this.updateTableData(createStatus);
+
+        let createPrefFlag = false;
+        for (const [key, value] of Object.entries(this.orgDefaultFlag)) {
+          if(!value){
+            createPrefFlag = true;
+            break;
           }
-          else{
-            this.userCreatedMsg = this.getUserCreatedMessage(true);
-            this.grpTitleVisible = true;
-            setTimeout(() => {  
-              this.grpTitleVisible = false;
-            }, 5000);
-            this.stepper.next();
-          }
-        });
+        }
+
+        if(createPrefFlag){ //--- pref created
+          this.accountService.createPreference(preferenceObj).subscribe((prefData: any) => {
+            this.goForword(createStatus);
+          });
+        }else{ //--- pref not created
+          this.goForword(createStatus);
+        }
+
         if(this.croppedImage != ''){
           let objData = {
             "blobId": this.userData.blobId,
@@ -244,10 +251,8 @@ export class NewUserStepComponent implements OnInit {
             "image": this.croppedImage.split(",")[1]
           }
       
-          this.accountService.saveAccountPicture(objData).subscribe(data => {
-            if(data){
-              
-            }
+          this.accountService.saveAccountPicture(objData).subscribe((data: any) => {
+            if(data){ }
           }, (error) => {
             this.imageError= "Something went wrong. Please try again!";
           })
@@ -263,6 +268,20 @@ export class NewUserStepComponent implements OnInit {
           }
         }
        });
+  }
+
+  goForword(_createStatus: any){
+    if(_createStatus){
+      this.updateTableData(_createStatus);
+    }
+    else{
+      this.userCreatedMsg = this.getUserCreatedMessage(true);
+      this.grpTitleVisible = true;
+      setTimeout(() => {  
+        this.grpTitleVisible = false;
+      }, 5000);
+      this.stepper.next();
+    }
   }
 
   callToLinkPopup(linkAccountInfo: any){
@@ -617,14 +636,14 @@ export class NewUserStepComponent implements OnInit {
         let prefObj: any = {
           id: this.prefId,
           refId: this.linkAccountId, //-- link account id
-          languageId: this.firstFormGroup.controls.language.value ? this.firstFormGroup.controls.language.value : this.defaultSetting.languageDropdownData[0].id,
-          timezoneId: this.firstFormGroup.controls.timeZone.value ? this.firstFormGroup.controls.timeZone.value : this.defaultSetting.timezoneDropdownData[0].id,
-          unitId: this.firstFormGroup.controls.unit.value ? this.firstFormGroup.controls.unit.value : this.defaultSetting.unitDropdownData[0].id,
-          currencyId: this.firstFormGroup.controls.currency.value ? this.firstFormGroup.controls.currency.value : this.defaultSetting.currencyDropdownData[0].id,
-          dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value ? this.firstFormGroup.controls.dateFormat.value : this.defaultSetting.dateFormatDropdownData[0].id,
-          timeFormatId: this.firstFormGroup.controls.timeFormat.value ? this.firstFormGroup.controls.timeFormat.value : this.defaultSetting.timeFormatDropdownData[0].id,
-          vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value ? this.firstFormGroup.controls.vehDisplay.value : this.defaultSetting.vehicleDisplayDropdownData[0].id,
-          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value ? this.firstFormGroup.controls.landingPage.value : this.defaultSetting.landingPageDisplayDropdownData[0].id
+          languageId: this.firstFormGroup.controls.language.value != '' ? this.firstFormGroup.controls.language.value : ((this.orgPreference.language && this.orgPreference.language != '') ? this.orgPreference.language : this.defaultSetting.languageDropdownData[0].id),
+          timezoneId: this.firstFormGroup.controls.timeZone.value != '' ?  this.firstFormGroup.controls.timeZone.value : ((this.orgPreference.timezone && this.orgPreference.timezone != '') ? this.orgPreference.timezone : this.defaultSetting.timezoneDropdownData[0].id),
+          unitId: this.firstFormGroup.controls.unit.value != '' ?  this.firstFormGroup.controls.unit.value : ((this.orgPreference.unit && this.orgPreference.unit != '') ? this.orgPreference.unit : this.defaultSetting.unitDropdownData[0].id),
+          currencyId: this.firstFormGroup.controls.currency.value != '' ?  this.firstFormGroup.controls.currency.value : ((this.orgPreference.currency && this.orgPreference.currency != '') ? this.orgPreference.currency : this.defaultSetting.currencyDropdownData[0].id),
+          dateFormatTypeId: this.firstFormGroup.controls.dateFormat.value != '' ?  this.firstFormGroup.controls.dateFormat.value : ((this.orgPreference.dateFormat && this.orgPreference.dateFormat != '') ? this.orgPreference.dateFormat : this.defaultSetting.dateFormatDropdownData[0].id),
+          timeFormatId: this.firstFormGroup.controls.timeFormat.value != '' ?  this.firstFormGroup.controls.timeFormat.value : ((this.orgPreference.timeFormat && this.orgPreference.timeFormat != '') ? this.orgPreference.timeFormat : this.defaultSetting.timeFormatDropdownData[0].id),
+          vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : ((this.orgPreference.vehicleDisplay && this.orgPreference.vehicleDisplay != '') ? this.orgPreference.vehicleDisplay : this.defaultSetting.vehicleDisplayDropdownData[0].id),
+          landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : ((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id)
         }
         if(this.prefId != 0){
           this.accountService.updateAccountPreference(prefObj).subscribe((data) => {
@@ -652,7 +671,7 @@ export class NewUserStepComponent implements OnInit {
     }
   }
 
-  onLanguageChange(event: any, value: any){
+  onDropdownChange(event: any, value: any){
     switch(value){
       case "language":{
         this.orgDefaultFlag.language = false;
@@ -689,8 +708,8 @@ export class NewUserStepComponent implements OnInit {
     }
   }
 
-  onOpenChange(event: any){
+  onOpenChange(event: any, value: any){
     //console.log("event:: ", event);
   }
-  
+
 }

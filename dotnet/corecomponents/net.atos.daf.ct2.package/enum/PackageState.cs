@@ -4,10 +4,11 @@ using System.Text;
 
 namespace net.atos.daf.ct2.package.ENUM
 {
-    public enum PackageStatus
+    public enum PackageState
     {
         None = 0,
         Active = 'A',
-        Inactive = 'I'
+        Inactive = 'I',
+        Delete='D'
     }
 }

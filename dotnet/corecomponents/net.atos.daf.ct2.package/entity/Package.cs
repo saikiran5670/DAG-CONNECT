@@ -11,8 +11,8 @@ namespace net.atos.daf.ct2.package.entity
         public string Name { get; set; }
         public string Type { get; set; }
         public string Description { get; set; }
-        public bool IsActive { get; set; }
-        public string Status { get; set; }
+        public string State { get; set; }
+     //   public string Status { get; set; }
         public long CreatedAt { get; set; }
     }  
     public class PackageMaster

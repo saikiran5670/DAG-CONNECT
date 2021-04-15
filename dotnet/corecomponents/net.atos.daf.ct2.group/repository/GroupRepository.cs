@@ -535,8 +535,8 @@ namespace net.atos.daf.ct2.group
                 var parameter = new DynamicParameters();
                 string query = string.Empty;
                 int count = 0;
-                query = @"select count(1) from master.account a join master.accountorg ag on a.id = ag.account_id and a.is_active=true 
-                and ag.is_active=true where lower(a.type)='p' and ag.organization_id=@organization_id";
+                query = @"select count(1) from master.account a join master.accountorg ag on a.id = ag.account_id and a.state='A' 
+                and ag.state='A' where lower(a.type)='p' and ag.organization_id=@organization_id";
                 parameter.Add("@organization_id", organization_id);
                 count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
@@ -709,7 +709,7 @@ namespace net.atos.daf.ct2.group
                             Inner join master.orgrelationship ors
                             on ors.id=orm.relationship_id
                             where  1=1
-                            and ors.is_active=true
+                            and ors.state='A'
                             and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
                             else COALESCE(end_date,0) =0 end
 							and (orm.created_org_id=@organization_id or orm.owner_org_id=@organization_id or orm.target_org_id=@organization_id)";
@@ -734,7 +734,7 @@ namespace net.atos.daf.ct2.group
                                 on orm.vehicle_id=veh.id
                                 Inner join master.orgrelationship ors
                                 on ors.id=orm.relationship_id
-                                 where ors.is_active=true
+                                 where ors.state='A'
                                 and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
                                 else COALESCE(end_date,0) =0 end
 							    and (orm.created_org_id=@organization_id or veh.organization_id=@organization_id)";
@@ -759,7 +759,7 @@ namespace net.atos.daf.ct2.group
                             on orm.vehicle_id=veh.id
                             Inner join master.orgrelationship ors
                             on ors.id=orm.relationship_id
-                            where ors.is_active=true
+                            where ors.state='A'
                             and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
                             else COALESCE(end_date,0) =0 end
 							and orm.target_org_id=@organization_id";
@@ -772,10 +772,6 @@ namespace net.atos.daf.ct2.group
                 throw ex;
             }
         }
-
-
-
-
 
         #endregion
     }

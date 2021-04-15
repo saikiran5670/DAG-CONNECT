@@ -14,6 +14,7 @@ using net.atos.daf.ct2.organizationservice.entity;
 using System.Linq;
 using net.atos.daf.ct2.relationship;
 using net.atos.daf.ct2.relationship.entity;
+using static net.atos.daf.ct2.utilities.CommonEnums;
 
 namespace net.atos.daf.ct2.organizationservice
 {
@@ -91,7 +92,7 @@ namespace net.atos.daf.ct2.organizationservice
                 relationship.Level = request.Level;
                 relationship.FeaturesetId = request.Featuresetid;
                 relationship.Description = request.Description;
-                relationship.IsActive = request.IsActive;
+                relationship.State = request.State;
 
                 relationship = await _relationshipManager.CreateRelationship(relationship);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Relationship Component", "Relationship Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Create", 1, 2, relationship.Id.ToString());
@@ -126,7 +127,7 @@ namespace net.atos.daf.ct2.organizationservice
                 relationship.Level = request.Level;
                 relationship.FeaturesetId = request.Featuresetid;
                 relationship.Description = request.Description;
-                relationship.IsActive = request.IsActive;
+                relationship.State = request.State;
 
                 relationship = await _relationshipManager.UpdateRelationship(relationship);
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Relationship Component", "Organization Relationship Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Updated", 1, 2, relationship.Id.ToString());
@@ -154,15 +155,15 @@ namespace net.atos.daf.ct2.organizationservice
             try
             {
                 var response = new RelationshipGetResponse();
-                var relationshipFilter = new Relationship();
+                var relationshipFilter = new RelationshipFilter();
                 relationshipFilter.Id = request.Id;
                 relationshipFilter.OrganizationId = request.OrganizationId;
                 relationshipFilter.Code = request.Code;
                 relationshipFilter.FeaturesetId = request.Featuresetid;
                 relationshipFilter.Level = request.Level;
-                relationshipFilter.Name = request.Name;
-                relationshipFilter.Description = request.Description;
-                relationshipFilter.IsActive = request.IsActive;
+                //relationshipFilter.Name = request.Name;
+                //relationshipFilter.Description = request.Description;
+                //relationshipFilter.State = request.State;
                 var orgRelationships = _relationshipManager.GetRelationship(relationshipFilter).Result;
                 response.RelationshipList.AddRange(orgRelationships
                                      .Select(x => new RelationshipGetRequest()
@@ -174,7 +175,7 @@ namespace net.atos.daf.ct2.organizationservice
                                          Name = x.Name,
                                          Featuresetid = x.FeaturesetId,
                                          Level = x.Level,
-                                         IsActive = x.IsActive,
+                                         State = x.State,
                                          CreatedAt = x.CreatedAt
 
                                      }).ToList());
@@ -474,6 +475,19 @@ namespace net.atos.daf.ct2.organizationservice
             }
             return await Task.FromResult(response);
         }
+
+        public override async Task<OrgDetailResponse> GetOrganizationDetails(IdRequest request, ServerCallContext context)
+        {
+            net.atos.daf.ct2.organization.entity.OrganizationDetailsResponse organization = new net.atos.daf.ct2.organization.entity.OrganizationDetailsResponse();
+            OrgDetailResponse response = new OrgDetailResponse();
+            _logger.LogInformation("Get Organization Details .");
+            organization = await organizationtmanager.GetOrganizationDetails(request.Id);
+            if (organization.id > 0)
+            {
+                response = _mapper.ToOrganizationDetailsResponse(organization);
+            }
+            return await Task.FromResult(response);
+        }
         public override async Task<GetAllOrgResponse> GetAll(IdRequest request, ServerCallContext context)
         {
             var organization = new OrganizationResponse();
@@ -496,7 +510,7 @@ namespace net.atos.daf.ct2.organizationservice
                                         Referenced = x.reference_date,
                                         VehicleOptIn = x.vehicle_default_opt_in,
                                         DriverOptIn = x.driver_default_opt_in,
-                                        IsActive = x.is_active
+                                        IsActive = x.state == (char)State.Active ? true : false
                                     }).ToList());
 
 
@@ -625,6 +639,29 @@ namespace net.atos.daf.ct2.organizationservice
                     Message = "Organization Preference Get Faile due to - " + ex.Message
                 });
             }
+        }
+
+        public override async Task<ListOfOrganization> GetOrganizations(IdRequest request, ServerCallContext context)
+        {
+            net.atos.daf.ct2.organization.entity.Organization organization = new net.atos.daf.ct2.organization.entity.Organization();
+            ListOfOrganization response = new ListOfOrganization();
+            _logger.LogInformation("GetAllOrganizations .");
+            var result = await organizationtmanager.GetAllOrganizations(request.Id);           
+            if (result.Count() > 0)
+            {
+                foreach (net.atos.daf.ct2.organization.entity.Organization entity in result)
+                {
+                    response.Organizations.Add(_mapper.ToListOfOrganizationResponse(entity));
+                }
+                response.Code = Responcecode.Success;
+                response.Message = "Get";
+            }
+            else
+            {
+                response.Code = Responcecode.NotFound;
+                response.Message = "Organization not found.";
+            }
+            return await Task.FromResult(response);            
         }
     }
 }

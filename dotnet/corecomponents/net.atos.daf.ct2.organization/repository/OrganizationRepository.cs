@@ -135,7 +135,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", organizationId);
-                var query = @"update master.organization set is_active=false where id=@id";
+                var query = @"update master.organization set state='D' where id=@id";
                 int isdelete = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
             }
@@ -205,8 +205,8 @@ namespace net.atos.daf.ct2.organization.repository
             try
             {
                 var parameter = new DynamicParameters();
-                var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date, is_active,vehicle_default_opt_in,driver_default_opt_in
-	                        FROM master.organization where id=@Id and is_active=true";
+                var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date, state,vehicle_default_opt_in,driver_default_opt_in
+	                        FROM master.organization where id=@Id and state='A'";
                 parameter.Add("@Id", organizationId);
                 IEnumerable<OrganizationResponse> OrganizationDetails = await dataAccess.QueryAsync<OrganizationResponse>(query, parameter);
                 OrganizationResponse objOrganization = new OrganizationResponse();               
@@ -222,7 +222,7 @@ namespace net.atos.daf.ct2.organization.repository
                     objOrganization.postal_code = item.postal_code;
                     objOrganization.city = item.city;
                     objOrganization.country_code = item.country_code;
-                    objOrganization.is_active = item.is_active;
+                    objOrganization.state = item.state;
                     objOrganization.reference_date = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(item.reference_date), "America/New_York", "yyyy-MM-ddTHH:mm:ss");
                     objOrganization.vehicle_default_opt_in = item.vehicle_default_opt_in;
                     objOrganization.driver_default_opt_in = item.driver_default_opt_in;                   
@@ -241,6 +241,72 @@ namespace net.atos.daf.ct2.organization.repository
                 throw ex;
             }
         }
+        public async Task<OrganizationDetailsResponse> GetOrganizationDetails(int organizationId)
+        {
+            log.Info("Get Organization details method called in repository");
+            try
+            {            
+                var parameter = new DynamicParameters();
+                var query = @"SELECT
+                              o.id ,
+                              o.org_id ,
+                              o.name ,
+                              o.description ,
+                              o.city ,                             
+                              o.street ,
+                              o.street_number ,
+                              o.postal_code ,
+                              o.country_code,
+                              o.vehicle_default_opt_in ,
+                              o.driver_default_opt_in ,
+                              c.name currency,
+                              t.name timezone ,
+                              tf.name timeformat,                            
+                              df.name DateFormatType,
+                              l.name LanguageName,
+                              u.name unit
+                            FROM master.organization o
+                            left join  master.accountpreference a on o.id=a.id
+                            left join  master.currency c on c.id=a.currency_id
+                            left join  master.timezone t on t.id=a.timezone_id
+                            left join  master.timeformat tf on tf.id=a.time_format_id
+                            left join  master.dateformat df on df.id=a.date_format_id
+                            left join  master.unit u on u.id=a.unit_id
+                            left join  translation.language l on l.id=a.language_id
+                            where o.id=@Id and o.state='A'";
+                parameter.Add("@Id", organizationId);
+                IEnumerable<OrganizationDetailsResponse> OrgDetails = await dataAccess.QueryAsync<OrganizationDetailsResponse>(query, parameter);
+                OrganizationDetailsResponse OrgDetailsResponse = new OrganizationDetailsResponse();
+                foreach (var item in OrgDetails)
+                {
+                    OrgDetailsResponse.id = item.id;
+                    OrgDetailsResponse.org_id = item.org_id;
+                    OrgDetailsResponse.name = item.name;
+                    OrgDetailsResponse.description = item.description;
+                    OrgDetailsResponse.city = item.city;
+                    OrgDetailsResponse.country_code = item.country_code;
+                    OrgDetailsResponse.street = item.street;
+                    OrgDetailsResponse.street_number = item.street_number;
+                    OrgDetailsResponse.postal_code = item.postal_code;
+                    OrgDetailsResponse.vehicle_default_opt_in = item.vehicle_default_opt_in;
+                    OrgDetailsResponse.driver_default_opt_in = item.driver_default_opt_in;
+
+                    OrgDetailsResponse.LanguageName = item.LanguageName;
+                    OrgDetailsResponse.Timezone = item.Timezone;
+                    OrgDetailsResponse.TimeFormat = item.TimeFormat;
+                    OrgDetailsResponse.Currency = item.Currency;
+                    OrgDetailsResponse.Unit = item.Unit;
+                    OrgDetailsResponse.DateFormatType = item.DateFormatType;
+                }
+                return OrgDetailsResponse;
+            }
+            catch (Exception ex)
+            {
+                log.Info("Get Organization preference method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }
 
         public async Task<PreferenceResponse> GetPreference(int organizationId)
         {
@@ -248,8 +314,8 @@ namespace net.atos.daf.ct2.organization.repository
             try
             {
                 var parameter = new DynamicParameters();
-                var query = @"SELECT o.id OrganizatioId,a.id PreferenceId, c.name currency,t.name timezone ,tf.name timeformat,vd.name vehicledisplay,
-                            df.name DateFormatType,lp.name landingpagedisplay,l.name LanguageName, u.name unit
+                var query = @"SELECT o.id OrganizatioId,a.id PreferenceId, c.id currency,t.id timezone ,tf.id timeformat,vd.id vehicledisplay,
+                            df.id DateFormatType,l.id LanguageName, u.id unit
                             FROM master.organization o
                             left join  master.accountpreference a on o.id=a.id
                             left join  master.currency c on c.id=a.currency_id
@@ -257,7 +323,6 @@ namespace net.atos.daf.ct2.organization.repository
                             left join  master.timeformat tf on tf.id=a.time_format_id
                             left join  master.vehicledisplay vd on vd.id=a.vehicle_display_id
                             left join  master.dateformat df on df.id=a.date_format_id
-                            left join  master.landingpagedisplay lp on lp.id=a.landing_page_display_id
                             left join  master.unit u on u.id=a.unit_id
                             left join  translation.language l on l.id=a.language_id
                             where o.id=@Id";
@@ -275,8 +340,6 @@ namespace net.atos.daf.ct2.organization.repository
                     preferenceResponse.Unit = item.Unit;
                     preferenceResponse.VehicleDisplay = item.VehicleDisplay;
                     preferenceResponse.DateFormatType = item.DateFormatType;
-                    preferenceResponse.LandingPageDisplay = item.LandingPageDisplay;
-
                 }
                 return preferenceResponse;
             }
@@ -766,8 +829,8 @@ namespace net.atos.daf.ct2.organization.repository
             try
             {
                 var parameter = new DynamicParameters();
-                var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date, is_active,vehicle_default_opt_in,driver_default_opt_in
-	                        FROM master.organization org where  org.is_active=true";
+                var query = @"SELECT id, org_id, type, name, address_type, street, street_number, postal_code, city, country_code, reference_date, state,vehicle_default_opt_in,driver_default_opt_in
+	                        FROM master.organization org where  org.state='A'";
                 if (organizationId > 0)
                 {
                     parameter.Add("@id", organizationId);
@@ -806,7 +869,7 @@ namespace net.atos.daf.ct2.organization.repository
             orgResponse.city = record.city;
             orgResponse.country_code = record.country_code;
             orgResponse.org_id = record.org_id;
-            orgResponse.is_active = record.is_active;
+            orgResponse.state = record.state;
             orgResponse.reference_date = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(record.reference_date), "America/New_York", "yyyy-MM-ddTHH:mm:ss");
             orgResponse.vehicle_default_opt_in = record.vehicle_default_opt_in;
             orgResponse.driver_default_opt_in = record.driver_default_opt_in;
@@ -861,8 +924,8 @@ namespace net.atos.daf.ct2.organization.repository
                 string strquery = string.Empty;
                 List<OrganizationNameandID> objOrganizationNameandID = new List<OrganizationNameandID>();
                 var parameter = new DynamicParameters();
-                parameter.Add("@is_active", true);
-                strquery = @"SELECT id,name FROM master.organization where is_active=@is_active";
+                parameter.Add("@state", 'A');
+                strquery = @"SELECT id,name FROM master.organization where state=@state";
                 switch (level)
                 {
                     case 10:
@@ -923,5 +986,26 @@ namespace net.atos.daf.ct2.organization.repository
                 throw ex;
             }
         }
+
+
+       public async Task<IEnumerable<Organization>> GetAllOrganizations(int OrganizationID)
+        {
+            log.Info("GetAllOrganizations method called in repository");
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", OrganizationID);
+                var query = @"Select distinct om.owner_org_id id,o.name from master.organization o
+                               left join master.orgrelationshipmapping om on om.target_org_id=o.id
+                                where o.id=@id and o.state='A'";
+                return await dataAccess.QueryAsync<Organization>(query, parameter);
+            }
+            catch (Exception ex)
+            {
+                log.Info("GetAllOrganizations method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }        
     }
 }

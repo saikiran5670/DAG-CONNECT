@@ -10,6 +10,8 @@ namespace net.atos.daf.ct2.organization.repository
         Task<Organization> Update(Organization organization);
         Task<bool> Delete(int organizationId);        
         Task<OrganizationResponse> Get(int organizationId);
+        Task<OrganizationDetailsResponse> GetOrganizationDetails(int organizationId);
+
         Task<PreferenceResponse> GetPreference(int organizationId);
 
         //Task<Organization> UpdateCustomer(Organization organization);
@@ -22,5 +24,7 @@ namespace net.atos.daf.ct2.organization.repository
         Task<List<OrganizationNameandID>> Get(OrganizationByID objOrganizationByID);
 
         Task<int> IsOwnerRelationshipExist(int VehicleID);
+
+        Task<IEnumerable<Organization>> GetAllOrganizations(int OrganizationID);
     }
 }

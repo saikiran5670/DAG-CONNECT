@@ -23,21 +23,35 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                 Name = request.Name,
                 FeatureSetID = request.FeatureSetID,
                 Description = request.Description,
-                Status = request.Status,
+               // Status = request.Status,
                 Type = request.Type,
-                IsActive = request.IsActive
+                State = request.State
 
             };
             createPackagerequest.FeatureIds.AddRange(request.FeatureIds.Select(x => x));
             return createPackagerequest;
 
         }
-        public packageservice.PackageStatus ToPackageStatus(string status)
-        {
 
-            return status == "A" ? packageservice.PackageStatus.Active : packageservice.PackageStatus.Inactive;
+        public PackageState ToPackageState(string status)
+        {
+            var type = PackageState.Active; ;
+            switch (status)
+            {
+                case "A":
+                    type = PackageState.Active;
+                    break;
+                case "I":
+                    type = PackageState.Inactive;
+                    break;
+                case "D":
+                    type = PackageState.Delete;
+                    break;
+            }
+            return type;
 
         }
+
         public packageservice.PackageType ToPackageType(string type)
         {
 
@@ -72,9 +86,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                         FeatureSetID = featureSetID,
                         Description = x.Description,
                         Name = x.Name,
-                        Status = x.Status,
+                      //  Status = x.Status,
                         Type = x.Type,
-                        IsActive = x.IsActive
+                        State = x.State
                     };
                     packageRequest.Packages.Add(pkgRequest);
                 }

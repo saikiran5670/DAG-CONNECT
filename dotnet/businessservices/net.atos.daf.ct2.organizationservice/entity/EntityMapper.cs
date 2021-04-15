@@ -1,5 +1,7 @@
 using Preference = net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.organization.entity;
+using static net.atos.daf.ct2.utilities.CommonEnums;
+
 namespace net.atos.daf.ct2.organizationservice.entity
 {
     public class EntityMapper
@@ -26,39 +28,16 @@ namespace net.atos.daf.ct2.organizationservice.entity
         {
             OrganizationPreference objResponse=new OrganizationPreference();
             objResponse.Id = request.PreferenceId;
-            objResponse.OrgId = request.OrganizatioId;   
-            if (!(string.IsNullOrEmpty(request.Currency)))
-            {
-                 objResponse.Currency= request.Currency;
-            }
-            if (!(string.IsNullOrEmpty(request.LanguageName)))
-            {
-                 objResponse.Language = request.LanguageName;
-            }
-             if (!(string.IsNullOrEmpty(request.TimeFormat)))
-            {
-                objResponse.TimeFormat = request.TimeFormat;
-            }
-             if (!(string.IsNullOrEmpty(request.DateFormatType)))
-            {
-                  objResponse.DateFormat = request.DateFormatType;
-            }           
-            if (!(string.IsNullOrEmpty(request.VehicleDisplay)))
-            {
-                  objResponse.VehicleDisplay = request.VehicleDisplay;
-            }
-              if (!(string.IsNullOrEmpty(request.LandingPageDisplay)))
-            {
-                   objResponse.LandingPageDisplay = request.LandingPageDisplay;
-            }
-            if (!(string.IsNullOrEmpty(request.Unit)))
-            {
-                  objResponse.Unit = request.Unit;
-            }
-            if (!(string.IsNullOrEmpty(request.Timezone)))
-            {
-                   objResponse.Timezone = request.Timezone;         
-            }
+            objResponse.OrgId = request.OrganizatioId;
+            objResponse.Currency = request.Currency;
+            objResponse.Language = request.LanguageName;
+            objResponse.TimeFormat = request.TimeFormat;
+            objResponse.DateFormat = request.DateFormatType;
+            objResponse.VehicleDisplay = request.VehicleDisplay;
+            objResponse.Unit = request.Unit;
+            objResponse.Timezone = request.Timezone;
+
+           
             return objResponse;
         }
 
@@ -79,8 +58,15 @@ namespace net.atos.daf.ct2.organizationservice.entity
             objResponse.Referenced=request.reference_date; 
             objResponse.VehicleOptIn=request.vehicle_default_opt_in;
             objResponse.DriverOptIn=request.driver_default_opt_in;
-            objResponse.IsActive = request.is_active;
+            objResponse.IsActive = request.state == (char)State.Active ? true : false;
             return objResponse;          
+        }
+        public net.atos.daf.ct2.organizationservice.AllOrganization ToListOfOrganizationResponse(net.atos.daf.ct2.organization.entity.Organization request)
+        {
+            net.atos.daf.ct2.organizationservice.AllOrganization organization = new net.atos.daf.ct2.organizationservice.AllOrganization();
+            organization.OrganizationId = request.Id;
+            organization.OrganizationName = request.Name;
+            return organization;
         }
 
         public net.atos.daf.ct2.organizationservice.OrgUpdateRequest TOOrgUpdateResponse(net.atos.daf.ct2.organizationservice.OrgCreateRequest request)
@@ -121,6 +107,28 @@ namespace net.atos.daf.ct2.organizationservice.entity
             objResponse.VehicleDefaultOptIn=request.VehicleDefaultOptIn; 
             objResponse.DriverDefaultOptIn=request.DriverDefaultOptIn; 
             return objResponse;          
-        }               
+        }
+        public net.atos.daf.ct2.organizationservice.OrgDetailResponse ToOrganizationDetailsResponse(net.atos.daf.ct2.organization.entity.OrganizationDetailsResponse request)
+        {
+            net.atos.daf.ct2.organizationservice.OrgDetailResponse objResponse = new OrgDetailResponse();
+            objResponse.Id = request.id;
+            objResponse.OrganizationId = request.org_id;
+            objResponse.OrganizationName = request.name;
+            objResponse.AddressStreet = request.street;
+            objResponse.AddressStreetNumber = request.street_number;
+            objResponse.PostalCode = request.postal_code;
+            objResponse.City = request.city;
+            objResponse.Country = request.country_code;
+            objResponse.VehicleOptIn = request.vehicle_default_opt_in;
+            objResponse.DriverOptIn = request.driver_default_opt_in;
+            objResponse.Currency = request.Currency;
+            objResponse.Timezone = request.Timezone;
+            objResponse.TimeFormat = request.TimeFormat;
+            objResponse.DateFormat = request.DateFormatType;
+            objResponse.LanguageName = request.LanguageName;
+            objResponse.Unit = request.Unit;
+            return objResponse;
+        }
+
     }
 }

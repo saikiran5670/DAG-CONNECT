@@ -10,6 +10,8 @@ import { DataSource, SelectionModel } from '@angular/cdk/collections';
 import { SubscriptionService } from 'src/app/services/subscription.service';
 import { UserDetailTableComponent } from '../../admin/user-management/new-user-step/user-detail-table/user-detail-table.component';
 import { MatTableExporterDirective } from 'mat-table-exporter';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-subscription-management',
@@ -21,7 +23,7 @@ export class SubscriptionManagementComponent implements OnInit {
 
   options=['Select Status','All','Active','Expired'];
   subscriptionRestData: any = [];
-  displayedColumns = ['subscriptionId','packageCode', 'name', 'orgName', 'type', 'count', 'subscriptionStartDate', 'subscriptionEndDate', 'isActive', 'action'];
+  displayedColumns = ['subscriptionId','packageCode', 'name', 'orgName', 'type', 'count', 'subscriptionStartDate', 'subscriptionEndDate', 'state', 'action'];
   vehicleDiaplayColumns = ['name', 'vin', 'licensePlateNumber'];
   openVehicleFlag: boolean = false;
   selectedElementData: any;
@@ -86,8 +88,26 @@ export class SubscriptionManagementComponent implements OnInit {
     }
   }
 
-  ExportAsCSV(){
+  exportAsCSV(){
       this.matTableExporter.exportTable('csv', {fileName:'Subscription_Data', sheet: 'sheet_name'});
+  }
+
+  exportAsPdf() {
+    let DATA = document.getElementById('subscriptionData');
+      
+    html2canvas(DATA).then(canvas => {
+        
+        let fileWidth = 208;
+        let fileHeight = canvas.height * fileWidth / canvas.width;
+        
+        const FILEURI = canvas.toDataURL('image/png')
+        let PDF = new jsPDF('p', 'mm', 'a4');
+        let position = 0;
+        PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+        
+        PDF.save('subscription_Data.pdf');
+        PDF.output('dataurlnewwindow');
+    });     
   }
 
   setDate(date : any){

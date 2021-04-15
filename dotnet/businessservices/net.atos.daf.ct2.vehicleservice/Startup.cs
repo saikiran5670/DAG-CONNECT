@@ -42,8 +42,12 @@ namespace net.atos.daf.ct2.vehicleservice
     }));
 
             var connectionString = Configuration.GetConnectionString("ConnectionString");
+            var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
-            services.AddSingleton(dataAccess); 
+            IDataMartDataAccess dataMartdataAccess = new PgSQLDataMartDataAccess(DataMartconnectionString);
+            services.AddSingleton(dataMartdataAccess);
+            services.AddSingleton(dataAccess);
+
             services.AddTransient<IVehicleManager,VehicleManager>();
             services.AddTransient<IVehicleRepository, VehicleRepository>();
             services.AddTransient<IAuditLogRepository,AuditLogRepository>();

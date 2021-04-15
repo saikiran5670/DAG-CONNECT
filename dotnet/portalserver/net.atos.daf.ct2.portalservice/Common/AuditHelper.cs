@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using net.atos.daf.ct2.auditservice;
 using net.atos.daf.ct2.portalservice.Entity.Audit;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace net.atos.daf.ct2.portalservice.Common
 {
@@ -22,27 +24,28 @@ namespace net.atos.daf.ct2.portalservice.Common
 
         }
 
-        public async Task<int> AddLogs(DateTime Created_at, DateTime Performed_at, int Performed_by, string Component_name, string Service_name, AuditTrailEnum.Event_type Event_type, AuditTrailEnum.Event_status Event_status, string Message, int Sourceobject_id, int Targetobject_id, string Updated_data, HttpRequest request)
+        public HeaderObj GetHeaderData(HttpRequest request)
         {
-            var Headers = request.Headers;
-            int roleid = 0;
-            int organizationid = 0;
-            int Accountid = 0;
-            if (Headers.Any(item=>item.Key == "roleid"))
+            var headerObj = new HeaderObj();
+            if (request != null)
             {
-                roleid = AuditHelper.ToInt32(Headers["roleid"]);
+                var Headers = request.Headers;
+
+                if (Headers.Any(item => item.Key == "headerObj"))
+                {
+                    headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["headerObj"]);
+                }
             }
-            if (Headers.Any(item => item.Key == "organizationid"))
-            {
-                organizationid = AuditHelper.ToInt32(Headers["organizationid"]);
-            }
-            if (Headers.Any(item => item.Key == "accountid"))
-            {
-                Accountid = AuditHelper.ToInt32(Headers["accountid"]);
-            }
-            AuditRecord logs = new AuditRecord();            
-            
-            //logs.PerformedAt = DateTime.Now.Ticks;
+            return headerObj;
+        }
+        public async Task<int> AddLogs(DateTime Created_at, DateTime Performed_at, string Component_name, string Service_name, AuditTrailEnum.Event_type Event_type, AuditTrailEnum.Event_status Event_status, string Message, int Sourceobject_id, int Targetobject_id, string Updated_data, HttpRequest request)
+        {
+            var headerData = GetHeaderData(request);
+            int roleid = headerData.roleId;
+            int organizationid = headerData.orgId;
+            int Accountid = headerData.accountId;
+            AuditRecord logs = new AuditRecord();
+            //logs.PerformedAt = DateTime.Now.Ticks;            
             logs.PerformedBy = Accountid;
             logs.ComponentName = Component_name;
             logs.ServiceName = Service_name;
@@ -53,11 +56,11 @@ namespace net.atos.daf.ct2.portalservice.Common
             logs.Message = Message;
             logs.SourceobjectId = Sourceobject_id;
             logs.TargetobjectId = Targetobject_id;
-            logs.UpdatedData =Updated_data;
+            logs.UpdatedData = Updated_data;
 
             AuditResponce auditresponse = await _auditService.AddlogsAsync(logs);
             _logger.LogError("Logs running fine");
-            return  0;
+            return 0;
         }
 
 
@@ -67,5 +70,12 @@ namespace net.atos.daf.ct2.portalservice.Common
                 return 0;
             return int.Parse(value, (IFormatProvider)CultureInfo.CurrentCulture);
         }
+    }
+    public class HeaderObj
+    {
+        public int roleId { get; set; }
+        public int accountId { get; set; }
+        public int orgId { get; set; }
+
     }
 }

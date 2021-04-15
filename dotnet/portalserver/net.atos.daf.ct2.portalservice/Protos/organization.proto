@@ -12,7 +12,10 @@ service OrganizationService {
   rpc Update (OrgUpdateRequest) returns (OrganizationUpdateData);
  // rpc Delete (IdRequest) returns (OrganizationResponse);
   rpc Get (IdRequest) returns (OrganizationGetData); 
-   rpc GetAll(IdRequest)returns(GetAllOrgResponse);
+  rpc GetOrganizationDetails (IdRequest) returns (OrgDetailResponse); 
+  rpc GetAll(IdRequest)returns(GetAllOrgResponse);
+  rpc GetOrganizations(IdRequest)returns(ListOfOrganization);
+  
 
   // Account Preference Mthod
   rpc CreatePreference (AccountPreference) returns (AccountPreferenceResponse);
@@ -39,13 +42,14 @@ message OrganizationprimaryFieldsListResponse{
 
 message OrganizationByID{
  int32 id = 1;
-  int32 roleId = 2;
+ int32 roleId = 2;
 }
 
 message OrganizationprimaryFieldsResponse{
  int32 id = 1;
  string name = 2;
 }
+
 message OrgRelationshipMappingGetRequest
 {
     int32 id = 1;
@@ -128,7 +132,7 @@ message RelationshipGetRequest{
     string code=6;
     repeated int32 featureIds=7;    
     int32 featuresetid =8; 
-    bool isActive=9;
+    string state=9;
     int64 CreatedAt=10;
 }
 message RelationshipGetResponse{
@@ -145,7 +149,7 @@ message RelationshipCreateRequest{
     string code=6;
     repeated int32 featureIds=7;
     int32 featuresetid =8; 
-    bool isActive=9;
+    string state=9;
     int64 CreatedAt=10;
 }
 
@@ -272,18 +276,47 @@ message OrganizationGetData {
     {
         int32 Id =1;
         int32 OrgId =2;
-        string Language =3;
-        string Timezone =4;
-        string Currency =5;
-        string Unit = 6;
-        string VehicleDisplay =7;
-        string DateFormat =8;
-        string TimeFormat=9;
-        string LandingPageDisplay=10;
+        int32 Language =3;
+        int32 Timezone =4;
+        int32 Currency =5;
+        int32 Unit = 6;
+        int32 VehicleDisplay =7;
+        int32 DateFormat =8;
+        int32 TimeFormat=9;      
     }
    message OrganizationPreferenceResponse
     {
      Responcecode Code=1;
      string Message = 2;
      OrganizationPreference OrganizationPreference= 3;      
+    }
+
+    message OrgDetailResponse {  
+    int32 Id=1;
+    string OrganizationId= 2;   
+    google.protobuf.StringValue OrganizationName=3;   
+    google.protobuf.StringValue OrganizationDescription=4;   
+    google.protobuf.StringValue AddressStreet=5;
+    google.protobuf.StringValue AddressStreetNumber=6; 
+    google.protobuf.StringValue PostalCode=7;    
+    google.protobuf.StringValue City=8;
+    google.protobuf.StringValue Country=9;     
+    google.protobuf.StringValue VehicleOptIn=10;
+    google.protobuf.StringValue DriverOptIn=11;   
+    google.protobuf.StringValue LanguageName =12;
+    google.protobuf.StringValue Timezone =13;
+    google.protobuf.StringValue Currency =14;
+    google.protobuf.StringValue Unit = 15;   
+    google.protobuf.StringValue DateFormat =16;
+    google.protobuf.StringValue TimeFormat=17;   
+}
+
+message ListOfOrganization {
+  Responcecode Code=1;
+  string Message = 2;
+  repeated AllOrganization Organizations = 3;
+}
+message AllOrganization{
+    int32 organizationId=1;
+    google.protobuf.StringValue OrganizationName = 2; 
     }
