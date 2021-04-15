@@ -861,7 +861,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 IdRequest idRequest = new IdRequest();
                 idRequest.Id = OrganizationId;
                 var data = await organizationClient.GetOrganizationsAsync(idRequest);
-                return Ok(data);
+                return Ok(data.Organizations);
             }
             catch (Exception ex)
             {
