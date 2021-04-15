@@ -22,8 +22,6 @@ namespace net.atos.daf.ct2.translation.repository
        Task<List<Translations>> GetAllTranslations();
         Task<List<DTCwarning>> ImportDTCWarningData(List<DTCwarning> dtcwarningList);
         Task<IEnumerable<DTCwarning>> GetDTCWarningData(string LanguageCode);
-
-        Task<List<Translations>> GetAllTranslations();
         Task<EmailTemplate> GetEmailTemplateTranslations(EmailEventType eventType, EmailContentType contentType, string languageCode);
     }
 }
