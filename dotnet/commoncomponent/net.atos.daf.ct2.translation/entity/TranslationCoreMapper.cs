@@ -7,17 +7,17 @@ namespace net.atos.daf.ct2.translation.entity
 {
     public class TranslationCoreMapper
     {
-        private DTCwarning MapWarningDetails(dynamic record)
+        public DTCwarning MapWarningDetails(dynamic record)
         {
             DTCwarning Entity = new DTCwarning();
             Entity.id = record.id;
             Entity.code = record.code;
-            Entity.type = !string.IsNullOrEmpty(record.type) ? MapCharToDTCType(record.type) : string.Empty;
-            Entity.veh_type = record.veh_type;
-            Entity.warning_class = record.warning_class;
+            Entity.Warning_type = !string.IsNullOrEmpty(record.type) ? Convert.ToString(MapCharToDTCType(record.type)) : string.Empty;
+            Entity.veh_type = !string.IsNullOrEmpty(record.veh_type) ? record.veh_type : string.Empty;
+            Entity.warning_class = record.warningclass;
             Entity.number = record.number;
-            Entity.description = record.description;
-            Entity.advice = record.advice;
+            Entity.description =  !string.IsNullOrEmpty(record.description) ? record.description : string.Empty;
+            Entity.advice = !string.IsNullOrEmpty(record.advice) ? record.advice : string.Empty; 
             Entity.expires_at = record.expires_at;
             Entity.icon_id = record.icon_id;
             Entity.created_at = record.created_at;

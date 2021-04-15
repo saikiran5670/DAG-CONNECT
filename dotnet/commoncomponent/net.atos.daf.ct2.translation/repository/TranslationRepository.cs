@@ -584,7 +584,7 @@ namespace net.atos.daf.ct2.translation.repository
                     foreach (DTCwarning item in dtcwarningList)
                     {
                         // If warning data is already exist then update specific record 
-                        int WarningId = CheckDtcWarningClassExist(item.warning_class, item.number);
+                        int WarningId = CheckDtcWarningClassExist(item.warning_class, item.number,item.code);
                         var iconID = GetIcocIDFromIcon(item.warning_class, item.number);
 
                         if (WarningId == 0)
@@ -635,12 +635,11 @@ namespace net.atos.daf.ct2.translation.repository
                                                                   icon_id=@icon_id,
                                                                   modified_at=@modified_at,
                                                                   modified_by=@modified_by
-                                                           WHERE code = @code and number = @number ";
+                                                           WHERE class = @class and number = @number and code =@code  RETURNING id";
 
                             var parameter = new DynamicParameters();
                             parameter.Add("@code", item.code);
                             parameter.Add("@type", item.type );
-                            //parameter.Add("@type", (char)_packageCoreMapper.ToPackageType(filter.Type), DbType.AnsiStringFixedLength, ParameterDirection.Input, 1)
                             parameter.Add("@veh_type", item.veh_type);
                             parameter.Add("@class", item.warning_class);
                             parameter.Add("@number", item.number);
@@ -701,7 +700,7 @@ namespace net.atos.daf.ct2.translation.repository
                 string GetDTCWarningDataQueryStatement = string.Empty;
 
                 parameter.Add("@LanguageCode", LanguageCode);
-                GetDTCWarningDataQueryStatement = @"SELECT id, code, type, veh_type, class, number, description, advice, expires_at,icon_id, created_at, created_by, modified_at, modified_by
+                GetDTCWarningDataQueryStatement = @"SELECT id, code, type, veh_type, class as Warningclass, number, description, advice, expires_at,icon_id, created_at, created_by, modified_at, modified_by
                                                                 FROM master.dtcwarning
                                                                   where 1=1";
                 GetDTCWarningDataQueryStatement = GetDTCWarningDataQueryStatement + " and code=@LanguageCode";
@@ -710,7 +709,7 @@ namespace net.atos.daf.ct2.translation.repository
                 dynamic result = await dataAccess.QueryAsync<dynamic>(GetDTCWarningDataQueryStatement, parameter);
                 foreach (dynamic record in result)
                 {
-                    dtcWarninglist.Add(_translationCoreMapper.MapCharToDTCType(record));
+                    dtcWarninglist.Add(_translationCoreMapper.MapWarningDetails(record));
                 }
 
                 return dtcWarninglist;
@@ -725,15 +724,16 @@ namespace net.atos.daf.ct2.translation.repository
         }
        
 
-        public int CheckDtcWarningClassExist(int WarningClass, int WarningNumber)
+        public int CheckDtcWarningClassExist(int WarningClass, int WarningNumber, string LanguageCode)
         {
             var QueryStatement = @"select id 
                                     from master.dtcwarning
-                                   where class=@class and number=@number";
+                                   where class=@class and number=@number and code = @code";
             var parameter = new DynamicParameters();
 
             parameter.Add("@class", WarningClass);
             parameter.Add("@number", WarningNumber);
+            parameter.Add("@code", LanguageCode);
 
             int resultWarningId = dataAccess.ExecuteScalar<int>(QueryStatement, parameter);
             return resultWarningId;
@@ -751,7 +751,7 @@ namespace net.atos.daf.ct2.translation.repository
                     foreach (DTCwarning item in dtcwarningList)
                     {
                         // If warning data is already exist then update specific record 
-                        int WarningId = CheckDtcWarningClassExist(item.warning_class, item.number);
+                        int WarningId = CheckDtcWarningClassExist(item.warning_class, item.number,item.code);
                         // Get Icon id from Icon table
                         var iconID = GetIcocIDFromIcon(item.warning_class, item.number);
 
@@ -771,7 +771,7 @@ namespace net.atos.daf.ct2.translation.repository
                                                                   icon_id=@icon_id,
                                                                   modified_at=@modified_at,
                                                                   modified_by=@modified_by
-                                                           WHERE code = @code and number = @number ";
+                                                           WHERE code = @code and number = @number and code =@code  RETURNING id ";
 
                             var parameter = new DynamicParameters();
                             parameter.Add("@code", item.code);
