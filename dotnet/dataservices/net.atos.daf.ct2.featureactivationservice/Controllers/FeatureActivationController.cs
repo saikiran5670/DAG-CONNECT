@@ -143,36 +143,6 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                 return StatusCode(500, string.Empty);
             }
         }
-        
-        [HttpPost]
-        [Route("update1dummy")]
-
-        public async Task<IActionResult> UnSubscribe(UnSubscription objUnSubscription)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(objUnSubscription.OrganizationID))
-                {
-                    return StatusCode(400, string.Empty);
-                }
-                else if (string.IsNullOrEmpty(objUnSubscription.PackageId))
-                {
-                    return StatusCode(400, string.Empty);
-                }
-                var orderId = await subscriptionManager.Unsubscribe(objUnSubscription);
-                if (orderId == null)
-                {
-                    logger.LogInformation($"No Data found for UnSubscription, payload - {Newtonsoft.Json.JsonConvert.SerializeObject(objUnSubscription)}");
-                    return StatusCode(400, string.Empty);
-                }
-                logger.LogInformation($"Subscription data has been UnSubscribed, order ID - {orderId}");
-                return Ok(orderId);                    
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex.Message + " " + ex.StackTrace);
-                return StatusCode(500,string.Empty);
-            }
-        }
+      
     }
 }

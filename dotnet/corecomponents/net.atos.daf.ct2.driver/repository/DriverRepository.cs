@@ -108,7 +108,7 @@ namespace net.atos.daf.ct2.driver
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", organizationId);
                 parameter.Add("@id", driverid);
-                var query = @"update master.driver set state='I' where id=@id and organization_id=@organization_id";
+                var query = @"update master.driver set state='D' where id=@id and organization_id=@organization_id";
                 int isdelete = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
             }

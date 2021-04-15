@@ -40,6 +40,11 @@ enum TranslationType{
     Dropdown = 1;
     Image =2;
   }
+  enum WarningType
+{
+    DTC = 0;
+    DM = 1;
+}
   message TranslationsRequest
     {
      int32 Id =1;
@@ -243,7 +248,7 @@ message dtcwarning
 {
      int32 id =1;
      string code =2;
-     string type =3;
+     WarningType type =3;
      string veh_type=4;
      int32 warning_class =5;
      int32 number =6;
@@ -276,3 +281,4 @@ message WarningGetResponse
     string message = 2;
     repeated dtcwarning dtcGetDataResponse =3;
 }
+
