@@ -72,8 +72,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("createfeatureset")]
         public async Task<IActionResult> CreateFeatureSet(FeatureSet featureSetRequest)
         {
-            FeatureSet ObjResponse = new FeatureSet();
-            FetureSetRequest featureset = new FetureSetRequest();
+           
             try
             {
                 _logger.Info("Create method in FeatureSet API called.");
@@ -87,7 +86,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(401, "invalid FeatureSet Description : Feature Description is Empty.");
                 }
-             
+                FeatureSet ObjResponse = new FeatureSet();
+                FetureSetRequest featureset = new FetureSetRequest();
                 featureset.Name = featureSetRequest.Name; // "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds()
                 //featureset. = featureSetRequest.description;
                 featureset.CreatedBy = featureSetRequest.created_by;
@@ -102,7 +102,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
                     "Feature service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                    "CreateFeatureSet method in Feature manager", 0, ObjResponse.FeatureSetID, JsonConvert.SerializeObject(featureset),
+                    "CreateFeatureSet method in Feature manager", 0, ObjResponse.FeatureSetID, JsonConvert.SerializeObject(featureSetRequest),
                      Request);
                 return Ok(featureSetRequest);
             }
@@ -111,7 +111,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
                    "Feature service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                   "CreateFeatureSet method in Feature manager",0, ObjResponse.FeatureSetID, JsonConvert.SerializeObject(featureset),
+                   "CreateFeatureSet method in Feature manager",0,0, JsonConvert.SerializeObject(featureSetRequest),
                     Request);
                 _logger.Error(null, ex);
 
@@ -127,7 +127,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("createfeature")]
         public async Task<IActionResult> CreateFeature(Features featureRequest)
         {
-            FeatureRequest FeatureObj = new FeatureRequest();
+         
             try
             {
                 _logger.Info("Create method in FeatureSet API called.");
@@ -149,7 +149,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //{
                 //    return StatusCode(401, "invalid FeatureSet Description : Feature Key is Empty.");
                 //}
-                
+                FeatureRequest FeatureObj = new FeatureRequest();
                 FeatureObj.Name = featureRequest.Name;
                 FeatureObj.Level = featureRequest.Level;
                 FeatureObj.State = (FeatureState)Enum.Parse(typeof(FeatureState), featureRequest.FeatureState.ToString());
@@ -171,7 +171,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                   
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now,  "Feature Component",
                                                "Feature service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                                               "CreateFeature method in Feature controller", 0, FeatureObj.Id, JsonConvert.SerializeObject(FeatureObj),
+                                               "CreateFeature method in Feature controller", 0, responce.FeatureID, JsonConvert.SerializeObject(featureRequest),
                                                 Request);
 
 
@@ -194,7 +194,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
                                              "Feature service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                             "CreateFeature method in Feature controller", 0, FeatureObj.Id, JsonConvert.SerializeObject(FeatureObj),
+                                             "CreateFeature method in Feature controller", 0, 0, JsonConvert.SerializeObject(featureRequest),
                                               Request);
 
                 _logger.Error(null, ex);
@@ -208,7 +208,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("update")]
         public async Task<IActionResult> update(Features featureRequest)
         {
-            FeatureRequest FeatureObj = new FeatureRequest();          
+            
 
             try
             {
@@ -223,6 +223,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //{
                 //    return StatusCode(401, "invalid FeatureSet Description : Feature Key is Empty.");
                 //}
+                FeatureRequest FeatureObj = new FeatureRequest();
                 FeatureObj.Name = featureRequest.Name;
                 FeatureObj.Id = featureRequest.Id;
                 FeatureObj.Level = featureRequest.Level;
@@ -245,7 +246,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
                                             "Feature service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                                            "Update Feature method in Feature controller", FeatureObj.Id, FeatureObj.Id, JsonConvert.SerializeObject(FeatureObj),
+                                            "Update Feature method in Feature controller", FeatureObj.Id, FeatureObj.Id, JsonConvert.SerializeObject(featureRequest),
                                              Request);
 
                     if (responce.Message == "Feature name allready exists")
@@ -266,7 +267,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //throw;
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
                                             "Feature service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                            "Update Feature method in Feature controller", FeatureObj.Id, FeatureObj.Id, JsonConvert.SerializeObject(FeatureObj),
+                                            "Update Feature method in Feature controller", featureRequest.Id, featureRequest.Id, JsonConvert.SerializeObject(featureRequest),
                                              Request);
                 _logger.Error(featureRequest, ex);
                 return StatusCode(500, "Internal Server Error.");
@@ -416,7 +417,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
                                           "Feature service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                                          "ChangeFeatureState  method in Feature controller", 1, 1, JsonConvert.SerializeObject(FeatureObj),
+                                          "ChangeFeatureState  method in Feature controller", FeatureId, FeatureId, JsonConvert.SerializeObject(FeatureObj),
                                            Request);
 
                 //List<FeatureResponce> featureList = new List<FeatureResponce>();
@@ -439,7 +440,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
                                 "Feature service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                "ChangeFeatureState  method in Feature controller", 1, 1, JsonConvert.SerializeObject(FeatureObj),
+                                "ChangeFeatureState  method in Feature controller", FeatureId, FeatureId, JsonConvert.SerializeObject(FeatureObj),
                                  Request);
                 _logger.Error(ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, "Internal Server Error.");
