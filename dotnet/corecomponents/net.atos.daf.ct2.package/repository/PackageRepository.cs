@@ -219,7 +219,7 @@ namespace net.atos.daf.ct2.package.repository
                     }
 
 
-                    // package status filter 
+                    // package state filter 
                     if (!string.IsNullOrEmpty(filter.State) && filter.State.Length == 1)
                     {
                         parameter.Add("@state", (char)_packageCoreMapper.ToPackageState(filter.State), DbType.AnsiStringFixedLength, ParameterDirection.Input, 1);
