@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.translation.entity
         public string code { get; set; }
         [Required]
         [StringLength(1)]
-        public WarningType type { get; set; }
+        public string type { get; set; }
         [Required]
         [StringLength(1)]
         public string veh_type { get; set; }

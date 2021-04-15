@@ -191,15 +191,15 @@ export class AccountInfoSettingsComponent implements OnInit {
       else{ //--- default org pref
         this.organizationService.getOrganizationPreference(this.organizationId).subscribe((data: any) => {
           this.orgDefaultPreference = {
-            currencyId: data.organizationPreference.currency,
-            dateFormatTypeId: data.organizationPreference.dateFormat,
-            languageId: data.organizationPreference.language,
-            timeFormatId: data.organizationPreference.timeFormat,
-            timezoneId: data.organizationPreference.timezone,
-            unitId: data.organizationPreference.unit,
-            vehicleDisplayId: data.organizationPreference.vehicleDisplay,
+            currencyId: data.currency,
+            dateFormatTypeId: data.dateFormat,
+            languageId: data.language,
+            timeFormatId: data.timeFormat,
+            timezoneId: data.timezone,
+            unitId: data.unit,
+            vehicleDisplayId: data.vehicleDisplay,
             landingPageDisplayId: this.landingPageDisplayDropdownData[0].id //-- set default landing page for org
-            //landingPageDisplayId: data.organizationPreference.landingPageDisplay
+            //landingPageDisplayId: data.landingPageDisplay
           };
           this.goForword(this.orgDefaultPreference);
         });

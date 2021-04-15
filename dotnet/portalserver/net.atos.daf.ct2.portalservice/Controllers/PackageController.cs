@@ -170,7 +170,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
                     {
-                          await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
+                          await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
                                              "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                              "Update method in Package controller",request.Id, packageResponse.PackageId, JsonConvert.SerializeObject(request),
                                               Request);
@@ -226,7 +226,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var request = new GetPackageRequest()
                 {
                     Id = filterRequest.Id,
-                    Status = filterRequest.Status == null ? string.Empty : filterRequest.Status,
+                    State = filterRequest.State == null ? string.Empty : filterRequest.State,
                     Code = filterRequest.Code == null ? string.Empty : filterRequest.Code,                   
                     Type = filterRequest.Type == null ? string.Empty : filterRequest.Type,
                     FeatureSetID = filterRequest.FeatureSetId
@@ -325,7 +325,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     else
                     {
                         if (packageResponse.PackageList.Count == 0)
-                            return StatusCode(500, "package code already exists");
+                            return StatusCode(409, "package code already exists");
                         else
                         {
                             return StatusCode(500, "Package response is null");
@@ -351,31 +351,31 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPut]
         [Route("updatestatus")]
-        public async Task<IActionResult> UpdatePackageStatus(UpdatePackageStatusRequest request)
+        public async Task<IActionResult> UpdatePackageStatus(UpdatePackageStateRequest request)
         {
             try
             {
                 _logger.LogInformation("Update package status method in package API called.");
 
                 // Validation 
-                if (request.PackageId <= 0 || (string.IsNullOrEmpty(request.Status)))
+                if (request.PackageId <= 0 || (string.IsNullOrEmpty(request.State)))
                 {
                     return StatusCode(400, PortalConstants.PackageValidation.PackageStatusRequired);
                 }
                 // The package status should be single character
-                if (request.Status.Length > 1)
+                if (request.State.Length > 1)
                 {
                     return StatusCode(400, PortalConstants.PackageValidation.InvalidPackageStatus);
                 }
 
 
-                var packageResponse = await _packageClient.UpdatePackageStatusAsync(request);
+                var packageResponse = await _packageClient.UpdatePackageStateAsync(request);
 
 
                 if (packageResponse != null && packageResponse.Code == Responsecode.Failed
-                     && packageResponse.Message == "There is an error in updating package status.")
+                     && packageResponse.Message == "There is an error in updating package state.")
                 {
-                    return StatusCode(500, "There is an error  in updating package status.");
+                    return StatusCode(500, "There is an error  in updating package state.");
                 }
                 else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
                 {

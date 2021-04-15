@@ -546,7 +546,7 @@ namespace net.atos.daf.ct2.translationservice
                 dtcWarning.AddRange(request.DtcData.Select(x => new DTCwarning()
                 {
                     code = x.Code,
-                    type = (translation.Enum.WarningType)x.Type,
+                    type = x.Type,
                     veh_type = x.VehType,
                     warning_class = x.WarningClass,
                     number = x.Number,
@@ -565,7 +565,7 @@ namespace net.atos.daf.ct2.translationservice
                                    {
                                        Id = x.id,
                                        Code = x.code,
-                                       Type = (WarningType)x.type,
+                                       Type = x.type,
                                        VehType = x.veh_type,
                                        WarningClass = x.warning_class,
                                        Number = x.number,
@@ -605,7 +605,7 @@ namespace net.atos.daf.ct2.translationservice
                     var WarnData = new dtcwarning();
                     WarnData.Id = item.id;
                     WarnData.Code = item.code;
-                    WarnData.Type = (WarningType)item.type;
+                    WarnData.Type = item.type;
                     WarnData.VehType = item.veh_type;
                     WarnData.WarningClass = item.warning_class;
                     WarnData.Number = item.number;
@@ -642,7 +642,7 @@ namespace net.atos.daf.ct2.translationservice
                 dtcWarning.AddRange(request.DtcData.Select(x => new DTCwarning()
                 {
                     code = x.Code,
-                    type = (translation.Enum.WarningType)x.Type,
+                    type = x.Type,
                     veh_type = x.VehType,
                     warning_class = x.WarningClass,
                     number = x.Number,
@@ -661,7 +661,7 @@ namespace net.atos.daf.ct2.translationservice
                                    {
                                        Id = x.id,
                                        Code = x.code,
-                                       Type = (WarningType)x.type,
+                                       Type = x.type,
                                        VehType = x.veh_type,
                                        WarningClass = x.warning_class,
                                        Number = x.number,

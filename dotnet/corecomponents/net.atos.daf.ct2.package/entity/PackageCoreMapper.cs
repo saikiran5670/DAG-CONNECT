@@ -10,8 +10,8 @@ namespace net.atos.daf.ct2.package.entity
             Package package = new Package();
             package.Id = record.id;
             package.Code = !string.IsNullOrEmpty(record.packagecode) ? record.packagecode : string.Empty;
-            package.State = !string.IsNullOrEmpty(record.state) ? MapCharToPackageStatus(record.state) : string.Empty;
-            package.Status = !string.IsNullOrEmpty(record.status) ? MapCharToPackageStatus(record.status) : string.Empty;
+            package.State = !string.IsNullOrEmpty(record.state) ? MapCharToPackageState(record.state) : string.Empty;
+           // package.State = !string.IsNullOrEmpty(record.status) ? MapCharToPackageStatus(record.state) : string.Empty;
             package.Type = !string.IsNullOrEmpty(record.type) ? MapCharToPackageType(record.type) : string.Empty;
             package.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;
             package.Description = !string.IsNullOrEmpty(record.description) ? record.description : string.Empty;
@@ -39,10 +39,29 @@ namespace net.atos.daf.ct2.package.entity
         }
 
 
-        public PackageStatus ToPackageStatus(string status)
+        public PackageState ToPackageStatus(string status)
         {
 
-            return status == "A" ? PackageStatus.Active : PackageStatus.Inactive;
+            return status == "A" ? PackageState.Active : PackageState.Inactive;
+        }
+
+        public PackageState ToPackageState(string status)
+        {
+            var type = PackageState.Active; ;
+            switch (status)
+            {
+                case "A":
+                    type = PackageState.Active;
+                    break;
+                case "I":
+                    type = PackageState.Inactive;
+                    break;
+                case "D":
+                    type = PackageState.Delete;
+                    break;
+            }
+            return type;
+          
         }
 
         public char MapPackageType(string packageType)
@@ -82,11 +101,25 @@ namespace net.atos.daf.ct2.package.entity
             return ptype;
         }
 
-        public string MapCharToPackageStatus(string status)
-        {
+        public string MapCharToPackageState(string state)
+        {        
 
-            var ptype = status == "A" ? "Active" : "Inactive";
+            var ptype = string.Empty;
+            switch (state)
+            {
+                case "A":
+                    ptype = "Active";
+                    break;
+                case "I":
+                    ptype = "Inactive";
+                    break;
+                case "D":
+                    ptype = "Delete";
+                    break;
+            }
             return ptype;
+
+
 
         }
 

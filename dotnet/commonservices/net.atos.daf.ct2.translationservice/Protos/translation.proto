@@ -255,7 +255,7 @@ message dtcwarning
 {
      int32 id =1;
      string code =2;
-     WarningType type =3;
+     string type =3;
      string veh_type=4;
      int32 warning_class =5;
      int32 number =6;
@@ -299,7 +299,7 @@ message WarningDeleteResponse
      string message = 2;
      int32 id =3;
 }
-}
+
 
 message AcceptedTermConditionRequest{
   int32 Id =1;

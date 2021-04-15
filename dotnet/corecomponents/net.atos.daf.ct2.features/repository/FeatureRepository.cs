@@ -13,9 +13,11 @@ namespace net.atos.daf.ct2.features.repository
     public class FeatureRepository : IFeatureRepository
     {
         private readonly IDataAccess dataAccess;
+        private readonly FeatureCoreMapper _featureCoreMapper;
         public FeatureRepository(IDataAccess _dataAccess)
         {
             dataAccess = _dataAccess;
+            _featureCoreMapper = new FeatureCoreMapper();
         }
 
         #region Feature Set 
@@ -71,7 +73,7 @@ namespace net.atos.daf.ct2.features.repository
 
         public async Task<IEnumerable<FeatureSet>> GetFeatureSet(int FeatureSetId, char state)
         {
-
+            List<FeatureSet> featuress = new List<FeatureSet>();
             var QueryStatement = @" SELECT id,
                                      name,
                                      description,
@@ -84,12 +86,20 @@ namespace net.atos.daf.ct2.features.repository
             parameter.Add("@featuresetid", FeatureSetId);
             parameter.Add("@state", state);
             IEnumerable<FeatureSet> FeatureSetDetails = await dataAccess.QueryAsync<FeatureSet>(QueryStatement, parameter);
-            return FeatureSetDetails;
+
+            foreach (dynamic record in FeatureSetDetails)
+            {
+
+                featuress.Add(_featureCoreMapper.Map(record));
+            }
+
+            return featuress;
 
         }
 
         public async Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid,int FeatureId,int level, char? Featuretype,string Langaugecode)
         {
+            var features = new List<Feature>();
 
             var QueryStatement = @"SELECT f.id, f.name, 
                                  f.type, f.state,f.data_attribute_set_id,f.key,r.id as roleid  , r.organization_id                        
@@ -151,7 +161,13 @@ namespace net.atos.daf.ct2.features.repository
 
             parameter.Add("@Code", Langaugecode);
             IEnumerable<Feature> FeatureSetDetails = await dataAccess.QueryAsync<Feature>(QueryStatement, parameter);
-            return FeatureSetDetails;
+
+            foreach(dynamic record in FeatureSetDetails)
+            {
+                features.Add(_featureCoreMapper.MapFeature(record));
+            }
+
+            return features;
 
         }
 
@@ -172,12 +188,20 @@ namespace net.atos.daf.ct2.features.repository
         {
             try
             {
+                List<DataAttributeSet> dataAttributeSets = new List<DataAttributeSet>();
                 var QueryStatement = @"SELECT id, name, description, is_exlusive, created_at, created_by, modified_at, modified_by, state
 	                                FROM master.dataattributeset where id= @data_set_id";
 
                 var parameter = new DynamicParameters();
                 parameter.Add("@data_set_id", DataAttributeSetID);
                 var DataAttributeSetDetails = await dataAccess.QueryAsync<DataAttributeSet>(QueryStatement, parameter);
+
+                foreach (dynamic record in DataAttributeSetDetails)
+                {
+
+                    dataAttributeSets.Add(_featureCoreMapper.MapDataAttributeSet(record));
+                }
+
 
                 var Dataattributequery = @"SELECT dsa.data_attribute_id as Id
 	                                    FROM master.dataattributeset ds Left Join 
@@ -187,7 +211,7 @@ namespace net.atos.daf.ct2.features.repository
                 var parameters = new DynamicParameters();
                 parameters.Add("@data_set_id", DataAttributeSetID);
                 var DataAttributeS = await dataAccess.QueryAsync<DataAttribute>(Dataattributequery, parameters);
-                var dataatribute = DataAttributeSetDetails.FirstOrDefault();
+                var dataatribute = dataAttributeSets.FirstOrDefault();
                 dataatribute.DataAttributes = new List<DataAttribute>();
                 dataatribute.DataAttributes.AddRange(DataAttributeS);
                 return dataatribute;
@@ -204,6 +228,7 @@ namespace net.atos.daf.ct2.features.repository
 
         public async Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int feature_set_id,string Langaugecode)
          {
+            var feature = new List<Feature>();
              var QueryStatement = @"Select f.id,f.name,t.value,f.type,f.state,f.data_attribute_set_id,f.key,f.level,fs.feature_set_id from master.feature f
 	                                Left join master.featuresetfeature fS
 	                                on f.id=fs.feature_id
@@ -216,7 +241,16 @@ namespace net.atos.daf.ct2.features.repository
             parameter.Add("@Code", Langaugecode);
             parameter.Add("@feature_set_id", feature_set_id);
             IEnumerable<Feature> FeatureSetDetails = await dataAccess.QueryAsync<Feature>(QueryStatement, parameter);
-            return FeatureSetDetails;
+
+
+            foreach (dynamic record in FeatureSetDetails)
+            {
+
+                feature.Add(_featureCoreMapper.MapFeatureSetDetails(record));
+            }
+
+
+            return feature;
 
 
          }
