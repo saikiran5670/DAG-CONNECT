@@ -127,7 +127,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("update")]
         public async Task<IActionResult> Update(PackagePortalRequest request)
         {
-             var packageResponse = new PackageResponse();
+            
             try
             {
                 _logger.LogInformation("Update method in package API called.");
@@ -155,8 +155,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         return StatusCode(400, "Please provide package featureIds");
                     }
                     var createPackageRequest = _packageMapper.ToCreatePackage(request);
-
-                        packageResponse = await _packageClient.UpdateAsync(createPackageRequest);
+                    var packageResponse = new PackageResponse();
+                    packageResponse = await _packageClient.UpdateAsync(createPackageRequest);
 
                     if (packageResponse.PackageId == -1 && packageResponse.Code == Responsecode.Conflict)
                     {
@@ -197,7 +197,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
                                              "Package service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                             "Update method in Package controller", request.Id, packageResponse.PackageId, JsonConvert.SerializeObject(request),
+                                             "Update method in Package controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                                               Request);
 
                 _logger.LogError("Package Service:Update : " + ex.Message + " " + ex.StackTrace);
