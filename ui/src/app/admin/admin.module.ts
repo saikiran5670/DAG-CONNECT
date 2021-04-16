@@ -42,6 +42,7 @@ import { CreateEditViewOrganisationRelationshipComponent } from './organisation-
 import { LinkOrgPopupComponent } from './user-management/new-user-step/link-org-popup/link-org-popup.component';
 import { LanguageSelectionComponent } from './translation-data-upload/language-selection/language-selection.component'
 import { MatTableExporterModule } from 'mat-table-exporter';
+import { CreateEditViewVehicleAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/create-edit-view-vehicle-account-access-relationship/create-edit-view-vehicle-account-access-relationship.component';
 
 @NgModule({
   declarations: [
@@ -76,7 +77,8 @@ import { MatTableExporterModule } from 'mat-table-exporter';
     OrganisationRelationshipComponent,
     CreateEditViewOrganisationRelationshipComponent,
     LinkOrgPopupComponent,
-    LanguageSelectionComponent
+    LanguageSelectionComponent,
+    CreateEditViewVehicleAccountAccessRelationshipComponent
   ],
   imports: [
       CommonModule,
