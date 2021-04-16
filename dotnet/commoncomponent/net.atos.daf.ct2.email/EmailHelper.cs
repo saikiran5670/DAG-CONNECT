@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.email
     public class EmailHelper
     {
         public static async Task<bool> SendEmail(MessageRequest messageRequest)
-        {
+        {            
             var apiKey = messageRequest.Configuration.ApiKey;
             var client = new SendGridClient(apiKey);
             var msg = new SendGridMessage();
