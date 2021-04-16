@@ -479,7 +479,7 @@ namespace net.atos.daf.ct2.account
                 if(!accountPreferenceId.HasValue)
                 {
                     string orgQuery =
-                    @"SELECT preference_id from master.account acc
+                    @"SELECT o.preference_id from master.account acc
                     INNER JOIN master.accountOrg ao ON acc.id=ao.account_id
                     INNER JOIN master.organization o ON ao.organization_id=o.id
                     where acc.email = @emailId";
