@@ -22,7 +22,7 @@ service FeatureService {
   rpc Delete (FeatureRequest) returns (FeatureResponce);
   rpc GetFeatures (FeaturesFilterRequest) returns (FeaturesListResponce);
   rpc GetDataAttributes(DataAtributeRequest)returns(DataAttributeResponceList);
-rpc ChangeFeatureState(FeatureStateRequest)returns(FeatureStateResponce);
+  rpc ChangeFeatureState(FeatureStateRequest)returns(FeatureStateResponce);
 
 }
 message FeatureStateRequest
@@ -35,7 +35,6 @@ message FeatureStateResponce
     Responcecode Code=1;
     string Message = 2;  
 }
-
 message DataAtributeRequest
 {
 string LangaugeCode = 1;
@@ -46,7 +45,7 @@ string LangaugeCode = 1;
     string Name= 2;
     string Key =3;
     string type= 4;
-    FeatureState State=5;
+    string State=5;
     DataAttributeSetRequest DataAttribute = 6;  
     string Description =7;
     int32 Level=8;

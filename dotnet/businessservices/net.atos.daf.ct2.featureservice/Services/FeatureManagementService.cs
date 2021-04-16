@@ -76,7 +76,7 @@ namespace net.atos.daf.ct2.featureservice
                         FeatureRequest ObjResponce = new FeatureRequest();
                         ObjResponce.Id = item.Id;
                         ObjResponce.Name = item.Value == null ? item.Name : item.Value;
-                        ObjResponce.State = item.state == "I" ? FeatureState.Inactive : FeatureState.Active;
+                        ObjResponce.State = item.state;
                         ObjResponce.Key = item.Key == null ? "" : item.Key;
                         ObjResponce.Type = item.Type.ToString();
                         ObjResponce.Level = item.Level;
@@ -95,7 +95,7 @@ namespace net.atos.daf.ct2.featureservice
                         ObjResponce.Name = item.Value == null ? item.Name : item.Value ;
                         //ObjResponce.Status = item.Is_Active;
                         //ObjResponce.State = (FeatureState)Enum.Parse(typeof(FeatureState), item.state.ToString().ToUpper());
-                        ObjResponce.State = item.state == "I" ? FeatureState.Inactive : FeatureState.Active;
+                        ObjResponce.State = item.state ;
                         ObjResponce.Key = item.Key == null ? "" : item.Key;
                        
                         if (item.Type.ToString() == "D")

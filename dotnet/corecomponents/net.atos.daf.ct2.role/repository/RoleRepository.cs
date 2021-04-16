@@ -83,7 +83,7 @@ namespace net.atos.daf.ct2.role.repository
 
             var parameter = new DynamicParameters();
             parameter.Add("@roleid", roleid);
-            parameter.Add("@state", 'I');
+            parameter.Add("@state", 'D');
             parameter.Add("@updated_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
             parameter.Add("@updated_by", Accountid);
 
@@ -139,7 +139,7 @@ namespace net.atos.daf.ct2.role.repository
                                 role.feature_set_id,
                                 role.level
 	                            FROM master.role role
-								WHERE state = 'A'";
+								WHERE state != 'D'";
 
 
             var parameter = new DynamicParameters();

@@ -126,7 +126,7 @@ namespace net.atos.daf.ct2.relationship.repository
                 {
                     var parameter = new DynamicParameters();
                     parameter.Add("@id", relationshipId);
-                    var deletequery = @"update master.orgrelationship set state ='I' where id=@id";
+                    var deletequery = @"update master.orgrelationship set state ='D' where id=@id";
                     int isdelete = await _dataAccess.ExecuteScalarAsync<int>(deletequery, parameter);
                     return true;
                 }
@@ -148,7 +148,7 @@ namespace net.atos.daf.ct2.relationship.repository
                 var relationships = new List<Relationship>();
                 string query = string.Empty;
 
-                query = @"select id, organization_id, feature_set_id, name, description, code, state, level,created_at from master.orgrelationship relationship where state = 'A' ";
+                query = @"select id, organization_id, feature_set_id, name, description, code, state, level,created_at from master.orgrelationship relationship where state != 'D' ";
 
                 if (filter != null)
                 {
@@ -227,8 +227,19 @@ namespace net.atos.daf.ct2.relationship.repository
         }
         public string MapCharToState(string state)
         {
-
-            var ptype = state == "A" ? "Active" : "Inactive";
+            var ptype = string.Empty;
+            switch (state)
+            {
+                case "A":
+                    ptype = "Active";
+                    break;
+                case "I":
+                    ptype = "Inactive";
+                    break;
+                case "D":
+                    ptype = "Delete";
+                    break;
+            }
             return ptype;
 
         }

@@ -81,7 +81,7 @@ namespace net.atos.daf.ct2.feature.test
             dataAttributeSet.Name = "AttributeSet_" + iSessionStartedAt;
             dataAttributeSet.State = 'A';
             dataAttributeSet.Description = "Testdescription";
-            dataAttributeSet.Is_exlusive = DataAttributeSetType.Exclusive;
+            //dataAttributeSet.Is_exlusive = DataAttributeSetType.Exclusive;
             dataAttributeSet.created_at = iSessionStartedAt;
             dataAttributeSet.created_by = 1;
             dataAttributeSet.modified_at = iSessionExpireddAt;
@@ -117,7 +117,7 @@ namespace net.atos.daf.ct2.feature.test
             dataAttributeSet.Name = "AttributeSet_" + iSessionStartedAt;
             dataAttributeSet.State = 'A';
             dataAttributeSet.Description = "Testdescription";
-            dataAttributeSet.Is_exlusive = DataAttributeSetType.Exclusive;
+            //dataAttributeSet.Is_exlusive = DataAttributeSetType.Exclusive;
             dataAttributeSet.created_at = iSessionStartedAt;
             dataAttributeSet.created_by = 1;
             dataAttributeSet.modified_at = iSessionExpireddAt;

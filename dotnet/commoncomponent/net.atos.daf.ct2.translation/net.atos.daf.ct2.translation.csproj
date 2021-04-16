@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\net.atos.daf.ct2.data\net.atos.daf.ct2.data.csproj" />
+    <ProjectReference Include="..\net.atos.daf.ct2.email\net.atos.daf.ct2.email.csproj" />
     <ProjectReference Include="..\net.atos.daf.ct2.utilities\net.atos.daf.ct2.utilities.csproj" />
   </ItemGroup>
 
