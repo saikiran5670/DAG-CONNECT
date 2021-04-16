@@ -58,16 +58,15 @@ namespace net.atos.daf.ct2.email
 
         public static string GetEmailContent(EmailTemplate emailTemplate)
         {
-            //ResourceManager rs = new ResourceManager("net.atos.daf.ct2.email.Templates", Assembly.GetExecutingAssembly());
-            //return rs.GetString(eventType.ToString(), CultureInfo.CurrentCulture);
             var replacedContent = emailTemplate.Description;
             Regex regex = new Regex(@"\[(.*?)\]");
 
             foreach (Match match in regex.Matches(emailTemplate.Description))
             {
-                replacedContent = replacedContent.Replace(match.Value, 
-                    emailTemplate.TemplateLabels
-                    .Where(x => x.LabelKey.Equals(match.Groups[1].Value)).FirstOrDefault()?.TranslatedValue);
+                var label = emailTemplate.TemplateLabels
+                    .Where(x => x.LabelKey.Equals(match.Groups[1].Value)).FirstOrDefault();
+                if(label != null)
+                    replacedContent = replacedContent.Replace(match.Value, label.TranslatedValue);
             }
             return replacedContent;
         }
