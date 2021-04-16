@@ -24,8 +24,8 @@ namespace net.atos.daf.ct2.role.repository
         {
 
             var RoleQueryStatement = @" INSERT INTO master.role
-                                    (organization_id,name,state,created_at,created_by,description,feature_set_id,level) 
-	                                VALUES (@organization_id,@name,@state,@created_at,@created_by,@description,@feature_set_id,@level)
+                                    (organization_id,name,state,created_at,created_by,description,feature_set_id,level,code) 
+	                                VALUES (@organization_id,@name,@state,@created_at,@created_by,@description,@feature_set_id,@level,@code)
 	                                RETURNING id";
 
             var Roleparameter = new DynamicParameters();
@@ -37,6 +37,7 @@ namespace net.atos.daf.ct2.role.repository
             Roleparameter.Add("@description", roleMaster.Description);
             Roleparameter.Add("@feature_set_id", roleMaster.Feature_set_id);
             Roleparameter.Add("@level", roleMaster.Level);
+            Roleparameter.Add("@code", roleMaster.Code);
 
             int InsertedRoleId = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, Roleparameter);
             // if (roleMaster.FeatureSetID > 0)
@@ -137,7 +138,8 @@ namespace net.atos.daf.ct2.role.repository
                                 role.modified_at,
                                 role.modified_by,
                                 role.feature_set_id,
-                                role.level
+                                role.level,
+                                role.code
 	                            FROM master.role role
 								WHERE state != 'D'";
 

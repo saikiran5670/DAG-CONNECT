@@ -37,7 +37,8 @@ message RoleRequest {
     repeated int32 FeatureIds = 6;
     int32 UpdatedBy=7;
     int32 Level = 8;
-    bool IsGlobal = 9;
+    string Code=9; 
+    bool IsGlobal = 10;
   }
 
   message RoleListResponce {
