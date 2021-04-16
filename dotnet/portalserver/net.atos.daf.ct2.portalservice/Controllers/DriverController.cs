@@ -198,6 +198,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Driver Component",
+                                             "Driver service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                             "UpdateOptinOptout method in Driver controller", 0, 0, JsonConvert.SerializeObject(Optrequest),
+                                              Request);
+
                 logger.LogError(ex.Message + " " + ex.StackTrace);
                 if (ex.Message.Contains(FK_Constraint))
                 {
