@@ -5,17 +5,21 @@ using Microsoft.Extensions.Logging;
 using AccountComponent = net.atos.daf.ct2.account;
 using AccountEntity = net.atos.daf.ct2.account.entity;
 using IdentityEntity = net.atos.daf.ct2.identity.entity;
+using log4net;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.authenticationservice
 {
     public class AuthenticationService: AuthService.AuthServiceBase
     {
-        private readonly ILogger logger;
+        
+
+        private ILog _logger;
         AccountComponent.IAccountIdentityManager accountIdentityManager;
-        public AuthenticationService(AccountComponent.IAccountIdentityManager _accountIdentityManager,ILogger<AuthenticationService> _logger)
+        public AuthenticationService(AccountComponent.IAccountIdentityManager _accountIdentityManager)
         {
             accountIdentityManager =_accountIdentityManager;
-            logger=_logger;
+            _logger= LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType); 
         }
         public override Task<AccountIdentityResponse> Auth(IdentityRequest request, ServerCallContext context)
         {
@@ -113,7 +117,9 @@ namespace net.atos.daf.ct2.authenticationservice
             }
             catch (Exception ex)
             {
-                return Task.FromResult(new AccountIdentityResponse
+               _logger.Error(null, ex);
+
+               return Task.FromResult(new AccountIdentityResponse
                 {
                     Code = Responsecode.Failed,
                     Message = " Authentication is failed due to - " + ex.Message,
@@ -131,6 +137,8 @@ namespace net.atos.daf.ct2.authenticationservice
             }
             catch (Exception ex)
             {
+                _logger.Error(null, ex);
+
                 return Task.FromResult(new ValidateResponse
                 {
                     Code = Responsecode.Failed,

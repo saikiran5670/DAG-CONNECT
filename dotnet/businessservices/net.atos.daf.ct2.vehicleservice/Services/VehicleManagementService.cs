@@ -15,21 +15,25 @@ using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
 using AccountComponent = net.atos.daf.ct2.account;
 using System.Linq;
+using log4net;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.vehicleservice.Services
 {
     public class VehicleManagementService : VehicleService.VehicleServiceBase
     {
-        private readonly ILogger<VehicleManagementService> _logger;
+        //private readonly ILogger<VehicleManagementService> _logger;
         private readonly IVehicleManager _vehicelManager;
         private readonly Group.IGroupManager _groupManager;
         private readonly Mapper _mapper;
+
+        private ILog _logger;
         private readonly IAuditTraillib _auditlog;
         private readonly AccountComponent.IAccountManager accountmanager;
 
-        public VehicleManagementService(ILogger<VehicleManagementService> logger, IVehicleManager vehicelManager, Group.IGroupManager groupManager, IAuditTraillib auditlog,AccountComponent.IAccountManager _accountmanager)
+        public VehicleManagementService( IVehicleManager vehicelManager, Group.IGroupManager groupManager, IAuditTraillib auditlog,AccountComponent.IAccountManager _accountmanager)
         {
-            _logger = logger;
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _vehicelManager = vehicelManager;
             _groupManager = groupManager;
             _auditlog = auditlog;
@@ -45,7 +49,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 VehiclesBySubscriptionDetailsResponse objVehiclesBySubscriptionDetailsResponse = new VehiclesBySubscriptionDetailsResponse();
                 VehiclesBySubscriptionDetails objVehiclesBySubscriptionId = new VehiclesBySubscriptionDetails();
                 var data = await _vehicelManager.GetVehicleBySubscriptionId(request.SubscriptionId);
-                _logger.LogInformation("GetVehicleBySubscriptionId method in vehicle service called.");
+                _logger.Info("GetVehicleBySubscriptionId method in vehicle service called.");
                 foreach (var item in data)
                 {
                     objVehiclesBySubscriptionId.OrderId = item.orderId;
@@ -59,7 +63,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service GetVehicleBySubscriptionId method.");
+                _logger.Error(null, ex);
                 throw ex;
             }
         }
@@ -72,7 +76,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 Objvehicle = _mapper.ToVehicleEntity(request);
                 Objvehicle = await _vehicelManager.Create(Objvehicle);
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "vehicle Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Vehicle Create", 1, 2, JsonConvert.SerializeObject(request));
-                _logger.LogInformation("Create method in vehicle service called.");
+                _logger.Info("Create method in vehicle service called.");
 
                 return await Task.FromResult(new VehicleCreateResponce
                 {
@@ -85,7 +89,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service Create method.");
+                _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleCreateResponce
                 {
                     Message = "Exception :-" + ex.Message,
@@ -123,7 +127,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 }
 
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "vehicle Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Update method in vehicle service", 1, 2, JsonConvert.SerializeObject(request));
-                _logger.LogInformation("Update method in vehicle service called.");
+                _logger.Info("Update method in vehicle service called.");
                 return await Task.FromResult(new VehicleResponce
                 {
                     Message = "Vehicle updated for id:- " + Objvehicle.ID,
@@ -134,7 +138,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Vehicle Service:Update : " + ex.Message + " " + ex.StackTrace);
+               _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleResponce
                 {
                     Message = "Vehicle Updation Faile due to - " + ex.Message,
@@ -159,12 +163,12 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 }
                 responce.Message = "Vehicles data retrieved";
                 responce.Code = Responcecode.Success;
-                _logger.LogInformation("Get method in vehicle service called.");
+                _logger.Info("Get method in vehicle service called.");
                 return await Task.FromResult(responce);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+               _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleListResponce
                 {
                     Code = Responcecode.Failed,
@@ -189,7 +193,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 ObjvehicleOptInOptOutResponce.Type = (vehicle.OptInOptOutType)Enum.Parse(typeof(vehicle.OptInOptOutType), request.OptInOptOutType.ToString()); //GetOptInOptOutEnum((int)request.OptInOptOutType);
                 ObjvehicleOptInOptOutResponce = _vehicelManager.UpdateStatus(ObjvehicleOptInOptOutResponce).Result;
 
-                _logger.LogInformation("UpdateStatus method in vehicle service called.");
+                _logger.Info("UpdateStatus method in vehicle service called.");
 
                 return Task.FromResult(new VehicleOptInOptOutResponce
                 {
@@ -199,7 +203,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service update status method.");
+                _logger.Error(null, ex);
                 return Task.FromResult(new VehicleOptInOptOutResponce
                 {
                     Message = "Exception " + ex.Message,
@@ -240,7 +244,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 }
                 request.Id = group.Id;
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Vehicle Group ", 1, 2, Convert.ToString(group.Id)).Result;
-                _logger.LogInformation("Group Created:" + Convert.ToString(group.Name));
+                _logger.Info("Group Created:" + Convert.ToString(group.Name));
                 return await Task.FromResult(new VehicleGroupResponce
                 {
                     Message = "Vehicle group created with id:- " + group.Id,
@@ -250,7 +254,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in create vehicle group :CreateGroup with exception - " + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleGroupResponce
                 {
                     Message = "Exception :-" + ex.Message,
@@ -292,7 +296,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         await _groupManager.RemoveRef(entity.Id);
                     }
                 }
-                _logger.LogInformation("Update vehicle Group :" + Convert.ToString(entity.Name));
+                _logger.Info("Update vehicle Group :" + Convert.ToString(entity.Name));
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Update vehicle Group ", 1, 2, Convert.ToString(entity.Id)).Result;
                 return await Task.FromResult(new VehicleGroupResponce
                 {
@@ -303,7 +307,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in create vehicle group :UpdateGroup with exception - " + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleGroupResponce
                 {
                     Message = "vehicle Group Update Failed :-" + ex.Message,
@@ -327,7 +331,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in delete vehicle group :DeleteGroup with exception - " + ex.StackTrace + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
                     Message = "Exception :-" + ex.Message,
@@ -423,13 +427,13 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     ObjVehicleGroupRes.Code = Responcecode.Success;
                 }
 
-                _logger.LogInformation("GetGroupDetails method in vehicle service called.");
+                _logger.Info("GetGroupDetails method in vehicle service called.");
 
                 return await Task.FromResult(ObjVehicleGroupRes);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in Get group details for group id :GetGroupDetails with exception - " + ex.StackTrace + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleGroupRefResponce
                 {
                     Message = "Exception " + ex.Message,
@@ -481,13 +485,13 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     ObjVehicleRes.Message = "No vehicle found for vehicle group";
                     ObjVehicleRes.Code = Responcecode.Success;
                 }
-                _logger.LogInformation("GetVehiclesByVehicleGroup method in vehicle service called.");
+                _logger.Info("GetVehiclesByVehicleGroup method in vehicle service called.");
 
                 return await Task.FromResult(ObjVehicleRes);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in Get vehicle details for group id :GetVehiclesByVehicleGroup with exception - " + ex.StackTrace + ex.Message);
+                _logger.Error(null, ex);
 
                 return await Task.FromResult(new VehicleGroupRefResponce
                 {
@@ -501,7 +505,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         {
             try
             {
-                _logger.LogInformation("Get vehicle list by group id method in vehicle API called.");
+                _logger.Info("Get vehicle list by group id method in vehicle API called.");
                 OrgVehicleGroupListResponse response = new OrgVehicleGroupListResponse();
                 IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroupRequest> ObjOrgVehicleGroupList = await _vehicelManager.GetOrganizationVehicleGroupdetails(request.OrganizationId);
                 foreach (var item in ObjOrgVehicleGroupList)
@@ -520,7 +524,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in Get vehicle group details for organization id :GetOrganizationVehicleGroupdetails with exception - " + ex.StackTrace + ex.Message);
+                _logger.Error(null, ex);
 
                 return await Task.FromResult(new OrgVehicleGroupListResponse
                 {
@@ -534,7 +538,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         {
             try
             {
-                _logger.LogInformation("Get vehicle group list by orgnization & vehicle id method in vehicle API called.");
+                _logger.Info("Get vehicle group list by orgnization & vehicle id method in vehicle API called.");
                 VehicleGroupDetailsResponse response = new VehicleGroupDetailsResponse();
                 IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroup> vehicleGroupList = await _vehicelManager.GetVehicleGroup(request.OrganizationId, request.VehicleId);
 
@@ -554,7 +558,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in Get vehicle group details for organization id and vehice id:GetVehicleGroup with exception - " + ex.StackTrace + ex.Message);
+                _logger.Error(null, ex);
 
                 return await Task.FromResult(new VehicleGroupDetailsResponse
                 {
@@ -568,7 +572,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         {
             try
             {
-                _logger.LogInformation("Get vehicle list by group id method in vehicle API called.");
+                _logger.Info("Get vehicle list by group id method in vehicle API called.");
 
                 StringBuilder VehicleIdList = new StringBuilder();
                 // Get Access Relationship
@@ -705,7 +709,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in Get vehicle group details for organization id :GetVehiclesByAccountGroup with exception - " + ex.StackTrace + ex.Message);
+                _logger.Error(null, ex);
 
                 return await Task.FromResult(new VehicleGroupRefResponce
                 {
@@ -730,7 +734,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle SetOTAStatus :SetOTAStatus with exception - " + ex.StackTrace + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
                     Message = "Exception :-" + ex.Message,
@@ -754,7 +758,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle Terminate :Terminate with exception - " + ex.StackTrace + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
                     Message = "Exception :-" + ex.Message,
@@ -778,7 +782,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle SetOptInStatus :SetOptInStatus with exception - " + ex.StackTrace + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
                     Message = "Exception :-" + ex.Message,
@@ -798,12 +802,12 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 responce.Vehicle=_mapper.ToVehicle(ObjRetrieveVehicle);
                 responce.Message = "Vehicles data retrieved";
                 responce.Code = Responcecode.Success;
-                _logger.LogInformation("Get method in vehicle service called.");
+                _logger.Info("Get method in vehicle service called.");
                 return await Task.FromResult(responce);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleDetailsResponce
                 {
                     Code = Responcecode.Failed,
@@ -865,12 +869,12 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 }
                 ObjVehicleGroupRes.Message = "Vehicles data retrieved";
                 ObjVehicleGroupRes.Code = Responcecode.Success;
-                _logger.LogInformation("Get method in vehicle service called.");
+                _logger.Info("Get method in vehicle service called.");
                 return await Task.FromResult(ObjVehicleGroupRes);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleGroupLandingResponse
                 {
                     Code = Responcecode.Failed,
@@ -898,12 +902,12 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 }
                 responce.Message = "Vehicles data retrieved";
                 responce.Code = Responcecode.Success;
-                _logger.LogInformation("Get method in vehicle service called.");
+                _logger.Info("Get method in vehicle service called.");
                 return await Task.FromResult(responce);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleListResponce
                 {
                     Code = Responcecode.Failed,
@@ -928,12 +932,12 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 }
                 responce.Message = "Vehicles data retrieved";
                 responce.Code = Responcecode.Success;
-                _logger.LogInformation("Get method in vehicle service called.");
+                _logger.Info("Get method in vehicle service called.");
                 return await Task.FromResult(responce);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleListResponce
                 {
                     Code = Responcecode.Failed,
@@ -959,12 +963,12 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 }
                 responce.Message = "Vehicles data retrieved";
                 responce.Code = Responcecode.Success;
-                _logger.LogInformation("Get method in vehicle service called.");
+                _logger.Info("Get method in vehicle service called.");
                 return await Task.FromResult(responce);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleListResponce
                 {
                     Code = Responcecode.Failed,
@@ -992,12 +996,12 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 }
                 responce.Message = "Vehicles data retrieved";
                 responce.Code = Responcecode.Success;
-                _logger.LogInformation("Get method in vehicle service called.");
+                _logger.Info("Get method in vehicle service called.");
                 return await Task.FromResult(responce);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleListResponce
                 {
                     Code = Responcecode.Failed,

@@ -17,7 +17,9 @@ using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Account;
 using net.atos.daf.ct2.utilities;
 using Newtonsoft.Json;
+using log4net;
 using AccountBusinessService = net.atos.daf.ct2.accountservice;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -29,21 +31,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region Private Variable
         private readonly AuditHelper _auditHelper;
-        private readonly ILogger<AccountController> _logger;
+        //private readonly ILogger<AccountController> _logger;
         private readonly AccountBusinessService.AccountService.AccountServiceClient _accountClient;
         private readonly Mapper _mapper;
+
+        private ILog _logger;
         private readonly IMemoryCacheExtensions _cache;
         private readonly HeaderObj _userDetails;
         
         #endregion
 
         #region Constructor
-        public AccountController(AccountBusinessService.AccountService.AccountServiceClient accountClient,
-            ILogger<AccountController> logger, IMemoryCacheExtensions cache,
+        public AccountController(AccountBusinessService.AccountService.AccountServiceClient accountClient, IMemoryCacheExtensions cache,
              AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor)
         {
             _accountClient = accountClient;
-            _logger = logger;
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _mapper = new Mapper();
             _cache = cache;
             _auditHelper = auditHelper;
@@ -140,7 +143,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                           "Create Account method in Account controller", 0, 0, JsonConvert.SerializeObject(request),
                                            Request);
 
-                _logger.LogError("Account Service:Create : " + ex.Message + " " + ex.StackTrace);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -232,7 +235,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                            "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                            "Update Account method in Account controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                                             Request);
-                _logger.LogError("Account Service:Update : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -276,7 +279,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                          "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                          "Delete Account method in Account controller", AccountId, AccountId, JsonConvert.SerializeObject(accountRequest),
                                           Request);
-                _logger.LogError("Error in account service:delete account with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -319,7 +322,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                              "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                              "ChangePassword  method in Account controller", _userDetails.accountId, _userDetails.accountId, JsonConvert.SerializeObject(request),
                                               Request);//accountid requred here
-                _logger.LogError("Error in account service:delete account with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -360,7 +363,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -397,7 +400,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500, PortalConstants.ResponseError.InternalServerError + "02");
             }
         }
@@ -439,7 +442,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                             "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                             "AddAccountOrg  method in Account controller", 0, 0, JsonConvert.SerializeObject(request),
                                              Request);
-                _logger.LogError("Account Service:AddAccountToOrg : " + ex.Message + " " + ex.StackTrace);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -483,7 +486,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                           "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                           "ResetPasswordInitiate  method in Account controller", _userDetails.accountId, _userDetails.accountId,
                                           JsonConvert.SerializeObject(request), Request);
-                _logger.LogError("Error in account service:ResetPasswordInitiate with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500, "Error while initiating reset password process.");
             }
         }
@@ -520,7 +523,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                         "GetResetPasswordTokenStatus  method in Account controller", _userDetails.accountId, _userDetails.accountId,
                                         JsonConvert.SerializeObject(request), Request);
-                _logger.LogError("Error in account service:GetResetPasswordTokenStatus with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500, "Error while fetching reset password token status.");
             }
             return StatusCode(500, "Error while fetching reset password token status.");
@@ -563,7 +566,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                         "ResetPassword  method in Account controller", _userDetails.accountId, _userDetails.accountId,
                                         JsonConvert.SerializeObject(request), Request);
-                _logger.LogError("Error in account service:ResetPassword with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500, "Error while reseting account password");
             }
         }
@@ -602,7 +605,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                         "ResetPasswordInvalidate  method in Account controller", _userDetails.accountId, _userDetails.accountId,
                                         JsonConvert.SerializeObject(request), Request);
-                _logger.LogError("Error in account service:ResetPasswordInvalidate with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500, "Error while invalidating reset password invalidate process.");
             }
         }
@@ -629,7 +632,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:GetMenuFeatures with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -676,7 +679,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                           "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                           "SaveProfilePicture  method in Account controller", accountBlobRequest.AccountId, accountBlobRequest.AccountId, JsonConvert.SerializeObject(accountBlobRequest),
                                            Request);
-                _logger.LogError("Error in account service:create profile picture with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -719,7 +722,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:create profile picture with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -747,7 +750,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:create profile picture with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -803,7 +806,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                         "CreateAccountPreference  method in Account controller", 0, 0, JsonConvert.SerializeObject(request),
                                          Request);
-                _logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -850,7 +853,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                        "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                        "UpdateAccountPreference  method in Account controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                                         Request);
-                _logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -898,7 +901,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                      "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                      "DeleteAccountPreference  method in Account controller", preferenceId, preferenceId, JsonConvert.SerializeObject(request),
                                       Request);
-                _logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -940,7 +943,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:get account preference with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -993,7 +996,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                      "CreateVehicleAccessRelationship  method in Account controller", request.Id, 0,  JsonConvert.SerializeObject(request),
                                       Request);
 
-                _logger.LogError("Error in account service:create vehicle access relationship with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -1038,7 +1041,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                    "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                    "UpdateVehicleAccessRelationship  method in Account controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                                     Request);
-                _logger.LogError("Error in account service:update vehicle access relationship with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -1086,7 +1089,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                  "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                  "DeleteVehicleAccessRelationship  method in Account controller", deleteRequest.Id, deleteRequest.Id, JsonConvert.SerializeObject(deleteRequest),
                                   Request);
-                _logger.LogError("Error in account service:delete vehicle access relationship with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500, string.Empty);
             }
         }
@@ -1124,7 +1127,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                "CreateAccountAccessRelationshipAsync  method in Account controller", 0, request.Id, JsonConvert.SerializeObject(request),
                                 Request);
-                _logger.LogError("Error in account service:create account access relationship with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -1166,7 +1169,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                               "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                               "UpdateAccountAccessRelationship  method in Account controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                                Request);
-                _logger.LogError("Error in account service:update vehicle access relationship with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -1214,7 +1217,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                              "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                              "DeleteAccountAccessRelationship  method in Account controller", deleteRequest.Id, deleteRequest.Id, JsonConvert.SerializeObject(deleteRequest),
                               Request);
-                _logger.LogError("Error in account service:delete account access relationship with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "02"));
             }
         }
@@ -1246,7 +1249,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:update vehicle access relationship with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -1284,7 +1287,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:update vehicle access relationship with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -1506,7 +1509,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                           "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                           "CreateAccountGroup  method in Account controller", 0, 0, JsonConvert.SerializeObject(request),
                            Request);
-                _logger.LogError("Error in account service:create account group with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500);
             }
         }
@@ -1548,7 +1551,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                         "UpdateAccountGroup  method in Account controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                          Request);
-                _logger.LogError("Error in account service:create account group with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -1586,7 +1589,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                      "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                      "DeleteAccountGroup  method in Account controller", 0, request.Id, JsonConvert.SerializeObject(request),
                       Request);
-                _logger.LogError("Error in delete account group :DeleteGroup with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -1631,7 +1634,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                   "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                   "AddAccountsToGroup  method in Account controller", 0, 0, JsonConvert.SerializeObject(request),
                    Request);//verify
-                _logger.LogError("Error in delete account group :DeleteGroup with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -1674,7 +1677,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                          "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                          "DeleteAccountFromGroup  method in Account controller", id, id, JsonConvert.SerializeObject(request),
                           Request);
-                _logger.LogError("Error in delete account group reference :DeleteAccountsGroupReference with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -1714,7 +1717,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:get account group with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -1750,7 +1753,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:get account group details with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -1794,7 +1797,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                         "AddRoles  method in Account controller", request.AccountId, request.AccountId, JsonConvert.SerializeObject(request),
                          Request);
-                _logger.LogError("Error in account service:get account group details with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -1834,7 +1837,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                        "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                        "RemoveRoles  method in Account controller", request.AccountId, request.AccountId, JsonConvert.SerializeObject(request),
                         Request);
-                _logger.LogError("Error in account service:get account group details with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -1870,7 +1873,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:get account roles with exception - " + ex.Message + ex.StackTrace);
+                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }

@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using net.atos.daf.ct2.portalservice.Common;
 using Newtonsoft.Json;
+using log4net;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -20,16 +22,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     public class DriverController : ControllerBase
     {
        private readonly AuditHelper _auditHelper;
-        private readonly ILogger<DriverController> logger;
+       // private readonly ILogger<DriverController> logger;
         private readonly DriverMapper mapper;
+
+        private ILog _logger;
 
         private readonly DriverBusinessService.DriverService.DriverServiceClient driverClient;
         private string FK_Constraint = "violates foreign key constraint";
         // private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
 
-        public DriverController(ILogger<DriverController> _logger, DriverBusinessService.DriverService.DriverServiceClient _driverClient, AuditHelper auditHelper)
+        public DriverController( DriverBusinessService.DriverService.DriverServiceClient _driverClient, AuditHelper auditHelper)
         {
-            logger = _logger;
+            _logger =LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType); 
             driverClient = _driverClient;
             mapper = new DriverMapper();
             _auditHelper = auditHelper;
@@ -53,7 +57,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 idRequest.DriverID = driverId;
                 idRequest.OrgID = organizationId;
 
-                logger.LogInformation("Driver get function called ");
+                _logger.Info("Driver get function called ");
                 if (organizationId < 1)
                 {
                     return StatusCode(400, "Please provide organization ID:");
@@ -68,7 +72,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -96,7 +100,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(404, "Please provde correct organizationId.");
                 }
 
-                logger.LogInformation("Driver update function called ");
+                _logger.Info("Driver update function called ");
                 DriverBusinessService.DriverUpdateResponse Response = await driverClient.UpdateAsync(request);
 
                 
@@ -114,7 +118,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                              "Update method in Driver controller",request.Id,request.Id, JsonConvert.SerializeObject(request),
                                               Request); 
 
-                logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 if (ex.Message.Contains(FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
@@ -142,7 +146,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             //    DriverBusinessService.IdRequest idRequest = new DriverBusinessService.IdRequest();
                 idRequest.DriverID = driverId;
                 idRequest.OrgID = organizationId;
-                logger.LogInformation("Driver update function called ");
+                _logger.Info("Driver update function called ");
                 DriverBusinessService.DriverDeleteResponse response = await driverClient.DeleteAsync(idRequest);
 
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Driver Component",
@@ -158,7 +162,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                              "Delete method in Driver controller",idRequest.DriverID,idRequest.DriverID, JsonConvert.SerializeObject(driverId),
                                               Request);
 
-                logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 if (ex.Message.Contains(FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
@@ -185,7 +189,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(404, "Please provide correct Optoutoptinstatus.");
                 }
-                logger.LogInformation("Driver UpdateOptinOptout function called ");
+                _logger.Info("Driver UpdateOptinOptout function called ");
                 DriverBusinessService.OptOutOptInResponse response = await driverClient.UpdateOptinOptoutAsync(Optrequest);
                 
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Driver Component",
@@ -203,7 +207,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                              "UpdateOptinOptout method in Driver controller", 0, 0, JsonConvert.SerializeObject(Optrequest),
                                               Request);
 
-                logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 if (ex.Message.Contains(FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
@@ -222,7 +226,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(404, "Please provide the driver list to import.");
                 }
-                logger.LogInformation("Driver import function called ");
+                _logger.Info("Driver import function called ");
                 net.atos.daf.ct2.driverservice.DriverImportRequest request = new DriverBusinessService.DriverImportRequest();
                 var driverInValidList = new List<net.atos.daf.ct2.driverservice.DriverReturns>();
                 request = mapper.ToDriverImport(drivers, out driverInValidList);                
@@ -258,7 +262,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                              "ImportDrivers method in Driver controller",0, 0, JsonConvert.SerializeObject(drivers),
                                               Request);
 
-                logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 if (ex.Message.Contains(FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
