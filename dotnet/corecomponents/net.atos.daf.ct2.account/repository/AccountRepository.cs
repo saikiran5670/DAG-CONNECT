@@ -462,6 +462,63 @@ namespace net.atos.daf.ct2.account
                 throw ex;
             }
         }        
+
+        public async Task<string> GetLanguageCodePreference(string emailId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@emailId", emailId);
+
+                string accountQuery =
+                    @"SELECT preference_id from master.account where email = @emailId";
+
+                var accountPreferenceId = await dataAccess.QueryFirstAsync<int?>(accountQuery, parameter);
+
+                if(!accountPreferenceId.HasValue)
+                {
+                    string orgQuery =
+                    @"SELECT o.preference_id from master.account acc
+                    INNER JOIN master.accountOrg ao ON acc.id=ao.account_id
+                    INNER JOIN master.organization o ON ao.organization_id=o.id
+                    where acc.email = @emailId";
+
+                    var orgPreferenceId = await dataAccess.QueryFirstAsync<int?>(orgQuery, parameter);
+                    if (!orgPreferenceId.HasValue)
+                        return "EN-GB";
+                    else
+                        return await GetCodeByPreferenceId(orgPreferenceId.Value);
+                }
+                return await GetCodeByPreferenceId(accountPreferenceId.Value);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<string> GetCodeByPreferenceId(int preferenceId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@preferenceId", preferenceId);
+
+                string query =
+                    @"SELECT l.code from master.accountpreference ap
+                    INNER JOIN translation.language l ON ap.id = @preferenceId AND ap.language_id=l.id";
+
+                var languageCode = await dataAccess.QueryFirstAsync<string>(query, parameter);
+
+                return languageCode;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         #endregion
 
         #region AccountBlob

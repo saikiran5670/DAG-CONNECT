@@ -32,12 +32,7 @@ namespace net.atos.daf.ct2.termsandconditions
         {
             return await termsAndConditionsRepository.GetAcceptedTermConditionByUser(AccountId, OrganizationId);
         }
-
-        public async Task<List<string>> GetAllVersionNo()
-        {
-            return await termsAndConditionsRepository.GetAllVersionNo();
-        }
-
+      
         public async Task<TermsAndConditions> GetLatestTermCondition(int AccountId, int OrganizationId)
         {
             return await termsAndConditionsRepository.GetLatestTermCondition(AccountId, OrganizationId);
@@ -47,10 +42,23 @@ namespace net.atos.daf.ct2.termsandconditions
         {
             return await termsAndConditionsRepository.GetTermConditionForVersionNo(VersionNo,LanguageCode);
         }
+
+        public async Task<TermsAndConditionResponseList> UploadTermsAndCondition(TermsandConFileDataList objTermsandConFileDataList)
+        {
+            return await termsAndConditionsRepository.UploadTermsAndCondition(objTermsandConFileDataList);
+        }
+        public async Task<InactivateTandCStatusResponceList> InactivateTermsandCondition(InactivateTandCRequestList objInactivateTandCRequestList)
+        {
+            return await termsAndConditionsRepository.InactivateTermsandCondition(objInactivateTandCRequestList);
+        }
         public async Task<bool> CheckUserAcceptedTermCondition(int AccountId, int OrganizationId)
         {
             return await termsAndConditionsRepository.CheckUserAcceptedTermCondition(AccountId, OrganizationId);
         }
 
+        public async Task<List<string>> GetAllVersionNo(VersionByID objVersionByID)
+        {
+            return await termsAndConditionsRepository.GetAllVersionNo(objVersionByID);
+        }
     }
 }

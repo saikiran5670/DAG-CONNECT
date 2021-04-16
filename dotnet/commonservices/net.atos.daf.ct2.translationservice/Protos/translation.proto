@@ -24,11 +24,18 @@ rpc UpdateDTCWarningData (WarningDataRequest) returns (WarningDataResponse);
 //rpc DeleteDTCWarningData (WarningDeleteRequest) returns (WarningDeleteResponse);
 
 rpc AddUserAcceptedTermCondition (AcceptedTermConditionRequest)returns (AcceptedTermConditionResponse);
-rpc GetAllVersionNo (VersionNoRequest)returns (VersionNoResponse);
+rpc GetAllVersionNo (VersionID)returns (VersionNoResponse);
 rpc GetTermConditionForVersionNo (VersionNoRequest)returns (TermCondDetailsReponse);
 rpc GetAcceptedTermConditionByUser (UserAcceptedTermConditionRequest)returns (TermCondDetailsReponse);
+rpc UploadTermsAndCondition (UploadTermandConditionRequestList) returns (UploadTermandConditionResponseList);
 rpc GetLatestTermCondition (UserAcceptedTermConditionRequest)returns (TermCondDetailsReponse);
 rpc CheckUserAcceptedTermCondition (UserAcceptedTermConditionRequest)returns (UserAcceptedTermConditionResponse);
+}
+
+
+message VersionID{
+ int32 orgId = 1;
+ int32 roleId = 2;
 }
 
 enum TranslationType{
@@ -257,7 +264,7 @@ message dtcwarning
 {
      int32 id =1;
      string code =2;
-     WarningType type =3;
+     string type =3;
      string veh_type=4;
      int32 warning_class =5;
      int32 number =6;
@@ -301,6 +308,7 @@ message WarningDeleteResponse
      string message = 2;
      int32 id =3;
 }
+
 
 message AcceptedTermConditionRequest{
   int32 Id =1;
@@ -356,6 +364,36 @@ message TermConditionReponse
    {
      int32 AccountId=1;
      int32 OrganizationId=2;
+   }
+
+   message UploadTermandConditionRequestList
+   {
+     repeated UploadTermandConditionRequest data = 1;
+      int32 orgId=2;
+     int32 accountId = 3;
+    }
+
+message UploadTermandConditionRequest
+{
+     string   versionno = 1;
+      string  code = 2;
+      bytes description = 3;
+      string fileName = 4;
+}
+
+message UploadTermandConditionResponseList 
+{
+     Responcecode code =1;
+     string message = 2;
+     repeated UploadTermandConditionResponse uploadedfilesaction = 3;
+    }
+
+message UploadTermandConditionResponse
+{
+        string fileName = 1;
+        string action = 2;
+        int32 id = 3;
+}
    }
 
     message UserAcceptedTermConditionResponse

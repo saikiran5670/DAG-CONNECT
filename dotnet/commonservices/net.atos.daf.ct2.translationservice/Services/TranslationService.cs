@@ -547,7 +547,7 @@ namespace net.atos.daf.ct2.translationservice
                 dtcWarning.AddRange(request.DtcData.Select(x => new DTCwarning()
                 {
                     code = x.Code,
-                    type = (translation.Enum.WarningType)x.Type,
+                    type = x.Type,
                     veh_type = x.VehType,
                     warning_class = x.WarningClass,
                     number = x.Number,
@@ -561,21 +561,21 @@ namespace net.atos.daf.ct2.translationservice
                 var DTCData = await translationmanager.ImportDTCWarningData(dtcWarning);
 
 
-                response.DtcDataResponse.AddRange(DTCData
-                                   .Select(x => new dtcwarning()
-                                   {
-                                       Id = x.id,
-                                       Code = x.code,
-                                       Type = (WarningType)x.type,
-                                       VehType = x.veh_type,
-                                       WarningClass = x.warning_class,
-                                       Number = x.number,
-                                       Description = x.description,
-                                       Advice = x.advice,
-                                       IconId = x.icon_id,
-                                       ExpiresAt = x.expires_at,
-                                       CreatedBy = x.created_by
-                                   }).ToList());
+                //response.DtcDataResponse.AddRange(DTCData
+                //                   .Select(x => new dtcwarning()
+                //                   {
+                //                       Id = x.id,
+                //                       Code = x.code,
+                //                       Type = x.type,
+                //                       VehType = x.veh_type,
+                //                       WarningClass = x.warning_class,
+                //                       Number = x.number,
+                //                       Description = x.description,
+                //                       Advice = x.advice,
+                //                       IconId = x.icon_id,
+                //                       ExpiresAt = x.expires_at,
+                //                       CreatedBy =x.created_by
+                //                   }).ToList());
 
                 response.Code = Responcecode.Success;
                 response.Message = "DTC warning Data imported successfully.";
@@ -606,7 +606,7 @@ namespace net.atos.daf.ct2.translationservice
                     var WarnData = new dtcwarning();
                     WarnData.Id = item.id;
                     WarnData.Code = item.code;
-                    WarnData.Type = (WarningType)item.type;
+                    WarnData.Type = item.Warning_type;
                     WarnData.VehType = item.veh_type;
                     WarnData.WarningClass = item.warning_class;
                     WarnData.Number = item.number;
@@ -643,7 +643,7 @@ namespace net.atos.daf.ct2.translationservice
                 dtcWarning.AddRange(request.DtcData.Select(x => new DTCwarning()
                 {
                     code = x.Code,
-                    type = (translation.Enum.WarningType)x.Type,
+                    type = x.Type,
                     veh_type = x.VehType,
                     warning_class = x.WarningClass,
                     number = x.Number,
@@ -662,7 +662,7 @@ namespace net.atos.daf.ct2.translationservice
                                    {
                                        Id = x.id,
                                        Code = x.code,
-                                       Type = (WarningType)x.type,
+                                       Type = x.type,
                                        VehType = x.veh_type,
                                        WarningClass = x.warning_class,
                                        Number = x.number,
@@ -721,12 +721,15 @@ namespace net.atos.daf.ct2.translationservice
             }
         }
 
-        public override async Task<VersionNoResponse> GetAllVersionNo(VersionNoRequest request, ServerCallContext context)
+        public override async Task<VersionNoResponse> GetAllVersionNo(VersionID request, ServerCallContext context)
         {
             try
             {
                 _logger.LogInformation("GetAllVersionNo method ");
-                var result = await termsandconditionsmanager.GetAllVersionNo();
+                net.atos.daf.ct2.termsandconditions.entity.VersionByID objVersionByID = new VersionByID();
+                objVersionByID.orgId = request.OrgId;
+                objVersionByID.roleId = request.RoleId;
+                var result = await termsandconditionsmanager.GetAllVersionNo(objVersionByID);
                 _logger.LogInformation("GetAllVersionNo service called.");
                 VersionNoResponse response = new VersionNoResponse();
                 foreach (var item in result.Distinct())
@@ -819,6 +822,61 @@ namespace net.atos.daf.ct2.translationservice
             }
         }
 
+        public override async Task<UploadTermandConditionResponseList> UploadTermsAndCondition(UploadTermandConditionRequestList request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("UploadTermsAndCondition method ");
+                UploadTermandConditionResponseList objUploadTermandConditionResponseList = new UploadTermandConditionResponseList();
+                net.atos.daf.ct2.termsandconditions.entity.TermsandConFileDataList objTermsandConFileDataList = new ct2.termsandconditions.entity.TermsandConFileDataList();
+                objTermsandConFileDataList.orgId = request.OrgId;
+                    objTermsandConFileDataList.accountId = request.AccountId;
+                if (request == null)
+                {
+                    return objUploadTermandConditionResponseList;
+                }
+                foreach (var item in request.Data)
+                {
+                    net.atos.daf.ct2.termsandconditions.entity.TermsandConFileData objTermsandConFileData = new ct2.termsandconditions.entity.TermsandConFileData();
+                    objTermsandConFileData.fileName = item.FileName;
+                    objTermsandConFileData.version_no = item.Versionno;
+                    objTermsandConFileData.code = item.Code;
+                    objTermsandConFileData.description = item.Description.ToByteArray() ;
+                    objTermsandConFileDataList._data.Add(objTermsandConFileData);
+                }
+
+                var data = await termsandconditionsmanager.UploadTermsAndCondition(objTermsandConFileDataList);
+                _logger.LogInformation("UploadTermsAndCondition service called ");
+                
+                if (data == null)
+                {
+                    return objUploadTermandConditionResponseList;
+                }
+                _logger.LogInformation("UploadTermsAndCondition service called.");
+                foreach (var items in data.termsAndConditionDetails)
+                {
+                    UploadTermandConditionResponse objUploadTermandConditionResponse = new UploadTermandConditionResponse();
+                    objUploadTermandConditionResponse.FileName = items.fileName;
+                    objUploadTermandConditionResponse.Id = items.id;
+                    objUploadTermandConditionResponse.Action = items.action;
+                    objUploadTermandConditionResponseList.Uploadedfilesaction.Add(objUploadTermandConditionResponse);
+                }
+                objUploadTermandConditionResponseList.Code = Responcecode.Success;
+                objUploadTermandConditionResponseList.Message = "Uploded Terms and condition details retrived for Individual file.";
+                return await Task.FromResult(objUploadTermandConditionResponseList);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Translation Service:UploadTermsAndCondition : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new UploadTermandConditionResponseList
+                {
+                    Code = Responcecode.Failed,
+                    Message = $"UploadTermsAndCondition Failed due to - {ex.Message}"
+                });
+            }
+        }
+        }
+
         public override async Task<TermCondDetailsReponse> GetLatestTermCondition(UserAcceptedTermConditionRequest request, ServerCallContext context)
         {
             try
@@ -878,6 +936,7 @@ namespace net.atos.daf.ct2.translationservice
                 });
             }
         }
+
 
 
         #endregion

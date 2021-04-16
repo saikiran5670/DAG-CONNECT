@@ -14,8 +14,7 @@ namespace net.atos.daf.ct2.translation.entity
         public string code { get; set; }
         [Required]
         [StringLength(1)]
-        public WarningType type { get; set; }
-        [Required]
+        public string type { get; set; }
         [StringLength(1)]
         public string veh_type { get; set; }
         [Required]
@@ -32,6 +31,7 @@ namespace net.atos.daf.ct2.translation.entity
         public int created_by { get; set; }
         public long modify_at { get; set; }
         public int modify_by { get; set; }
+        public string Warning_type { get; set; }
 
     }
     public class DTCWarningImportRequest
