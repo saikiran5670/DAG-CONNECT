@@ -13,6 +13,7 @@ import { VehicleGroupManagementComponent } from './vehicle-group-management/vehi
 import { VehicleService } from '../services/vehicle.service';
 import { CreateEditViewVehicleGroupComponent } from './vehicle-group-management/create-edit-view-vehicle-group/create-edit-view-vehicle-group.component';
 import { EditViewVehicleComponent } from './vehicle-management/edit-view-vehicle/edit-view-vehicle.component';
+import { MatTableExporterModule } from 'mat-table-exporter';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { EditViewVehicleComponent } from './vehicle-management/edit-view-vehicle
     FormsModule,
     ReactiveFormsModule,
     SharedModule,
-    ChartsModule
+    ChartsModule,
+    MatTableExporterModule
     ],
     providers: [ConfirmDialogService,VehicleService],
     schemas: [
