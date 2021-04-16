@@ -720,12 +720,15 @@ namespace net.atos.daf.ct2.translationservice
             }
         }
 
-        public override async Task<VersionNoResponse> GetAllVersionNo(VersionNoRequest request, ServerCallContext context)
+        public override async Task<VersionNoResponse> GetAllVersionNo(VersionID request, ServerCallContext context)
         {
             try
             {
                 _logger.LogInformation("GetAllVersionNo method ");
-                var result = await termsandconditionsmanager.GetAllVersionNo();
+                net.atos.daf.ct2.termsandconditions.entity.VersionByID objVersionByID = new VersionByID();
+                objVersionByID.orgId = request.OrgId;
+                objVersionByID.roleId = request.RoleId;
+                var result = await termsandconditionsmanager.GetAllVersionNo(objVersionByID);
                 _logger.LogInformation("GetAllVersionNo service called.");
                 VersionNoResponse response = new VersionNoResponse();
                 foreach (var item in result)
@@ -814,6 +817,61 @@ namespace net.atos.daf.ct2.translationservice
                 });
             }
         }
+
+        public override async Task<UploadTermandConditionResponseList> UploadTermsAndCondition(UploadTermandConditionRequestList request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("UploadTermsAndCondition method ");
+                UploadTermandConditionResponseList objUploadTermandConditionResponseList = new UploadTermandConditionResponseList();
+                net.atos.daf.ct2.termsandconditions.entity.TermsandConFileDataList objTermsandConFileDataList = new ct2.termsandconditions.entity.TermsandConFileDataList();
+                objTermsandConFileDataList.orgId = request.OrgId;
+                    objTermsandConFileDataList.accountId = request.AccountId;
+                if (request == null)
+                {
+                    return objUploadTermandConditionResponseList;
+                }
+                foreach (var item in request.Data)
+                {
+                    net.atos.daf.ct2.termsandconditions.entity.TermsandConFileData objTermsandConFileData = new ct2.termsandconditions.entity.TermsandConFileData();
+                    objTermsandConFileData.fileName = item.FileName;
+                    objTermsandConFileData.version_no = item.Versionno;
+                    objTermsandConFileData.code = item.Code;
+                    objTermsandConFileData.description = item.Description.ToByteArray() ;
+                    objTermsandConFileDataList._data.Add(objTermsandConFileData);
+                }
+
+                var data = await termsandconditionsmanager.UploadTermsAndCondition(objTermsandConFileDataList);
+                _logger.LogInformation("UploadTermsAndCondition service called ");
+                
+                if (data == null)
+                {
+                    return objUploadTermandConditionResponseList;
+                }
+                _logger.LogInformation("UploadTermsAndCondition service called.");
+                foreach (var items in data.termsAndConditionDetails)
+                {
+                    UploadTermandConditionResponse objUploadTermandConditionResponse = new UploadTermandConditionResponse();
+                    objUploadTermandConditionResponse.FileName = items.fileName;
+                    objUploadTermandConditionResponse.Id = items.id;
+                    objUploadTermandConditionResponse.Action = items.action;
+                    objUploadTermandConditionResponseList.Uploadedfilesaction.Add(objUploadTermandConditionResponse);
+                }
+                objUploadTermandConditionResponseList.Code = Responcecode.Success;
+                objUploadTermandConditionResponseList.Message = "Uploded Terms and condition details retrived for Individual file.";
+                return await Task.FromResult(objUploadTermandConditionResponseList);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Translation Service:UploadTermsAndCondition : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new UploadTermandConditionResponseList
+                {
+                    Code = Responcecode.Failed,
+                    Message = $"UploadTermsAndCondition Failed due to - {ex.Message}"
+                });
+            }
+        }
+
 
         #endregion
 
