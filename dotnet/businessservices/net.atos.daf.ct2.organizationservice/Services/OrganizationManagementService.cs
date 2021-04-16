@@ -15,15 +15,19 @@ using System.Linq;
 using net.atos.daf.ct2.relationship;
 using net.atos.daf.ct2.relationship.entity;
 using static net.atos.daf.ct2.utilities.CommonEnums;
+using log4net;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.organizationservice
 {
     public class OrganizationManagementService : OrganizationService.OrganizationServiceBase
     {
 
-        private readonly ILogger _logger;
+       
         private readonly IAuditTraillib _AuditTrail;
         private readonly IAuditTraillib auditlog;
+
+        private ILog _logger;
         private readonly IOrganizationManager organizationtmanager;
         private readonly IPreferenceManager preferencemanager;
         private readonly IVehicleManager vehicleManager;
@@ -31,7 +35,7 @@ namespace net.atos.daf.ct2.organizationservice
         private readonly IRelationshipManager _relationshipManager;
 
 
-        public OrganizationManagementService(ILogger<OrganizationManagementService> logger,
+        public OrganizationManagementService(
                                              IAuditTraillib AuditTrail,
                                              IOrganizationManager _organizationmanager,
                                              IPreferenceManager _preferencemanager,
@@ -39,7 +43,7 @@ namespace net.atos.daf.ct2.organizationservice
                                              IAuditTraillib _auditlog,
                                              IRelationshipManager relationshipManager)
         {
-            _logger = logger;
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType); 
             _AuditTrail = AuditTrail;
             organizationtmanager = _organizationmanager;
             preferencemanager = _preferencemanager;
@@ -74,7 +78,7 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in OrganizationGrpcService Organization Service: " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 throw ex;
             }
         }
@@ -104,7 +108,7 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Orgganization Relationship Service: Create : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new RelationshipCreateResponse
                 {
                     Code = Responcecode.Failed,
@@ -140,7 +144,7 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Relationship Service: Update : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new RelationshipCreateResponse
                 {
                     Code = Responcecode.Failed,
@@ -179,13 +183,13 @@ namespace net.atos.daf.ct2.organizationservice
                                          CreatedAt = x.CreatedAt
 
                                      }).ToList());
-                _logger.LogInformation("Get  relationship details.");
+                _logger.Info("Get  relationship details.");
                 response.Code = Responcecode.Success;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in   relationship service:get  org relationship  details with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new RelationshipGetResponse
                 {
                     Message = "Exception " + ex.Message,
@@ -217,7 +221,7 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in  relationship service:delete  relationship  with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new RelationshipDeleteResponse
                 {
                     Code = Responcecode.Failed,
@@ -258,7 +262,7 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in create  relationship mapping service:  relationship  with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new OrgRelationshipCreateResponse
                 {
                     Code = Responcecode.Failed,
@@ -311,7 +315,7 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Allow chaining failed due to - " + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new ChainingResponse
                 {
                     Code = Responcecode.Failed,
@@ -354,13 +358,13 @@ namespace net.atos.daf.ct2.organizationservice
                                          VehicleGroupName = x.VehicleGroupName
                                          
                                      }).ToList());
-                _logger.LogInformation("Get  relationship mapping details.");
+                _logger.Info("Get  relationship mapping details.");
                 response.Code = Responcecode.Success;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in   relationship service:get  org relationship mapping  details with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new OrgRelationshipGetResponse
                 {
                     Message = "Exception " + ex.Message,
@@ -395,7 +399,7 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Orgganization Service: Create : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new OrganizationCreateData
                 {
                     Code = Responcecode.Failed,
@@ -445,7 +449,7 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Orgganization Service: Updated : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new OrganizationUpdateData
                 {
                     Code = Responcecode.Failed,
@@ -460,7 +464,7 @@ namespace net.atos.daf.ct2.organizationservice
 
             net.atos.daf.ct2.organization.entity.OrganizationResponse organization = new net.atos.daf.ct2.organization.entity.OrganizationResponse();
             OrganizationGetData response = new OrganizationGetData();
-            _logger.LogInformation("Get Organization .");
+            _logger.Info("Get Organization .");
             organization = await organizationtmanager.Get(request.Id);
             response.Message = "Get";
             if (organization.Id > 0)
@@ -480,7 +484,7 @@ namespace net.atos.daf.ct2.organizationservice
         {
             net.atos.daf.ct2.organization.entity.OrganizationDetailsResponse organization = new net.atos.daf.ct2.organization.entity.OrganizationDetailsResponse();
             OrgDetailResponse response = new OrgDetailResponse();
-            _logger.LogInformation("Get Organization Details .");
+            _logger.Info("Get Organization Details .");
             organization = await organizationtmanager.GetOrganizationDetails(request.Id);
             if (organization.id > 0)
             {
@@ -492,7 +496,7 @@ namespace net.atos.daf.ct2.organizationservice
         {
             var organization = new OrganizationResponse();
             var response = new GetAllOrgResponse();
-            _logger.LogInformation("Get Organization .");
+            _logger.Info("Get Organization .");
             organization.OrganizationList = await organizationtmanager.GetAll(request.Id);
             response.OrganizationList.AddRange(organization.OrganizationList
                                     .Select(x => new OrgGetResponse()
@@ -545,7 +549,7 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in organization service:create preference with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
@@ -573,7 +577,7 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in organization service:update preference with exception - " + ex.Message + ex.StackTrace);
+               _logger.Error(null, ex);
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
@@ -604,7 +608,7 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in organization service:delete organization preference with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
@@ -621,7 +625,7 @@ namespace net.atos.daf.ct2.organizationservice
                 Preference.AccountPreferenceFilter preferenceFilter = new Preference.AccountPreferenceFilter();
                 preferenceFilter.Id = request.Id;
                 preferenceFilter.PreferenceType = Preference.PreferenceType.Organization;
-                _logger.LogInformation("Get account preference.");
+                _logger.Info("Get account preference.");
                 var result = await organizationtmanager.GetPreference(preferenceFilter.Id);
                 // response 
                 OrganizationPreferenceResponse response = new OrganizationPreferenceResponse();
@@ -632,7 +636,7 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in organization service:get organization preference with exception - " + ex.Message + ex.StackTrace);
+               _logger.Error(null, ex);
                 return await Task.FromResult(new OrganizationPreferenceResponse
                 {
                     Code = Responcecode.Failed,
@@ -645,7 +649,7 @@ namespace net.atos.daf.ct2.organizationservice
         {
             net.atos.daf.ct2.organization.entity.Organization organization = new net.atos.daf.ct2.organization.entity.Organization();
             ListOfOrganization response = new ListOfOrganization();
-            _logger.LogInformation("GetAllOrganizations .");
+            _logger.Info("GetAllOrganizations .");
             var result = await organizationtmanager.GetAllOrganizations(request.Id);           
             if (result.Count() > 0)
             {

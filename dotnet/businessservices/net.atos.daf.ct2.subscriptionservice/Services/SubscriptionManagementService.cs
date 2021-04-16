@@ -5,18 +5,22 @@ using net.atos.daf.ct2.subscription.entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.subscriptionservice
 {
     public class SubscriptionManagementService : SubscribeGRPCService.SubscribeGRPCServiceBase
     {
-        private readonly ILogger<SubscriptionManagementService> _logger;
+       // private readonly ILogger<SubscriptionManagementService> _logger;
+
+        private ILog _logger;
         private readonly ISubscriptionManager _SubscriptionManager;
 
-        public SubscriptionManagementService(ILogger<SubscriptionManagementService> logger, ISubscriptionManager SubscriptionManager)
+        public SubscriptionManagementService( ISubscriptionManager SubscriptionManager)
         {
-            _logger = logger;
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _SubscriptionManager = SubscriptionManager;
         }
 
@@ -48,8 +52,9 @@ namespace net.atos.daf.ct2.subscriptionservice
                 }
                 return objSubscribeListResponce;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.Error(null, ex);
                 throw;
             }
         }

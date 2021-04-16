@@ -6,17 +6,20 @@ using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.features;
 using Newtonsoft.Json;
+using log4net;
 using net.atos.daf.ct2.features.entity;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.featureservice
 {
     public class FeatureManagementService : FeatureService.FeatureServiceBase
     {
-        private readonly ILogger<FeatureManagementService> _logger;
+        //private readonly ILogger<FeatureManagementService> _logger;
         private readonly IFeatureManager _FeaturesManager;
-        public FeatureManagementService(ILogger<FeatureManagementService> logger, IFeatureManager FeatureManager)
+        private ILog _logger;
+        public FeatureManagementService( IFeatureManager FeatureManager)
         {
-            _logger = logger;
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
             _FeaturesManager = FeatureManager;
         }
@@ -43,7 +46,7 @@ namespace net.atos.daf.ct2.featureservice
 
                 ObjResponse = await _FeaturesManager.CreateFeatureSet(featureset);
                 featureset.FeatureSetID = ObjResponse.FeatureSetID;
-                _logger.LogInformation("Feature Set created with id." + ObjResponse.FeatureSetID);
+                _logger.Info("Feature Set created with id." + ObjResponse.FeatureSetID);
 
                 return await Task.FromResult(new FeatureSetResponce
                 {
@@ -277,7 +280,7 @@ namespace net.atos.daf.ct2.featureservice
         {
             try
             {
-                _logger.LogInformation("UpdateFeatureSet method in Feature API called.");
+                _logger.Info("UpdateFeatureSet method in Feature API called.");
 
 
                 FeatureSet ObjResponse = new FeatureSet();
@@ -299,7 +302,7 @@ namespace net.atos.daf.ct2.featureservice
 
                 ObjResponse = await _FeaturesManager.UpdateFeatureSet(featureset);
                 featureset.FeatureSetID = ObjResponse.FeatureSetID;
-                _logger.LogInformation("Feature Set created with id." + ObjResponse.FeatureSetID);
+                _logger.Info("Feature Set created with id." + ObjResponse.FeatureSetID);
 
                 //await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Feature Component", "Feature Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Update method in Feature manager", ObjResponse.FeatureSetID, ObjResponse.FeatureSetID, JsonConvert.SerializeObject(ObjResponse.FeatureSetID));
                 return await Task.FromResult(new FeatureSetResponce
@@ -312,7 +315,7 @@ namespace net.atos.daf.ct2.featureservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("FeatureSet Service:Update : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
 
                 return await Task.FromResult(new FeatureSetResponce
                 {
@@ -327,7 +330,7 @@ namespace net.atos.daf.ct2.featureservice
         {
             try
             {
-                _logger.LogInformation("DeleteFeatureSet method in Feature API called.");
+                _logger.Info("DeleteFeatureSet method in Feature API called.");
                 
                 bool IsFeatureSetIDDeleted = await _FeaturesManager.DeleteFeatureSet(featureSetRequest.FeatureSetID);
 
@@ -342,7 +345,7 @@ namespace net.atos.daf.ct2.featureservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Feature Service:DeleteFeatureSet : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new FeatureSetResponce
                 {
                     Message = featureSetRequest.FeatureSetID.ToString() + " Delete failed",
@@ -358,7 +361,7 @@ namespace net.atos.daf.ct2.featureservice
         {
             try
             {
-                _logger.LogInformation("DeleteFeatureSet method in Feature API called.");
+                _logger.Info("DeleteFeatureSet method in Feature API called.");
 
                 var FeatureId = await _FeaturesManager.DeleteFeature(featureSetRequest.Id);
 
@@ -387,7 +390,7 @@ namespace net.atos.daf.ct2.featureservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Feature Service:DeleteFeatureSet : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new FeatureResponce
                 {
                     Message = featureSetRequest.Id.ToString() + " Delete failed",
@@ -403,7 +406,7 @@ namespace net.atos.daf.ct2.featureservice
         {
             try
             {
-                _logger.LogInformation("Feature State method in Feature API called.");
+                _logger.Info("Feature State method in Feature API called.");
 
                 var FeatureId = await _FeaturesManager.ChangeFeatureState(featureSetRequest.Featureid,Convert.ToChar(featureSetRequest.FeatureState));
 
@@ -431,7 +434,7 @@ namespace net.atos.daf.ct2.featureservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Feature Service:DeleteFeatureSet : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new FeatureStateResponce
                 {
                     Message = featureSetRequest.Featureid.ToString() + " Feature state change failed",

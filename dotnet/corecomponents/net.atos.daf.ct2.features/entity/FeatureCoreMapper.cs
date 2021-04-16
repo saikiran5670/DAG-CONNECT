@@ -39,15 +39,15 @@ namespace net.atos.daf.ct2.features.entity
         {
             //SELECT id, name, description, is_exlusive, created_at, created_by, modified_at, modified_by, state
             DataAttributeSet da = new DataAttributeSet();
-            da.ID = record.id != null ? record.id : 0;
-            da.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;
-            da.Description =  !string.IsNullOrEmpty(record.description) ? record.description : string.Empty;
-            da.Is_exlusive = record.is_exlusive;
+            da.ID = record.ID != null ? record.ID : 0;
+            da.Name = !string.IsNullOrEmpty(record.Name) ? record.Name : string.Empty;
+            da.Description =  !string.IsNullOrEmpty(record.Description) ? record.Description : string.Empty;
+            da.Is_exlusive = record.Is_exlusive;
             da.created_at = record.created_at != null ? record.created_at : 0;
             da.created_by = record.created_by != null ? record.created_by : 0;
             da.modified_at = record.modified_at != null ? record.modified_at : 0;
             da.modified_by = record.modified_by != null ? record.modified_by : 0;
-            da.State = !string.IsNullOrEmpty(record.state) ? MapCharToFeatureState(record.state) : string.Empty;
+            da.State = record.State;
             return da;
         }
 
