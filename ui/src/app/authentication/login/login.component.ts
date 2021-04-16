@@ -67,6 +67,7 @@ export class LoginComponent implements OnInit {
       if(this.loginClicks == 0){
         this.loginClicks = 1;
        this.authService.signIn(this.loginForm.value).subscribe((data:any) => {
+        
          //console.log("data:: ", data)
          if(data.status === 200){
             //this.cookiesFlag = true;
@@ -126,14 +127,22 @@ export class LoginComponent implements OnInit {
           this.invalidUserMsg = true;
           this.loginClicks = 0;
         }
-        
+        else if(data.status == 302){
+          this.router.navigate(['/auth/resetpassword/'+data["processToken"]]);
+        }
        },
        (error)=> {
          this.loginClicks = 0;
           console.log("Error: " + error);
-          if(error.status == 404 || error.status == 401 || error.status == 403){
-          //  this.errorMsg= error.error; // uncomment this once api changes deployed
-          this.invalidUserMsg = true; // temporary change as api change not deployed.
+          if(error.status == 404  || error.status == 403){
+            this.errorMsg= error.error;
+          }
+          else if(error.status === 401){
+            this.invalidUserMsg = true;
+            this.loginClicks = 0;
+          }
+          else if(error.status == 302){
+            this.router.navigate(['/auth/resetpassword/:'+error["processToken"]]);
           }
           else if(error.status == 500)
             this.invalidUserMsg = true;
