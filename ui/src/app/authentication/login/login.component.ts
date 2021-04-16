@@ -8,6 +8,8 @@ import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { CookieService } from 'ngx-cookie-service';
 import { DataInterchangeService } from 'src/app/services/data-interchange.service';
+import { TermsConditionsPopupComponent } from 'src/app/terms-conditions-content/terms-conditions-popup.component';
+import { TranslationService } from 'src/app/services/translation.service';
 
 export interface Organization {
   id: number ;
@@ -29,14 +31,17 @@ export class LoginComponent implements OnInit {
   public forgotPasswordForm: FormGroup;
   hide: boolean = true;
   invalidUserMsg: boolean = false;
+  errorMsg: string= '';
   cookiesFlag: boolean = true;
   forgotPwdFlag: boolean = false;
   resetPwdFlag: boolean = false;
   dialogRefLogin: MatDialogRef<LoginDialogComponent>;
   maintenancePopupFlag: boolean = false;
   loginClicks = 0;
+  dialogRefTerms: MatDialogRef<TermsConditionsPopupComponent>;
+  translationData: any;
 
-  constructor(private cookieService: CookieService, public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService, private dataInterchangeService: DataInterchangeService) {
+  constructor(private cookieService: CookieService, public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService) {
     this.loginForm = this.fb.group({
       // 'username': [null, Validators.compose([Validators.required, Validators.email])],
       // 'password': [null, Validators.compose([Validators.required, Validators.minLength(6)])]
@@ -55,7 +60,8 @@ export class LoginComponent implements OnInit {
 
 
   public onLogin(values: Object) {
-
+    this.errorMsg= '';
+    this.invalidUserMsg = false;
     if (this.loginForm.valid) {
       //console.log("values:: ", values)
       if(this.loginClicks == 0){
@@ -63,7 +69,6 @@ export class LoginComponent implements OnInit {
        this.authService.signIn(this.loginForm.value).subscribe((data:any) => {
          //console.log("data:: ", data)
          if(data.status === 200){
-           this.invalidUserMsg = false;
             //this.cookiesFlag = true;
 
             let loginObj = {
@@ -75,17 +80,46 @@ export class LoginComponent implements OnInit {
               accountGroupId: 0
             }
             
-              this.accountService.getAccount(loginObj).subscribe(resp => {
-                if(resp[0].preferenceId != 0){
-                  this.accountService.getAccountPreference(resp[0].preferenceId).subscribe(accPref => {
-                    this.showOrganizationRolePopup(data.body, resp[0], accPref);  
+              this.accountService.getAccount(loginObj).subscribe(getAccresp => {
+                if(getAccresp[0].preferenceId != 0){
+                  this.accountService.getAccountPreference(getAccresp[0].preferenceId).subscribe(accPref => {
+                      this.translationService.getLanguageCodes().subscribe(languageCodes => {
+                        let filterLang = languageCodes.filter(item => item.id == accPref["languageId"]);
+                        let translationObj = {
+                          id: 0,
+                          code: filterLang[0].code, //-- TODO: Lang code based on account 
+                          type: "Menu",
+                          name: "",
+                          value: "",
+                          filter: "",
+                          menuId: 0 //-- for common & user preference
+                        }
+                        this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
+                        this.processTranslation(resp);
+                        this.openTermsConditionsPopup(data.body, getAccresp[0], accPref);
+                      });
+                    });
                   })
                 }
                 else{
-                  this.showOrganizationRolePopup(data.body, resp[0], "");  
+                  let translationObj = {
+                    id: 0,
+                    code: "EN-GB",
+                    type: "Menu",
+                    name: "",
+                    value: "",
+                    filter: "",
+                    menuId: 0 //-- for common & user preference
+                  }
+                  this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
+                    this.processTranslation(resp);
+                    this.openTermsConditionsPopup(data.body, getAccresp[0], "");
+                  });
+                  
                 } 
               }, (error) => {
                 this.loginClicks = 0;
+                this.invalidUserMsg= true;
               });
          }
          else if(data.status === 401){
@@ -97,7 +131,12 @@ export class LoginComponent implements OnInit {
        (error)=> {
          this.loginClicks = 0;
           console.log("Error: " + error);
-          this.invalidUserMsg = true;
+          if(error.status == 404 || error.status == 401 || error.status == 403){
+          //  this.errorMsg= error.error; // uncomment this once api changes deployed
+          this.invalidUserMsg = true; // temporary change as api change not deployed.
+          }
+          else if(error.status == 500)
+            this.invalidUserMsg = true;
           //this.cookiesFlag = false;
         })
       }
@@ -113,6 +152,29 @@ export class LoginComponent implements OnInit {
        //------------------------//
     }
   }
+
+  processTranslation(transData: any){
+    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+  }
+
+  openTermsConditionsPopup(data: any, accountDetails: any, accountPreference: any){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      translationData: this.translationData
+    }
+    this.dialogRefTerms = this.dialog.open(TermsConditionsPopupComponent, dialogConfig);
+    this.dialogRefTerms.afterClosed().subscribe(res => {
+      if(res.termsConditionsAgreeFlag){
+        this.showOrganizationRolePopup(data, accountDetails, accountPreference);
+      } 
+      else{
+        this.loginClicks= 0;        
+      } 
+    });
+  }
+
 
   public onResetPassword(values: object): void {
     console.log("values:: ", values)
