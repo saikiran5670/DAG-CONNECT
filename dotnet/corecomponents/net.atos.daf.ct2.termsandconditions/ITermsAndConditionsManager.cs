@@ -17,5 +17,6 @@ namespace net.atos.daf.ct2.termsandconditions
 
         Task<InactivateTandCStatusResponceList> InactivateTermsandCondition(InactivateTandCRequestList objInactivateTandCRequestList);
 
+        Task<bool> CheckUserAcceptedTermCondition(int AccountId, int OrganizationId);
     }
 }

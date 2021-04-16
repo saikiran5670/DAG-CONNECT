@@ -43,6 +43,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   dialogRef: MatDialogRef<UserDetailTableComponent>;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
+  associationTypeId: any = 1;
 
   constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private dialog: MatDialog) { 
     this.defaultTranslation();
@@ -120,12 +121,14 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     this.accountService.getAccessRelationshipDetails(this.accountOrganizationId, accountStatus).subscribe((data: any) => {
       this.accountGrpAccountDetails = data.account;
       this.vehicleGrpVehicleDetails = data.vehicle;
-      if(!this.isViewListDisabled){
-        this.createVehicleAccessRelation = true;
-      }
-      else{
-        this.createAccountAccessRelation = true;
-      }
+      this.associationTypeId = this.isViewListDisabled ? 2 : 1; // 1-> vehicle 2-> account
+      this.createAccountAccessRelation = true;
+      // if(!this.isViewListDisabled){
+      //   this.createVehicleAccessRelation = true;
+      // }
+      // else{
+      //   this.createAccountAccessRelation = true;
+      // }
     }, (error) => {
       console.log("error:: ", error)
     });

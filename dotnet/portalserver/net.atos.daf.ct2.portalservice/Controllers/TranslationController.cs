@@ -549,7 +549,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region  Terms And Conditions
 
         [HttpPost]
-        [Route("adduseracceptedtermcondition")]
+        [Route("termsandconditions/adduseracceptedtermcondition")]
         // [AllowAnonymous]
         public async Task<IActionResult> AddUserAcceptedTermCondition(AccountTermsCondition request)
         {
@@ -603,7 +603,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("getversionnos")]
+        [Route("termsandconditions/getalltermsandconditionversions")]
       
         public async Task<IActionResult> GetAllVersionNo([FromQuery]VersionByID objVersionByID)
         {
@@ -627,7 +627,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     if (response.VersionNos != null && response.VersionNos.Count > 0)
                     {
-                        return Ok(response);
+                        return Ok(response.VersionNos);
                     }
                     else
                     {
@@ -647,8 +647,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("gettermconditionforversionno")]
-        public async Task<IActionResult> GetTermConditionForVersionNo(string VersionNo,string languageCode)
+        [Route("termsandconditions/gettermconditionforversionno")]
+        public async Task<IActionResult> GetTermConditionForVersionNo([FromQuery] string VersionNo,string languageCode)
         {
             try
             {
@@ -663,7 +663,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (response.TermCondition.Count()>0 && response.Code == translationservice.Responcecode.Success)
                 {
-                    return Ok(response);
+                    return Ok(response.TermCondition);
                 }
                 else
                 {
@@ -678,12 +678,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("getacceptedtermconditionbyuser")]
-        public async Task<IActionResult> GetAcceptedTermConditionByUser(int AccountId, int OrganizationId)
+        [Route("termsandconditions/getacceptedtermconditionbyuser")]
+        public async Task<IActionResult> GetAcceptedTermConditionByUser([FromQuery] int AccountId, int OrganizationId)
         {
             try
             {
-
                 UserAcceptedTermConditionRequest request = new UserAcceptedTermConditionRequest();
                 request.AccountId = AccountId;
                 request.OrganizationId = OrganizationId;
@@ -694,7 +693,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (response.TermCondition.Count() > 0 && response.Code == translationservice.Responcecode.Success)
                 {
-                    return Ok(response);
+                    return Ok(response.TermCondition);
                 }
                 else
                 {
@@ -708,9 +707,69 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("termsandconditions/getlatesttermcondition")]
+        public async Task<IActionResult> GetLatestTermCondition([FromQuery] int AccountId, int OrganizationId)
+        {
+            try
+            {
+                UserAcceptedTermConditionRequest request = new UserAcceptedTermConditionRequest();
+                request.AccountId = AccountId;
+                request.OrganizationId = OrganizationId;
+                TermCondDetailsReponse response = await _translationServiceClient.GetLatestTermConditionAsync(request);
+                if (response.TermCondition != null && response.Code == translationservice.Responcecode.Failed)
+                {
+                    return StatusCode(500, "There is an error fetching Terms and condition.");
+                }
+                else if (response.TermCondition.Count() > 0 && response.Code == translationservice.Responcecode.Success)
+                {
+                    return Ok(response.TermCondition);
+                }
+                else
+                {
+                    return StatusCode(500, "Terms and condition is not avaliable");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in Translation service:GetLatestTermCondition Details with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpGet]
+        [Route("termsandconditions/checkuseracceptedtermcondition")]
+        public async Task<IActionResult> CheckUserAcceptedTermCondition([FromQuery] int AccountId, int OrganizationId)
+        {
+            try
+            {
+                UserAcceptedTermConditionRequest request = new UserAcceptedTermConditionRequest();
+                request.AccountId = AccountId;
+                request.OrganizationId = OrganizationId;
+                UserAcceptedTermConditionResponse response = await _translationServiceClient.CheckUserAcceptedTermConditionAsync(request);
+                if (response != null && response.Code == translationservice.Responcecode.Failed)
+                {
+                    return StatusCode(500, "There is an error fetching Terms and condition.");
+                }
+                else if (response !=null && response.Code == translationservice.Responcecode.Success)
+                {
+                    return Ok(response.IsUserAcceptedTC);
+                }
+                else
+                {
+                    return StatusCode(500, "Terms and condition is not avaliable");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in Translation service:CheckUserAcceptedTermCondition Details with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
 
         [HttpPost]
-        [Route("Upload")]
+        [Route("termsandconditions/uploadtermsandconditions")]
         // [AllowAnonymous]
         public async Task<IActionResult> UploadTermsAndCondition(TermsandConFileDataList request)
         {
