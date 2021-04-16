@@ -348,7 +348,9 @@ namespace net.atos.daf.ct2.account
                         objToken.ProcessToken = processToken;
                         objToken.Status = ResetTokenStatus.New;
                         var now = DateTime.Now;
-                        objToken.ExpiryAt = UTCHandling.GetUTCFromDateTime(now.AddMinutes(configuration.GetValue<double>("ResetPasswordTokenExpiryInMinutes")));
+                        var expiryAt = canSendEmail ? configuration.GetValue<double>("ResetPasswordTokenExpiryInMinutes")
+                                                    : configuration.GetValue<double>("CreatePasswordTokenExpiryInMinutes");
+                        objToken.ExpiryAt = UTCHandling.GetUTCFromDateTime(now.AddMinutes(expiryAt));
                         objToken.CreatedAt = UTCHandling.GetUTCFromDateTime(now);
 
                         //Create with status as New
