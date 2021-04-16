@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Google.Protobuf;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -33,20 +34,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly Mapper _mapper;
         private readonly IMemoryCacheExtensions _cache;
         private readonly HeaderObj _userDetails;
-
+        
         #endregion
 
         #region Constructor
         public AccountController(AccountBusinessService.AccountService.AccountServiceClient accountClient,
             ILogger<AccountController> logger, IMemoryCacheExtensions cache,
-             AuditHelper auditHelper)
+             AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor)
         {
             _accountClient = accountClient;
             _logger = logger;
             _mapper = new Mapper();
             _cache = cache;
             _auditHelper = auditHelper;
-            _userDetails = _auditHelper.GetHeaderData(Request);
+            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
         #endregion
 
@@ -483,9 +484,48 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                           "ResetPasswordInitiate  method in Account controller", _userDetails.accountId, _userDetails.accountId,
                                           JsonConvert.SerializeObject(request), Request);
                 _logger.LogError("Error in account service:ResetPasswordInitiate with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, "Error while initiating reset password process.");
             }
         }
+
+        [HttpGet]
+        [Route("getresetpasswordtokenstatus")]
+        public async Task<IActionResult> GetResetPasswordTokenStatus([FromQuery] GetResetPasswordTokenStatusRequest request)
+        {
+            try
+            {
+                if (!Guid.TryParse(request.ProcessToken, out _))
+                {
+                    return BadRequest($"{nameof(request.ProcessToken)} field is tampered or has invalid value.");
+                }
+                var resetPasswordTokenStatusRequest = new AccountBusinessService.GetResetPasswordTokenStatusRequest();
+                resetPasswordTokenStatusRequest.ProcessToken = request.ProcessToken;
+
+                var response = await _accountClient.GetResetPasswordTokenStatusAsync(resetPasswordTokenStatusRequest);
+
+                if (response.Code == AccountBusinessService.Responcecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
+                                        "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                        "GetResetPasswordTokenStatus method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                        JsonConvert.SerializeObject(request), Request);
+                    return Ok(response.Message);
+                }
+                else if (response.Code == AccountBusinessService.Responcecode.NotFound)
+                    return NotFound(response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
+                                        "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                        "GetResetPasswordTokenStatus  method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                        JsonConvert.SerializeObject(request), Request);
+                _logger.LogError("Error in account service:GetResetPasswordTokenStatus with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, "Error while fetching reset password token status.");
+            }
+            return StatusCode(500, "Error while fetching reset password token status.");
+        }
+
         [HttpPost]
         [Route("resetpassword")]
         [Route("createpassword")]
@@ -524,7 +564,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                         "ResetPassword  method in Account controller", _userDetails.accountId, _userDetails.accountId,
                                         JsonConvert.SerializeObject(request), Request);
                 _logger.LogError("Error in account service:ResetPassword with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, "Error while reseting account password");
             }
         }
 
@@ -563,7 +603,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                         "ResetPasswordInvalidate  method in Account controller", _userDetails.accountId, _userDetails.accountId,
                                         JsonConvert.SerializeObject(request), Request);
                 _logger.LogError("Error in account service:ResetPasswordInvalidate with exception - " + ex.Message + ex.StackTrace);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, "Error while invalidating reset password invalidate process.");
             }
         }
 

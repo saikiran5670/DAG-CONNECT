@@ -29,6 +29,8 @@ using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using System;
+using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.translation;
 
 namespace net.atos.daf.ct2.customerdataservice
 {
@@ -92,7 +94,8 @@ namespace net.atos.daf.ct2.customerdataservice
             services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
             services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
             services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
-
+            services.AddTransient<ITranslationRepository, TranslationRepository>();
+            services.AddTransient<ITranslationManager, TranslationManager>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(x =>

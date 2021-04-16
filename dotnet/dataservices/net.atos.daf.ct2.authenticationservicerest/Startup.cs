@@ -20,6 +20,8 @@ using Identity = net.atos.daf.ct2.identity;
 using AccountPreference = net.atos.daf.ct2.accountpreference;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 using net.atos.daf.ct2.account;
+using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.translation;
 
 namespace net.atos.daf.ct2.authenticationservicerest
 {
@@ -73,7 +75,8 @@ namespace net.atos.daf.ct2.authenticationservicerest
             
             services.AddTransient<AccountComponent.IAccountRepository,AccountComponent.AccountRepository>();
             services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();
-                     
+            services.AddTransient<ITranslationRepository, TranslationRepository>();
+            services.AddTransient<ITranslationManager, TranslationManager>();
 
             services.AddCors(c =>  
             {  

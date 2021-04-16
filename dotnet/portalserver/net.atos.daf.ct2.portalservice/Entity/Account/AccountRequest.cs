@@ -99,6 +99,13 @@ namespace net.atos.daf.ct2.portalservice.Account
         public string ResetToken { get; set; }
     }
 
+    public class GetResetPasswordTokenStatusRequest
+    {
+        [Required]
+        [StringLength(36, MinimumLength = 36, ErrorMessage = "The field {0} must be a string with a length of {1} characters.")]
+        public string ProcessToken { get; set; }
+    }
+
     public class MenuFeatureRequest
     {
         [Required]

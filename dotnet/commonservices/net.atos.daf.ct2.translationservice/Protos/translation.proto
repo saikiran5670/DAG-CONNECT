@@ -24,9 +24,18 @@ rpc UpdateDTCWarningData (WarningDataRequest) returns (WarningDataResponse);
 //rpc DeleteDTCWarningData (WarningDeleteRequest) returns (WarningDeleteResponse);
 
 rpc AddUserAcceptedTermCondition (AcceptedTermConditionRequest)returns (AcceptedTermConditionResponse);
-rpc GetAllVersionNo (VersionNoRequest)returns (VersionNoResponse);
+rpc GetAllVersionNo (VersionID)returns (VersionNoResponse);
 rpc GetTermConditionForVersionNo (VersionNoRequest)returns (TermCondDetailsReponse);
 rpc GetAcceptedTermConditionByUser (UserAcceptedTermConditionRequest)returns (TermCondDetailsReponse);
+rpc UploadTermsAndCondition (UploadTermandConditionRequestList) returns (UploadTermandConditionResponseList);
+rpc GetLatestTermCondition (UserAcceptedTermConditionRequest)returns (TermCondDetailsReponse);
+rpc CheckUserAcceptedTermCondition (UserAcceptedTermConditionRequest)returns (UserAcceptedTermConditionResponse);
+}
+
+
+message VersionID{
+ int32 orgId = 1;
+ int32 roleId = 2;
 }
 
 enum TranslationType{
@@ -339,6 +348,9 @@ message TermConditionReponse
  int32 CreatedBy =9;
  string ModifiedAt =10;
  int32 ModifiedBy =11;
+ string AcceptedDate=12;
+ string FirstName=13;
+ string Lastname=14;
 }
 
     message TermCondDetailsReponse
@@ -352,4 +364,41 @@ message TermConditionReponse
    {
      int32 AccountId=1;
      int32 OrganizationId=2;
+   }
+
+   message UploadTermandConditionRequestList
+   {
+     repeated UploadTermandConditionRequest data = 1;
+      int32 orgId=2;
+     int32 accountId = 3;
+    }
+
+message UploadTermandConditionRequest
+{
+     string   versionno = 1;
+      string  code = 2;
+      bytes description = 3;
+      string fileName = 4;
+}
+
+message UploadTermandConditionResponseList 
+{
+     Responcecode code =1;
+     string message = 2;
+     repeated UploadTermandConditionResponse uploadedfilesaction = 3;
+    }
+
+message UploadTermandConditionResponse
+{
+        string fileName = 1;
+        string action = 2;
+        int32 id = 3;
+}
+   
+
+    message UserAcceptedTermConditionResponse
+   {
+       Responcecode code =1;
+       string message = 2;
+       bool IsUserAcceptedTC=3;
    }
