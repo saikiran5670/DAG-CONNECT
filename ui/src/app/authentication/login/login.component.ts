@@ -80,9 +80,9 @@ export class LoginComponent implements OnInit {
               accountGroupId: 0
             }
             
-              this.accountService.getAccount(loginObj).subscribe(resp => {
-                if(resp[0].preferenceId != 0){
-                  this.accountService.getAccountPreference(resp[0].preferenceId).subscribe(accPref => {
+              this.accountService.getAccount(loginObj).subscribe(getAccresp => {
+                if(getAccresp[0].preferenceId != 0){
+                  this.accountService.getAccountPreference(getAccresp[0].preferenceId).subscribe(accPref => {
                       this.translationService.getLanguageCodes().subscribe(languageCodes => {
                         let filterLang = languageCodes.filter(item => item.id == accPref["languageId"]);
                         let translationObj = {
@@ -96,7 +96,7 @@ export class LoginComponent implements OnInit {
                         }
                         this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
                         this.processTranslation(resp);
-                        this.openTermsConditionsPopup(data.body, resp[0], accPref);
+                        this.openTermsConditionsPopup(data.body, getAccresp[0], accPref);
                       });
                     });
                   })
@@ -113,7 +113,7 @@ export class LoginComponent implements OnInit {
                   }
                   this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
                     this.processTranslation(resp);
-                    this.openTermsConditionsPopup(data.body, resp[0], "");
+                    this.openTermsConditionsPopup(data.body, getAccresp[0], "");
                   });
                   
                 } 
