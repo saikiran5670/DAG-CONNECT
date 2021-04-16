@@ -51,6 +51,10 @@ namespace net.atos.daf.ct2.termsandconditions
         {
             return await termsAndConditionsRepository.InactivateTermsandCondition(objInactivateTandCRequestList);
         }
+        public async Task<bool> CheckUserAcceptedTermCondition(int AccountId, int OrganizationId)
+        {
+            return await termsAndConditionsRepository.CheckUserAcceptedTermCondition(AccountId, OrganizationId);
+        }
 
         public async Task<List<string>> GetAllVersionNo(VersionByID objVersionByID)
         {

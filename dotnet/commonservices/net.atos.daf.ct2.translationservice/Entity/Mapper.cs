@@ -157,6 +157,9 @@ namespace net.atos.daf.ct2.translationservice.Entity
             response.Description = ByteString.CopyFrom(termsAndConditions.Description);
             response.StartDate = termsAndConditions.StartDate.ToString();
             response.EndDate = termsAndConditions.EndDate.ToString();
+            response.AcceptedDate = termsAndConditions.Accepted_Date.ToString();
+            response.FirstName = termsAndConditions.FirstName;
+            response.Lastname = termsAndConditions.Lastname;
             return response;
         }
 
