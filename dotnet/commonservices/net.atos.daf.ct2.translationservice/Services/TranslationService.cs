@@ -825,6 +825,7 @@ namespace net.atos.daf.ct2.translationservice
                 _logger.LogInformation("UploadTermsAndCondition method ");
                 UploadTermandConditionResponseList objUploadTermandConditionResponseList = new UploadTermandConditionResponseList();
                 net.atos.daf.ct2.termsandconditions.entity.TermsandConFileDataList objTermsandConFileDataList = new ct2.termsandconditions.entity.TermsandConFileDataList();
+                objTermsandConFileDataList._data = new List<TermsandConFileData>();
                 objTermsandConFileDataList.orgId = request.OrgId;
                     objTermsandConFileDataList.accountId = request.AccountId;
                 if (request == null)
@@ -849,9 +850,10 @@ namespace net.atos.daf.ct2.translationservice
                     return objUploadTermandConditionResponseList;
                 }
                 _logger.LogInformation("UploadTermsAndCondition service called.");
+                //objUploadTermandConditionResponseList.Uploadedfilesaction = new Google.Protobuf.Collections.RepeatedField<UploadTermandConditionResponse>();
                 foreach (var items in data.termsAndConditionDetails)
                 {
-                    UploadTermandConditionResponse objUploadTermandConditionResponse = new UploadTermandConditionResponse();
+                    var objUploadTermandConditionResponse = new UploadTermandConditionResponse();
                     objUploadTermandConditionResponse.FileName = items.fileName;
                     objUploadTermandConditionResponse.Id = items.id;
                     objUploadTermandConditionResponse.Action = items.action;

@@ -242,12 +242,13 @@ namespace net.atos.daf.ct2.termsandconditions.repository
                 TermsAndConditionResponseList objTermsAndConditionResponseList = new TermsAndConditionResponseList();
                 if (objTermsandConFileDataList != null && objTermsandConFileDataList._data.Count > 0)
                 {
+                    objTermsAndConditionResponseList.termsAndConditionDetails = new List<TermsAndConditionResponse>();
                     foreach (var item in objTermsandConFileDataList._data)
                     {
                         TermsAndConditionResponse objTermsAndConditionResponse = new TermsAndConditionResponse();
                         var descriptionExists = await TermsAndConditionExits(item.version_no, item.code);
                         //To insert non existing record
-                        if (descriptionExists == null)
+                        if (descriptionExists.code == null && descriptionExists.version_no == null)
                         {
                             var QueryStatement = @"INSERT INTO master.termsandcondition 
             (version_no,code,description,state,start_date,created_at,created_by,organization_id)
@@ -273,7 +274,7 @@ VALUES (@version_no,@code,@description,@state,@start_date,@created_at,@created_b
                                 objTermsAndConditionResponseList.termsAndConditionDetails.Add(objTermsAndConditionResponse);
                             }
                         }
-                        else if (descriptionExists != null)
+                        else if (descriptionExists.code != null && descriptionExists.version_no != null)
                         {   //To update description when same version and code are passed
                             if (descriptionExists.version_no == item.version_no && descriptionExists.code == item.code)
                             {
@@ -307,7 +308,7 @@ VALUES (@version_no,@code,@description,@state,@start_date,@created_at,@created_b
                              SET state=@state,end_date=@end_date,modified_by=@modified_by 
                              WHERE code=@code";
                                 var parameter = new DynamicParameters();
-                                parameter.Add("@state", "D");
+                                parameter.Add("@state", "I");
                                 parameter.Add("@end_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                                 parameter.Add("@modified_by", objTermsandConFileDataList.accountId);
                                 parameter.Add("@code", item.code);
@@ -343,23 +344,24 @@ VALUES (@version_no,@code,@description,@state,@start_date,@created_at,@created_b
                             }
                         }
                     }
-                    foreach (var item in objTermsAndConditionResponseList.termsAndConditionDetails)
-                    {
-                        var Query = @"INSERT INTO accounttermsacondition(organization_id,account_id
-                                          ,terms_and_condition_id,accepted_date)
-                                      VALUES(@organization_id,@account_id,@terms_and_condition_id,@accepted_date)";
+                    //foreach (var item in objTermsAndConditionResponseList.termsAndConditionDetails)
+                    //{
+                    //    var Query = @"INSERT INTO master.accounttermsacondition(organization_id,account_id
+                    //                      ,terms_and_condition_id,accepted_date)
+                    //                  VALUES(@organization_id,@account_id,@terms_and_condition_id,@accepted_date) RETURNING id";
 
-                        var param = new DynamicParameters();
-                        param.Add("@terms_and_condition_id", item.id);
-                        param.Add("@accepted_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                        param.Add("@account_id", objTermsandConFileDataList.accountId);
-                        param.Add("@organization_id", objTermsandConFileDataList.orgId);
-                        int id = await dataAccess.ExecuteScalarAsync<int>(Query, param);
-                        if (id > 0)
-                        {
-                            item.action = $"{item.action}.";
-                        }
-                    }
+                    //    var param = new DynamicParameters();
+                    //    param.Add("@organization_id", objTermsandConFileDataList.orgId);
+                    //    param.Add("@account_id", objTermsandConFileDataList.accountId);
+                    //    param.Add("@terms_and_condition_id", item.id);
+                    //    param.Add("@accepted_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                        
+                    //    int id = await dataAccess.ExecuteScalarAsync<int>(Query, param);
+                    //    if (id > 0)
+                    //    {
+                    //        item.action = $"{item.action}.";
+                    //    }
+                    //}
 
                 }
                 return objTermsAndConditionResponseList;
@@ -372,10 +374,11 @@ VALUES (@version_no,@code,@description,@state,@start_date,@created_at,@created_b
 
         async Task<VersionAndCodeExits> TermsAndConditionExits(string version, string code)
         {
-            var QueryStatement = @"select id,version_no,code from master.termsandcondition where code=@code and state=@state";
+            var QueryStatement = @"select id,version_no,code from master.termsandcondition where code=@code and version_no=@version_no and state=@state";
             var parameter = new DynamicParameters();
             parameter.Add("@version_no", version);
             parameter.Add("@code", code);
+            parameter.Add("@state", "A");
             var data = await dataAccess.QueryFirstOrDefaultAsync<VersionAndCodeExits>(QueryStatement, parameter);
             if (data == null)
             {

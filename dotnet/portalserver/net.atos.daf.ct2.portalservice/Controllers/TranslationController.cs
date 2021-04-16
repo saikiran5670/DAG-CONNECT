@@ -604,7 +604,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("getversionnos")]
-      
+      [AllowAnonymous]
         public async Task<IActionResult> GetAllVersionNo([FromQuery]VersionByID objVersionByID)
         {
             try
@@ -711,7 +711,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPost]
         [Route("Upload")]
-        // [AllowAnonymous]
         public async Task<IActionResult> UploadTermsAndCondition(TermsandConFileDataList request)
         {
             _logger.LogInformation("UploadTermsAndCondition Method post");
@@ -729,8 +728,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (aryFileNameContent != null && aryFileNameContent.Length > 1)
                 {
                     //item.fileName = aryFileNameContent[0];
-                    objUploadTermandConditionRequest.Code = aryFileNameContent[1];
-                    objUploadTermandConditionRequest.VersionNo = aryFileNameContent[2];
+                    objUploadTermandConditionRequest.Code = aryFileNameContent[1].ToUpper();
+                    objUploadTermandConditionRequest.Versionno = aryFileNameContent[2].ToUpper();
                     objUploadTermandConditionRequest.Description = ByteString.CopyFrom(item.description);
                     objUploadTermandConditionRequestList.Data.Add(objUploadTermandConditionRequest);
                 }
@@ -740,7 +739,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
 
             }
-            var data = await _translationServiceClient.UploadTermsAndConditionAsync(objUploadTermandConditionRequestList);
+            UploadTermandConditionResponseList data = await _translationServiceClient.UploadTermsAndConditionAsync(objUploadTermandConditionRequestList);
             _logger.LogInformation("UploadTermsAndCondition Service called");
             if (data == null)
             {
