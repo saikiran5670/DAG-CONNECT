@@ -9,6 +9,9 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { AccountService } from '../../services/account.service';
 import { OrganizationService } from '../../services/organization.service';
 import { RoleService } from '../../services/role.service';
+import { MatTableExporterDirective } from 'mat-table-exporter';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-user-management',
@@ -39,6 +42,7 @@ export class UserManagementComponent implements OnInit {
   userCreatedMsg : any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   filterFlag = false;
   accountOrganizationId: any = 0;
   localStLanguage: any;
@@ -437,4 +441,27 @@ export class UserManagementComponent implements OnInit {
       document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
     }, 100);
   }
+
+  exportAsCSV(){
+    this.matTableExporter.exportTable('csv', {fileName:'AccountMgmt_Data', sheet: 'sheet_name'});
+}
+
+exportAsPdf() {
+  let DATA = document.getElementById('accountMgmtData');
+    
+  html2canvas(DATA).then(canvas => {
+      
+      let fileWidth = 208;
+      let fileHeight = canvas.height * fileWidth / canvas.width;
+      
+      const FILEURI = canvas.toDataURL('image/png')
+      let PDF = new jsPDF('p', 'mm', 'a4');
+      let position = 0;
+      PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+      
+      PDF.save('AccountMgmt_Data.pdf');
+      PDF.output('dataurlnewwindow');
+  });     
+}
+
 }

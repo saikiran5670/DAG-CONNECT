@@ -8,6 +8,9 @@ import { TranslationService } from '../../services/translation.service';
 import { VehicleService } from '../../services/vehicle.service';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { UserDetailTableComponent } from '../user-management/new-user-step/user-detail-table/user-detail-table.component';
+import { MatTableExporterDirective } from 'mat-table-exporter';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-vehicle-account-access-relationship',
@@ -35,6 +38,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   initData: any = [];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   showLoadingIndicator: any = false;
   isViewListDisabled: boolean = false;
   actionType: any = '';
@@ -108,6 +112,28 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
+  }
+
+  exportAsCSV(){
+    this.matTableExporter.exportTable('csv', {fileName:'VehicleAccess_Data', sheet: 'sheet_name'});
+  }
+
+  exportAsPdf() {
+    let DATA = document.getElementById('vehicleAccessData');
+      
+    html2canvas(DATA).then(canvas => {
+        
+        let fileWidth = 208;
+        let fileHeight = canvas.height * fileWidth / canvas.width;
+        
+        const FILEURI = canvas.toDataURL('image/png')
+        let PDF = new jsPDF('p', 'mm', 'a4');
+        let position = 0;
+        PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+        
+        PDF.save('VehicleAccess_Data.pdf');
+        PDF.output('dataurlnewwindow');
+    });     
   }
 
   createNewAssociation(){

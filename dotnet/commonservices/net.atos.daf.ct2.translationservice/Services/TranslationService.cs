@@ -766,7 +766,10 @@ namespace net.atos.daf.ct2.translationservice
                     tramcond.Id = item.Id;
                     tramcond.Code = item.Code;
                     tramcond.Versionno = item.version_no;
-                    tramcond.Description = ByteString.CopyFrom(item.Description);
+                    if (item.Description != null)
+                    {
+                        tramcond.Description = ByteString.CopyFrom(item.Description);
+                    }
                     tramcond.StartDate = item.StartDate.ToString();
                     Response.TermCondition.Add(tramcond);
                 }
@@ -800,7 +803,10 @@ namespace net.atos.daf.ct2.translationservice
                     tramcond.Id = item.Id;
                     tramcond.Code = item.Code;
                     tramcond.Versionno = item.version_no;
-                    tramcond.Description = ByteString.CopyFrom(item.Description);
+                    if (item.Description != null)
+                    {
+                        tramcond.Description = ByteString.CopyFrom(item.Description);
+                    }
                     tramcond.StartDate = item.StartDate.ToString();
                     tramcond.AcceptedDate = item.Accepted_Date.ToString();
                     tramcond.FirstName = item.FirstName;
