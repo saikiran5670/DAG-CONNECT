@@ -26,8 +26,6 @@ import { AccountService } from '../services/account.service';
 import { UserDetailTableComponent } from './user-management/new-user-step/user-detail-table/user-detail-table.component';
 import { VehicleService } from '../services/vehicle.service';
 import { VehicleAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/vehicle-account-access-relationship.component';
-import { CreateEditViewVehicleAccessRelationshipComponent } from './vehicle-account-access-relationship/create-edit-view-vehicle-access-relationship/create-edit-view-vehicle-access-relationship.component';
-import { CreateEditViewAccountAccessRelationshipComponent } from './vehicle-account-access-relationship/create-edit-view-account-access-relationship/create-edit-view-account-access-relationship.component';
 import { TranslationDataUploadComponent } from './translation-data-upload/translation-data-upload.component';
 import { ConsentOptComponent } from './driver-management/consent-opt/consent-opt.component';
 import { FeatureManagementComponent } from './feature-management/feature-management.component';
@@ -63,8 +61,6 @@ import { CreateEditViewVehicleAccountAccessRelationshipComponent } from './vehic
     EditCommonTableComponent,
     UserDetailTableComponent,
     VehicleAccountAccessRelationshipComponent,
-    CreateEditViewVehicleAccessRelationshipComponent,
-    CreateEditViewAccountAccessRelationshipComponent,
     TranslationDataUploadComponent,
     ConsentOptComponent,
     FeatureManagementComponent,
