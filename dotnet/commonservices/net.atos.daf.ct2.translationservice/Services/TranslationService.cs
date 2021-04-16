@@ -29,6 +29,7 @@ namespace net.atos.daf.ct2.translationservice
         private readonly ITranslationManager translationmanager;
         private readonly Mapper _mapper;
         private readonly ITermsAndConditionsManager termsandconditionsmanager;
+        private readonly IIconManager iconmanager;
 
         public TranslationManagementService(ILogger<TranslationManagementService> logger, ITranslationManager _TranslationManager, ITermsAndConditionsManager _termsandconditionsmanager)
         {
@@ -827,7 +828,102 @@ namespace net.atos.daf.ct2.translationservice
                 });
             }
         }
+        #endregion
 
+        #region  DTC Translation Icon 
+        public override async Task<IconUpdateResponse> UpdateDTCTranslationIcon(IconUpdateRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("UpdateDTCTranslationIcon method ");
+
+                var icons = new List<Icon>();
+                
+                icons.AddRange(request.IconData.Select(x=> new Icon()
+                {
+                     name=x.Name,                     
+                     icon=x.Icon.ToArray(),
+                     modified_at=x.ModifiedAt,
+                     modified_by=x.ModifiedBy
+
+                }).ToList());
+               
+                 bool result = await iconmanager.UpdateIcons(icons);
+                _logger.LogInformation("UpdateDTCTranslationIcon service called.");
+
+                IconUpdateResponse Response = new IconUpdateResponse();
+                if(result)
+                {
+                    Response.Code = Responcecode.Success;
+                    Response.Message = "Update Icon in DTC translation.";
+                }
+                else
+                {
+                    Response.Code = Responcecode.Failed;
+                    Response.Message = "Update Icon in DTC translation failed.";
+                }
+                return await Task.FromResult(Response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Translation Service:UpdateDTCTranslationIcon : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new IconUpdateResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "UpdateDTCTranslationIcon Failed due to - " + ex.Message
+                });
+            }
+        }
+
+        public override async Task<IconGetResponse> GetDTCTranslationIcon(IconGetRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.LogInformation("GetDTCTranslationIcon method ");
+
+                var icons = new List<Icon>();              
+                
+                 IconGetResponse Response = new IconGetResponse();   
+                 icons = await iconmanager.GetIcons(request.Id);
+                 foreach(var itemicon in icons)
+                 {
+                    var icon = new dtcIcon();
+                    icon.Id = itemicon.id;
+                    icon.Name =itemicon.name;
+                    icon.Icon =ByteString.CopyFrom(itemicon.icon); 
+                    icon.ModifiedAt =itemicon.modified_at;
+                    icon.ModifiedBy =itemicon.modified_by;                   
+                    icon.Type =itemicon.type.ToString();
+                    icon.WarningClass =itemicon.warning_class; 
+                    icon.WarningNumber =itemicon.warning_number;        
+                    icon.ColorName =itemicon.color_name.ToString();
+                    icon.State =itemicon.state.ToString();                        
+                    Response.IconData.Add(icon);
+                 }
+                _logger.LogInformation("GetDTCTranslationIcon service called.");
+                
+                if(icons.Count()>0)
+                {
+                    Response.Code = Responcecode.Success;
+                    Response.Message = "Get Icon in DTC translation.";
+                }
+                else
+                {
+                    Response.Code = Responcecode.Failed;
+                    Response.Message = "Get Icon in DTC translation failed.";
+                }
+                 return await Task.FromResult(Response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Translation Service:GetDTCTranslationIcon : " + ex.Message + " " + ex.StackTrace);
+                return await Task.FromResult(new IconGetResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "GetDTCTranslationIcon Failed due to - " + ex.Message
+                });
+            }
+        }
         public override async Task<UploadTermandConditionResponseList> UploadTermsAndCondition(UploadTermandConditionRequestList request, ServerCallContext context)
         {
             try

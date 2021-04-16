@@ -295,6 +295,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 _cache.SetCache(request.LangaugeCode, responce.Responce, cacheEntryOptions);
 
+                if (responce.Code== Responcecode.Failed)
+                {
+                    return StatusCode(500, "Internal Server Error");
+                }
                 return Ok(responce.Responce);
             }
             catch (Exception ex)
