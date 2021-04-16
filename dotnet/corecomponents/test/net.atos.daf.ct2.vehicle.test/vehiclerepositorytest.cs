@@ -15,6 +15,7 @@ namespace net.atos.daf.ct2.vehicle.test
     public class vehiclerepositorytest
     {
         private readonly IDataAccess _dataAccess;
+        private readonly IDataMartDataAccess _datamartDataacess;
         private readonly IConfiguration _config;
         private readonly IVehicleRepository _vehicleRepository;
         private readonly IGroupRepository _groupRepository;  
@@ -22,8 +23,10 @@ namespace net.atos.daf.ct2.vehicle.test
         public vehiclerepositorytest()
         {
             string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+            string datamartconnectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=vehicledatamart;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             _dataAccess = new PgSQLDataAccess(connectionString);
-            _vehicleRepository = new VehicleRepository(_dataAccess);
+            _datamartDataacess = new PgSQLDataMartDataAccess(datamartconnectionString);
+            _vehicleRepository = new VehicleRepository(_dataAccess, _datamartDataacess);
             _groupRepository=new GroupRepository(_dataAccess);
 
         }
@@ -113,11 +116,18 @@ namespace net.atos.daf.ct2.vehicle.test
         [TestMethod]
         public void UpdateVehicle()
         {
-            Vehicle Objvehicle = new Vehicle();
-            Objvehicle.ID = 5;
-            Objvehicle.Name = "Vehicle 5";
-            Objvehicle.License_Plate_Number = "LIC0325147878";
-            var resultUpdatevehicle = _vehicleRepository.Update(Objvehicle).Result;
+            //Vehicle Objvehicle = new Vehicle();
+            //Objvehicle.ID = 5;
+            //Objvehicle.Name = "Vehicle 5";
+            //Objvehicle.License_Plate_Number = "LIC0325147878";
+            //var resultUpdatevehicle = _vehicleRepository.Update(Objvehicle).Result;
+
+            VehicleFilter ObjFilter = new VehicleFilter();
+            ObjFilter.VIN = "KLRAE75PC0E200144";
+            var resultvehicleList = _vehicleRepository.Get(ObjFilter).Result;
+            var testVehicle = resultvehicleList.Where(x => x is Vehicle).First();
+            var resultUpdatevehicle = _vehicleRepository.Update(testVehicle).Result;
+
             Assert.IsNotNull(resultUpdatevehicle);
             Assert.IsTrue(resultUpdatevehicle.ID > 0);
 
