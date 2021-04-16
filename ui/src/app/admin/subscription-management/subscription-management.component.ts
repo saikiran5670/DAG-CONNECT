@@ -133,7 +133,7 @@ export class SubscriptionManagementComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 3 //-- for user mgnt
+      menuId: 34 //-- for Subscription mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
         this.processTranslation(data);

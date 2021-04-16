@@ -27,7 +27,7 @@ export class PackageManagementComponent implements OnInit {
   features: any = [];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   titleVisible : boolean = false;
   exportFlag = true;
   packageCreatedMsg : any = '';
@@ -106,7 +106,7 @@ export class PackageManagementComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 3 //-- for user mgnt
+      menuId: 33 //-- for package mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);

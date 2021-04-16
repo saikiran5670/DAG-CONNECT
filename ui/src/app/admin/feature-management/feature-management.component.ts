@@ -7,6 +7,9 @@ import { TranslationService } from '../../services/translation.service';
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { FeatureService } from '../../services/feature.service';
+import { MatTableExporterDirective } from 'mat-table-exporter';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-feature-management',
@@ -23,6 +26,7 @@ export class FeatureManagementComponent implements OnInit {
   feautreCreatedMsg : any = '';
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   initData: any = [];
   accountOrganizationId: any = 0;
   localStLanguage: any;
@@ -70,7 +74,7 @@ export class FeatureManagementComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 3 //-- for user mgnt
+      menuId: 28 //-- for feature mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
@@ -115,6 +119,28 @@ export class FeatureManagementComponent implements OnInit {
     let newFalseData = data.filter(item => item.newTag == false);
     Array.prototype.push.apply(newTrueData, newFalseData); 
     return newTrueData;
+  }
+
+  exportAsCSV(){
+    this.matTableExporter.exportTable('csv', {fileName:'Feature_Data', sheet: 'sheet_name'});
+  }
+
+  exportAsPdf() {
+    let DATA = document.getElementById('featureData');
+      
+    html2canvas(DATA).then(canvas => {
+        
+        let fileWidth = 208;
+        let fileHeight = canvas.height * fileWidth / canvas.width;
+        
+        const FILEURI = canvas.toDataURL('image/png')
+        let PDF = new jsPDF('p', 'mm', 'a4');
+        let position = 0;
+        PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+        
+        PDF.save('Feature_Data.pdf');
+        PDF.output('dataurlnewwindow');
+    });     
   }
 
   processTranslation(transData: any){
