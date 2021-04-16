@@ -59,7 +59,7 @@ export class VehicleGroupManagementComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 24 //-- for veh grp mgnt
+      menuId: 27 //-- for vehicle group mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);

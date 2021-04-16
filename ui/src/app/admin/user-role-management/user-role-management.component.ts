@@ -96,7 +96,7 @@ export class UserRoleManagementComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 25 //-- for role mgnt
+      menuId: 26 //-- for account role mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
