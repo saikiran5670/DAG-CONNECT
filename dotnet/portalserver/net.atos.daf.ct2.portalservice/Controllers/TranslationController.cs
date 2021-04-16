@@ -373,7 +373,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
                    "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                   "InsertTranslationFileDetails  method in Translation controller", 0, 0, JsonConvert.SerializeObject(transupload),
+                   "InsertTranslationFileDetails  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
                     Request);
 
 
