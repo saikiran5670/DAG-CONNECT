@@ -1029,7 +1029,7 @@ namespace net.atos.daf.ct2.organization.repository
                 List<OrganizationNameandID> objOrganizationNameandID = new List<OrganizationNameandID>();
                 var parameter = new DynamicParameters();
                 parameter.Add("@state", 'A');
-                strquery = @"SELECT id,name FROM master.organization where state=@state";
+                strquery = @"SELECT id,case when name is null then 'Unknown' else name end as name FROM master.organization where state=@state";
                 switch (level)
                 {
                     case 10:
