@@ -28,8 +28,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   selectedVehicleViewType: any = '';
   selectedAccountViewType: any = '';
   selectedColumnType: any = '';
-  createVehicleAccessRelation: boolean = false;
-  createAccountAccessRelation: boolean = false;
+  createVehicleAccountAccessRelation: boolean = false;
   cols: string[] = ['name','accessType','associatedAccount','action'];
   columnNames: string[] = ['Vehicle Group/Vehicle','Access Type','Account Group/Account','Action'];
   dataSource: any;
@@ -122,13 +121,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
       this.accountGrpAccountDetails = data.account;
       this.vehicleGrpVehicleDetails = data.vehicle;
       this.associationTypeId = this.isViewListDisabled ? 2 : 1; // 1-> vehicle 2-> account
-      this.createAccountAccessRelation = true;
-      // if(!this.isViewListDisabled){
-      //   this.createVehicleAccessRelation = true;
-      // }
-      // else{
-      //   this.createAccountAccessRelation = true;
-      // }
+      this.createVehicleAccountAccessRelation = true;
     }, (error) => {
       console.log("error:: ", error)
     });
@@ -294,31 +287,9 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     }
   }
 
-  checkCreationForVehicle(item: any){
-    //this.createVehicleAccessRelation = !this.createVehicleAccessRelation;
-    this.createVehicleAccessRelation = item.stepFlag;
-    if(item.msg && item.msg != ''){
-      this.successMsgBlink(item.msg);
-    }
-    if(item.tableData){
-      this.accountGrpAccountAssociationDetails = item.tableData.account;
-      this.vehicleGrpVehicleAssociationDetails = item.tableData.vehicle;
-    }
-    if(this.isViewListDisabled){
-      this.selectedColumnType = 'account';
-      this.selectedAccountViewType = 'both';
-      this.changeGridOnAccountList(this.selectedAccountViewType);
-    }
-    else{
-      this.selectedColumnType = 'vehicle';
-      this.selectedVehicleViewType = 'both';
-      this.changeGridOnVehicleList(this.selectedVehicleViewType);
-    }
-  }
-
-  checkCreationForAccount(item: any){
-   // this.createAccountAccessRelation = !this.createAccountAccessRelation;
-    this.createAccountAccessRelation = item.stepFlag;
+  checkCreationForAccountVehicle(item: any){
+   // this.createVehicleAccountAccessRelation = !this.createVehicleAccountAccessRelation;
+    this.createVehicleAccountAccessRelation = item.stepFlag;
     if(item.msg && item.msg != ''){
       this.successMsgBlink(item.msg);
     }
