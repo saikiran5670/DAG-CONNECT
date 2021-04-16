@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Audit;
 using Newtonsoft.Json;
+using Google.Protobuf;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -566,16 +567,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [HttpGet]
         [Route("getversionnos")]
       
-        public async Task<IActionResult> GetAllVersionNo()
+        public async Task<IActionResult> GetAllVersionNo([FromQuery]VersionByID objVersionByID)
         {
             try
             {
                 VersionNoRequest versionNoRequest = new VersionNoRequest();
                 versionNoRequest.VersionNo = "V1.0";
-               var response = await _translationServiceClient.GetAllVersionNoAsync(versionNoRequest);
+                net.atos.daf.ct2.translationservice.VersionID objVersionID = new VersionID();
+                objVersionID.RoleId = objVersionByID.roleId;
+                objVersionID.OrgId = objVersionByID.orgId;
+                var response = await _translationServiceClient.GetAllVersionNoAsync(objVersionID);
                 TermsAndConditions termsAndConditions = new TermsAndConditions();
                 //termsAndConditions=_mapper.
-
+                if (objVersionByID.roleId == 0)
+                {
+                    var request = Request;
+                    var Headers = request.Headers;
+                    objVersionByID.roleId = Convert.ToInt32(Headers["roleid"]);
+                }
                 if (response != null && response.Code == Responcecode.Success)
                 {
                     if (response.VersionNos != null && response.VersionNos.Count > 0)
@@ -661,6 +670,46 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+
+        [HttpPost]
+        [Route("Upload")]
+        // [AllowAnonymous]
+        public async Task<IActionResult> UploadTermsAndCondition(TermsandConFileDataList request)
+        {
+            _logger.LogInformation("UploadTermsAndCondition Method post");
+            if (request.orgId == 0 || request.accountId == 0)
+            {
+                return StatusCode(400, string.Empty);
+            }
+            net.atos.daf.ct2.translationservice.UploadTermandConditionRequestList objUploadTermandConditionRequestList = new UploadTermandConditionRequestList();
+            objUploadTermandConditionRequestList.OrgId = request.orgId;
+            objUploadTermandConditionRequestList.AccountId = request.accountId;
+            foreach (var item in request._data)
+            {
+                string[] aryFileNameContent = item.fileName.Split('_');
+                UploadTermandConditionRequest objUploadTermandConditionRequest = new UploadTermandConditionRequest();
+                if (aryFileNameContent != null && aryFileNameContent.Length > 1)
+                {
+                    //item.fileName = aryFileNameContent[0];
+                    objUploadTermandConditionRequest.Code = aryFileNameContent[1];
+                    objUploadTermandConditionRequest.VersionNo = aryFileNameContent[2];
+                    objUploadTermandConditionRequest.Description = ByteString.CopyFrom(item.description);
+                    objUploadTermandConditionRequestList.Data.Add(objUploadTermandConditionRequest);
+                }
+                else
+                {
+                    return StatusCode(400, string.Empty);
+                }
+
+            }
+            var data = await _translationServiceClient.UploadTermsAndConditionAsync(objUploadTermandConditionRequestList);
+            _logger.LogInformation("UploadTermsAndCondition Service called");
+            if (data == null)
+            {
+                return StatusCode(400, string.Empty);
+            }
+            return Ok(data.Uploadedfilesaction);
+        }
 
         #endregion
     }

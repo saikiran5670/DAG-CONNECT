@@ -22,9 +22,38 @@ rpc ImportDTCWarningData (WarningDataRequest) returns (WarningDataResponse);
 rpc GetDTCWarningData (WarningGetRequest)returns (WarningGetResponse);
 
 rpc AddUserAcceptedTermCondition (AcceptedTermConditionRequest)returns (AcceptedTermConditionResponse);
-rpc GetAllVersionNo (VersionNoRequest)returns (VersionNoResponse);
+rpc GetAllVersionNo (VersionID)returns (VersionNoResponse);
 rpc GetTermConditionForVersionNo (VersionNoRequest)returns (TermCondDetailsReponse);
 rpc GetAcceptedTermConditionByUser (UserAcceptedTermConditionRequest)returns (TermCondDetailsReponse);
+rpc UploadTermsAndCondition (UploadTermandConditionRequestList) returns (UploadTermandConditionResponseList);
+}
+
+message VersionID{
+ int32 orgId = 1;
+ int32 roleId = 2;
+}
+
+message UploadTermandConditionRequestList {
+     repeated UploadTermandConditionRequest data = 1;
+     int32 orgId=2;
+     int32 accountId = 3;
+    }
+
+message UploadTermandConditionRequest{
+     string   version_no = 1;
+      string  code = 2;
+      bytes description = 3;
+      string fileName = 4;
+}
+
+message UploadTermandConditionResponseList {
+     repeated UploadTermandConditionResponse uploadedfilesaction = 1;
+    }
+
+message UploadTermandConditionResponse {
+        string fileName = 1;
+        string action = 2;
+        int32 id = 3;
 }
 
 enum TranslationType{
