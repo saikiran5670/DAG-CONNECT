@@ -22,6 +22,7 @@ export class SetPasswordComponent implements OnInit {
   isResetPwdInvalidate: boolean= false;
   errorMsg: string= '';
   errorCode: number= 0;
+  isLinkActive: boolean= true;
 
   constructor(public router: Router, private route: ActivatedRoute, public fb: FormBuilder, private accountService: AccountService) {
     this.setPasswordForm = this.fb.group({
@@ -38,6 +39,19 @@ export class SetPasswordComponent implements OnInit {
 
   ngOnInit() { 
     this.token=  this.route.snapshot.paramMap.get('token');
+    this.accountService.getResetPasswordTokenStatus(this.token).subscribe(data => {
+      if(data){
+        this.isLinkActive= true;
+      }
+    }, (error)=> {
+      if(error.status == 404){
+        this.isLinkActive= false;
+      }
+      else if(error.status == 200){
+        this.isLinkActive= true;
+      }
+    })
+
     this.currentRoute = this.router.url;
     if(this.currentRoute.includes("/createpassword/")){
       this.buttonName = "Create";

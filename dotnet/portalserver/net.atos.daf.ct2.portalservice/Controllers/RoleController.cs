@@ -74,6 +74,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 ObjRole.Description = request.Description;
                 //ObjRole.Fea = 0;
                 ObjRole.Level = request.Level;
+                ObjRole.Code = request.Code;
 
                 //ObjRole.FeatureSet.Features = new List<Feature>();
                 foreach (var item in request.FeatureIds)
@@ -83,10 +84,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var role = await _roleclient.CreateAsync(ObjRole);
 
 
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Role Component",
-                        "Role service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                        "Create  method in Role controller", 0, request.RoleId, JsonConvert.SerializeObject(request),
-                         Request);
+                //await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Role Component",
+                //        "Role service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                //        "Create  method in Role controller", 0, request.RoleId, JsonConvert.SerializeObject(request),
+                //         Request);
 
                 return Ok(role);
             }

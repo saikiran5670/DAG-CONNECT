@@ -12,7 +12,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 using Newtonsoft.Json;
+using log4net;
 using net.atos.daf.ct2.portalservice.Common;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -20,13 +22,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class AuthenticationController: ControllerBase
     {
-        private readonly ILogger<AuthenticationController> _logger;
+        //private readonly ILogger<AuthenticationController> _logger;
         private readonly AuditHelper _auditHelper;
+
+        private ILog _logger;
         private readonly AccountBusinessService.AccountService.AccountServiceClient _accountClient;
-        public AuthenticationController(AccountBusinessService.AccountService.AccountServiceClient accountClient, ILogger<AuthenticationController> logger, AuditHelper auditHelper)
+        public AuthenticationController(AccountBusinessService.AccountService.AccountServiceClient accountClient,  AuditHelper auditHelper)
         {
             _accountClient = accountClient;
-            _logger = logger;
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _auditHelper = auditHelper;
         }
         [AllowAnonymous]
@@ -150,13 +154,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex.Message +" " +ex.StackTrace);                
+               _logger.Error(null, ex);              
 
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Authentication Component",
             "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
             "RemoveRoles  method in Authentication controller", 0, 0, JsonConvert.SerializeObject(identityRequest),
              Request);
-                _logger.LogError(ex.Message +" " +ex.StackTrace);
+                _logger.Error(null, ex);
                 return StatusCode(500,"Please contact system administrator. "+ ex.Message );
             }            
         }
@@ -180,7 +184,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.ToString());
+                _logger.Error(null, ex);
                 return StatusCode(500, "Please contact system administrator. " + ex.Message);
             }
         }

@@ -27,7 +27,7 @@ export class PackageManagementComponent implements OnInit {
   features: any = [];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   titleVisible : boolean = false;
   exportFlag = true;
   packageCreatedMsg : any = '';

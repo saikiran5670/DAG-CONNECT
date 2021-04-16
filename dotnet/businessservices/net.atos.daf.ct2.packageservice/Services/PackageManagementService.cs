@@ -6,20 +6,24 @@ using net.atos.daf.ct2.package.entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.packageservice
 {
     public class PackageManagementService : PackageService.PackageServiceBase
     {
-        private readonly ILogger<PackageManagementService> _logger;
+        //private readonly ILogger<PackageManagementService> _logger;
+
+         private ILog _logger;
         private readonly IAuditTraillib _AuditTrail;
         private readonly IPackageManager _packageManager;
-        public PackageManagementService(ILogger<PackageManagementService> logger,
+        public PackageManagementService(
                                         IAuditTraillib AuditTrail,
                                         IPackageManager packageManager)
         {
-            _logger = logger;
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType); 
             _AuditTrail = AuditTrail;
             _packageManager = packageManager;
         }
@@ -133,7 +137,7 @@ namespace net.atos.daf.ct2.packageservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in package service:delete package  with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new PackageResponse
                 {
                     Code = Responsecode.Failed,
@@ -170,12 +174,12 @@ namespace net.atos.daf.ct2.packageservice
                                          CreatedAt = x.CreatedAt,
                                          Type = x.Type
                                      }).ToList());
-                _logger.LogInformation("Get package details.");
+                _logger.Info("Get package details.");
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in package service:get package  details with exception - " + ex.Message + ex.StackTrace);
+               _logger.Error(null, ex);
                 return await Task.FromResult(new GetPackageResponce
                 {
                     Message = "Exception " + ex.Message,
@@ -226,7 +230,7 @@ namespace net.atos.daf.ct2.packageservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in package service:Import package with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new ImportPackageResponce
                 {
                     Message = "Exception " + ex.Message,

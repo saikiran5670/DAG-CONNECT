@@ -69,7 +69,11 @@ namespace net.atos.daf.ct2.termsandconditions.repository
             try
             {
                 List<TermsAndConditions> Objtermcondn = new List<TermsAndConditions>();
-                var QueryStatement = @"SELECT terms.id
+                var QueryStatement = string.Empty;
+                if (AccountId > 0 && OrganizationId > 0)
+                {
+
+                    QueryStatement = @"SELECT terms.id
 		                                ,terms.version_no
 		                                ,terms.code
 		                                ,terms.description
@@ -84,6 +88,24 @@ namespace net.atos.daf.ct2.termsandconditions.repository
 									Inner Join master.account acc
 									on accterm.account_id=acc.id
                                     where 1=1";
+                }
+                else
+                {
+                    QueryStatement = @"SELECT terms.id
+		                                ,terms.version_no
+		                                ,terms.code		                               
+		                                ,terms.state
+		                                ,terms.start_date
+										,accterm.accepted_date
+										,acc.first_name  
+										,acc.last_name 
+	                                FROM master.termsandcondition terms 
+	                                Inner Join master.accounttermsacondition accterm
+	                                on terms.id=accterm.terms_and_condition_id
+									Inner Join master.account acc
+									on accterm.account_id=acc.id
+                                    where 1=1";
+                }
                 var parameter = new DynamicParameters();
 
                 // Account Filter
@@ -210,7 +232,11 @@ namespace net.atos.daf.ct2.termsandconditions.repository
         public async Task<List<TermsAndConditions>> GetTermConditionForVersionNo(string VersionNo, string LanguageCode)
         {
             List<TermsAndConditions> Objtermcondn = new List<TermsAndConditions>();
-            var QueryStatement = @"select id
+            var QueryStatement = string.Empty;
+
+            if ((!string.IsNullOrEmpty(VersionNo)) && (!string.IsNullOrEmpty(LanguageCode)))
+            {
+                QueryStatement = @"select id
                                     , version_no
                                     , code
                                     , description
@@ -219,6 +245,18 @@ namespace net.atos.daf.ct2.termsandconditions.repository
                                     , end_date
                                     FROM master.termsandcondition 
                                     where lower(version_no)=lower(trim(@version_no))";
+            }
+            else
+            {
+                QueryStatement = @"select id
+                                    , version_no
+                                    , code
+                                    , state
+                                    , start_date
+                                    , end_date
+                                    FROM master.termsandcondition 
+                                    where lower(version_no)=lower(trim(@version_no))";
+            }
 
             var parameter = new DynamicParameters();
             parameter.Add("@version_no", VersionNo);
@@ -471,10 +509,20 @@ VALUES (@version_no,@code,@description,@state,@start_date,@created_at,@created_b
             termsAndConditions.Id = record.id;
             termsAndConditions.Code = record.code;
             termsAndConditions.version_no = record.version_no;
-            termsAndConditions.Description = record.description;
+            if (record.description != null)
+            {
+                termsAndConditions.Description = record.description;
+            }
             termsAndConditions.State = Convert.ToChar(record.state);
             termsAndConditions.StartDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.start_date, "Asia/Dubai", "yyyy-MM-ddTHH:mm:ss"));
-            termsAndConditions.Accepted_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.accepted_date, "Asia/Dubai", "yyyy-MM-ddTHH:mm:ss"));
+            if (record.end_date != null)
+            {
+                termsAndConditions.EndDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.end_date, "Asia/Dubai", "yyyy-MM-ddTHH:mm:ss"));
+            }
+            if (record.accepted_date != null)
+            {
+                termsAndConditions.Accepted_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.accepted_date, "Asia/Dubai", "yyyy-MM-ddTHH:mm:ss"));
+            }
             termsAndConditions.FirstName = record.first_name;
             termsAndConditions.Lastname = record.last_name;
             return termsAndConditions;
