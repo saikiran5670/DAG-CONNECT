@@ -61,7 +61,7 @@ export class OrganisationRelationshipComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 0 //-- for role mgnt
+      menuId: 29 //-- for org relationship mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);

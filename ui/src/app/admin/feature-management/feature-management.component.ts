@@ -70,7 +70,7 @@ export class FeatureManagementComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 3 //-- for user mgnt
+      menuId: 28 //-- for feature mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);

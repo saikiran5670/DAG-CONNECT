@@ -106,7 +106,7 @@ export class PackageManagementComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 3 //-- for user mgnt
+      menuId: 33 //-- for package mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
