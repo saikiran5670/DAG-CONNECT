@@ -17,9 +17,7 @@ namespace net.atos.daf.ct2.email
     public class EmailHelper
     {
         public static async Task<bool> SendEmail(MessageRequest messageRequest)
-        {
-            if (messageRequest.ToAddressList.ContainsKey("him.waghulde@atos.net"))
-                throw new Exception("test error");
+        {            
             var apiKey = messageRequest.Configuration.ApiKey;
             var client = new SendGridClient(apiKey);
             var msg = new SendGridMessage();
