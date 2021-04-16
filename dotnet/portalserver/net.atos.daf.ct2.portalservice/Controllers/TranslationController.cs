@@ -564,7 +564,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region  Terms And Conditions
 
         [HttpPost]
-        [Route("termsandconditions/adduseracceptedtermcondition")]
+        [Route("tac/adduseracceptedtac")]
         // [AllowAnonymous]
         public async Task<IActionResult> AddUserAcceptedTermCondition(AccountTermsCondition request)
         {
@@ -627,7 +627,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("termsandconditions/getalltermsandconditionversions")]
+        [Route("tac/getallversionsfortac")]
       
         public async Task<IActionResult> GetAllVersionNo([FromQuery]VersionByID objVersionByID)
         {
@@ -671,14 +671,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("termsandconditions/gettermconditionforversionno")]
-        public async Task<IActionResult> GetTermConditionForVersionNo([FromQuery] string VersionNo,string languageCode)
+        [Route("tac/gettacforversionno")]
+        public async Task<IActionResult> GetTermConditionForVersionNo([FromQuery] string versionNo,string languageCode)
         {
             try
             {
+                if (string.IsNullOrEmpty(versionNo))
+                {
+                    return StatusCode(400, "Version number is required.");
+                }
 
                 VersionNoRequest request = new VersionNoRequest();
-                request.VersionNo = VersionNo;
+                request.VersionNo = versionNo;
                 request.Languagecode = languageCode;
                 TermCondDetailsReponse response = await _translationServiceClient.GetTermConditionForVersionNoAsync(request);
                 if (response.TermCondition != null && response.Code == translationservice.Responcecode.Failed)
@@ -702,11 +706,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("termsandconditions/getacceptedtermconditionbyuser")]
+        [Route("tac/getacceptedbyusertac")]
         public async Task<IActionResult> GetAcceptedTermConditionByUser([FromQuery] int AccountId, int OrganizationId)
         {
             try
             {
+                if (OrganizationId <= 0)
+                {
+                    return StatusCode(400, "Organization Id is required.");
+                }
                 UserAcceptedTermConditionRequest request = new UserAcceptedTermConditionRequest();
                 request.AccountId = AccountId;
                 request.OrganizationId = OrganizationId;
@@ -732,11 +740,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("termsandconditions/getlatesttermcondition")]
+        [Route("tac/getlatesttac")]
         public async Task<IActionResult> GetLatestTermCondition([FromQuery] int AccountId, int OrganizationId)
         {
             try
             {
+                if (OrganizationId <= 0 || AccountId <= 0)
+                {
+                    return StatusCode(400, "Organization Id and Account Id both are required.");
+                }
                 UserAcceptedTermConditionRequest request = new UserAcceptedTermConditionRequest();
                 request.AccountId = AccountId;
                 request.OrganizationId = OrganizationId;
@@ -762,11 +774,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("termsandconditions/checkuseracceptedtermcondition")]
+        [Route("tac/checkuseracceptedtac")]
         public async Task<IActionResult> CheckUserAcceptedTermCondition([FromQuery] int AccountId, int OrganizationId)
         {
             try
             {
+                if (OrganizationId <= 0 || AccountId <= 0)
+                {
+                    return StatusCode(400, "Organization Id and Account Id both are required.");
+                }
                 UserAcceptedTermConditionRequest request = new UserAcceptedTermConditionRequest();
                 request.AccountId = AccountId;
                 request.OrganizationId = OrganizationId;
@@ -793,7 +809,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
 
         [HttpPost]
-        [Route("termsandconditions/uploadtermsandconditions")]
+        [Route("tac/uploadtac")]
         // [AllowAnonymous]
         public async Task<IActionResult> UploadTermsAndCondition(TermsandConFileDataList request)
         {
