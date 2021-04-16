@@ -7,6 +7,9 @@ import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog
 import { TranslationService } from '../../services/translation.service';
 import { VehicleService } from '../../services/vehicle.service';
 import { UserDetailTableComponent } from '../../admin/user-management/new-user-step/user-detail-table/user-detail-table.component';
+import { MatTableExporterDirective } from 'mat-table-exporter';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-vehicle-group-management',
@@ -27,6 +30,7 @@ export class VehicleGroupManagementComponent implements OnInit {
   showLoadingIndicator: boolean = false;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   dialogRef: MatDialogRef<UserDetailTableComponent>;
   actionType: any = '';
   selectedRowData: any = [];
@@ -59,7 +63,7 @@ export class VehicleGroupManagementComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 24 //-- for veh grp mgnt
+      menuId: 27 //-- for vehicle group mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
@@ -243,5 +247,27 @@ export class VehicleGroupManagementComponent implements OnInit {
     }
     this.updateDataSource(this.initData);
   }
+
+  exportAsCSV(){
+    this.matTableExporter.exportTable('csv', {fileName:'VehicleGroupMgmt_Data', sheet: 'sheet_name'});
+}
+
+exportAsPdf() {
+  let DATA = document.getElementById('vehicleGroupMgmtData');
+    
+  html2canvas(DATA).then(canvas => {
+      
+      let fileWidth = 208;
+      let fileHeight = canvas.height * fileWidth / canvas.width;
+      
+      const FILEURI = canvas.toDataURL('image/png')
+      let PDF = new jsPDF('p', 'mm', 'a4');
+      let position = 0;
+      PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+      
+      PDF.save('VehicleGroupMgmt_Data.pdf');
+      PDF.output('dataurlnewwindow');
+  });     
+}
 
 }

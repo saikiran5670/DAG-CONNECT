@@ -41,6 +41,7 @@ namespace net.atos.daf.ct2.roleservice
                 ObjRole.Description = request.Description;
                 ObjRole.Feature_set_id=0;
                 ObjRole.Level = request.Level;
+                ObjRole.Code = request.Code;
                 ObjRole.FeatureSet = new FeatureSet();
                 ObjRole.FeatureSet.Features = new List<Feature>();
                 foreach(var item in request.FeatureIds)
@@ -149,9 +150,10 @@ namespace net.atos.daf.ct2.roleservice
                 ObjroleFilter.AccountId=request.AccountId;
                 ObjroleFilter.RoleId= request.RoleId;
                 ObjroleFilter.Organization_Id = request.OrganizationId;
-                ObjroleFilter.Is_Active= request.Active;
+                ObjroleFilter.State= request.Active? "A" : "I";
                 ObjroleFilter.IsGlobal = request.IsGlobal;
                 ObjroleFilter.LangaugeCode = request.LangaugeCode;
+
                 var role = _RoleManagement.GetRoles(ObjroleFilter).Result;
                  foreach (var item in role)
                 {
@@ -166,6 +168,7 @@ namespace net.atos.daf.ct2.roleservice
                     //ObjResponce.Roletype= item.Organization_Id == null ? RoleTypes.Global : RoleTypes.Regular;
                     ObjResponce.FeatureIds.Add(item.FeatureSet.Features.Select(I=> I.Id).ToArray());
                     ObjResponce.Level = item.Level;
+                    ObjResponce.Code = item.Code;
                     ObjroleList.Roles.Add(ObjResponce);
                 }
 

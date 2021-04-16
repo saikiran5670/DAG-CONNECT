@@ -15,11 +15,13 @@ namespace net.atos.daf.ct2.role.entity
         public long Created_at { get; set; }
         public long Modified_at { get; set; }
         public int Updatedby { get; set; }
-        public bool Is_Active { get; set; }
+        public string State { get; set; }
+
         public int? Feature_set_id { get; set; }
         public int? Featurescount { get; set; }
         public FeatureSet FeatureSet { get; set; }
         public int Level { get; set; }
+        public string Code { get; set; }
 
     }
 }

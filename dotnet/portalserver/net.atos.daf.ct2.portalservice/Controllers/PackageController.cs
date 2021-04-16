@@ -10,7 +10,9 @@ using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.portalservice.Entity.Package;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using log4net;
 using Newtonsoft.Json;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -21,19 +23,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     public class PackageController : ControllerBase
     {
         private readonly AuditHelper _auditHelper;
-        private readonly ILogger<PackageController> _logger;
+        //private readonly ILogger<PackageController> _logger;
         private readonly PackageService.PackageServiceClient _packageClient;
         private readonly FeatureService.FeatureServiceClient _featureclient;
         private readonly PackageMapper _packageMapper;
+
+        private ILog _logger;
         private readonly FeatureSetMapper _featureSetMapper;
 
         public PackageController(PackageService.PackageServiceClient packageClient,
-            FeatureService.FeatureServiceClient featureclient,
-            ILogger<PackageController> logger, AuditHelper auditHelper)
+            FeatureService.FeatureServiceClient featureclient
+            , AuditHelper auditHelper)
         {
             _packageClient = packageClient;
             _featureclient = featureclient;
-            _logger = logger;
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _featureSetMapper = new FeatureSetMapper(featureclient);
             _packageMapper = new PackageMapper(_featureclient);
             _auditHelper = auditHelper;
@@ -110,7 +114,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                              "Create method in Package controller", 0, packageResponse.PackageId, JsonConvert.SerializeObject(request),
                                               Request);
                                               
-                _logger.LogError("Package Service:Create : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, PortalConstants.ExceptionKeyWord.FK_Constraint);
@@ -127,10 +131,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("update")]
         public async Task<IActionResult> Update(PackagePortalRequest request)
         {
-             var packageResponse = new PackageResponse();
+            
             try
             {
-                _logger.LogInformation("Update method in package API called.");
+                _logger.Info("Update method in package API called.");
 
                 // Validation 
                 if (request.Id <= 0 || (string.IsNullOrEmpty(request.Code)) || request.FeatureSetID <= 0)
@@ -155,8 +159,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         return StatusCode(400, "Please provide package featureIds");
                     }
                     var createPackageRequest = _packageMapper.ToCreatePackage(request);
-
-                        packageResponse = await _packageClient.UpdateAsync(createPackageRequest);
+                    var packageResponse = new PackageResponse();
+                    packageResponse = await _packageClient.UpdateAsync(createPackageRequest);
 
                     if (packageResponse.PackageId == -1 && packageResponse.Code == Responsecode.Conflict)
                     {
@@ -197,10 +201,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
                                              "Package service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                             "Update method in Package controller", request.Id, packageResponse.PackageId, JsonConvert.SerializeObject(request),
+                                             "Update method in Package controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                                               Request);
 
-                _logger.LogError("Package Service:Update : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
@@ -255,7 +259,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in package service:get package with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -299,7 +303,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                              "Delete method in Package controller",packageRequest.Id, packageRequest.Id, JsonConvert.SerializeObject(packageId),
                                               Request);
 
-                _logger.LogError("Error in Package service:delete Package with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -362,7 +366,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                              "Import method in Package controller", 0, 0, JsonConvert.SerializeObject(request),
                                               Request);
 
-                _logger.LogError("Package Service:Import : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
@@ -377,7 +381,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Update package status method in package API called.");
+                _logger.Info("Update package status method in package API called.");
 
                 // Validation 
                 if (request.PackageId <= 0 || (string.IsNullOrEmpty(request.State)))
@@ -420,7 +424,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                              "UpdatePackageStatus method in Package controller", 0, 0, JsonConvert.SerializeObject(request),
                                               Request);
 
-                _logger.LogError("Package Service:Update : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
