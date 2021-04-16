@@ -442,7 +442,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else if (DTCResponse != null && DTCResponse.Code == Responcecode.Success )
                     {
-                        return Ok(DTCResponse);
+                    await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                          "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                          "ImportDTCWarningData  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
+                           Request);
+                    return Ok(DTCResponse);
                     }
                     else
                     {
@@ -452,6 +456,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                      "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                      "ImportDTCWarningData  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
+                       Request);
                 _logger.LogError("Translation Service:ImportdtcWarning : " + ex.Message + " " + ex.StackTrace);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -525,7 +533,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (DTCResponse != null && DTCResponse.Code == Responcecode.Success )
                 {
-
+                    await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                      "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                      "UpdateDTCWarningData  method in Translation controller", 0,0, JsonConvert.SerializeObject(request),
+                       Request);
                     return Ok(DTCResponse);
                 }
                 else
@@ -536,6 +547,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                     "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                     "UpdateDTCWarningData  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
+                      Request);
                 _logger.LogError("Translation Service:UpdateDTCWarning : " + ex.Message + " " + ex.StackTrace);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -581,7 +596,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (termsAndCondResponse != null && termsAndCondResponse.Code == Responcecode.Success)
                 {
-
+                    await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                                        "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                        "AddUserAcceptedTermCondition  method in Translation controller", 0, termsAndCondResponse.AcceptedTermCondition !=null? termsAndCondResponse.AcceptedTermCondition.Id:0, 
+                                        JsonConvert.SerializeObject(request),
+                                         Request);
                     return Ok(termsAndCondResponse);
                 }
                 else
@@ -592,6 +611,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                                        "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                        "AddUserAcceptedTermCondition  method in Translation controller", 0, 0,
+                                        JsonConvert.SerializeObject(request),
+                                         Request);
                 _logger.LogError("Translation Service:AddUserAcceptedTermCondition : " + ex.Message + " " + ex.StackTrace);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
@@ -805,6 +829,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 return StatusCode(400, string.Empty);
             }
+
+            await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                                    "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                    "UploadTermsAndCondition  method in Translation controller", 0, 0,
+                                    JsonConvert.SerializeObject(request),
+                                     Request);
+
             return Ok(data.Uploadedfilesaction);
         }
 
