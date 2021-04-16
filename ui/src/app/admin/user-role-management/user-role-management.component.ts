@@ -6,6 +6,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { TranslationService } from '../../services/translation.service';
 import { RoleService } from 'src/app/services/role.service';
+import { MatTableExporterDirective } from 'mat-table-exporter';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-user-role-management',
@@ -17,6 +20,7 @@ export class UserRoleManagementComponent implements OnInit {
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   roleDisplayedColumns: string[] = ['roleName', 'description', 'action'];
   editFlag: boolean = false;
   duplicateFlag: boolean = false;
@@ -96,7 +100,7 @@ export class UserRoleManagementComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 25 //-- for role mgnt
+      menuId: 26 //-- for account role mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
@@ -257,4 +261,27 @@ export class UserRoleManagementComponent implements OnInit {
     // Setting display of spinner
     this.showLoadingIndicator=false;
   }
+
+  exportAsCSV(){
+    this.matTableExporter.exportTable('csv', {fileName:'AccountRole_Data', sheet: 'sheet_name'});
+}
+
+exportAsPdf() {
+  let DATA = document.getElementById('accountRoleData');
+    
+  html2canvas(DATA).then(canvas => {
+      
+      let fileWidth = 208;
+      let fileHeight = canvas.height * fileWidth / canvas.width;
+      
+      const FILEURI = canvas.toDataURL('image/png')
+      let PDF = new jsPDF('p', 'mm', 'a4');
+      let position = 0;
+      PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+      
+      PDF.save('AccountRole_Data.pdf');
+      PDF.output('dataurlnewwindow');
+  });     
+}
+
 }

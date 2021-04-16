@@ -40,5 +40,6 @@ namespace net.atos.daf.ct2.account
         Task<bool> CheckForFeatureAccessByEmailId(string emailId, string featureName);
         Task<PasswordPolicyAccount> GetPasswordPolicyAccount(int id);
         Task<int> UpsertPasswordPolicyAccount(PasswordPolicyAccount passwordPolicyBlockAccount);
+        Task<Response> GetResetPasswordTokenStatus(Guid processToken);
     }
 }

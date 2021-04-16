@@ -7,6 +7,7 @@ using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.utilities;
 using Dapper;
 using System.Data;
+using static net.atos.daf.ct2.utilities.CommonEnums;
 
 namespace net.atos.daf.ct2.termsandconditions.repository
 {
@@ -34,7 +35,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
 
 
                 var parameter = new DynamicParameters();
-                
+
                 parameter.Add("@organization_id", accountTermsCondition.Organization_Id);
                 parameter.Add("@account_id", accountTermsCondition.Account_Id);
                 parameter.Add("@terms_and_condition_id", accountTermsCondition.Terms_And_Condition_Id);
@@ -63,21 +64,48 @@ namespace net.atos.daf.ct2.termsandconditions.repository
             }
         }
 
-        public async Task<List<TermsAndConditions>> GetAcceptedTermConditionByUser(int AccountId,int OrganizationId)
+        public async Task<List<TermsAndConditions>> GetAcceptedTermConditionByUser(int AccountId, int OrganizationId)
         {
             try
             {
                 List<TermsAndConditions> Objtermcondn = new List<TermsAndConditions>();
-                   var QueryStatement = @"SELECT terms.id
+                var QueryStatement = string.Empty;
+                if (AccountId > 0 && OrganizationId > 0)
+                {
+
+                    QueryStatement = @"SELECT terms.id
 		                                ,terms.version_no
 		                                ,terms.code
 		                                ,terms.description
 		                                ,terms.state
 		                                ,terms.start_date
+										,accterm.accepted_date
+										,acc.first_name  
+										,acc.last_name 
 	                                FROM master.termsandcondition terms 
 	                                Inner Join master.accounttermsacondition accterm
 	                                on terms.id=accterm.terms_and_condition_id
-	                                where 1=1";
+									Inner Join master.account acc
+									on accterm.account_id=acc.id
+                                    where 1=1";
+                }
+                else
+                {
+                    QueryStatement = @"SELECT terms.id
+		                                ,terms.version_no
+		                                ,terms.code		                               
+		                                ,terms.state
+		                                ,terms.start_date
+										,accterm.accepted_date
+										,acc.first_name  
+										,acc.last_name 
+	                                FROM master.termsandcondition terms 
+	                                Inner Join master.accounttermsacondition accterm
+	                                on terms.id=accterm.terms_and_condition_id
+									Inner Join master.account acc
+									on accterm.account_id=acc.id
+                                    where 1=1";
+                }
                 var parameter = new DynamicParameters();
 
                 // Account Filter
@@ -121,15 +149,15 @@ namespace net.atos.daf.ct2.termsandconditions.repository
                                     FROM master.termsandcondition 
                                     where id not in(select terms_and_condition_id
 		                                       from master.accounttermsacondition
-		                                       where account_id=account_id 
-		                                       and organization_id=organization_id)                                   
+		                                       where account_id=@account_id 
+		                                       and organization_id=@organization_id)                                   
                                     and lower(code) = (select SUBSTRING (lower(lang.code), 1,2)
 					                                      from master.account acc 
 					                                      inner join  master.accountpreference accpref
 					                                      on acc.preference_id=accpref.id
 					                                      inner join translation.language lang
 					                                      on accpref.language_id=lang.id
-					                                      and acc.id=account_id)
+					                                      and acc.id=@account_id)
                                     and state='A'";
             var parameter = new DynamicParameters();
             parameter.Add("@account_id", AccountId);
@@ -204,7 +232,11 @@ namespace net.atos.daf.ct2.termsandconditions.repository
         public async Task<List<TermsAndConditions>> GetTermConditionForVersionNo(string VersionNo, string LanguageCode)
         {
             List<TermsAndConditions> Objtermcondn = new List<TermsAndConditions>();
-            var QueryStatement = @"select id
+            var QueryStatement = string.Empty;
+
+            if ((!string.IsNullOrEmpty(VersionNo)) && (!string.IsNullOrEmpty(LanguageCode)))
+            {
+                QueryStatement = @"select id
                                     , version_no
                                     , code
                                     , description
@@ -213,6 +245,18 @@ namespace net.atos.daf.ct2.termsandconditions.repository
                                     , end_date
                                     FROM master.termsandcondition 
                                     where lower(version_no)=lower(trim(@version_no))";
+            }
+            else
+            {
+                QueryStatement = @"select id
+                                    , version_no
+                                    , code
+                                    , state
+                                    , start_date
+                                    , end_date
+                                    FROM master.termsandcondition 
+                                    where lower(version_no)=lower(trim(@version_no))";
+            }
 
             var parameter = new DynamicParameters();
             parameter.Add("@version_no", VersionNo);
@@ -222,8 +266,8 @@ namespace net.atos.daf.ct2.termsandconditions.repository
             {
                 // parameter.Add("@code", "%" + LanguageCode + "%");
                 // QueryStatement = QueryStatement + " and code LIKE SUBSTRING(lower(@code), 1,2)";
-                 parameter.Add("@code", LanguageCode);
-                 QueryStatement = QueryStatement + " and lower(code) = SUBSTRING (lower(@code), 1,2)";
+                parameter.Add("@code", LanguageCode);
+                QueryStatement = QueryStatement + " and lower(code) = SUBSTRING (lower(@code), 1,2)";
             }
             dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
 
@@ -432,6 +476,31 @@ VALUES (@version_no,@code,@description,@state,@start_date,@created_at,@created_b
                              (query, parameterToGetPackageId);
             return data;
         }
+        public async Task<bool> CheckUserAcceptedTermCondition(int AccountId, int OrganizationId)
+        {
+
+            var QueryStatement = @"select coalesce((select termc.id
+                                            from master.termsandcondition termc
+                                            inner join master.accounttermsacondition acctermc
+                                            on termc.id=acctermc.terms_and_condition_id
+                                            where acctermc.account_id=@account_id
+                                            and acctermc.organization_id=@organization_id
+                                            and termc.state=@state), 0)";
+
+            var parameter = new DynamicParameters();
+            parameter.Add("@account_id", AccountId);
+            parameter.Add("@organization_id", OrganizationId);
+            parameter.Add("@state", Convert.ToChar(State.Active));
+            int result = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            if (result > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         #region Private methods
         private TermsAndConditions Map(dynamic record)
@@ -440,9 +509,22 @@ VALUES (@version_no,@code,@description,@state,@start_date,@created_at,@created_b
             termsAndConditions.Id = record.id;
             termsAndConditions.Code = record.code;
             termsAndConditions.version_no = record.version_no;
-            termsAndConditions.Description = record.description;
+            if (record.description != null)
+            {
+                termsAndConditions.Description = record.description;
+            }
             termsAndConditions.State = Convert.ToChar(record.state);
             termsAndConditions.StartDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.start_date, "Asia/Dubai", "yyyy-MM-ddTHH:mm:ss"));
+            if (record.end_date != null)
+            {
+                termsAndConditions.EndDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.end_date, "Asia/Dubai", "yyyy-MM-ddTHH:mm:ss"));
+            }
+            if (record.accepted_date != null)
+            {
+                termsAndConditions.Accepted_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.accepted_date, "Asia/Dubai", "yyyy-MM-ddTHH:mm:ss"));
+            }
+            termsAndConditions.FirstName = record.first_name;
+            termsAndConditions.Lastname = record.last_name;
             return termsAndConditions;
         }
 

@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Configuration;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -27,6 +28,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     {
         private readonly ILogger<OrganizationController> logger;
         private readonly OrganizationMapper _mapper;
+        private readonly AuditHelper _auditHelper;
         private readonly FeatureSetMapper _featureSetMapper;
         private readonly FeatureService.FeatureServiceClient _featureclient;
         private readonly RelationshipMapper _relationshipMapper;
@@ -41,10 +43,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                       AccountBusinessService.AccountService.AccountServiceClient accountClient,
                                       FeatureService.FeatureServiceClient featureclient,
                                       VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient,
-                                      IConfiguration configuration)
+                                      IConfiguration configuration, AuditHelper auditHelper)
         {
             logger = _logger;
             organizationClient = _organizationClient;
+            _auditHelper = auditHelper;
             _accountClient = accountClient;
             _mapper = new OrganizationMapper();
             _relationshipMapper = new RelationshipMapper();
@@ -92,6 +95,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
+                        await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "RelationshipManagement Component",
+                         "RelationshipManagement service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                         "CreateRelationship  method in Organnization controller", 0, orgResponse.Relationship.Id, JsonConvert.SerializeObject(request),
+                  Request);
                         return Ok("Relationship Created :" + orgResponse);
                     }
                 }
@@ -102,6 +109,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "RelationshipManagement Component",
+                 "RelationshipManagement service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 "CreateRelationship  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request),
+                Request);
                 logger.LogError(ex.Message + " " + ex.StackTrace);
                 if (ex.Message.Contains(FK_Constraint))
                 {
@@ -148,6 +159,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
+                        await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "RelationshipManagement Component",
+                       "RelationshipManagement service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                       "UPDATERelationship  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), Request);
                         return Ok("Relationship updated :" + orgResponse);
                     }
                 }
@@ -161,6 +175,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "RelationshipManagement Component",
+                     "RelationshipManagement service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                     "UPDATERelationship  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), Request);
+
                 logger.LogError(ex.Message + " " + ex.StackTrace);
                 if (ex.Message.Contains(FK_Constraint))
                 {
@@ -243,6 +261,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("relationship/delete")]
         public async Task<IActionResult> DeleteRelationship(int relationshipId)
         {
+            var relationshipRequest = new RelationshipDeleteRequest();
             try
             {
                 // Validation                 
@@ -250,12 +269,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Relationship id is required.");
                 }
-                var relationshipRequest = new RelationshipDeleteRequest();
                 relationshipRequest.Id = relationshipId;
                 var response = await organizationClient.DeleteRelationshipAsync(relationshipRequest);
                 response.RelationshipRequest = relationshipRequest;
                 if (response != null && response.Code == organizationservice.Responcecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "RelationshipManagement Component",
+                   "RelationshipManagement service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                   "DeleteRelationship  method in Organnization controller", relationshipId, relationshipId, JsonConvert.SerializeObject(relationshipRequest), Request);
                     return Ok(response);
+                }
                 else if (response.Code == organizationservice.Responcecode.Conflict)
                 {
                     return StatusCode(409, "Relationship cannot be deleted as it is mapped with organiztion.");
@@ -264,6 +287,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "RelationshipManagement Component",
+                  "RelationshipManagement service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                  "DeleteRelationship  method in Organnization controller", relationshipId, relationshipId, JsonConvert.SerializeObject(relationshipRequest), Request);
                 logger.LogError("Error in Relationship service:delete Relationship with exception - " + ex.Message + ex.StackTrace);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -305,11 +331,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
+                 "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                 "Create  method in Organnization controller", 0, orgResponse.Organization.Id, JsonConvert.SerializeObject(request), Request);
+
                     return Ok(orgResponse);
                 }
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
+                 "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 "Create  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), Request);
                 logger.LogError(ex.Message + " " + ex.StackTrace);
                 if (ex.Message.Contains(FK_Constraint))
                 {
@@ -366,11 +399,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
+                "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                "Update  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), Request);
                     return Ok(orgResponse);
                 }
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
+          "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+          "Update  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), Request);
                 logger.LogError(ex.Message + " " + ex.StackTrace);
                 //  await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Organization Component","Organization Service",AuditTrailEnum.Event_type.DELETE,AuditTrailEnum.Event_status.FAILED,"Update method in organization manager",0,0,JsonConvert.SerializeObject(request));      
                 if (ex.Message.Contains(FK_Constraint))
@@ -471,6 +510,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountPreferenceResponse preference = await _accountClient.CreatePreferenceAsync(accountPreference);
                 if (preference != null && preference.Code == AccountBusinessService.Responcecode.Success)
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
+         "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+         "CreatePreference  method in Organnization controller", 0, preference.AccountPreference.Id, JsonConvert.SerializeObject(request), Request);
                     return Ok(_mapper.ToAccountPreference(preference.AccountPreference));
                 }
                 else
@@ -480,6 +522,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
+                      "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                      "CreatePreference  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), Request);
                 logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
                 if (ex.Message.Contains(FK_Constraint))
@@ -509,6 +554,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountPreferenceResponse preference = await _accountClient.UpdatePreferenceAsync(accountPreference);
                 if (preference != null && preference.Code == AccountBusinessService.Responcecode.Success)
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
+                    "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                    "UpdatePreference  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), Request);
                     return Ok(_mapper.ToAccountPreference(preference.AccountPreference));
                 }
                 else
@@ -518,6 +566,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
+                   "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                   "UpdatePreference  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), Request);
                 logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
                 if (ex.Message.Contains(FK_Constraint))
@@ -532,9 +583,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("preference/delete")]
         public async Task<IActionResult> DeletePreference(int preferenceId)
         {
+            AccountBusinessService.IdRequest request = new AccountBusinessService.IdRequest();
             try
             {
-                AccountBusinessService.IdRequest request = new AccountBusinessService.IdRequest();
+
                 // Validation                 
                 if (preferenceId <= 0)
                 {
@@ -544,6 +596,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountPreferenceResponse response = await _accountClient.DeletePreferenceAsync(request);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
+                   "Organization service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                   "DeletePreference  method in Organnization controller", preferenceId, preferenceId, JsonConvert.SerializeObject(request), Request);
                     return Ok("Preference Deleted.");
                 }
                 else if (response != null && response.Code == AccountBusinessService.Responcecode.NotFound)
@@ -557,6 +612,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
+                  "Organization service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                  "DeletePreference  method in Organnization controller", preferenceId, preferenceId, JsonConvert.SerializeObject(request), Request);
                 logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
                 if (ex.Message.Contains(FK_Constraint))
@@ -625,6 +683,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var CreateResponce = await organizationClient.CreateOrgRelationshipAsync(objRelationship);
                 if (CreateResponce.Code == OrganizationBusinessService.Responcecode.Success)
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
+                  "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                  "CreateOrgRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), Request);
                     return Ok(CreateResponce);
                 }
                 else
@@ -635,6 +696,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
+                 "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 "CreateOrgRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), Request);
                 logger.LogError("Error in account service:create orgRelations with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
                 if (ex.Message.Contains(FK_Constraint))
@@ -649,17 +713,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("orgrelationship/EndRelation")]
         public async Task<IActionResult> EndOrganizationRelationShip(int[] Relationshipid)
         {
+            EndOrgRelationShipRequest request = new EndOrgRelationShipRequest();
+
             try
             {
                 if (Relationshipid.Count() <= 0)
                 {
                     return StatusCode(400, "Select atleast 1 relationship");
                 }
-                EndOrgRelationShipRequest request = new EndOrgRelationShipRequest();
                 request.OrgRelationShipid.Add(Relationshipid);
                 var UpdateResponce = await organizationClient.EndOrgRelationShipAsync(request);
                 if (UpdateResponce.Code == OrganizationBusinessService.Responcecode.Success)
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
+                "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                "EndOrganizationRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), Request);
                     return Ok(UpdateResponce);
                 }
                 else
@@ -670,6 +738,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
+               "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+               "EndOrganizationRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), Request);
                 logger.LogError("Error in account service:End relation with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
                 if (ex.Message.Contains(FK_Constraint))
@@ -694,6 +765,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var UpdateResponce = await organizationClient.AllowChainingAsync(request);
                 if (UpdateResponce.Code == OrganizationBusinessService.Responcecode.Success)
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
+                         "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                         "AllowChaining  method in Organnization controller", request.OrgRelationID, request.OrgRelationID, JsonConvert.SerializeObject(request), Request);
                     UpdateResponce.Message = "Updated allow chain";
                     return Ok(UpdateResponce);
                 }
@@ -705,6 +779,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
+                       "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                       "AllowChaining  method in Organnization controller", request.OrgRelationID, request.OrgRelationID, JsonConvert.SerializeObject(request), Request);
+
                 logger.LogError("Error in account service:Allow chaining with exception - " + ex.Message + ex.StackTrace);
                 // check for fk violation
                 if (ex.Message.Contains(FK_Constraint))

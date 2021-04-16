@@ -16,6 +16,8 @@ using static net.atos.daf.ct2.translation.Enum.translationenum;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Transactions;
+using net.atos.daf.ct2.email.entity;
+using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.translation.Enum;
 
 namespace net.atos.daf.ct2.translation.repository
@@ -518,6 +520,41 @@ namespace net.atos.daf.ct2.translation.repository
 
         }
 
+        public async Task<EmailTemplate> GetEmailTemplateTranslations(EmailEventType eventType, EmailContentType contentType, string languageCode)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@contentType", (char)contentType);
+                parameter.Add("@eventName", eventType.ToString());
+
+                string emailTemplateQuery =
+                    @"select id as TemplateId, description as Description from master.emailtemplate
+                where type=@contentType and event_name=@eventName";
+
+                EmailTemplate template = await dataAccess.QueryFirstAsync<EmailTemplate>(emailTemplateQuery, parameter);
+
+                parameter = new DynamicParameters();
+                parameter.Add("@languageCode", languageCode);
+                parameter.Add("@templateId", template.TemplateId);
+
+                string emailTemplateLabelQuery =
+                    @"select tl.name as LabelKey, tl.value as TranslatedValue 
+                from master.emailtemplatelabels etl
+                INNER JOIN translation.translation tl ON etl.key=tl.name and tl.code=@languageCode
+                WHERE etl.email_template_id=@templateId";
+
+                IEnumerable<EmailTemplateTranslationLabel> labels = await dataAccess.QueryAsync<EmailTemplateTranslationLabel>(emailTemplateLabelQuery, parameter);
+
+                template.TemplateLabels = labels;
+                return template;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }            
+        }
+
         private Translationupload MapfileDetails(dynamic record)
         {
             Translationupload Entity = new Translationupload();
@@ -557,6 +594,9 @@ namespace net.atos.daf.ct2.translation.repository
                         int WarningId = CheckDtcWarningClassExist(item.warning_class, item.number,item.code);
                         var iconID = GetIcocIDFromIcon(item.warning_class, item.number);
 
+                        var LanguageCode = _translationCoreMapper.MapDTCTLanguageCode(item.code);
+
+
                         if (WarningId == 0)
                         {
                             // Insert
@@ -568,7 +608,7 @@ namespace net.atos.daf.ct2.translation.repository
                                                              RETURNING id";
 
                             var parameter = new DynamicParameters();
-                            parameter.Add("@code", item.code);
+                            parameter.Add("@code", LanguageCode);
                             parameter.Add("@type", item.type );
                             parameter.Add("@veh_type", item.veh_type);
                             parameter.Add("@class", item.warning_class);
@@ -608,7 +648,7 @@ namespace net.atos.daf.ct2.translation.repository
                                                            WHERE class = @class and number = @number and code =@code  RETURNING id";
 
                             var parameter = new DynamicParameters();
-                            parameter.Add("@code", item.code);
+                            parameter.Add("@code", LanguageCode);
                             parameter.Add("@type", item.type );
                             parameter.Add("@veh_type", item.veh_type);
                             parameter.Add("@class", item.warning_class);
@@ -717,6 +757,7 @@ namespace net.atos.daf.ct2.translation.repository
                 var dtcwarningLists = new List<DTCwarning>();
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
+                    
 
                     foreach (DTCwarning item in dtcwarningList)
                     {
@@ -724,6 +765,7 @@ namespace net.atos.daf.ct2.translation.repository
                         int WarningId = CheckDtcWarningClassExist(item.warning_class, item.number,item.code);
                         // Get Icon id from Icon table
                         var iconID = GetIcocIDFromIcon(item.warning_class, item.number);
+                        var LanguageCode = _translationCoreMapper.MapDTCTLanguageCode(item.code);
 
                         if (WarningId > 0)
                         {
@@ -744,7 +786,7 @@ namespace net.atos.daf.ct2.translation.repository
                                                            WHERE code = @code and number = @number and code =@code  RETURNING id ";
 
                             var parameter = new DynamicParameters();
-                            parameter.Add("@code", item.code);
+                            parameter.Add("@code", LanguageCode);
                             parameter.Add("@type", item.type );
                             parameter.Add("@veh_type", item.veh_type);
                             parameter.Add("@class", item.warning_class);
@@ -775,6 +817,8 @@ namespace net.atos.daf.ct2.translation.repository
                 throw ex;
             }
         }
+
+       
 
         public async Task<int> DeleteDTCWarningData(int id)
         {
