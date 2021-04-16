@@ -580,7 +580,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     if (response.VersionNos != null && response.VersionNos.Count > 0)
                     {
-                        return Ok(response);
+                        return Ok(response.VersionNos);
                     }
                     else
                     {
@@ -616,7 +616,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (response.TermCondition.Count()>0 && response.Code == translationservice.Responcecode.Success)
                 {
-                    return Ok(response);
+                    return Ok(response.TermCondition);
                 }
                 else
                 {
@@ -636,7 +636,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-
                 UserAcceptedTermConditionRequest request = new UserAcceptedTermConditionRequest();
                 request.AccountId = AccountId;
                 request.OrganizationId = OrganizationId;
@@ -647,7 +646,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (response.TermCondition.Count() > 0 && response.Code == translationservice.Responcecode.Success)
                 {
-                    return Ok(response);
+                    return Ok(response.TermCondition);
                 }
                 else
                 {
@@ -657,6 +656,66 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error in Translation service:AddUserAcceptedTermCondition Details with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpGet]
+        [Route("getlatesttermcondition")]
+        public async Task<IActionResult> GetLatestTermCondition(int AccountId, int OrganizationId)
+        {
+            try
+            {
+                UserAcceptedTermConditionRequest request = new UserAcceptedTermConditionRequest();
+                request.AccountId = AccountId;
+                request.OrganizationId = OrganizationId;
+                TermCondDetailsReponse response = await _translationServiceClient.GetLatestTermConditionAsync(request);
+                if (response.TermCondition != null && response.Code == translationservice.Responcecode.Failed)
+                {
+                    return StatusCode(500, "There is an error fetching Terms and condition.");
+                }
+                else if (response.TermCondition.Count() > 0 && response.Code == translationservice.Responcecode.Success)
+                {
+                    return Ok(response.TermCondition);
+                }
+                else
+                {
+                    return StatusCode(500, "Terms and condition is not avaliable");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in Translation service:GetLatestTermCondition Details with exception - " + ex.Message + ex.StackTrace);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpGet]
+        [Route("checkuseracceptedtermcondition")]
+        public async Task<IActionResult> CheckUserAcceptedTermCondition(int AccountId, int OrganizationId)
+        {
+            try
+            {
+                UserAcceptedTermConditionRequest request = new UserAcceptedTermConditionRequest();
+                request.AccountId = AccountId;
+                request.OrganizationId = OrganizationId;
+                UserAcceptedTermConditionResponse response = await _translationServiceClient.CheckUserAcceptedTermConditionAsync(request);
+                if (response != null && response.Code == translationservice.Responcecode.Failed)
+                {
+                    return StatusCode(500, "There is an error fetching Terms and condition.");
+                }
+                else if (response !=null && response.Code == translationservice.Responcecode.Success)
+                {
+                    return Ok(response.IsUserAcceptedTC);
+                }
+                else
+                {
+                    return StatusCode(500, "Terms and condition is not avaliable");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in Translation service:CheckUserAcceptedTermCondition Details with exception - " + ex.Message + ex.StackTrace);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }

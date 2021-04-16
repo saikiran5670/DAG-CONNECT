@@ -25,6 +25,8 @@ rpc AddUserAcceptedTermCondition (AcceptedTermConditionRequest)returns (Accepted
 rpc GetAllVersionNo (VersionNoRequest)returns (VersionNoResponse);
 rpc GetTermConditionForVersionNo (VersionNoRequest)returns (TermCondDetailsReponse);
 rpc GetAcceptedTermConditionByUser (UserAcceptedTermConditionRequest)returns (TermCondDetailsReponse);
+rpc GetLatestTermCondition (UserAcceptedTermConditionRequest)returns (TermCondDetailsReponse);
+rpc CheckUserAcceptedTermCondition (UserAcceptedTermConditionRequest)returns (UserAcceptedTermConditionResponse);
 }
 
 enum TranslationType{
@@ -325,6 +327,9 @@ message TermConditionReponse
  int32 CreatedBy =9;
  string ModifiedAt =10;
  int32 ModifiedBy =11;
+ string AcceptedDate=12;
+ string FirstName=13;
+ string Lastname=14;
 }
 
     message TermCondDetailsReponse
@@ -338,4 +343,11 @@ message TermConditionReponse
    {
      int32 AccountId=1;
      int32 OrganizationId=2;
+   }
+
+     message UserAcceptedTermConditionResponse
+   {
+       Responcecode code =1;
+       string message = 2;
+       bool IsUserAcceptedTC=3;
    }

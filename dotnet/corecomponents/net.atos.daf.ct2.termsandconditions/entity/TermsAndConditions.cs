@@ -17,6 +17,9 @@ namespace net.atos.daf.ct2.termsandconditions.entity
         public int created_by { get; set; }
         public DateTime Modified_at { get; set; }
         public int Modified_by { get; set; }
+        public DateTime Accepted_Date { get; set; }
+        public string FirstName { get; set; }
+        public string Lastname { get; set; }
     }
 
     public class AccountTermsCondition

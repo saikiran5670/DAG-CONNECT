@@ -13,5 +13,6 @@ namespace net.atos.daf.ct2.termsandconditions.repository
         Task<TermsAndConditions> GetLatestTermCondition(int AccountId, int OrganizationId);
         Task<List<string>> GetAllVersionNo();
         Task<List<TermsAndConditions>> GetTermConditionForVersionNo(string VersionNo, string LanguageCode);
+        Task<bool> CheckUserAcceptedTermCondition(int AccountId, int OrganizationId);
     }
 }
