@@ -394,7 +394,7 @@ message UploadTermandConditionResponse
         string action = 2;
         int32 id = 3;
 }
-   }
+   
 
     message UserAcceptedTermConditionResponse
    {

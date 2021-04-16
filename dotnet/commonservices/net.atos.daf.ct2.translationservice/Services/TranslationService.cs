@@ -875,7 +875,7 @@ namespace net.atos.daf.ct2.translationservice
                 });
             }
         }
-        }
+        
 
         public override async Task<TermCondDetailsReponse> GetLatestTermCondition(UserAcceptedTermConditionRequest request, ServerCallContext context)
         {

@@ -549,7 +549,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region  Terms And Conditions
 
         [HttpPost]
-        [Route("adduseracceptedtermcondition")]
+        [Route("termsandconditions/adduseracceptedtermcondition")]
         // [AllowAnonymous]
         public async Task<IActionResult> AddUserAcceptedTermCondition(AccountTermsCondition request)
         {
@@ -603,7 +603,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("getversionnos")]
+        [Route("termsandconditions/getalltermsandconditionversions")]
       
         public async Task<IActionResult> GetAllVersionNo([FromQuery]VersionByID objVersionByID)
         {
@@ -647,8 +647,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("gettermconditionforversionno")]
-        public async Task<IActionResult> GetTermConditionForVersionNo(string VersionNo,string languageCode)
+        [Route("termsandconditions/gettermconditionforversionno")]
+        public async Task<IActionResult> GetTermConditionForVersionNo([FromQuery] string VersionNo,string languageCode)
         {
             try
             {
@@ -678,8 +678,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("getacceptedtermconditionbyuser")]
-        public async Task<IActionResult> GetAcceptedTermConditionByUser(int AccountId, int OrganizationId)
+        [Route("termsandconditions/getacceptedtermconditionbyuser")]
+        public async Task<IActionResult> GetAcceptedTermConditionByUser([FromQuery] int AccountId, int OrganizationId)
         {
             try
             {
@@ -708,8 +708,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("getlatesttermcondition")]
-        public async Task<IActionResult> GetLatestTermCondition(int AccountId, int OrganizationId)
+        [Route("termsandconditions/getlatesttermcondition")]
+        public async Task<IActionResult> GetLatestTermCondition([FromQuery] int AccountId, int OrganizationId)
         {
             try
             {
@@ -738,8 +738,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("checkuseracceptedtermcondition")]
-        public async Task<IActionResult> CheckUserAcceptedTermCondition(int AccountId, int OrganizationId)
+        [Route("termsandconditions/checkuseracceptedtermcondition")]
+        public async Task<IActionResult> CheckUserAcceptedTermCondition([FromQuery] int AccountId, int OrganizationId)
         {
             try
             {
@@ -769,7 +769,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
 
         [HttpPost]
-        [Route("Upload")]
+        [Route("termsandconditions/uploadtermsandconditions")]
         // [AllowAnonymous]
         public async Task<IActionResult> UploadTermsAndCondition(TermsandConFileDataList request)
         {
