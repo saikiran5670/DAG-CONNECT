@@ -557,6 +557,9 @@ namespace net.atos.daf.ct2.translation.repository
                         int WarningId = CheckDtcWarningClassExist(item.warning_class, item.number,item.code);
                         var iconID = GetIcocIDFromIcon(item.warning_class, item.number);
 
+                        var LanguageCode = _translationCoreMapper.MapDTCTLanguageCode(item.code);
+
+
                         if (WarningId == 0)
                         {
                             // Insert
@@ -568,7 +571,7 @@ namespace net.atos.daf.ct2.translation.repository
                                                              RETURNING id";
 
                             var parameter = new DynamicParameters();
-                            parameter.Add("@code", item.code);
+                            parameter.Add("@code", LanguageCode);
                             parameter.Add("@type", item.type );
                             parameter.Add("@veh_type", item.veh_type);
                             parameter.Add("@class", item.warning_class);
@@ -608,7 +611,7 @@ namespace net.atos.daf.ct2.translation.repository
                                                            WHERE class = @class and number = @number and code =@code  RETURNING id";
 
                             var parameter = new DynamicParameters();
-                            parameter.Add("@code", item.code);
+                            parameter.Add("@code", LanguageCode);
                             parameter.Add("@type", item.type );
                             parameter.Add("@veh_type", item.veh_type);
                             parameter.Add("@class", item.warning_class);
@@ -717,6 +720,7 @@ namespace net.atos.daf.ct2.translation.repository
                 var dtcwarningLists = new List<DTCwarning>();
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
+                    
 
                     foreach (DTCwarning item in dtcwarningList)
                     {
@@ -724,6 +728,7 @@ namespace net.atos.daf.ct2.translation.repository
                         int WarningId = CheckDtcWarningClassExist(item.warning_class, item.number,item.code);
                         // Get Icon id from Icon table
                         var iconID = GetIcocIDFromIcon(item.warning_class, item.number);
+                        var LanguageCode = _translationCoreMapper.MapDTCTLanguageCode(item.code);
 
                         if (WarningId > 0)
                         {
@@ -744,7 +749,7 @@ namespace net.atos.daf.ct2.translation.repository
                                                            WHERE code = @code and number = @number and code =@code  RETURNING id ";
 
                             var parameter = new DynamicParameters();
-                            parameter.Add("@code", item.code);
+                            parameter.Add("@code", LanguageCode);
                             parameter.Add("@type", item.type );
                             parameter.Add("@veh_type", item.veh_type);
                             parameter.Add("@class", item.warning_class);
@@ -775,6 +780,8 @@ namespace net.atos.daf.ct2.translation.repository
                 throw ex;
             }
         }
+
+       
 
         public async Task<int> DeleteDTCWarningData(int id)
         {
