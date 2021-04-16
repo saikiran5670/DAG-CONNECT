@@ -61,6 +61,13 @@ namespace net.atos.daf.ct2.organizationservice.entity
             objResponse.IsActive = request.state == (char)State.Active ? true : false;
             return objResponse;          
         }
+        public net.atos.daf.ct2.organizationservice.AllOrganization ToListOfOrganizationResponse(net.atos.daf.ct2.organization.entity.Organization request)
+        {
+            net.atos.daf.ct2.organizationservice.AllOrganization organization = new net.atos.daf.ct2.organizationservice.AllOrganization();
+            organization.OrganizationId = request.Id;
+            organization.OrganizationName = request.Name;
+            return organization;
+        }
 
         public net.atos.daf.ct2.organizationservice.OrgUpdateRequest TOOrgUpdateResponse(net.atos.daf.ct2.organizationservice.OrgCreateRequest request)
         {
