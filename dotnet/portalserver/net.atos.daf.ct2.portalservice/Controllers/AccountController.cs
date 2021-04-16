@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Google.Protobuf;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -39,14 +40,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Constructor
         public AccountController(AccountBusinessService.AccountService.AccountServiceClient accountClient,
             ILogger<AccountController> logger, IMemoryCacheExtensions cache,
-             AuditHelper auditHelper)
+             AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor)
         {
             _accountClient = accountClient;
             _logger = logger;
             _mapper = new Mapper();
             _cache = cache;
             _auditHelper = auditHelper;
-            _userDetails = _auditHelper.GetHeaderData(Request);
+            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
         #endregion
 

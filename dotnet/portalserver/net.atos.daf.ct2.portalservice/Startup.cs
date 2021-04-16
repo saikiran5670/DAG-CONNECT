@@ -66,6 +66,7 @@ namespace net.atos.daf.ct2.portalservice
             var headeraccesscontrolallowmethods = Configuration["WebServerConfiguration:headeraccesscontrolallowmethods"];
             var headerAccesscontrolallowheaders = Configuration["WebServerConfiguration:headeraccesscontrolallowheaders"];
             var httpsport = Configuration["WebServerConfiguration:httpsport"];
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             // We are enforcing to call Insercure service             
             AppContext.SetSwitch(
                     "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
