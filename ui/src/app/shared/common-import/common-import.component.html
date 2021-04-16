@@ -59,7 +59,7 @@
 
 <!-- import status -->
 <mat-card *ngIf="showImportStatus" style='border: 1px solid #d0d0d0;' class='mat-elevation-z margin-bottom-xlg'>
-    <div *ngIf="!packageCodeErrorMsg">
+  
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div style='width:95%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ this.importTranslationData.importedFileDetails || 'Imported file details' }} ( {{filelist.length}} )</span>
@@ -68,6 +68,7 @@
             <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
         </div>
     </div>
+    <div *ngIf="!packageCodeErrorMsg">
     <div fxLayout="row" fxLayoutAlign="start space-between">
         <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <span>{{ this.importTranslationData.imported || 'Imported' }} <span style='color: green'>{{importedPackagesCount}} {{this.importTranslationData.new}} {{importedPackagesCount>1 ? this.importTranslationData.fileTypeMultiple :this.importTranslationData.fileType}}</span></span>

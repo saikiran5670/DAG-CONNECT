@@ -33,6 +33,8 @@ using System.Security.Cryptography;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 using Microsoft.Extensions.Options;
 using net.atos.daf.ct2.vehicledataservice.Common;
+using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.translation;
 
 namespace net.atos.daf.ct2.vehicledataservice
 {  
@@ -90,6 +92,8 @@ namespace net.atos.daf.ct2.vehicledataservice
             services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
             services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
             services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
+            services.AddTransient<ITranslationRepository, TranslationRepository>();
+            services.AddTransient<ITranslationManager, TranslationManager>();
 
             services.AddSingleton<IPostConfigureOptions<BasicAuthenticationOptions>, BasicAuthenticationPostConfigureOptions>();
             services.AddTransient<IBasicAuthenticationService, BasicAuthenticationService>();

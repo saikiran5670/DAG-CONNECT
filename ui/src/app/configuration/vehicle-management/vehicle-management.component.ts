@@ -5,6 +5,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { TranslationService } from '../../services/translation.service';
 import { VehicleService } from '../../services/vehicle.service';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
+import { MatTableExporterDirective } from 'mat-table-exporter';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-vehicle-management',
@@ -20,6 +23,7 @@ export class VehicleManagementComponent implements OnInit {
   vehicleUpdatedMsg: any = '';
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   initData: any = [];
   translationData: any;
   accountOrganizationId: any = 0;
@@ -125,5 +129,27 @@ export class VehicleManagementComponent implements OnInit {
       this.titleVisible = false;
     }, 5000);
   }
+
+  exportAsCSV(){
+    this.matTableExporter.exportTable('csv', {fileName:'VehicleMgmt_Data', sheet: 'sheet_name'});
+}
+
+exportAsPdf() {
+  let DATA = document.getElementById('vehicleMgmtData');
+    
+  html2canvas(DATA).then(canvas => {
+      
+      let fileWidth = 208;
+      let fileHeight = canvas.height * fileWidth / canvas.width;
+      
+      const FILEURI = canvas.toDataURL('image/png')
+      let PDF = new jsPDF('p', 'mm', 'a4');
+      let position = 0;
+      PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+      
+      PDF.save('VehicleMgmt_Data.pdf');
+      PDF.output('dataurlnewwindow');
+  });     
+}
 
 }

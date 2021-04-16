@@ -29,6 +29,9 @@ using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using System;
+using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.customerdataservice.Common;
 
 namespace net.atos.daf.ct2.customerdataservice
 {
@@ -92,45 +95,13 @@ namespace net.atos.daf.ct2.customerdataservice
             services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
             services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
             services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
+            services.AddTransient<ITranslationRepository, TranslationRepository>();
+            services.AddTransient<ITranslationManager, TranslationManager>();
 
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(x =>
+            services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
+            .AddBasic<BasicAuthenticationService>(options =>
             {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = false;
-
-                RSA rsa = RSA.Create();
-                rsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(Configuration["IdentityConfiguration:RsaPublicKey"]), out _);
-                SecurityKey key = new RsaSecurityKey(rsa)
-                {
-                    CryptoProviderFactory = new CryptoProviderFactory()
-                    {
-                        CacheSignatureProviders = false
-                    }
-                };
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = Configuration["IdentityConfiguration:Issuer"],
-                    IssuerSigningKey = key,
-                    CryptoProviderFactory = new CryptoProviderFactory()
-                    {
-                        CacheSignatureProviders = false
-                    }
-                };
-
-                x.Events = new JwtBearerEvents()
-                {
-                    OnTokenValidated = context =>
-                    {
-                        context.HttpContext.User = context.Principal;
-                        return Task.CompletedTask;
-                    }
-                };
+                options.ApplicationName = "DAFCT2.0";
             });
 
             services.AddAuthorization(options =>

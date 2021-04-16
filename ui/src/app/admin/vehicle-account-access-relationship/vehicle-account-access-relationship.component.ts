@@ -8,6 +8,9 @@ import { TranslationService } from '../../services/translation.service';
 import { VehicleService } from '../../services/vehicle.service';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { UserDetailTableComponent } from '../user-management/new-user-step/user-detail-table/user-detail-table.component';
+import { MatTableExporterDirective } from 'mat-table-exporter';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-vehicle-account-access-relationship',
@@ -28,14 +31,14 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   selectedVehicleViewType: any = '';
   selectedAccountViewType: any = '';
   selectedColumnType: any = '';
-  createVehicleAccessRelation: boolean = false;
-  createAccountAccessRelation: boolean = false;
+  createVehicleAccountAccessRelation: boolean = false;
   cols: string[] = ['name','accessType','associatedAccount','action'];
   columnNames: string[] = ['Vehicle Group/Vehicle','Access Type','Account Group/Account','Action'];
   dataSource: any;
   initData: any = [];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   showLoadingIndicator: any = false;
   isViewListDisabled: boolean = false;
   actionType: any = '';
@@ -43,6 +46,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   dialogRef: MatDialogRef<UserDetailTableComponent>;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
+  associationTypeId: any = 1;
 
   constructor(private translationService: TranslationService, private accountService: AccountService, private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private dialog: MatDialog) { 
     this.defaultTranslation();
@@ -66,7 +70,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 3 //-- for user mgnt
+      menuId: 30 //-- for access relationship mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
@@ -110,6 +114,28 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
+  exportAsCSV(){
+    this.matTableExporter.exportTable('csv', {fileName:'VehicleAccess_Data', sheet: 'sheet_name'});
+  }
+
+  exportAsPdf() {
+    let DATA = document.getElementById('vehicleAccessData');
+      
+    html2canvas(DATA).then(canvas => {
+        
+        let fileWidth = 208;
+        let fileHeight = canvas.height * fileWidth / canvas.width;
+        
+        const FILEURI = canvas.toDataURL('image/png')
+        let PDF = new jsPDF('p', 'mm', 'a4');
+        let position = 0;
+        PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+        
+        PDF.save('VehicleAccess_Data.pdf');
+        PDF.output('dataurlnewwindow');
+    });     
+  }
+
   createNewAssociation(){
     this.actionType = 'create';
     this.getAccountVehicleDetails();
@@ -120,12 +146,8 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     this.accountService.getAccessRelationshipDetails(this.accountOrganizationId, accountStatus).subscribe((data: any) => {
       this.accountGrpAccountDetails = data.account;
       this.vehicleGrpVehicleDetails = data.vehicle;
-      if(!this.isViewListDisabled){
-        this.createVehicleAccessRelation = true;
-      }
-      else{
-        this.createAccountAccessRelation = true;
-      }
+      this.associationTypeId = this.isViewListDisabled ? 2 : 1; // 1-> vehicle 2-> account
+      this.createVehicleAccountAccessRelation = true;
     }, (error) => {
       console.log("error:: ", error)
     });
@@ -291,31 +313,9 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
     }
   }
 
-  checkCreationForVehicle(item: any){
-    //this.createVehicleAccessRelation = !this.createVehicleAccessRelation;
-    this.createVehicleAccessRelation = item.stepFlag;
-    if(item.msg && item.msg != ''){
-      this.successMsgBlink(item.msg);
-    }
-    if(item.tableData){
-      this.accountGrpAccountAssociationDetails = item.tableData.account;
-      this.vehicleGrpVehicleAssociationDetails = item.tableData.vehicle;
-    }
-    if(this.isViewListDisabled){
-      this.selectedColumnType = 'account';
-      this.selectedAccountViewType = 'both';
-      this.changeGridOnAccountList(this.selectedAccountViewType);
-    }
-    else{
-      this.selectedColumnType = 'vehicle';
-      this.selectedVehicleViewType = 'both';
-      this.changeGridOnVehicleList(this.selectedVehicleViewType);
-    }
-  }
-
-  checkCreationForAccount(item: any){
-   // this.createAccountAccessRelation = !this.createAccountAccessRelation;
-    this.createAccountAccessRelation = item.stepFlag;
+  checkCreationForAccountVehicle(item: any){
+   // this.createVehicleAccountAccessRelation = !this.createVehicleAccountAccessRelation;
+    this.createVehicleAccountAccessRelation = item.stepFlag;
     if(item.msg && item.msg != ''){
       this.successMsgBlink(item.msg);
     }
