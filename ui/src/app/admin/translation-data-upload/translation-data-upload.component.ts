@@ -73,7 +73,7 @@ export class TranslationDataUploadComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 0 //-- for common & user preference. menuid for driver will be add later
+      menuId: 31 //-- for Translation mgnt
     }
 
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {

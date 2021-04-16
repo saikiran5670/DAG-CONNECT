@@ -69,7 +69,7 @@ export class RelationshipManagementComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 0 //-- for role mgnt
+      menuId: 35 //-- for relationship mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);

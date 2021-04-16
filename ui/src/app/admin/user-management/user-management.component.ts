@@ -152,7 +152,7 @@ export class UserManagementComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 3 //-- for user mgnt
+      menuId: 25 //-- for account mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
