@@ -22,16 +22,27 @@
                       <span matPrefix><mat-icon>search</mat-icon></span>
                   </mat-form-field>
                 </div>
-                <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-                    <button mat-flat-button color="primary" (click)="newUserRole()">
-                        <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUserRole || 'New Account Role'}}
-                    </button>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                    <div fxLayout="row" class='areaWidth'>
+                        <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
+                        <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
+                        <mat-menu #menu="matMenu">
+                            <button mat-menu-item (click)="exportAsPdf()">PDF (as snapshot)</button>
+                            <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
+                        </mat-menu>
+                        </div>
+                        <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                            <button mat-flat-button color="primary" (click)="newUserRole()">
+                            <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUserRole || 'New Account Role'}}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
             <div *ngIf='initData.length > 0' fxLayout="row" class='margin-top-xlg'>
-                <div fxLayout="column" class='full-width'>
-                    <mat-table [dataSource]="dataSource" matSort>
+                <div fxLayout="column" class='full-width' id="accountRoleData">
+                    <mat-table matTableExporter [dataSource]="dataSource" matSort #exporter="matTableExporter">
                         <!-- <ng-container matColumnDef="newTag">
                             <mat-header-cell *matHeaderCellDef></mat-header-cell>
                             <mat-cell *matCellDef="let row">
