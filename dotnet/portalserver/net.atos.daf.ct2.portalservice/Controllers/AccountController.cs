@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly Mapper _mapper;
         private readonly IMemoryCacheExtensions _cache;
         private readonly HeaderObj _userDetails;
-
+        
         #endregion
 
         #region Constructor
@@ -490,7 +490,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("getresetpasswordtokenstatus")]
-        public async Task<IActionResult> GetResetPasswordTokenStatus([FromBody] GetResetPasswordTokenStatusRequest request)
+        public async Task<IActionResult> GetResetPasswordTokenStatus([FromQuery] GetResetPasswordTokenStatusRequest request)
         {
             try
             {

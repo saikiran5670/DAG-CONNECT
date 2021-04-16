@@ -66,7 +66,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 3 //-- for user mgnt
+      menuId: 30 //-- for access relationship mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
