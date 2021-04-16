@@ -378,6 +378,34 @@ namespace net.atos.daf.ct2.account
             }
         }
 
+        public async Task<Response> GetResetPasswordTokenStatus(Guid processToken)
+        {
+            var response = new Response(HttpStatusCode.NotFound);
+            try
+            {
+                //Check if token record exists, Fetch it and validate the status
+                var resetPasswordToken = await repository.GetIssuedResetToken(processToken);
+                if (resetPasswordToken != null)
+                {
+                    //Check for Expiry of Reset Token
+                    if (UTCHandling.GetUTCFromDateTime(DateTime.Now) > resetPasswordToken.ExpiryAt.Value)
+                    {
+                        //Update status to Expired
+                        await repository.Update(resetPasswordToken.Id, ResetTokenStatus.Expired);
+
+                        return response;
+                    }
+                    return new Response(HttpStatusCode.OK);
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Get Reset Password Token Status" + ex.Message, 1, 2, processToken.ToString());
+                throw ex;
+            }
+        }
+
         public async Task<Response> ResetPassword(Account accountInfo)
         {
             var response = new Response(HttpStatusCode.NotFound);
