@@ -250,8 +250,7 @@ namespace net.atos.daf.ct2.organization.repository
                 var query = @"SELECT
                               o.id ,
                               o.org_id ,
-                              o.name ,
-                              o.description ,
+                              o.name ,                             
                               o.city ,                             
                               o.street ,
                               o.street_number ,
@@ -281,8 +280,7 @@ namespace net.atos.daf.ct2.organization.repository
                 {
                     OrgDetailsResponse.id = item.id;
                     OrgDetailsResponse.org_id = item.org_id;
-                    OrgDetailsResponse.name = item.name;
-                    OrgDetailsResponse.description = item.description;
+                    OrgDetailsResponse.name = item.name;                    
                     OrgDetailsResponse.city = item.city;
                     OrgDetailsResponse.country_code = item.country_code;
                     OrgDetailsResponse.street = item.street;
