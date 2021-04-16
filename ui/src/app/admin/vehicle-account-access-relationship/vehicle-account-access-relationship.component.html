@@ -9,7 +9,7 @@
     </div>
   </div>
 
-  <mat-card class='mat-elevation-z' *ngIf='!createVehicleAccountAccessRelation'> 
+  <mat-card class='mat-elevation-z' *ngIf='!createAccountAccessRelation'> 
     <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
       <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllAccessRelationshipDetails || 'All Access Relationship Details' }}</span>
@@ -123,5 +123,7 @@
     </div>
     <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
   </mat-card>
-  <app-create-edit-view-vehicle-account-access-relationship *ngIf='createVehicleAccountAccessRelation' [associationTypeId]='associationTypeId' [translationData]='translationData' [actionType]='actionType' [accountGrpList]='accountGrpAccountDetails' [vehicleGrpList]='vehicleGrpVehicleDetails' [selectedElementData]='selectedElementData' (accessRelationCreate)='checkCreationForAccountVehicle($event)'></app-create-edit-view-vehicle-account-access-relationship>
+ <!-- <app-create-edit-view-vehicle-access-relationship *ngIf='createVehicleAccessRelation' [translationData]='translationData' [actionType]='actionType' [accountGrpList]='accountGrpAccountDetails' [vehicleGrpList]='vehicleGrpVehicleDetails' [selectedElementData]='selectedElementData' (vehicleAccessRelationCreate)='checkCreationForVehicle($event)'></app-create-edit-view-vehicle-access-relationship>
+  <app-create-edit-view-account-access-relationship *ngIf='createAccountAccessRelation' [translationData]='translationData' [actionType]='actionType' [accountGrpList]='accountGrpAccountDetails' [vehicleGrpList]='vehicleGrpVehicleDetails' [selectedElementData]='selectedElementData' (accountAccessRelationCreate)='checkCreationForAccount($event)'></app-create-edit-view-account-access-relationship> -->
+  <app-create-edit-view-vehicle-account-access-relationship *ngIf='createAccountAccessRelation' [associationTypeId]='associationTypeId' [translationData]='translationData' [actionType]='actionType' [accountGrpList]='accountGrpAccountDetails' [vehicleGrpList]='vehicleGrpVehicleDetails' [selectedElementData]='selectedElementData' (accessRelationCreate)='checkCreationForAccount($event)'></app-create-edit-view-vehicle-account-access-relationship>
 </div>
