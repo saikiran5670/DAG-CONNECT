@@ -645,6 +645,37 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
+
+        public override async Task<ResetPasswordResponse> GetResetPasswordTokenStatus(GetResetPasswordTokenStatusRequest request, ServerCallContext context)
+        {
+            try
+            {            
+                var result = await accountmanager.GetResetPasswordTokenStatus(new Guid(request.ProcessToken));
+
+                ResetPasswordResponse response = new ResetPasswordResponse();
+                if (result.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    response.Code = Responcecode.Success;
+                    response.Message = "Activation link is valid.";
+                }
+                else if (result.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    response.Code = Responcecode.NotFound;
+                    response.Message = "Email activation link is either Expired or Invalidated.";
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in account service:GetResetPasswordTokenStatus with exception - " + ex.Message + ex.StackTrace);
+                return await Task.FromResult(new ResetPasswordResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Account Get Reset Password status failed due to the reason : " + ex.Message
+                });
+            }
+        }
+
         public override async Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request, ServerCallContext context)
         {
             try

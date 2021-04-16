@@ -25,6 +25,9 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using net.atos.daf.ct2.featureactivationservice.CustomAttributes;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
+using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.translation;
+
 namespace net.atos.daf.ct2.featureactivationservice
 {
     public class Startup
@@ -112,7 +115,8 @@ namespace net.atos.daf.ct2.featureactivationservice
             //services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();
             services.AddTransient<AccountComponent.IAccountRepository, AccountComponent.AccountRepository>();
             services.AddTransient<AccountComponent.IAccountManager, AccountComponent.AccountManager>();
-
+            services.AddTransient<ITranslationRepository, TranslationRepository>();
+            services.AddTransient<ITranslationManager, TranslationManager>();
             //services.AddMvc(options =>
             //{
             //    options.Filters.Add(new ProducesAttribute("application/json"));

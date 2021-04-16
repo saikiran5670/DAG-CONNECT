@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web;
+using net.atos.daf.ct2.email.entity;
+using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.translation.entity;
 using net.atos.daf.ct2.translation.repository;
 using static net.atos.daf.ct2.translation.Enum.translationenum;
@@ -170,6 +172,11 @@ namespace net.atos.daf.ct2.translation
             {
                 throw ex;
             }
+        }
+
+        public async Task<EmailTemplate> GetEmailTemplateTranslations(EmailEventType eventType, EmailContentType contentType, string languageCode)
+        {
+            return await Translationrepository.GetEmailTemplateTranslations(eventType, contentType, languageCode);
         }
 
         public async Task<List<DTCwarning>> UpdateDTCWarningData(List<DTCwarning> dtcwarningList)
