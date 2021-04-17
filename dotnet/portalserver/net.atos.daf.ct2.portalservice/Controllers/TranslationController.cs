@@ -106,6 +106,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Language code  required..");
                 }
+                if (request.Languagecode.Any(char.IsDigit))
+                {
+                    return StatusCode(400, "Invalid langauge code..");
+                }
                 _logger.Info("Get translation Common  method get " + request.Languagecode);
 
                 CodeResponce CommontranslationResponseList = await _translationServiceClient.GetCommonTranslationsAsync(request);
@@ -187,15 +191,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (CodeResponseList != null
                  && CodeResponseList.Message == "There is an error In GetKeyTranslationByLanguageCode.")
                 {
-                    return StatusCode(500, "There is an error In GetKeyTranslationByLanguageCode.");
+                    return StatusCode(401, "There is an error In GetKeyTranslationByLanguageCode.");
                 }
-                else if (CodeResponseList != null && CodeResponseList.Code == Responcecode.Success)
+                else if (CodeResponseList.KeyCodeTranslationsList.Count() > 0 && CodeResponseList.Code == Responcecode.Success)
                 {
                     return Ok(CodeResponseList.KeyCodeTranslationsList);
                 }
                 else
                 {
-                    return StatusCode(500, "GetKeyTranslationByLanguageCode Response is null");
+                    return StatusCode(401, "GetKeyTranslationByLanguageCode Response is null");
                 }
             }
             catch (Exception ex)
@@ -226,7 +230,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "There is an error In GetKeyTranslationByLanguageCode.");
                 }
-                else if (dropdownResponseList != null && dropdownResponseList.Code == Responcecode.Success)
+                else if (dropdownResponseList.DropdownnameTranslationsList.Count() > 0 && dropdownResponseList.Code == Responcecode.Success)
                 {
                     return Ok(dropdownResponseList.DropdownnameTranslationsList);
                 }
@@ -257,9 +261,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 for (int i = 0; i < request.Dropdownname.Count; i++)
                 {
-                    if (request.Dropdownname[i] == null || request.Dropdownname[i] == "")
+                    if (string.IsNullOrEmpty(request.Dropdownname[i].Trim()))
                     {
-                        return StatusCode(400, "Dropdownname is required it cant be null.");
+                        return StatusCode(400, "Dropdownname invalid.");
                     }
                 }
 
@@ -273,15 +277,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (dropdownResponseList != null
                 && dropdownResponseList.Message == "There is an error In GetTranslationsFormultipleDropDowns.")
                 {
-                    return StatusCode(500, "There is an error In GetTranslationsFormultipleDropDowns.");
+                    return StatusCode(400, "There is an error In GetTranslationsFormultipleDropDowns.");
                 }
-                else if (dropdownResponseList != null && dropdownResponseList.Code == Responcecode.Success)
+                else if (dropdownResponseList.DropdownnamearrayList.Count() >= 0  && dropdownResponseList.Code == Responcecode.Success)
                 {
                     return Ok(dropdownResponseList.DropdownnamearrayList);
                 }
                 else
                 {
-                    return StatusCode(500, "GetTranslationsFormultipleDropDowns Response is null");
+                    return StatusCode(400, "Data not found");
                 }
             }
             catch (Exception ex)
@@ -359,7 +363,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (request.file[i].code == null || request.file[i].code == "")
                 {
-                    return StatusCode(400, "File Code is required.");
+                    return StatusCode(400, "invalid langauge code in file.");
                 }
             }
 
@@ -418,7 +422,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             else
             {
-                return StatusCode(500, "GetFileUploadDetails Response is null");
+                return StatusCode(404, "GetFileUploadDetails Response is null");
             }
 
         }

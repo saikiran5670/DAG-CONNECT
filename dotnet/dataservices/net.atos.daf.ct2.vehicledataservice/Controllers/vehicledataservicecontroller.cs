@@ -513,8 +513,8 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                         }
                     }
 
-                    using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-                    {
+                    //using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                    //{
                         VehicleProperty vehiclePro = await vehicleManager.UpdateProperty(vehicleProperties);
 
                         // Create owner realtionship
@@ -536,8 +536,8 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                             await organizationManager.CreateOwnerRelationship(relationshipMapping);
                         }
 
-                        transactionScope.Complete();
-                    }
+                    //    transactionScope.Complete();
+                    //}
 
                     logger.LogInformation("Vehicle Properties updated with VIN - " + vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN);
                     return Ok();
