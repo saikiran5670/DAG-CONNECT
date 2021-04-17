@@ -808,6 +808,7 @@ namespace net.atos.daf.ct2.translationservice
                     {
                         tramcond.Description = ByteString.CopyFrom(item.Description);
                     }
+                    tramcond.State = item.State.ToString();
                     tramcond.StartDate = item.StartDate.ToString();
                     tramcond.AcceptedDate = item.Accepted_Date.ToString();
                     tramcond.FirstName = item.FirstName;

@@ -367,9 +367,6 @@ message TermConditionReponse
  string StartDate =6;
  string EndDate =7;
  string CreatedAt =8;
- int32 CreatedBy =9;
- string ModifiedAt =10;
- int32 ModifiedBy =11;
  string AcceptedDate=12;
  string FirstName=13;
  string Lastname=14;
