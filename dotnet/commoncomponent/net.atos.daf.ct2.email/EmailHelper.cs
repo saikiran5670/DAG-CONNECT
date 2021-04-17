@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Reflection;
-using System.Resources;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.email.entity;
@@ -16,7 +13,7 @@ namespace net.atos.daf.ct2.email
 {
     public class EmailHelper
     {
-        public static async Task<bool> SendEmail(MessageRequest messageRequest)
+        private static async Task<bool> SendEmail(MessageRequest messageRequest)
         {            
             var apiKey = messageRequest.Configuration.ApiKey;
             var client = new SendGridClient(apiKey);
@@ -56,17 +53,63 @@ namespace net.atos.daf.ct2.email
             msg.AddContent(mimeType, content);
         }
 
+        public static async Task<bool> SendEmail(MessageRequest messageRequest, EmailTemplate emailTemplate)
+        {
+            var emailContent = string.Empty;
+            try
+            {
+                Uri baseUrl = new Uri(messageRequest.Configuration.PortalUIBaseUrl);
+                Uri logoUrl = new Uri(baseUrl, "assets/logo.png");
+
+                var emailTemplateContent = GetEmailContent(emailTemplate);
+
+                if (string.IsNullOrEmpty(emailTemplateContent))
+                    return false;
+
+                switch (emailTemplate.EventType)
+                {
+                    case EmailEventType.CreateAccount:
+                        Uri setUrl = new Uri(baseUrl, $"#/auth/createpassword/{ messageRequest.TokenSecret }");
+
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.accountInfo.FullName, messageRequest.accountInfo.OrganizationName, setUrl.AbsoluteUri);
+                        break;
+                    case EmailEventType.ResetPassword:
+                        Uri resetUrl = new Uri(baseUrl, $"#/auth/resetpassword/{ messageRequest.TokenSecret }");
+                        Uri resetInvalidateUrl = new Uri(baseUrl, $"#/auth/resetpasswordinvalidate/{ messageRequest.TokenSecret }");
+
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.accountInfo.FullName, resetUrl.AbsoluteUri, resetInvalidateUrl.AbsoluteUri);
+                        break;
+                    case EmailEventType.ChangeResetPasswordSuccess:
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.accountInfo.FullName, baseUrl.AbsoluteUri);
+                        break;
+                    default:
+                        messageRequest.Subject = string.Empty;
+                        break;
+                }
+
+                messageRequest.Subject = emailTemplate.TemplateLabels.Where(x => x.LabelKey.EndsWith("_Subject")).First().TranslatedValue;
+                messageRequest.Content = emailContent;
+                messageRequest.ContentMimeType = emailTemplate.ContentType == (char)EmailContentType.Html ? MimeType.Html : MimeType.Text;
+                
+                return await SendEmail(messageRequest);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public static string GetEmailContent(EmailTemplate emailTemplate)
         {
             var replacedContent = emailTemplate.Description;
             Regex regex = new Regex(@"\[(.*?)\]");
 
+            var dictLabels = emailTemplate.TemplateLabels.ToDictionary(x => x.LabelKey, x => x.TranslatedValue);
+
             foreach (Match match in regex.Matches(emailTemplate.Description))
             {
-                var label = emailTemplate.TemplateLabels
-                    .Where(x => x.LabelKey.Equals(match.Groups[1].Value)).FirstOrDefault();
-                if(label != null)
-                    replacedContent = replacedContent.Replace(match.Value, label.TranslatedValue);
+                if(dictLabels.ContainsKey(match.Groups[1].Value))
+                    replacedContent = replacedContent.Replace(match.Value, dictLabels[match.Groups[1].Value]);
             }
             return replacedContent;
         }

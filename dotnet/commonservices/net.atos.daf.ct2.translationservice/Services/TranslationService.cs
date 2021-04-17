@@ -31,13 +31,14 @@ namespace net.atos.daf.ct2.translationservice
         private readonly ITermsAndConditionsManager termsandconditionsmanager;
         private readonly IIconManager iconmanager;
 
-        public TranslationManagementService(ILogger<TranslationManagementService> logger, ITranslationManager _TranslationManager, ITermsAndConditionsManager _termsandconditionsmanager)
+        public TranslationManagementService(ILogger<TranslationManagementService> logger, ITranslationManager _TranslationManager, ITermsAndConditionsManager _termsandconditionsmanager , IIconManager _iconmanager)
         {
             _logger = logger;
             translationmanager = _TranslationManager;
             // auditlog = _auditlog;
             termsandconditionsmanager = _termsandconditionsmanager;
             _mapper = new Mapper();
+            iconmanager = _iconmanager;
         }
 
         // Translation
@@ -809,6 +810,7 @@ namespace net.atos.daf.ct2.translationservice
                     {
                         tramcond.Description = ByteString.CopyFrom(item.Description);
                     }
+                    tramcond.State = item.State.ToString();
                     tramcond.StartDate = item.StartDate.ToString();
                     tramcond.AcceptedDate = item.Accepted_Date.ToString();
                     tramcond.FirstName = item.FirstName;
@@ -861,7 +863,7 @@ namespace net.atos.daf.ct2.translationservice
                 else
                 {
                     Response.Code = Responcecode.Failed;
-                    Response.Message = "Update Icon in DTC translation failed.";
+                    Response.Message = "File Name not exist .";
                 }
                 return await Task.FromResult(Response);
             }
@@ -890,10 +892,13 @@ namespace net.atos.daf.ct2.translationservice
                  {
                     var icon = new dtcIcon();
                     icon.Id = itemicon.id;
-                    icon.Name =itemicon.name;
-                    icon.Icon =ByteString.CopyFrom(itemicon.icon); 
-                    icon.ModifiedAt =itemicon.modified_at;
-                    icon.ModifiedBy =itemicon.modified_by;                   
+                    icon.Name =itemicon.name; 
+                    if (itemicon.icon != null)
+                    {
+                        icon.Icon = ByteString.CopyFrom(itemicon.icon);
+                    }
+                    icon.ModifiedAt = itemicon.modified_at == null ? 0 : (long)itemicon.modified_at;
+                    icon.ModifiedBy = itemicon.modified_by == null ? 0 :(int)itemicon.modified_by;
                     icon.Type =itemicon.type.ToString();
                     icon.WarningClass =itemicon.warning_class; 
                     icon.WarningNumber =itemicon.warning_number;        

@@ -529,11 +529,12 @@ namespace net.atos.daf.ct2.translation.repository
                 parameter.Add("@eventName", eventType.ToString());
 
                 string emailTemplateQuery =
-                    @"select id as TemplateId, description as Description from master.emailtemplate
-                where type=@contentType and event_name=@eventName";
+                    @"select id as TemplateId, description as Description, type as ContentType, event_name as EventType
+                    from master.emailtemplate
+                    where type=@contentType and event_name=@eventName";
 
                 EmailTemplate template = await dataAccess.QueryFirstAsync<EmailTemplate>(emailTemplateQuery, parameter);
-
+             
                 parameter = new DynamicParameters();
                 parameter.Add("@languageCode", languageCode);
                 parameter.Add("@templateId", template.TemplateId);
@@ -734,8 +735,9 @@ namespace net.atos.daf.ct2.translation.repository
         }
        
 
-        public int CheckDtcWarningClassExist(int WarningClass, int WarningNumber, string LanguageCode)
+        public int CheckDtcWarningClassExist(int WarningClass, int WarningNumber, string excelLanguageCode)
         {
+            var LanguageCode = _translationCoreMapper.MapDTCTLanguageCode(excelLanguageCode);
             var QueryStatement = @"select id 
                                     from master.dtcwarning
                                    where class=@class and number=@number and code = @code";
