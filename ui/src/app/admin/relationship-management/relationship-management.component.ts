@@ -6,6 +6,9 @@ import { TranslationService } from 'src/app/services/translation.service';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { OrganizationService } from 'src/app/services/organization.service';
 import { ThrowStmt } from '@angular/compiler';
+import { MatTableExporterDirective } from 'mat-table-exporter';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-relationship-management',
@@ -16,6 +19,7 @@ export class RelationshipManagementComponent implements OnInit {
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   relationshipDisplayedColumns: string[]= ['name', 'features', 'description', 'action'];
   editFlag: boolean = false;
   viewFlag: boolean = false;
@@ -69,7 +73,7 @@ export class RelationshipManagementComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 0 //-- for role mgnt
+      menuId: 35 //-- for relationship mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
@@ -143,6 +147,28 @@ export class RelationshipManagementComponent implements OnInit {
     else{
       return data;
     }
+  }
+
+  exportAsCSV(){
+    this.matTableExporter.exportTable('csv', {fileName:'Relationship_Data', sheet: 'sheet_name'});
+  }
+
+  exportAsPdf() {
+    let DATA = document.getElementById('relationshipData');
+      
+    html2canvas(DATA).then(canvas => {
+        
+        let fileWidth = 208;
+        let fileHeight = canvas.height * fileWidth / canvas.width;
+        
+        const FILEURI = canvas.toDataURL('image/png')
+        let PDF = new jsPDF('p', 'mm', 'a4');
+        let position = 0;
+        PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+        
+        PDF.save('Relationship_Data.pdf');
+        PDF.output('dataurlnewwindow');
+    });     
   }
 
   newRelationship(){

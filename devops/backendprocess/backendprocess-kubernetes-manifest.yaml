@@ -1,0 +1,15 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: backendprocess
+spec:
+  schedule: "*/3 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backendprocess
+            image: dafdev017756.azurecr.io/backendprocess
+            imagePullPolicy: Always
+          restartPolicy: OnFailure

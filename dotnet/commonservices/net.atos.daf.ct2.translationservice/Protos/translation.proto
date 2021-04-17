@@ -27,7 +27,12 @@ rpc AddUserAcceptedTermCondition (AcceptedTermConditionRequest)returns (Accepted
 rpc GetAllVersionNo (VersionID)returns (VersionNoResponse);
 rpc GetTermConditionForVersionNo (VersionNoRequest)returns (TermCondDetailsReponse);
 rpc GetAcceptedTermConditionByUser (UserAcceptedTermConditionRequest)returns (TermCondDetailsReponse);
+rpc UpdateDTCTranslationIcon(IconUpdateRequest) returns (IconUpdateResponse);
+rpc GetDTCTranslationIcon(IconGetRequest) returns (IconGetResponse);
+
 rpc UploadTermsAndCondition (UploadTermandConditionRequestList) returns (UploadTermandConditionResponseList);
+rpc GetLatestTermCondition (UserAcceptedTermConditionRequest)returns (TermCondDetailsReponse);
+rpc CheckUserAcceptedTermCondition (UserAcceptedTermConditionRequest)returns (UserAcceptedTermConditionResponse);
 }
 
 
@@ -346,6 +351,9 @@ message TermConditionReponse
  int32 CreatedBy =9;
  string ModifiedAt =10;
  int32 ModifiedBy =11;
+ string AcceptedDate=12;
+ string FirstName=13;
+ string Lastname=14;
 }
 
     message TermCondDetailsReponse
@@ -361,6 +369,53 @@ message TermConditionReponse
      int32 OrganizationId=2;
    }
 
+   message IconUpdateResponse
+   {
+      Responcecode code =1;
+      string message = 2;                 
+   } 
+
+   message IconGetResponse
+   {
+      Responcecode code =1;
+      string message = 2; 
+      repeated dtcIcon iconData =3;                
+   } 
+
+    message IconUpdateRequest
+    {
+        repeated dtcIconUpdate iconData =1;     
+    } 
+    message IconGetRequest
+    {
+        int32 Id =1;     
+    } 
+
+    message dtcIconUpdate
+    {
+        string Name =1;
+        bytes Icon =2; 
+        int64 ModifiedAt =3;
+        int32 ModifiedBy =4;          
+    } 
+
+    message dtcIcon
+    {
+        string Name =1;
+        bytes Icon =2; 
+        int64 ModifiedAt =3;
+        int32 ModifiedBy =4;
+        int32 Id =5;
+        string Type =6;
+        int32 Warning_class =7; 
+        int32 Warning_number =8;        
+        string Color_name =9;
+        string State =10;
+        int64 Created_at =11;
+        int32 Created_by =12;        
+    } 
+
+    
    message UploadTermandConditionRequestList
    {
      repeated UploadTermandConditionRequest data = 1;
@@ -389,3 +444,11 @@ message UploadTermandConditionResponse
         string action = 2;
         int32 id = 3;
 }
+   
+
+    message UserAcceptedTermConditionResponse
+   {
+       Responcecode code =1;
+       string message = 2;
+       bool IsUserAcceptedTC=3;
+   }

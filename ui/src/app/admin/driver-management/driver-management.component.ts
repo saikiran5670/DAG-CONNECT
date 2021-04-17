@@ -190,7 +190,7 @@ export class DriverManagementComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 0 //-- for common & user preference. menuid for driver will be add later
+      menuId: 20 //-- driver mgnt
     }
 
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {

@@ -23,6 +23,7 @@ service AccountService
   rpc SaveProfilePicture (AccountBlobRequest) returns (AccountBlobResponse); 
   rpc GetProfilePicture (IdRequest) returns (AccountBlobResponse); 
   rpc ResetPasswordInitiate (ResetPasswordInitiateRequest) returns (ResetPasswordResponse);
+  rpc GetResetPasswordTokenStatus (GetResetPasswordTokenStatusRequest) returns (ResetPasswordResponse);
   rpc ResetPassword (ResetPasswordRequest) returns (ResetPasswordResponse);
   rpc ResetPasswordInvalidate (ResetPasswordInvalidateRequest) returns (ResetPasswordResponse);
   rpc GetMenuFeatures (MenuFeatureRequest) returns (MenuFeatureResponse);
@@ -150,6 +151,10 @@ message ResetPasswordRequest {
 
 message ResetPasswordInvalidateRequest {
     string ResetToken=1;
+}
+
+message GetResetPasswordTokenStatusRequest {
+    string ProcessToken=1;
 }
 
 message ResetPasswordExpiryResponse {

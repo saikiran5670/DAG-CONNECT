@@ -16,23 +16,28 @@ using Google.Protobuf.Collections;
 using net.atos.daf.ct2.accountservice.Entity;
 using net.atos.daf.ct2.utilities;
 using Newtonsoft.Json;
+using log4net;
 using net.atos.daf.ct2.identity.entity;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.accountservice
 {
     public class AccountManagementService : AccountService.AccountServiceBase
     {
-        private readonly ILogger<AccountManagementService> _logger;
+       // private readonly ILogger<AccountManagementService> _logger;
         private readonly AccountComponent.IAccountManager accountmanager;
         private readonly Preference.IPreferenceManager preferencemanager;
         private readonly Group.IGroupManager groupmanager;
         private readonly Mapper _mapper;
+
+        private ILog _logger;
+
         private readonly AccountComponent.IAccountIdentityManager accountIdentityManager;
 
         #region Constructor
-        public AccountManagementService(ILogger<AccountManagementService> logger, AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, AccountComponent.IAccountIdentityManager _accountIdentityManager)
+        public AccountManagementService( AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, AccountComponent.IAccountIdentityManager _accountIdentityManager)
         {
-            _logger = logger;
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             accountmanager = _accountmanager;
             preferencemanager = _preferencemanager;
             groupmanager = _groupmanager;
@@ -54,7 +59,7 @@ namespace net.atos.daf.ct2.accountservice
                 AccountComponent.entity.AccountIdentity accIdentity = accountIdentityManager.Login(account).Result;
                 if (accIdentity != null && (!string.IsNullOrEmpty(accIdentity.tokenIdentifier)))
                 {
-                    _logger.LogInformation("account is Authenticated", accIdentity);
+                    _logger.Info("account is Authenticated");
                     response.TokenIdentifier = accIdentity.tokenIdentifier;
                     if (accIdentity.accountInfo != null)
                     {
@@ -88,7 +93,7 @@ namespace net.atos.daf.ct2.accountservice
                 if (accIdentity != null && string.IsNullOrEmpty(accIdentity.tokenIdentifier))
                 {
 
-                    _logger.LogError(accIdentity.ErrorMessage, accIdentity);
+                   
 
                     return Task.FromResult(new AccountIdentityResponse
                     {
@@ -100,7 +105,7 @@ namespace net.atos.daf.ct2.accountservice
                 }
                 else
                 {
-                    _logger.LogError("account is not authenticated", accIdentity);
+                  
                     return Task.FromResult(new AccountIdentityResponse
                     {
                         //Account not present  in IDP or IDP related error
@@ -112,7 +117,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.ToString());
+                _logger.Error(null, ex);
                 return Task.FromResult(new AccountIdentityResponse
                 {
                     Code = Responcecode.Failed,
@@ -129,18 +134,18 @@ namespace net.atos.daf.ct2.accountservice
                 bool result = accountIdentityManager.LogoutByTokenId(request.TokenId).Result;
                 if (result)
                 {
-                    _logger.LogInformation("account is logged out", request.TokenId);
+                    _logger.Info("account is logged out");
                     response.Success = true;
                 }
                 else
                 {
-                    _logger.LogInformation("account is logged out", request.TokenId);
+                    _logger.Info("account is logged out");
                     response.Success = false;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.ToString() + " " + request.TokenId);
+                _logger.Error(null, ex);
                 response.Success = false;
             }
             return Task.FromResult(response);
@@ -187,7 +192,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Account Service:Create : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountData
                 {
                     Code = Responcecode.Failed,
@@ -213,7 +218,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Account Service:Update : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountData
                 {
                     Code = Responcecode.Failed,
@@ -244,7 +249,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:delete account with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountResponse
                 {
                     Code = Responcecode.Failed,
@@ -310,7 +315,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:delete account with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountResponse
                 {
                     Code = Responcecode.Failed,
@@ -377,7 +382,7 @@ namespace net.atos.daf.ct2.accountservice
                 }
 
                 var result = await accountmanager.Get(filter);
-                _logger.LogInformation("Account Service - Get.");
+                _logger.Info("Account Service - Get.");
                 // response 
                 AccountDataList response = new AccountDataList();
                 foreach (AccountComponent.entity.Account entity in result)
@@ -390,7 +395,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountDataList
                 {
                     Code = Responcecode.Failed,
@@ -420,7 +425,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:delete account with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountOrganizationResponse
                 {
                     Code = Responcecode.Failed,
@@ -595,14 +600,14 @@ namespace net.atos.daf.ct2.accountservice
                     // End Get Roles
                     response.AccountDetails.Add(accountDetails);
                 }
-                _logger.LogInformation("Get account details.");
+                _logger.Info("Get account details.");
                 response.Code = Responcecode.Success;
                 response.Message = "Get";
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:account details with exception - " + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountDetailsResponse
                 {
                     Code = Responcecode.Failed,
@@ -637,7 +642,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:ResetPasswordInitiate with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new ResetPasswordResponse
                 {
                     Code = Responcecode.Failed,
@@ -645,6 +650,37 @@ namespace net.atos.daf.ct2.accountservice
                 });
             }
         }
+
+        public override async Task<ResetPasswordResponse> GetResetPasswordTokenStatus(GetResetPasswordTokenStatusRequest request, ServerCallContext context)
+        {
+            try
+            {            
+                var result = await accountmanager.GetResetPasswordTokenStatus(new Guid(request.ProcessToken));
+
+                ResetPasswordResponse response = new ResetPasswordResponse();
+                if (result.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    response.Code = Responcecode.Success;
+                    response.Message = "Activation link is valid.";
+                }
+                else if (result.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    response.Code = Responcecode.NotFound;
+                    response.Message = "Email activation link is either Expired or Invalidated.";
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new ResetPasswordResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Account Get Reset Password status failed due to the reason : " + ex.Message
+                });
+            }
+        }
+
         public override async Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request, ServerCallContext context)
         {
             try
@@ -699,7 +735,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:ResetPassword with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new ResetPasswordResponse
                 {
                     Code = Responcecode.Failed,
@@ -732,7 +768,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:ResetPasswordInvalidate with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new ResetPasswordResponse
                 {
                     Code = Responcecode.Failed,
@@ -764,7 +800,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:GetMenuFeatures with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new MenuFeatureResponse
                 {
                     Code = Responcecode.Failed,
@@ -793,7 +829,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Account Service:Create Blob: " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountBlobResponse
                 {
                     Code = Responcecode.Failed,
@@ -824,7 +860,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Account Service:Create Blob: " + ex.Message + " " + ex.StackTrace);
+               _logger.Error(null, ex);
                 return await Task.FromResult(new AccountBlobResponse
                 {
                     Code = Responcecode.Failed,
@@ -1075,7 +1111,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in create vehicle accessrelationship:CreateVehicleAccessRelationship with exception - " + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new ServiceResponse
                 {
                     Message = "Exception :-" + ex.Message,
@@ -1143,7 +1179,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in update vehicle accessrelationship:UpdateVehicleAccessRelationship with exception - " + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new ServiceResponse
                 {
                     Message = "Exception :-" + ex.Message,
@@ -1192,7 +1228,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in delete vehicle accessrelationship:DeleteVehicleAccessRelationship with exception - " + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new ServiceResponse
                 {
                     Message = "Exception :-" + ex.Message,
@@ -1256,7 +1292,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in create account accessrelationship:CreateAccountAccessRelationship with exception - " + ex.Message);
+               _logger.Error(null, ex);
                 return await Task.FromResult(new ServiceResponse
                 {
                     Message = "Exception :-" + ex.Message + ex.StackTrace,
@@ -1325,7 +1361,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in update account accessrelationship:UpdateAccountAccessRelationship with exception - " + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new ServiceResponse
                 {
                     Message = "Exception :-" + ex.Message + ex.StackTrace,
@@ -1369,7 +1405,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in delete account accessrelationship:DeleteAccountAccessRelationship with exception - " + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new ServiceResponse
                 {
                     Message = "Exception :-" + ex.Message + ex.StackTrace,
@@ -1392,14 +1428,14 @@ namespace net.atos.daf.ct2.accountservice
                     var accountAccessRelation = await accountmanager.GetAccountVehicleAccessRelationship(filter, false);
                     accessRelationship.VehicleAccessRelationship.AddRange(_mapper.ToVehicleAccessRelationShip(vehicleAccessRelation));
                     accessRelationship.AccountAccessRelationship.AddRange(_mapper.ToVehicleAccessRelationShip(accountAccessRelation));
-                    _logger.LogInformation("Get AccessRelationshipAccount." + request.OrganizationId.ToString());
+                    _logger.Info("Get AccessRelationshipAccount." + request.OrganizationId.ToString());
                 }
                 accessRelationship.Code = Responcecode.Success;
                 return accessRelationship;
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in GetAccessRelationship with exception - " + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccessRelationshipResponse
                 {
                     Message = "Exception :-" + ex.Message + ex.StackTrace,
@@ -1433,14 +1469,14 @@ namespace net.atos.daf.ct2.accountservice
 
                     accountVehiclesResponse.VehiclesVehicleGroup.AddRange(_mapper.ToAccountVehicles(vehicleList));
                     accountVehiclesResponse.AccountsAccountGroups.AddRange(_mapper.ToAccountVehicles(accountList));
-                    _logger.LogInformation("Get AccessRelationshipAccount." + request.OrganizationId.ToString());
+                    _logger.Info("Get AccessRelationshipAccount." + request.OrganizationId.ToString());
                 }
                 accountVehiclesResponse.Code = Responcecode.Success;
                 return accountVehiclesResponse;
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in GetAccountsVehicles with exception - " + ex.Message);
+               _logger.Error(null, ex);
                 return await Task.FromResult(new AccountVehiclesResponse
                 {
                     Message = "Exception :-" + ex.Message + ex.StackTrace,
@@ -1472,7 +1508,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
@@ -1499,7 +1535,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:create preference with exception - " + ex.Message + ex.StackTrace);
+               _logger.Error(null, ex);
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
@@ -1530,7 +1566,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:delete account preference with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
@@ -1547,7 +1583,7 @@ namespace net.atos.daf.ct2.accountservice
                 preferenceFilter.Id = request.Id;
                 //preferenceFilter.Ref_Id = request.RefId;
                 preferenceFilter.PreferenceType = Preference.PreferenceType.Account; // (Preference.PreferenceType)Enum.Parse(typeof(Preference.PreferenceType), request.Preference.ToString());
-                _logger.LogInformation("Get account preference.");
+                _logger.Info("Get account preference.");
                 var result = await preferencemanager.Get(preferenceFilter);
                 // response 
                 AccountPreferenceResponse response = new AccountPreferenceResponse();
@@ -1561,7 +1597,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:get account preference with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
@@ -1604,7 +1640,7 @@ namespace net.atos.daf.ct2.accountservice
                 }
                 request.Id = group.Id;
                 request.CreatedAt = group.CreatedAt.Value;
-                _logger.LogInformation("Group Created:" + Convert.ToString(group.Name));
+                _logger.Info("Group Created:" + Convert.ToString(group.Name));
                 return await Task.FromResult(new AccountGroupResponce
                 {
                     Message = "Account group created.",
@@ -1614,7 +1650,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in create account group :CreateGroup with exception - " + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountGroupResponce
                 {
                     Message = "Exception :-" + ex.Message,
@@ -1655,7 +1691,7 @@ namespace net.atos.daf.ct2.accountservice
                         await groupmanager.RemoveRef(entity.Id);
                     }
                 }
-                _logger.LogInformation("Update Account Group :" + Convert.ToString(entity.Name));
+                _logger.Info("Update Account Group :" + Convert.ToString(entity.Name));
                 return await Task.FromResult(new AccountGroupResponce
                 {
                     Message = "Account group updated for id: " + entity.Id,
@@ -1665,7 +1701,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in create account group :UpdateGroup with exception - " + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountGroupResponce
                 {
                     Message = "Account Group Update Failed :-" + ex.Message,
@@ -1686,7 +1722,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in delete account group :DeleteGroup with exception - " + ex.StackTrace + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountGroupResponce
                 {
                     Message = "Exception :-" + ex.Message,
@@ -1729,7 +1765,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in delete account group :DeleteGroup with exception - " + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountGroupRefResponce
                 {
                     Message = "Exception :-" + ex.Message,
@@ -1760,7 +1796,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in delete account group :DeleteGroup with exception - " + ex.StackTrace + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountGroupResponce
                 {
                     Message = "Exception :-" + ex.Message,
@@ -1786,7 +1822,7 @@ namespace net.atos.daf.ct2.accountservice
                 ObjGroupFilter.GroupType = Group.GroupType.None;
 
                 IEnumerable<Group.Group> ObjRetrieveGroupList = await groupmanager.Get(ObjGroupFilter);
-                _logger.LogInformation("Get account group.");
+                _logger.Info("Get account group.");
                 foreach (var item in ObjRetrieveGroupList)
                 {
                     AccountGroupRequest ObjResponce = new AccountGroupRequest();
@@ -1799,7 +1835,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:get account group with exception - " + ex.Message);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountGroupDataList
                 {
                     Message = "Exception " + ex.Message,
@@ -1862,7 +1898,7 @@ namespace net.atos.daf.ct2.accountservice
                         accountDetail.VehicleCount = count;
                     }
                     response.AccountGroupDetail.Add(accountDetail);
-                    _logger.LogInformation("Get account group details.");
+                    _logger.Info("Get account group details.");
                 }
                 response.Message = "Get AccountGroup";
                 response.Code = Responcecode.Success;
@@ -1870,7 +1906,8 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:get account group details with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
+
                 return await Task.FromResult(new AccountGroupDetailsDataList
                 {
                     Message = "Exception " + ex.Message,
@@ -1908,7 +1945,8 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:add account roles with exception - " + ex.StackTrace + ex.Message);
+                _logger.Error(null, ex);
+
                 return await Task.FromResult(new AccountRoleResponse
                 {
                     Message = "Exception " + ex.Message,
@@ -1936,7 +1974,8 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:remove account roles with exception - " + ex.StackTrace + ex.Message);
+                _logger.Error(null, ex);
+
                 return await Task.FromResult(new AccountRoleResponse
                 {
                     Message = "Exception " + ex.Message,
@@ -1959,7 +1998,7 @@ namespace net.atos.daf.ct2.accountservice
                     accountRole.OrganizationId = request.OrganizationId;
                     accountRole.AccountId = request.AccountId;
                     var roles = await accountmanager.GetRoles(accountRole);
-                    _logger.LogInformation("Get Roles");
+                    _logger.Info("Get Roles");
                     foreach (AccountComponent.entity.KeyValue role in roles)
                     {
                         //response.Roles = new NameIdResponse();
@@ -1980,7 +2019,8 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in account service:get account roles with exception - " + ex.Message);
+               _logger.Error(null, ex);
+
                 return await Task.FromResult(new AccountRoles
                 {
                     Message = "Exception " + ex.Message,

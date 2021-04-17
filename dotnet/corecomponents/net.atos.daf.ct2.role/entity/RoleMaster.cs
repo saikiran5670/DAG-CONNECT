@@ -21,6 +21,7 @@ namespace net.atos.daf.ct2.role.entity
         public int? Featurescount { get; set; }
         public FeatureSet FeatureSet { get; set; }
         public int Level { get; set; }
+        public string Code { get; set; }
 
     }
 }

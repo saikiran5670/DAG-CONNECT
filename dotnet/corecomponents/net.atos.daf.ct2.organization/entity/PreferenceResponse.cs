@@ -19,8 +19,7 @@ namespace net.atos.daf.ct2.organization.entity
     {
         public int id { get; set; }
         public string org_id { get; set; }
-        public string name { get; set; }
-        public string description { get; set; }
+        public string name { get; set; }        
         public string street { get; set; }
         public string street_number { get; set; }
         public string postal_code { get; set; }

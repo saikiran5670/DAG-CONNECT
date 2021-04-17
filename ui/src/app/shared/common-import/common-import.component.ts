@@ -268,7 +268,7 @@ export class CommonImportComponent implements OnInit {
   callImportAPI(validData,invalidData,removableInput){
     this.rejectedPackageList = invalidData;
     this.rejectedPackagesCount = invalidData.length;
-    this.importedPackagesCount = validData.length;
+    this.importedPackagesCount = 0;
     this.packageCodeError = false;
     if(validData.length > 0){
         this.packageService.importPackage(validData).subscribe((resultData)=>{
@@ -279,6 +279,7 @@ export class CommonImportComponent implements OnInit {
           }
         },
         (err)=>{
+          removableInput.clear();
           this.showImportStatus = true;
 
           if(err.status === 409){
@@ -289,6 +290,10 @@ export class CommonImportComponent implements OnInit {
           }
         })
     }
+    else{
+      removableInput.clear();
+      this.showImportStatus = true;
+    }
   }
 
   onClose(){
@@ -297,11 +302,16 @@ export class CommonImportComponent implements OnInit {
 
   codeValidation(value: any){
     let obj: any = { status: true, reason: 'correct data'};
-    const regx = /[A-Z]{1,1}[A-Z\s]{1,1}[\s]{1,1}[A-Z0-9]{13,13}[0-9]{3,3}/;
+    let SpecialCharRegex = /[^!@#\$%&*]+$/;
     if(!value || value == '' || value.trim().length == 0){
       obj.status = false;
       obj.reason = this.importTranslationData.input1mandatoryReason;
-      return obj;  
+      return obj;
+    }
+    if(!SpecialCharRegex.test(value)){
+      obj.status = false;
+      obj.reason = this.importTranslationData.specialCharNotAllowedReason;
+      return obj;
     }
     return obj;
   }
@@ -329,16 +339,22 @@ export class CommonImportComponent implements OnInit {
         obj.reason = this.getValidateMsg(type,  this.importTranslationData.specialCharNotAllowedReason);
         return obj;
       }
-      return obj;
     }
+    return obj;
   }
 
   descValidation(value:any){
     let obj: any = { status: true, reason: 'correct data'};
+    let SpecialCharRegex = /[^!@#\$%&*]+$/;
     if(value.length > 100){
       obj.status = false;
       obj.reason = this.importTranslationData.packageDescriptionCannotExceedReason;
-
+      return obj;
+    }
+    if(!SpecialCharRegex.test(value)){
+      obj.status = false;
+      obj.reason =  this.importTranslationData.specialCharNotAllowedReason;
+      return obj;
     }
     return obj;
   }

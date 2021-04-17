@@ -152,7 +152,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 FeatureRequest FeatureObj = new FeatureRequest();
                 FeatureObj.Name = featureRequest.Name;
                 FeatureObj.Level = featureRequest.Level;
-                FeatureObj.State = (FeatureState)Enum.Parse(typeof(FeatureState), featureRequest.FeatureState.ToString());
+                FeatureObj.State = featureRequest.FeatureState;//(FeatureState)Enum.Parse(typeof(FeatureState), featureRequest.FeatureState.ToString());
                 FeatureObj.Description = featureRequest.Description;
                 FeatureObj.DataAttribute = new DataAttributeSetRequest();
                 FeatureObj.DataAttribute.Name = featureRequest.Name;
@@ -227,7 +227,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 FeatureObj.Name = featureRequest.Name;
                 FeatureObj.Id = featureRequest.Id;
                 FeatureObj.Level = featureRequest.Level;
-                FeatureObj.State = (FeatureState)Enum.Parse(typeof(FeatureState), featureRequest.FeatureState.ToString());
+                FeatureObj.State = featureRequest.FeatureState;//(FeatureState)Enum.Parse(typeof(FeatureState), featureRequest.FeatureState.ToString());
                 FeatureObj.Description = featureRequest.Description;
                 FeatureObj.DataAttribute = new DataAttributeSetRequest();
                 FeatureObj.DataAttribute.Name = featureRequest.Name;
@@ -295,6 +295,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 _cache.SetCache(request.LangaugeCode, responce.Responce, cacheEntryOptions);
 
+                if (responce.Code== Responcecode.Failed)
+                {
+                    return StatusCode(500, "Internal Server Error");
+                }
                 return Ok(responce.Responce);
             }
             catch (Exception ex)
