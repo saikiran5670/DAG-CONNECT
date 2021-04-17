@@ -12,11 +12,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
         [Required]
         [StringLength(8)]
         public string code { get; set; }
-        
-        [StringLength(1)]
-        public string type { get; set; }
         [Required]
         [StringLength(1)]
+        public string type { get; set; }
+        [StringLength(1) ]
         public string veh_type { get; set; }
         [Required]
         public int warning_class { get; set; }
