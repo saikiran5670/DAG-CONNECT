@@ -1,15 +1,14 @@
+using Dapper;
+using net.atos.daf.ct2.account.entity;
+using net.atos.daf.ct2.account.ENUM;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Transactions;
-using Dapper;
 using System.Threading.Tasks;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.utilities;
-using net.atos.daf.ct2.account.entity;
-using net.atos.daf.ct2.account.ENUM;
-using System.Text;
+using System.Transactions;
 
 namespace net.atos.daf.ct2.account
 {
@@ -528,6 +527,22 @@ namespace net.atos.daf.ct2.account
                 var languageCode = await dataAccess.QueryFirstAsync<string>(query, parameter);
 
                 return languageCode;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<Account>> GetAccountOfPasswordExpiry(int noOfDays)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@noOfDays", noOfDays);
+
+                var query = @"Select acc.id as Id, acc.email as EmailId, acc.salutation as Salutation, acc.first_name as FirstName, last_name as LastName from master.account acc inner join master.passwordpolicy pp on acc.id = pp.account_id where State= 'A' and EXTRACT(day FROM(now() - TO_TIMESTAMP(modified_at / 1000))) = @noOfDays";
+                return await dataAccess.QueryAsync<Account>(query, parameter);
             }
             catch (Exception ex)
             {

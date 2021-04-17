@@ -42,5 +42,6 @@ namespace net.atos.daf.ct2.account
         Task<PasswordPolicyAccount> GetPasswordPolicyAccount(int id);
         Task<int> UpsertPasswordPolicyAccount(PasswordPolicyAccount passwordPolicyBlockAccount);
         Task<Response> GetResetPasswordTokenStatus(Guid processToken);
+        Task<IEnumerable<EmailList>> SendEmailForPasswordExpiry(int noOfDays);
     }
 }
