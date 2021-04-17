@@ -889,10 +889,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (DTCResponse != null && DTCResponse.Code == Responcecode.Success)
                 {
-                    //await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
-                    //  "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                    //  "UpdateDTCTranslationIcon  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
-                    //   Request);
+                    await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                      "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                      "UpdateDTCTranslationIcon  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
+                       Request);
                     return Ok(DTCResponse);
                 }
                 else if (DTCResponse.Message== "File Name not exist .")
