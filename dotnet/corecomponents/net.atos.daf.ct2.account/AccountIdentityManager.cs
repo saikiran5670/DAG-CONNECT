@@ -500,7 +500,7 @@ namespace net.atos.daf.ct2.account
         {
             try
             {
-                var result = await accountManager.ResetPasswordInitiate(user.UserName, false);
+                var result = await accountManager.ResetPasswordInitiate(user.UserName, 0, false);
                 result.StatusCode = result.StatusCode == HttpStatusCode.OK ? HttpStatusCode.Redirect : HttpStatusCode.NotFound;
                 return result;
             }

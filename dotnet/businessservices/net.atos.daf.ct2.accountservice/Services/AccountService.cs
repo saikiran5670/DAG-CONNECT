@@ -259,6 +259,7 @@ namespace net.atos.daf.ct2.accountservice
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
                 account.EmailId = request.EmailId;
                 account.Password = request.Password;
+                account.Organization_Id = request.OrgId;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
                 var identityResult = await accountmanager.ChangePassword(account);
                 // response 
@@ -615,7 +616,7 @@ namespace net.atos.daf.ct2.accountservice
         {
             try
             {
-                var identityResult = await accountmanager.ResetPasswordInitiate(request.EmailId);
+                var identityResult = await accountmanager.ResetPasswordInitiate(request.EmailId, request.OrgId);
 
                 ResetPasswordResponse response = new ResetPasswordResponse();
                 if (identityResult.StatusCode == System.Net.HttpStatusCode.OK)
@@ -683,6 +684,7 @@ namespace net.atos.daf.ct2.accountservice
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
                 account.ProcessToken = new Guid(request.ProcessToken);
                 account.Password = request.Password;
+                account.Organization_Id = request.OrgId;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
                 var identityResult = await accountmanager.ResetPassword(account);
 

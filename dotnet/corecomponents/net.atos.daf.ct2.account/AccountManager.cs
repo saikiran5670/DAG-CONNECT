@@ -67,8 +67,8 @@ namespace net.atos.daf.ct2.account
                     // get account by email , if not exists in DB-- create it
                     AccountFilter filter = new AccountFilter();
                     filter.Email = account.EmailId;
-                    filter.OrganizationId = account.Organization_Id;
-                    int Organization_Id = account.Organization_Id;
+                    filter.OrganizationId = account.Organization_Id.Value;
+                    int Organization_Id = account.Organization_Id.Value;
                     filter.AccountType = AccountType.None;
                     filter.AccountIds = string.Empty;
                     filter.Name = string.Empty;
@@ -136,7 +136,7 @@ namespace net.atos.daf.ct2.account
             var identityresult = await identity.DeleteUser(identityEntity);
             if (identityresult.StatusCode == HttpStatusCode.NoContent)
             {
-                result = await repository.Delete(account.Id, account.Organization_Id);
+                result = await repository.Delete(account.Id, account.Organization_Id.Value);
             }
             else if (identityresult.StatusCode == HttpStatusCode.NotFound)
             {
@@ -163,6 +163,7 @@ namespace net.atos.daf.ct2.account
                         await repository.UpsertPasswordModifiedDate(account.Id, UTCHandling.GetUTCFromDateTime(DateTime.Now));
 
                         //Send confirmation email
+                        account.Organization_Id = accountRequest.Organization_Id;
                         await TriggerSendEmailRequest(account, EmailEventType.ChangeResetPasswordSuccess);
                     }
                     return identityResult;
@@ -314,7 +315,7 @@ namespace net.atos.daf.ct2.account
             return await repository.GetAccountRole(accountId);
         }
 
-        public async Task<Response> ResetPasswordInitiate(string emailId, bool canSendEmail = true)
+        public async Task<Response> ResetPasswordInitiate(string emailId, int orgId, bool canSendEmail = true)
         {
             var response = new Response(HttpStatusCode.NotFound);
             try
@@ -359,7 +360,10 @@ namespace net.atos.daf.ct2.account
                         bool isSent = false;
                         //Send activation email based on flag
                         if (canSendEmail)
+                        {
+                            account.Organization_Id = orgId;
                             isSent = await TriggerSendEmailRequest(account, EmailEventType.ResetPassword, processToken);
+                        }                            
 
                         if ((canSendEmail && isSent) || !canSendEmail)
                         {
@@ -440,6 +444,7 @@ namespace net.atos.daf.ct2.account
                         await repository.Update(resetPasswordToken.Id, ResetTokenStatus.Used);
 
                         //Send confirmation email
+                        account.Organization_Id = accountInfo.Organization_Id;
                         await TriggerSendEmailRequest(account, EmailEventType.ChangeResetPasswordSuccess);
                     }
                     return identityresult;
@@ -492,7 +497,7 @@ namespace net.atos.daf.ct2.account
 
         private async Task<bool> SetPasswordViaEmail(Account account)
         {
-            var response = await ResetPasswordInitiate(account.EmailId, false);
+            var response = await ResetPasswordInitiate(account.EmailId, account.Organization_Id.Value, false);
 
             if (response.StatusCode != HttpStatusCode.OK)
                 return false;
@@ -534,7 +539,7 @@ namespace net.atos.daf.ct2.account
                 Uri baseUrl = new Uri(emailConfiguration.PortalUIBaseUrl);
                 Uri logoUrl = new Uri(baseUrl, "assets/logo.png");
 
-                var languageCode = await GetLanguageCodePreference(account.EmailId);
+                var languageCode = await GetLanguageCodePreference(account.EmailId, account.Organization_Id);
                 var emailTemplate = await translationManager.GetEmailTemplateTranslations(eventType, contentType, languageCode);
                 var emailTemplateContent = EmailHelper.GetEmailContent(emailTemplate);
 
@@ -555,7 +560,7 @@ namespace net.atos.daf.ct2.account
                         emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, account.FullName, resetUrl.AbsoluteUri, resetInvalidateUrl.AbsoluteUri);
                         break;
                     case EmailEventType.ChangeResetPasswordSuccess:
-                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, account.FullName);
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, account.FullName, baseUrl.AbsoluteUri);
                         break;
                     default:
                         messageRequest.Subject = string.Empty;
@@ -602,9 +607,9 @@ namespace net.atos.daf.ct2.account
             return await repository.UpsertPasswordPolicyAccount(passwordPolicyAccount);
         }
 
-        public async Task<string> GetLanguageCodePreference(string emailId)
+        public async Task<string> GetLanguageCodePreference(string emailId, int? orgId)
         {
-            return await repository.GetLanguageCodePreference(emailId.ToLower());
+            return await repository.GetLanguageCodePreference(emailId.ToLower(), orgId);
         }
         #endregion
     }
