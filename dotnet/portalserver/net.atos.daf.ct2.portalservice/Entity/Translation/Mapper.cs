@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Google.Protobuf;
 using net.atos.daf.ct2.translationservice;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Translation
@@ -102,7 +104,29 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
             return acceptedTermConditionRequest;
         }
 
-   
+           public IconUpdateRequest ToImportDTCWarningIcon(DTCWarningIconUpdateRequest request)
+        {
+
+            var dtcRequests = new IconUpdateRequest();
+            
+            foreach (var x in request.dtcWarningUpdateIcon)
+            {
+                if (x.Name != null || x.Name != "" || x.Icon != null)
+                {
+                    
+                    var dtcRequest = new dtcIconUpdate()
+                    {
+                        Name = x.Name,
+                        Icon = ByteString.CopyFrom(x.Icon),
+                        ModifiedBy = x.ModifiedBy
+                    };
+                    dtcRequests.IconData.Add(dtcRequest);
+                }
+            }
+            return dtcRequests;
+
+        }
+
 
     }
 }
