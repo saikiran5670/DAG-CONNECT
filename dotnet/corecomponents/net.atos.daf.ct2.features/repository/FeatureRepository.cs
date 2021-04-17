@@ -471,10 +471,10 @@ namespace net.atos.daf.ct2.features.repository
                             parameter.Add("@data_attribute_set_id", InserteddataAttributeSetID);
                             parameter.Add("@key", feature.Description);
                             parameter.Add("@level", feature.Level);
-                            parameter.Add("@State", (char)feature.FeatureState);
+                            parameter.Add("@status", (char)feature.FeatureState);
             int resultAddFeatureSet = await dataAccess.ExecuteScalarAsync<int>(@"INSERT INTO master.feature(
-	                                                 id, name, type, state, data_attribute_set_id, key,level,state)
-	                                           VALUES (@id, @name, @type, @state, @data_attribute_set_id, @key,@level,@State) RETURNING id", parameter);
+	                                                 id, name, type, state, data_attribute_set_id, key,level,status)
+	                                           VALUES (@id, @name, @type, @state, @data_attribute_set_id, @key,@level,@status) RETURNING id", parameter);
                                         return resultAddFeatureSet;
         }
 
