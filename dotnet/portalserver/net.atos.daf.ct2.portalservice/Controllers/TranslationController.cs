@@ -13,7 +13,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Audit;
 using Newtonsoft.Json;
+using log4net;
 using Google.Protobuf;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -22,18 +24,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class TranslationController : ControllerBase
     {
-        private readonly ILogger<TranslationController> _logger;
+        //private readonly ILogger<TranslationController> _logger;
         private readonly AuditHelper _Audit;
+
+         private ILog _logger;
         private readonly TranslationService.TranslationServiceClient _translationServiceClient;
         private readonly Mapper _mapper;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
 
         //Constructor
-        public TranslationController(TranslationService.TranslationServiceClient translationServiceClient, ILogger<TranslationController> logger, AuditHelper auditHelper)
+        public TranslationController(TranslationService.TranslationServiceClient translationServiceClient, AuditHelper auditHelper)
         {
             _translationServiceClient = translationServiceClient;
-            _logger = logger;
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType); 
             _mapper = new Mapper();
             _Audit = auditHelper;
         }
@@ -62,7 +66,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     //return StatusCode(400, "Invalid Type In Request ");
                 }
                 
-                _logger.LogInformation("Get translation Menu  method get " + request.Code + " " + request.MenuId);
+                _logger.Info("Get translation Menu  method get " + request.Code + " " + request.MenuId);
 
                 TranslationsRequest obj = new TranslationsRequest();
                 obj = _mapper.MapGetTranslations(request);
@@ -87,7 +91,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -102,7 +106,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Language code  required..");
                 }
-                _logger.LogInformation("Get translation Common  method get " + request.Languagecode);
+                _logger.Info("Get translation Common  method get " + request.Languagecode);
 
                 CodeResponce CommontranslationResponseList = await _translationServiceClient.GetCommonTranslationsAsync(request);
 
@@ -123,7 +127,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message + " " + ex.StackTrace);
+               _logger.Error(null, ex);
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -139,7 +143,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //{
                 //    return StatusCode(400, " Key  required..");
                 //}
-                _logger.LogInformation("GetLangagugeTranslationByKey  method " + request.Key);
+                _logger.Info("GetLangagugeTranslationByKey  method " + request.Key);
 
                 KeyResponce KeyResponseList = await _translationServiceClient.GetLangagugeTranslationByKeyAsync(request);
 
@@ -160,7 +164,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -175,7 +179,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, " Language code and key required..");
                 }
-                _logger.LogInformation("GetKeyTranslationByLanguageCode  method " + request.Key);
+                _logger.Info("GetKeyTranslationByLanguageCode  method " + request.Key);
 
                 KeyCodeResponce CodeResponseList = await _translationServiceClient.GetKeyTranslationByLanguageCodeAsync(request);
 
@@ -196,7 +200,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -212,7 +216,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Language code and dropdown  required..");
                 }
-                _logger.LogInformation("Drop down method get" + request.Dropdownname + request.Languagecode);
+                _logger.Info("Drop down method get" + request.Dropdownname + request.Languagecode);
 
                 dropdownnameResponce dropdownResponseList = await _translationServiceClient.GetTranslationsForDropDownsAsync(request);
 
@@ -233,7 +237,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return StatusCode(500, "Internal Server Error.");
             }
 
@@ -282,7 +286,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message + " " + ex.StackTrace);
+               _logger.Error(null, ex);
                 return StatusCode(500, "Internal Server Error.");
             }
 
@@ -307,7 +311,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -317,7 +321,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("languagecodes")]
         public async Task<IActionResult> GetAllLanguagecodes([FromQuery] Request request)
         {          
-            _logger.LogInformation("All languages method get");
+            _logger.Info("All languages method get");
 
             TranslationListResponce ResponseList = await _translationServiceClient.GetAllLanguagecodesAsync(request);
 
@@ -341,7 +345,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
        // [AllowAnonymous]
         public async Task<IActionResult> InsertTranslationFileDetails(FileUploadRequest request)
         {
-            _logger.LogInformation("InsertTranslationFileDetails Method post");
+            _logger.Info("InsertTranslationFileDetails Method post");
             if (request.file_name == "" || request.file_name == null || request.file_size <= 0)
             {
                 return StatusCode(400, "File name and valid file size is required.");
@@ -391,7 +395,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("getUploadDetails")]
         public async Task<IActionResult> GetFileUploadDetails([FromQuery] FileUploadDetailsRequest request)
         {
-            _logger.LogInformation("GetFileUploadDetails Method get");
+            _logger.Info("GetFileUploadDetails Method get");
 
             FileUploadDetailsResponse ResponseList = await _translationServiceClient.GetFileUploadDetailsAsync(request);
 
@@ -460,7 +464,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                       "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                       "ImportDTCWarningData  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
                        Request);
-                _logger.LogError("Translation Service:ImportdtcWarning : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
@@ -505,7 +509,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in package service:get DTC warning Details with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -551,7 +555,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                      "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                      "UpdateDTCWarningData  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
                       Request);
-                _logger.LogError("Translation Service:UpdateDTCWarning : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
@@ -616,7 +620,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                         "AddUserAcceptedTermCondition  method in Translation controller", 0, 0,
                                         JsonConvert.SerializeObject(request),
                                          Request);
-                _logger.LogError("Translation Service:AddUserAcceptedTermCondition : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
@@ -665,7 +669,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in Translation service:GetAllVersionNo Details with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -700,7 +704,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in Translation service:AddUserAcceptedTermCondition Details with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -734,7 +738,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in Translation service:AddUserAcceptedTermCondition Details with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -768,7 +772,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in Translation service:GetLatestTermCondition Details with exception - " + ex.Message + ex.StackTrace);
+               _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -802,7 +806,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in Translation service:CheckUserAcceptedTermCondition Details with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -813,7 +817,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         // [AllowAnonymous]
         public async Task<IActionResult> UploadTermsAndCondition(TermsandConFileDataList request)
         {
-            _logger.LogInformation("UploadTermsAndCondition Method post");
+            _logger.Info("UploadTermsAndCondition Method post");
             if (request.orgId == 0 || request.accountId == 0)
             {
                 return StatusCode(400, string.Empty);
@@ -828,8 +832,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (aryFileNameContent != null && aryFileNameContent.Length > 1)
                 {
                     //item.fileName = aryFileNameContent[0];
-                    objUploadTermandConditionRequest.Code = aryFileNameContent[1];
-                    objUploadTermandConditionRequest.VersionNo = aryFileNameContent[2];
+                    objUploadTermandConditionRequest.Code = aryFileNameContent[1].ToUpper();
+                    objUploadTermandConditionRequest.Versionno = aryFileNameContent[2].ToUpper();
                     objUploadTermandConditionRequest.Description = ByteString.CopyFrom(item.description);
                     objUploadTermandConditionRequestList.Data.Add(objUploadTermandConditionRequest);
                 }
@@ -840,7 +844,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             }
             var data = await _translationServiceClient.UploadTermsAndConditionAsync(objUploadTermandConditionRequestList);
-            _logger.LogInformation("UploadTermsAndCondition Service called");
+            _logger.Info("UploadTermsAndCondition Service called");
             if (data == null)
             {
                 return StatusCode(400, string.Empty);

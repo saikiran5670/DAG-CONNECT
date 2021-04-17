@@ -10,7 +10,9 @@ using net.atos.daf.ct2.role.entity;
 using net.atos.daf.ct2.role;
 using net.atos.daf.ct2.features;
 using Newtonsoft.Json;
+using log4net;
 using net.atos.daf.ct2.features.entity;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.roleservice
 {
@@ -18,12 +20,14 @@ namespace net.atos.daf.ct2.roleservice
     public class RoleManagementService : RoleService.RoleServiceBase
     {
 
-        private readonly ILogger<RoleManagementService> _logger;
+       // private readonly ILogger<RoleManagementService> _logger;
+
+        private ILog _logger;
         private readonly IRoleManagement _RoleManagement;
         private readonly IFeatureManager _FeaturesManager;
-        public RoleManagementService(ILogger<RoleManagementService> logger, IRoleManagement RoleManagement,IFeatureManager FeatureManager)
+        public RoleManagementService( IRoleManagement RoleManagement,IFeatureManager FeatureManager)
         {
-            _logger = logger;
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType); 
             _RoleManagement = RoleManagement;
             _FeaturesManager=FeatureManager;
 
@@ -69,6 +73,7 @@ namespace net.atos.daf.ct2.roleservice
             }
             catch(Exception ex)
             {
+                _logger.Error(null, ex);
                 return await Task.FromResult(new RoleResponce
                                 {
                                     Message = "Exception :-" + ex.Message,
@@ -106,6 +111,7 @@ namespace net.atos.daf.ct2.roleservice
             }
             catch(Exception ex)
             {
+                _logger.Error(null, ex);
                 return await Task.FromResult(new RoleResponce
                                 {
                                     Message = "Exception :-" + ex.Message,
@@ -131,6 +137,7 @@ namespace net.atos.daf.ct2.roleservice
             }
             catch(Exception ex)
             {
+                _logger.Error(null, ex);
                 return Task.FromResult(new RoleResponce
                                 {
                                     Message = "Exception :-" + ex.Message,
@@ -178,6 +185,7 @@ namespace net.atos.daf.ct2.roleservice
             }
             catch(Exception ex)
             {
+                _logger.Error(null, ex);
                 return await Task.FromResult(new RoleListResponce
                 {
                     Message = "Exception " + ex.Message,
