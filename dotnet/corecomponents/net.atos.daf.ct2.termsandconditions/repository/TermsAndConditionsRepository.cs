@@ -78,7 +78,8 @@ namespace net.atos.daf.ct2.termsandconditions.repository
 		                                ,terms.code
 		                                ,terms.description
 		                                ,terms.state
-		                                ,terms.start_date
+		                                ,terms.created_at
+                                        ,terms.start_date
 										,accterm.accepted_date
 										,acc.first_name  
 										,acc.last_name 
@@ -96,6 +97,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
 		                                ,terms.code		                               
 		                                ,terms.state
 		                                ,terms.start_date
+                                        ,terms.created_at
 										,accterm.accepted_date
 										,acc.first_name  
 										,acc.last_name 
@@ -531,6 +533,10 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
             if (record.end_date != null)
             {
                 termsAndConditions.EndDate = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.end_date, "Asia/Dubai", "yyyy-MM-ddTHH:mm:ss"));
+            }
+            if (record.created_at != null)
+            {
+                termsAndConditions.Created_At = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.created_at, "Asia/Dubai", "yyyy-MM-ddTHH:mm:ss"));
             }
             if (record.accepted_date != null)
             {
