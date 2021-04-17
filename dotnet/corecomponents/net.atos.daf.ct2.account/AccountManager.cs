@@ -17,6 +17,7 @@ using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.identity.entity;
 using System.Net;
 using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.email.entity;
 
 namespace net.atos.daf.ct2.account
 {
@@ -57,7 +58,7 @@ namespace net.atos.daf.ct2.account
                 // if this fails
                 account = await repository.Create(account);
 
-                account.isErrorInEmail = !(await SetPasswordViaEmail(account));
+                account.isErrorInEmail = !(await SetPasswordViaEmail(account, EmailEventType.CreateAccount));
             }
             else // there is issues and need delete user from IDP. 
             {
@@ -78,7 +79,7 @@ namespace net.atos.daf.ct2.account
                         account = await repository.Create(account);
                         await identity.UpdateUser(identityEntity);
 
-                        account.isErrorInEmail = !(await SetPasswordViaEmail(account));
+                        account.isErrorInEmail = !(await SetPasswordViaEmail(account, EmailEventType.CreateAccount));
                     }
                     else
                     {
@@ -315,7 +316,8 @@ namespace net.atos.daf.ct2.account
             return await repository.GetAccountRole(accountId);
         }
 
-        public async Task<Response> ResetPasswordInitiate(string emailId, int orgId, bool canSendEmail = true)
+        //This method is called for ResetPassword, SetupNewPassword and PassswordExpiry process
+        public async Task<Response> ResetPasswordInitiate(string emailId, int orgId, EmailEventType eventType = EmailEventType.ResetPassword)
         {
             var response = new Response(HttpStatusCode.NotFound);
             try
@@ -343,14 +345,15 @@ namespace net.atos.daf.ct2.account
                     var processToken = (Guid)identityResult.Result;
                     if (identityResult.StatusCode == HttpStatusCode.OK)
                     {
-                        //Save Reset Password Token to the database
+                        //Save Password Token to the database
                         var objToken = new ResetPasswordToken();
                         objToken.AccountId = account.Id;
                         objToken.ProcessToken = processToken;
                         objToken.Status = ResetTokenStatus.New;
                         var now = DateTime.Now;
-                        var expiryAt = canSendEmail ? configuration.GetValue<double>("ResetPasswordTokenExpiryInMinutes")
-                                                    : configuration.GetValue<double>("CreatePasswordTokenExpiryInMinutes");
+                        var expiryAt = eventType == EmailEventType.CreateAccount 
+                                                    ? configuration.GetValue<double>("CreatePasswordTokenExpiryInMinutes")
+                                                    : configuration.GetValue<double>("ResetPasswordTokenExpiryInMinutes");
                         objToken.ExpiryAt = UTCHandling.GetUTCFromDateTime(now.AddMinutes(expiryAt));
                         objToken.CreatedAt = UTCHandling.GetUTCFromDateTime(now);
 
@@ -358,14 +361,15 @@ namespace net.atos.daf.ct2.account
                         await repository.Create(objToken);
 
                         bool isSent = false;
-                        //Send activation email based on flag
-                        if (canSendEmail)
+                        //Send email for reset password flow only
+                        //In cases like Create Password and Password Expiry, no need to send below email
+                        if (eventType == EmailEventType.ResetPassword)
                         {
                             account.Organization_Id = orgId;
-                            isSent = await TriggerSendEmailRequest(account, EmailEventType.ResetPassword, processToken);
+                            isSent = await TriggerSendEmailRequest(account, eventType, processToken);
                         }                            
 
-                        if ((canSendEmail && isSent) || !canSendEmail)
+                        if ((eventType == EmailEventType.ResetPassword && isSent) || eventType != EmailEventType.ResetPassword)
                         {
                             //Update status to Issued
                             await repository.Update(objToken.Id, ResetTokenStatus.Issued);
@@ -495,9 +499,9 @@ namespace net.atos.daf.ct2.account
 
         #region Private Helper Methods
 
-        private async Task<bool> SetPasswordViaEmail(Account account)
+        private async Task<bool> SetPasswordViaEmail(Account account, EmailEventType eventType)
         {
-            var response = await ResetPasswordInitiate(account.EmailId, account.Organization_Id.Value, false);
+            var response = await ResetPasswordInitiate(account.EmailId, account.Organization_Id.Value, eventType);
 
             if (response.StatusCode != HttpStatusCode.OK)
                 return false;
@@ -506,79 +510,38 @@ namespace net.atos.daf.ct2.account
                 var result = await repository.GetAccountOrg(account.Id);
                 account.OrgName = result.FirstOrDefault().Name;
                 //Send account confirmation email
-                return await TriggerSendEmailRequest(account, EmailEventType.CreateAccount, (Guid)response.Result);
+                return await TriggerSendEmailRequest(account, eventType, (Guid)response.Result);
             }
         }
 
-        private async Task<bool> TriggerSendEmailRequest(Account account, EmailEventType templateType, Guid? tokenSecret = null, EmailContentType contentType = EmailContentType.Html)
+        private async Task<bool> TriggerSendEmailRequest(Account account, EmailEventType eventType, Guid? tokenSecret = null, EmailContentType contentType = EmailContentType.Html)
         {
             var messageRequest = new MessageRequest();
-            messageRequest.Configuration = emailConfiguration;
+            messageRequest.accountInfo = new AccountInfo
+            {
+                FullName = account.FullName,
+                OrganizationName = account.OrgName
+            };
             messageRequest.ToAddressList = new Dictionary<string, string>()
             {
                 { account.EmailId, null }
             };
+            messageRequest.Configuration = emailConfiguration;
+            messageRequest.TokenSecret = tokenSecret;
             try
             {
-                if (await FillEmailTemplate(account, messageRequest, templateType, contentType, tokenSecret))
-                    return await EmailHelper.SendEmail(messageRequest);
+                var languageCode = await GetLanguageCodePreference(account.EmailId, account.Organization_Id);
+                var emailTemplate = await translationManager.GetEmailTemplateTranslations(eventType, contentType, languageCode);
+
+                return await EmailHelper.SendEmail(messageRequest, emailTemplate);
             }
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Trigger Email: " + ex.Message, 1, 2, account.EmailId);
                 return false;
             }
-            return false;
         }
-
-        private async Task<bool> FillEmailTemplate(Account account, MessageRequest messageRequest, EmailEventType eventType, EmailContentType contentType, Guid? tokenSecret)
-        {
-            var emailContent = string.Empty;
-            try
-            {
-                Uri baseUrl = new Uri(emailConfiguration.PortalUIBaseUrl);
-                Uri logoUrl = new Uri(baseUrl, "assets/logo.png");
-
-                var languageCode = await GetLanguageCodePreference(account.EmailId, account.Organization_Id);
-                var emailTemplate = await translationManager.GetEmailTemplateTranslations(eventType, contentType, languageCode);
-                var emailTemplateContent = EmailHelper.GetEmailContent(emailTemplate);
-
-                if (string.IsNullOrEmpty(emailTemplateContent))
-                    return false;
-
-                switch (eventType)
-                {
-                    case EmailEventType.CreateAccount:
-                        Uri setUrl = new Uri(baseUrl, $"#/auth/createpassword/{ tokenSecret }");
-
-                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, account.FullName, account.OrgName, setUrl.AbsoluteUri);
-                        break;
-                    case EmailEventType.ResetPassword:
-                        Uri resetUrl = new Uri(baseUrl, $"#/auth/resetpassword/{ tokenSecret }");
-                        Uri resetInvalidateUrl = new Uri(baseUrl, $"#/auth/resetpasswordinvalidate/{ tokenSecret }");
-
-                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, account.FullName, resetUrl.AbsoluteUri, resetInvalidateUrl.AbsoluteUri);
-                        break;
-                    case EmailEventType.ChangeResetPasswordSuccess:
-                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, account.FullName, baseUrl.AbsoluteUri);
-                        break;
-                    default:
-                        messageRequest.Subject = string.Empty;
-                        break;
-                }
-
-                messageRequest.Subject = emailTemplate.TemplateLabels.Where(x => x.LabelKey.EndsWith("_Subject")).First().TranslatedValue;
-                messageRequest.Content = emailContent;
-                messageRequest.ContentMimeType = contentType == EmailContentType.Html ? MimeType.Html : MimeType.Text;
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }            
-        }
-
+        
         private async Task<bool> CheckForMinPasswordAge(Account account)
         {
             //Check for Min Password Age if policy enabled

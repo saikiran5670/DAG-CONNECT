@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using net.atos.daf.ct2.account.ENUM;
 using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.identity.entity;
+using net.atos.daf.ct2.email.Enum;
 
 namespace net.atos.daf.ct2.account
 {
@@ -33,7 +34,7 @@ namespace net.atos.daf.ct2.account
         Task<List<int>> GetRoleAccounts(int roleId);
         Task<List<KeyValue>> GetAccountOrg(int accountId);
         Task<List<AccountOrgRole>> GetAccountRole(int accountId);
-        Task<Response> ResetPasswordInitiate(string emailId, int orgId, bool canSendEmail = true);
+        Task<Response> ResetPasswordInitiate(string emailId, int orgId, EmailEventType eventType = EmailEventType.ResetPassword);
         Task<Response> ResetPassword(Account account);
         Task<Response> ResetPasswordInvalidate(Guid ResetToken);
         Task<IEnumerable<MenuFeatureDto>> GetMenuFeatures(int accountId, int roleId, int organizationId, string languageCode);

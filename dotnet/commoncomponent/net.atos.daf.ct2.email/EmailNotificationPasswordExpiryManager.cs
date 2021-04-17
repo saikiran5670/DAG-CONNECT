@@ -48,7 +48,7 @@ namespace net.atos.daf.ct2.email
                          ContentMimeType = EmailContants.ContentMimeType,
                          ToAddressList = new Dictionary<string, string> { { email, null } ,
                                                                          { "harneet.rekhi@atos.net", null} }
-                     }).Result;
+                     }, null).Result;
 
                      lock (synRoot)
                      {

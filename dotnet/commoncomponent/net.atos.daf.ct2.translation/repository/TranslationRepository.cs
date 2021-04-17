@@ -529,11 +529,12 @@ namespace net.atos.daf.ct2.translation.repository
                 parameter.Add("@eventName", eventType.ToString());
 
                 string emailTemplateQuery =
-                    @"select id as TemplateId, description as Description from master.emailtemplate
-                where type=@contentType and event_name=@eventName";
+                    @"select id as TemplateId, description as Description, type as ContentType, event_name as EventType
+                    from master.emailtemplate
+                    where type=@contentType and event_name=@eventName";
 
                 EmailTemplate template = await dataAccess.QueryFirstAsync<EmailTemplate>(emailTemplateQuery, parameter);
-
+             
                 parameter = new DynamicParameters();
                 parameter.Add("@languageCode", languageCode);
                 parameter.Add("@templateId", template.TemplateId);
