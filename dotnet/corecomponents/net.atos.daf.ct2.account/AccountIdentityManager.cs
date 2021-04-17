@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.identity.entity;
+using net.atos.daf.ct2.email.Enum;
 
 namespace net.atos.daf.ct2.account
 {
@@ -500,7 +501,7 @@ namespace net.atos.daf.ct2.account
         {
             try
             {
-                var result = await accountManager.ResetPasswordInitiate(user.UserName, false);
+                var result = await accountManager.ResetPasswordInitiate(user.UserName, 0, EmailEventType.PasswordExpiryNotification);
                 result.StatusCode = result.StatusCode == HttpStatusCode.OK ? HttpStatusCode.Redirect : HttpStatusCode.NotFound;
                 return result;
             }

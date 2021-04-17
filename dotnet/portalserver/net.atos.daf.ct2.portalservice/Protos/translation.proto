@@ -30,6 +30,8 @@ rpc GetAcceptedTermConditionByUser (UserAcceptedTermConditionRequest)returns (Te
 rpc UploadTermsAndCondition (UploadTermandConditionRequestList) returns (UploadTermandConditionResponseList);
 rpc GetLatestTermCondition (UserAcceptedTermConditionRequest)returns (TermCondDetailsReponse);
 rpc CheckUserAcceptedTermCondition (UserAcceptedTermConditionRequest)returns (UserAcceptedTermConditionResponse);
+rpc UpdateDTCTranslationIcon(IconUpdateRequest) returns (IconUpdateResponse);
+rpc GetDTCTranslationIcon(IconGetRequest) returns (IconGetResponse);
 }
 
 message VersionID{
@@ -399,3 +401,48 @@ message TermConditionReponse
        string message = 2;
        bool IsUserAcceptedTC=3;
    }
+
+   message IconUpdateRequest
+    {
+        repeated dtcIconUpdate iconData =1;     
+    } 
+    message IconGetRequest
+    {
+        int32 Id =1;     
+    } 
+
+    message dtcIconUpdate
+    {
+        string Name =1;
+        bytes Icon =2; 
+        int64 ModifiedAt =3;
+        int32 ModifiedBy =4;          
+    } 
+
+    message dtcIcon
+    {
+        string Name =1;
+        bytes Icon =2; 
+        int64 ModifiedAt =3;
+        int32 ModifiedBy =4;
+        int32 Id =5;
+        string Type =6;
+        int32 Warning_class =7; 
+        int32 Warning_number =8;        
+        string Color_name =9;
+        string State =10;
+        int64 Created_at =11;
+        int32 Created_by =12;        
+    }
+     message IconUpdateResponse
+   {
+      Responcecode code =1;
+      string message = 2;                 
+   } 
+
+   message IconGetResponse
+   {
+      Responcecode code =1;
+      string message = 2; 
+      repeated dtcIcon iconData =3;                
+   } 
