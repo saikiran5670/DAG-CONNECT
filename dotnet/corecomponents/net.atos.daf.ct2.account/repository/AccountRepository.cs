@@ -463,7 +463,7 @@ namespace net.atos.daf.ct2.account
             }
         }        
 
-        public async Task<string> GetLanguageCodePreference(string emailId)
+        public async Task<string> GetLanguageCodePreference(string emailId, int? orgId)
         {
             try
             {
@@ -478,13 +478,28 @@ namespace net.atos.daf.ct2.account
 
                 if(!accountPreferenceId.HasValue)
                 {
-                    string orgQuery =
-                    @"SELECT o.preference_id from master.account acc
-                    INNER JOIN master.accountOrg ao ON acc.id=ao.account_id
-                    INNER JOIN master.organization o ON ao.organization_id=o.id
-                    where acc.email = @emailId";
+                    string orgQuery = string.Empty;
+                    int? orgPreferenceId = null;
+                    if (orgId.HasValue)
+                    {
+                        var orgParameter = new DynamicParameters();
+                        orgParameter.Add("@orgId", orgId);
 
-                    var orgPreferenceId = await dataAccess.QueryFirstAsync<int?>(orgQuery, parameter);
+                        orgQuery = @"SELECT preference_id from master.organization WHERE id=@orgId";
+
+                        orgPreferenceId = await dataAccess.QueryFirstAsync<int?>(orgQuery, orgParameter);
+                    }
+                    else
+                    {
+                        orgQuery =
+                            @"SELECT o.preference_id from master.account acc
+                            INNER JOIN master.accountOrg ao ON acc.id=ao.account_id
+                            INNER JOIN master.organization o ON ao.organization_id=o.id
+                            where acc.email = @emailId";
+
+                        orgPreferenceId = await dataAccess.QueryFirstAsync<int?>(orgQuery, parameter);
+                    }
+
                     if (!orgPreferenceId.HasValue)
                         return "EN-GB";
                     else

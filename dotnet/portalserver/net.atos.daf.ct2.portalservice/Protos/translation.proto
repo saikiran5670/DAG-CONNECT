@@ -30,35 +30,48 @@ rpc GetAcceptedTermConditionByUser (UserAcceptedTermConditionRequest)returns (Te
 rpc UploadTermsAndCondition (UploadTermandConditionRequestList) returns (UploadTermandConditionResponseList);
 rpc GetLatestTermCondition (UserAcceptedTermConditionRequest)returns (TermCondDetailsReponse);
 rpc CheckUserAcceptedTermCondition (UserAcceptedTermConditionRequest)returns (UserAcceptedTermConditionResponse);
+rpc UpdateDTCTranslationIcon(IconUpdateRequest) returns (IconUpdateResponse);
+rpc GetDTCTranslationIcon(IconGetRequest) returns (IconGetResponse);
 }
 
 message VersionID{
  int32 orgId = 1;
- int32 roleId = 2;
+ int32 levelCode = 2;
+ int32 accountId = 3;
 }
 
-message UploadTermandConditionRequestList {
+ message UploadTermandConditionRequestList
+   {
      repeated UploadTermandConditionRequest data = 1;
-     int32 orgId=2;
-     int32 accountId = 3;
+      int64 start_date = 2;
+      int64 end_date = 3;
+      int32 created_by = 4;
     }
 
-message UploadTermandConditionRequest{
-     string   version_no = 1;
+message UploadTermandConditionRequest
+{
+     string   versionno = 1;
       string  code = 2;
       bytes description = 3;
       string fileName = 4;
+     
 }
 
-message UploadTermandConditionResponseList {
-     repeated UploadTermandConditionResponse uploadedfilesaction = 1;
+message UploadTermandConditionResponseList 
+{
+     Responcecode code =1;
+     string message = 2;
+     repeated UploadTermandConditionResponse uploadedfilesaction = 3;
     }
 
-message UploadTermandConditionResponse {
+message UploadTermandConditionResponse
+{
         string fileName = 1;
         string action = 2;
         int32 id = 3;
 }
+
+
 
 enum TranslationType{
     Menu = 0;
@@ -367,9 +380,6 @@ message TermConditionReponse
  string StartDate =6;
  string EndDate =7;
  string CreatedAt =8;
- int32 CreatedBy =9;
- string ModifiedAt =10;
- int32 ModifiedBy =11;
  string AcceptedDate=12;
  string FirstName=13;
  string Lastname=14;
@@ -394,3 +404,48 @@ message TermConditionReponse
        string message = 2;
        bool IsUserAcceptedTC=3;
    }
+
+   message IconUpdateRequest
+    {
+        repeated dtcIconUpdate iconData =1;     
+    } 
+    message IconGetRequest
+    {
+        int32 Id =1;     
+    } 
+
+    message dtcIconUpdate
+    {
+        string Name =1;
+        bytes Icon =2; 
+        int64 ModifiedAt =3;
+        int32 ModifiedBy =4;          
+    } 
+
+    message dtcIcon
+    {
+        string Name =1;
+        bytes Icon =2; 
+        int64 ModifiedAt =3;
+        int32 ModifiedBy =4;
+        int32 Id =5;
+        string Type =6;
+        int32 Warning_class =7; 
+        int32 Warning_number =8;        
+        string Color_name =9;
+        string State =10;
+        int64 Created_at =11;
+        int32 Created_by =12;        
+    }
+     message IconUpdateResponse
+   {
+      Responcecode code =1;
+      string message = 2;                 
+   } 
+
+   message IconGetResponse
+   {
+      Responcecode code =1;
+      string message = 2; 
+      repeated dtcIcon iconData =3;                
+   } 

@@ -38,7 +38,8 @@ rpc CheckUserAcceptedTermCondition (UserAcceptedTermConditionRequest)returns (Us
 
 message VersionID{
  int32 orgId = 1;
- int32 roleId = 2;
+ int32 levelCode = 2;
+ int32 accountId = 3;
 }
 
 enum TranslationType{
@@ -416,11 +417,12 @@ message TermConditionReponse
     } 
 
     
-   message UploadTermandConditionRequestList
+  message UploadTermandConditionRequestList
    {
      repeated UploadTermandConditionRequest data = 1;
-      int32 orgId=2;
-     int32 accountId = 3;
+      int64 start_date = 2;
+      int64 end_date = 3;
+      int32 created_by = 4;
     }
 
 message UploadTermandConditionRequest
@@ -436,6 +438,9 @@ message UploadTermandConditionResponseList
      Responcecode code =1;
      string message = 2;
      repeated UploadTermandConditionResponse uploadedfilesaction = 3;
+      int64 start_date = 4;
+      int64 end_date = 5;
+      int32 created_by = 6;
     }
 
 message UploadTermandConditionResponse

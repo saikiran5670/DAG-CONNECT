@@ -25,6 +25,10 @@ namespace net.atos.daf.ct2.featureactivationservice
                  serverOptions.AddServerHeader = false;
              })
             .UseStartup<Startup>();
+         }).ConfigureLogging(builder =>
+         {
+             builder.SetMinimumLevel(LogLevel.Trace);
+             builder.AddLog4Net("log4net.config");
          });
     }
 }
