@@ -106,6 +106,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Language code  required..");
                 }
+                if (request.Languagecode.Any(char.IsDigit))
+                {
+                    return StatusCode(400, "Invalid langauge code..");
+                }
                 _logger.Info("Get translation Common  method get " + request.Languagecode);
 
                 CodeResponce CommontranslationResponseList = await _translationServiceClient.GetCommonTranslationsAsync(request);
@@ -187,15 +191,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (CodeResponseList != null
                  && CodeResponseList.Message == "There is an error In GetKeyTranslationByLanguageCode.")
                 {
-                    return StatusCode(500, "There is an error In GetKeyTranslationByLanguageCode.");
+                    return StatusCode(401, "There is an error In GetKeyTranslationByLanguageCode.");
                 }
-                else if (CodeResponseList != null && CodeResponseList.Code == Responcecode.Success)
+                else if (CodeResponseList.KeyCodeTranslationsList.Count() > 0 && CodeResponseList.Code == Responcecode.Success)
                 {
                     return Ok(CodeResponseList.KeyCodeTranslationsList);
                 }
                 else
                 {
-                    return StatusCode(500, "GetKeyTranslationByLanguageCode Response is null");
+                    return StatusCode(401, "GetKeyTranslationByLanguageCode Response is null");
                 }
             }
             catch (Exception ex)
@@ -226,7 +230,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "There is an error In GetKeyTranslationByLanguageCode.");
                 }
-                else if (dropdownResponseList != null && dropdownResponseList.Code == Responcecode.Success)
+                else if (dropdownResponseList.DropdownnameTranslationsList.Count() > 0 && dropdownResponseList.Code == Responcecode.Success)
                 {
                     return Ok(dropdownResponseList.DropdownnameTranslationsList);
                 }
@@ -257,9 +261,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 for (int i = 0; i < request.Dropdownname.Count; i++)
                 {
-                    if (request.Dropdownname[i] == null || request.Dropdownname[i] == "")
+                    if (string.IsNullOrEmpty(request.Dropdownname[i].Trim()))
                     {
-                        return StatusCode(400, "Dropdownname is required it cant be null.");
+                        return StatusCode(400, "Dropdownname invalid.");
                     }
                 }
 
@@ -273,15 +277,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (dropdownResponseList != null
                 && dropdownResponseList.Message == "There is an error In GetTranslationsFormultipleDropDowns.")
                 {
-                    return StatusCode(500, "There is an error In GetTranslationsFormultipleDropDowns.");
+                    return StatusCode(400, "There is an error In GetTranslationsFormultipleDropDowns.");
                 }
-                else if (dropdownResponseList != null && dropdownResponseList.Code == Responcecode.Success)
+                else if (dropdownResponseList.DropdownnamearrayList.Count() >= 0  && dropdownResponseList.Code == Responcecode.Success)
                 {
                     return Ok(dropdownResponseList.DropdownnamearrayList);
                 }
                 else
                 {
-                    return StatusCode(500, "GetTranslationsFormultipleDropDowns Response is null");
+                    return StatusCode(400, "Data not found");
                 }
             }
             catch (Exception ex)
@@ -359,7 +363,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (request.file[i].code == null || request.file[i].code == "")
                 {
-                    return StatusCode(400, "File Code is required.");
+                    return StatusCode(400, "invalid langauge code in file.");
                 }
             }
 
@@ -418,7 +422,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             else
             {
-                return StatusCode(500, "GetFileUploadDetails Response is null");
+                return StatusCode(404, "GetFileUploadDetails Response is null");
             }
 
         }
@@ -482,7 +486,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
 
-                // The package type should be single character
+               
                 if (string.IsNullOrEmpty(Request.LanguageCode) )
                 {
                     return StatusCode(400, "Language Code is Required");
@@ -860,5 +864,106 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         #endregion
+
+        [HttpPost]
+        [Route("updatedtcIconDetails")]
+        [AllowAnonymous]
+        public async Task<IActionResult> UpdateDTCTranslationIcon (DTCWarningIconUpdateRequest request)
+        {
+            try
+            {
+                //Validation
+                if (request.dtcWarningUpdateIcon.Count <= 0)
+                {
+                    return StatusCode(400, "DTC Warning Icon Data is required.");
+                }
+
+                //if (request.Name == "" || request.file_name == null || request.file_size <= 0)
+                //{
+                //    return StatusCode(400, "File name and valid file size is required.");
+                //}
+
+                var dtcRequest = _mapper.ToImportDTCWarningIcon(request);
+                var DTCResponse = await _translationServiceClient.UpdateDTCTranslationIconAsync(dtcRequest);
+
+                if (DTCResponse != null
+                   && DTCResponse.Message == "There is an error updating dtc Warning Icon.")
+                {
+                    return StatusCode(500, "There is an error updating  dtc Warning Icon..");
+                }
+                else if (DTCResponse != null && DTCResponse.Code == Responcecode.Success)
+                {
+                    await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                      "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                      "UpdateDTCTranslationIcon  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
+                       Request);
+                    return Ok(DTCResponse);
+                }
+                else if (DTCResponse.Message== "File Name not exist .")
+                {
+                    return Ok(DTCResponse.Message);
+                }
+                else
+                {
+                    return StatusCode(500, "Warning response is null");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                     "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                     "UpdateDTCTranslationIcon  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
+                      Request);
+                _logger.Error(null, ex);
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
+                return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
+            }
+
+        }
+
+        [HttpGet]
+        [Route("getdtcIconDetails")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetDTCTranslationIcon([FromQuery] IconGetRequest Request)
+        {
+            try
+            {
+                if (Request.Id > 0)
+                {
+                    var response = await _translationServiceClient.GetDTCTranslationIconAsync(Request);
+
+
+                    if (response != null && response.Code == Responcecode.Success)
+                    {
+                        if (response.IconData != null && response.IconData.Count > 0)
+                        {
+                            return Ok(response);
+                        }
+                        else
+                        {
+                            return StatusCode(404, "DTC warning Icon details are not found.");
+                        }
+                    }
+                    else
+                    {
+                        return StatusCode(500, response.Message);
+                    }
+                }
+                else
+                {
+                    return StatusCode(400, "Valid ID is Required");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
     }
 }

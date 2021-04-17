@@ -37,7 +37,16 @@ namespace net.atos.daf.ct2.auditservice.Services
             {
                 AuditTrail logs= new AuditTrail();
                 logs.Created_at= DateTime.Now;
-                logs.Performed_at = DateTime.Now;
+                try
+                {
+                    logs.Performed_at = Convert.ToDateTime(request.PerformedAt);
+                }
+                catch (Exception)
+                {
+
+                    logs.Performed_at = DateTime.Now;
+                }
+                
                 logs.Performed_by=request.PerformedBy;
                 logs.Component_name=request.ComponentName;
                 logs.Service_name = request.ServiceName;
