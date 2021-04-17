@@ -729,7 +729,8 @@ namespace net.atos.daf.ct2.translationservice
                 _logger.LogInformation("GetAllVersionNo method ");
                 net.atos.daf.ct2.termsandconditions.entity.VersionByID objVersionByID = new VersionByID();
                 objVersionByID.orgId = request.OrgId;
-                objVersionByID.roleId = request.RoleId;
+                objVersionByID.accountId = request.AccountId;
+                objVersionByID.levelCode = request.LevelCode;
                 var result = await termsandconditionsmanager.GetAllVersionNo(objVersionByID);
                 _logger.LogInformation("GetAllVersionNo service called.");
                 VersionNoResponse response = new VersionNoResponse();
@@ -932,8 +933,9 @@ namespace net.atos.daf.ct2.translationservice
                 UploadTermandConditionResponseList objUploadTermandConditionResponseList = new UploadTermandConditionResponseList();
                 net.atos.daf.ct2.termsandconditions.entity.TermsandConFileDataList objTermsandConFileDataList = new ct2.termsandconditions.entity.TermsandConFileDataList();
                 objTermsandConFileDataList._data = new List<TermsandConFileData>();
-                objTermsandConFileDataList.orgId = request.OrgId;
-                    objTermsandConFileDataList.accountId = request.AccountId;
+                objTermsandConFileDataList.start_date = request.StartDate;
+                objTermsandConFileDataList.end_date = request.EndDate;
+                objTermsandConFileDataList.created_by = request.CreatedBy;
                 if (request == null)
                 {
                     return objUploadTermandConditionResponseList;
@@ -945,6 +947,7 @@ namespace net.atos.daf.ct2.translationservice
                     objTermsandConFileData.version_no = item.Versionno;
                     objTermsandConFileData.code = item.Code;
                     objTermsandConFileData.description = item.Description.ToByteArray() ;
+                   
                     objTermsandConFileDataList._data.Add(objTermsandConFileData);
                 }
 

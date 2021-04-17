@@ -640,16 +640,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 VersionNoRequest versionNoRequest = new VersionNoRequest();
                 versionNoRequest.VersionNo = "V1.0";
                 net.atos.daf.ct2.translationservice.VersionID objVersionID = new VersionID();
-                objVersionID.RoleId = objVersionByID.roleId;
+                objVersionID.LevelCode = objVersionByID.levelCode;
                 objVersionID.OrgId = objVersionByID.orgId;
+                objVersionID.AccountId = objVersionByID.accountId;
                 var response = await _translationServiceClient.GetAllVersionNoAsync(objVersionID);
                 TermsAndConditions termsAndConditions = new TermsAndConditions();
                 //termsAndConditions=_mapper.
-                if (objVersionByID.roleId == 0)
+                if (objVersionByID.levelCode == 0 || objVersionByID.orgId == 0 || objVersionByID.accountId == 0)
                 {
-                    var request = Request;
-                    var Headers = request.Headers;
-                    objVersionByID.roleId = Convert.ToInt32(Headers["roleid"]);
+                    return StatusCode(400, "Level code is required.");
                 }
                 if (response != null && response.Code == Responcecode.Success)
                 {
@@ -814,26 +813,43 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPost]
         [Route("tac/uploadtac")]
-        // [AllowAnonymous]
+         [AllowAnonymous]
         public async Task<IActionResult> UploadTermsAndCondition(TermsandConFileDataList request)
         {
             _logger.Info("UploadTermsAndCondition Method post");
-            if (request.orgId == 0 || request.accountId == 0)
+          
+            UploadTermandConditionRequestList objUploadTermandConditionRequestList = new UploadTermandConditionRequestList();
+            try
             {
-                return StatusCode(400, string.Empty);
+                long startdatetime = 0; long enddatetime = 0;
+                if (request.start_date != string.Empty)
+                {
+                    startdatetime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(request.start_date));
+                }
+
+                if (request.end_date != string.Empty)
+                {//Assign only if enddate is passed
+                    enddatetime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(request.end_date));
+                }
+                objUploadTermandConditionRequestList.StartDate = startdatetime;
+                objUploadTermandConditionRequestList.EndDate = enddatetime;
             }
-            net.atos.daf.ct2.translationservice.UploadTermandConditionRequestList objUploadTermandConditionRequestList = new UploadTermandConditionRequestList();
-            objUploadTermandConditionRequestList.OrgId = request.orgId;
-            objUploadTermandConditionRequestList.AccountId = request.accountId;
+            catch (Exception)
+            {
+                _logger.Info($"Not valid date in subcription event - {Newtonsoft.Json.JsonConvert.SerializeObject(request.start_date)}");
+                return StatusCode(400, string.Empty); ;
+            }
+            objUploadTermandConditionRequestList.CreatedBy = request.created_by;
             foreach (var item in request._data)
             {
                 string[] aryFileNameContent = item.fileName.Split('_');
                 UploadTermandConditionRequest objUploadTermandConditionRequest = new UploadTermandConditionRequest();
                 if (aryFileNameContent != null && aryFileNameContent.Length > 1)
                 {
-                    //item.fileName = aryFileNameContent[0];
-                    objUploadTermandConditionRequest.Code = aryFileNameContent[1].ToUpper();
-                    objUploadTermandConditionRequest.Versionno = aryFileNameContent[2].ToUpper();
+                  
+                    objUploadTermandConditionRequest.Code = aryFileNameContent[2].ToUpper();
+                    objUploadTermandConditionRequest.Versionno = aryFileNameContent[1].ToUpper();
+                    objUploadTermandConditionRequest.FileName = item.fileName;
                     objUploadTermandConditionRequest.Description = ByteString.CopyFrom(item.description);
                     objUploadTermandConditionRequestList.Data.Add(objUploadTermandConditionRequest);
                 }
@@ -850,11 +866,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(400, string.Empty);
             }
 
-            await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
-                                    "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                                    "UploadTermsAndCondition  method in Translation controller", 0, 0,
-                                    JsonConvert.SerializeObject(request),
-                                     Request);
+            //await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+            //                        "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+            //                        "UploadTermsAndCondition  method in Translation controller", 0, 0,
+            //                        JsonConvert.SerializeObject(request),
+            //                         Request);
 
             return Ok(data.Uploadedfilesaction);
         }

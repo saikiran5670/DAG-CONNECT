@@ -47,8 +47,9 @@ namespace net.atos.daf.ct2.termsandconditions.entity
     /// </summary>
     public class TermsandConFileDataList
     {
-        public int orgId { get; set; }
-        public int accountId { get; set; }
+        public long start_date { get; set; }
+        public long end_date { get; set; }
+        public int created_by { get; set; }
         public List<TermsandConFileData> _data { get; set; }
     }
     /// <summary>
@@ -101,6 +102,7 @@ namespace net.atos.daf.ct2.termsandconditions.entity
     public class VersionByID
     {
         public int orgId { get; set; }
-        public int roleId { get; set; }
+        public int levelCode { get; set; }
+        public int accountId { get; set; }
     }
 }

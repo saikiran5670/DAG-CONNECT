@@ -34,14 +34,16 @@ rpc CheckUserAcceptedTermCondition (UserAcceptedTermConditionRequest)returns (Us
 
 message VersionID{
  int32 orgId = 1;
- int32 roleId = 2;
+ int32 levelCode = 2;
+ int32 accountId = 3;
 }
 
  message UploadTermandConditionRequestList
    {
      repeated UploadTermandConditionRequest data = 1;
-      int32 orgId=2;
-     int32 accountId = 3;
+      int64 start_date = 2;
+      int64 end_date = 3;
+      int32 created_by = 4;
     }
 
 message UploadTermandConditionRequest
@@ -50,6 +52,7 @@ message UploadTermandConditionRequest
       string  code = 2;
       bytes description = 3;
       string fileName = 4;
+     
 }
 
 message UploadTermandConditionResponseList 
