@@ -37,28 +37,36 @@ message VersionID{
  int32 roleId = 2;
 }
 
-message UploadTermandConditionRequestList {
+ message UploadTermandConditionRequestList
+   {
      repeated UploadTermandConditionRequest data = 1;
-     int32 orgId=2;
+      int32 orgId=2;
      int32 accountId = 3;
     }
 
-message UploadTermandConditionRequest{
-     string   version_no = 1;
+message UploadTermandConditionRequest
+{
+     string   versionno = 1;
       string  code = 2;
       bytes description = 3;
       string fileName = 4;
 }
 
-message UploadTermandConditionResponseList {
-     repeated UploadTermandConditionResponse uploadedfilesaction = 1;
+message UploadTermandConditionResponseList 
+{
+     Responcecode code =1;
+     string message = 2;
+     repeated UploadTermandConditionResponse uploadedfilesaction = 3;
     }
 
-message UploadTermandConditionResponse {
+message UploadTermandConditionResponse
+{
         string fileName = 1;
         string action = 2;
         int32 id = 3;
 }
+
+
 
 enum TranslationType{
     Menu = 0;

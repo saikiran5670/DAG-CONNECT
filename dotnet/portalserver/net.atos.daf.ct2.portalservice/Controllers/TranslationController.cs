@@ -832,8 +832,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (aryFileNameContent != null && aryFileNameContent.Length > 1)
                 {
                     //item.fileName = aryFileNameContent[0];
-                    objUploadTermandConditionRequest.Code = aryFileNameContent[1];
-                    objUploadTermandConditionRequest.VersionNo = aryFileNameContent[2];
+                    objUploadTermandConditionRequest.Code = aryFileNameContent[1].ToUpper();
+                    objUploadTermandConditionRequest.Versionno = aryFileNameContent[2].ToUpper();
                     objUploadTermandConditionRequest.Description = ByteString.CopyFrom(item.description);
                     objUploadTermandConditionRequestList.Data.Add(objUploadTermandConditionRequest);
                 }
