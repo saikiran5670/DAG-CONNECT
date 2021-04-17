@@ -62,6 +62,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Role name  is required");
                 }
+                if ((string.IsNullOrEmpty(request.Code.Trim())))
+                {
+                    return StatusCode(400, "Role code  is required");
+                }
                 if (request.FeatureIds.Length == 0)
                 {
                     return StatusCode(400, "Feature Ids are required.");
@@ -84,10 +88,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var role = await _roleclient.CreateAsync(ObjRole);
 
 
-                //await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Role Component",
-                //        "Role service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                //        "Create  method in Role controller", 0, request.RoleId, JsonConvert.SerializeObject(request),
-                //         Request);
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Role Component",
+                        "Role service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                        "Create  method in Role controller", 0, request.RoleId, JsonConvert.SerializeObject(request),
+                         Request);
 
                 return Ok(role);
             }
