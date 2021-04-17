@@ -348,8 +348,8 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             else
             {
-                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-                {
+                //using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                //{
                     await CheckUnknownOEM(vehicle.VIN);
 
                     var QueryStatement = @" UPDATE master.vehicle
@@ -384,8 +384,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                     await CreateAndUpdateVehicleInDataMart(vehicleDataMart);
 
 
-                    transactionScope.Complete();
-                }
+                //    transactionScope.Complete();
+                //}
             }
             return vehicle;
         }
