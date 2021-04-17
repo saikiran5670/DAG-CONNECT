@@ -735,8 +735,9 @@ namespace net.atos.daf.ct2.translation.repository
         }
        
 
-        public int CheckDtcWarningClassExist(int WarningClass, int WarningNumber, string LanguageCode)
+        public int CheckDtcWarningClassExist(int WarningClass, int WarningNumber, string excelLanguageCode)
         {
+            var LanguageCode = _translationCoreMapper.MapDTCTLanguageCode(excelLanguageCode);
             var QueryStatement = @"select id 
                                     from master.dtcwarning
                                    where class=@class and number=@number and code = @code";

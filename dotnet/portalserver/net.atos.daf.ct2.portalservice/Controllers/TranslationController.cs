@@ -106,6 +106,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Language code  required..");
                 }
+                if (request.Languagecode.Any(char.IsDigit))
+                {
+                    return StatusCode(400, "Invalid langauge code..");
+                }
                 _logger.Info("Get translation Common  method get " + request.Languagecode);
 
                 CodeResponce CommontranslationResponseList = await _translationServiceClient.GetCommonTranslationsAsync(request);
@@ -187,15 +191,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (CodeResponseList != null
                  && CodeResponseList.Message == "There is an error In GetKeyTranslationByLanguageCode.")
                 {
-                    return StatusCode(500, "There is an error In GetKeyTranslationByLanguageCode.");
+                    return StatusCode(401, "There is an error In GetKeyTranslationByLanguageCode.");
                 }
-                else if (CodeResponseList != null && CodeResponseList.Code == Responcecode.Success)
+                else if (CodeResponseList.KeyCodeTranslationsList.Count() > 0 && CodeResponseList.Code == Responcecode.Success)
                 {
                     return Ok(CodeResponseList.KeyCodeTranslationsList);
                 }
                 else
                 {
-                    return StatusCode(500, "GetKeyTranslationByLanguageCode Response is null");
+                    return StatusCode(401, "GetKeyTranslationByLanguageCode Response is null");
                 }
             }
             catch (Exception ex)
@@ -226,7 +230,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "There is an error In GetKeyTranslationByLanguageCode.");
                 }
-                else if (dropdownResponseList != null && dropdownResponseList.Code == Responcecode.Success)
+                else if (dropdownResponseList.DropdownnameTranslationsList.Count() > 0 && dropdownResponseList.Code == Responcecode.Success)
                 {
                     return Ok(dropdownResponseList.DropdownnameTranslationsList);
                 }
@@ -257,9 +261,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 for (int i = 0; i < request.Dropdownname.Count; i++)
                 {
-                    if (request.Dropdownname[i] == null || request.Dropdownname[i] == "")
+                    if (string.IsNullOrEmpty(request.Dropdownname[i].Trim()))
                     {
-                        return StatusCode(400, "Dropdownname is required it cant be null.");
+                        return StatusCode(400, "Dropdownname invalid.");
                     }
                 }
 
@@ -273,15 +277,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (dropdownResponseList != null
                 && dropdownResponseList.Message == "There is an error In GetTranslationsFormultipleDropDowns.")
                 {
-                    return StatusCode(500, "There is an error In GetTranslationsFormultipleDropDowns.");
+                    return StatusCode(400, "There is an error In GetTranslationsFormultipleDropDowns.");
                 }
-                else if (dropdownResponseList != null && dropdownResponseList.Code == Responcecode.Success)
+                else if (dropdownResponseList.DropdownnamearrayList.Count() >= 0  && dropdownResponseList.Code == Responcecode.Success)
                 {
                     return Ok(dropdownResponseList.DropdownnamearrayList);
                 }
                 else
                 {
-                    return StatusCode(500, "GetTranslationsFormultipleDropDowns Response is null");
+                    return StatusCode(400, "Data not found");
                 }
             }
             catch (Exception ex)
@@ -359,7 +363,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (request.file[i].code == null || request.file[i].code == "")
                 {
-                    return StatusCode(400, "File Code is required.");
+                    return StatusCode(400, "invalid langauge code in file.");
                 }
             }
 
@@ -418,7 +422,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             else
             {
-                return StatusCode(500, "GetFileUploadDetails Response is null");
+                return StatusCode(404, "GetFileUploadDetails Response is null");
             }
 
         }
@@ -482,7 +486,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
 
-                // The package type should be single character
+               
                 if (string.IsNullOrEmpty(Request.LanguageCode) )
                 {
                     return StatusCode(400, "Language Code is Required");
@@ -637,20 +641,27 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                VersionNoRequest versionNoRequest = new VersionNoRequest();
-                versionNoRequest.VersionNo = "V1.0";
+                switch (objVersionByID.levelCode)
+                {
+                    case 0:
+                        return StatusCode(400, "Level code is required.");
+                    case 30:
+                    case 40:
+                        if (objVersionByID.orgId <= 0)
+                            return StatusCode(400, "Organization id is required.");
+                        if (objVersionByID.accountId <= 0)
+                            return StatusCode(400, "Account id is required.");
+                        break;
+
+                }
                 net.atos.daf.ct2.translationservice.VersionID objVersionID = new VersionID();
-                objVersionID.RoleId = objVersionByID.roleId;
+                objVersionID.LevelCode = objVersionByID.levelCode;
                 objVersionID.OrgId = objVersionByID.orgId;
+                objVersionID.AccountId = objVersionByID.accountId;
                 var response = await _translationServiceClient.GetAllVersionNoAsync(objVersionID);
                 TermsAndConditions termsAndConditions = new TermsAndConditions();
                 //termsAndConditions=_mapper.
-                if (objVersionByID.roleId == 0)
-                {
-                    var request = Request;
-                    var Headers = request.Headers;
-                    objVersionByID.roleId = Convert.ToInt32(Headers["roleid"]);
-                }
+               
                 if (response != null && response.Code == Responcecode.Success)
                 {
                     if (response.VersionNos != null && response.VersionNos.Count > 0)
@@ -814,26 +825,43 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPost]
         [Route("tac/uploadtac")]
-        // [AllowAnonymous]
+        //[AllowAnonymous]
         public async Task<IActionResult> UploadTermsAndCondition(TermsandConFileDataList request)
         {
             _logger.Info("UploadTermsAndCondition Method post");
-            if (request.orgId == 0 || request.accountId == 0)
+
+            UploadTermandConditionRequestList objUploadTermandConditionRequestList = new UploadTermandConditionRequestList();
+            try
             {
-                return StatusCode(400, string.Empty);
+                long startdatetime = 0; long enddatetime = 0;
+                if (request.start_date != string.Empty)
+                {
+                    startdatetime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(request.start_date));
+                }
+
+                if (request.end_date != string.Empty)
+                {//Assign only if enddate is passed
+                    enddatetime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(request.end_date));
+                }
+                objUploadTermandConditionRequestList.StartDate = startdatetime;
+                objUploadTermandConditionRequestList.EndDate = enddatetime;
             }
-            net.atos.daf.ct2.translationservice.UploadTermandConditionRequestList objUploadTermandConditionRequestList = new UploadTermandConditionRequestList();
-            objUploadTermandConditionRequestList.OrgId = request.orgId;
-            objUploadTermandConditionRequestList.AccountId = request.accountId;
+            catch (Exception)
+            {
+                _logger.Info($"Not valid date in subcription event - {Newtonsoft.Json.JsonConvert.SerializeObject(request.start_date)}");
+                return StatusCode(400, string.Empty); ;
+            }
+            objUploadTermandConditionRequestList.CreatedBy = request.created_by;
             foreach (var item in request._data)
             {
                 string[] aryFileNameContent = item.fileName.Split('_');
                 UploadTermandConditionRequest objUploadTermandConditionRequest = new UploadTermandConditionRequest();
                 if (aryFileNameContent != null && aryFileNameContent.Length > 1)
                 {
-                    //item.fileName = aryFileNameContent[0];
-                    objUploadTermandConditionRequest.Code = aryFileNameContent[1].ToUpper();
-                    objUploadTermandConditionRequest.Versionno = aryFileNameContent[2].ToUpper();
+
+                    objUploadTermandConditionRequest.Code = aryFileNameContent[2].ToUpper();
+                    objUploadTermandConditionRequest.Versionno = aryFileNameContent[1].ToUpper();
+                    objUploadTermandConditionRequest.FileName = item.fileName;
                     objUploadTermandConditionRequest.Description = ByteString.CopyFrom(item.description);
                     objUploadTermandConditionRequestList.Data.Add(objUploadTermandConditionRequest);
                 }
@@ -845,20 +873,127 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             var data = await _translationServiceClient.UploadTermsAndConditionAsync(objUploadTermandConditionRequestList);
             _logger.Info("UploadTermsAndCondition Service called");
-            if (data == null)
+
+            if (data != null && data.Code == translationservice.Responcecode.Failed)
             {
-                return StatusCode(400, string.Empty);
+                return StatusCode(500, "There is an error while inserting/updating terms and conditions.");
             }
-
-            await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
-                                    "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                                    "UploadTermsAndCondition  method in Translation controller", 0, 0,
-                                    JsonConvert.SerializeObject(request),
-                                     Request);
-
-            return Ok(data.Uploadedfilesaction);
+            else if (data != null && data.Code == translationservice.Responcecode.Success)
+            {
+                await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                                        "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                        "UploadTermsAndCondition  method in Translation controller", 0, 0,
+                                        JsonConvert.SerializeObject(request),
+                                         Request);
+                return Ok(data.Uploadedfilesaction);
+            }
+            else
+            {
+                return StatusCode(500, "term and condition is null");
+            }
         }
 
         #endregion
+
+        [HttpPost]
+        [Route("updatedtcIconDetails")]
+        [AllowAnonymous]
+        public async Task<IActionResult> UpdateDTCTranslationIcon (DTCWarningIconUpdateRequest request)
+        {
+            try
+            {
+                //Validation
+                if (request.dtcWarningUpdateIcon.Count <= 0)
+                {
+                    return StatusCode(400, "DTC Warning Icon Data is required.");
+                }
+
+                //if (request.Name == "" || request.file_name == null || request.file_size <= 0)
+                //{
+                //    return StatusCode(400, "File name and valid file size is required.");
+                //}
+
+                var dtcRequest = _mapper.ToImportDTCWarningIcon(request);
+                var DTCResponse = await _translationServiceClient.UpdateDTCTranslationIconAsync(dtcRequest);
+
+                if (DTCResponse != null
+                   && DTCResponse.Message == "There is an error updating dtc Warning Icon.")
+                {
+                    return StatusCode(500, "There is an error updating  dtc Warning Icon..");
+                }
+                else if (DTCResponse != null && DTCResponse.Code == Responcecode.Success)
+                {
+                    await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                      "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                      "UpdateDTCTranslationIcon  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
+                       Request);
+                    return Ok(DTCResponse);
+                }
+                else if (DTCResponse.Message== "File Name not exist .")
+                {
+                    return Ok(DTCResponse.Message);
+                }
+                else
+                {
+                    return StatusCode(500, "Warning response is null");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                     "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                     "UpdateDTCTranslationIcon  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
+                      Request);
+                _logger.Error(null, ex);
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }
+                return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
+            }
+
+        }
+
+        [HttpGet]
+        [Route("getdtcIconDetails")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetDTCTranslationIcon([FromQuery] IconGetRequest Request)
+        {
+            try
+            {
+                if (Request.Id > 0)
+                {
+                    var response = await _translationServiceClient.GetDTCTranslationIconAsync(Request);
+
+
+                    if (response != null && response.Code == Responcecode.Success)
+                    {
+                        if (response.IconData != null && response.IconData.Count > 0)
+                        {
+                            return Ok(response);
+                        }
+                        else
+                        {
+                            return StatusCode(404, "DTC warning Icon details are not found.");
+                        }
+                    }
+                    else
+                    {
+                        return StatusCode(500, response.Message);
+                    }
+                }
+                else
+                {
+                    return StatusCode(400, "Valid ID is Required");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
     }
 }
