@@ -29,6 +29,7 @@ export class DtcTranslationComponent implements OnInit {
   loginAccountId: any;
   serverError: any = false;
   successMsg: any = false;
+  errorMsg: any = '';
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) { 
       this.defaultTranslation();
@@ -107,9 +108,15 @@ export class DtcTranslationComponent implements OnInit {
         this.successMsg = true;
         setTimeout(() => {  
           this.successMsg = false;
+          clearInput.clear();
         }, 5000);
-      }, (error)=>{
+      }, (error) => {
         this.serverError = true;
+        if(error.status == 400){
+          this.errorMsg = this.translationData.lblImportingViolationError || 'Violates foreign key constraint for Icon_ID, Please enter valid data for Warning_Class and Warning_Number';
+        }else{
+          this.errorMsg = this.translationData.lblImportingError || 'Importing Error';
+        }
       });
     }else{
       console.log("Empty Excel File...");
@@ -123,6 +130,12 @@ export class DtcTranslationComponent implements OnInit {
   }
 
   getImportData(item: any){
+    if(item['Warning Advice']){
+      item['Warning Advice'] = item['Warning Advice'].replace("\"", "\\u022");
+    }
+    if(item['Warning Description']){
+      item['Warning Description'] = item['Warning Description'].replace("\"", "\\u022");
+    }
     let obj = {
       id: 0,
       code: item['Warning Language'],
@@ -142,4 +155,7 @@ export class DtcTranslationComponent implements OnInit {
     return obj;
   }
 
+  onBrowse(){
+    this.serverError = false;
+  }
 }

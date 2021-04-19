@@ -595,6 +595,13 @@ namespace net.atos.daf.ct2.translation.repository
                         int WarningId = CheckDtcWarningClassExist(item.warning_class, item.number,item.code);
                         var iconID = GetIcocIDFromIcon(item.warning_class, item.number);
 
+                        if (iconID == 0)
+                        {
+                            item.message = "violates foreign key constraint for Icon_ID";
+                            dtcwarningLists.Add(item);
+                            return dtcwarningList;
+                        }
+
                         var LanguageCode = _translationCoreMapper.MapDTCTLanguageCode(item.code);
 
 
@@ -709,6 +716,10 @@ namespace net.atos.daf.ct2.translation.repository
                 var parameter = new DynamicParameters();
                 List<DTCwarning> dtcWarninglist = new List<DTCwarning>();
                 string GetDTCWarningDataQueryStatement = string.Empty;
+                if (LanguageCode.Length == 2)
+                {
+                    LanguageCode = _translationCoreMapper.MapDTCTLanguageCode(LanguageCode);
+                }
 
                 parameter.Add("@LanguageCode", LanguageCode);
                 GetDTCWarningDataQueryStatement = @"SELECT id, code, type, veh_type, class as Warningclass, number, description, advice, expires_at,icon_id, created_at, created_by, modified_at, modified_by
