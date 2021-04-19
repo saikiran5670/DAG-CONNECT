@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.account.entity
         public string LastName { get; set; }
         public string Password { get; set; }        
         public AccountType AccountType { get; set; }
-        public int  Organization_Id { get; set; } 
+        public int? Organization_Id { get; set; } 
         public string DriverId { get; set; }
         public bool isDuplicateInOrg { get; set; } 
         public long? StartDate { get; set; }   

@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.accountservice
             request.Salutation = account.Salutation;            
             request.FirstName = account.FirstName;
             request.LastName = account.LastName ?? string.Empty;
-            request.OrganizationId = account.Organization_Id;
+            request.OrganizationId = account.Organization_Id.Value;
             if (account.PreferenceId.HasValue)
                 request.PreferenceId = account.PreferenceId.Value;
             if (account.BlobId.HasValue)
@@ -109,7 +109,7 @@ namespace net.atos.daf.ct2.accountservice
             response.Salutation = account.Salutation;
             response.FirstName = account.FirstName;
             response.LastName = account.LastName ?? string.Empty;
-            response.OrganizationId = account.Organization_Id;
+            response.OrganizationId = account.Organization_Id.Value;
             if (account.PreferenceId.HasValue)
                 response.PreferenceId = account.PreferenceId.Value;
             if (account.BlobId.HasValue)

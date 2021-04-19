@@ -30,14 +30,17 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
         [JsonIgnore]
         public string code { get; set; }
         public byte[] description { get; set; }
+       
+          
     }
     /// <summary>
     /// List of data from front end
     /// </summary>
     public class TermsandConFileDataList
     {
-        public int orgId { get; set; }
-        public int accountId { get; set; }
+        public string start_date { get; set; }
+        public string end_date { get; set; }
+        public int created_by { get; set; }
         public List<TermsandConFileData> _data { get; set; }
     }
     /// <summary>
@@ -66,6 +69,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
     public class VersionByID
     {
         public int orgId { get; set; }
-        public int roleId { get; set; }
+        public int levelCode { get; set; }
+        public int accountId { get; set; }
     }
 }

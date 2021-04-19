@@ -13,6 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.email\net.atos.daf.ct2.email.csproj" />
+    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.account\net.atos.daf.ct2.account.csproj" />
   </ItemGroup>
 </Project>

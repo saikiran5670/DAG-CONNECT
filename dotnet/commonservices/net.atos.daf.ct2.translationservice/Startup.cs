@@ -47,6 +47,8 @@ namespace net.atos.daf.ct2.translationservice
              services.AddTransient<ITranslationRepository, TranslationRepository>();
             services.AddTransient<ITermsAndConditionsManager, TermsAndConditionsManager>();
             services.AddTransient<ITermsAndConditionsRepository, TermsAndConditionsRepository>();
+            services.AddTransient<IIconManager, IconManager>();
+            services.AddTransient<IIconRepository, IconRepository>();
 
         }
 

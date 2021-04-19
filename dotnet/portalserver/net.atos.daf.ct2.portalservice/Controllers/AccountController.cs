@@ -287,7 +287,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("changepassword")]
         public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
         {
-
             try
             {
                 if (string.IsNullOrEmpty(request.EmailId) || string.IsNullOrEmpty(request.Password))
@@ -297,6 +296,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.ChangePasswordRequest changePasswordRequest = new AccountBusinessService.ChangePasswordRequest();
                 changePasswordRequest.EmailId = request.EmailId;
                 changePasswordRequest.Password = request.Password;
+                changePasswordRequest.OrgId = _userDetails.orgId;
                 var response = await _accountClient.ChangePasswordAsync(changePasswordRequest);
                 if (response.Code == AccountBusinessService.Responcecode.Success)
                 {                   
@@ -465,7 +465,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 var resetPasswordInitiateRequest = new AccountBusinessService.ResetPasswordInitiateRequest();
                 resetPasswordInitiateRequest.EmailId = request.EmailId;
-
+                resetPasswordInitiateRequest.OrgId = _userDetails.orgId;
                 var response = await _accountClient.ResetPasswordInitiateAsync(resetPasswordInitiateRequest);
                 if (response.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -528,7 +528,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             return StatusCode(500, "Error while fetching reset password token status.");
         }
-
+        
+        [AllowAnonymous]
         [HttpPost]
         [Route("resetpassword")]
         [Route("createpassword")]
@@ -543,7 +544,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var resetPasswordRequest = new AccountBusinessService.ResetPasswordRequest();
                 resetPasswordRequest.ProcessToken = request.ProcessToken;
                 resetPasswordRequest.Password = request.Password;
-
+                resetPasswordRequest.OrgId = _userDetails.orgId;
                 var response = await _accountClient.ResetPasswordAsync(resetPasswordRequest);
                 if (response.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -571,6 +572,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("resetpasswordinvalidate")]
         public async Task<IActionResult> ResetPasswordInvalidate([FromBody] ResetPasswordInvalidateRequest request)

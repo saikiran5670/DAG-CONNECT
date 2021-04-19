@@ -1,15 +1,14 @@
+using Dapper;
+using net.atos.daf.ct2.account.entity;
+using net.atos.daf.ct2.account.ENUM;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Transactions;
-using Dapper;
 using System.Threading.Tasks;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.utilities;
-using net.atos.daf.ct2.account.entity;
-using net.atos.daf.ct2.account.ENUM;
-using System.Text;
+using System.Transactions;
 
 namespace net.atos.daf.ct2.account
 {
@@ -463,7 +462,7 @@ namespace net.atos.daf.ct2.account
             }
         }        
 
-        public async Task<string> GetLanguageCodePreference(string emailId)
+        public async Task<string> GetLanguageCodePreference(string emailId, int? orgId)
         {
             try
             {
@@ -478,13 +477,28 @@ namespace net.atos.daf.ct2.account
 
                 if(!accountPreferenceId.HasValue)
                 {
-                    string orgQuery =
-                    @"SELECT o.preference_id from master.account acc
-                    INNER JOIN master.accountOrg ao ON acc.id=ao.account_id
-                    INNER JOIN master.organization o ON ao.organization_id=o.id
-                    where acc.email = @emailId";
+                    string orgQuery = string.Empty;
+                    int? orgPreferenceId = null;
+                    if (orgId.HasValue)
+                    {
+                        var orgParameter = new DynamicParameters();
+                        orgParameter.Add("@orgId", orgId);
 
-                    var orgPreferenceId = await dataAccess.QueryFirstAsync<int?>(orgQuery, parameter);
+                        orgQuery = @"SELECT preference_id from master.organization WHERE id=@orgId";
+
+                        orgPreferenceId = await dataAccess.QueryFirstAsync<int?>(orgQuery, orgParameter);
+                    }
+                    else
+                    {
+                        orgQuery =
+                            @"SELECT o.preference_id from master.account acc
+                            INNER JOIN master.accountOrg ao ON acc.id=ao.account_id
+                            INNER JOIN master.organization o ON ao.organization_id=o.id
+                            where acc.email = @emailId";
+
+                        orgPreferenceId = await dataAccess.QueryFirstAsync<int?>(orgQuery, parameter);
+                    }
+
                     if (!orgPreferenceId.HasValue)
                         return "EN-GB";
                     else
@@ -513,6 +527,22 @@ namespace net.atos.daf.ct2.account
                 var languageCode = await dataAccess.QueryFirstAsync<string>(query, parameter);
 
                 return languageCode;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<Account>> GetAccountOfPasswordExpiry(int noOfDays)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@noOfDays", noOfDays);
+
+                var query = @"Select acc.id as Id, acc.email as EmailId, acc.salutation as Salutation, acc.first_name as FirstName, last_name as LastName from master.account acc inner join master.passwordpolicy pp on acc.id = pp.account_id where State= 'A' and EXTRACT(day FROM(now() - TO_TIMESTAMP(modified_at / 1000))) = @noOfDays";
+                return await dataAccess.QueryAsync<Account>(query, parameter);
             }
             catch (Exception ex)
             {
