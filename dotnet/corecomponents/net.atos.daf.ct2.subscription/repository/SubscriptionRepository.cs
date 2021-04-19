@@ -167,7 +167,7 @@ namespace net.atos.daf.ct2.subscription.repository
                         string queryInsert = @"insert into master.subscription(organization_id, subscription_id, type, package_code, package_id, vehicle_id, subscription_start_date, subscription_end_date, state,is_zuora_package)  
                                      values(@organization_id, @subscription_id, @type, @package_code, @package_id, @vehicle_id, @subscription_start_date, @subscription_end_date, @state,@is_zuora_package) RETURNING id";
 
-                        int subid = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
+                        long subid = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
                         if (subid > 0)
                             objSubscriptionResponse.orderId = SubscriptionId.ToString();
                     }
@@ -270,7 +270,7 @@ namespace net.atos.daf.ct2.subscription.repository
             {
                 SubscriptionResponse objSubscriptionResponse = new SubscriptionResponse();
 
-                if (string.IsNullOrEmpty(objUnSubscription.OrderID) && Convert.ToInt32(objUnSubscription.OrderID) != 0)// for Organization
+                if (!string.IsNullOrEmpty(objUnSubscription.OrganizationID) && Convert.ToInt32(objUnSubscription.OrderID) != 0)// for Organization
                 {
                     //To Get Organizationid by orgcode
                     int orgid = await GetOrganizationIdByCode(objUnSubscription.OrganizationID);
@@ -279,7 +279,7 @@ namespace net.atos.daf.ct2.subscription.repository
                         return null;
                     }
                     //To Get SubscriptionId and Type
-                    var data = await SubscriptionIdExits(Convert.ToInt32(objUnSubscription.OrderID), orgid);
+                    var data = await SubscriptionIdExits(objUnSubscription.OrderID, orgid);
                     
                     if (data == null)
                     {
@@ -293,14 +293,14 @@ namespace net.atos.daf.ct2.subscription.repository
                             return null;
                         }
                         var parameter = new DynamicParameters();
-                        parameter.Add("@subscription_id", objUnSubscription.OrderID);
+                        parameter.Add("@id", data.id);
                         parameter.Add("@subscription_end_date", objUnSubscription.EndDateTime);
                         parameter.Add("@organization_id", orgid);
                         parameter.Add("@state", "I");
-                        string queryUpdate = @"update master.subscription set state=@state, subscription_end_date=@subscription_end_date where subscription_id=@subscription_id and organization_id=@organization_id";
+                        string queryUpdate = @"update master.subscription set state=@state, subscription_end_date=@subscription_end_date where id=@id and organization_id=@organization_id";
                         int roweffected = await dataAccess.ExecuteAsync
                             (queryUpdate, parameter);
-                        objSubscriptionResponse.orderId = objUnSubscription.OrderID;
+                        objSubscriptionResponse.orderId = objUnSubscription.OrderID.ToString();
                         return objSubscriptionResponse;
                     }
                 
@@ -345,9 +345,9 @@ namespace net.atos.daf.ct2.subscription.repository
                             parameter.Add("@id", item);
                  string queryInsert = "update master.subscription set state=@state,subscription_end_date=@subscription_end_date where id=@id";
 
-                            int rowEffected = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
+                            int rowEffected = await dataAccess.ExecuteAsync(queryInsert, parameter);
                         }
-                            objSubscriptionResponse.orderId = objUnSubscription.OrderID;
+                            objSubscriptionResponse.orderId = objUnSubscription.OrderID.ToString();
                             objSubscriptionResponse.numberOfVehicles = objvinList.Count;
                     }
                 }
@@ -396,6 +396,10 @@ namespace net.atos.daf.ct2.subscription.repository
                     }
                 }
                 Package objPackage = await GetPackageTypeById(packageId);
+                if (objPackage == null)
+                {
+                    return null;
+                }
                 long SubscriptionId = 0;
                 SubscriptionId = await GetTopOrderId();
                 var parameter = new DynamicParameters();
