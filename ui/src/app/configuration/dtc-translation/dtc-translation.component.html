@@ -24,7 +24,7 @@
                         <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                             <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                                 <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                                    <mat-label>{{ translationData.lblUploadUpdatedExcelFile || 'Upload updated Excel file' }} <span class='mandatoryColor'>*</span></mat-label>
+                                    <mat-label>{{ translationData.lblUploadExcelFile || 'Upload Excel file' }} <span class='mandatoryColor'>*</span></mat-label>
                                     <mat-form-field appearance="outline">
                                         <ngx-mat-file-input #removableInput (change)="addfile($event)" [accept]="'.xlsx'" formControlName="uploadFile" placeholder="Upload Excel File" ></ngx-mat-file-input>
                                         <button mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse || 'Browse' }}</button>
