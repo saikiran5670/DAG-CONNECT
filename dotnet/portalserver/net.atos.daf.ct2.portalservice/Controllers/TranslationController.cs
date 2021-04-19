@@ -912,10 +912,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "DTC Warning Icon Data is required.");
                 }
 
-                //if (request.Name == "" || request.file_name == null || request.file_size <= 0)
-                //{
-                //    return StatusCode(400, "File name and valid file size is required.");
-                //}
+                foreach(var item in request.dtcWarningUpdateIcon)
+                { 
+                if (item.Icon.Length <= 0  || item.Name == null || item.Name == "")
+                {
+                    return StatusCode(400, "Icon name and valid Icon size is required.");
+                }
+                }
 
                 var dtcRequest = _mapper.ToImportDTCWarningIcon(request);
                 var DTCResponse = await _translationServiceClient.UpdateDTCTranslationIconAsync(dtcRequest);
@@ -971,7 +974,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     var response = await _translationServiceClient.GetDTCTranslationIconAsync(Request);
 
 
-                    if (response != null && response.Code == Responcecode.Success)
+                    if (response != null )
                     {
                         if (response.IconData != null && response.IconData.Count > 0)
                         {

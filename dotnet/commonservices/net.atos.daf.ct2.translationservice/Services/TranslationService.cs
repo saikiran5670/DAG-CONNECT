@@ -931,7 +931,7 @@ namespace net.atos.daf.ct2.translationservice
                 else
                 {
                     Response.Code = Responcecode.Failed;
-                    Response.Message = "Get Icon in DTC translation failed.";
+                    Response.Message = "Resource Not Found ";
                 }
                  return await Task.FromResult(Response);
             }
