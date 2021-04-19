@@ -85,38 +85,63 @@ export class LoginComponent implements OnInit {
                 if(getAccresp[0].preferenceId != 0){
                   this.accountService.getAccountPreference(getAccresp[0].preferenceId).subscribe(accPref => {
                       this.translationService.getLanguageCodes().subscribe(languageCodes => {
-                        let filterLang = languageCodes.filter(item => item.id == accPref["languageId"]);
-                        let translationObj = {
-                          id: 0,
-                          code: filterLang[0].code, //-- TODO: Lang code based on account 
-                          type: "Menu",
-                          name: "",
-                          value: "",
-                          filter: "",
-                          menuId: 0 //-- for common & user preference
+                      let objData = {
+                        AccountId: data.body.accountInfo.id,
+                        OrganizationId: data.body.accountOrganization[0].id
+                      }  
+                      this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
+                        if(!response){
+                          let filterLang = languageCodes.filter(item => item.id == accPref["languageId"]);
+                          let translationObj = {
+                            id: 0,
+                            code: filterLang[0].code, //-- TODO: Lang code based on account 
+                            type: "Menu",
+                            name: "",
+                            value: "",
+                            filter: "",
+                            menuId: 0 //-- for common & user preference
+                          }
+                          this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
+                            this.processTranslation(resp);
+                            this.openTermsConditionsPopup(data.body, getAccresp[0], accPref);
+                          });
                         }
-                        this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
-                        this.processTranslation(resp);
-                        this.openTermsConditionsPopup(data.body, getAccresp[0], accPref);
-                      });
+                        else{
+                          this.showOrganizationRolePopup(data.body, getAccresp[0], accPref);
+                        }
+                      }, (error) => {
+                        this.showOrganizationRolePopup(data.body, getAccresp[0], accPref);
+                      })  
                     });
                   })
                 }
                 else{
-                  let translationObj = {
-                    id: 0,
-                    code: "EN-GB",
-                    type: "Menu",
-                    name: "",
-                    value: "",
-                    filter: "",
-                    menuId: 0 //-- for common & user preference
-                  }
-                  this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
-                    this.processTranslation(resp);
-                    this.openTermsConditionsPopup(data.body, getAccresp[0], "");
-                  });
-                  
+                  let objData = {
+                    AccountId: data.body.accountInfo.id,
+                    OrganizationId: data.body.accountOrganization[0].id
+                  }  
+                  this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
+                    if(!response){
+                      let translationObj = {
+                        id: 0,
+                        code: "EN-GB", //-- TODO: Lang code based on account 
+                        type: "Menu",
+                        name: "",
+                        value: "",
+                        filter: "",
+                        menuId: 0 //-- for common & user preference
+                      }
+                      this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
+                        this.processTranslation(resp);
+                        this.openTermsConditionsPopup(data.body, getAccresp[0], "");
+                      });
+                    }
+                    else{
+                      this.showOrganizationRolePopup(data.body, getAccresp[0], "");
+                    }
+                  }, (error) => {
+                    this.showOrganizationRolePopup(data.body, getAccresp[0], "");
+                  })  
                 } 
               }, (error) => {
                 this.loginClicks = 0;

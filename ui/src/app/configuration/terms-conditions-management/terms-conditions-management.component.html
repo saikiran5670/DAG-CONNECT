@@ -13,11 +13,11 @@
         <form [formGroup]="uploadTermsConditionsFormGroup">
             <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUploadNewTermsAndConditions || 'Upload New Terms and Conditions`' }}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUploadNewTermsAndConditions || 'Upload New Terms and Conditions' }}</span>
                 </div>
             </div>
-            <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="15px">
-                <div style='width: 90%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="center">
+            <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="15px">
+                <div style='width: 60%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="center">
                     <div style='padding: 30px;' fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="start">
                         <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                             <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
@@ -45,6 +45,11 @@
                                     </button>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div fxLayout="row" style='padding: 10px;' >
+                        <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
+                            <span>Please follow the file name convension as : TermsConditions_(version)_(language code).pdf    (Ex. TermsConditions_v2.1_EN.pdf)</span>
                         </div>
                     </div>
                 </div>
