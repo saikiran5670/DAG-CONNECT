@@ -28,6 +28,7 @@ export class DtcTranslationComponent implements OnInit {
   filelist: any = [];
   loginAccountId: any;
   serverError: any = false;
+  successMsg: any = false;
 
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) { 
       this.defaultTranslation();
@@ -103,6 +104,10 @@ export class DtcTranslationComponent implements OnInit {
       });
       this.translationService.importDTCTranslationData({ dtcWarningToImport: transUploadData }).subscribe((uploadedData: any) => {
         console.log("uploadedData:: ", uploadedData);
+        this.successMsg = true;
+        setTimeout(() => {  
+          this.successMsg = false;
+        }, 5000);
       }, (error)=>{
         this.serverError = true;
       });
@@ -111,6 +116,10 @@ export class DtcTranslationComponent implements OnInit {
       this.excelEmptyMsg = true;
       clearInput.clear();
     }
+  }
+
+  onClose(){
+    this.successMsg = false;
   }
 
   getImportData(item: any){
