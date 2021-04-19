@@ -82,12 +82,17 @@ namespace net.atos.daf.ct2.email
                     case EmailEventType.ChangeResetPasswordSuccess:
                         emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.accountInfo.FullName, baseUrl.AbsoluteUri);
                         break;
-                    default:
-                        messageRequest.Subject = string.Empty;
+                    case EmailEventType.PasswordExpiryNotification:
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.accountInfo.FullName, baseUrl.AbsoluteUri, messageRequest.ToAddressList.First().Key,DateTime.Now.AddDays(messageRequest.RemainingDaysToExpire).ToString("dd-MMM-yyyy"));
                         break;
                 }
-
-                messageRequest.Subject = emailTemplate.TemplateLabels.Where(x => x.LabelKey.EndsWith("_Subject")).First().TranslatedValue;
+                
+                if (emailTemplate.TemplateLabels.Count() > 0)
+                {
+                    var translationLabel = emailTemplate.TemplateLabels.Where(x => x.LabelKey.EndsWith("_Subject")).FirstOrDefault();
+                    messageRequest.Subject = translationLabel == null ? " " : translationLabel.TranslatedValue;
+                }
+                                    
                 messageRequest.Content = emailContent;
                 messageRequest.ContentMimeType = emailTemplate.ContentType == (char)EmailContentType.Html ? MimeType.Html : MimeType.Text;
                 

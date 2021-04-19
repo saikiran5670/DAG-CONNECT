@@ -813,8 +813,9 @@ namespace net.atos.daf.ct2.translationservice
                     tramcond.State = item.State.ToString();
                     tramcond.StartDate = item.StartDate.ToString();
                     tramcond.AcceptedDate = item.Accepted_Date.ToString();
-                    tramcond.FirstName = item.FirstName;
-                    tramcond.Lastname = item.Lastname;
+                    tramcond.CreatedAt = item.Created_At.ToString();
+                    tramcond.FirstName = item.FirstName == null ? "" : item.FirstName;
+                    tramcond.Lastname = item.Lastname == null ? "" : item.Lastname;
                     Response.TermCondition.Add(tramcond);
                 }
                 Response.Code = Responcecode.Success;
