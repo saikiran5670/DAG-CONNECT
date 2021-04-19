@@ -36,6 +36,16 @@ export class OrganizationService {
     return getHeaderObj;
   }
   
+  getOrganizations(id: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.organizationServiceUrl}/GetOrganizations?OrganizationId=${id}`,headers)
+      .pipe(catchError(this.handleError));
+  }
+
   getOrganizationPreference(id: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -52,8 +62,21 @@ export class OrganizationService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.organizationServiceUrl}/get?organizationId=${id}`,headers)
+      .get<any[]>(`${this.organizationServiceUrl}/GetOrganizationInfo?organizationId=${id}`,headers)
       .pipe(catchError(this.handleError));
+
+      // return this.httpClient
+      // .get<any[]>(`${this.organizationServiceUrl}/get?organizationId=${id}`,headers)
+      // .pipe(catchError(this.handleError));
+  }
+
+  updatePreferences(data: any): Observable<any> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
+    return this.httpClient.put<any[]>(
+      `${this.organizationServiceUrl}/preference/update`, 
+       data , 
+      { headers, responseType: 'text' as 'json'}
+    ).pipe(catchError(this.handleError));
   }
 
   getRelationship(data: any): Observable<any[]> {
