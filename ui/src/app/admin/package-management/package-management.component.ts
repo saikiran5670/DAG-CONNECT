@@ -317,6 +317,10 @@ export class PackageManagementComponent implements OnInit {
 
   updateImportView(_event){
     this.importClicked = _event;
+    if(!_event){
+      this.initData = [];
+      this.loadPackageData();
+    }
     console.log(_event)
   }
   getexportedValues(dataSource){
