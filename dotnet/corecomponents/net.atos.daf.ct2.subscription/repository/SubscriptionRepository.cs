@@ -218,17 +218,26 @@ namespace net.atos.daf.ct2.subscription.repository
                                 {
                                     count = ++count;
                                 }
+                                
                             }
                             //This will get us the list of vins exits on Vehicle Table or Not
                             if (vinActivated == 0)
                             {
                                 objvinList.Add(vinexist);
                             }
-
+                            if(response != null && response.subscription_id > 0)
+                            objSubscriptionResponse.orderId = response.subscription_id.ToString();
                         }
 
-                        long SubscriptionId ;
-                        SubscriptionId = await GetTopOrderId();
+                        long SubscriptionId =0;
+                        if (string.IsNullOrEmpty(objSubscriptionResponse.orderId) == true)
+                        {
+                            SubscriptionId = await GetTopOrderId();
+                        }
+                        else
+                        {
+                            SubscriptionId = Convert.ToInt64(objSubscriptionResponse.orderId);
+                        }
                         var parameter = new DynamicParameters();
                         parameter.Add("@organization_id", orgid);
                         parameter.Add("@subscription_id", SubscriptionId);
