@@ -6,6 +6,7 @@ import { LandmarksComponent } from './landmarks/landmarks.component';
 import { VehicleManagementComponent } from './vehicle-management/vehicle-management.component';
 import { VehicleGroupManagementComponent } from './vehicle-group-management/vehicle-group-management.component';
 import { DriverManagementComponent } from '../admin/driver-management/driver-management.component';
+import { TermsConditionsManagementComponent } from './terms-conditions-management/terms-conditions-management.component';
 
 const routes: Routes = [
   {
@@ -15,6 +16,7 @@ const routes: Routes = [
       { path: "reportscheduler", component: LandmarksComponent },
       { path: "drivermanagement", component: DriverManagementComponent },
       { path: "vehiclemanagement", component: VehicleManagementComponent },
+      { path: "termsandcondition", component: TermsConditionsManagementComponent }
       // { path: "vehiclegroupmanagement", component: VehicleGroupManagementComponent }
     ]
   }
