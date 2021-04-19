@@ -37,6 +37,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
         
         [HttpPost]
         [Route("update")]
+        [AllowAnonymous]
         public async Task<IActionResult> Subscription(SubsCriptionEntity objsubscriptionActivation)
         {
             try
@@ -81,7 +82,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     if (order == null)
                     {
                         logger.LogInformation($"No Data found for Subscription, payload - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation)}");
-                        return StatusCode(400, string.Empty);
+                        return StatusCode(404, string.Empty);
                     }
                     logger.LogInformation($"Subscription data has been Inserted, order ID - {order.orderId}");
                     return Ok(order);
@@ -93,7 +94,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     {
                         return StatusCode(400, string.Empty);
                     }
-                    else if (string.IsNullOrEmpty(objsubscriptionActivation.UnsubscribeEvent.OrderID))
+                    else if (objsubscriptionActivation.UnsubscribeEvent.OrderID <= 0)
                     {
                         return StatusCode(400, string.Empty);
                     }

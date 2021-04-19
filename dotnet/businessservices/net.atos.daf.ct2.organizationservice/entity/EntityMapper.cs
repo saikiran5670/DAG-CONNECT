@@ -16,11 +16,11 @@ namespace net.atos.daf.ct2.organizationservice.entity
             preference.TimezoneId = request.TimezoneId;
             preference.CurrencyId = request.CurrencyId;
             preference.UnitId = request.UnitId;
-            preference.VehicleDisplayId = request.VehicleDisplayId;
+            //preference.VehicleDisplayId = request.VehicleDisplayId;
             preference.DateFormatTypeId = request.DateFormatId;
             // preference.DriverId = request.DriverId;
             preference.TimeFormatId = request.TimeFormatId;
-            preference.LandingPageDisplayId = request.LandingPageDisplayId;
+           // preference.LandingPageDisplayId = request.LandingPageDisplayId;
             return preference;
         }    
 
@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.organizationservice.entity
             objResponse.Language = request.LanguageName;
             objResponse.TimeFormat = request.TimeFormat;
             objResponse.DateFormat = request.DateFormatType;
-            objResponse.VehicleDisplay = request.VehicleDisplay;
+            //objResponse.VehicleDisplay = request.VehicleDisplay;
             objResponse.Unit = request.Unit;
             objResponse.Timezone = request.Timezone;
 
