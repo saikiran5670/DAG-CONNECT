@@ -459,8 +459,6 @@ namespace net.atos.daf.ct2.organization.repository
                     parameterInsert.Add("@PostalCode", customer.PostalCode);
                     parameterInsert.Add("@City", customer.City);
                     parameterInsert.Add("@CountryCode", customer.CountryCode);
-                   
-
                     if ((customer.ReferenceDateTime != null) && (DateTime.Compare(DateTime.MinValue, customer.ReferenceDateTime) < 0))
                     {
                         referenceDateTime = UTCHandling.GetUTCFromDateTime(customer.ReferenceDateTime.ToString());
@@ -474,9 +472,10 @@ namespace net.atos.daf.ct2.organization.repository
                     }
                     parameterInsert.Add("@vehicle_default_opt_in", "I");
                     parameterInsert.Add("@driver_default_opt_in", "U");
-                   parameterInsert.Add("@reference_date", referenceDateTime);
-                    string queryInsert = "insert into master.organization(org_id, name,type ,address_type, street, street_number, postal_code, city,country_code,reference_date,vehicle_default_opt_in,driver_default_opt_in) " +
-                                  "values(@org_id, @Name,@Type ,@AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@reference_date,@vehicle_default_opt_in,@driver_default_opt_in) RETURNING id";
+                    parameterInsert.Add("@reference_date", referenceDateTime);
+                    parameterInsert.Add("@state", "A");
+                    string queryInsert = "insert into master.organization(org_id, name,type ,address_type, street, street_number, postal_code, city,country_code,reference_date,vehicle_default_opt_in,driver_default_opt_in,state) " +
+                                  "values(@org_id, @Name,@Type ,@AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@reference_date,@vehicle_default_opt_in,@driver_default_opt_in,@state) RETURNING id";
 
                    int organizationId= await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameterInsert);
 
@@ -591,8 +590,9 @@ namespace net.atos.daf.ct2.organization.repository
                     parameterOrgInsert.Add("@CountryCode", keyHandOver.CountryCode);   
                     parameterOrgInsert.Add("@vehicle_default_opt_in", "U");
                     parameterOrgInsert.Add("@driver_default_opt_in","U");
+                    parameterOrgInsert.Add("@state", "A");
 
-                     if (keyHandOver.ReferenceDateTime != null)
+                if (keyHandOver.ReferenceDateTime != null)
                     {
                         parameterOrgInsert.Add("@reference_date",  UTCHandling.GetUTCFromDateTime(keyHandOver.ReferenceDateTime));
                     }
@@ -601,8 +601,8 @@ namespace net.atos.daf.ct2.organization.repository
                          parameterOrgInsert.Add("@reference_date",  0);
                     }
 
-                    string queryOrgInsert = "insert into master.organization(org_id,name,address_type,street,street_number,postal_code,city,country_code,reference_date,vehicle_default_opt_in,driver_default_opt_in) " +
-                                  "values(@org_id,@Name,@AddressType,@AddressStreet,@AddressStreetNumber,@PostalCode,@City,@CountryCode,@reference_date,@vehicle_default_opt_in,@driver_default_opt_in) RETURNING id";
+                    string queryOrgInsert = "insert into master.organization(org_id,name,address_type,street,street_number,postal_code,city,country_code,reference_date,vehicle_default_opt_in,driver_default_opt_in,state) " +
+                                  "values(@org_id,@Name,@AddressType,@AddressStreet,@AddressStreetNumber,@PostalCode,@City,@CountryCode,@reference_date,@vehicle_default_opt_in,@driver_default_opt_in,@state) RETURNING id";
 
                     return  await dataAccess.ExecuteScalarAsync<int>(queryOrgInsert, parameterOrgInsert);            
                 }
@@ -973,11 +973,30 @@ namespace net.atos.daf.ct2.organization.repository
             orgResponse.city = record.city;
             orgResponse.country_code = record.country_code;
             orgResponse.org_id = record.org_id;
-            orgResponse.state = record.state;
+            orgResponse.state = Convert.ToChar(record.state);
             orgResponse.reference_date = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(record.reference_date), "America/New_York", "yyyy-MM-ddTHH:mm:ss");
             orgResponse.vehicle_default_opt_in = record.vehicle_default_opt_in;
             orgResponse.driver_default_opt_in = record.driver_default_opt_in;
             return orgResponse;
+        }
+
+        public string MapCharToState(string state)
+        {
+            var ptype = string.Empty;
+            switch (state)
+            {
+                case "A":
+                    ptype = "Active";
+                    break;
+                case "I":
+                    ptype = "Inactive";
+                    break;
+                case "D":
+                    ptype = "Delete";
+                    break;
+            }
+            return ptype;
+
         }
         // public async Task<int> CraeteOrganizationRelationship(OrganizationRelationship organizationRelationship)
         // {
