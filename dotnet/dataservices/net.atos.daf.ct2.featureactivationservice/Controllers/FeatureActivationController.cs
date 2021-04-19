@@ -37,7 +37,6 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
         
         [HttpPost]
         [Route("update")]
-        [AllowAnonymous]
         public async Task<IActionResult> Subscription(SubsCriptionEntity objsubscriptionActivation)
         {
             try
