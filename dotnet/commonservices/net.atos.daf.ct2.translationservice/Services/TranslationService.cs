@@ -544,7 +544,7 @@ namespace net.atos.daf.ct2.translationservice
                 _logger.LogInformation("ImportDTCWarningData Method");
                 var dtcWarning = new List<DTCwarning>();
                 var response = new WarningDataResponse();
-
+                string foreignkeymessage = string.Empty;
 
                 dtcWarning.AddRange(request.DtcData.Select(x => new DTCwarning()
                 {
@@ -562,26 +562,40 @@ namespace net.atos.daf.ct2.translationservice
 
                 var DTCData = await translationmanager.ImportDTCWarningData(dtcWarning);
 
+                foreach (var item in DTCData)
+                {
+                    if (item.message == "violates foreign key constraint for Icon_ID")
+                    foreignkeymessage = item.message;
+                }
 
-                //response.DtcDataResponse.AddRange(DTCData
-                //                   .Select(x => new dtcwarning()
-                //                   {
-                //                       Id = x.id,
-                //                       Code = x.code,
-                //                       Type = x.type,
-                //                       VehType = x.veh_type,
-                //                       WarningClass = x.warning_class,
-                //                       Number = x.number,
-                //                       Description = x.description,
-                //                       Advice = x.advice,
-                //                       IconId = x.icon_id,
-                //                       ExpiresAt = x.expires_at,
-                //                       CreatedBy =x.created_by
-                //                   }).ToList());
+                if (foreignkeymessage == "violates foreign key constraint for Icon_ID")
+                {
+                    response.Code = Responcecode.Failed;
+                    response.Message = "violates foreign key constraint for Icon_ID , Please enter valid data for Warning_Class and Warning_Number";
+                    return await Task.FromResult(response);
+                }
+                else
+                {
+                    response.DtcDataResponse.AddRange(DTCData
+                                  .Select(x => new dtcwarning()
+                                  {
+                                      Id = x.id,
+                                      Code = x.code,
+                                      Type = x.type,
+                                      VehType = x.veh_type,
+                                      WarningClass = x.warning_class,
+                                      Number = x.number,
+                                      Description = x.description,
+                                      Advice = x.advice,
+                                      IconId = x.icon_id,
+                                      ExpiresAt = x.expires_at,
+                                      CreatedBy = x.created_by
+                                  }).ToList());
 
-                response.Code = Responcecode.Success;
-                response.Message = "DTC warning Data imported successfully.";
-                return await Task.FromResult(response);
+                    response.Code = Responcecode.Success;
+                    response.Message = "DTC warning Data imported successfully.";
+                    return await Task.FromResult(response);
+                }
 
             }
             catch (Exception ex)

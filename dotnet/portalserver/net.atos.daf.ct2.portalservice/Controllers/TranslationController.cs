@@ -456,9 +456,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                            Request);
                     return Ok(DTCResponse);
                     }
+                    else if (DTCResponse != null && DTCResponse.Message == "violates foreign key constraint for Icon_ID , Please enter valid data for Warning_Class and Warning_Number")
+                    {
+                     return StatusCode(400, DTCResponse.Message);
+                    }
                     else
                     {
-                            return StatusCode(500, "Warning response is null");
+                    return StatusCode(500, "Warning response is null");
                     }
                
             }
