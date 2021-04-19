@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.applications
                     Service_name = "Backend Process",
                     Event_type = AuditTrailEnum.Event_type.Mail,
                     Event_status = isPartial ? AuditTrailEnum.Event_status.PARTIAL : AuditTrailEnum.Event_status.SUCCESS,
-                    Message = isPartial ? "Email send was partially successful. Please check audit log for more info." : "Email send to all users",
+                    Message = isPartial ? "Email send was partially successful. Please check audit log for more info." : "Email send process run successfully.",
                     Sourceobject_id = 0,
                     Targetobject_id = 0,
                     Updated_data = "EmailNotificationForPasswordExpiry"

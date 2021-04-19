@@ -21,8 +21,17 @@ export class OrganisationDetailsComponent implements OnInit {
   OrgDetailsMsg : any = '';
   organisationData: any;
   organisationPreferenceData: any;
+  organisationList : any = []; 
+  selectedOrganisationId : number;
+  organisationSelected : string;
+  preferenceId : number;
   // private _formBuilder: any;
- 
+  languageDropdownData: any = [];
+  timezoneDropdownData: any = [];
+  unitDropdownData: any = [];
+  currencyDropdownData: any = [];
+  dateFormatDropdownData: any = [];
+  timeFormatDropdownData: any = [];
 
   constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private organizationService: OrganizationService) { 
     this.defaultTranslation();
@@ -80,31 +89,58 @@ export class OrganisationDetailsComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
+      //this.loadOrganisationdata();
+      //this.loadOrgPreferenceData();
+    });
+
+    this.organizationService.getOrganizations(this.accountOrganizationId).subscribe((orgList: any) => {
+      this.organisationList = orgList;
+      this.selectedOrganisationId = orgList[0]["organizationId"];
+      this.preferenceId = orgList.id;
+     // console.log( this.organisationSelected)
       this.loadOrganisationdata();
-      this.loadOrgPreferenceData();
+     // console.log("---orgData---",orgList)
     });
   }
 
   loadOrganisationdata(){
-    this.organizationService.getOrganizationDetails(this.accountOrganizationId).subscribe((orgData: any) => {
+    this.organizationService.getOrganizationDetails(this.selectedOrganisationId).subscribe((orgData: any) => {
       this.organisationData = orgData;
-      console.log("---orgData---",this.organisationData)
+      //console.log("---orgData---",this.organisationData)
     });
   }
   loadOrgPreferenceData() {
-    this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPreferenceData: any) => {
+    this.organizationService.getOrganizationPreference(this.selectedOrganisationId).subscribe((orgPreferenceData: any) => {
       this.organisationPreferenceData = orgPreferenceData.organizationPreference;
-      console.log("---orgPrefrenceData---",this.organisationPreferenceData)
+      //console.log("---orgPrefrenceData---",this.organisationPreferenceData)
     });
   }
 
+  selectionChanged(_event){
+    this.selectedOrganisationId = _event;
+    console.log(_event)
+  }
+  
   languageChange(event:any) {
 
   }
 
+  
   onPreferenceEdit() {
     this.editPrefereneceFlag = true;
-
+    let languageCode = this.localStLanguage.code;
+    //let preferenceId = this.selectedOrganisationId;
+    this.translationService.getPreferences(languageCode).subscribe((data: any) => {
+      let dropDownData = data;
+      this.languageDropdownData = dropDownData.language;
+      this.timezoneDropdownData = dropDownData.timezone;
+      this.unitDropdownData = dropDownData.unit;
+      this.currencyDropdownData = dropDownData.currency;
+      this.dateFormatDropdownData = dropDownData.dateformat;
+      this.timeFormatDropdownData = dropDownData.timeformat;
+      // this.vehicleDisplayDropdownData = dropDownData.vehicledisplay;
+      // this.landingPageDisplayDropdownData = accountNavMenu;
+    });
   }
   onCloseMsg(){
     this.titleVisible = false;
@@ -117,8 +153,25 @@ export class OrganisationDetailsComponent implements OnInit {
 
   }
   onCreateUpdate() {
-    let successMsg = "Organisation Details Updated Successfully!"
+    let successMsg = "Organisation Details Updated Successfully!";
     this.successMsgBlink(successMsg);
+    let accountId = parseInt(localStorage.getItem('accountId'));
+    let preferenceUpdateObj = 
+    {
+      id: this.preferenceId,
+      refId: accountId,
+      languageId: this.orgDetailsPreferenceForm.controls.language.value ? this.orgDetailsPreferenceForm.controls.language.value : this.languageDropdownData[0].id,
+      timezoneId: this.orgDetailsPreferenceForm.controls.timeZone.value ? this.orgDetailsPreferenceForm.controls.timeZone.value : this.timezoneDropdownData[0].id,
+      unitId: this.orgDetailsPreferenceForm.controls.unit.value ? this.orgDetailsPreferenceForm.controls.unit.value : this.unitDropdownData[0].id,
+      currencyId: this.orgDetailsPreferenceForm.controls.currency.value ? this.orgDetailsPreferenceForm.controls.currency.value : this.currencyDropdownData[0].id,
+      dateFormatTypeId: this.orgDetailsPreferenceForm.controls.dateFormat.value ? this.orgDetailsPreferenceForm.controls.dateFormat.value : this.dateFormatDropdownData[0].id,
+      timeFormatId: this.orgDetailsPreferenceForm.controls.timeFormat.value ? this.orgDetailsPreferenceForm.controls.timeFormat.value : this.timeFormatDropdownData[0].id,
+    
+    }
+    
+    // this.organizationService.updatePreferences(preferenceUpdateObj).subscribe(preferenceResult =>{
+
+    // })
   }
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
