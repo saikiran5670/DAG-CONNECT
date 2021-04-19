@@ -56,22 +56,20 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 CustomerRequest customerRequest = new CustomerRequest();
                // customerRequest.CompanyType = customer.CompanyUpdatedEvent.Company.type;
                 customerRequest.CustomerID = customer.CompanyUpdatedEvent.Company.ID;
-                customerRequest.CustomerName = customer.CompanyUpdatedEvent.Company.Name;              
+               // customerRequest.CustomerName = customer.CompanyUpdatedEvent.Company.Name;              
                 customerRequest.ReferenceDateTime = customer.CompanyUpdatedEvent.Company.ReferenceDateTime;
 
                 // Configuarable values   
                 customerRequest.OrgCreationPackage = Configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value;
 
                 if (customerRequest.ReferenceDateTime != null && (customerRequest.CustomerID != null) && (customerRequest.CustomerID.Trim().Length>0)
-                    && (customerRequest.CustomerName != null) && (customerRequest.CustomerName.Trim().Length>0)
                     && (customerRequest.ReferenceDateTime).ToUniversalTime() < System.DateTime.Now.ToUniversalTime())
                   {                  
                     string dateformat = "yyyy-mm-ddThh:mm:ss";
                     DateTime parsed;
                     if (!(DateTime.TryParseExact(Convert.ToString(customerRequest.ReferenceDateTime), dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed)))
                     {                      
-                        if (!((customerRequest.CustomerID.Trim().Length > 100)
-                            || (customerRequest.CustomerName.Trim().Length > 100)                        
+                        if (!((customerRequest.CustomerID.Trim().Length > 100)                                                  
                             || (customerRequest.ReferenceDateTime == new DateTime())
                             ))
                         {
@@ -79,6 +77,15 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                             {
                                 customerRequest.CompanyType = customer.CompanyUpdatedEvent.Company.type;
                                 if (customerRequest.CompanyType.Trim().Length > 50)
+                                {
+                                    return StatusCode(400, string.Empty);
+                                }
+                            }
+
+                            if (customer.CompanyUpdatedEvent.Company.Name != null)
+                            {
+                                customerRequest.CustomerName = customer.CompanyUpdatedEvent.Company.Name;
+                                if (customerRequest.CustomerName.Trim().Length > 100)
                                 {
                                     return StatusCode(400, string.Empty);
                                 }
