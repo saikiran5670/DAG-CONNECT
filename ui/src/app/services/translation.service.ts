@@ -100,16 +100,22 @@ export class TranslationService {
         return this.httpClient
           .post<any>(`${this.translationUrl}/Import`, data, headers)
           .pipe(catchError(this.handleError));
-      }
+    }
+
+    importDTCTranslationData(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .post<any>(`${this.translationUrl}/ImportdtcWarning`, data, headers)
+        .pipe(catchError(this.handleError));
+    }
 
     private handleError(errResponse: HttpErrorResponse) {
-        if (errResponse.error instanceof ErrorEvent) {
-            console.error('Client side error', errResponse.error.message);
-        } else {
-            console.error('Server side error', errResponse);
-        }
-        return throwError(
-            'There is a problem with the service. Please try again later.'
-        );
+      console.error('Error : ', errResponse.error);
+      return throwError(
+        errResponse
+      );
     }
 }

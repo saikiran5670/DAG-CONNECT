@@ -7,6 +7,7 @@ import { VehicleManagementComponent } from './vehicle-management/vehicle-managem
 import { VehicleGroupManagementComponent } from './vehicle-group-management/vehicle-group-management.component';
 import { DriverManagementComponent } from '../admin/driver-management/driver-management.component';
 import { TermsConditionsManagementComponent } from './terms-conditions-management/terms-conditions-management.component';
+import { DtcTranslationComponent } from './dtc-translation/dtc-translation.component';
 
 const routes: Routes = [
   {
@@ -16,7 +17,8 @@ const routes: Routes = [
       { path: "reportscheduler", component: LandmarksComponent },
       { path: "drivermanagement", component: DriverManagementComponent },
       { path: "vehiclemanagement", component: VehicleManagementComponent },
-      { path: "termsandcondition", component: TermsConditionsManagementComponent }
+      { path: "termsandcondition", component: TermsConditionsManagementComponent },
+      { path: "dtctranslation", component: DtcTranslationComponent }
       // { path: "vehiclegroupmanagement", component: VehicleGroupManagementComponent }
     ]
   }

@@ -1323,7 +1323,7 @@ namespace net.atos.daf.ct2.account
 
                 string query =
                     @"SELECT DISTINCT
-                    f.id as FeatureId, f.name as FeatureName, f.type as FeatureType, f.key as FeatureKey, f.level as FeatureLevel, mn.id as MenuId, mn.name as MenuName, tl.value as TranslatedValue, COALESCE(mn2.name, '') as ParentMenuName, mn.key as MenuKey, mn.url as MenuUrl, mn.seq_no as MenuSeqNo
+                    f.id as FeatureId, f.name as FeatureName, f.type as FeatureType, f.key as FeatureKey, f.level as FeatureLevel, mn.id as MenuId, mn.sort_id as MenuSortId, mn.name as MenuName, tl.value as TranslatedValue, COALESCE(mn2.name, '') as ParentMenuName, mn.key as MenuKey, mn.url as MenuUrl, mn.seq_no as MenuSeqNo
                     FROM
                     (
 	                    --Account Route
@@ -1347,7 +1347,7 @@ namespace net.atos.daf.ct2.account
                     LEFT JOIN master.Menu mn ON mn.feature_id = f.id AND mn.state = 'A' AND mn.id <> 0
                     LEFT JOIN master.Menu mn2 ON mn.parent_id = mn2.id AND mn2.state = 'A' AND mn2.id <> 0
                     LEFT JOIN translation.translation tl ON tl.name = mn.key AND tl.code = @code
-                    ORDER BY MenuId, MenuSeqNo";
+                    ORDER BY MenuSortId, MenuSeqNo";
 
                 var record = await dataAccess.QueryAsync<MenuFeatureDto>(query, parameter);
                 return record;
