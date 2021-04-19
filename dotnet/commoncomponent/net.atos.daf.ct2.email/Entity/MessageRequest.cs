@@ -6,6 +6,10 @@ namespace net.atos.daf.ct2.email.Entity
 {
     public class MessageRequest
     {
+        public MessageRequest()
+        {
+            Subject = " ";
+        }
          public Dictionary<string, string> ToAddressList { get; set; }
         public string Subject { get; set; }
         public string Content { get; set; }
@@ -13,5 +17,6 @@ namespace net.atos.daf.ct2.email.Entity
         public EmailConfiguration Configuration { get; set; }
         public AccountInfo accountInfo { get; set; }
         public Guid? TokenSecret { get; set; }
+        public int RemainingDaysToExpire { get; set; }
     }
 } 

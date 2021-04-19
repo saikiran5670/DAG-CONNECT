@@ -456,7 +456,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-
+        [AllowAnonymous]
         [HttpPost]
         [Route("resetpasswordinitiate")]
         public async Task<IActionResult> ResetPasswordInitiate([FromBody] ResetPasswordInitiateRequest request)
@@ -528,7 +528,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             return StatusCode(500, "Error while fetching reset password token status.");
         }
-
+        
+        [AllowAnonymous]
         [HttpPost]
         [Route("resetpassword")]
         [Route("createpassword")]
@@ -571,6 +572,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("resetpasswordinvalidate")]
         public async Task<IActionResult> ResetPasswordInvalidate([FromBody] ResetPasswordInvalidateRequest request)
