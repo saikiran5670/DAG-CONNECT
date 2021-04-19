@@ -64,10 +64,10 @@
           </mat-header-cell>
           <mat-cell *matCellDef="let row">{{ row.status }}
             <button class='actionBtn' mat-flat-button (click)="changeFeatureStatus(row)"
-              matTooltip="{{ row.state == 0 ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}">
-              <mat-slide-toggle color="primary" [checked]='row.state == 0 ? true : false'>
+              matTooltip="{{ row.state == 'ACTIVE' ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'InActive' }}">
+              <mat-slide-toggle color="primary" [checked]="row.state == 'ACTIVE' ? true : false">
               </mat-slide-toggle>
-              <span>{{ row.state == 0 ? (translationData.lblActive || 'Active') : translationData.lblInActive ||
+              <span>{{ row.state == 'ACTIVE' ? (translationData.lblActive || 'Active') : translationData.lblInActive ||
                 'InActive' }}</span>
             </button>
           </mat-cell>

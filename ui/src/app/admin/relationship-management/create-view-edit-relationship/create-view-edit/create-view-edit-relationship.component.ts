@@ -225,7 +225,8 @@ export class CreateViewEditRelationshipComponent implements OnInit {
           level: (this.userType == "Admin#Platform" || this.userType == "Admin#Global") ? this.relationshipFormGroup.controls.level.value : 40,
           code: (this.userType == "Admin#Platform" || this.userType == "Admin#Global") ? this.relationshipFormGroup.controls.code.value : "Owner",
           id: 0,
-          isActive: true
+          // isActive: true
+          state: "A"
         }
         this.organizationService.createRelationship(objData).subscribe((res) => {
           this.backToPage.emit({ editFlag: false, editText: 'create',  name: this.relationshipFormGroup.controls.relationshipName.value });
@@ -265,7 +266,8 @@ export class CreateViewEditRelationshipComponent implements OnInit {
       code: (this.userType == "Admin#Platform" || this.userType == "Admin#Global") ? this.relationshipFormGroup.controls.code.value : "Owner",
       description:this.relationshipFormGroup.controls.relationshipDescription.value,
       featureIds: featureIds,
-      isActive: this.gridData[0].isActive
+      // isActive: this.gridData[0].isActive
+       isActive: this.gridData[0].state === "Active" ? "A" : "I"
     }
 
     this.organizationService.updateRelationship(objData).subscribe((res) => {
