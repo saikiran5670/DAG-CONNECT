@@ -973,11 +973,30 @@ namespace net.atos.daf.ct2.organization.repository
             orgResponse.city = record.city;
             orgResponse.country_code = record.country_code;
             orgResponse.org_id = record.org_id;
-            orgResponse.state = record.state;
+            orgResponse.state = Convert.ToChar(record.state);
             orgResponse.reference_date = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(record.reference_date), "America/New_York", "yyyy-MM-ddTHH:mm:ss");
             orgResponse.vehicle_default_opt_in = record.vehicle_default_opt_in;
             orgResponse.driver_default_opt_in = record.driver_default_opt_in;
             return orgResponse;
+        }
+
+        public string MapCharToState(string state)
+        {
+            var ptype = string.Empty;
+            switch (state)
+            {
+                case "A":
+                    ptype = "Active";
+                    break;
+                case "I":
+                    ptype = "Inactive";
+                    break;
+                case "D":
+                    ptype = "Delete";
+                    break;
+            }
+            return ptype;
+
         }
         // public async Task<int> CraeteOrganizationRelationship(OrganizationRelationship organizationRelationship)
         // {
