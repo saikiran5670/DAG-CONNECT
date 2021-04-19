@@ -321,7 +321,7 @@ export class PackageManagementComponent implements OnInit {
       this.initData = [];
       this.loadPackageData();
     }
-    console.log(_event)
+    //console.log(_event)
   }
   getexportedValues(dataSource){
     this.dataSource = dataSource;
