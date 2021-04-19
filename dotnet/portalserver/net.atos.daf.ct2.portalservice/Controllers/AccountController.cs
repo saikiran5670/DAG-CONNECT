@@ -490,7 +490,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, "Error while initiating reset password process.");
             }
         }
-
+        
+        [AllowAnonymous]
         [HttpGet]
         [Route("getresetpasswordtokenstatus")]
         public async Task<IActionResult> GetResetPasswordTokenStatus([FromQuery] GetResetPasswordTokenStatusRequest request)
