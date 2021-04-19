@@ -14,7 +14,7 @@ const routes: Routes = [
   { path: 'mobileportal', loadChildren: () => import('./mobile-portal/mobile-portal.module').then(m => m.MobilePortalModule) },
   { path: 'shop', loadChildren: () => import('./shop/shop.module').then(m => m.ShopModule) },
   { path: 'information', loadChildren: () => import('./information/information.module').then(m => m.InformationModule) },
-  { path: 'termsConditions', loadChildren: () => import('./terms-conditions-content/terms-conditions.module').then(m => m.TermsConditionsModule) },
+  { path: 'termsAndconditionhistory', loadChildren: () => import('./terms-conditions-content/terms-conditions.module').then(m => m.TermsConditionsModule) },
   { path: "errorPage", component: ErrorComponent },
 
 ];
