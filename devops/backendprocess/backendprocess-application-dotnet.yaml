@@ -36,6 +36,23 @@ variables:
   - group: ACC03-Build-Variables
   
 steps:
+- task: replacetokens@3
+  inputs:
+    targetFiles: 'dotnet/backendprocess/net.atos.daf.ct2.applications/appsettings.json'
+    encoding: 'auto'
+    writeBOM: true
+    actionOnMissing: 'warn'
+    keepToken: false
+    tokenPrefix: '#{'
+    tokenSuffix: '}#'
+    useLegacyPattern: false
+    enableTelemetry: true
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      cat dotnet/backendprocess/net.atos.daf.ct2.applications/appsettings.json
+
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
@@ -51,4 +68,3 @@ steps:
     azureContainerRegistry: $(ContainerRegistry)
     action: 'Push an image'
     imageName: backendprocess
-
