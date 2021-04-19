@@ -112,6 +112,28 @@ export class TranslationService {
         .pipe(catchError(this.handleError));
     }
 
+    checkUserAcceptedTaC(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .get<any>(
+              `${this.translationUrl}/tac/checkuseracceptedtac?AccountId=${data.AccountId}&OrganizationId=${data.OrganizationId}`
+            )
+        .pipe(catchError(this.handleError));
+    }
+
+    uploadTermsAndConditions(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .post<any>(`${this.translationUrl}/tac/uploadtac`, data, headers)
+        .pipe(catchError(this.handleError));
+    }
+
     private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);
       return throwError(
