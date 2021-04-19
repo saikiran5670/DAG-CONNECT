@@ -279,10 +279,9 @@ message OrganizationGetData {
         int32 Language =3;
         int32 Timezone =4;
         int32 Currency =5;
-        int32 Unit = 6;
-        int32 VehicleDisplay =7;
-        int32 DateFormat =8;
-        int32 TimeFormat=9;      
+        int32 Unit = 6;        
+        int32 DateFormat =7;
+        int32 TimeFormat=8;      
     }
    message OrganizationPreferenceResponse
     {
