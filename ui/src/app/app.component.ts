@@ -364,7 +364,7 @@ export class AppComponent {
          if(accessNameList.includes("Admin#Platform")){
            this.userType = "Admin#Platform";
          }else if(accessNameList.includes("Admin#Global")){
-           this.userType = "Admpin#Global";
+           this.userType = "Admin#Global";
          }else if(accessNameList.includes("Admin#Organisation")){
            this.userType = "Admin#Organisation";
          }else if(accessNameList.includes("Admin#Account")){
