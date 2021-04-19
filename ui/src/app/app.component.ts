@@ -79,6 +79,7 @@ export class AppComponent {
     accountmanagement: 'Account Management',
     accountrolemanagement: 'Account Role Management',
     vehiclegroupmanagement: 'Vehicle Group Management',
+    termsandcondition: 'Terms & Conditions',
     featuremanagement: 'Feature Management',
     organisationrelationshipmanagement: 'Organisation Relationship Management',
     relationshipmanagement: 'Relationship Management',
@@ -92,7 +93,7 @@ export class AppComponent {
     shop: 'Shop',
     information: 'Information',
     legalnotices: 'Legal Notices',
-    termsConditions: 'Terms & Conditions'
+    termsAndconditionhistory: 'Terms & Conditions History'
   }
 
 
@@ -140,7 +141,8 @@ export class AppComponent {
         landmarks: 'Landmarks',
         reportscheduler: 'Report Scheduler',
         drivermanagement: 'Driver Management',
-        vehiclemanagement: 'Vehicle Management'
+        vehiclemanagement: 'Vehicle Management',
+        termsandcondition: 'Terms & Conditions'
       }
     },
     admin : {
@@ -205,12 +207,12 @@ export class AppComponent {
       },
       link: "https://www.daf.com/en/legal/legal-notice"
     },
-    termsConditions : {
+    termsAndconditionhistory : {
       open: false,
       icon: "notes",
       externalLink: false,
       pageTitles: {
-        termsConditions: 'Terms & Conditions'
+        termsAndconditionhistory: 'Terms & Conditions History'
       }
     }
   }
@@ -501,6 +503,7 @@ export class AppComponent {
       lblAccountManagement: 'Account Management',
       lblAccountRoleManagement: 'Account Role Management',
       lblVehicleGroupManagement: 'Vehicle Group Management',
+      lblTermsAndCondition: 'Terms & Conditions',
       lblFeatureManagement: 'Feature Management',
       lblOrganisationRelationshipManagement: 'Organisation Relationship Management',
       lblRelationshipManagement: 'Relationship Management',
@@ -514,7 +517,7 @@ export class AppComponent {
       lblShop: 'Shop',
       lblInformation: 'Information',
       lblLegalNotices: 'Legal Notices',
-      lblTermsAndConditions: 'Terms & Conditions'
+      lblTermsAndConditionHistory: 'Terms & Conditions History' 
     }
   }
 
