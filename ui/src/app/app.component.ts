@@ -93,7 +93,8 @@ export class AppComponent {
     shop: 'Shop',
     information: 'Information',
     legalnotices: 'Legal Notices',
-    termsAndconditionhistory: 'Terms & Conditions History'
+    termsAndconditionhistory: 'Terms & Conditions History',
+    dtctranslation: 'DTC Translation'
   }
 
 
@@ -142,7 +143,8 @@ export class AppComponent {
         reportscheduler: 'Report Scheduler',
         drivermanagement: 'Driver Management',
         vehiclemanagement: 'Vehicle Management',
-        termsandcondition: 'Terms & Conditions'
+        termsandcondition: 'Terms & Conditions',
+        dtctranslation: "DTC Translation"
       }
     },
     admin : {
@@ -517,7 +519,8 @@ export class AppComponent {
       lblShop: 'Shop',
       lblInformation: 'Information',
       lblLegalNotices: 'Legal Notices',
-      lblTermsAndConditionHistory: 'Terms & Conditions History' 
+      lblTermsAndConditionHistory: 'Terms & Conditions History', 
+      lblDTCTranslation: "DTC Translation" 
     }
   }
 

@@ -17,5 +17,6 @@ namespace net.atos.daf.ct2.account.entity
         public string ParentMenuName { get; set; }
         public string MenuKey { get; set; }
         public string MenuUrl { get; set; }
+        public int? MenuSortId { get; set; }
     }
 }
