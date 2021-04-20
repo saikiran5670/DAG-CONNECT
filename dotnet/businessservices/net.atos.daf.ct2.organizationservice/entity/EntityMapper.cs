@@ -16,11 +16,11 @@ namespace net.atos.daf.ct2.organizationservice.entity
             preference.TimezoneId = request.TimezoneId;
             preference.CurrencyId = request.CurrencyId;
             preference.UnitId = request.UnitId;
-            preference.VehicleDisplayId = request.VehicleDisplayId;
+            //preference.VehicleDisplayId = request.VehicleDisplayId;
             preference.DateFormatTypeId = request.DateFormatId;
             // preference.DriverId = request.DriverId;
             preference.TimeFormatId = request.TimeFormatId;
-            preference.LandingPageDisplayId = request.LandingPageDisplayId;
+           // preference.LandingPageDisplayId = request.LandingPageDisplayId;
             return preference;
         }    
 
@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.organizationservice.entity
             objResponse.Language = request.LanguageName;
             objResponse.TimeFormat = request.TimeFormat;
             objResponse.DateFormat = request.DateFormatType;
-            objResponse.VehicleDisplay = request.VehicleDisplay;
+            //objResponse.VehicleDisplay = request.VehicleDisplay;
             objResponse.Unit = request.Unit;
             objResponse.Timezone = request.Timezone;
 
@@ -69,10 +69,10 @@ namespace net.atos.daf.ct2.organizationservice.entity
             return organization;
         }
 
-        public net.atos.daf.ct2.organizationservice.OrgUpdateRequest TOOrgUpdateResponse(net.atos.daf.ct2.organizationservice.OrgCreateRequest request)
+        public net.atos.daf.ct2.organizationservice.OrgCreateRequest TOOrgCreateResponse(net.atos.daf.ct2.organizationservice.OrgCreateRequest request)
         {
           
-            net.atos.daf.ct2.organizationservice.OrgUpdateRequest objResponse=new OrgUpdateRequest();
+            net.atos.daf.ct2.organizationservice.OrgCreateRequest objResponse=new OrgCreateRequest();
             objResponse.Id = request.Id;
             objResponse.Type=request.Type;
             objResponse.Name=request.Name;
@@ -86,24 +86,14 @@ namespace net.atos.daf.ct2.organizationservice.entity
             objResponse.ReferenceDate=request.ReferenceDate; 
             objResponse.VehicleDefaultOptIn="I";
             objResponse.DriverDefaultOptIn="I";
-             return objResponse;          
+            return objResponse;          
         }    
 
         public net.atos.daf.ct2.organizationservice.OrgUpdateRequest TOOrgUpdateResponse(net.atos.daf.ct2.organizationservice.OrgUpdateRequest request)
         {
           
             net.atos.daf.ct2.organizationservice.OrgUpdateRequest objResponse=new OrgUpdateRequest();
-            objResponse.Id = request.Id;
-            objResponse.Type=request.Type;
-            objResponse.Name=request.Name;
-            objResponse.Street=request.Street;
-            objResponse.AddressType=request.AddressType;
-            objResponse.StreetNumber=request.StreetNumber;
-            objResponse.PostalCode=request.PostalCode;
-            objResponse.City=request.City;
-            objResponse.CountryCode=request.CountryCode;
-            objResponse.OrgId=request.OrgId;
-            objResponse.ReferenceDate=request.ReferenceDate; 
+            objResponse.Id = request.Id;           
             objResponse.VehicleDefaultOptIn=request.VehicleDefaultOptIn; 
             objResponse.DriverDefaultOptIn=request.DriverDefaultOptIn; 
             return objResponse;          

@@ -32,6 +32,7 @@ namespace net.atos.daf.ct2.translation.entity
         public long modify_at { get; set; }
         public int modify_by { get; set; }
         public string Warning_type { get; set; }
+        public string message { get; set; }
 
     }
     public class DTCWarningImportRequest

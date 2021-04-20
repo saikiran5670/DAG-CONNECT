@@ -462,7 +462,6 @@ export class AccountService {
       .pipe(catchError(this.handleError));
   }
 
-
   private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);
       return throwError(

@@ -45,5 +45,6 @@ namespace net.atos.daf.ct2.account
         Task<bool> CheckForFeatureAccessByEmailId(string emailId, string featureName);
         Task<string> GetCodeByPreferenceId(int preferenceId);
         Task<string> GetLanguageCodePreference(string emailId, int? orgId);
+        Task<IEnumerable<Account>> GetAccountOfPasswordExpiry(int noOfDays);
     }
 }

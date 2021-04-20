@@ -1,35 +1,30 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using net.atos.daf.ct2.account;
-using net.atos.daf.ct2.audit;
-using net.atos.daf.ct2.audit.entity;
-using net.atos.daf.ct2.audit.Enum;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.entity;
+using net.atos.daf.ct2.audit.Enum;
+using net.atos.daf.ct2.email;
 
 namespace net.atos.daf.ct2.applications
-{
-    public class PasswordExpiryWorker : BackgroundService
+{     
+    public class NoWorker : BackgroundService
     {
         private readonly ILogger<PasswordExpiryWorker> _logger;
-        private readonly IAuditTraillib _auditlog;
-        private readonly IAccountManager _accountManager;
-        private readonly IHostApplicationLifetime _hostApplicationLifetime;
-        private readonly IConfiguration _configuration;
+        private readonly IAuditTraillib _auditlog;        
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;        
 
-        public PasswordExpiryWorker(ILogger<PasswordExpiryWorker> logger,
-                        IConfiguration configuration,
-                        IAuditTraillib auditlog,
-                        IAccountManager accountManager,
+        public NoWorker(ILogger<PasswordExpiryWorker> logger,                        
+                        IAuditTraillib auditlog,                        
                         IHostApplicationLifetime hostApplicationLifetime)
         {
-            _logger = logger;
-            _configuration = configuration;
-            _auditlog = auditlog;
-            _accountManager = accountManager;
+            _logger = logger;            
+            _auditlog = auditlog;            
             _hostApplicationLifetime = hostApplicationLifetime;
         }
 
@@ -41,23 +36,20 @@ namespace net.atos.daf.ct2.applications
             });
             try
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                var calcDayToSendMail = Convert.ToInt32(_configuration["PasswordExpiryInDays"]) - Convert.ToInt32(_configuration["RemainingDaysToExpire"]);
-                var emailList = await _accountManager.SendEmailForPasswordExpiry(calcDayToSendMail);
-                var isPartial = emailList.Where(w => w.IsSend == false).Count() > 0;
+                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);                
                 await _auditlog.AddLogs(new AuditTrail
                 {
                     Created_at = DateTime.Now,
                     Performed_at = DateTime.Now,
                     Performed_by = 2,
-                    Component_name = "Email Notication Pasword Expiry",
+                    Component_name = "NoWorker",
                     Service_name = "Backend Process",
                     Event_type = AuditTrailEnum.Event_type.Mail,
-                    Event_status = isPartial ? AuditTrailEnum.Event_status.PARTIAL : AuditTrailEnum.Event_status.SUCCESS,
-                    Message = isPartial ? "Email send was partially successful. Please check audit log for more info." : "Email send process run successfully.",
+                    Event_status =  AuditTrailEnum.Event_status.SUCCESS,
+                    Message = "NoWorker process got executed.",
                     Sourceobject_id = 0,
                     Targetobject_id = 0,
-                    Updated_data = "EmailNotificationForPasswordExpiry"
+                    Updated_data = "NoWorker"
                 });
             }
             catch (OperationCanceledException ex)
@@ -68,14 +60,14 @@ namespace net.atos.daf.ct2.applications
                     Created_at = DateTime.Now,
                     Performed_at = DateTime.Now,
                     Performed_by = 2,
-                    Component_name = "Email Notication Pasword Expiry",
+                    Component_name = "NoWorker",
                     Service_name = "Backend Process",
                     Event_type = AuditTrailEnum.Event_type.Mail,
                     Event_status = AuditTrailEnum.Event_status.FAILED,
-                    Message = $"Failed to send email. with error : {ex.Message}",
+                    Message = "NoWorker process got executed.",
                     Sourceobject_id = 0,
                     Targetobject_id = 0,
-                    Updated_data = "EmailNotificationForPasswordExpiry"
+                    Updated_data = "NoWorker"
                 });
                 _logger.LogError(ex, "An OperationCanceled exception was thrown.");
             }
@@ -87,14 +79,14 @@ namespace net.atos.daf.ct2.applications
                     Created_at = DateTime.Now,
                     Performed_at = DateTime.Now,
                     Performed_by = 2,
-                    Component_name = "Email Notication Pasword Expiry",
+                    Component_name = "NoWorker",
                     Service_name = "Backend Process",
                     Event_type = AuditTrailEnum.Event_type.Mail,
                     Event_status = AuditTrailEnum.Event_status.FAILED,
-                    Message = $"Failed to send email. with error : {ex.Message}",
+                    Message = "NoWorker process got executed.",
                     Sourceobject_id = 0,
                     Targetobject_id = 0,
-                    Updated_data = "EmailNotificationForPasswordExpiry"
+                    Updated_data = "NoWorker"
                 });
                 _logger.LogError(ex, "An unhandled exception was thrown.");
             }

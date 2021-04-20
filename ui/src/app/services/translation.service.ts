@@ -100,16 +100,67 @@ export class TranslationService {
         return this.httpClient
           .post<any>(`${this.translationUrl}/Import`, data, headers)
           .pipe(catchError(this.handleError));
-      }
+    }
+
+    importDTCTranslationData(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .post<any>(`${this.translationUrl}/ImportdtcWarning`, data, headers)
+        .pipe(catchError(this.handleError));
+    }
+
+    checkUserAcceptedTaC(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .get<any>(
+              `${this.translationUrl}/tac/checkuseracceptedtac?AccountId=${data.AccountId}&OrganizationId=${data.OrganizationId}`
+            )
+        .pipe(catchError(this.handleError));
+    }
+
+    uploadTermsAndConditions(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .post<any>(`${this.translationUrl}/tac/uploadtac`, data, headers)
+        .pipe(catchError(this.handleError));
+    }
+
+    getLatestTermsConditions(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .get<any>(
+              `${this.translationUrl}/tac/getlatesttac?AccountId=${data.AccountId}&OrganizationId=${data.OrganizationId}`
+            )
+        .pipe(catchError(this.handleError));
+    }
+
+    addUserAcceptedTermsConditions(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .post<any>(`${this.translationUrl}/tac/adduseracceptedtac`, data, headers)
+        .pipe(catchError(this.handleError));
+    }
+
 
     private handleError(errResponse: HttpErrorResponse) {
-        if (errResponse.error instanceof ErrorEvent) {
-            console.error('Client side error', errResponse.error.message);
-        } else {
-            console.error('Server side error', errResponse);
-        }
-        return throwError(
-            'There is a problem with the service. Please try again later.'
-        );
+      console.error('Error : ', errResponse.error);
+      return throwError(
+        errResponse
+      );
     }
 }

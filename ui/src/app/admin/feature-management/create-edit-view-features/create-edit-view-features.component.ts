@@ -28,7 +28,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   selectionForDataAttribute = new SelectionModel(true, []);
   initData: any = [];
   selectedSetType: any = true; //byDefault Exclusive
-  selectedStatus: any = 0; //byDefault active
+  selectedStatus: any = 'ACTIVE'; //0; //byDefault active
   userCreatedMsg: any = '';
   vehGrpName: string = '';
   showLoadingIndicator: any;
@@ -149,7 +149,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
       key: "",
       dataAttributeIds: selectedId,
       level: 0,
-      featureState: this.selectedStatus === "1" ? 1 : 0
+      featureState: this.selectedStatus === 'INACTIVE' ? 'INACTIVE' : 'ACTIVE'
     }
     if(this.actionType == 'create'){
       this.featureService.createFeature(createFeatureParams).subscribe((data: any) => {
@@ -189,7 +189,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
         key: "",
         dataAttributeIds: selectedId,
         level: 0,
-        featureState: this.selectedStatus === "1" ? 1 : 0
+        featureState: this.selectedStatus === 'INACTIVE' ? 'INACTIVE' : 'ACTIVE'
       }        
       this.featureService.updateFeature(updatedFeatureParams).subscribe((dataUpdated: any) => {
         this.featureService.getFeatures().subscribe((getData: any) => {

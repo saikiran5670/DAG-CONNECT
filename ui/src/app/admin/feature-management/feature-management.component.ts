@@ -183,8 +183,8 @@ export class FeatureManagementComponent implements OnInit {
       // cancelText: this.translationData.lblNo || "No",
       // confirmText: this.translationData.lblYes || "Yes",
       cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.state == 0) ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
-      status: rowData.state == 0 ? 'Inactive' : 'Active' ,
+      confirmText: (rowData.state == 'ACTIVE') ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
+      status: rowData.state == 'ACTIVE' ? 'Inactive' : 'Active' ,
       name: rowData.name
     };
     
@@ -223,7 +223,7 @@ export class FeatureManagementComponent implements OnInit {
               // });
               let objData ={
                     id: rowData.id,
-                    state: rowData.state === 0 ? 1 : 0
+                    state: rowData.state === 'INACTIVE' ? 'ACTIVE' : 'INACTIVE'
               }
               this.featureService.updateFeatureState(objData).subscribe((data) => {
                 let successMsg = "Status updated successfully."
@@ -288,7 +288,7 @@ export class FeatureManagementComponent implements OnInit {
   updatedTableData(tableData : any) {
     this.initData = tableData;
     this.initData.map(obj =>{   //temporary
-      obj.statusVal = obj.state === 0? 'active': obj.state === 1 ? 'inactive': '';
+      obj.statusVal = obj.state === 'ACTIVE'? 'active': obj.state === 'INACTIVE' ? 'inactive': '';
       obj.isExclusiveVal = obj.isExclusive === true ? 'exclusive' : obj.isExclusive === false ? 'inclusive': '';
     })
     // this.initData = this.getNewTagData(this.initData);

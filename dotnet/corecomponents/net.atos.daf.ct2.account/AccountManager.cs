@@ -1,23 +1,22 @@
-using net.atos.daf.ct2.audit;
-using System.Linq;
-using System.Collections.Generic;
-using System;
-using System.Threading.Tasks;
-using Identity = net.atos.daf.ct2.identity;
-using IdentityEntity = net.atos.daf.ct2.identity.entity;
-using net.atos.daf.ct2.account.ENUM;
-using net.atos.daf.ct2.account.entity;
-using net.atos.daf.ct2.utilities;
-using net.atos.daf.ct2.audit.Enum;
-using System.Text;
 using Microsoft.Extensions.Configuration;
+using net.atos.daf.ct2.account.entity;
+using net.atos.daf.ct2.account.ENUM;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.entity;
+using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.email;
 using net.atos.daf.ct2.email.Entity;
 using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.identity.entity;
-using System.Net;
 using net.atos.daf.ct2.translation;
-using net.atos.daf.ct2.email.entity;
+using net.atos.daf.ct2.utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using Identity = net.atos.daf.ct2.identity;
+using IdentityEntity = net.atos.daf.ct2.identity.entity;
 
 namespace net.atos.daf.ct2.account
 {
@@ -351,7 +350,7 @@ namespace net.atos.daf.ct2.account
                         objToken.ProcessToken = processToken;
                         objToken.Status = ResetTokenStatus.New;
                         var now = DateTime.Now;
-                        var expiryAt = eventType == EmailEventType.CreateAccount 
+                        var expiryAt = eventType == EmailEventType.CreateAccount
                                                     ? configuration.GetValue<double>("CreatePasswordTokenExpiryInMinutes")
                                                     : configuration.GetValue<double>("ResetPasswordTokenExpiryInMinutes");
                         objToken.ExpiryAt = UTCHandling.GetUTCFromDateTime(now.AddMinutes(expiryAt));
@@ -367,12 +366,16 @@ namespace net.atos.daf.ct2.account
                         {
                             account.Organization_Id = orgId;
                             isSent = await TriggerSendEmailRequest(account, eventType, processToken);
-                        }                            
+                        }
 
                         if ((eventType == EmailEventType.ResetPassword && isSent) || eventType != EmailEventType.ResetPassword)
                         {
                             //Update status to Issued
                             await repository.Update(objToken.Id, ResetTokenStatus.Issued);
+                        }
+                        else if(eventType == EmailEventType.ResetPassword && !isSent)
+                        {
+                            identityResult.StatusCode = HttpStatusCode.ExpectationFailed;
                         }
                     }
                     return identityResult;
@@ -497,6 +500,53 @@ namespace net.atos.daf.ct2.account
             return await repository.CheckForFeatureAccessByEmailId(emailId, featureName);
         }
 
+        public async Task<IEnumerable<EmailList>> SendEmailForPasswordExpiry(int noOfDays)
+        {
+            var emailSendList = new List<EmailList>();
+            
+            foreach (var account in await repository.GetAccountOfPasswordExpiry(noOfDays))
+            {
+                try
+                {
+                    var isSuccuss = TriggerSendEmailRequest(account, EmailEventType.PasswordExpiryNotification).Result;
+                                        
+                    emailSendList.Add(new EmailList { Email = account.EmailId, IsSend = isSuccuss });
+                    await auditlog.AddLogs(new AuditTrail
+                    {
+                        Created_at = DateTime.Now,
+                        Performed_at = DateTime.Now,
+                        Performed_by = 2,
+                        Component_name = "Email Notication Pasword Expiry",
+                        Service_name = "Email Component",
+                        Event_type = AuditTrailEnum.Event_type.Mail,
+                        Event_status = isSuccuss ? AuditTrailEnum.Event_status.SUCCESS : AuditTrailEnum.Event_status.FAILED,
+                        Message = isSuccuss ? $"Email send to {account.EmailId}" : $"Email is not send to {account.EmailId}",
+                        Sourceobject_id = 0,
+                        Targetobject_id = 0,
+                        Updated_data = "EmailNotificationForPasswordExpiry"
+                    });                    
+                }
+                catch (Exception ex)
+                {
+                    emailSendList.Add(new EmailList { Email = account.EmailId, IsSend = false });
+                    await auditlog.AddLogs(new AuditTrail
+                    {
+                        Created_at = DateTime.Now,
+                        Performed_at = DateTime.Now,
+                        Performed_by = 2,
+                        Component_name = "Email Notication Pasword Expiry",
+                        Service_name = "Email Component",
+                        Event_type = AuditTrailEnum.Event_type.Mail,
+                        Event_status = AuditTrailEnum.Event_status.FAILED,
+                        Message = $"Email is not send to {account.EmailId} with error as {ex.Message}",
+                        Sourceobject_id = 0,
+                        Targetobject_id = 0,
+                        Updated_data = "EmailNotificationForPasswordExpiry"
+                    });
+                }
+            }
+            return emailSendList.ToArray();
+        }
         #region Private Helper Methods
 
         private async Task<bool> SetPasswordViaEmail(Account account, EmailEventType eventType)
@@ -517,6 +567,10 @@ namespace net.atos.daf.ct2.account
         private async Task<bool> TriggerSendEmailRequest(Account account, EmailEventType eventType, Guid? tokenSecret = null, EmailContentType contentType = EmailContentType.Html)
         {
             var messageRequest = new MessageRequest();
+            if (eventType == EmailEventType.PasswordExpiryNotification)
+            {
+                messageRequest.RemainingDaysToExpire = Convert.ToInt32(configuration["RemainingDaysToExpire"]);
+            }
             messageRequest.accountInfo = new AccountInfo
             {
                 FullName = account.FullName,
@@ -541,7 +595,7 @@ namespace net.atos.daf.ct2.account
                 return false;
             }
         }
-        
+
         private async Task<bool> CheckForMinPasswordAge(Account account)
         {
             //Check for Min Password Age if policy enabled

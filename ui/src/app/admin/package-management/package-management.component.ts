@@ -22,7 +22,7 @@ import html2canvas from 'html2canvas';
 export class PackageManagementComponent implements OnInit {
   
   packageRestData: any = [];
-  displayedColumns = ['code','name', 'type', 'status', 'action'];
+  displayedColumns = ['code','name', 'type', 'state', 'action'];
   selectedElementData: any;
   features: any = [];
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -200,8 +200,8 @@ export class PackageManagementComponent implements OnInit {
       // cancelText: this.translationData.lblNo || "No",
       // confirmText: this.translationData.lblYes || "Yes",
       cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.status == 'Active') ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
-      status: rowData.status == 'Active' ? 'Inactive' : 'Active' ,
+      confirmText: (rowData.state == 'Active') ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
+      status: rowData.state == 'Active' ? 'Inactive' : 'Active' ,
       name: rowData.name
     };
     const dialogConfig = new MatDialogConfig();
@@ -214,7 +214,7 @@ export class PackageManagementComponent implements OnInit {
         // TODO: change status with latest grid data
         let updatePackageParams = {
           "packageId": rowData.id,
-          "status":rowData.status === "Active" ? "I" : "A"
+          "state":rowData.state === "Active" ? "I" : "A"
         }
         this.packageService.updateChangedStatus(updatePackageParams).subscribe((data) => {
           this.loadPackageData();
@@ -317,7 +317,11 @@ export class PackageManagementComponent implements OnInit {
 
   updateImportView(_event){
     this.importClicked = _event;
-    console.log(_event)
+    if(!_event){
+      this.initData = [];
+      this.loadPackageData();
+    }
+    //console.log(_event)
   }
   getexportedValues(dataSource){
     this.dataSource = dataSource;
