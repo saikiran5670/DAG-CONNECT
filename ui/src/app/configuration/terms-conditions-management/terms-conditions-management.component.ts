@@ -7,6 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { FileValidator } from 'ngx-material-file-input';
 import { TranslationService } from 'src/app/services/translation.service';
 import * as FileSaver from 'file-saver';
+import { base64ToFile } from 'ngx-image-cropper';
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 
@@ -22,7 +23,7 @@ export class TermsConditionsManagementComponent implements OnInit {
   accountOrganizationId: any = 0;
   dataSource: any;
   initData: any = [];
-  displayedColumns: string[] = ['userName','version','action'];
+  displayedColumns: string[] = ['firstName','versionno','action'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   uploadTermsConditionsFormGroup: FormGroup;
@@ -39,6 +40,8 @@ export class TermsConditionsManagementComponent implements OnInit {
   pdfEmptyMsg: boolean = false;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
+  uploadFileErrorCode: number;
+  downloadPDFErrorCode: number;
   
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) { 
       this.defaultTranslation();
@@ -78,30 +81,22 @@ export class TermsConditionsManagementComponent implements OnInit {
   }
 
   loadInitData(){
-    let data = [{
-      userName: "User1 Test1",
-      version: "V1"
-    },
-    {
-      userName: "User2 Test2",
-      version: "V2"
-    },
-    {
-      userName: "User3 Test3",
-      version: "V3"
-    }]
+    let objData= {
+      OrganizationId : this.accountOrganizationId
+    }
+    
     this.showLoadingIndicator = true;
-   // this.translationService.getTranslationUploadDetails().subscribe((data: any) => {
+    this.translationService.getUserAcceptedTC(objData).subscribe((data: any) => {
       this.hideloader();
       if(data){
         this.initData = data;
         this.updateGridData(this.initData);
       }
-    //}, (error) => {
-    //   this.hideloader();
-    //   this.initData = [];
-    //   this.updateGridData(this.initData);
-    // })
+    }, (error) => {
+      this.hideloader();
+      this.initData = [];
+    //  this.updateGridData(this.initData);
+    })
   }
 
   processTranslation(transData: any){
@@ -135,7 +130,7 @@ export class TermsConditionsManagementComponent implements OnInit {
         this.successMsgBlink(msg);
       }
     }, (error) => {
-      
+      this.uploadFileErrorCode = error.status;
     });   
     
   }
@@ -156,6 +151,7 @@ export class TermsConditionsManagementComponent implements OnInit {
 
   addfile(event)     
   {    
+    this.uploadFileErrorCode = 0;
     for(let i= 0; i < event.target.files.length; i++){
 
       const reader = new FileReader();
@@ -180,9 +176,38 @@ export class TermsConditionsManagementComponent implements OnInit {
   }
 
   onDownloadPdf(row: any){
+    let objData= {
+      versionNo: row.versionno,
+      languageCode: JSON.parse(localStorage.getItem("language")).code
+    }
+    this.translationService.getTCForVersionNo(objData).subscribe(response => {
+      let arrayBuffer= response[0].description;
+      var base64File = btoa(
+        new Uint8Array(arrayBuffer)
+          .reduce((data, byte) => data + String.fromCharCode(byte), '')
+      );
+      const linkSource = 'data:application/pdf;base64,' + base64File;
+      const downloadLink = document.createElement("a");
+      const fileName = "TermsConditions_"+row.versionno+"_"+(JSON.parse(localStorage.getItem("language")).code).split("-")[0]+".pdf";
+
+      downloadLink.href = linkSource;
+      downloadLink.download = fileName;
+      downloadLink.click();
+    }, (error) => {
+      this.downloadPDFErrorCode= error.status;
+    });
     
   }
 
+  showPdf() {
+    const linkSource = 'data:application/pdf;base64,' + ' JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9Db2xvclNwYWNlL0';
+    const downloadLink = document.createElement("a");
+    const fileName = "sample.pdf";
+
+    downloadLink.href = linkSource;
+    downloadLink.download = fileName;
+    downloadLink.click();
+}
 
   private saveAsPDFFile(buffer: any, fileName: string): void {
     const data: Blob = new Blob([buffer], {

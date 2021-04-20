@@ -199,7 +199,6 @@ export class LoginComponent implements OnInit {
     this.translationService.getLatestTermsConditions(objData).subscribe((response)=>{
 
       let arrayBuffer= response[0].description;
-      //, { type: 'application/pdf' }
       var base64File = btoa(
         new Uint8Array(arrayBuffer)
           .reduce((data, byte) => data + String.fromCharCode(byte), '')
