@@ -35,7 +35,8 @@ export class NewUserStepComponent implements OnInit {
   userName: string = '';
   isLinear = false;
   orgName: any;
-  duplicateEmailMsg: boolean;
+  duplicateEmailMsg: string= "";
+  
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
   thirdFormGroup: FormGroup;
@@ -199,7 +200,7 @@ export class NewUserStepComponent implements OnInit {
   }
 
   onCreate(createStatus: any){
-    this.duplicateEmailMsg = false;
+    this.duplicateEmailMsg = "";
     this.linkFlag = false;
       let objData = {
         id: 0,
@@ -264,8 +265,12 @@ export class NewUserStepComponent implements OnInit {
             this.callToLinkPopup(error.error); //--- show link popup
           }
           else if(error.error.account && error.error.account.organizationId == this.accountOrganizationId){
-            this.duplicateEmailMsg = true; //--- duplicate account
-          }
+            let userName= '"'+error.error.account.firstName+" "+error.error.account.lastName+'"';
+            if(this.translationData.lblEmailIdAlreadyRegistered)
+               this.duplicateEmailMsg = this.translationData.lblEmailIdAlreadyRegistered.replace('$', userName);
+            else
+               this.duplicateEmailMsg = ("Email ID already registered with user '$'").replace('$', userName);
+            }
         }
        });
   }
