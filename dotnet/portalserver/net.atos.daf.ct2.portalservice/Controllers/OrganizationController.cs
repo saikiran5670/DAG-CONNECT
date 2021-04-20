@@ -372,25 +372,25 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "Please provide organization ID:");
                 }
 
-                if (string.IsNullOrEmpty(request.org_id) || (request.org_id.Trim().Length < 1))
-                {
-                    return StatusCode(400, "Please provide organization org_id:");
-                }
-                if (string.IsNullOrEmpty(request.name) || (request.name.Trim().Length < 1))
-                {
-                    return StatusCode(400, "Please provide organization name:");
-                }
+                //if (string.IsNullOrEmpty(request.org_id) || (request.org_id.Trim().Length < 1))
+                //{
+                //    return StatusCode(400, "Please provide organization org_id:");
+                //}
+                //if (string.IsNullOrEmpty(request.name) || (request.name.Trim().Length < 1))
+                //{
+                //    return StatusCode(400, "Please provide organization name:");
+                //}
 
                 organization.Id = request.Id;
-                organization.OrganizationId = request.org_id;
-                organization.Name = request.name;
-                organization.Type = request.type;
-                organization.AddressType = request.address_type;
-                organization.AddressStreet = request.street_number;
-                organization.AddressStreetNumber = request.street_number;
-                organization.City = request.city;
-                organization.CountryCode = request.country_code;
-                organization.reference_date = request.reference_date;
+                //organization.OrganizationId = request.org_id;
+                //organization.Name = request.name;
+                //organization.Type = request.type;
+                //organization.AddressType = request.address_type;
+                //organization.AddressStreet = request.street_number;
+                //organization.AddressStreetNumber = request.street_number;
+                //organization.City = request.city;
+                organization.VehicleDefaultOptIn = request.vehicle_default_opt_in;
+                organization.DriverDefaultOptIn = request.driver_default_opt_in;
 
                 OrganizationBusinessService.OrganizationUpdateData orgResponse = await organizationClient.UpdateAsync(objRequest);
                 if (orgResponse.Organization.Id == 0)
@@ -406,7 +406,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
                 "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                 "Update  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), Request);
-                    return Ok(orgResponse);
+                    return Ok(orgResponse.Organization);
                 }
             }
             catch (Exception ex)
