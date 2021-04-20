@@ -1,0 +1,11 @@
+{
+  "SubscribeEvent": {
+  "organizationID": "JMTR001",
+  "packageId": "HarrisAPackage12345",
+  "viNs": [ 
+     "XLR0998HGFFT76638",
+      "XLR0998HGFFT74597"
+  ],
+  "startdatetime": ""
+  }
+}

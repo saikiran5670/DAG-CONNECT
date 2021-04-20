@@ -1,0 +1,10 @@
+{
+  "SubscribeEvent": {
+  "organizationID": "JMTR001",
+  "packageId": "VDLAPackage12345",
+  "viNs": [ 
+     
+  ],
+  "startdatetime": ""
+  }
+}

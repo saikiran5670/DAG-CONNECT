@@ -65,6 +65,7 @@ dependencies {
 	compile group: 'org.eclipse.paho', name: 'org.eclipse.paho.client.mqttv3', version: '1.2.5'
 	// https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk16
 	compile group: 'org.bouncycastle', name: 'bcprov-jdk16', version: '1.46'
+	compile group: 'com.github.wnameless', name: 'json-flattener', version: '0.2.2'
 	
 
 }

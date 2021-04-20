@@ -1,97 +1,150 @@
+/*****Login***************************************************************************************************
+
+USERNAME = XPATH~//input[@formcontrolname="username"]
+PASSWORD = XPATH~//input[@formcontrolname="password"]
+LOGIN_BTN = XPATH~//button[@type="submit"]
+WELLCOME = XPATH~//div[@class="cdk-overlay-pane"]
+SELECT_ROLE = XPATH~//mat-label[text()="Select Role"] /following-sibling :: mat-form-field
+SELECT_ORG = XPATH~//mat-label[text()="Select Organisation"] /following-sibling :: mat-form-field
+CONFIRM_BTN = XPATH~//button[@type="submit"]/span[text() = 'Confirm']
+USER_NMAE = XPATH~//span[@class="mat-tooltip-trigger userName text-truncate"]
+USER_ROLE = XPATH~//*[@id="sideNavConteiner"]/div[1]/div[1]/div[2]/span[2]/span
+USER_ORG = XPATH~//*[@id="sideNavConteiner"]/div[1]/div[1]/div[2]/span[3]/span
+LOGOUT_BTN = XPATH~//*[@mattooltip="Logout"]
+LOGIN_ERROR = XPATH~//div[@class="invalidMsgContainer"]//span
+LOGIN_USER_ERROR = XPATH~//form/div/div[1]/div[2]/mat-form-field/div/div[3]/div//mat-error[@role="alert"]
+LOGIN_PASS_ERROR = XPATH~//form/div/div[2]/div[2]/mat-form-field/div/div[3]/div//mat-error[@role="alert"]
+DAF_TandC  XPATH~//mat-dialog-container//span[text()='DAF Connect - Terms & Conditions']
+DAF_TandC_AGREED  XPATH~//mat-dialog-container//button/span[text()="I Agree"]
+DAF_TandC_DISAGREE  XPATH~//mat-dialog-container//button/span[text()="Disagree"]
+
 /*****MenuOptions**********************************************************************************************
+
 ADMIN_MENU 		 = XPATH~//*[@menuname="admin"]/a/span[text()='Admin']
-SSD_MENU 		 = XPATH~//*[@href='/admin/servicesubscriberdetails']
-USER_GRP_MENU 	 = XPATH~//*[@href='/admin/usergroupmanagement']
-USER_MENU 		 = XPATH~//*[@href='/admin/usermanagement']
+SSD_MENU 		 = XPATH~//*[@href="#/admin/organisationdetails"]
+USER_GRP_MENU 	 = XPATH~//*[@href="#/admin/accountgroupmanagement"]
+USER_MENU 		 = XPATH~//*[@href="#/admin/accountmanagement"]
+ROLE_MENU 		 = XPATH~//*[@href="#/admin/accountrolemanagement"]
 DASHBOARD_MENU   = XPATH~//div[@class="dashboardMenu ng-star-inserted"]/ul/li
 CONFIG_MENU 	 = XPATH~//*[@menuname="configuration"]/a/span[text()='Configuration']
-VEHICLE_MANAG 	 = XPATH~//*[@href='/configuration/vehiclemanagement']
+VEHICLE_MANAG 	 = XPATH~//*[@href='#/configuration/vehiclemanagement']
+VEHICLE_GROUP 	= XPATH~//*[@href='#/configuration/vehiclegroupmanagement']
 VEHICLE_MANAG_LBL = XPATH~//*[text()='Vehicle Management ']
+VEHICLE_G_MANAG_LBL = XPATH~//*[text()='Vehicle Group Management ']
+ORG_DETAILS = XPATH~//*[text()='Organisation Details ']
 
 /*****User Group Management************************************************************************************
-NEW_USER_GRP_BTN = XPATH~//*[text()=' New User Group']
-USER_GRP_LB = XPATH~//*[text()='User Group Management ']
-GRP_DETAILS_LB = XPATH~//*[@class="bgtrans"]//div/div/span[contains(text(),'Group Details -')]
+
+NEW_USER_GRP_BTN = XPATH~//*[text()=' New Account Group ']
+USER_GRP_LB = XPATH~//*[text()='Account Group Management ']
+GRP_DETAILS_LB = XPATH~//app-user-group-management/div/mat-card/div[1]/div[1]
 GRP_FILTER_TXT = XPATH~//input[@data-placeholder="Filter"]
+SEARCH_TXT = XPATH~//input[@data-placeholder="Search"]
+SELECT_ALL = XPATH~//*[@role="columnheader"]//mat-checkbox
 GRP_COLUMNHEADER = XPATH~//*[@role="columnheader"]
 GRP_ROW = XPATH~//mat-row[@role="row"]
-GRP_GRIDCELL = XPATH~//*[@role="gridcell"]
+BREADCRUMB = XPATH~//app-create-edit-user-group/form/div/div[1]
 GRP_EDIT1 = XPATH~]/mat-cell[
 GRP_EDIT = XPATH~]/button[2]/span[1]/mat-icon
-GRP_EDIT_DIALOG = XPATH~//*[@class="mat-dialog-title" and text()='Edit User Group Name']
-GRP_EDIT_UPDATE = XPATH~//*[@id="mat-dialog-2"]/app-confirm-dialog/div/div[4]/button/span[1]
-GRP_EDIT_CANCEL = XPATH~//*[@id="mat-dialog-0"]/app-confirm-dialog/div/div[3]/button/span[text()=' Cancel ']
-GRP_DELETEs = XPATH~]/mat-cell[4]/button[3]/span[1]/mat-icon
+GRP_EDIT_PEN = XPATH~//button[@mattooltip="Edit"]/span
+//mat-card[1]/mat-card-content/div/div[3]/button
+GRP_EDIT_CONFIRM =ID~createUpdateButton
+GRP_EDIT_RESET = XPATH~//span[text()='Reset']
+GRP_EDIT_CANCEL = XPATH~//span[text()='Cancel']
 GRP_DELETE1 = XPATH~]/mat-cell[
 GRP_DELETE = XPATH~]/button[3]/span[1]/mat-icon
-GRP_ROW_COUNT_VAL = XPATH~//*[@ng-reflect-aria-label="Items per page:"]/div/div/span/span
+GRP_ROW_COUNT_VAL = XPATH~//*[@class="mat-paginator"]//*[@role="combobox"]/div/div/span/span
 SORT_LIST_PART1 = XPATH~//*[text()='
 SORT_LIST_PART2 = XPATH~']/following::div
 GRP_DELETE_DIALOG = XPATH~//app-delete-dialog/div/mat-card/mat-card-content/div[1]/div[1]/span
 GRP_DELETE_NO = XPATH~//app-delete-dialog//button/span[text()='No']
 GRP_DELETE_YES = XPATH~//app-delete-dialog//button/span[text()='Yes']
-GRP_NAME = ID~name
-GRP_CREATEnCONTINUE = XPATH~//button/span[text()=' Create & Continue ']
-GRP_CREATE = XPATH~//button/span[text()=' Create ']
-GRP_ROLE_CANCEL = XPATH~//*[@id="cdk-step-content-0-0"]/form/mat-card/mat-card-actions/div/button[1]
+GRP_USER_COUNT = XPATH~//*[@role="dialog"]
+GRP_NAME = XPATH~//input[@formcontrolname="userGroupName"]
+GRP_DESC =XPATH~//input[@formcontrolname="userGroupDescription"]
+GRP_CREATE = XPATH~//button/span[text()='Create']
 GRP_MESG = XPATH~//app-user-group-management/div/app-user-group-step/div/div[1]
-[contains(text(),'Created Successfully. ')]
-GRP_STEP1_TBL = XPATH~//*[@id="cdk-step-content-0-0"]
+GRP_STEP1_TBL = XPATH~//mat-table[@role="grid"]
+GRP_POPUP_TBL = XPATH~//*[@role="dialog"]
 GRP_STEP2_TBL = XPATH~//*[@id="cdk-step-content-0-1"]
 GRP_STEP3_TBL = XPATH~//*[@id="cdk-step-content-0-2"]
 GRP_STEP2_COL_NAME = XPATH~//mat-header-cell
 GRP_STEP_TBL_CHK = XPATH~]//mat-checkbox/label
 GRP_STEP1_NEXT_BTN = XPATH~//*[@id="cdk-step-content-0-0"]/form/mat-card/mat-card-actions/div/button[2]/span[1]
-GRP_STEP2_NEXT_BTN = XPATH~//*[@id="cdk-step-content-0-1"]/form/mat-card/mat-card-actions/div/button[3]/span[1]
+GRP_STEP2_NEXT_BTN = XPATH~//*[@id="cdk-step-content-0-1"]//span[text()='Next']
 GRP_STEP3_TITLE = XPATH~//*[@id="mat-expansion-panel-header-0"]/span[1]/mat-panel-title/span
 GRP_STEP2_CONFIRM_BTN = XPATH~//*[@id="cdk-step-content-0-2"]/mat-card/mat-card-actions/div/button[3]
-GRP_VG_CANCEL = XPATH~//*[@id="cdk-step-content-0-1"]/form/mat-card/mat-card-actions/div/button[1]
-//*[@id="cdk-step-content-2-1"]/form/mat-card/mat-card-actions/div/button[2]
-GRP_VG_PRIVIOUS = XPATH~//*[@id="cdk-step-content-0-1"]/form/mat-card/mat-card-actions/div/button[2]
-GRP_SUM_CANCEL = XPATH~//*[@id="cdk-step-content-0-2"]/mat-card/mat-card-actions/div/button[1]
-GRP_SUM_PRIVIOUS = XPATH~//*[@id="cdk-step-content-0-2"]/mat-card/mat-card-actions/div/button[2]
-GRP_ROLE_LBL = XPATH~//*[@id="cdk-step-label-0-0"]/div[3]/div
 GRP_GROUP_LBL = XPATH~//*[@id="cdk-step-label-0-1"]/div[3]/div
-STEP1_ITEM_PP_ARROW = XPATH~//*[@id="cdk-step-content-1-0"]//*[@aria-label="Items per page:"]/div/div[2]
-STEP2_ITEM_PP_ARROW = XPATH~//*[@id="cdk-step-content-1-1"]//*[@aria-label="Items per page:"]/div/div[2]
+GROUP_TYPE = XPATH~//mat-select[@formcontrolname="groupType"]
+/*****User Setting*********************************************************************************************
 
-GRP_STEP3_RTITLE = XPATH~//*[@id="mat-expansion-panel-header-2"]/span[1]/mat-panel-title
-GRP_STEP3_VGTITLE = XPATH~//*[@id="mat-expansion-panel-header-3"]/span[1]/mat-panel-title
+USER_SETTING_W = XPATH~//mat-icon[@mattooltip="Preferences"]
+USER_SETTING_TITLE = XPATH~//*[text()='Preferences (Personalise your own display settings)']
+ACINFOANDSETTING_TAB = XPATH~//*[text()='Account Info & Settings']
+ACCOUNT_INFO_LBL = XPATH~//*[text()='Account Information ']
+ACC_INFO_EDIT = XPATH~//*[text()='Account Information ']/mat-icon[text()='edit']
+GENERAL_SETTING_EDIT = XPATH~//*[text()='General Settings (Organisation based settings) ']/mat-icon[text()='edit']
+ACCOUNT_INFO_FNAME = XPATH~//input[@formcontrolname="firstName"]
+ACCOUNT_INFO_LNAME = XPATH~//input[@formcontrolname="lastName"]
+ACCOUNT_INFO_SALU = XPATH~//mat-select[@formcontrolname="salutation"]
+ACCOUNT_INFO_EMAIL_LBL = XPATH~//mat-label[text()="Login Email"]/following-sibling::mat-label
+ACCOUNT_INFO_ORG_LBL = XPATH~//mat-label[text()="Organisation"]/following-sibling::mat-label
+ACCOUNT_INFO_CONFIRM = XPATH~//span[text()="Confirm"]
+GENERAL_SETTING_LANGU = XPATH~//mat-select[@formcontrolname="language"]
+GENERAL_SETTING_TZONE = XPATH~//mat-select[@formcontrolname="timeZone"]
+GENERAL_SETTING_UNIT = XPATH~//mat-select[@formcontrolname="unit"]
+GENERAL_SETTING_CURR = XPATH~//mat-select[@formcontrolname="currency"]
+GENERAL_SETTING_DATEF = XPATH~//mat-select[@formcontrolname="dateFormat"]
+GENERAL_SETTING_TIMEF = XPATH~//mat-select[@formcontrolname="timeFormat"]
+GENERAL_SETTING_LANDP = XPATH~//mat-select[@formcontrolname="landingPage"]
+GENERAL_SETTING_VEHPAGE = XPATH~//mat-select[@formcontrolname="vehDisplay"]
+GENERAL_SETTING_LANG = XPATH~//mat-select[@formcontrolname="vehDisplay"]
+GENERAL_SETTING_LANG = XPATH~//mat-select[@formcontrolname="landingPage"]
+CHANGE_PASSWORD_LINK = XPATH~//a[text()="Change Password"]
+NEW_PASSWORD = XPATH~//input[@formcontrolname="newPassword"]
+NEW_PASSWORD_ERR = XPATH~//li[@class="text-danger"]
+CONFIRM_PASSWORD = XPATH~//input[@formcontrolname="confirmPassword"]
+CANCEL_PASSWORD = XPATH~//button/span[text()="Cancel"]
+CHANGE_PASSWORD = XPATH~//button/span[text()="Change Password"]
+
 /*****User ****************************************************************************************************
+
 USER_MANAG_LB = XPATH~//*[text()='User Management ']
-NEW_USER_GRP_BTN = XPATH~//*[text()=' New User ']
+NEW_USER_BTN = XPATH~//*[text()=' New User ']
 ACCOUNT_INFO_LB = XPATH~//*[text()='Account Information']
-SALUTATION = ID~mat-select-value-3
-FNAME = ID~mat-input-1
-LNAME = ID~mat-input-2
-LOGIN_EMAIL = ID~mat-input-3
-BIRTHDATE = ID~mat-input-4
-ORGANIZATION = ID~mat-input-5
+---SALUTATION = ID~mat-select-value-3
+--FNAME = ID~mat-input-1
+---LNAME = ID~mat-input-2
+LOGIN_EMAIL = XPATH~//input[@formcontrolname="loginEmail"]
+--BIRTHDATE = ID~mat-input-4
+--ORGANIZATION = ID~mat-input-5
 USER_GEN_SET_LB = XPATH~//*[text()='User General Setting']
-USER_LANG = XPATH~//mat-select[@ng-reflect-placeholder='Language']
-USER_TIMEZONE = XPATH~//mat-select[@ng-reflect-placeholder='Time Zone']
-USER_UNIT = XPATH~//mat-select[@ng-reflect-placeholder='Unit']
-USER_CURRENCY = XPATH~//mat-select[@ng-reflect-placeholder='Currency']
-USER_DFORMATE = XPATH~//mat-select[@ng-reflect-placeholder='Date Format']
-USER_VEHDISPLAY = XPATH~//mat-select[@ng-reflect-placeholder='Vehicle Display (Default)']
+--USER_LANG = XPATH~//mat-select[@ng-reflect-placeholder='Language']
+--USER_TIMEZONE = XPATH~//mat-select[@ng-reflect-placeholder='Time Zone']
+--USER_UNIT = XPATH~//mat-select[@ng-reflect-placeholder='Unit']
+--USER_CURRENCY = XPATH~//mat-select[@ng-reflect-placeholder='Currency']
+--USER_DFORMATE = XPATH~//mat-select[@ng-reflect-placeholder='Date Format']
+--USER_VEHDISPLAY = XPATH~//mat-select[@ng-reflect-placeholder='Vehicle Display (Default)']
 DDOPTION = XPATH~//span[@class="mat-option-text"]
 CREATEnCONTINUE = XPATH~//button/span[text()='Create & Continue']
 CREATE = XPATH~//button/span[text()='Create']
-GRP_STEP3_NEXT_BTN = XPATH~//*[@id="cdk-step-content-0-2"]/form/mat-card/mat-card-actions/div/button[3]/span[1]
+GRP_STEP3_NEXT_BTN = XPATH~//*[@id="cdk-step-content-0-2"]//span[text()='Next']
 GRP_STEP4_NEXT_BTN = XPATH~//*[@id="cdk-step-content-0-3"]/form/mat-card/mat-card-actions/div/button[3]/span[1]
 USER_STEP4_TBL = XPATH~//*[@id="cdk-step-content-0-3"]
 USER_GROUP_LBL = XPATH~//*[@id="cdk-step-label-0-2"]/div[3]/div
 USER_VHGROUP_LBL = XPATH~//*[@id="cdk-step-label-0-3"]/div[3]/div
-USER_SUMM_LBL = XPATH~//*[@id="cdk-step-label-0-4"]/div[3]/div
-USER_SUMM_CONFIRM = XPATH~//*[@id="cdk-step-content-0-4"]/mat-card/mat-card-actions/div/button[3]
-USER_SUMM_PREV = XPATH~//*[@id="cdk-step-content-0-4"]/mat-card/mat-card-actions/div/button[2]/span[1]
-USER_SUMM_CANCEL = XPATH~//*[@id="cdk-step-content-0-4"]/mat-card/mat-card-actions/div/button[1]/span[1]
+USER_SUMM_LBL = XPATH~//*[@role="tablist"]//mat-step-header[4]/div[3]
+USER_SUMM_CONFIRM = XPATH~//*[text()='Confirm']
+USER_SUMM_PREV = XPATH~//*[@id="cdk-step-content-0-3"]//*[text()='Previous']
+USER_SUMM_CANCEL = XPATH~//*[@id="cdk-step-content-0-3"]//*[text()='Cancel']
 USER_UPATE = XPATH~//*[@id="cdk-step-content-0-0"]/form/div/button[2]/span[1]
-USER_CANCEL = XPATH~//*[@id="cdk-step-content-0-0"]/form/div/button[1]/span[1]
-USER_ROLE_CANCEL = XPATH~//*[@id="cdk-step-content-0-1"]/form/mat-card/mat-card-actions/div/button[1]/span[1]
-USER_ROLE_PREV = XPATH~//*[@id="cdk-step-content-0-1"]/form/mat-card/mat-card-actions/div/button[2]
-USER_GRP_PREV = XPATH~//*[@id="cdk-step-content-0-2"]/form/mat-card/mat-card-actions/div/button[2]/span[1]
-USER_GRP_CANCEL = XPATH~//*[@id="cdk-step-content-0-2"]/form/mat-card/mat-card-actions/div/button[1]/span[1]
+USER_CANCEL = XPATH~//*[@id="cdk-step-content-0-0"]/form/div//button/span[text()='Cancel']
+USER_ROLE_CANCEL = XPATH~//*[@id="cdk-step-content-0-1"]//button/span[text()='Cancel']
+//*[@id="cdk-step-content-0-1"]/form/mat-card/mat-card-actions/div/button[1]/span[1]
+---USER_ROLE_PREV = XPATH~//*[@id="cdk-step-content-0-1"]/form/mat-card/mat-card-actions/div/button[2]
+USER_GRP_PREV = XPATH~ //*[@id="cdk-step-content-0-2"]//button/span[text()='Previous']
+USER_GRP_CANCEL = XPATH~ //*[@id="cdk-step-content-0-2"]//button/span[text()='Cancel']
+//*[@id="cdk-step-content-0-2"]/form/mat-card/mat-card-actions/div/button[1]/span[1]
 USER_VGRP_PREV = XPATH~//*[@id="cdk-step-content-0-3"]/form/mat-card/mat-card-actions/div/button[2]/span[1]
 USER_VGRP_CANCEL = XPATH~//*[@id="cdk-step-content-0-3"]/form/mat-card/mat-card-actions/div/button[1]/span[1]
 USER_SUMMARY_AI = XPATH~//app-summary-step/mat-card[1]
@@ -99,44 +152,88 @@ USER_SUMMARY_SUROLE = XPATH~//app-summary-step/mat-card[2]//span[contains(text()
 USER_SUMMARY_SUGRP = XPATH~//app-summary-step/mat-card[3]//span[contains(text(),'Selected User Groups')]
 USER_SUMMARY_SUVGRP = XPATH~//app-summary-step/mat-card[4]//span[contains(text(),'Selected Vehicle Groups/Vehicles')]
 USER_SUMMARY_SUROLE_TABLE = XPATH~//app-summary-step/mat-card[2]//mat-table
+ACCOUNT_INFO_EDIT = XPATH~//*[text()='Account Information']/following-sibling::button/span
+USER_GEN_SETTING_EDIT = XPATH~//*[text()='User General Setting']/parent::span/following-sibling::button/span
+SELE_USER_ROLE_EDIT = XPATH~//*[contains(text(),'Selected User Roles')]/following-sibling::button/span
+SELE_USER_GRP_EDIT = XPATH~//*[contains(text(),'Selected User Groups')]/following-sibling::button/span
+USER_EDIT_CONFIRM = XPATH~//button/span[text()='Confirm']
+USER_GRP_TABLE = XPATH~//*[@id="cdk-step-content-1-2"]//mat-table[@role="grid"]
+USER_BREADCRUMB = XPATH~//app-edit-view-user/div[@fxlayout="row"]/div/span
+ACCOUNT_INFO_TYPE = XPATH~//mat-select[@formcontrolname="userType"]
 
-/*****Dashboard ***********************************************************************************************
+/*****Role ****************************************************************************************************
+
+ROLE_MANAG_LB = XPATH~//*[text()='User Role Management ']
+ROLE_DETAIL_LB = XPATH~//*[text()='All User Role Details']
+ROLE_ACCESS = XPATH~//*[text()='Access ']//input[@role="switch"]
+ROLE_ACCESS_TOGGLE = XPATH~//*[text()='Access ']//mat-slide-toggle
+ROLE_NAME_LB = XPATH~//*[text()='User Role Name']/following-sibling::mat-label
+ROLE_DESC_LB = XPATH~//*[text()='User Role Description']/following-sibling::mat-label
+COPY = XPATH~]/button[2]/span[1]/mat-icon
+ROLE_EDIT = XPATH~]/button[3]/span[1]/mat-icon
+ROLE_DELETE = XPATH~]/button[4]/span[1]/mat-icon
+ROLENAME = XPATH~//input[@formcontrolname="userRoleName"]
+NEW_ROLE = XPATH~//span[text()=' New User Role ']
+ROLEDESC = XPATH~//input[@formcontrolname="userRoleDescription"]
+ROLETYPEDD = XPATH~//*[@formcontrolname="roleType"]
+ROLETYPE = XPATH~//span[text()='Regular']
+
 /*****Vehicle Management***************************************************************************************
-VEHICLE_GRP_OPT  = XPATH~//*[@ng-reflect-value="group"]
-VEHICLE_OPT 	 = XPATH~//*[@ng-reflect-value="vehicle"]
-VEHICLE_BOTH_OPT = XPATH~//*[@ng-reflect-value="both"]
+
+OPTION_BTNS  = XPATH~//mat-radio-group[@role="radiogroup"]
+VEHICLE_GRP_OPT  = XPATH~//mat-radio-button[@value="group"]/label/div[2]
+VEHICLE_OPT 	 = XPATH~//mat-radio-button[@value="vehicle"]/label/div[2]
+VEHICLE_BOTH_OPT = XPATH~//mat-radio-button[@value="both"]/label/div[2]
 NEW_VEH_GRP_BTN  = XPATH~//*[text()=' New Vehicle Group ']
 NEW_VEH_GRP_LBL  = XPATH~//*[text()='Create New Vehicle Group']
-VEH_GRP_NAME	 = XPATH~//input[@ng-reflect-name="vehicleGroupName"]
-VEH_GRP_DESC	 = XPATH~//input[@ng-reflect-name="vehicleGroupDescription"]
-VEH_GRP_CANCEL_BTN  = XPATH~//button/span[text()='Cancel']
+VEH_GRP_NAME	 = XPATH~//input[@formcontrolname="vehicleGroupName"]
+VEH_GRP_DESC	 = XPATH~//input[@formcontrolname="vehicleGroupDescription"]
 VEH_GRP_CREATE_BTN  = XPATH~//button/span[text()='Create']
-VEH_LIST_LBL 	 = XPATH~//span[text()='Select Vehicle List (Optional)']
-VEH_DETAIL_LBL 	 = XPATH~//*[contains(text(),'Vehicle Details')]
+VEH_DETAIL_LBL 	 = XPATH~//*[contains(text(),'All Vehicle Group/Vehicle Details')]
 VEH_TABLE_ROW 	 = XPATH~//mat-table/mat-row[1]/mat-cell[1]
 VEH_GRP_CANCEL 	 	= XPATH~//mat-card-actions//button/span[text()='Cancel']
 VEH_GRP_RESET 	 	= XPATH~//mat-card-actions//button/span[text()='Reset']
-VEH_GRP_UPDATE	= XPATH~//mat-card-actions//button/span[text()='Update']
+VEH_GRP_UPDATE	= XPATH~//mat-card-actions//button/span[text()='Confirm']
 VEH_NAME 	 	= XPATH~//input[@formcontrolname="vehicleName"]
 VEH_REG_NO 	 	= XPATH~//input[@formcontrolname="registrationNumber"]
 VEH_UPDATE 	 	= XPATH~//app-edit-vin-setting/form/div/button[3]/span[1]
 VEH_RESET	 	= XPATH~//app-edit-vin-setting/form/div/button[2]/span[1]
 VEH_CANCEL		= XPATH~//app-edit-vin-setting/form/div/button[1]/span[1]
+VEH_SELECT_ALL	= XPATH~//input[@aria-label="select row"]/parent::div
 
+/*****Organization Management**************************************************************************************
+
+VEH_POPUP = XPATH~//app-user-detail-table//mat-card-content
+VEG_POPUP_CLOSE = XPATH~//app-user-detail-table//mat-card-content//mat-icon[text()='close']
 
 /*****User Reset Password**************************************************************************************
 
 /*****Common ELEMENTS******************************************************************************************
+ERROR_MESSAGE = XPATH~//mat-error[@role="alert"]
+BACK_BUTTON = XPATH~//span[@class="backBtnCss"]
 PAGINATION         = XPATH~//*[@class="mat-paginator-range-label"]
 NEXT_PAGINATION    = XPATH~//*[@aria-label="Next page"]
+PREVIOUS_PAGINATION    = XPATH~//*[@aria-label="Previous page"]
+POPUP_PAGINATION         = XPATH~//*[@role="dialog"]//*[@class="mat-paginator-range-label"]
+POPUP_NEXT_PAGINATION    = XPATH~//*[@role="dialog"]//*[@aria-label="Next page"]
+POPUP_PREVIOUS_PAGINATION    = XPATH~//*[@role="dialog"]//*[@aria-label="Previous page"]
+POPUP_GRP_ROW_COUNT_VAL = XPATH~//*[@role="dialog"]//*[@class="mat-paginator"]//*[@role="combobox"]/div/div/span/span
+POPUP_CLOSE     = XPATH~//*[@role="dialog"]//mat-icon[text()='close']
 TABLE              = XPATH~//mat-table
+POPUP_SEARCH =XPATH~//*[@role="dialog"]//input[@data-placeholder="Search"]
+POPUP_ROW	 = XPATH~//*[@role="dialog"]//mat-row[@role="row"]
+POPUP_COL	 = XPATH~//*[@role="dialog"]//*[@role="columnheader"]
+POPUP_COL_FIRST	 = XPATH~//*[@role="dialog"]//*[@role="columnheader"][
+POPUP_COL_SEC	 = XPATH~]
 PART_COL_F_N_FIRST	 = XPATH~//*[@role="columnheader"][
 PART_COL_F_N_SEC	 = XPATH~]
-]/div/div[1]
 TABLE_ROW_PART_ONE = XPATH~//mat-table/mat-row[
 ITEM_PP_ARROW = XPATH~//*[@aria-label="Items per page:"]/div/div[2]
 ITEM_PP_VALUE = XPATH~//*[@role="listbox"]/*[@ng-reflect-value="
-TBL_COL_NAME_LIST  = XPATH~//*[@class="thead-dark"]/tr/th
-LOADING_IMG        = XPATH~//*[@class="lds-ripple float-center"]
+VIEW = XPATH~]/button[1]/span[1]/mat-icon
+LOADING_IMG        = XPATH~//div[@class="lds-roller"]
+NEW_TAG = XPATH~//span[contains(@class,"newTagIcon ")]
+NEW_TAG_NAME = XPATH~//span[text()='New']
+border-top
 
 /*****Common ELEMENTS******************************************************************************************
