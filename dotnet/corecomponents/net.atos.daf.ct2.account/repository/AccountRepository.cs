@@ -479,7 +479,7 @@ namespace net.atos.daf.ct2.account
                 {
                     string orgQuery = string.Empty;
                     int? orgPreferenceId = null;
-                    if (orgId.HasValue)
+                    if (orgId.HasValue && orgId > 0)
                     {
                         var orgParameter = new DynamicParameters();
                         orgParameter.Add("@orgId", orgId);
