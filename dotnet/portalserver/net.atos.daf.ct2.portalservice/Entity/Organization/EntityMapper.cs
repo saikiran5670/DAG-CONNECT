@@ -92,10 +92,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
         //      return objResponse;          
         // }    
 
-        public net.atos.daf.ct2.organizationservice.OrgUpdateRequest TOOrgUpdateResponse(net.atos.daf.ct2.organizationservice.OrgCreateRequest request)
+        public net.atos.daf.ct2.organizationservice.OrgCreateRequest TOOrgUpdateResponse(net.atos.daf.ct2.organizationservice.OrgCreateRequest request)
         {
           
-            net.atos.daf.ct2.organizationservice.OrgUpdateRequest objResponse=new organizationservice.OrgUpdateRequest();
+            net.atos.daf.ct2.organizationservice.OrgCreateRequest objResponse =new organizationservice.OrgCreateRequest();
             objResponse.Id = request.Id;
             objResponse.Type=request.Type;
             objResponse.Name=request.Name;
@@ -113,20 +113,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
         }    
 
         public net.atos.daf.ct2.organizationservice.OrgUpdateRequest TOOrgUpdateResponse(net.atos.daf.ct2.organizationservice.OrgUpdateRequest request)
-        {
-          
+        {          
             net.atos.daf.ct2.organizationservice.OrgUpdateRequest objResponse=new organizationservice.OrgUpdateRequest();
-            objResponse.Id = request.Id;
-            objResponse.Type=request.Type;
-            objResponse.Name=request.Name;
-            objResponse.Street=request.Street;
-            objResponse.AddressType=request.AddressType;
-            objResponse.StreetNumber=request.StreetNumber;
-            objResponse.PostalCode=request.PostalCode;
-            objResponse.City=request.City;
-            objResponse.CountryCode=request.CountryCode;
-            objResponse.OrgId=request.OrgId;
-            objResponse.ReferenceDate=request.ReferenceDate; 
+            objResponse.Id = request.Id;           
             objResponse.VehicleDefaultOptIn=request.VehicleDefaultOptIn; 
             objResponse.DriverDefaultOptIn=request.DriverDefaultOptIn; 
             return objResponse;          

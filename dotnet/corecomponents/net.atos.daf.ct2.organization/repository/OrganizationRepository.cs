@@ -154,7 +154,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 var parameterduplicate = new DynamicParameters();
                 parameterduplicate.Add("@org_id", organization.OrganizationId);
-                var query = @"SELECT id FROM master.organization where org_id=@org_id";
+                var query = @"SELECT id FROM master.organization where org_id=@org_id and state='A'";
                 int orgexist = await dataAccess.ExecuteScalarAsync<int>(query, parameterduplicate);
                 if (orgexist > 0)
                 {
@@ -165,23 +165,26 @@ namespace net.atos.daf.ct2.organization.repository
                 {
                     var parameter = new DynamicParameters();
                     parameter.Add("@Id", organization.Id);
-                    parameter.Add("@OrganizationId", organization.OrganizationId);
-                    parameter.Add("@OrganizationType", organization.Type);
-                    parameter.Add("@Name", organization.Name);
-                    parameter.Add("@AddressType", organization.AddressType);
-                    parameter.Add("@AddressStreet", organization.AddressStreet);
-                    parameter.Add("@AddressStreetNumber", organization.AddressStreetNumber);
-                    parameter.Add("@PostalCode", organization.PostalCode);
-                    parameter.Add("@City", organization.City);
-                    parameter.Add("@CountryCode", organization.CountryCode);
-                    parameter.Add("@ReferencedDate", organization.reference_date != null ? UTCHandling.GetUTCFromDateTime(organization.reference_date.ToString()) : (long?)null);
+                    //parameter.Add("@OrganizationId", organization.OrganizationId);
+                    //parameter.Add("@OrganizationType", organization.Type);
+                    //parameter.Add("@Name", organization.Name);
+                    //parameter.Add("@AddressType", organization.AddressType);
+                    //parameter.Add("@AddressStreet", organization.AddressStreet);
+                    //parameter.Add("@AddressStreetNumber", organization.AddressStreetNumber);
+                    //parameter.Add("@PostalCode", organization.PostalCode);
+                    //parameter.Add("@City", organization.City);
+                    //parameter.Add("@CountryCode", organization.CountryCode);
+                    //parameter.Add("@ReferencedDate", organization.reference_date != null ? UTCHandling.GetUTCFromDateTime(organization.reference_date.ToString()) : (long?)null);
                     parameter.Add("@vehicleoptin", organization.vehicle_default_opt_in);
                     parameter.Add("@driveroptin", organization.driver_default_opt_in);
                     //parameter.Add("@IsActive", organization.IsActive); 
 
-                    var queryUpdate = @"update master.organization set org_id=@OrganizationId, type=@OrganizationType, name=@Name,
-                 address_type=@AddressType, street=@AddressStreet, street_number=@AddressStreetNumber,
-                  postal_code=@PostalCode, city=@City,country_code=@CountryCode,reference_date=@ReferencedDate,vehicle_default_opt_in=@vehicleoptin,driver_default_opt_in=@driveroptin              
+                 //   var queryUpdate = @"update master.organization set org_id=@OrganizationId, type=@OrganizationType, name=@Name,
+                 //address_type=@AddressType, street=@AddressStreet, street_number=@AddressStreetNumber,
+                 // postal_code=@PostalCode, city=@City,country_code=@CountryCode,reference_date=@ReferencedDate,vehicle_default_opt_in=@vehicleoptin,driver_default_opt_in=@driveroptin              
+	                //                 WHERE id = @Id RETURNING id;";
+
+                    var queryUpdate = @"update master.organization set vehicle_default_opt_in=@vehicleoptin,driver_default_opt_in=@driveroptin              
 	                                 WHERE id = @Id RETURNING id;";
                     var orgid = await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameter);
                     if (orgid < 1)

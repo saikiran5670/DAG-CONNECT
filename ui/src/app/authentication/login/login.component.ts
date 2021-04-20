@@ -192,21 +192,47 @@ export class LoginComponent implements OnInit {
   }
 
   openTermsConditionsPopup(data: any, accountDetails: any, accountPreference: any){
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.disableClose = true;
-    dialogConfig.autoFocus = true;
-    dialogConfig.data = {
-      translationData: this.translationData
-    }
-    this.dialogRefTerms = this.dialog.open(TermsConditionsPopupComponent, dialogConfig);
-    this.dialogRefTerms.afterClosed().subscribe(res => {
-      if(res.termsConditionsAgreeFlag){
-        this.showOrganizationRolePopup(data, accountDetails, accountPreference);
-      } 
-      else{
-        this.loginClicks= 0;        
-      } 
-    });
+    let objData= {
+      AccountId: data.accountInfo.id,
+      OrganizationId: data.accountOrganization[0].id
+    }  
+    this.translationService.getLatestTermsConditions(objData).subscribe((response)=>{
+
+      let arrayBuffer= response[0].description;
+      //, { type: 'application/pdf' }
+      var base64File = btoa(
+        new Uint8Array(arrayBuffer)
+          .reduce((data, byte) => data + String.fromCharCode(byte), '')
+      );
+      let latestTCData= {
+        id: 0,
+        organization_Id: data.accountOrganization[0].id,
+        account_Id: data.accountInfo.id,
+        terms_And_Condition_Id: response[0].id,
+        version_no: response[0].versionno
+      }
+      const dialogConfig = new MatDialogConfig();
+      dialogConfig.disableClose = true;
+      dialogConfig.autoFocus = true;
+      dialogConfig.data = {
+        translationData: this.translationData,
+        base64File: base64File,
+        latestTCData: latestTCData
+      }
+      this.dialogRefTerms = this.dialog.open(TermsConditionsPopupComponent, dialogConfig);
+      this.dialogRefTerms.afterClosed().subscribe(res => {
+        if(res.termsConditionsAgreeFlag){
+          this.showOrganizationRolePopup(data, accountDetails, accountPreference);
+        } 
+        else{
+          this.loginClicks= 0;        
+        } 
+      });
+     }, (error) => {
+      this.showOrganizationRolePopup(data, accountDetails, accountPreference);
+     });
+
+     
   }
 
 
