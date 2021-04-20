@@ -127,8 +127,8 @@
                   <mat-error *ngIf="firstFormGroup.get('loginEmail').hasError('email')">
                     {{ translationData.lblPleaseentervalidemailID || 'Please enter valid email ID' }}
                   </mat-error>
-                  <mat-error *ngIf="duplicateEmailMsg">
-                    {{ translationData.lblEmailIDAlreadyExists || 'Email ID already exists' }}
+                  <mat-error *ngIf="duplicateEmailMsg != ''">
+                    {{ duplicateEmailMsg }}
                   </mat-error>
                 </div>
                 <div *ngIf='privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
