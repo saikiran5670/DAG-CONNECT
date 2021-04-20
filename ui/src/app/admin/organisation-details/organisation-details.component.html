@@ -37,10 +37,16 @@
                     </div>
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label style='display: flex;'>
-                            <span>{{ translationData.lblPackageName || 'Package Name' }}</span>
+                            <span>{{ translationData.lbleName || 'Name' }}</span>
                         </mat-label>
                         <div>
                             <span style='font-weight: 500!important;'>{{organisationData.organizationName}}</span>
+                        </div>
+                    </div>
+                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label><span>{{ translationData.lblStreetName || 'Street Name' }}</span></mat-label>
+                        <div>
+                            <span style='font-weight: 500!important;'>{{organisationData.addressStreet}}</span>
                         </div>
                     </div>
                     <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -54,12 +60,7 @@
                 </div>
 
                 <div fxLayout="row" class="full-width margin-bottom-xlg">
-                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                        <mat-label><span>{{ translationData.lblStreetName || 'Street Name' }}</span></mat-label>
-                        <div>
-                            <span style='font-weight: 500!important;'>{{organisationData.addressStreet}}</span>
-                        </div>
-                    </div>
+                   
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label style='display: flex;'>
                             <span>{{ translationData.lblStreetNumber || 'Street Number' }}</span>
@@ -76,15 +77,16 @@
                             <span style='font-weight: 500!important;'>{{organisationData.postalCode}}</span>
                         </div>
                     </div>
-                </div>
-
-                <div fxLayout="row" class="full-width margin-bottom-xlg">
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label><span>{{ translationData.lblCity || 'City' }}</span></mat-label>
                         <div>
                             <span style='font-weight: 500!important;'>{{organisationData.city}}</span>
                         </div>
                     </div>
+                </div>
+
+                <div fxLayout="row" class="full-width margin-bottom-xlg">
+                    
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label style='display: flex;'>
                             <span>{{ translationData.lblCountry || 'Country' }}</span>

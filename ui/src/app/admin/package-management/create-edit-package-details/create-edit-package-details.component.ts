@@ -155,9 +155,9 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     this.packageFormGroup.get("code").setValue(this.selectedElementData.code);
     this.packageFormGroup.get("name").setValue(this.selectedElementData.name);
     this.packageFormGroup.get("type").setValue(this.selectedElementData.type);
-    this.packageFormGroup.get("state").setValue(this.selectedElementData.status);
+    this.packageFormGroup.get("state").setValue(this.selectedElementData.state);
     this.packageFormGroup.get("description").setValue(this.selectedElementData.description);
-    this.selectedStatus = this.selectedElementData.status;
+    this.selectedStatus = this.selectedElementData.state;
   }
 
   toBack(){

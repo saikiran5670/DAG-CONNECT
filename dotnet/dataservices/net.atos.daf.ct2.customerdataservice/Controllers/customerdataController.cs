@@ -224,13 +224,18 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                         return StatusCode(400, string.Empty);
                     }
                 }
-                if (objHandOver.ReferenceDateTime != null || (!string.IsNullOrEmpty(objHandOver.ReferenceDateTime)))
+                if ((objHandOver.ReferenceDateTime == null) || (string.IsNullOrEmpty(objHandOver.ReferenceDateTime)))
+                {
+                    return StatusCode(400, string.Empty);
+                }
+                if ((objHandOver.ReferenceDateTime != null) || (!string.IsNullOrEmpty(objHandOver.ReferenceDateTime)))
                 {
                     if ((Convert.ToDateTime(objHandOver.ReferenceDateTime)).ToUniversalTime() > System.DateTime.Now.ToUniversalTime())
                     {
                         return StatusCode(400, string.Empty);
-                    }                    
+                    }
                 }
+            
 
                 objHandOver.CustomerName = keyHandOver.KeyHandOverEvent.EndCustomer.Name;
 

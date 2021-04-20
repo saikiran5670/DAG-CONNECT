@@ -300,6 +300,7 @@ message OrganizationGetData {
     google.protobuf.StringValue Unit = 14;   
     google.protobuf.StringValue DateFormat =15;
     google.protobuf.StringValue TimeFormat=16;   
+    int32 preferenceId=17;
 }
 
 message ListOfOrganization {

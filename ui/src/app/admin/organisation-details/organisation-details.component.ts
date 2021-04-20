@@ -113,15 +113,50 @@ export class OrganisationDetailsComponent implements OnInit {
     this.organizationService.getOrganizationDetails(this.selectedOrganisationId).subscribe((orgData: any) => {
       this.organisationData = orgData;
       this.organizationIdNo = orgData.id;
+      this.updateVehicleDefault();
+      this.updateDriverDefault();
+
       //console.log("---orgData---",this.organisationData)
     });
   }
-  loadOrgPreferenceData() {
-    this.organizationService.getOrganizationPreference(this.selectedOrganisationId).subscribe((orgPreferenceData: any) => {
-      this.organisationPreferenceData = orgPreferenceData.organizationPreference;
-      //console.log("---orgPrefrenceData---",this.organisationPreferenceData)
-    });
+
+  updateVehicleDefault(){
+    switch (this.organisationData.vehicleOptIn) {
+      case 'U':
+        this.organisationData.vehicleOptIn = 'Opt Out'
+        break;
+        case 'I':
+          this.organisationData.vehicleOptIn = 'Opt In'
+          break;
+          case 'H':
+        this.organisationData.vehicleOptIn = 'Inherit'
+        break;
+      default:
+        break;
+    }
   }
+
+  updateDriverDefault(){
+    switch (this.organisationData.driverOptIn) {
+      case 'U':
+        this.organisationData.driverOptIn = 'Opt Out'
+        break;
+        case 'I':
+          this.organisationData.driverOptIn = 'Opt In'
+          break;
+          case 'H':
+        this.organisationData.driverOptIn = 'Inherit'
+        break;
+      default:
+        break;
+    }
+  }
+  // loadOrgPreferenceData() {
+  //   this.organizationService.getOrganizationPreference(this.selectedOrganisationId).subscribe((orgPreferenceData: any) => {
+  //     this.organisationPreferenceData = orgPreferenceData.organizationPreference;
+  //     //console.log("---orgPrefrenceData---",this.organisationPreferenceData)
+  //   });
+  // }
 
   selectionChanged(_event){
     this.selectedOrganisationId = _event;
