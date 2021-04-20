@@ -54,12 +54,12 @@ namespace net.atos.daf.ct2.organizationservice
                    .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
                 }));
 
-            var connectionString = Configuration.GetConnectionString("ConnectionString");
-            //var connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+            //var connectionString = Configuration.GetConnectionString("ConnectionString");
+            var connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);          
 
-            var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
-            // var DataMartconnectionString = @"Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=vehicledatamart;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+            //var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
+            var DataMartconnectionString = @"Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=vehicledatamart;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             IDataMartDataAccess dataMartdataAccess = new PgSQLDataMartDataAccess(DataMartconnectionString);
 
 

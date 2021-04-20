@@ -251,6 +251,7 @@ namespace net.atos.daf.ct2.organization.repository
             {            
                 var parameter = new DynamicParameters();
                 var query = @"SELECT
+                              a.id,
                               o.id ,
                               o.org_id ,
                               o.name ,                             
@@ -274,7 +275,7 @@ namespace net.atos.daf.ct2.organization.repository
                             left join  master.timeformat tf on tf.id=a.time_format_id
                             left join  master.dateformat df on df.id=a.date_format_id
                             left join  master.unit u on u.id=a.unit_id
-                            left join  translation.language l on l.id=a.language_id
+                            left join  translation.language l on l.id=a.language_id                                                      
                             where o.id=@Id and o.state='A'";
                 parameter.Add("@Id", organizationId);
                 IEnumerable<OrganizationDetailsResponse> OrgDetails = await dataAccess.QueryAsync<OrganizationDetailsResponse>(query, parameter);
@@ -282,6 +283,7 @@ namespace net.atos.daf.ct2.organization.repository
                 foreach (var item in OrgDetails)
                 {
                     OrgDetailsResponse.id = item.id;
+                    OrgDetailsResponse.preferenceId = item.preferenceId;
                     OrgDetailsResponse.org_id = item.org_id;
                     OrgDetailsResponse.name = item.name;                    
                     OrgDetailsResponse.city = item.city;

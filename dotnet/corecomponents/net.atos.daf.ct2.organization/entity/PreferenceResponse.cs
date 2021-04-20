@@ -18,6 +18,7 @@ namespace net.atos.daf.ct2.organization.entity
     public class OrganizationDetailsResponse
     {
         public int id { get; set; }
+        public int preferenceId { get; set; }
         public string org_id { get; set; }
         public string name { get; set; }        
         public string street { get; set; }
