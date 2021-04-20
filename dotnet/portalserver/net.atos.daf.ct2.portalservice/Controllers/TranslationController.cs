@@ -613,7 +613,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "Terms And Conditions response is null");
+                    return StatusCode(404, "Terms And Conditions response is null");
                 }
 
             }
@@ -710,7 +710,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "Terms and condition is null");
+                    return StatusCode(404, "Terms and condition is null");
                 }
             }
             catch (Exception ex)
@@ -744,7 +744,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "Terms and condition is null");
+                    return StatusCode(404, "Terms and condition is null");
                 }
             }
             catch (Exception ex)
@@ -778,7 +778,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "Terms and condition is not avaliable");
+                    return StatusCode(404, "Terms and condition is not avaliable");
                 }
             }
             catch (Exception ex)
@@ -812,7 +812,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "Terms and condition is not avaliable");
+                    return StatusCode(404, "Terms and condition is not avaliable");
                 }
             }
             catch (Exception ex)
@@ -889,7 +889,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             else
             {
-                return StatusCode(500, "term and condition is null");
+                return StatusCode(404, "term and condition is null");
             }
         }
 
