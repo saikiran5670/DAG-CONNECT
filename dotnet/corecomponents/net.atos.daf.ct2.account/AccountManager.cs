@@ -373,6 +373,10 @@ namespace net.atos.daf.ct2.account
                             //Update status to Issued
                             await repository.Update(objToken.Id, ResetTokenStatus.Issued);
                         }
+                        else if(eventType == EmailEventType.ResetPassword && !isSent)
+                        {
+                            identityResult.StatusCode = HttpStatusCode.ExpectationFailed;
+                        }
                     }
                     return identityResult;
                 }

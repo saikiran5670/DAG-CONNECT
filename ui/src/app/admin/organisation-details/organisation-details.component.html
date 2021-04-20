@@ -98,7 +98,7 @@
             <div style='padding: 20px; position: relative;'>
                 <mat-divider></mat-divider>
             </div>
-            <div *ngIf="organisationData">
+            <div *ngIf="organisationData && (userType == 'Admin#Platform' || userType == 'Admin#Global')">
                 <form [formGroup]="orgDetailsPreferenceForm">
                     <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
@@ -118,10 +118,10 @@
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)"
-                                            placeholder="{{ translationData.lblLanguageENGB || 'English GB' }}"
+                                            placeholder="{{ translationData.lblLanguage || 'Language' }}"
                                             formControlName="language" required>
-                                            <mat-option *ngFor="let rer of languageDropdownData" [value]="rer.value">
-                                                {{ rer.name }}
+                                            <mat-option *ngFor="let rer of languageDropdownData" [value]="rer.id">
+                                                {{ rer.value }}
                                             </mat-option>
                                         </mat-select>
                                     </mat-form-field>
@@ -143,8 +143,8 @@
                                         <mat-select (selectionChange)="languageChange($event)"
                                             placeholder="{{ translationData.lblTimeZone || 'Time Zone' }}"
                                             formControlName="timeZone" required>
-                                            <mat-option *ngFor="let rer of timezoneDropdownData" [value]="rer.value">
-                                                {{ rer.name }}
+                                            <mat-option *ngFor="let rer of timezoneDropdownData" [value]="rer.id">
+                                                {{ rer.value }}
                                             </mat-option>
                                         </mat-select>
                                     </mat-form-field>
@@ -166,8 +166,8 @@
                                         <mat-select (selectionChange)="languageChange($event)"
                                             placeholder="{{ translationData.lblUnit || 'Unit' }}" formControlName="unit"
                                             required>
-                                            <mat-option *ngFor="let rer of unitDropdownData" [value]="rer.value">
-                                                {{ rer.name }}
+                                            <mat-option *ngFor="let rer of unitDropdownData" [value]="rer.id">
+                                                {{ rer.value }}
                                             </mat-option>
                                         </mat-select>
                                     </mat-form-field>
@@ -189,8 +189,8 @@
                                         <mat-select (selectionChange)="languageChange($event)"
                                             placeholder="{{ translationData.lblCurrency || 'Currency' }}"
                                             formControlName="currency" required>
-                                            <mat-option *ngFor="let rer of currencyDropdownData" [value]="rer.value">
-                                                {{ rer.name }}
+                                            <mat-option *ngFor="let rer of currencyDropdownData" [value]="rer.id">
+                                                {{ rer.value }}
                                             </mat-option>
                                         </mat-select>
                                     </mat-form-field>
@@ -212,8 +212,8 @@
                                         <mat-select (selectionChange)="languageChange($event)"
                                             placeholder="{{ translationData.lblDateFormat || 'DateFormat' }}"
                                             formControlName="dateFormat" required>
-                                            <mat-option *ngFor="let rer of dateFormatDropdownData" [value]="rer.value">
-                                                {{ rer.name }}
+                                            <mat-option *ngFor="let rer of dateFormatDropdownData" [value]="rer.id">
+                                                {{ rer.value }}
                                             </mat-option>
                                         </mat-select>
                                     </mat-form-field>
@@ -234,13 +234,13 @@
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)"
                                             placeholder="{{ translationData.lblTimeFormat || 'Time Format' }}"
-                                            formControlName="timeformat" required>
-                                            <mat-option *ngFor="let rer of timeFormatDropdownData" [value]="rer.value">
-                                                {{ rer.name }}
+                                            formControlName="timeFormat" required>
+                                            <mat-option *ngFor="let rer of timeFormatDropdownData" [value]="rer.id">
+                                                {{ rer.value }}
                                             </mat-option>
                                         </mat-select>
                                     </mat-form-field>
-                                    <mat-error *ngIf="orgDetailsPreferenceForm.get('timeformat').hasError('required')">
+                                    <mat-error *ngIf="orgDetailsPreferenceForm.get('timeFormat').hasError('required')">
                                         {{ translationData.lblPleasechooseTimeFormat|| 'Please choose Time Format type'
                                         }}
                                     </mat-error>
@@ -259,9 +259,9 @@
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)" placeholder="{{ translationData.lblVehicleDefaultStatus || 'Vehicle Default Status'
                                 }}" formControlName="vehicleDefaultStatus" required>
-                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
-                          {{ rer.name }}
-                        </mat-option> -->
+                                            <mat-option *ngFor="let rer of vehicleStatusDropdownData" [value]="rer.id">
+                                                {{ rer.value }}
+                                            </mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                     <mat-error
@@ -282,9 +282,9 @@
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)" placeholder="{{ translationData.lblVehicleDefaultStatus || 'Vehicle Default Status'
                                 }}" formControlName="driverDefaultStatus" required>
-                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
-                          {{ rer.name }}
-                        </mat-option> -->
+                                            <mat-option *ngFor="let rer of driverStatusDropdownData" [value]="rer.id">
+                                                {{ rer.value }}
+                                            </mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                     <mat-error

@@ -85,38 +85,63 @@ export class LoginComponent implements OnInit {
                 if(getAccresp[0].preferenceId != 0){
                   this.accountService.getAccountPreference(getAccresp[0].preferenceId).subscribe(accPref => {
                       this.translationService.getLanguageCodes().subscribe(languageCodes => {
-                        let filterLang = languageCodes.filter(item => item.id == accPref["languageId"]);
-                        let translationObj = {
-                          id: 0,
-                          code: filterLang[0].code, //-- TODO: Lang code based on account 
-                          type: "Menu",
-                          name: "",
-                          value: "",
-                          filter: "",
-                          menuId: 0 //-- for common & user preference
+                      let objData = {
+                        AccountId: data.body.accountInfo.id,
+                        OrganizationId: data.body.accountOrganization[0].id
+                      }  
+                      this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
+                        if(!response){
+                          let filterLang = languageCodes.filter(item => item.id == accPref["languageId"]);
+                          let translationObj = {
+                            id: 0,
+                            code: filterLang[0].code, //-- TODO: Lang code based on account 
+                            type: "Menu",
+                            name: "",
+                            value: "",
+                            filter: "",
+                            menuId: 0 //-- for common & user preference
+                          }
+                          this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
+                            this.processTranslation(resp);
+                            this.openTermsConditionsPopup(data.body, getAccresp[0], accPref);
+                          });
                         }
-                        this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
-                        this.processTranslation(resp);
-                        this.openTermsConditionsPopup(data.body, getAccresp[0], accPref);
-                      });
+                        else{
+                          this.showOrganizationRolePopup(data.body, getAccresp[0], accPref);
+                        }
+                      }, (error) => {
+                        this.showOrganizationRolePopup(data.body, getAccresp[0], accPref);
+                      })  
                     });
                   })
                 }
                 else{
-                  let translationObj = {
-                    id: 0,
-                    code: "EN-GB",
-                    type: "Menu",
-                    name: "",
-                    value: "",
-                    filter: "",
-                    menuId: 0 //-- for common & user preference
-                  }
-                  this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
-                    this.processTranslation(resp);
-                    this.openTermsConditionsPopup(data.body, getAccresp[0], "");
-                  });
-                  
+                  let objData = {
+                    AccountId: data.body.accountInfo.id,
+                    OrganizationId: data.body.accountOrganization[0].id
+                  }  
+                  this.translationService.checkUserAcceptedTaC(objData).subscribe(response => {
+                    if(!response){
+                      let translationObj = {
+                        id: 0,
+                        code: "EN-GB", //-- TODO: Lang code based on account 
+                        type: "Menu",
+                        name: "",
+                        value: "",
+                        filter: "",
+                        menuId: 0 //-- for common & user preference
+                      }
+                      this.translationService.getMenuTranslations(translationObj).subscribe( (resp) => {
+                        this.processTranslation(resp);
+                        this.openTermsConditionsPopup(data.body, getAccresp[0], "");
+                      });
+                    }
+                    else{
+                      this.showOrganizationRolePopup(data.body, getAccresp[0], "");
+                    }
+                  }, (error) => {
+                    this.showOrganizationRolePopup(data.body, getAccresp[0], "");
+                  })  
                 } 
               }, (error) => {
                 this.loginClicks = 0;
@@ -167,21 +192,47 @@ export class LoginComponent implements OnInit {
   }
 
   openTermsConditionsPopup(data: any, accountDetails: any, accountPreference: any){
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.disableClose = true;
-    dialogConfig.autoFocus = true;
-    dialogConfig.data = {
-      translationData: this.translationData
-    }
-    this.dialogRefTerms = this.dialog.open(TermsConditionsPopupComponent, dialogConfig);
-    this.dialogRefTerms.afterClosed().subscribe(res => {
-      if(res.termsConditionsAgreeFlag){
-        this.showOrganizationRolePopup(data, accountDetails, accountPreference);
-      } 
-      else{
-        this.loginClicks= 0;        
-      } 
-    });
+    let objData= {
+      AccountId: data.accountInfo.id,
+      OrganizationId: data.accountOrganization[0].id
+    }  
+    this.translationService.getLatestTermsConditions(objData).subscribe((response)=>{
+
+      let arrayBuffer= response[0].description;
+      //, { type: 'application/pdf' }
+      var base64File = btoa(
+        new Uint8Array(arrayBuffer)
+          .reduce((data, byte) => data + String.fromCharCode(byte), '')
+      );
+      let latestTCData= {
+        id: 0,
+        organization_Id: data.accountOrganization[0].id,
+        account_Id: data.accountInfo.id,
+        terms_And_Condition_Id: response[0].id,
+        version_no: response[0].versionno
+      }
+      const dialogConfig = new MatDialogConfig();
+      dialogConfig.disableClose = true;
+      dialogConfig.autoFocus = true;
+      dialogConfig.data = {
+        translationData: this.translationData,
+        base64File: base64File,
+        latestTCData: latestTCData
+      }
+      this.dialogRefTerms = this.dialog.open(TermsConditionsPopupComponent, dialogConfig);
+      this.dialogRefTerms.afterClosed().subscribe(res => {
+        if(res.termsConditionsAgreeFlag){
+          this.showOrganizationRolePopup(data, accountDetails, accountPreference);
+        } 
+        else{
+          this.loginClicks= 0;        
+        } 
+      });
+     }, (error) => {
+      this.showOrganizationRolePopup(data, accountDetails, accountPreference);
+     });
+
+     
   }
 
 
