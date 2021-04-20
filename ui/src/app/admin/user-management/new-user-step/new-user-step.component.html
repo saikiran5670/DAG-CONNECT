@@ -65,7 +65,7 @@
             </div>
             <div class="areaWidth min-width-75-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblSalutation || 'Salutation' }}<span class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline" class="full-width">
                     <mat-select placeholder="{{ translationData.lblSalutation || 'Salutation' }}" formControlName="salutation" required>
@@ -96,7 +96,7 @@
                     {{ translationData.lblFirstNamecannotcontainonlywhitespace || 'First Name cannot contain only whitespace' }}
                    </mat-error>
                 </div>
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblLastName || 'Last Name' }}<span class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline" class="full-width">
                     <input maxlength="20" placeholder="{{ translationData.lblLastName || 'Last Name' }}" matInput formControlName="lastName" required>
@@ -116,7 +116,7 @@
                 </div>
               </div>
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblLoginEmail || 'Login Email' }}<span class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline" class="full-width">
                     <input maxlength="50" placeholder="{{ translationData.lblLoginEmail || 'Login Email' }}" matInput formControlName="loginEmail" pattern="[a-zA-Z0-9-_.]{1,}@[a-zA-Z0-9-_.]{2,}[.]{1}[a-zA-Z]{2,}" required>
@@ -127,11 +127,11 @@
                   <mat-error *ngIf="firstFormGroup.get('loginEmail').hasError('email')">
                     {{ translationData.lblPleaseentervalidemailID || 'Please enter valid email ID' }}
                   </mat-error>
-                  <mat-error *ngIf="duplicateEmailMsg">
-                    {{ translationData.lblEmailIDAlreadyExists || 'Email ID already exists' }}
+                  <mat-error *ngIf="duplicateEmailMsg != ''">
+                    {{ duplicateEmailMsg }}
                   </mat-error>
                 </div>
-                <div *ngIf='privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div *ngIf='privilegeAccess' class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblUserType || 'Account Type' }}<span class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline" class="full-width">
                     <mat-select placeholder="{{ translationData.lblUserType || 'Account Type' }}" formControlName="userType">
@@ -144,13 +144,13 @@
                     {{ translationData.lblPleasechooseusertype || 'Please choose account type' }}
                   </mat-error> -->
                 </div>
-                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblOrganisation || 'Organisation' }}</mat-label>
                   <mat-form-field appearance="outline" class="full-width">
                     <input placeholder="{{ translationData.lblOrganisation || 'Organisation' }}" matInput formControlName="organization">
                   </mat-form-field>
                 </div>
-                <div *ngIf='!privilegeAccess' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+                <div *ngIf='!privilegeAccess' class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
               </div>
             </div>
           </div>

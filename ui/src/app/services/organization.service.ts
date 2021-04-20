@@ -70,9 +70,18 @@ export class OrganizationService {
       // .pipe(catchError(this.handleError));
   }
 
-  updatePreferences(data: any): Observable<any> {
+  updateOrganization(data: any): Observable<any> {
     const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
     return this.httpClient.put<any[]>(
+      `${this.organizationServiceUrl}/update`, 
+       data , 
+      { headers, responseType: 'text' as 'json'}
+    ).pipe(catchError(this.handleError));
+  }
+
+  updatePreferences(data: any): Observable<any> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
+    return this.httpClient.post<any[]>(
       `${this.organizationServiceUrl}/preference/update`, 
        data , 
       { headers, responseType: 'text' as 'json'}
