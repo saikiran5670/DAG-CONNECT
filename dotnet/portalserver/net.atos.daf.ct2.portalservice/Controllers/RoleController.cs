@@ -58,11 +58,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
 
-                if ((string.IsNullOrEmpty(request.RoleName.Trim())))
+                if ((string.IsNullOrEmpty(request.RoleName)))
                 {
                     return StatusCode(400, "Role name  is required");
                 }
-                if ((string.IsNullOrEmpty(request.Code.Trim())))
+                if ((string.IsNullOrEmpty(request.Code)))
                 {
                     return StatusCode(400, "Role code  is required");
                 }
@@ -116,7 +116,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> Update(Roleupdaterequest roleMaster)
         {
 
-            if ((string.IsNullOrEmpty(roleMaster.RoleName.Trim())) || (roleMaster.RoleId == 0))
+            if ((string.IsNullOrEmpty(roleMaster.RoleName)) || (roleMaster.RoleId == 0))
             {
                 return StatusCode(400, "Role name and Role Id required Roleid required");
             }

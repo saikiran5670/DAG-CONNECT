@@ -134,6 +134,53 @@ export class TranslationService {
         .pipe(catchError(this.handleError));
     }
 
+    getLatestTermsConditions(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .get<any>(
+              `${this.translationUrl}/tac/getlatesttac?AccountId=${data.AccountId}&OrganizationId=${data.OrganizationId}`
+            )
+        .pipe(catchError(this.handleError));
+    }
+
+    addUserAcceptedTermsConditions(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .post<any>(`${this.translationUrl}/tac/adduseracceptedtac`, data, headers)
+        .pipe(catchError(this.handleError));
+    }
+
+    getUserAcceptedTC(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .get<any>(
+          data.AccountId ? `${this.translationUrl}/tac/getacceptedbyusertac?AccountId=${data.AccountId}&OrganizationId=${data.OrganizationId}` : `${this.translationUrl}/tac/getacceptedbyusertac?OrganizationId=${data.OrganizationId}`
+            )
+        .pipe(catchError(this.handleError));
+    }
+
+    
+    getTCForVersionNo(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .get<any>(
+          `${this.translationUrl}/tac/gettacforversionno?versionNo=${data.versionNo}&languageCode=${data.languageCode}`
+            )
+        .pipe(catchError(this.handleError));
+    }
+
     private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);
       return throwError(

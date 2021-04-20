@@ -102,6 +102,7 @@ namespace net.atos.daf.ct2.organizationservice.entity
         {
             net.atos.daf.ct2.organizationservice.OrgDetailResponse objResponse = new OrgDetailResponse();
             objResponse.Id = request.id;
+            objResponse.PreferenceId = request.preferenceId;          
             objResponse.OrganizationId = request.org_id;
             objResponse.OrganizationName = request.name;
             objResponse.AddressStreet = request.street;

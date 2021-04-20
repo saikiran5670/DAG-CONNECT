@@ -37,6 +37,7 @@ namespace net.atos.daf.ct2.driverservice
             //var connectionString = @"Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             //var DataMartconnectionString = @"Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=vehicledatamart;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
 
+
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             IDataMartDataAccess dataMartdataAccess = new PgSQLDataMartDataAccess(DataMartconnectionString);
             services.AddSingleton(dataMartdataAccess);   

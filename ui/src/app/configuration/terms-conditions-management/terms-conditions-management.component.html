@@ -49,7 +49,7 @@
                     </div>
                     <div fxLayout="row" style='padding: 10px;' >
                         <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
-                            <span>Please follow the file name convension as : TermsConditions_(version)_(language code).pdf    (Ex. TermsConditions_v2.1_EN.pdf)</span>
+                            <span [ngStyle]="{'color': uploadFileErrorCode == 400 ? 'red' : 'black' }">{{ translationData.lblFileNamingConvensionMsg || 'Please follow the file name convension as : TermsConditions_(version)_(language code).pdf (Ex. TermsConditions_v2.1_EN.pdf)' }}</span>
                         </div>
                     </div>
                 </div>
@@ -63,29 +63,32 @@
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
-                <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                <div class='areaWidth min-width-30-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
                         <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
                         <span matPrefix><mat-icon>search</mat-icon></span>
                     </mat-form-field>
                 </div>
+                <div *ngIf="downloadPDFErrorCode == 404" class='full-width min-width-60-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
+                    <span style="color: red;">{{ translationData.lblTCNotPresentForSelectedLanguage || 'Terms and conditions not present for selected language' }}</span>
+                </div>
             </div>
             <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
             <div *ngIf='initData.length > 0'>
                 <mat-table [dataSource]="dataSource" matSort>
-                    <ng-container matColumnDef="userName">
+                    <ng-container matColumnDef="firstName">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserName || 'User Name' }}</mat-header-cell>
-                        <mat-cell *matCellDef="let row">{{ row.userName }}</mat-cell>
+                        <mat-cell *matCellDef="let row">{{ row.firstName+" "+row.lastname }}</mat-cell>
                     </ng-container>
-                    <ng-container matColumnDef="version">
+                    <ng-container matColumnDef="versionno">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblTnCVersion || 'T&C Version' }}</mat-header-cell>
-                        <mat-cell *matCellDef="let row">{{ row.version }}</mat-cell>
+                        <mat-cell *matCellDef="let row">{{ row.versionno }}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="action">
                         <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action' }}</mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <button class='actionBtn' mat-flat-button (click)="onDownloadPdf(row)" matTooltip="{{ translationData.lblDownload || 'Download' }}">
-                                <mat-icon style="width: 20px; height: 20px;">picture_as_pdf</mat-icon>
+                            <button class='actionBtn' style="color: red;" mat-flat-button (click)="onDownloadPdf(row)" matTooltip="{{ translationData.lblDownload || 'Download' }}">
+                                <mat-icon style="width: 20px; height: 20px; ">picture_as_pdf</mat-icon>
                             </button>
                         </mat-cell>
                     </ng-container>

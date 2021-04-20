@@ -25,6 +25,7 @@ export class OrganisationDetailsComponent implements OnInit {
   selectedOrganisationId : number;
   organisationSelected : string;
   preferenceId : number;
+  organizationIdNo : number;
   // private _formBuilder: any;
   languageDropdownData: any = [];
   timezoneDropdownData: any = [];
@@ -32,6 +33,10 @@ export class OrganisationDetailsComponent implements OnInit {
   currencyDropdownData: any = [];
   dateFormatDropdownData: any = [];
   timeFormatDropdownData: any = [];
+  vehicleStatusDropdownData: any = [];
+  driverStatusDropdownData:any = [];
+  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  userType: any = localStorage.getItem("userType");
 
   constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private organizationService: OrganizationService) { 
     this.defaultTranslation();
@@ -73,7 +78,7 @@ export class OrganisationDetailsComponent implements OnInit {
       unit: ['', [Validators.required]],
       currency: ['', [Validators.required]],
       dateFormat: ['', [Validators.required]],
-      timeformat: ['', [Validators.required]],
+      timeFormat: ['', [Validators.required]],
       vehicleDefaultStatus: ['', [Validators.required]],
       driverDefaultStatus: ['', [Validators.required]]
     });
@@ -92,11 +97,12 @@ export class OrganisationDetailsComponent implements OnInit {
       //this.loadOrganisationdata();
       //this.loadOrgPreferenceData();
     });
-
+    
     this.organizationService.getOrganizations(this.accountOrganizationId).subscribe((orgList: any) => {
       this.organisationList = orgList;
       this.selectedOrganisationId = orgList[0]["organizationId"];
-      this.preferenceId = orgList.id;
+      this.organizationIdNo = orgList[0].id;
+      this.preferenceId = orgList[0].preferenceId;
      // console.log( this.organisationSelected)
       this.loadOrganisationdata();
      // console.log("---orgData---",orgList)
@@ -106,15 +112,51 @@ export class OrganisationDetailsComponent implements OnInit {
   loadOrganisationdata(){
     this.organizationService.getOrganizationDetails(this.selectedOrganisationId).subscribe((orgData: any) => {
       this.organisationData = orgData;
+      this.organizationIdNo = orgData.id;
+      this.updateVehicleDefault();
+      this.updateDriverDefault();
+
       //console.log("---orgData---",this.organisationData)
     });
   }
-  loadOrgPreferenceData() {
-    this.organizationService.getOrganizationPreference(this.selectedOrganisationId).subscribe((orgPreferenceData: any) => {
-      this.organisationPreferenceData = orgPreferenceData.organizationPreference;
-      //console.log("---orgPrefrenceData---",this.organisationPreferenceData)
-    });
+
+  updateVehicleDefault(){
+    switch (this.organisationData.vehicleOptIn) {
+      case 'U':
+        this.organisationData.vehicleOptIn = 'Opt Out'
+        break;
+        case 'I':
+          this.organisationData.vehicleOptIn = 'Opt In'
+          break;
+          case 'H':
+        this.organisationData.vehicleOptIn = 'Inherit'
+        break;
+      default:
+        break;
+    }
   }
+
+  updateDriverDefault(){
+    switch (this.organisationData.driverOptIn) {
+      case 'U':
+        this.organisationData.driverOptIn = 'Opt Out'
+        break;
+        case 'I':
+          this.organisationData.driverOptIn = 'Opt In'
+          break;
+          case 'H':
+        this.organisationData.driverOptIn = 'Inherit'
+        break;
+      default:
+        break;
+    }
+  }
+  // loadOrgPreferenceData() {
+  //   this.organizationService.getOrganizationPreference(this.selectedOrganisationId).subscribe((orgPreferenceData: any) => {
+  //     this.organisationPreferenceData = orgPreferenceData.organizationPreference;
+  //     //console.log("---orgPrefrenceData---",this.organisationPreferenceData)
+  //   });
+  // }
 
   selectionChanged(_event){
     this.selectedOrganisationId = _event;
@@ -129,15 +171,17 @@ export class OrganisationDetailsComponent implements OnInit {
   onPreferenceEdit() {
     this.editPrefereneceFlag = true;
     let languageCode = this.localStLanguage.code;
-    //let preferenceId = this.selectedOrganisationId;
     this.translationService.getPreferences(languageCode).subscribe((data: any) => {
       let dropDownData = data;
       this.languageDropdownData = dropDownData.language;
       this.timezoneDropdownData = dropDownData.timezone;
-      this.unitDropdownData = dropDownData.unit;
       this.currencyDropdownData = dropDownData.currency;
+      this.unitDropdownData = dropDownData.unit;
       this.dateFormatDropdownData = dropDownData.dateformat;
       this.timeFormatDropdownData = dropDownData.timeformat;
+      this.vehicleStatusDropdownData = [{id:'U',value:'Opt Out'},{id:'I',value:'Opt in'},{id:'H',value:'Inherit'}]
+      this.driverStatusDropdownData = [{id:'U',value:'Opt Out'},{id:'I',value:'Opt in'},{id:'H',value:'Inherit'}]
+      
       // this.vehicleDisplayDropdownData = dropDownData.vehicledisplay;
       // this.landingPageDisplayDropdownData = accountNavMenu;
     });
@@ -153,25 +197,47 @@ export class OrganisationDetailsComponent implements OnInit {
 
   }
   onCreateUpdate() {
-    let successMsg = "Organisation Details Updated Successfully!";
-    this.successMsgBlink(successMsg);
-    let accountId = parseInt(localStorage.getItem('accountId'));
+    let orgSuccess : boolean = false;
+    let prefSuccess : boolean = false;
+
+    let organizationUpdateObj = {
+      id: this.organisationData.id,
+      vehicle_default_opt_in: this.orgDetailsPreferenceForm.controls.vehicleDefaultStatus.value ? this.orgDetailsPreferenceForm.controls.vehicleDefaultStatus.value : this.vehicleStatusDropdownData[0].id,
+      driver_default_opt_in: this.orgDetailsPreferenceForm.controls.driverDefaultStatus.value ? this.orgDetailsPreferenceForm.controls.driverDefaultStatus.value : this.driverStatusDropdownData[0].id,
+    
+    
+    }
+
+    this.organizationService.updateOrganization(organizationUpdateObj).subscribe(ogranizationResult =>{
+      if(ogranizationResult){
+          orgSuccess = true;
+          let successMsg = "Organisation Details Updated Successfully!";
+          this.successMsgBlink(successMsg); 
+      }
+    })
+    
     let preferenceUpdateObj = 
     {
       id: this.preferenceId,
-      refId: accountId,
+      refId: this.organizationIdNo,
       languageId: this.orgDetailsPreferenceForm.controls.language.value ? this.orgDetailsPreferenceForm.controls.language.value : this.languageDropdownData[0].id,
       timezoneId: this.orgDetailsPreferenceForm.controls.timeZone.value ? this.orgDetailsPreferenceForm.controls.timeZone.value : this.timezoneDropdownData[0].id,
-      unitId: this.orgDetailsPreferenceForm.controls.unit.value ? this.orgDetailsPreferenceForm.controls.unit.value : this.unitDropdownData[0].id,
       currencyId: this.orgDetailsPreferenceForm.controls.currency.value ? this.orgDetailsPreferenceForm.controls.currency.value : this.currencyDropdownData[0].id,
+      unitId: this.orgDetailsPreferenceForm.controls.unit.value ? this.orgDetailsPreferenceForm.controls.unit.value : this.unitDropdownData[0].id,
       dateFormatTypeId: this.orgDetailsPreferenceForm.controls.dateFormat.value ? this.orgDetailsPreferenceForm.controls.dateFormat.value : this.dateFormatDropdownData[0].id,
       timeFormatId: this.orgDetailsPreferenceForm.controls.timeFormat.value ? this.orgDetailsPreferenceForm.controls.timeFormat.value : this.timeFormatDropdownData[0].id,
-    
+      // landingPageDisplayId :1,
+      // vehicleDisplayId :1
     }
-    
-    // this.organizationService.updatePreferences(preferenceUpdateObj).subscribe(preferenceResult =>{
-
-    // })
+    this.organizationService.updatePreferences(preferenceUpdateObj).subscribe(preferenceResult =>{
+      if (preferenceResult) {
+        orgSuccess = true;
+      }
+    })
+    if(orgSuccess && prefSuccess){
+      let successMsg = "Organisation Details Updated Successfully!";
+      this.successMsgBlink(successMsg); 
+    }
   }
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
