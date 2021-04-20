@@ -228,7 +228,7 @@ namespace net.atos.daf.ct2.driver
                         }
                         else
                         {
-                            var queryInsert = @"insert into master.driver(organization_id,driver_id_ext, first_name, last_name,email,status, opt_in,modified_at,modified_by,created_at) values(@organization_id,@driver_id_ext, @first_name, @last_name,@email ,@status, @opt_in,@modified_at,@modified_by,@created_at)";
+                            var queryInsert = @"insert into master.driver(organization_id,driver_id_ext, first_name, last_name,email,status, opt_in,modified_at,modified_by,created_at,state) values(@organization_id,@driver_id_ext, @first_name, @last_name,@email ,@status, @opt_in,@modified_at,@modified_by,@created_at,'A')";
                             await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
                             //  ErrorMessage=item.Driver_id_ext + "Not Inserted";
                             //  dicMessage.Add(item.Driver_id_ext,"Inserted");
