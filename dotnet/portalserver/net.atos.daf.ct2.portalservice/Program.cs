@@ -23,7 +23,6 @@ namespace net.atos.daf.ct2.portalservice
                 webBuilder.ConfigureKestrel(serverOptions =>
                 {
                     serverOptions.AddServerHeader = false;
-                    serverOptions.Limits.MaxRequestBodySize = long.MaxValue;
                 })
                 .UseStartup<Startup>();
             }).ConfigureLogging(builder =>
