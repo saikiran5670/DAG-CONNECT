@@ -45,7 +45,7 @@
 </div>
 <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
 <div *ngIf='initData.length > 0' id="packageData">
-  <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
+  <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter" [hiddenColumns]="[4]">
     <!-- <ng-container matColumnDef="select">
       <mat-header-cell *matHeaderCellDef>
         <mat-checkbox (change)='$event ? masterToggleForPackage() : null'
