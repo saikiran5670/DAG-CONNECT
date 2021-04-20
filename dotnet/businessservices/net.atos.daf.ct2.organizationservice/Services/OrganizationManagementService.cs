@@ -394,7 +394,7 @@ namespace net.atos.daf.ct2.organizationservice
                 response.Code = Responcecode.Success;
                 response.Message = "Created";
                 request.Id = organization.Id;
-                response.Organization = _mapper.TOOrgUpdateResponse(request);
+                response.Organization = _mapper.TOOrgCreateResponse(request);
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -415,16 +415,7 @@ namespace net.atos.daf.ct2.organizationservice
             {
                 Organization organization = new Organization();
                 OrganizationUpdateData response = new OrganizationUpdateData();
-                organization.Id = request.Id;
-                organization.OrganizationId = request.OrgId;
-                organization.Type = request.Type;
-                organization.Name = request.Name;
-                organization.AddressType = request.AddressType;
-                organization.AddressStreet = request.Street;
-                organization.AddressStreetNumber = request.StreetNumber;
-                organization.City = request.City;
-                organization.CountryCode = request.CountryCode;
-                organization.reference_date = Convert.ToDateTime(request.ReferenceDate);
+                organization.Id = request.Id;               
                 organization.vehicle_default_opt_in = request.VehicleDefaultOptIn;
                 organization.driver_default_opt_in = request.DriverDefaultOptIn;
                 var OrgId = await organizationtmanager.Update(organization);
