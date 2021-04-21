@@ -346,15 +346,17 @@ export class CommonImportComponent implements OnInit {
   descValidation(value:any){
     let obj: any = { status: true, reason: 'correct data'};
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
-    if(value.length > 100){
-      obj.status = false;
-      obj.reason = this.importTranslationData.packageDescriptionCannotExceedReason;
-      return obj;
-    }
-    if(!SpecialCharRegex.test(value)){
-      obj.status = false;
-      obj.reason =  this.importTranslationData.specialCharNotAllowedReason;
-      return obj;
+    if(value && value != ""){
+      if (value.length > 100) {
+        obj.status = false;
+        obj.reason = this.importTranslationData.packageDescriptionCannotExceedReason;
+        return obj;
+      }
+      if (!SpecialCharRegex.test(value)) {
+        obj.status = false;
+        obj.reason = this.importTranslationData.specialCharNotAllowedReason;
+        return obj;
+      }
     }
     return obj;
   }
