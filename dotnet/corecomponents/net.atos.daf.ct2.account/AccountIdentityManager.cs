@@ -332,8 +332,15 @@ namespace net.atos.daf.ct2.account
             IEnumerable<IdentitySessionComponent.entity.AccountToken> tokenlst = await accountTokenManager.GetTokenDetails(tokenGuid);
             foreach (var item in tokenlst)
             {
-                accountid = item.AccountId;
-                response.AccountId = item.AccountId;
+                DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+                dtDateTime = dtDateTime.AddSeconds(item.CreatedAt).ToLocalTime();
+                DateTime exdateTime = dtDateTime.AddSeconds(item.ExpireIn);
+                int result = DateTime.Compare(exdateTime, DateTime.Now);
+                if (result > 0)
+                {
+                    accountid = item.AccountId;
+                    response.AccountId = item.AccountId;
+                }
                 break;
             }
             //check session is available in account session
