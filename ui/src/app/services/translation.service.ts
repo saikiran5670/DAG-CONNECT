@@ -168,7 +168,6 @@ export class TranslationService {
         .pipe(catchError(this.handleError));
     }
 
-    
     getTCForVersionNo(data: any): Observable<any> {
       let headerObj = this.generateHeader();
       const headers = {
@@ -177,6 +176,18 @@ export class TranslationService {
       return this.httpClient
         .get<any>(
           `${this.translationUrl}/tac/gettacforversionno?versionNo=${data.versionNo}&languageCode=${data.languageCode}`
+            )
+        .pipe(catchError(this.handleError));
+    }
+
+    getAllTCVersions(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .get<any>(
+          `${this.translationUrl}/tac/getallversionsfortac?orgId=${data.orgId}&levelCode=${data.levelCode}&accountId=${data.accountId}`
             )
         .pipe(catchError(this.handleError));
     }
