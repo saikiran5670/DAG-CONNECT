@@ -418,7 +418,7 @@ namespace net.atos.daf.ct2.organization.repository
                     // postal_code=@PostalCode, city=@City,country_code=@CountryCode,reference_date=@reference_date                               
                     //                 WHERE org_id = @org_id RETURNING id;";
 
-                    var queryUpdate = @"update master.organization set org_id=@org_id, name=@Name,reference_date=@reference_date";
+                    var queryUpdate = @"update master.organization set org_id=@org_id, reference_date=@reference_date";
 
                     if ((customer.CustomerName != null) && (customer.CustomerName.Trim().Length > 0))
                     {
