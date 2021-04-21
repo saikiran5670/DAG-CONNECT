@@ -38,7 +38,16 @@ export class OrganisationDetailsComponent implements OnInit {
   driverStatusDropdownData:any = [];
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
-
+  languageHolder: string;
+  timezoneHolder: string;
+  currencyHolder: string;
+  unitHolder: string;
+  dateFormatHolder: string;
+  timeFormatHolder: string;
+  driverOptHolder:string;
+  vehicleOptHolder:string;
+  driverOptIn : string;
+  vehicleOptIn : string;
   constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private organizationService: OrganizationService) { 
     this.defaultTranslation();
   }
@@ -118,13 +127,13 @@ export class OrganisationDetailsComponent implements OnInit {
   updateVehicleDefault(){
     switch (this.organisationData.vehicleOptIn) {
       case 'U':
-        this.organisationData.vehicleOptIn = 'Opt Out'
+        this.vehicleOptIn = 'Opt Out'
         break;
         case 'I':
-          this.organisationData.vehicleOptIn = 'Opt In'
+          this.vehicleOptIn = 'Opt In'
           break;
           case 'H':
-        this.organisationData.vehicleOptIn = 'Inherit'
+        this.vehicleOptIn = 'Inherit'
         break;
       default:
         break;
@@ -134,13 +143,13 @@ export class OrganisationDetailsComponent implements OnInit {
   updateDriverDefault(){
     switch (this.organisationData.driverOptIn) {
       case 'U':
-        this.organisationData.driverOptIn = 'Opt Out'
+        this.driverOptIn = 'Opt Out'
         break;
         case 'I':
-          this.organisationData.driverOptIn = 'Opt In'
+          this.driverOptIn= 'Opt In'
           break;
           case 'H':
-        this.organisationData.driverOptIn = 'Inherit'
+        this.driverOptIn = 'Inherit'
         break;
       default:
         break;
@@ -174,7 +183,32 @@ export class OrganisationDetailsComponent implements OnInit {
       
       // this.vehicleDisplayDropdownData = dropDownData.vehicledisplay;
       // this.landingPageDisplayDropdownData = accountNavMenu;
+      
+      this.languageHolder =  this.organisationData.languageName ? this.organisationData.languageName :  'Language';
+      this.timezoneHolder =  this.organisationData.timezone ? this.organisationData.timezone :  'TimeZone';
+      this.currencyHolder =  this.organisationData.currency ? this.organisationData.currency :  'Currency';
+      this.unitHolder =  this.organisationData.unit ? this.organisationData.unit :  'Unit';
+      this.dateFormatHolder =  this.organisationData.dateFormat ? this.organisationData.dateFormat :  'Date Format';
+      this.timeFormatHolder =  this.organisationData.timeFormat ? this.organisationData.timeFormat :  'Time Format';
+      this.vehicleOptHolder =  this.organisationData.driverOptIn ? this.organisationData.driverOptIn :  'Driver Opt In';
+      this.driverOptHolder =  this.organisationData.vehicleOptIn ? this.organisationData.vehicleOptIn :  'Vehicle Opt In';
+
+
+this.orgDetailsPreferenceForm.controls.language.setValue(this.organisationData.languageName );
+this.orgDetailsPreferenceForm.controls.timeZone.setValue(this.organisationData.timezone);
+this.orgDetailsPreferenceForm.controls.unit.setValue(this.organisationData.unit);
+this.orgDetailsPreferenceForm.controls.currency.setValue(this.organisationData.currency);
+this.orgDetailsPreferenceForm.controls.dateFormat.setValue(this.organisationData.dateFormat);
+this.orgDetailsPreferenceForm.controls.timeFormat.setValue(this.organisationData.timeFormat);
+
+
+
+
+
     });
+
+    this.orgDetailsPreferenceForm.controls.driverDefaultStatus.setValue(this.organisationData.driverOptIn);
+    this.orgDetailsPreferenceForm.controls.vehicleDefaultStatus.setValue(this.organisationData.vehicleOptIn);
   }
   onCloseMsg(){
     this.titleVisible = false;
@@ -210,14 +244,14 @@ export class OrganisationDetailsComponent implements OnInit {
     {
       id: this.preferenceId,
       refId: this.organizationIdNo,
-      languageId: this.orgDetailsPreferenceForm.controls.language.value ? this.orgDetailsPreferenceForm.controls.language.value : this.languageDropdownData[0].id,
-      timezoneId: this.orgDetailsPreferenceForm.controls.timeZone.value ? this.orgDetailsPreferenceForm.controls.timeZone.value : this.timezoneDropdownData[0].id,
-      currencyId: this.orgDetailsPreferenceForm.controls.currency.value ? this.orgDetailsPreferenceForm.controls.currency.value : this.currencyDropdownData[0].id,
-      unitId: this.orgDetailsPreferenceForm.controls.unit.value ? this.orgDetailsPreferenceForm.controls.unit.value : this.unitDropdownData[0].id,
-      dateFormatTypeId: this.orgDetailsPreferenceForm.controls.dateFormat.value ? this.orgDetailsPreferenceForm.controls.dateFormat.value : this.dateFormatDropdownData[0].id,
-      timeFormatId: this.orgDetailsPreferenceForm.controls.timeFormat.value ? this.orgDetailsPreferenceForm.controls.timeFormat.value : this.timeFormatDropdownData[0].id,
-      // landingPageDisplayId :1,
-      // vehicleDisplayId :1
+      languageId: this.orgDetailsPreferenceForm.controls.language.value ? this.orgDetailsPreferenceForm.controls.language.value : this.languageDropdownData[0].value,
+      timezoneId: this.orgDetailsPreferenceForm.controls.timeZone.value ? this.orgDetailsPreferenceForm.controls.timeZone.value : this.timezoneDropdownData[0].value,
+      currencyId: this.orgDetailsPreferenceForm.controls.currency.value ? this.orgDetailsPreferenceForm.controls.currency.value : this.currencyDropdownData[0].value,
+      unitId: this.orgDetailsPreferenceForm.controls.unit.value ? this.orgDetailsPreferenceForm.controls.unit.value : this.unitDropdownData[0].value,
+      dateFormatTypeId: this.orgDetailsPreferenceForm.controls.dateFormat.value ? this.orgDetailsPreferenceForm.controls.dateFormat.value : this.dateFormatDropdownData[0].value,
+      timeFormatId: this.orgDetailsPreferenceForm.controls.timeFormat.value ? this.orgDetailsPreferenceForm.controls.timeFormat.value : this.timeFormatDropdownData[0].value,
+      landingPageDisplayId :1,
+      vehicleDisplayId :1
     }
     this.organizationService.updatePreferences(preferenceUpdateObj).subscribe(preferenceResult =>{
       if (preferenceResult) {
