@@ -215,6 +215,13 @@ export class UserGroupManagementComponent implements OnInit {
       this.initData = this.getNewTagData(this.initData);
     }
     this.dataSource = new MatTableDataSource(this.initData);
+    this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+      return (
+        data.accountGroupName.toString().toLowerCase().includes(filter) ||
+        data.vehicleCount.toString().toLowerCase().includes(filter) ||
+        data.accountCount.toString().toLowerCase().includes(filter)
+      );
+    };
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -377,5 +384,14 @@ exportAsPdf() {
   });     
 }
 
+ngAfterViewInit() {
+  this.dataSource.filterPredicate = function(data, filter: string): boolean {
+    return (
+      this.initData.accountGroupName.toString().includes(filter) ||
+      this.initData.vehicleCount.toString().includes(filter) ||
+      this.initData.accountCount.toString().includes(filter)
+    );
+  };
+}
 
 }
