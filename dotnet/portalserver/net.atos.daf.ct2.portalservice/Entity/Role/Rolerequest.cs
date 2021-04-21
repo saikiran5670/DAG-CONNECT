@@ -17,7 +17,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Role
         [Required]
         public int Level { get; set; }
         public long CreatedAt { get; set; }
-        [Required]
         public string Code { get; set; }
     }
 
