@@ -685,6 +685,9 @@ private setPageTitle() {
     this.userOrg = orgname[0].name;
     localStorage.setItem("organizationName", this.userOrg);
     this.filterOrgBasedRoles(value, false);
+    if((this.router.url).includes("organisationdetails")){
+      this.reloadCurrentComponent();
+    }
   }
 
    onRoleChange(value: any){

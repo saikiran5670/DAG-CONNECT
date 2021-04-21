@@ -207,7 +207,7 @@ namespace net.atos.daf.ct2.subscription.repository
                                 var parameterStatus = new DynamicParameters();
                                 parameterStatus.Add("@state", "A");
                                 parameterStatus.Add("@subscription_id", response.subscription_id);
-                                parameterStatus.Add("@subscription_start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                                parameterStatus.Add("@subscription_start_date", objSubscription.StartDateTime);
                                 parameterStatus.Add("@subscription_end_date", null);
                                 parameterStatus.Add("@vehicle_id", vinexist); 
                                 string queryUpdate = @"update master.subscription set state = @state, subscription_start_date = @subscription_start_date,
@@ -449,15 +449,15 @@ namespace net.atos.daf.ct2.subscription.repository
                 string query = string.Empty;
                 List<SubscriptionDetails> objsubscriptionDetails = new List<SubscriptionDetails>();
                
-                    query = @"SELECT sub.subscription_id,org.name as orgname,sub.package_code,pak.name,sub.type,COUNT(veh.name),
-                                     sub.subscription_start_date,sub.subscription_end_date,sub.state,sub.organization_id
-                                     FROM master.Subscription sub 
-                              JOIN master.package pak on sub.package_id = pak.id 
-                              LEFT JOIN master.vehicle veh on sub.vehicle_id = veh.id
-                              LEFT JOIN master.organization org on sub.organization_id = org.id
-                              GROUP BY sub.subscription_id,org.name,sub.package_code,pak.name,sub.type,
-                                     sub.subscription_start_date,sub.subscription_end_date,sub.state,sub.organization_id
-                              HAVING 1=1";
+                    query = @"SELECT sub.subscription_id,org.name as orgname,sub.package_code,pak.name,sub.type,COUNT(veh.id),
+                                 sub.subscription_start_date,sub.subscription_end_date,sub.state,sub.organization_id
+                            FROM master.Subscription sub
+                            Inner JOIN master.organization org on sub.organization_id = org.id
+                            Inner JOIN master.package pak on sub.package_id = pak.id
+                            Left JOIN master.vehicle veh on sub.vehicle_id = veh.id
+                            GROUP BY sub.subscription_id,org.name,sub.package_code,pak.name,sub.type,
+                                 sub.subscription_start_date,sub.subscription_end_date,sub.state,sub.organization_id
+                            HAVING 1=1";
 
                     var parameter = new DynamicParameters();
 

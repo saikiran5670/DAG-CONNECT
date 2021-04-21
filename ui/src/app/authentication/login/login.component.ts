@@ -167,7 +167,7 @@ export class LoginComponent implements OnInit {
             this.loginClicks = 0;
           }
           else if(error.status == 302){
-            this.router.navigate(['/auth/resetpassword/:'+error["processToken"]]);
+            this.router.navigate(['/auth/resetpassword/'+error.error.processToken]);
           }
           else if(error.status == 500)
             this.invalidUserMsg = true;
@@ -199,7 +199,6 @@ export class LoginComponent implements OnInit {
     this.translationService.getLatestTermsConditions(objData).subscribe((response)=>{
 
       let arrayBuffer= response[0].description;
-      //, { type: 'application/pdf' }
       var base64File = btoa(
         new Uint8Array(arrayBuffer)
           .reduce((data, byte) => data + String.fromCharCode(byte), '')
