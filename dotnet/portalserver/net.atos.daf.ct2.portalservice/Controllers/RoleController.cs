@@ -64,7 +64,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 if ((string.IsNullOrEmpty(request.Code)))
                 {
-                    return StatusCode(400, "Role code  is required");
+                    request.Code = "PLADM";
                 }
                 if (request.FeatureIds.Length == 0)
                 {

@@ -9,8 +9,6 @@ import { TranslationService } from 'src/app/services/translation.service';
 import * as FileSaver from 'file-saver';
 import { base64ToFile } from 'ngx-image-cropper';
 
-const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-
 @Component({
   selector: 'app-terms-conditions-management',
   templateUrl: './terms-conditions-management.component.html',
@@ -114,8 +112,6 @@ export class TermsConditionsManagementComponent implements OnInit {
 
   uploadTermsAndConditions(){ 
     let languageData = [];
-    console.log("filelist:: ", this.filelist);
-    //TODO : Convert PDF to byte array and send to API
    
     let tncObj= {
       "start_date": "",
@@ -157,7 +153,6 @@ export class TermsConditionsManagementComponent implements OnInit {
       const reader = new FileReader();
       reader.readAsDataURL(event.target.files[i]);
       reader.onload = () => {
-          console.log("File base64= " +reader.result);
           let fileSelected= reader.result.toString();
           let filename= 
           this.filelist.push({"fileName": (this.uploadTermsConditionsFormGroup.controls.uploadFile.value._fileNames).replace(".pdf", ""), "description": fileSelected.split(",")[1]})
@@ -197,23 +192,6 @@ export class TermsConditionsManagementComponent implements OnInit {
       this.downloadPDFErrorCode= error.status;
     });
     
-  }
-
-  showPdf() {
-    const linkSource = 'data:application/pdf;base64,' + ' JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9Db2xvclNwYWNlL0';
-    const downloadLink = document.createElement("a");
-    const fileName = "sample.pdf";
-
-    downloadLink.href = linkSource;
-    downloadLink.download = fileName;
-    downloadLink.click();
-}
-
-  private saveAsPDFFile(buffer: any, fileName: string): void {
-    const data: Blob = new Blob([buffer], {
-      type: EXCEL_TYPE
-    });
-    FileSaver.saveAs(data, fileName);
   }
 
   onCloseMsg(){
