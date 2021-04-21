@@ -167,7 +167,7 @@ export class LoginComponent implements OnInit {
             this.loginClicks = 0;
           }
           else if(error.status == 302){
-            this.router.navigate(['/auth/resetpassword/:'+error["processToken"]]);
+            this.router.navigate(['/auth/resetpassword/'+error.error.processToken]);
           }
           else if(error.status == 500)
             this.invalidUserMsg = true;
