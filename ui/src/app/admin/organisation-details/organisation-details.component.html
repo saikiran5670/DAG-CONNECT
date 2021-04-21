@@ -37,7 +37,7 @@
                     </div>
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label style='display: flex;'>
-                            <span>{{ translationData.lbleName || 'Name' }}</span>
+                            <span>{{ translationData.lblName || 'Name' }}</span>
                         </mat-label>
                         <div>
                             <span style='font-weight: 500!important;'>{{organisationData.organizationName}}</span>
@@ -120,7 +120,7 @@
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)"
-                                            placeholder="{{ translationData.lblLanguage || 'Language' }}"
+                                            placeholder="{{ languageHolder }}"
                                             formControlName="language" required>
                                             <mat-option *ngFor="let rer of languageDropdownData" [value]="rer.id">
                                                 {{ rer.value }}
@@ -143,7 +143,7 @@
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)"
-                                            placeholder="{{ translationData.lblTimeZone || 'Time Zone' }}"
+                                            placeholder="{{ timezoneHolder }}"
                                             formControlName="timeZone" required>
                                             <mat-option *ngFor="let rer of timezoneDropdownData" [value]="rer.id">
                                                 {{ rer.value }}
@@ -166,7 +166,7 @@
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)"
-                                            placeholder="{{ translationData.lblUnit || 'Unit' }}" formControlName="unit"
+                                            placeholder="{{currencyHolder}}" formControlName="unit"
                                             required>
                                             <mat-option *ngFor="let rer of unitDropdownData" [value]="rer.id">
                                                 {{ rer.value }}
@@ -189,7 +189,7 @@
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)"
-                                            placeholder="{{ translationData.lblCurrency || 'Currency' }}"
+                                            placeholder="{{ currencyHolder }}"
                                             formControlName="currency" required>
                                             <mat-option *ngFor="let rer of currencyDropdownData" [value]="rer.id">
                                                 {{ rer.value }}
@@ -212,7 +212,7 @@
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)"
-                                            placeholder="{{ translationData.lblDateFormat || 'DateFormat' }}"
+                                            placeholder="{{ dateFormatHolder }}"
                                             formControlName="dateFormat" required>
                                             <mat-option *ngFor="let rer of dateFormatDropdownData" [value]="rer.id">
                                                 {{ rer.value }}
@@ -235,7 +235,7 @@
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)"
-                                            placeholder="{{ translationData.lblTimeFormat || 'Time Format' }}"
+                                            placeholder="{{ timeFormatHolder}}"
                                             formControlName="timeFormat" required>
                                             <mat-option *ngFor="let rer of timeFormatDropdownData" [value]="rer.id">
                                                 {{ rer.value }}
@@ -255,12 +255,11 @@
                                 <mat-label><span>{{ translationData.lblVehicleDefaultStatus || 'Vehicle Default Status'
                                         }}</span></mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span style='font-weight: 500!important;'>{{organisationData.vehicleOptIn}}</span>
+                                    <span style='font-weight: 500!important;'>{{vehicleOptIn}}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
-                                        <mat-select (selectionChange)="languageChange($event)" placeholder="{{ translationData.lblVehicleDefaultStatus || 'Vehicle Default Status'
-                                }}" formControlName="vehicleDefaultStatus" required>
+                                        <mat-select (selectionChange)="languageChange($event)" placeholder="{{ vehicleOptHolder}}" formControlName="vehicleDefaultStatus" required>
                                             <mat-option *ngFor="let rer of vehicleStatusDropdownData" [value]="rer.id">
                                                 {{ rer.value }}
                                             </mat-option>
@@ -278,12 +277,11 @@
                                     <span>{{ translationData.lblDriverDefaultStatus || 'Driver Default Status' }}</span>
                                 </mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span style='font-weight: 500!important;'>{{organisationData.driverOptIn}}</span>
+                                    <span style='font-weight: 500!important;'>{{driverOptIn}}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
-                                        <mat-select (selectionChange)="languageChange($event)" placeholder="{{ translationData.lblVehicleDefaultStatus || 'Vehicle Default Status'
-                                }}" formControlName="driverDefaultStatus" required>
+                                        <mat-select (selectionChange)="languageChange($event)" placeholder="{{ driverOptHolder}}" formControlName="driverDefaultStatus" required>
                                             <mat-option *ngFor="let rer of driverStatusDropdownData" [value]="rer.id">
                                                 {{ rer.value }}
                                             </mat-option>
