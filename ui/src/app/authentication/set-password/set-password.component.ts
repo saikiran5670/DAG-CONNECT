@@ -41,35 +41,38 @@ export class SetPasswordComponent implements OnInit {
     this.token=  this.route.snapshot.paramMap.get('token');
     this.accountService.getResetPasswordTokenStatus(this.token).subscribe(data => {
       if(data){
-        this.isLinkActive= true;
+        this.getButtonName();
       }
     }, (error)=> {
       if(error.status == 404){
         this.isLinkActive= false;
       }
       else if(error.status == 200){
-        this.isLinkActive= true;
+        this.getButtonName();
       }
     })
+  }
 
-    this.currentRoute = this.router.url;
-    if(this.currentRoute.includes("/createpassword/")){
-      this.buttonName = "Create";
-    }
-    else if(this.currentRoute.includes("/resetpassword/")){
-      this.buttonName = "Reset";
-    }
-    else if(this.currentRoute.includes("/resetpasswordinvalidate/")){
-      let objData= {
-        resetToken: this.token
+  getButtonName(){
+    this.isLinkActive= true;
+      this.currentRoute = this.router.url;
+      if(this.currentRoute.includes("/createpassword/")){
+        this.buttonName = "Create";
       }
-      this.accountService.resetPasswordInvalidate(objData).subscribe(data => {
-        this.isResetPwdInvalidate= true;
-      },(error)=> {
-        this.isResetPwdInvalidate= true;
-        this.errorMsg= 'InvalidateFailed'
-      })
-    }
+      else if(this.currentRoute.includes("/resetpassword/")){
+        this.buttonName = "Reset";
+      }
+      else if(this.currentRoute.includes("/resetpasswordinvalidate/")){
+        let objData= {
+          resetToken: this.token
+        }
+        this.accountService.resetPasswordInvalidate(objData).subscribe(data => {
+          this.isResetPwdInvalidate= true;
+        },(error)=> {
+          this.isResetPwdInvalidate= true;
+          this.errorMsg= 'InvalidateFailed'
+        })
+      }
   }
 
   public onCreatePassword(formValue) {
