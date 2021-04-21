@@ -197,12 +197,12 @@ export class OrganisationDetailsComponent implements OnInit {
       this.driverOptHolder =  this.organisationData.vehicleOptIn ? this.organisationData.vehicleOptIn :  'Vehicle Opt In';
 
 
-this.orgDetailsPreferenceForm.controls.language.setValue(this.organisationData.languageName );
-this.orgDetailsPreferenceForm.controls.timeZone.setValue(this.organisationData.timezone);
-this.orgDetailsPreferenceForm.controls.unit.setValue(this.organisationData.unit);
-this.orgDetailsPreferenceForm.controls.currency.setValue(this.organisationData.currency);
-this.orgDetailsPreferenceForm.controls.dateFormat.setValue(this.organisationData.dateFormat);
-this.orgDetailsPreferenceForm.controls.timeFormat.setValue(this.organisationData.timeFormat);
+      this.orgDetailsPreferenceForm.controls.language.setValue(this.organisationData.languageName );
+      this.orgDetailsPreferenceForm.controls.timeZone.setValue(this.organisationData.timezone);
+      this.orgDetailsPreferenceForm.controls.unit.setValue(this.organisationData.unit);
+      this.orgDetailsPreferenceForm.controls.currency.setValue(this.organisationData.currency);
+      this.orgDetailsPreferenceForm.controls.dateFormat.setValue(this.organisationData.dateFormat);
+      this.orgDetailsPreferenceForm.controls.timeFormat.setValue(this.organisationData.timeFormat);
 
 
 
@@ -221,7 +221,7 @@ this.orgDetailsPreferenceForm.controls.timeFormat.setValue(this.organisationData
     this.editPrefereneceFlag = false;
   }
   onReset() {
-
+    this.onPreferenceEdit();
   }
   onCreateUpdate() {
     let orgSuccess : boolean = false;
