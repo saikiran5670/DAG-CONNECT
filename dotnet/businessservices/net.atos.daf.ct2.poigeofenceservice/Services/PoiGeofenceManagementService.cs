@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using log4net;
 using net.atos.daf.ct2.poigeofence;
-using net.atos.daf.ct2.poigeofenceservice;
 
 namespace net.atos.daf.ct2.poigeofenceservice
 {
