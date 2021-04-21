@@ -21,7 +21,8 @@ export class OrganisationDetailsComponent implements OnInit {
   OrgDetailsMsg : any = '';
   organisationData: any;
   organisationPreferenceData: any;
-  organisationList : any = []; 
+  organisationList : any; 
+  accountDetails : any =[];
   selectedOrganisationId : number;
   organisationSelected : string;
   preferenceId : number;
@@ -71,7 +72,7 @@ export class OrganisationDetailsComponent implements OnInit {
   }
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    //this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.orgDetailsPreferenceForm = this._formBuilder.group({
       language: ['', [Validators.required]],
       timeZone: ['', [Validators.required]],
@@ -94,25 +95,19 @@ export class OrganisationDetailsComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
-      //this.loadOrganisationdata();
-      //this.loadOrgPreferenceData();
     });
     
-    this.organizationService.getOrganizations(this.accountOrganizationId).subscribe((orgList: any) => {
-      this.organisationList = orgList;
-      this.selectedOrganisationId = orgList[0]["organizationId"];
-      this.organizationIdNo = orgList[0].id;
-      this.preferenceId = orgList[0].preferenceId;
-     // console.log( this.organisationSelected)
+      this.accountDetails = JSON.parse(localStorage.getItem('accountInfo'));
+      this.organisationList = this.accountDetails["organization"];
+      this.selectedOrganisationId =  parseInt(localStorage.getItem('accountOrganizationId'));
       this.loadOrganisationdata();
-     // console.log("---orgData---",orgList)
-    });
   }
 
   loadOrganisationdata(){
     this.organizationService.getOrganizationDetails(this.selectedOrganisationId).subscribe((orgData: any) => {
       this.organisationData = orgData;
       this.organizationIdNo = orgData.id;
+      this.preferenceId = orgData.preferenceId;
       this.updateVehicleDefault();
       this.updateDriverDefault();
 
@@ -151,16 +146,11 @@ export class OrganisationDetailsComponent implements OnInit {
         break;
     }
   }
-  // loadOrgPreferenceData() {
-  //   this.organizationService.getOrganizationPreference(this.selectedOrganisationId).subscribe((orgPreferenceData: any) => {
-  //     this.organisationPreferenceData = orgPreferenceData.organizationPreference;
-  //     //console.log("---orgPrefrenceData---",this.organisationPreferenceData)
-  //   });
-  // }
 
   selectionChanged(_event){
     this.selectedOrganisationId = _event;
-    console.log(_event)
+    this.loadOrganisationdata();
+   // console.log(_event)
   }
   
   languageChange(event:any) {
