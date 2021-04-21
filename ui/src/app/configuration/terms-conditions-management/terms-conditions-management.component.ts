@@ -112,8 +112,6 @@ export class TermsConditionsManagementComponent implements OnInit {
 
   uploadTermsAndConditions(){ 
     let languageData = [];
-    console.log("filelist:: ", this.filelist);
-    //TODO : Convert PDF to byte array and send to API
    
     let tncObj= {
       "start_date": "",
@@ -155,7 +153,6 @@ export class TermsConditionsManagementComponent implements OnInit {
       const reader = new FileReader();
       reader.readAsDataURL(event.target.files[i]);
       reader.onload = () => {
-          console.log("File base64= " +reader.result);
           let fileSelected= reader.result.toString();
           let filename= 
           this.filelist.push({"fileName": (this.uploadTermsConditionsFormGroup.controls.uploadFile.value._fileNames).replace(".pdf", ""), "description": fileSelected.split(",")[1]})
