@@ -20,8 +20,8 @@
                 <mat-form-field appearance="fill">
                     <mat-label>Organisation</mat-label>
                     <mat-select [(value)]="selectedOrganisationId" [disabled]="organisationList.length == 1" (selectionChange)="selectionChanged($event.value)">
-                      <mat-option *ngFor="let data of organisationList" [value]="data.organizationId">
-                        {{data.organizationName}}
+                      <mat-option *ngFor="let data of organisationList" [value]="data.id">
+                        {{data.name}}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
