@@ -7,6 +7,9 @@ import { TranslationService } from '../../services/translation.service';
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { FeatureService } from '../../services/feature.service';
+import { MatTableExporterDirective } from 'mat-table-exporter';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-feature-management',
@@ -23,6 +26,7 @@ export class FeatureManagementComponent implements OnInit {
   feautreCreatedMsg : any = '';
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   initData: any = [];
   accountOrganizationId: any = 0;
   localStLanguage: any;
@@ -70,7 +74,7 @@ export class FeatureManagementComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 3 //-- for user mgnt
+      menuId: 28 //-- for feature mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
@@ -117,6 +121,28 @@ export class FeatureManagementComponent implements OnInit {
     return newTrueData;
   }
 
+  exportAsCSV(){
+    this.matTableExporter.exportTable('csv', {fileName:'Feature_Data', sheet: 'sheet_name'});
+  }
+
+  exportAsPdf() {
+    let DATA = document.getElementById('featureData');
+      
+    html2canvas(DATA).then(canvas => {
+        
+        let fileWidth = 208;
+        let fileHeight = canvas.height * fileWidth / canvas.width;
+        
+        const FILEURI = canvas.toDataURL('image/png')
+        let PDF = new jsPDF('p', 'mm', 'a4');
+        let position = 0;
+        PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+        
+        PDF.save('Feature_Data.pdf');
+        PDF.output('dataurlnewwindow');
+    });     
+  }
+
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
@@ -154,9 +180,11 @@ export class FeatureManagementComponent implements OnInit {
     const options = {
       title: this.translationData.lblAlert || "Alert",
       message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
-      cancelText: this.translationData.lblNo || "No",
-      confirmText: this.translationData.lblYes || "Yes",
-      status: rowData.state == 0 ? 'Inactive' : 'Active' ,
+      // cancelText: this.translationData.lblNo || "No",
+      // confirmText: this.translationData.lblYes || "Yes",
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: (rowData.state == 'ACTIVE') ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
+      status: rowData.state == 'ACTIVE' ? 'Inactive' : 'Active' ,
       name: rowData.name
     };
     
@@ -195,7 +223,7 @@ export class FeatureManagementComponent implements OnInit {
               // });
               let objData ={
                     id: rowData.id,
-                    state: rowData.state === 0 ? 1 : 0
+                    state: rowData.state === 'INACTIVE' ? 'ACTIVE' : 'INACTIVE'
               }
               this.featureService.updateFeatureState(objData).subscribe((data) => {
                 let successMsg = "Status updated successfully."
@@ -260,7 +288,7 @@ export class FeatureManagementComponent implements OnInit {
   updatedTableData(tableData : any) {
     this.initData = tableData;
     this.initData.map(obj =>{   //temporary
-      obj.statusVal = obj.state === 0? 'active': obj.state === 1 ? 'inactive': '';
+      obj.statusVal = obj.state === 'ACTIVE'? 'active': obj.state === 'INACTIVE' ? 'inactive': '';
       obj.isExclusiveVal = obj.isExclusive === true ? 'exclusive' : obj.isExclusive === false ? 'inclusive': '';
     })
     // this.initData = this.getNewTagData(this.initData);

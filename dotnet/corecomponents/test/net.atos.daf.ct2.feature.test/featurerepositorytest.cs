@@ -46,7 +46,7 @@ namespace net.atos.daf.ct2.feature.test
             FeatureSet feature = new FeatureSet();
             feature.Name = "FeatureSet_"+ iSessionStartedAt;
             feature.description = null;
-            feature.Is_Active = true;
+            feature.State = 'A';
             feature.created_at = iSessionStartedAt;
             feature.created_by = 1;
             feature.modified_at = iSessionExpireddAt;
@@ -79,9 +79,9 @@ namespace net.atos.daf.ct2.feature.test
             long iSessionExpireddAt = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(30));
             DataAttributeSet dataAttributeSet = new DataAttributeSet();
             dataAttributeSet.Name = "AttributeSet_" + iSessionStartedAt;
-            dataAttributeSet.isActive = true;
+            dataAttributeSet.State = 'A';
             dataAttributeSet.Description = "Testdescription";
-            dataAttributeSet.Is_exlusive = DataAttributeSetType.Exclusive;
+            //dataAttributeSet.Is_exlusive = DataAttributeSetType.Exclusive;
             dataAttributeSet.created_at = iSessionStartedAt;
             dataAttributeSet.created_by = 1;
             dataAttributeSet.modified_at = iSessionExpireddAt;
@@ -115,9 +115,9 @@ namespace net.atos.daf.ct2.feature.test
             DataAttributeSet dataAttributeSet = new DataAttributeSet();
             dataAttributeSet.ID = 10;
             dataAttributeSet.Name = "AttributeSet_" + iSessionStartedAt;
-            dataAttributeSet.isActive = true;
+            dataAttributeSet.State = 'A';
             dataAttributeSet.Description = "Testdescription";
-            dataAttributeSet.Is_exlusive = DataAttributeSetType.Exclusive;
+            //dataAttributeSet.Is_exlusive = DataAttributeSetType.Exclusive;
             dataAttributeSet.created_at = iSessionStartedAt;
             dataAttributeSet.created_by = 1;
             dataAttributeSet.modified_at = iSessionExpireddAt;
@@ -183,7 +183,7 @@ namespace net.atos.daf.ct2.feature.test
             featureSet.FeatureSetID = 131;
             featureSet.Name = "FeatureSet_" + iSessionStartedAt;
             featureSet.description = "Test_Description";
-            featureSet.Is_Active = true;
+            featureSet.State = 'A';
             featureSet.created_at = iSessionStartedAt;
             featureSet.created_by = 1;
             featureSet.modified_at = iSessionExpireddAt;

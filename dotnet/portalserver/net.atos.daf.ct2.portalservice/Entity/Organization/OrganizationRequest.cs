@@ -35,7 +35,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
         public string PostalCode { get; set; }   
         public string City { get; set; }  
         public string CountryCode { get; set; }  
-        public  DateTime ?  reference_date { get; set; }       
-      
+        public  DateTime ?  reference_date { get; set; }
+        public string VehicleDefaultOptIn { get; set; }
+        public string DriverDefaultOptIn { get; set; }   
     }
 }

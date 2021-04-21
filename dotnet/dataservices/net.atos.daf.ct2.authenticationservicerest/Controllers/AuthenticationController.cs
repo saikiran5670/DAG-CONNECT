@@ -63,7 +63,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                         user.UserName = arrUsernamePassword[0].Trim();
                         user.Password = arrUsernamePassword[1];
 
-                        IdentityEntity.AccountToken response = await accountIdentityManager.GenerateToken(user);
+                        IdentityEntity.AccountToken response = await accountIdentityManager.GenerateTokenGUID(user);
                         if (response != null && response.statusCode==System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(response.AccessToken))
                         {
                             //Check for feature access
@@ -97,30 +97,31 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
             }
         }
 
-        [HttpPost]        
-        [Route("validate")]
-        public async Task<IActionResult> Validate([FromBody] string token)
-        {
-            bool valid=false;
-            try 
-            {
-                if(string.IsNullOrEmpty(token))
-                {
-                    return StatusCode(401);
-                }
-                else
-                {
-                    valid = await accountIdentityManager.ValidateToken(token);
-                }
-            }
-            catch(Exception ex)
-            {
-                valid = false;
-                logger.LogError(ex.Message +" " +ex.StackTrace);
-                return StatusCode(500);
-            }           
-            return Ok(valid); 
-        }
+        //[HttpPost]        
+        //[Route("validate")]
+        //public async Task<IActionResult> Validate([FromBody] string token)
+        //{
+        //    bool valid=false;
+        //    try 
+        //    {
+        //        if(string.IsNullOrEmpty(token))
+        //        {
+        //            return StatusCode(401);
+        //        }
+        //        else
+        //        {
+        //            AccountEntity.ValidTokenResponse response = await accountIdentityManager.ValidatTokeneGuid(token);
+        //            valid = (response!=null) && (response.Valid==true) ? true : false;
+        //        }
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        valid = false;
+        //        logger.LogError(ex.Message +" " +ex.StackTrace);
+        //        return StatusCode(500);
+        //    }           
+        //    return Ok(valid); 
+        //}
         
         [HttpPost]
         [Route("signout")]

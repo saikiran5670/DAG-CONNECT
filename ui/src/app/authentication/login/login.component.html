@@ -25,6 +25,11 @@
                         <span *ngIf='invalidUserMsg && !forgotPwdFlag'>Invalid user name/ password. Try again</span>
                     </div>
                 </div>
+                <div fxLayout="row" fxLayoutAlign="center" class='invalidMsgContainer'>
+                    <div fxLayout="column" fxLayoutAlign="center">
+                        <span *ngIf="errorMsg!=''">{{errorMsg}}</span>
+                    </div>
+                </div>
                 <div *ngIf='!forgotPwdFlag && !resetPwdFlag' fxLayout="row" fxLayoutAlign="start" class='fieldContainer'>
                     <div fxLayout="column" fxLayoutAlign="start" class='full-width'>
                         <form [formGroup]="loginForm" (ngSubmit)="onLogin(loginForm.value)">

@@ -1,46 +1,42 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>221878fb-5d2b-4a35-9cb3-25bf740e4b1e</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
-
   <ItemGroup>
-    <None Remove="Protos\package.proto" />
+    <None Remove="Protos\package.proto"/>
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.14.0" />
-    <PackageReference Include="Grpc.Net.Client" Version="2.35.0" />
-    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.35.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.14.0"/>
+    <PackageReference Include="Grpc.Net.Client" Version="2.35.0"/>
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.35.0"/>
     <PackageReference Include="Grpc.Tools" Version="2.33.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="5.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.utilities\net.atos.daf.ct2.utilities.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="5.0.0"/>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9"/>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3"/>
   </ItemGroup>
   <ItemGroup>
-    <Protobuf Include="Protos\account.proto" GrpcServices="Client" />
-    <Protobuf Include="Protos\package.proto" GrpcServices="Client" />
-	  <Protobuf Include="Protos\feature.proto" GrpcServices="Client" />
-	  <Protobuf Include="Protos\subscribe.proto" GrpcServices="Client" />
-	<Protobuf Include="Protos\vehicle.proto" GrpcServices="Client" />
-	  <Protobuf Include="Protos\translation.proto" GrpcServices="Client" />
-	  <Protobuf Include="Protos\audittrail.proto" GrpcServices="Client" />
-    <Protobuf Include="Protos\organization.proto" GrpcServices="Client" />
-	  <Protobuf Include="Protos\role.proto" GrpcServices="Client" />
-     <Protobuf Include="Protos\driver.proto" GrpcServices="Client" />
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.utilities\net.atos.daf.ct2.utilities.csproj"/>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Entity\Role\" />
+    <Protobuf Include="Protos\account.proto" GrpcServices="Client"/>
+    <Protobuf Include="Protos\package.proto" GrpcServices="Client"/>
+    <Protobuf Include="Protos\feature.proto" GrpcServices="Client"/>
+    <Protobuf Include="Protos\subscribe.proto" GrpcServices="Client"/>
+    <Protobuf Include="Protos\vehicle.proto" GrpcServices="Client"/>
+    <Protobuf Include="Protos\translation.proto" GrpcServices="Client"/>
+    <Protobuf Include="Protos\audittrail.proto" GrpcServices="Client"/>
+    <Protobuf Include="Protos\organization.proto" GrpcServices="Client"/>
+    <Protobuf Include="Protos\role.proto" GrpcServices="Client"/>
+    <Protobuf Include="Protos\driver.proto" GrpcServices="Client"/>
   </ItemGroup>
-
+  <ItemGroup>
+    <Folder Include="Entity\Role\"/>
+  </ItemGroup>
 </Project>

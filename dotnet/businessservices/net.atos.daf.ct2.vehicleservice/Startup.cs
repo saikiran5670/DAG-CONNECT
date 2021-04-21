@@ -18,6 +18,8 @@ using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.account;
 using Identity = net.atos.daf.ct2.identity;
+using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.translation;
 
 namespace net.atos.daf.ct2.vehicleservice
 {
@@ -42,8 +44,12 @@ namespace net.atos.daf.ct2.vehicleservice
     }));
 
             var connectionString = Configuration.GetConnectionString("ConnectionString");
+            var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
-            services.AddSingleton(dataAccess); 
+            IDataMartDataAccess dataMartdataAccess = new PgSQLDataMartDataAccess(DataMartconnectionString);
+            services.AddSingleton(dataMartdataAccess);
+            services.AddSingleton(dataAccess);
+
             services.AddTransient<IVehicleManager,VehicleManager>();
             services.AddTransient<IVehicleRepository, VehicleRepository>();
             services.AddTransient<IAuditLogRepository,AuditLogRepository>();
@@ -53,6 +59,8 @@ namespace net.atos.daf.ct2.vehicleservice
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IAccountManager, AccountManager>();
             services.AddTransient<Identity.IAccountManager, Identity.AccountManager>();
+            services.AddTransient<ITranslationRepository, TranslationRepository>();
+            services.AddTransient<ITranslationManager, TranslationManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

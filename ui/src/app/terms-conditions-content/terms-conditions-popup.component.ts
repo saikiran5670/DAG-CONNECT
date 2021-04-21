@@ -1,6 +1,8 @@
 import { Component, HostListener, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { TranslationService } from '../services/translation.service';
 
 @Component({
   selector: 'app-terms-conditions-popup',
@@ -8,14 +10,18 @@ import { Router } from '@angular/router';
   styleUrls: ['./terms-conditions-popup.component.less']
 })
 export class TermsConditionsPopupComponent implements OnInit {
+  fileURL: any;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     translationData: any,
-  }, private mdDialogRef: MatDialogRef<TermsConditionsPopupComponent>, public router: Router) {
+    base64File: any,
+    latestTCData: any
+  }, private mdDialogRef: MatDialogRef<TermsConditionsPopupComponent>, public router: Router, private domSanitizer: DomSanitizer, private translationService: TranslationService) {
    
   }
 
   ngOnInit(): void {
+    this.fileURL = this.domSanitizer.bypassSecurityTrustResourceUrl("data:application/pdf;base64,"+this.data.base64File);
   }
 
   public cancel() {
@@ -27,7 +33,11 @@ export class TermsConditionsPopupComponent implements OnInit {
   }
 
   onClickIAgree(){
-    //Send terms and conditions accept flag to backend.
+    this.translationService.addUserAcceptedTermsConditions(this.data.latestTCData).subscribe(data => {
+
+    }, (error) => {
+
+    })
     this.mdDialogRef.close({termsConditionsAgreeFlag : true}); 
   }
 

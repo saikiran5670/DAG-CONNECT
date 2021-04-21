@@ -26,6 +26,8 @@ using net.atos.daf.ct2.relationship;
 using net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.repository;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
+using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.translation;
 //using Swashbuckle.AspNetCore.Swagger;
 //using Microsoft.OpenApi.Models;
 
@@ -52,13 +54,16 @@ namespace net.atos.daf.ct2.organizationservice
                    .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
                 }));
 
-            string connectionString = Configuration.GetConnectionString("ConnectionString");
+            var connectionString = Configuration.GetConnectionString("ConnectionString");
             //var connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);          
 
-            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
-            // var connectionString = Configuration.GetConnectionString("ConnectionString");
-            // var connectionString="Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y\\97;Ssl Mode=Require;";
-            //IDataAccess dataAccess = new PgSQLDataAccess(connectionString);           
+            var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
+            //var DataMartconnectionString = @"Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=vehicledatamart;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+            IDataMartDataAccess dataMartdataAccess = new PgSQLDataMartDataAccess(DataMartconnectionString);
+
+
+            services.AddSingleton(dataMartdataAccess);     
             services.AddSingleton(dataAccess); 
             services.AddTransient<IAuditTraillib,AuditTraillib>(); 
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
@@ -97,6 +102,8 @@ namespace net.atos.daf.ct2.organizationservice
             services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
             services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
             services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
+            services.AddTransient<ITranslationRepository, TranslationRepository>();
+            services.AddTransient<ITranslationManager, TranslationManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

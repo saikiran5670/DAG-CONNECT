@@ -66,6 +66,7 @@ namespace net.atos.daf.ct2.portalservice
             var headeraccesscontrolallowmethods = Configuration["WebServerConfiguration:headeraccesscontrolallowmethods"];
             var headerAccesscontrolallowheaders = Configuration["WebServerConfiguration:headeraccesscontrolallowheaders"];
             var httpsport = Configuration["WebServerConfiguration:httpsport"];
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             // We are enforcing to call Insercure service             
             AppContext.SetSwitch(
                     "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
@@ -119,14 +120,6 @@ namespace net.atos.daf.ct2.portalservice
             //    options.HttpsPort = string.IsNullOrEmpty(httpsport) || httpsport.Contains("Configuration") ? 443 : Convert.ToInt32(httpsport);
             //});
             services.AddMemoryCache();
-            services.AddControllers().ConfigureApiBehaviorOptions(options =>
-            {
-                options.InvalidModelStateResponseFactory = actionContext =>
-                {
-                    return CustomErrorResponse(actionContext);
-                };
-            });
-
             services.AddControllers();
             services.AddTransient<AuditHelper, AuditHelper>();
             services.AddDistributedMemoryCache();
@@ -257,48 +250,6 @@ namespace net.atos.daf.ct2.portalservice
                 c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
                 c.RoutePrefix = $"{swaggerBasePath}/swagger";
             });
-        }
-
-        private ObjectResult CustomErrorResponse(ActionContext context)
-        {
-            // create a problem details object
-            var problemDetailsFactory = context.HttpContext.RequestServices
-                    .GetRequiredService<ProblemDetailsFactory>();
-            var problemDetails = problemDetailsFactory.CreateValidationProblemDetails(
-                    context.HttpContext,
-                    context.ModelState);
-
-            // add additional info not added by default
-            problemDetails.Detail = "See the errors field for details.";
-            problemDetails.Instance = context.HttpContext.Request.Path;
-
-            // find out which status code to use
-            var actionExecutingContext =
-                      context as Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext;
-
-            // if there are modelstate errors & all arguments were correctly
-            // found/parsed we're dealing with validation errors
-            if ((context.ModelState.ErrorCount > 0) &&
-                    (actionExecutingContext?.ActionArguments.Count == context.ActionDescriptor.Parameters.Count))
-            {
-                problemDetails.Type = "/modelvalidationproblem";
-                problemDetails.Status = StatusCodes.Status422UnprocessableEntity;
-                problemDetails.Title = "One or more validation errors occurred.";
-
-                return new UnprocessableEntityObjectResult(problemDetails)
-                {
-                    ContentTypes = { "application/json" }
-                };
-            }
-
-            // if one of the arguments wasn't correctly found / couldn't be parsed
-            // we're dealing with null/unparseable input
-            problemDetails.Status = StatusCodes.Status400BadRequest;
-            problemDetails.Title = "One or more errors on input occurred.";
-            return new BadRequestObjectResult(problemDetails)
-            {
-                ContentTypes = { "application/json" }
-            };
         }
     }
 }

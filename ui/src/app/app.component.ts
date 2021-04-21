@@ -11,7 +11,6 @@ import { AccountService } from './services/account.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Variable } from '@angular/compiler/src/render3/r3_ast';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { TermsConditionsPopupComponent } from './terms-conditions-content/terms-conditions-popup.component';
 
 @Component({
   selector: 'app-root',
@@ -55,7 +54,6 @@ export class AppComponent {
   isFullScreen= false;
   public userPreferencesFlag : boolean = false;
   appForm: FormGroup;
-  dialogRefTerms: MatDialogRef<TermsConditionsPopupComponent>;
   selectedRoles: any = [];
   private pagetTitles = {
     dashboard: 'Dashboard',
@@ -81,6 +79,7 @@ export class AppComponent {
     accountmanagement: 'Account Management',
     accountrolemanagement: 'Account Role Management',
     vehiclegroupmanagement: 'Vehicle Group Management',
+    termsandcondition: 'Terms & Conditions',
     featuremanagement: 'Feature Management',
     organisationrelationshipmanagement: 'Organisation Relationship Management',
     relationshipmanagement: 'Relationship Management',
@@ -94,7 +93,8 @@ export class AppComponent {
     shop: 'Shop',
     information: 'Information',
     legalnotices: 'Legal Notices',
-    termsConditions: 'Terms & Conditions'
+    termsAndconditionhistory: 'Terms & Conditions History',
+    dtctranslation: 'DTC Translation'
   }
 
 
@@ -107,7 +107,7 @@ export class AppComponent {
         dashboard: 'Dashboard'
       }
     },
-    livefleet : {
+    fleetoverview : {
       open: false,
       icon: "info",
       externalLink: false,
@@ -142,7 +142,9 @@ export class AppComponent {
         landmarks: 'Landmarks',
         reportscheduler: 'Report Scheduler',
         drivermanagement: 'Driver Management',
-        vehiclemanagement: 'Vehicle Management'
+        vehiclemanagement: 'Vehicle Management',
+        termsandcondition: 'Terms & Conditions',
+        dtctranslation: "DTC Translation"
       }
     },
     admin : {
@@ -207,12 +209,12 @@ export class AppComponent {
       },
       link: "https://www.daf.com/en/legal/legal-notice"
     },
-    termsConditions : {
+    termsAndconditionhistory : {
       open: false,
       icon: "notes",
       externalLink: false,
       pageTitles: {
-        termsConditions: 'Terms & Conditions'
+        termsAndconditionhistory: 'Terms & Conditions History'
       }
     }
   }
@@ -226,9 +228,9 @@ export class AppComponent {
 
     this.dataInterchangeService.dataInterface$.subscribe(data => {
       this.isLogedIn = data;
+      localStorage.setItem("isUserLogin", this.isLogedIn.toString());
       this.getTranslationLabels();
       //this.getAccountInfo();
-      this.openTermsConditionsPopup();
       // this.getNavigationMenu();
     });
 
@@ -272,10 +274,15 @@ export class AppComponent {
         this.pageName = PageName;
         this.subpage = val.url.split('/')[2];
 
+        let userLoginStatus = localStorage.getItem("isUserLogin");
         if(val.url == "/auth/login" || val.url.includes("/auth/createpassword/") || val.url.includes("/auth/resetpassword/") || val.url.includes("/auth/resetpasswordinvalidate/")) {
           this.isLogedIn = false;
         } else if (val.url == "/") {
           this.isLogedIn = false;
+        }else{
+          if(!userLoginStatus){
+            this.logOut();
+          }
         }
 
         if(this.isLogedIn) {
@@ -300,54 +307,44 @@ export class AppComponent {
     // this.isDesktop();
   }
 
-  openTermsConditionsPopup(){
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.disableClose = true;
-    dialogConfig.autoFocus = true;
-    dialogConfig.data = {
-      translationData: this.translationData
-    }
-    this.dialogRefTerms = this.dialog.open(TermsConditionsPopupComponent, dialogConfig);
-    this.dialogRefTerms.afterClosed().subscribe(res => {
-      if(res.termsConditionsAgreeFlag){
-
-      } 
-      else{
-        this.logOut();
-      } 
-    });
-  }
-
   getNavigationMenu() {
     let parseLanguageCode = JSON.parse(localStorage.getItem("language"))
-
-    //accessing getmenufeature api from account
-    
-  //   let featureMenuObj = {
-  //     "accountId": 336,
-  //     "roleId": 161,
-  //     "organizationId": 1,
-  //     "languageCode": "EN-GB"
-  // }
+    //--- accessing getmenufeature api from account --//
+    // let featureMenuObj = {
+    //  "accountId": 336,
+    //  "roleId": 161,
+    //  "organizationId": 1,
+    //  "languageCode": "EN-GB"
+    // }
     let featureMenuObj = {
       "accountId": parseInt(localStorage.getItem("accountId")),
       "roleId": parseInt(localStorage.getItem("accountRoleId")),
       "organizationId": parseInt(localStorage.getItem("accountOrganizationId")),
       "languageCode": parseLanguageCode.code
-}
+    }
     this.accountService.getMenuFeatures(featureMenuObj).subscribe((result : any) => {
-
       this.menuPages = result;
-
-        // This will handle externalLink and Icons for Navigation Menu
+        //-- This will handle externalLink and Icons for Navigation Menu --//
+        let landingPageMenus: any = [];
         this.menuPages.menus.forEach(elem => {
-            elem.externalLink = this.menuStatus[elem.url].externalLink ;
+            elem.externalLink = this.menuStatus[elem.url].externalLink;
             elem.icon = this.menuStatus[elem.url].icon;
             if(elem.externalLink){
               elem.link = this.menuStatus[elem.url].link;
             }
+            if(elem.subMenus.length > 0){ //-- If subMenus
+              elem.subMenus.forEach(subMenuItem => {
+                landingPageMenus.push({ id: subMenuItem.menuId, value: `${elem.translatedName}.${subMenuItem.translatedName}` });  
+              });
+            }else{
+              if(!elem.externalLink){ //-- external link not added
+                landingPageMenus.push({ id: elem.menuId, value: `${elem.translatedName}` });
+              }
+            }
         })
-       // For checking Access of the User
+        //console.log("accountNavMenu:: ", landingPageMenus)
+        localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
+       //-- For checking Access of the User --//
        let accessNameList = [];
        this.menuPages.features.forEach((obj: any) => {
            accessNameList.push(obj.name)
@@ -371,20 +368,14 @@ export class AppComponent {
          if(accessNameList.includes("Admin#Platform")){
            this.userType = "Admin#Platform";
          }else if(accessNameList.includes("Admin#Global")){
-           this.userType = "Admpin#Global";
+           this.userType = "Admin#Global";
          }else if(accessNameList.includes("Admin#Organisation")){
            this.userType = "Admin#Organisation";
          }else if(accessNameList.includes("Admin#Account")){
            this.userType = "Admin#Account";
          }
          localStorage.setItem("userType", this.userType);
-       
-   
-
- 
-     }
-     );
-  
+    });
 
       // // For checking Access of the User
       // let accessNameList = [];
@@ -514,6 +505,7 @@ export class AppComponent {
       lblAccountManagement: 'Account Management',
       lblAccountRoleManagement: 'Account Role Management',
       lblVehicleGroupManagement: 'Vehicle Group Management',
+      lblTermsAndCondition: 'Terms & Conditions',
       lblFeatureManagement: 'Feature Management',
       lblOrganisationRelationshipManagement: 'Organisation Relationship Management',
       lblRelationshipManagement: 'Relationship Management',
@@ -527,7 +519,8 @@ export class AppComponent {
       lblShop: 'Shop',
       lblInformation: 'Information',
       lblLegalNotices: 'Legal Notices',
-      lblTermsAndConditions: 'Terms & Conditions'
+      lblTermsAndConditionHistory: 'Terms & Conditions History', 
+      lblDTCTranslation: "DTC Translation" 
     }
   }
 
@@ -692,6 +685,9 @@ private setPageTitle() {
     this.userOrg = orgname[0].name;
     localStorage.setItem("organizationName", this.userOrg);
     this.filterOrgBasedRoles(value, false);
+    if((this.router.url).includes("organisationdetails")){
+      this.reloadCurrentComponent();
+    }
   }
 
    onRoleChange(value: any){

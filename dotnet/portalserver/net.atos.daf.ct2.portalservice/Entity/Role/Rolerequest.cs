@@ -1,17 +1,24 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Role
 {
     public class Rolerequest
     {
         public int OrganizationId   { get; set; }
+        
         public int RoleId { get; set; }
+        [Required]
         public string RoleName { get; set; }
+
         public string  Description { get; set; }
         public int[] FeatureIds { get; set; }
         public int Createdby { get; set; }
+        [Required]
         public int Level { get; set; }
         public long CreatedAt { get; set; }
+        [Required]
+        public string Code { get; set; }
     }
 
     public class Roleupdaterequest

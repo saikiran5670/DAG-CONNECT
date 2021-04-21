@@ -10,6 +10,9 @@ using System.Text;
 using net.atos.daf.ct2.portalservice.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using log4net;
+using Newtonsoft.Json;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -18,17 +21,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class VehicleController : Controller
     {
-        private readonly ILogger<VehicleController> _logger;
+        //private readonly ILogger<VehicleController> _logger;
         private readonly VehicleBusinessService.VehicleService.VehicleServiceClient _vehicleClient;
         private readonly Mapper _mapper;
+
+         private ILog _logger;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-
-        public VehicleController(ILogger<VehicleController> logger, VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient)
+        private readonly AuditHelper _auditHelper;
+        public VehicleController( VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient, AuditHelper auditHelper)
         {
-            _logger = logger;
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _vehicleClient = vehicleClient;
             _mapper = new Mapper();
+            _auditHelper = auditHelper;
         }
 
 
@@ -96,9 +102,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("update")]
         public async Task<IActionResult> Update(VehicleRequest request)
         {
+           
             try
             {
-                _logger.LogInformation("Create method in vehicle API called.");
+                _logger.Info("Update method in vehicle API called.");
 
                 // Validation 
                 if (request.ID <= 0)
@@ -110,7 +117,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The organization id is required.");
                 }
-                var vehicleRequest = _mapper.ToVehicle(request);
+                var vehicleRequest = new VehicleBusinessService.VehicleRequest();
+                vehicleRequest = _mapper.ToVehicle(request);
                 VehicleBusinessService.VehicleResponce vehicleResponse = await _vehicleClient.UpdateAsync(vehicleRequest);
                 var response = _mapper.ToVehicle(vehicleResponse.Vehicle);
 
@@ -125,6 +133,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Success)
                 {
+
+
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                  "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                  "Update  method in Vehicle controller", request.ID, request.ID, JsonConvert.SerializeObject(request),
+                   Request);
+
                     return Ok(response);
                 }
                 else
@@ -135,7 +150,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Vehicle Service:Update : " + ex.Message + " " + ex.StackTrace);
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                 "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 "Update  method in Vehicle controller", request.ID, request.ID, JsonConvert.SerializeObject(request),
+                  Request);
+                _logger.Error(null,ex);
                 // check for fk violation
                 if (ex.Message.Contains(FK_Constraint))
                 {
@@ -157,7 +176,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Get method in vehicle API called.");
+                _logger.Info("Get method in vehicle API called.");
 
                 var vehicleFilterRequest = _mapper.ToVehicleFilter(vehicleFilter);
                 VehicleBusinessService.VehicleListResponce vehicleListResponse = await _vehicleClient.GetAsync(vehicleFilterRequest);
@@ -184,7 +203,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null,ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -195,7 +214,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Create Group method in vehicle API called.");
+                _logger.Info("Create Group method in vehicle API called.");
 
                 if (string.IsNullOrEmpty(group.Name) || group.Name == "string")
                 {
@@ -214,12 +233,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, PortalConstants.VehicleValidation.InvalidGroupType);
                 }
 
-
                 VehicleBusinessService.VehicleGroupRequest accountGroupRequest = new VehicleBusinessService.VehicleGroupRequest();
+
+
                 accountGroupRequest = _mapper.ToVehicleGroup(group);
                 VehicleBusinessService.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(accountGroupRequest);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                   "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                   "CreateGroup  method in Vehicle controller", 0, response.VehicleGroup.Id, JsonConvert.SerializeObject(group),
+                    Request);
                     return Ok(_mapper.ToVehicleGroup(response));
                 }
                 else if (response != null && response.Code == VehicleBusinessService.Responcecode.Conflict)
@@ -234,7 +258,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service:create vehicle group with exception - " + ex.Message + ex.StackTrace);
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                      "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                      "CreateGroup  method in Vehicle controller", 0, 0, JsonConvert.SerializeObject(group), Request);
+                _logger.Error(null,ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -246,7 +273,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Update Group method in vehicle API called.");
+                _logger.Info("Update Group method in vehicle API called.");
 
                 if (group.Id == 0)
                 {
@@ -276,6 +303,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 VehicleBusinessService.VehicleGroupResponce response = await _vehicleClient.UpdateGroupAsync(vehicleGroupRequest);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                     "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                     "UpdateGroup  method in Vehicle controller", group.Id, group.Id, JsonConvert.SerializeObject(group), Request);
                     return Ok(_mapper.ToVehicleGroup(response));
                 }
                 else if (response != null && response.Code == VehicleBusinessService.Responcecode.Conflict)
@@ -290,7 +320,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service:update vehicle group with exception - " + ex.Message + ex.StackTrace);
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                    "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                    "UpdateGroup  method in Vehicle controller", group.Id, group.Id, JsonConvert.SerializeObject(group), Request);
+                _logger.Error(null,ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -299,19 +332,23 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("group/delete")]
         public async Task<IActionResult> DeleteGroup(long GroupId)
         {
+            VehicleBusinessService.VehicleGroupIdRequest request = new VehicleBusinessService.VehicleGroupIdRequest();
             try
             {
-                _logger.LogInformation("Delete Group method in vehicle API called.");
+                _logger.Info("Delete Group method in vehicle API called.");
 
                 if ((Convert.ToInt32(GroupId) <= 0))
                 {
                     return StatusCode(400, "The vehicle group id is required.");
                 }
-                VehicleBusinessService.VehicleGroupIdRequest request = new VehicleBusinessService.VehicleGroupIdRequest();
+              
                 request.GroupId = Convert.ToInt32(GroupId);
                 VehicleBusinessService.VehicleGroupDeleteResponce response = await _vehicleClient.DeleteGroupAsync(request);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                  "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                  "DeleteGroup  method in Vehicle controller", Convert.ToInt32(GroupId), Convert.ToInt32(GroupId), JsonConvert.SerializeObject(request), Request);
                     return Ok(response.Result);
                 }
                 else
@@ -322,7 +359,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Vehicle Service:DeleteGroup : " + ex.Message + " " + ex.StackTrace);
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                "DeleteGroup  method in Vehicle controller", Convert.ToInt32(GroupId), Convert.ToInt32(GroupId), JsonConvert.SerializeObject(request), Request);
+                _logger.Error(null,ex);
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -334,7 +374,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Get Group detais method in vehicle API called.");
+                _logger.Info("Get Group detais method in vehicle API called.");
 
                 VehicleBusinessService.GroupFilterRequest VehicleGroupRequest = new VehicleBusinessService.GroupFilterRequest();
                 VehicleGroupRequest = _mapper.ToVehicleGroupFilter(groupFilter);
@@ -359,7 +399,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Vehicle Service:Get group details : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null,ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -371,7 +411,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Get vehicle list by group id method in vehicle API called.");
+                _logger.Info("Get vehicle list by group id method in vehicle API called.");
 
                 if (Convert.ToInt32(GroupId) <= 0)
                 {
@@ -403,7 +443,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Vehicle Service:Get vehicle list by group ID  : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null,ex);
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -415,7 +455,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Get vehicle list by group id method in vehicle API called.");
+                _logger.Info("Get vehicle list by group id method in vehicle API called.");
 
                 if (Convert.ToInt32(OrganizationId) <= 0)
                 {
@@ -446,7 +486,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service:get vehicle details with exception - " + ex.Message + ex.StackTrace);
+               _logger.Error(null,ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -458,7 +498,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Get vehicle group list by orgnization & vehicle id method in vehicle API called.");
+                _logger.Info("Get vehicle group list by orgnization & vehicle id method in vehicle API called.");
 
                 if (Convert.ToInt32(OrganizationId) <= 0)
                 {
@@ -494,7 +534,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service:get vehicle details with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null,ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -505,7 +545,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Get vehicle list by group id method in vehicle API called.");
+                _logger.Info("Get vehicle list by group id method in vehicle API called.");
 
                 if (AccountGroupId == 0)
                 {
@@ -526,7 +566,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(404, "vehicle group details are not found.");
+                        return StatusCode(404, "vehicle details are not found.");
                     }
                 }
                 else
@@ -537,7 +577,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service:get vehicle details with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null,ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -548,7 +588,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Create method in vehicle API called.");
+                _logger.Info("Create method in vehicle API called.");
 
                 // Validation 
                 if (request.VehicleId <= 0)
@@ -565,6 +605,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Success)
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                "SetOptInStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
+
                     return Ok(vehicleResponse.Result);
                 }
                 else
@@ -575,7 +619,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Vehicle Service:SetOptInStatus : " + ex.Message + " " + ex.StackTrace);
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+              "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+              "SetOptInStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
+                _logger.Error(null,ex);
                 // check for fk violation
                 if (ex.Message.Contains(FK_Constraint))
                 {
@@ -596,7 +643,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Create method in vehicle API called.");
+                _logger.Info("Create method in vehicle API called.");
 
                 // Validation 
                 if (request.VehicleId <= 0)
@@ -613,6 +660,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Success)
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+            "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+            "SetOTAStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
                     return Ok(vehicleResponse.Result);
                 }
                 else
@@ -623,7 +673,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Vehicle Service:SetOTAStatus : " + ex.Message + " " + ex.StackTrace);
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+          "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+          "SetOTAStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
+                _logger.Error(null,ex);
                 // check for fk violation
                 if (ex.Message.Contains(FK_Constraint))
                 {
@@ -644,7 +697,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Create method in vehicle API called.");
+                _logger.Info("Create method in vehicle API called.");
 
                 // Validation 
                 if (request.VehicleId <= 0)
@@ -661,6 +714,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Success)
                 {
+
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+       "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+       "Terminate  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
                     return Ok(vehicleResponse.Result);
                 }
                 else
@@ -671,7 +728,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Vehicle Service:Terminate : " + ex.Message + " " + ex.StackTrace);
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+   "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+   "Terminate  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
+                _logger.Error(null,ex);
                 // check for fk violation
                 if (ex.Message.Contains(FK_Constraint))
                 {
@@ -692,7 +752,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Get method in vehicle API called.");
+                _logger.Info("Get method in vehicle API called.");
 
                 VehicleBusinessService.VehicleIdRequest Vid = new VehicleBusinessService.VehicleIdRequest();
                 Vid.VehicleId = vehicleId;
@@ -718,7 +778,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null,ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -731,7 +791,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Get Group detais method in vehicle API called.");
+                _logger.Info("Get Group detais method in vehicle API called.");
 
                 VehicleBusinessService.VehicleGroupLandingRequest VehicleGroupRequest = new VehicleBusinessService.VehicleGroupLandingRequest();
                 VehicleGroupRequest = _mapper.ToVehicleGroupLandingFilter(OrganizationId);
@@ -756,7 +816,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Vehicle Service:Get group details : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null,ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -768,7 +828,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Get vehicle list by group id method in vehicle API called.");
+                _logger.Info("Get vehicle list by group id method in vehicle API called.");
 
                 if (dynamicVehicleGroupRequest.GroupType != null ? EnumValidator.ValidateGroupType(Convert.ToChar(dynamicVehicleGroupRequest.GroupType)) : false)
                 {
@@ -882,7 +942,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Vehicle Service:Get vehicle list by group ID  : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null,ex);
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -895,7 +955,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("GetRelationshipVehicles method in vehicle API called.");
+                _logger.Info("GetRelationshipVehicles method in vehicle API called.");
                 VehicleBusinessService.OrgvehicleIdRequest orgvehicleIdRequest = new VehicleBusinessService.OrgvehicleIdRequest();
                 orgvehicleIdRequest.OrganizationId = OrganizationId;
                 orgvehicleIdRequest.VehicleId = VehicleId;
@@ -924,7 +984,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service:get vehicle with exception - " + ex.Message + ex.StackTrace);
+               _logger.Error(null,ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -935,7 +995,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("GetVehicleBySubscriptionId method in vehicle API called.");
+                _logger.Info("GetVehicleBySubscriptionId method in vehicle API called.");
                 if (string.IsNullOrEmpty(subscriptionId))
                 {
                     return StatusCode(400, string.Empty);
@@ -957,7 +1017,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             catch (Exception ex)
             {
-                _logger.LogError("Error in vehicle service:GetVehicleBySubscriptionId with exception - " + ex.Message + ex.StackTrace);
+                _logger.Error(null,ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }

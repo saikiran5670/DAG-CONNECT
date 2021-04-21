@@ -12,7 +12,10 @@ service OrganizationService {
   rpc Update (OrgUpdateRequest) returns (OrganizationUpdateData);
  // rpc Delete (IdRequest) returns (OrganizationResponse);
   rpc Get (IdRequest) returns (OrganizationGetData); 
-   rpc GetAll(IdRequest)returns(GetAllOrgResponse);
+  rpc GetOrganizationDetails (IdRequest) returns (OrgDetailResponse); 
+  rpc GetAll(IdRequest)returns(GetAllOrgResponse);
+  rpc GetOrganizations(IdRequest)returns(ListOfOrganization);
+  
 
   // Account Preference Mthod
   rpc CreatePreference (AccountPreference) returns (AccountPreferenceResponse);
@@ -129,7 +132,7 @@ message RelationshipGetRequest{
     string code=6;
     repeated int32 featureIds=7;    
     int32 featuresetid =8; 
-    bool isActive=9;
+    string state=9;
     int64 CreatedAt=10;
 }
 message RelationshipGetResponse{
@@ -146,7 +149,7 @@ message RelationshipCreateRequest{
     string code=6;
     repeated int32 featureIds=7;
     int32 featuresetid =8; 
-    bool isActive=9;
+    string state=9;
     int64 CreatedAt=10;
 }
 
@@ -177,22 +180,15 @@ message RelationshipCreateResponse{
     string postal_code =8;    
     string city=9;
     string country_code =10;
-    string reference_date =11;   
+    string reference_date =11;
+    string vehicle_default_opt_in=12;
+    string driver_default_opt_in=13; 
+    
   }
   message OrgUpdateRequest {
     int32 id = 1;
-    string org_id=2;
-    string type =3;
-    string name=4;
-    string address_Type=5;
-    string street=6;
-    string street_number =7; 
-    string postal_code =8;    
-    string city=9;
-    string country_code =10;
-    string reference_date =11;
-    string vehicle_default_opt_in=12;
-    string driver_default_opt_in=13;   
+    string vehicle_default_opt_in=2;
+    string driver_default_opt_in=3;   
   }
 // The response message containing the greetings.
 message OrgGetResponse {  
@@ -215,7 +211,7 @@ message OrgGetResponse {
 message OrganizationCreateData {
   Responcecode Code=1;
   string Message = 2;
-  OrgUpdateRequest Organization = 3;
+  OrgCreateRequest Organization = 3;
 }
 
 message OrganizationUpdateData {
@@ -273,18 +269,46 @@ message OrganizationGetData {
     {
         int32 Id =1;
         int32 OrgId =2;
-        string Language =3;
-        string Timezone =4;
-        string Currency =5;
-        string Unit = 6;
-        string VehicleDisplay =7;
-        string DateFormat =8;
-        string TimeFormat=9;
-        string LandingPageDisplay=10;
+        int32 Language =3;
+        int32 Timezone =4;
+        int32 Currency =5;
+        int32 Unit = 6;        
+        int32 DateFormat =7;
+        int32 TimeFormat=8;      
     }
    message OrganizationPreferenceResponse
     {
      Responcecode Code=1;
      string Message = 2;
      OrganizationPreference OrganizationPreference= 3;      
+    }
+
+    message OrgDetailResponse {  
+    int32 Id=1;
+    string OrganizationId= 2;   
+    google.protobuf.StringValue OrganizationName=3;  
+    google.protobuf.StringValue AddressStreet=4;
+    google.protobuf.StringValue AddressStreetNumber=5; 
+    google.protobuf.StringValue PostalCode=6;    
+    google.protobuf.StringValue City=7;
+    google.protobuf.StringValue Country=8;     
+    google.protobuf.StringValue VehicleOptIn=9;
+    google.protobuf.StringValue DriverOptIn=10;   
+    google.protobuf.StringValue LanguageName =11;
+    google.protobuf.StringValue Timezone =12;
+    google.protobuf.StringValue Currency =13;
+    google.protobuf.StringValue Unit = 14;   
+    google.protobuf.StringValue DateFormat =15;
+    google.protobuf.StringValue TimeFormat=16;   
+    int32 preferenceId=17;
+}
+
+message ListOfOrganization {
+  Responcecode Code=1;
+  string Message = 2;
+  repeated AllOrganization Organizations = 3;
+}
+message AllOrganization{
+    int32 organizationId=1;
+    google.protobuf.StringValue OrganizationName = 2; 
     }

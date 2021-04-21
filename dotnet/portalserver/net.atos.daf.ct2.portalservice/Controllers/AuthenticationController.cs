@@ -11,6 +11,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
+using Newtonsoft.Json;
+using log4net;
+using net.atos.daf.ct2.portalservice.Common;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -18,19 +22,23 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class AuthenticationController: ControllerBase
     {
-        private readonly ILogger<AuthenticationController> _logger;
+        //private readonly ILogger<AuthenticationController> _logger;
+        private readonly AuditHelper _auditHelper;
 
+        private ILog _logger;
         private readonly AccountBusinessService.AccountService.AccountServiceClient _accountClient;
-        public AuthenticationController(AccountBusinessService.AccountService.AccountServiceClient accountClient, ILogger<AuthenticationController> logger)
+        public AuthenticationController(AccountBusinessService.AccountService.AccountServiceClient accountClient,  AuditHelper auditHelper)
         {
             _accountClient = accountClient;
-            _logger = logger;
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            _auditHelper = auditHelper;
         }
         [AllowAnonymous]
         [HttpPost]        
         [Route("login")]
         public async Task<IActionResult> Login()
         {
+            AccountBusinessService.IdentityRequest identityRequest = new AccountBusinessService.IdentityRequest();
             try 
             {
                 if (!string.IsNullOrEmpty(Request.Headers["Authorization"]))  
@@ -48,10 +56,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        AccountBusinessService.IdentityRequest identityRequest = new AccountBusinessService.IdentityRequest();
+                     
                         identityRequest.UserName = arrUsernamePassword[0];
                         identityRequest.Password = arrUsernamePassword[1];
-                        AccountBusinessService.AccountIdentityResponse response = await _accountClient.AuthAsync(identityRequest).ResponseAsync;
+                        AccountBusinessService.AccountIdentityResponse response = new AccountBusinessService.AccountIdentityResponse();
+
+                        response = await _accountClient.AuthAsync(identityRequest).ResponseAsync;
                         if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                         {
                             Identity.Identity accIdentity = new Identity.Identity();
@@ -100,12 +110,32 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-                           // }
+                            // }
+
+
+                            await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Authentication Component",
+                                    "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                    "RemoveRoles  method in Authentication controller", 0, response.AccountInfo.Id, JsonConvert.SerializeObject(identityRequest),
+                                     Request);
+
+
                             return Ok(accIdentity);
-                        }
-                        else if (response != null && response.Code == AccountBusinessService.Responcecode.Failed)
+                        }//To Do: Need to fix once we stream line the responceCode class in gRPC Account service.
+                        else if (response != null && (response.Code == AccountBusinessService.Responcecode.FoundRedirect))
                         {
-                            return StatusCode(500, response.Message);
+                            return StatusCode((int)response.Code, response.ResetPasswordExpiryResponse);
+                        }
+                        else if (response != null && (response.Code == AccountBusinessService.Responcecode.Unauthorized))
+                        {
+                            return StatusCode((int)response.Code, response.Message);
+                        }
+                        else if (response != null && response.Code == AccountBusinessService.Responcecode.Forbidden)
+                        {
+                            return StatusCode(403, response.Message);
+                        }
+                        else if (response != null && response.Code == AccountBusinessService.Responcecode.NotFound)
+                        {
+                            return StatusCode(404, response.Message);
                         }
                         else if (response != null && response.Code == AccountBusinessService.Responcecode.Failed)
                         {
@@ -113,7 +143,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         }
                         else
                         {
-                            return StatusCode(500, "Please contact system administrator.");
+                            return StatusCode(500, "Unknown :- Please contact system administrator.");
                         }
                     }
             }
@@ -124,7 +154,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex.Message +" " +ex.StackTrace);
+               _logger.Error(null, ex);              
+
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Authentication Component",
+            "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+            "RemoveRoles  method in Authentication controller", 0, 0, JsonConvert.SerializeObject(identityRequest),
+             Request);
+                _logger.Error(null, ex);
                 return StatusCode(500,"Please contact system administrator. "+ ex.Message );
             }            
         }
@@ -133,21 +169,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("logout")]
         public async Task<IActionResult> Logout()
         {
+            AccountBusinessService.LogoutRequest request = new AccountBusinessService.LogoutRequest();
             try
             {
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 string sessionid = HttpContext.Session.GetString("session_id");
                 if (!string.IsNullOrEmpty(sessionid))
                 {
-                    AccountBusinessService.LogoutRequest request = new AccountBusinessService.LogoutRequest();
+                   
                     request.TokenId = sessionid;
                     await _accountClient.LogoutAsync(request);
-                }
+                }               
                 return Ok(new { Message = "You are logged out" });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.ToString());
+                _logger.Error(null, ex);
                 return StatusCode(500, "Please contact system administrator. " + ex.Message);
             }
         }

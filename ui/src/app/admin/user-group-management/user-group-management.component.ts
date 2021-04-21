@@ -8,6 +8,9 @@ import { TranslationService } from '../../services/translation.service';
 import { AccountService } from '../../services/account.service';
 import { VehicleService } from '../../services/vehicle.service';
 import { UserDetailTableComponent } from '../user-management/new-user-step/user-detail-table/user-detail-table.component';
+import { MatTableExporterDirective } from 'mat-table-exporter';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-user-group-management',
@@ -36,6 +39,7 @@ export class UserGroupManagementComponent implements OnInit {
   userCreatedMsg: any = '';
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   inputText: any;
   translationData: any;
   localStLanguage: any;
@@ -124,7 +128,7 @@ export class UserGroupManagementComponent implements OnInit {
     this.OrgId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
       id: 0,
-      code: this.localStLanguage.code,
+      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
       type: "Menu",
       name: "",
       value: "",
@@ -350,5 +354,28 @@ export class UserGroupManagementComponent implements OnInit {
     Array.prototype.push.apply(newTrueData, newFalseData); 
     return newTrueData;
   }
+
+  exportAsCSV(){
+    this.matTableExporter.exportTable('csv', {fileName:'AccountGroupMgmt_Data', sheet: 'sheet_name'});
+}
+
+exportAsPdf() {
+  let DATA = document.getElementById('accountGroupMgmtData');
+    
+  html2canvas(DATA).then(canvas => {
+      
+      let fileWidth = 208;
+      let fileHeight = canvas.height * fileWidth / canvas.width;
+      
+      const FILEURI = canvas.toDataURL('image/png')
+      let PDF = new jsPDF('p', 'mm', 'a4');
+      let position = 0;
+      PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+      
+      PDF.save('AccountGroupMgmt_Data.pdf');
+      PDF.output('dataurlnewwindow');
+  });     
+}
+
 
 }

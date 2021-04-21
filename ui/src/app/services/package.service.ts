@@ -90,6 +90,16 @@ export class PackageService {
       .pipe(catchError(this.handleError));
   }
 
+  importPackage(data): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    const importData = {packagesToImport:data}
+    return this.httpClient
+      .post<any>(`${this.PackageServiceUrl}/Import`, importData, headers)
+      .pipe(catchError(this.handleError));
+  }
 
   private handleError(errResponse: HttpErrorResponse) {
     if (errResponse.error instanceof ErrorEvent) {

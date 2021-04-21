@@ -61,9 +61,41 @@ spec:
           value: "0"
         ports:
           - containerPort: 8080
+      - name: filebeatservice-container
+        image: #{acrurl}#/filebeat
+        imagePullPolicy: "Always"
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: filebeatdata 
+          mountPath: /usr/share/filebeat/data
+        - name: certs
+          mountPath: /certs
+          readOnly: true
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+             - all
+        resources:
+          limits:
+            cpu: 50m
+            memory: 50Mi
+          requests:
+            cpu: 20m
+            memory: 20Mi
+        env:
+        - name: serviceName
+          value: "AuthenticationDataService"
       volumes:
       - name: tmp
         emptyDir: {}
+      - name: filebeatdata
+        emptyDir: {}
+      - name: certs
+        secret:
+          secretName: filebeat
       nodeSelector:
         agentpool: npuser01         
   selector:

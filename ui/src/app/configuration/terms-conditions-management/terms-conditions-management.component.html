@@ -1,0 +1,103 @@
+<div class='bgtrans'>
+    <div *ngIf='grpTitleVisible' fxLayout="row" fxLayoutAlign="center center"
+        style='padding:10px; color:#fff; background: #5dc24e;' class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+        {{ fileUploadedMsg }}
+        </div>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+        <mat-icon (click)='onCloseMsg()' style='cursor: pointer;'>close</mat-icon>
+        </div>
+    </div>
+    <!-- <mat-card *ngIf="!adminAccessType.adminReadOnlyAccess" class='mat-elevation-z margin-bottom-xlg'> -->
+    <mat-card class='mat-elevation-z margin-bottom-xlg'>
+        <form [formGroup]="uploadTermsConditionsFormGroup">
+            <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblUploadNewTermsAndConditions || 'Upload New Terms and Conditions' }}</span>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="15px">
+                <div style='width: 60%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="center">
+                    <div style='padding: 30px;' fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="start">
+                        <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                            <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
+                                <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                                    <mat-label>{{ translationData.lblUploadTermsCoditionsFile || 'Upload Terms and Conditions file(s)' }} <span class='mandatoryColor'>*</span></mat-label>
+                                    <mat-form-field appearance="outline">
+                                        <ngx-mat-file-input (change)="addfile($event)" [accept]="'.pdf'" formControlName="uploadFile" placeholder="{{ translationData.lblUploadYourUpdatedPDFFile || 'Upload your updated pdf File'}}" ></ngx-mat-file-input>
+                                        <button mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse || 'Browse' }}</button>
+                                    </mat-form-field>
+                                    <mat-error *ngIf="uploadTermsConditionsFormGroup.get('uploadFile').hasError('required')">
+                                        {{ translationData.lblPleaseselectafile || 'Please select a file' }}
+                                    </mat-error>
+                                    <!-- <mat-error *ngIf="uploadTermsConditionsFormGroup.get('uploadFile').hasError('maxContentSize')">
+                                        The total size must not exceed {{uploadTermsConditionsFormGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{uploadTermsConditionsFormGroup.get('uploadFile')?.getError('maxContentSize').actualSize
+                                        | byteFormat}}).
+                                    </mat-error> -->
+                                    <mat-error *ngIf="pdfEmptyMsg">
+                                        {{ translationData.lblEmptyFile || 'Empty File' }}
+                                    </mat-error>
+                                </div>
+                                <div fxLayout="column" fxLayoutAlign="space-around" class='margin-bottom-sm'>
+                                    <button style='color: #fff;' [disabled]="!uploadTermsConditionsFormGroup.valid || pdfEmptyMsg" [ngStyle]="{'margin-top': uploadTermsConditionsFormGroup.get('uploadFile').hasError('required') ? '9px' : '29px' }" mat-flat-button color="primary"
+                                        (click)="uploadTermsAndConditions()">
+                                        <mat-icon>arrow_circle_up</mat-icon> {{ translationData.lblUploadFile || 'Upload File' }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div fxLayout="row" style='padding: 10px;' >
+                        <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
+                            <span [ngStyle]="{'color': uploadFileErrorCode == 400 ? 'red' : 'black' }">{{ translationData.lblFileNamingConvensionMsg || 'Please follow the file name convension as : TermsConditions_(version)_(language code).pdf (Ex. TermsConditions_v2.1_EN.pdf)' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </mat-card>
+    <mat-card class='mat-elevation-z'>
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-xlg'>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblLastAcceprteTnCVersions || 'Last accepted T&C versions' }}</span>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+                <div class='areaWidth min-width-30-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <mat-form-field appearance="outline" class="full-width">
+                        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                        <span matPrefix><mat-icon>search</mat-icon></span>
+                    </mat-form-field>
+                </div>
+                <div *ngIf="downloadPDFErrorCode == 404" class='full-width min-width-60-per' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="right">
+                    <span style="color: red;">{{ translationData.lblTCNotPresentForSelectedLanguage || 'Terms and conditions not present for selected language' }}</span>
+                </div>
+            </div>
+            <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+            <div *ngIf='initData.length > 0'>
+                <mat-table [dataSource]="dataSource" matSort>
+                    <ng-container matColumnDef="firstName">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblUserName || 'User Name' }}</mat-header-cell>
+                        <mat-cell *matCellDef="let row">{{ row.firstName+" "+row.lastname }}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="versionno">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblTnCVersion || 'T&C Version' }}</mat-header-cell>
+                        <mat-cell *matCellDef="let row">{{ row.versionno }}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="action">
+                        <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action' }}</mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <button class='actionBtn' style="color: red;" mat-flat-button (click)="onDownloadPdf(row)" matTooltip="{{ translationData.lblDownload || 'Download' }}">
+                                <mat-icon style="width: 20px; height: 20px; ">picture_as_pdf</mat-icon>
+                            </button>
+                        </mat-cell>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;">
+                    </mat-row>
+                </mat-table>
+                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+            </div>
+        <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
+    </mat-card>
+</div>

@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.auditservice;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using log4net;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -16,16 +18,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class AuditController : ControllerBase
     {
-        private readonly ILogger<AuditController> _logger;
+       // private readonly ILogger<AuditController> _logger;
+
+       private ILog _logger;
         private readonly AuditService.AuditServiceClient _auditService;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
 
         //Constructor
-        public AuditController(AuditService.AuditServiceClient auditService, ILogger<AuditController> logger)
+        public AuditController(AuditService.AuditServiceClient auditService)
         {
             _auditService = auditService;
-            _logger = logger;
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         }
 
@@ -35,7 +39,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("Add Logs method " );
+                _logger.Info("Add Logs method " );
 
                 AuditResponce auditresponse = await _auditService.AddlogsAsync(request);
 
@@ -57,7 +61,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -68,7 +72,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.LogInformation("All langauges method get");
+                _logger.Info("All langauges method get");
                 
                 AuditLogResponse allauditLogs = await _auditService.GetAuditLogsAsync(request);
                 if (allauditLogs != null
@@ -89,7 +93,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("All AuditLog method get failed " + ex.ToString());
+                _logger.Error(null, ex);
                 return StatusCode(500, "Internal server error.");
             }
 

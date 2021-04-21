@@ -17,6 +17,9 @@ using net.atos.daf.ct2.roleservice;
 using RoleBusinessService = net.atos.daf.ct2.roleservice;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Newtonsoft.Json;
+using log4net;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -27,20 +30,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     {
 
         #region Private Variable
-        private readonly ILogger<RoleController> _logger;
+        //private readonly ILogger<RoleController> _logger;
         private readonly RoleBusinessService.RoleService.RoleServiceClient _roleclient;
         private readonly Mapper _mapper;
+
+        private ILog _logger;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
+        private readonly AuditHelper _auditHelper;
 
         #endregion
 
         #region Constructor
-        public RoleController(RoleBusinessService.RoleService.RoleServiceClient Featureclient, ILogger<RoleController> logger)
+        public RoleController(RoleBusinessService.RoleService.RoleServiceClient Featureclient, AuditHelper auditHelper)
         {
             _roleclient = Featureclient;
-            _logger = logger;
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _mapper = new Mapper();
+            _auditHelper = auditHelper;
         }
         #endregion
 
@@ -51,9 +58,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
 
-                if ((string.IsNullOrEmpty(request.RoleName.Trim())))
+                if ((string.IsNullOrEmpty(request.RoleName)))
                 {
                     return StatusCode(400, "Role name  is required");
+                }
+                if ((string.IsNullOrEmpty(request.Code)))
+                {
+                    return StatusCode(400, "Role code  is required");
                 }
                 if (request.FeatureIds.Length == 0)
                 {
@@ -67,6 +78,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 ObjRole.Description = request.Description;
                 //ObjRole.Fea = 0;
                 ObjRole.Level = request.Level;
+                ObjRole.Code = request.Code;
 
                 //ObjRole.FeatureSet.Features = new List<Feature>();
                 foreach (var item in request.FeatureIds)
@@ -74,11 +86,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     ObjRole.FeatureIds.Add(item);
                 }
                 var role = await _roleclient.CreateAsync(ObjRole);
+
+
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Role Component",
+                        "Role service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                        "Create  method in Role controller", 0, request.RoleId, JsonConvert.SerializeObject(request),
+                         Request);
+
                 return Ok(role);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Role Service:Create : " + ex.Message + " " + ex.StackTrace);
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Role Component",
+                       "Role service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                       "Create  method in Role controller", 0, request.RoleId, JsonConvert.SerializeObject(request),
+                        Request);
+                _logger.Error(null,ex);
                 if (ex.Message.Contains(FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
@@ -93,7 +116,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> Update(Roleupdaterequest roleMaster)
         {
 
-            if ((string.IsNullOrEmpty(roleMaster.RoleName.Trim())) || (roleMaster.RoleId == 0))
+            if ((string.IsNullOrEmpty(roleMaster.RoleName)) || (roleMaster.RoleId == 0))
             {
                 return StatusCode(400, "Role name and Role Id required Roleid required");
             }
@@ -122,12 +145,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 var role = await _roleclient.UpdateAsync(ObjRole);
                 //auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Role Component", "Role Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Create method in Role manager", roleMaster.RoleId, 0, JsonConvert.SerializeObject(roleMaster));
-                _logger.LogInformation(role.Message + "Role Master Updated");
+                _logger.Info(role.Message + "Role Master Updated");
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Role Component",
+                     "Role service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                     "Update  method in Role controller", roleMaster.RoleId, roleMaster.RoleId, JsonConvert.SerializeObject(roleMaster),
+                      Request);
                 return Ok(role);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Role Component",
+                   "Role service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                   "Update  method in Role controller", roleMaster.RoleId, roleMaster.RoleId, JsonConvert.SerializeObject(roleMaster),
+                    Request);
+                _logger.Error(null,ex);
                 //auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Role Component", "Role Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Create method in Role manager", roleMaster.RoleId, 0, JsonConvert.SerializeObject(roleMaster));
                 if (ex.Message.Contains("foreign key"))
                 {
@@ -141,23 +172,32 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("delete")]
         public async Task<IActionResult> Delete(int roleId, int updatedby)
         {
+            RoleRequest ObjRole = new RoleRequest();
             try
             {
                 if (roleId == 0)
                 {
                     return StatusCode(400, "Role id required ");
                 }
-                RoleRequest ObjRole = new RoleRequest();
+               
                 ObjRole.RoleID = roleId;
                 ObjRole.UpdatedBy = updatedby;
                 var role_Id = await _roleclient.DeleteAsync(ObjRole);
                 //auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Role Component", "Role Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Delete method in Role manager", roleId, roleId, JsonConvert.SerializeObject(roleId));
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Role Component",
+                     "Role service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                     "Delete  method in Role controller", ObjRole.RoleID, ObjRole.RoleID, JsonConvert.SerializeObject(ObjRole),
+                      Request);
                 return Ok(role_Id);
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Role Component",
+                    "Role service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                    "Delete  method in Role controller", ObjRole.RoleID, ObjRole.RoleID, JsonConvert.SerializeObject(ObjRole),
+                     Request);
                 //await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Role Component", "Role Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.FAILED, "Create method in Role manager", 0, 0, JsonConvert.SerializeObject(roleId));
-                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error(null,ex);
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -195,6 +235,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     Robj.OrganizationId = roleitem.OrganizationId;
                     Robj.Level = roleitem.Level;
                     Robj.CreatedAt = roleitem.CreatedAt;
+                    Robj.Code = roleitem.Code;
                     Robj.FeatureIds = roleitem.FeatureIds.ToArray();
                     roleList.Add(Robj);
                 }
@@ -204,7 +245,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.Error(null,ex);
                 return StatusCode(500, ex.ToString());
             }
         }

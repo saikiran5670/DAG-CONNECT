@@ -59,7 +59,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     this.packageFormGroup = this._formBuilder.group({
       code: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc ]],
       description: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
-      status: ['', [CustomValidators.numberValidationForName]],
+      state: ['', [CustomValidators.numberValidationForName]],
       type: ['', [ Validators.required]],
       name: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc]]
     },
@@ -155,11 +155,9 @@ export class CreateEditPackageDetailsComponent implements OnInit {
     this.packageFormGroup.get("code").setValue(this.selectedElementData.code);
     this.packageFormGroup.get("name").setValue(this.selectedElementData.name);
     this.packageFormGroup.get("type").setValue(this.selectedElementData.type);
-    this.packageFormGroup.get("status").setValue(this.selectedElementData.status);
-    // this.packageFormGroup.get("features").setValue(this.selectedElementData.features);
-    // this.selectedType = this.selectedElementData.type.toLowerCase();
+    this.packageFormGroup.get("state").setValue(this.selectedElementData.state);
     this.packageFormGroup.get("description").setValue(this.selectedElementData.description);
-    this.selectedStatus = this.selectedElementData.status;
+    this.selectedStatus = this.selectedElementData.state;
   }
 
   toBack(){
@@ -195,8 +193,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       "name": this.packageFormGroup.controls.name.value,
       "type": this.packageFormGroup.controls.type.value === "VIN" ? "V" : "O",
       "description": this.packageFormGroup.controls.description.value,
-      "isActive": true,
-      "status": this.selectedStatus === "Inactive" ? "I" : "A"
+      "state": this.selectedStatus === "Inactive" ? "I" : "A" //TODO: For delete, add option "D"
     }
     if(this.actionType == 'create'){
       this.packageService.createPackage(createPackageParams).subscribe((res) => {
@@ -225,8 +222,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       "name": this.packageFormGroup.controls.name.value,
       "type": this.packageFormGroup.controls.type.value === "VIN" ? "V" : "O",
       "description": this.packageFormGroup.controls.description.value,
-      "status": this.selectedStatus === "Inactive" ? "I" : "A",
-      "isActive": true
+      "state": this.selectedStatus === "Inactive" ? "I" : "A"
     }
     this.packageService.updatePackage(updatePackageParams).subscribe((data) => {
       this.packageService.getPackages().subscribe((getData) => {

@@ -9,6 +9,9 @@ import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dail
 import { SelectionModel } from '@angular/cdk/collections';
 import { OrganizationService } from 'src/app/services/organization.service';
 import { Router } from '@angular/router';
+import { MatTableExporterDirective } from 'mat-table-exporter';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-organisation-relationship',
@@ -18,6 +21,7 @@ import { Router } from '@angular/router';
 export class OrganisationRelationshipComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @Output() createViewEditPackageEmit = new EventEmitter<object>();
   dataSource: any;
   orgrelationshipDisplayedColumns: string[]= ['select', 'relationshipName', 'vehicleGroupName', 'organizationName', 'startDate', 'endDate','allowChain', 'endRelationship'];
@@ -61,7 +65,7 @@ export class OrganisationRelationshipComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 0 //-- for role mgnt
+      menuId: 29 //-- for org relationship mgnt
     }
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
       this.processTranslation(data);
@@ -115,6 +119,28 @@ export class OrganisationRelationshipComponent implements OnInit {
       return (`${​​​​​​​​day}​​​​​​​​/${​​​​​​​​month + 1}​​​​​​​​/${​​​​​​​​year}​​​​​​​​`);
         }​​​​​​​​
       }​​​​​​​​
+
+      exportAsCSV(){
+        this.matTableExporter.exportTable('csv', {fileName:'OrganisationRelationship_Data', sheet: 'sheet_name'});
+      }
+    
+      exportAsPdf() {
+        let DATA = document.getElementById('organisationRelationData');
+          
+        html2canvas(DATA).then(canvas => {
+            
+            let fileWidth = 208;
+            let fileHeight = canvas.height * fileWidth / canvas.width;
+            
+            const FILEURI = canvas.toDataURL('image/png')
+            let PDF = new jsPDF('p', 'mm', 'a4');
+            let position = 0;
+            PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+            
+            PDF.save('OrganisationRelationship_Data.pdf');
+            PDF.output('dataurlnewwindow');
+        });     
+      }
 
   defaultTranslation () {
     this.translationData = {
@@ -262,8 +288,10 @@ export class OrganisationRelationshipComponent implements OnInit {
     const options = {
       title: this.translationData.lblAlert || "Alert",
       message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",
-      cancelText: this.translationData.lblNo || "No",
-      confirmText: this.translationData.lblYes || "Yes",
+      // cancelText: this.translationData.lblNo || "No",
+      // confirmText: this.translationData.lblYes || "Yes",
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: (rowData.allowChain == true) ? this.translationData.lblDeactivate || " Deactivate" : this.translationData.lblActivate || " Activate",
       status: rowData.allowChain == true ? 'Inactive' : 'Active' ,
       name: rowData.relationshipName
     };

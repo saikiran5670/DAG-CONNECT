@@ -9,21 +9,25 @@ using net.atos.daf.ct2.driver;
 using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.driverservice.entity;
 using System.Linq;
+using log4net;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.driverservice
 {
     public class DriverManagementService:DriverService.DriverServiceBase
     {
-        private readonly ILogger _logger;                
+                 
         private readonly IAuditTraillib _AuditTrail;      
         private readonly IAuditTraillib auditlog;     
         private readonly IDriverManager driverManager;        
         
         private readonly DriverMapper _mapper;
 
-        public DriverManagementService(ILogger<DriverManagementService> logger, IAuditTraillib AuditTrail,IAuditTraillib _auditlog,IDriverManager _driverManager)
+        private ILog _logger;
+
+        public DriverManagementService( IAuditTraillib AuditTrail,IAuditTraillib _auditlog,IDriverManager _driverManager)
         {
-           _logger = logger;
+           _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
            _AuditTrail = AuditTrail;         
            auditlog = _auditlog;
            driverManager=_driverManager;
@@ -33,7 +37,7 @@ namespace net.atos.daf.ct2.driverservice
         public override async Task<DriverDataList> Get(IdRequest request, ServerCallContext context)
         {
              try{
-                _logger.LogInformation("Get Drivers .");
+                _logger.Info("Get Drivers .");
                 DriverDataList response = new DriverDataList();
                 var result = await driverManager.GetDriver(request.OrgID,request.DriverID);
                 if (result.Count() > 0)
@@ -54,7 +58,7 @@ namespace net.atos.daf.ct2.driverservice
              }
              catch (Exception ex)
               {
-                _logger.LogError("Driver Service:Get : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new DriverDataList
                 {
                     Code = Responcecode.Failed,
@@ -71,7 +75,7 @@ namespace net.atos.daf.ct2.driverservice
                 net.atos.daf.ct2.driverservice.DriverUpdateResponse response=new net.atos.daf.ct2.driverservice.DriverUpdateResponse();
                net.atos.daf.ct2.driverservice.DriverUpdateRequest objDriver=new  DriverUpdateRequest(); 
                driver.entity.Driver driver=new driver.entity.Driver();
-               _logger.LogInformation("Update Drivers ."); 
+               _logger.Info("Update Drivers ."); 
                driver= _mapper.ToDriverUpdateResponse(request);
                var result = await driverManager.UpdateDriver(driver);   
                
@@ -83,7 +87,7 @@ namespace net.atos.daf.ct2.driverservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Driver Service:Update : " + ex.Message + " " + ex.StackTrace);
+               _logger.Error(null, ex);
                 return await Task.FromResult(new DriverUpdateResponse
                 {
                     Code = Responcecode.Failed,
@@ -97,7 +101,7 @@ namespace net.atos.daf.ct2.driverservice
             try
             {
                 net.atos.daf.ct2.driverservice.DriverDeleteResponse response=new driverservice.DriverDeleteResponse();
-                _logger.LogInformation("Delete Drivers ."); 
+                _logger.Info("Delete Drivers ."); 
                 bool result = await driverManager.DeleteDriver(request.OrgID,request.DriverID);  
                 if(result)
                 {
@@ -113,7 +117,7 @@ namespace net.atos.daf.ct2.driverservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Driver Service:Get : " + ex.Message + " " + ex.StackTrace);
+               _logger.Error(null, ex);
                 return await Task.FromResult(new DriverDeleteResponse
                 {
                     Code = Responcecode.Failed,
@@ -127,7 +131,7 @@ namespace net.atos.daf.ct2.driverservice
             try
             { 
                 net.atos.daf.ct2.driverservice.OptOutOptInResponse response=new driverservice.OptOutOptInResponse();
-                _logger.LogInformation("OptOutOptIn Drivers ."); 
+                _logger.Info("OptOutOptIn Drivers ."); 
                 bool result = await driverManager.UpdateOptinOptout(Optrequest.OrgID,Optrequest.Optoutoptinstatus);  
                 if(result)
                 {
@@ -143,7 +147,7 @@ namespace net.atos.daf.ct2.driverservice
             }
             catch (Exception ex)
             {
-                _logger.LogError("Driver Service:Update : " + ex.Message + " " + ex.StackTrace);
+               _logger.Error(null, ex);
                 return await Task.FromResult(new OptOutOptInResponse
                 {
                     Code = Responcecode.Failed,
@@ -156,7 +160,7 @@ namespace net.atos.daf.ct2.driverservice
             try {     
             net.atos.daf.ct2.driverservice.DriverImportData response=new net.atos.daf.ct2.driverservice.DriverImportData();
                
-                _logger.LogInformation("Drivers import."); 
+                _logger.Info("Drivers import."); 
 
                 List<Driver> lstDriver =new List<Driver>();
                     
@@ -177,7 +181,7 @@ namespace net.atos.daf.ct2.driverservice
         }
             catch (Exception ex)
             {
-                _logger.LogError("Driver Service:Update : " + ex.Message + " " + ex.StackTrace);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new DriverImportData
                 {
                     Code = Responcecode.Failed,

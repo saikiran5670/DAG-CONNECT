@@ -29,6 +29,9 @@ using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using System;
+using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.customerdataservice.Common;
 
 namespace net.atos.daf.ct2.customerdataservice
 {
@@ -52,11 +55,16 @@ namespace net.atos.daf.ct2.customerdataservice
                        return CustomErrorResponse(actionContext);
                       };
                   });
-            var connectionString = Configuration.GetConnectionString("ConnectionString");
-            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
-
+            //var connectionString = Configuration.GetConnectionString("ConnectionString");
             //var connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             //IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
+
+            var connectionString = Configuration.GetConnectionString("ConnectionString");
+            var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
+            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
+            IDataMartDataAccess dataMartdataAccess = new PgSQLDataMartDataAccess(DataMartconnectionString);
+            services.AddSingleton(dataMartdataAccess);
+            services.AddSingleton(dataAccess);
 
 
             services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration")); 
@@ -87,45 +95,13 @@ namespace net.atos.daf.ct2.customerdataservice
             services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
             services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
             services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
+            services.AddTransient<ITranslationRepository, TranslationRepository>();
+            services.AddTransient<ITranslationManager, TranslationManager>();
 
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(x =>
+            services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
+            .AddBasic<BasicAuthenticationService>(options =>
             {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = false;
-
-                RSA rsa = RSA.Create();
-                rsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(Configuration["IdentityConfiguration:RsaPublicKey"]), out _);
-                SecurityKey key = new RsaSecurityKey(rsa)
-                {
-                    CryptoProviderFactory = new CryptoProviderFactory()
-                    {
-                        CacheSignatureProviders = false
-                    }
-                };
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = Configuration["IdentityConfiguration:Issuer"],
-                    IssuerSigningKey = key,
-                    CryptoProviderFactory = new CryptoProviderFactory()
-                    {
-                        CacheSignatureProviders = false
-                    }
-                };
-
-                x.Events = new JwtBearerEvents()
-                {
-                    OnTokenValidated = context =>
-                    {
-                        context.HttpContext.User = context.Principal;
-                        return Task.CompletedTask;
-                    }
-                };
+                options.ApplicationName = "DAFCT2.0";
             });
 
             services.AddAuthorization(options =>

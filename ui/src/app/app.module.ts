@@ -66,7 +66,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     DriverService,
     FeatureService,
     PackageService,
-    SubscriptionService,
+    SubscriptionService
   ],
   bootstrap: [AppComponent],
 })

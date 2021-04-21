@@ -12,6 +12,8 @@ using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.translationservice;
 using Microsoft.Extensions.Configuration;
+using net.atos.daf.ct2.termsandconditions.repository;
+using net.atos.daf.ct2.termsandconditions;
 
 namespace net.atos.daf.ct2.translationservice
 {
@@ -43,6 +45,10 @@ namespace net.atos.daf.ct2.translationservice
             
             services.AddTransient<ITranslationManager, TranslationManager>();
              services.AddTransient<ITranslationRepository, TranslationRepository>();
+            services.AddTransient<ITermsAndConditionsManager, TermsAndConditionsManager>();
+            services.AddTransient<ITermsAndConditionsRepository, TermsAndConditionsRepository>();
+            services.AddTransient<IIconManager, IconManager>();
+            services.AddTransient<IIconRepository, IconRepository>();
 
         }
 

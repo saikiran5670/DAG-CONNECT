@@ -6,7 +6,7 @@ const routes: Routes = [
   { path:'', redirectTo:'auth/login', pathMatch: 'full'},
   { path: 'auth', loadChildren: () => import('./authentication/authentication.module').then(m => m.AuthenticationModule) },
   { path: 'dashboard', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule) },
-  { path: 'livefleet', loadChildren: () => import('./live-fleet/live-fleet.module').then(m => m.LiveFleetModule) },
+  { path: 'fleetoverview', loadChildren: () => import('./live-fleet/live-fleet.module').then(m => m.LiveFleetModule) },
   { path: 'report', loadChildren: () => import('./report/report.module').then(m => m.ReportModule) },
   { path: 'configuration', loadChildren: () => import('./configuration/configuration.module').then(m => m.ConfigurationModule) },
   { path: 'admin', loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule) },
@@ -14,7 +14,7 @@ const routes: Routes = [
   { path: 'mobileportal', loadChildren: () => import('./mobile-portal/mobile-portal.module').then(m => m.MobilePortalModule) },
   { path: 'shop', loadChildren: () => import('./shop/shop.module').then(m => m.ShopModule) },
   { path: 'information', loadChildren: () => import('./information/information.module').then(m => m.InformationModule) },
-  { path: 'termsConditions', loadChildren: () => import('./terms-conditions-content/terms-conditions.module').then(m => m.TermsConditionsModule) },
+  { path: 'termsAndconditionhistory', loadChildren: () => import('./terms-conditions-content/terms-conditions.module').then(m => m.TermsConditionsModule) },
   { path: "errorPage", component: ErrorComponent },
 
 ];

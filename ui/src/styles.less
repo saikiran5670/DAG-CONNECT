@@ -230,7 +230,8 @@ Refer : https://styleguide.daf.com/en/guidelines-for-developers/use-of-colors
 
 //----------- login style----------//
 .loginPageContainer{
-    height: 610px;
+    // height: 610px;
+    height: 94.8vh;
     width: 100%;
     .loginPageBg{
         background-image: url(assets/daf-login-bg.png); 
@@ -657,6 +658,9 @@ mat-dialog-container{
 }
 
 //-------- Utility css--------//
+.background-transparent{
+    background: transparent !important;
+}
 .full-width{
     width: 100%;
 }
@@ -764,6 +768,9 @@ mat-dialog-container{
 }
 .min-width-75-per{
     min-width: 75%;
+}
+.max-width-30-per{
+    max-width: 30%;
 }
 .margin-left-10-per{
     margin-left: 10%;
@@ -1043,4 +1050,24 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
             background: lightgray !important;
         }
     }
+}
+
+//For Popup scrollable content_UserGroupManagement
+.contentInpopup {
+    max-height: 500px;
+    overflow: auto;
+
+    .header_sticky {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+}
+.contentInpopup__paginator {
+    bottom: 0;
+    width: 100%;
+}
+
+.wordWrap {
+    word-wrap: break-word;
 }

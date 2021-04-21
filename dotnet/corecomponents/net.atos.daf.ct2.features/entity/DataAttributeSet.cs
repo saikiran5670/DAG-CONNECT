@@ -7,7 +7,7 @@ namespace net.atos.daf.ct2.features.entity
     {
         public int ID { get; set; }
         public string Name { get; set; }
-        public bool isActive { get; set; }
+        public char State { get; set; }
         public string Description { get; set; }
         //public string Is_exlusive { get; set; }
         public long created_at { get; set; }

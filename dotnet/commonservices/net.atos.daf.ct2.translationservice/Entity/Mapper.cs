@@ -9,6 +9,7 @@ using System.IO;
 using System.Text;
 using Google.Protobuf;
 using Newtonsoft.Json;
+using net.atos.daf.ct2.termsandconditions.entity;
 
 namespace net.atos.daf.ct2.translationservice.Entity
 {
@@ -135,6 +136,46 @@ namespace net.atos.daf.ct2.translationservice.Entity
 
         }
 
+        public AccountTermsCondition ToAcceptedTermConditionEntity(AcceptedTermConditionRequest request)
+        {
+            AccountTermsCondition accountTermsCondition = new AccountTermsCondition();
+            accountTermsCondition.Id = request.Id;
+            accountTermsCondition.Account_Id = request.AccountId;
+            accountTermsCondition.Organization_Id = request.OrganizationId;
+            accountTermsCondition.Terms_And_Condition_Id = request.TermsAndConditionId;
+            accountTermsCondition.version_no = request.VersionNo;
+            accountTermsCondition.Accepted_Date = DateTime.Now;
+            return accountTermsCondition;
+        }
+
+        public TermConditionReponse ToTermConditionReponse(TermsAndConditions termsAndConditions)
+        {
+            TermConditionReponse response = new TermConditionReponse();
+            response.Id = termsAndConditions.Id;
+            response.Code = termsAndConditions.Code;
+            response.Versionno = termsAndConditions.version_no;
+            if (termsAndConditions.Description != null)
+            {
+                response.Description = ByteString.CopyFrom(termsAndConditions.Description);
+            }
+            response.StartDate = termsAndConditions.StartDate.ToString();
+            response.EndDate = termsAndConditions.EndDate.ToString();
+            response.AcceptedDate = termsAndConditions.Accepted_Date.ToString();
+            response.FirstName = termsAndConditions.FirstName == null ? "" : termsAndConditions.FirstName;
+            response.Lastname = termsAndConditions.Lastname == null ? "" : termsAndConditions.Lastname;
+            return response;
+        }
+
+        public AcceptedTermConditionRequest ToAcceptedTermConditionRequestEntity(AccountTermsCondition response)
+        {
+            AcceptedTermConditionRequest accountTermsConditionrequest = new AcceptedTermConditionRequest();
+            accountTermsConditionrequest.Id = response.Id;
+            accountTermsConditionrequest.AccountId = response.Account_Id;
+            accountTermsConditionrequest.OrganizationId = response.Organization_Id;
+            accountTermsConditionrequest.TermsAndConditionId = response.Terms_And_Condition_Id;
+            accountTermsConditionrequest.VersionNo = response.version_no;
+            return accountTermsConditionrequest;
+        }
 
     }
 }

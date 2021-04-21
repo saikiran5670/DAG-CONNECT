@@ -26,15 +26,26 @@
           </span>
         </mat-form-field>
       </div>
-      <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-        <button mat-flat-button color="primary" (click)="onNewUserGroup()">
-          <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUserGroup || 'New Account Group' }}
-        </button>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+        <div fxLayout="row" class='areaWidth'>
+            <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
+            <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="exportAsPdf()">PDF (as snapshot)</button>
+                <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
+            </mat-menu>
+            </div>
+              <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                <button mat-flat-button color="primary" (click)="onNewUserGroup()">
+                <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUserGroup || 'New Account Group' }}
+                </button>
+              </div>
+        </div>
       </div>
     </div>
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
-    <div *ngIf='initData.length > 0'>
-      <mat-table [dataSource]="dataSource" matSort>
+    <div *ngIf='initData.length > 0' id="accountGroupMgmtData">
+      <mat-table matTableExporter [dataSource]="dataSource" matSort #exporter="matTableExporter">
         <ng-container matColumnDef="accountGroupName">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblGroupName || 'Group Name'}}
           </mat-header-cell>
@@ -62,12 +73,14 @@
             <button class='actionBtn' (click)="editViewGroup(row, 'view')" mat-flat-button matTooltip="View">
               <mat-icon>visibility</mat-icon>
             </button>
-            <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="editViewGroup(row, 'edit')" matTooltip="Edit">
+            <div *ngIf ="row.type == 'G'">
+            <button *ngIf="!adminAccessType.adminReadOnlyAccess && row.type != 'D'" class='actionBtn' mat-flat-button (click)="editViewGroup(row, 'edit')" matTooltip="Edit">
               <mat-icon>create</mat-icon>
             </button>
-            <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deleteGroup(row)" matTooltip="Delete">
+            <button *ngIf="adminAccessType.adminFullAccess && row.type != 'D'" class='actionBtn' mat-flat-button (click)="deleteGroup(row)" matTooltip="Delete">
               <mat-icon class="deleteIcon">delete_outline</mat-icon>
             </button>
+          </div>
           </mat-cell>
         </ng-container>
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

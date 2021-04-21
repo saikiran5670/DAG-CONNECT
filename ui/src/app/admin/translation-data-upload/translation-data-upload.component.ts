@@ -73,7 +73,7 @@ export class TranslationDataUploadComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 0 //-- for common & user preference. menuid for driver will be add later
+      menuId: 31 //-- for Translation mgnt
     }
 
     this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
@@ -119,7 +119,6 @@ export class TranslationDataUploadComponent implements OnInit {
 
   uploadTranslationData(){ 
     let languageData = [];
-    console.log("filelist:: ", this.filelist);
     //TODO : Read file, parse into JSON and send to API
     this.filelist.forEach(element => {
       let tempArr = this.manipulateObjectForXLSXToJSON(element);
@@ -147,6 +146,7 @@ export class TranslationDataUploadComponent implements OnInit {
         this.isTranslationDataUploaded = true;
         this.addedCount= data["translationupload"].added;
         this.updatedCount= data["translationupload"].updated;
+        this.loadInitData();
       }
     }, (error) => {
       

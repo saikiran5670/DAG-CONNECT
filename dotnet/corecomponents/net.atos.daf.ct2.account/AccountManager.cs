@@ -1,21 +1,22 @@
-using net.atos.daf.ct2.audit;
-using System.Linq;
-using System.Collections.Generic;
-using System;
-using System.Threading.Tasks;
-using Identity = net.atos.daf.ct2.identity;
-using IdentityEntity = net.atos.daf.ct2.identity.entity;
-using net.atos.daf.ct2.account.ENUM;
-using net.atos.daf.ct2.account.entity;
-using net.atos.daf.ct2.utilities;
-using net.atos.daf.ct2.audit.Enum;
-using System.Text;
 using Microsoft.Extensions.Configuration;
+using net.atos.daf.ct2.account.entity;
+using net.atos.daf.ct2.account.ENUM;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.entity;
+using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.email;
 using net.atos.daf.ct2.email.Entity;
 using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.identity.entity;
+using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
+using Identity = net.atos.daf.ct2.identity;
+using IdentityEntity = net.atos.daf.ct2.identity.entity;
 
 namespace net.atos.daf.ct2.account
 {
@@ -26,8 +27,9 @@ namespace net.atos.daf.ct2.account
         IAuditTraillib auditlog;
         private readonly EmailConfiguration emailConfiguration;
         private readonly IConfiguration configuration;
+        private readonly ITranslationManager translationManager;
 
-        public AccountManager(IAccountRepository _repository, IAuditTraillib _auditlog, Identity.IAccountManager _identity, IConfiguration _configuration)
+        public AccountManager(IAccountRepository _repository, IAuditTraillib _auditlog, Identity.IAccountManager _identity, IConfiguration _configuration, ITranslationManager _translationManager)
         {
             repository = _repository;
             auditlog = _auditlog;
@@ -35,6 +37,7 @@ namespace net.atos.daf.ct2.account
             configuration = _configuration;
             emailConfiguration = new EmailConfiguration();
             configuration.GetSection("EmailConfiguration").Bind(emailConfiguration);
+            translationManager = _translationManager;
         }
         public async Task<Account> Create(Account account)
         {
@@ -54,7 +57,7 @@ namespace net.atos.daf.ct2.account
                 // if this fails
                 account = await repository.Create(account);
 
-                account.isErrorInEmail = !(await SetPasswordViaEmail(account));
+                account.isErrorInEmail = !(await SetPasswordViaEmail(account, EmailEventType.CreateAccount));
             }
             else // there is issues and need delete user from IDP. 
             {
@@ -64,8 +67,8 @@ namespace net.atos.daf.ct2.account
                     // get account by email , if not exists in DB-- create it
                     AccountFilter filter = new AccountFilter();
                     filter.Email = account.EmailId;
-                    filter.OrganizationId = account.Organization_Id;
-                    int Organization_Id = account.Organization_Id;
+                    filter.OrganizationId = account.Organization_Id.Value;
+                    int Organization_Id = account.Organization_Id.Value;
                     filter.AccountType = AccountType.None;
                     filter.AccountIds = string.Empty;
                     filter.Name = string.Empty;
@@ -75,7 +78,7 @@ namespace net.atos.daf.ct2.account
                         account = await repository.Create(account);
                         await identity.UpdateUser(identityEntity);
 
-                        account.isErrorInEmail = !(await SetPasswordViaEmail(account));
+                        account.isErrorInEmail = !(await SetPasswordViaEmail(account, EmailEventType.CreateAccount));
                     }
                     else
                     {
@@ -133,7 +136,7 @@ namespace net.atos.daf.ct2.account
             var identityresult = await identity.DeleteUser(identityEntity);
             if (identityresult.StatusCode == HttpStatusCode.NoContent)
             {
-                result = await repository.Delete(account.Id, account.Organization_Id);
+                result = await repository.Delete(account.Id, account.Organization_Id.Value);
             }
             else if (identityresult.StatusCode == HttpStatusCode.NotFound)
             {
@@ -160,7 +163,8 @@ namespace net.atos.daf.ct2.account
                         await repository.UpsertPasswordModifiedDate(account.Id, UTCHandling.GetUTCFromDateTime(DateTime.Now));
 
                         //Send confirmation email
-                        await TriggerSendEmailRequest(account, EmailTemplateType.ChangeResetPasswordSuccess);
+                        account.Organization_Id = accountRequest.Organization_Id;
+                        await TriggerSendEmailRequest(account, EmailEventType.ChangeResetPasswordSuccess);
                     }
                     return identityResult;
                 }
@@ -311,7 +315,8 @@ namespace net.atos.daf.ct2.account
             return await repository.GetAccountRole(accountId);
         }
 
-        public async Task<Response> ResetPasswordInitiate(string emailId, bool canSendEmail = true)
+        //This method is called for ResetPassword, SetupNewPassword and PassswordExpiry process
+        public async Task<Response> ResetPasswordInitiate(string emailId, int orgId, EmailEventType eventType = EmailEventType.ResetPassword)
         {
             var response = new Response(HttpStatusCode.NotFound);
             try
@@ -339,27 +344,38 @@ namespace net.atos.daf.ct2.account
                     var processToken = (Guid)identityResult.Result;
                     if (identityResult.StatusCode == HttpStatusCode.OK)
                     {
-                        //Save Reset Password Token to the database
+                        //Save Password Token to the database
                         var objToken = new ResetPasswordToken();
                         objToken.AccountId = account.Id;
                         objToken.ProcessToken = processToken;
                         objToken.Status = ResetTokenStatus.New;
                         var now = DateTime.Now;
-                        objToken.ExpiryAt = UTCHandling.GetUTCFromDateTime(now.AddMinutes(configuration.GetValue<double>("ResetPasswordTokenExpiryInMinutes")));
+                        var expiryAt = eventType == EmailEventType.CreateAccount
+                                                    ? configuration.GetValue<double>("CreatePasswordTokenExpiryInMinutes")
+                                                    : configuration.GetValue<double>("ResetPasswordTokenExpiryInMinutes");
+                        objToken.ExpiryAt = UTCHandling.GetUTCFromDateTime(now.AddMinutes(expiryAt));
                         objToken.CreatedAt = UTCHandling.GetUTCFromDateTime(now);
 
                         //Create with status as New
                         await repository.Create(objToken);
 
                         bool isSent = false;
-                        //Send activation email based on flag
-                        if (canSendEmail)
-                            isSent = await TriggerSendEmailRequest(account, EmailTemplateType.ResetPassword, processToken);
+                        //Send email for reset password flow only
+                        //In cases like Create Password and Password Expiry, no need to send below email
+                        if (eventType == EmailEventType.ResetPassword)
+                        {
+                            account.Organization_Id = orgId;
+                            isSent = await TriggerSendEmailRequest(account, eventType, processToken);
+                        }
 
-                        if ((canSendEmail && isSent) || !canSendEmail)
+                        if ((eventType == EmailEventType.ResetPassword && isSent) || eventType != EmailEventType.ResetPassword)
                         {
                             //Update status to Issued
                             await repository.Update(objToken.Id, ResetTokenStatus.Issued);
+                        }
+                        else if(eventType == EmailEventType.ResetPassword && !isSent)
+                        {
+                            identityResult.StatusCode = HttpStatusCode.ExpectationFailed;
                         }
                     }
                     return identityResult;
@@ -369,6 +385,34 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Initiate" + ex.Message, 1, 2, emailId);
+                throw ex;
+            }
+        }
+
+        public async Task<Response> GetResetPasswordTokenStatus(Guid processToken)
+        {
+            var response = new Response(HttpStatusCode.NotFound);
+            try
+            {
+                //Check if token record exists, Fetch it and validate the status
+                var resetPasswordToken = await repository.GetIssuedResetToken(processToken);
+                if (resetPasswordToken != null)
+                {
+                    //Check for Expiry of Reset Token
+                    if (UTCHandling.GetUTCFromDateTime(DateTime.Now) > resetPasswordToken.ExpiryAt.Value)
+                    {
+                        //Update status to Expired
+                        await repository.Update(resetPasswordToken.Id, ResetTokenStatus.Expired);
+
+                        return response;
+                    }
+                    return new Response(HttpStatusCode.OK);
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Get Reset Password Token Status" + ex.Message, 1, 2, processToken.ToString());
                 throw ex;
             }
         }
@@ -407,7 +451,8 @@ namespace net.atos.daf.ct2.account
                         await repository.Update(resetPasswordToken.Id, ResetTokenStatus.Used);
 
                         //Send confirmation email
-                        await TriggerSendEmailRequest(account, EmailTemplateType.ChangeResetPasswordSuccess);
+                        account.Organization_Id = accountInfo.Organization_Id;
+                        await TriggerSendEmailRequest(account, EmailEventType.ChangeResetPasswordSuccess);
                     }
                     return identityresult;
                 }
@@ -455,11 +500,58 @@ namespace net.atos.daf.ct2.account
             return await repository.CheckForFeatureAccessByEmailId(emailId, featureName);
         }
 
+        public async Task<IEnumerable<EmailList>> SendEmailForPasswordExpiry(int noOfDays)
+        {
+            var emailSendList = new List<EmailList>();
+            
+            foreach (var account in await repository.GetAccountOfPasswordExpiry(noOfDays))
+            {
+                try
+                {
+                    var isSuccuss = TriggerSendEmailRequest(account, EmailEventType.PasswordExpiryNotification).Result;
+                                        
+                    emailSendList.Add(new EmailList { Email = account.EmailId, IsSend = isSuccuss });
+                    await auditlog.AddLogs(new AuditTrail
+                    {
+                        Created_at = DateTime.Now,
+                        Performed_at = DateTime.Now,
+                        Performed_by = 2,
+                        Component_name = "Email Notication Pasword Expiry",
+                        Service_name = "Email Component",
+                        Event_type = AuditTrailEnum.Event_type.Mail,
+                        Event_status = isSuccuss ? AuditTrailEnum.Event_status.SUCCESS : AuditTrailEnum.Event_status.FAILED,
+                        Message = isSuccuss ? $"Email send to {account.EmailId}" : $"Email is not send to {account.EmailId}",
+                        Sourceobject_id = 0,
+                        Targetobject_id = 0,
+                        Updated_data = "EmailNotificationForPasswordExpiry"
+                    });                    
+                }
+                catch (Exception ex)
+                {
+                    emailSendList.Add(new EmailList { Email = account.EmailId, IsSend = false });
+                    await auditlog.AddLogs(new AuditTrail
+                    {
+                        Created_at = DateTime.Now,
+                        Performed_at = DateTime.Now,
+                        Performed_by = 2,
+                        Component_name = "Email Notication Pasword Expiry",
+                        Service_name = "Email Component",
+                        Event_type = AuditTrailEnum.Event_type.Mail,
+                        Event_status = AuditTrailEnum.Event_status.FAILED,
+                        Message = $"Email is not send to {account.EmailId} with error as {ex.Message}",
+                        Sourceobject_id = 0,
+                        Targetobject_id = 0,
+                        Updated_data = "EmailNotificationForPasswordExpiry"
+                    });
+                }
+            }
+            return emailSendList.ToArray();
+        }
         #region Private Helper Methods
 
-        private async Task<bool> SetPasswordViaEmail(Account account)
+        private async Task<bool> SetPasswordViaEmail(Account account, EmailEventType eventType)
         {
-            var response = await ResetPasswordInitiate(account.EmailId, false);
+            var response = await ResetPasswordInitiate(account.EmailId, account.Organization_Id.Value, eventType);
 
             if (response.StatusCode != HttpStatusCode.OK)
                 return false;
@@ -468,66 +560,40 @@ namespace net.atos.daf.ct2.account
                 var result = await repository.GetAccountOrg(account.Id);
                 account.OrgName = result.FirstOrDefault().Name;
                 //Send account confirmation email
-                return await TriggerSendEmailRequest(account, EmailTemplateType.CreateAccount, (Guid)response.Result);
+                return await TriggerSendEmailRequest(account, eventType, (Guid)response.Result);
             }
         }
 
-        private async Task<bool> TriggerSendEmailRequest(Account account, EmailTemplateType templateType, Guid? tokenSecret = null)
+        private async Task<bool> TriggerSendEmailRequest(Account account, EmailEventType eventType, Guid? tokenSecret = null, EmailContentType contentType = EmailContentType.Html)
         {
             var messageRequest = new MessageRequest();
-            messageRequest.Configuration = emailConfiguration;
+            if (eventType == EmailEventType.PasswordExpiryNotification)
+            {
+                messageRequest.RemainingDaysToExpire = Convert.ToInt32(configuration["RemainingDaysToExpire"]);
+            }
+            messageRequest.accountInfo = new AccountInfo
+            {
+                FullName = account.FullName,
+                OrganizationName = account.OrgName
+            };
             messageRequest.ToAddressList = new Dictionary<string, string>()
             {
                 { account.EmailId, null }
             };
+            messageRequest.Configuration = emailConfiguration;
+            messageRequest.TokenSecret = tokenSecret;
             try
             {
-                if (FillEmailTemplate(account, messageRequest, templateType, tokenSecret))
-                    return await EmailHelper.SendEmail(messageRequest);
+                var languageCode = await GetLanguageCodePreference(account.EmailId, account.Organization_Id);
+                var emailTemplate = await translationManager.GetEmailTemplateTranslations(eventType, contentType, languageCode);
+
+                return await EmailHelper.SendEmail(messageRequest, emailTemplate);
             }
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Trigger Email: " + ex.Message, 1, 2, account.EmailId);
                 return false;
             }
-            return false;
-        }
-
-        private bool FillEmailTemplate(Account account, MessageRequest messageRequest, EmailTemplateType templateType, Guid? tokenSecret = null)
-        {
-            StringBuilder sb = new StringBuilder();
-            Uri baseUrl = new Uri(emailConfiguration.PortalUIBaseUrl);
-            var templateString = EmailHelper.GetTemplateHtmlString(templateType);
-
-            if (string.IsNullOrEmpty(templateString))
-                return false;
-
-            switch (templateType)
-            {
-                case EmailTemplateType.CreateAccount:
-                    Uri setUrl = new Uri(baseUrl, $"#/auth/createpassword/{ tokenSecret }");
-
-                    sb.Append(string.Format(templateString, account.FullName, account.OrgName, setUrl.AbsoluteUri));
-                    break;
-                case EmailTemplateType.ResetPassword:
-                    Uri resetUrl = new Uri(baseUrl, $"#/auth/resetpassword/{ tokenSecret }");
-                    Uri resetInvalidateUrl = new Uri(baseUrl, $"#/auth/resetpasswordinvalidate/{ tokenSecret }");
-
-                    sb.Append(string.Format(templateString, account.FullName, resetUrl.AbsoluteUri, resetInvalidateUrl.AbsoluteUri));
-                    break;
-                case EmailTemplateType.ChangeResetPasswordSuccess:
-                    sb.Append(string.Format(templateString, account.FullName));
-                    break;
-                default:
-                    messageRequest.Subject = string.Empty;
-                    break;
-            }
-
-            messageRequest.Subject = EnumExtension.GetAttribute<SubjectAttribute>(templateType).Title;
-            messageRequest.Content = sb.ToString();
-            messageRequest.ContentMimeType = EnumExtension.GetAttribute<MimeTypeAttribute>(templateType).Name;
-
-            return true;
         }
 
         private async Task<bool> CheckForMinPasswordAge(Account account)
@@ -548,6 +614,20 @@ namespace net.atos.daf.ct2.account
             return true;
         }
 
+        public async Task<PasswordPolicyAccount> GetPasswordPolicyAccount(int id)
+        {
+            return await repository.GetPasswordPolicyAccount(id);
+        }
+
+        public async Task<int> UpsertPasswordPolicyAccount(PasswordPolicyAccount passwordPolicyAccount)
+        {
+            return await repository.UpsertPasswordPolicyAccount(passwordPolicyAccount);
+        }
+
+        public async Task<string> GetLanguageCodePreference(string emailId, int? orgId)
+        {
+            return await repository.GetLanguageCodePreference(emailId.ToLower(), orgId);
+        }
         #endregion
     }
 }

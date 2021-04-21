@@ -19,7 +19,14 @@ namespace net.atos.daf.ct2.customerdataservice.CustomAttributes
         protected override async Task HandleRequirementAsync(
             AuthorizationHandlerContext context, AuthorizeRequirement requirement)
         {
-            if(!context.User.Identity.IsAuthenticated)
+            string emailAddress = string.Empty;
+            var emailClaim = context.User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
+
+            if (emailClaim != null && !string.IsNullOrEmpty(emailClaim.Value))
+            {
+                emailAddress = emailClaim.Value;
+            }
+            else
             {
                 context.Fail();
                 return;
@@ -27,15 +34,11 @@ namespace net.atos.daf.ct2.customerdataservice.CustomAttributes
 
             try
             {
-                var emailClaim = context.User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
-                var emailAddress = emailClaim.Value;
-
                 var isExists = await accountManager.CheckForFeatureAccessByEmailId(emailAddress, requirement.FeatureName);
                 if (isExists)
                     context.Succeed(requirement);
                 else
                     context.Fail();
-
                 return;
             }
             catch (Exception)

@@ -45,10 +45,14 @@
           </mat-select>
         </mat-form-field>
       </div>
-      <button *ngIf='initData.length > 0' mat-button (click)="ExportAsCSV()">Export<mat-icon>file_upload</mat-icon></button>
+      <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="exportAsPdf()">PDF (as snapshot)</button>
+          <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
+        </mat-menu>
     </div>
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
-    <div *ngIf='initData.length > 0'>
+    <div *ngIf='initData.length > 0' id="subscriptionData">
         <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
             <ng-container matColumnDef="subscriptionId">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOrderId || 'Order ID' }}</mat-header-cell>
@@ -85,9 +89,9 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndDate || 'End Date' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ setDate(row.subscriptionEndDate) }}</mat-cell>
               </ng-container>
-              <ng-container matColumnDef="isActive">
+              <ng-container matColumnDef="state">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.isActive == true ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Expired' }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.state == true ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Expired' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="action">
                 <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
@@ -95,8 +99,8 @@
                   <!-- <button mat-stroked-button color="primary" class='actionBtn' *ngIf="row.status == 'Expired' ? true : false ">
                      shop
                   </button>  -->
-                  <span *ngIf = "row.isActive">-</span>
-                  <button type="button" class="btn btn-outline-primary btn-sm" *ngIf="row.isActive ? false : true " [disabled]="!adminAccessType.adminReadOnlyAccess">Shop</button>           
+                  <span *ngIf = "row.state">-</span>
+                  <button type="button" class="btn btn-outline-primary btn-sm" *ngIf="row.state ? false : true " [disabled]="!adminAccessType.adminReadOnlyAccess">Shop</button>           
                </mat-cell>
               </ng-container>
               <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

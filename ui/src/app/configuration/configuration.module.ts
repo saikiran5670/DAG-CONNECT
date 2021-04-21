@@ -13,6 +13,9 @@ import { VehicleGroupManagementComponent } from './vehicle-group-management/vehi
 import { VehicleService } from '../services/vehicle.service';
 import { CreateEditViewVehicleGroupComponent } from './vehicle-group-management/create-edit-view-vehicle-group/create-edit-view-vehicle-group.component';
 import { EditViewVehicleComponent } from './vehicle-management/edit-view-vehicle/edit-view-vehicle.component';
+import { MatTableExporterModule } from 'mat-table-exporter';
+import { TermsConditionsManagementComponent } from './terms-conditions-management/terms-conditions-management.component';
+import { DtcTranslationComponent } from './dtc-translation/dtc-translation.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +25,9 @@ import { EditViewVehicleComponent } from './vehicle-management/edit-view-vehicle
     VehicleManagementComponent,
     VehicleGroupManagementComponent,
     CreateEditViewVehicleGroupComponent,
-    EditViewVehicleComponent
+    EditViewVehicleComponent,
+    TermsConditionsManagementComponent,
+    DtcTranslationComponent
   ],
   imports: [
     CommonModule,
@@ -30,7 +35,8 @@ import { EditViewVehicleComponent } from './vehicle-management/edit-view-vehicle
     FormsModule,
     ReactiveFormsModule,
     SharedModule,
-    ChartsModule
+    ChartsModule,
+    MatTableExporterModule
     ],
     providers: [ConfirmDialogService,VehicleService],
     schemas: [

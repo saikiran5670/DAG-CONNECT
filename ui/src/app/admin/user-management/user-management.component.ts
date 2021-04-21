@@ -7,7 +7,11 @@ import { TranslationService } from '../../services/translation.service';
 import { CommonTableComponent } from '../.././shared/common-table/common-table.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { AccountService } from '../../services/account.service';
+import { OrganizationService } from '../../services/organization.service';
 import { RoleService } from '../../services/role.service';
+import { MatTableExporterDirective } from 'mat-table-exporter';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-user-management',
@@ -38,19 +42,22 @@ export class UserManagementComponent implements OnInit {
   userCreatedMsg : any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   filterFlag = false;
   accountOrganizationId: any = 0;
   localStLanguage: any;
   dialogRef: MatDialogRef<CommonTableComponent>;
   showLoadingIndicator: any;
   privilegeAccess: boolean = true; //-- false
+  orgPreference: any = {};
 
   constructor(
     private dialogService: ConfirmDialogService,
     private translationService: TranslationService,
     private dialog: MatDialog,
     private accountService: AccountService,
-    private roleService: RoleService
+    private roleService: RoleService,
+    private organizationService: OrganizationService
   ) {
     this.defaultTranslation();
   }
@@ -144,14 +151,14 @@ export class UserManagementComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     let translationObj = {
       id: 0,
-      code: this.localStLanguage.code,
+      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
       type: "Menu",
       name: "",
       value: "",
       filter: "",
-      menuId: 3 //-- for user mgnt
+      menuId: 25 //-- for account mgnt
     }
-    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.loadUsersData();
       this.getUserSettingsDropdownValues();
@@ -160,6 +167,7 @@ export class UserManagementComponent implements OnInit {
 
   getUserSettingsDropdownValues(){
     let languageCode = this.localStLanguage.code;
+    let accountNavMenu = localStorage.getItem("accountNavMenu") ? JSON.parse(localStorage.getItem("accountNavMenu")) : [];
     this.translationService.getPreferences(languageCode).subscribe(data => {
       this.defaultSetting = {
         languageDropdownData: data.language,
@@ -169,7 +177,7 @@ export class UserManagementComponent implements OnInit {
         dateFormatDropdownData: data.dateformat,
         timeFormatDropdownData: data.timeformat,
         vehicleDisplayDropdownData: data.vehicledisplay,
-        landingPageDisplayDropdownData: data.landingpagedisplay
+        landingPageDisplayDropdownData: accountNavMenu
       }
     });
   }
@@ -211,12 +219,15 @@ export class UserManagementComponent implements OnInit {
       roleId: 0,
       name: ""
    }
-
    this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
     this.roleData = allRoleData;
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
       this.userGrpData = allAccountGroupData;
-      this.stepFlag = true;
+      this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((data: any)=>{
+        this.orgPreference = data;
+        this.orgPreference.landingPageDisplay = this.defaultSetting.landingPageDisplayDropdownData[0].id; //-- set landing page value for org
+        this.stepFlag = true;
+      });
     }, (error)=> {});
    }, (error)=> {});
   }
@@ -251,19 +262,33 @@ export class UserManagementComponent implements OnInit {
         if(element.preferenceId != 0){
           this.accountService.getAccountPreference(element.preferenceId).subscribe(accountPrefData => {
             this.selectedPreference = accountPrefData;
-            this.editFlag = (type == 'edit') ? true : false;
-            this.viewFlag = (type == 'view') ? true : false;
-            this.isCreateFlag = false;
+            this.goForword(type);
           }, (error)=> {});
         }
         else{
-          this.selectedPreference = {};
-          this.editFlag = (type == 'edit') ? true : false;
-          this.viewFlag = (type == 'view') ? true : false;
-          this.isCreateFlag = false;
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((data: any) => {
+            this.selectedPreference = {
+              languageId: data.language,
+              timezoneId: data.timezone,
+              unitId: data.unit,
+              currencyId: data.currency,
+              dateFormatTypeId: data.dateFormat,
+              timeFormatId: data.timeFormat,
+              vehicleDisplayId: data.vehicleDisplay,
+              landingPageDisplayId: this.defaultSetting.landingPageDisplayDropdownData[0].id
+              //landingPageDisplayId: data.landingPageDisplay
+            };
+            this.goForword(type);
+          });
         }
     }, (error)=> {});
    }, (error)=> {});
+  }
+
+  goForword(type: any){
+    this.editFlag = (type == 'edit') ? true : false;
+    this.viewFlag = (type == 'view') ? true : false;
+    this.isCreateFlag = false;
   }
 
   loadUsersData(){
@@ -410,5 +435,33 @@ export class UserManagementComponent implements OnInit {
     // Setting display of spinner
       this.showLoadingIndicator=false;
   }
+
+  pageSizeUpdated(_event){
+    setTimeout(() => {
+      document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
+    }, 100);
+  }
+
+  exportAsCSV(){
+    this.matTableExporter.exportTable('csv', {fileName:'AccountMgmt_Data', sheet: 'sheet_name'});
+}
+
+exportAsPdf() {
+  let DATA = document.getElementById('accountMgmtData');
+    
+  html2canvas(DATA).then(canvas => {
+      
+      let fileWidth = 208;
+      let fileHeight = canvas.height * fileWidth / canvas.width;
+      
+      const FILEURI = canvas.toDataURL('image/png')
+      let PDF = new jsPDF('p', 'mm', 'a4');
+      let position = 0;
+      PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+      
+      PDF.save('AccountMgmt_Data.pdf');
+      PDF.output('dataurlnewwindow');
+  });     
+}
 
 }

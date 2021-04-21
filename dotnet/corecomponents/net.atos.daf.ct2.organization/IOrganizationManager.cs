@@ -11,6 +11,7 @@ namespace net.atos.daf.ct2.organization
         Task<bool> Delete(int organizationId);
         Task<OrganizationResponse> Get(int organizationId);
         Task<List<OrganizationResponse>> GetAll(int organizationId);
+        Task<OrganizationDetailsResponse> GetOrganizationDetails(int organizationId);
         Task<PreferenceResponse> GetPreference(int organizationId);
         Task<CustomerRequest> UpdateCustomer(CustomerRequest customer);
         Task<HandOver> KeyHandOverEvent(HandOver keyHandOver);
@@ -19,5 +20,6 @@ namespace net.atos.daf.ct2.organization
 
         Task<List<OrganizationNameandID>> Get(OrganizationByID objOrganizationByID);
         Task<int> IsOwnerRelationshipExist(int VehicleID);
+        Task<IEnumerable<Organization>> GetAllOrganizations(int OrganizationID);
     }
 }

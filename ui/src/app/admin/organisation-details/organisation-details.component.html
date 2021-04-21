@@ -11,10 +11,20 @@
     <mat-card class='mat-elevation-z'>
         <mat-card-content>
 
-            <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
-                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+            <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="start" class='margin-bottom-sm'>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Organisation Details
                     </span>
+                </div>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+                <mat-form-field appearance="fill">
+                    <mat-label>Organisation</mat-label>
+                    <mat-select [(value)]="selectedOrganisationId" [disabled]="organisationList.length == 1" (selectionChange)="selectionChanged($event.value)">
+                      <mat-option *ngFor="let data of organisationList" [value]="data.organizationId">
+                        {{data.organizationName}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
                 </div>
             </div>
             <div *ngIf="organisationData">
@@ -27,29 +37,30 @@
                     </div>
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label style='display: flex;'>
-                            <span>{{ translationData.lblPackageName || 'Package Name' }}</span>
+                            <span>{{ translationData.lbleName || 'Name' }}</span>
                         </mat-label>
                         <div>
-                            <span style='font-weight: 500!important;'>{{organisationData.name}}</span>
+                            <span style='font-weight: 500!important;'>{{organisationData.organizationName}}</span>
                         </div>
                     </div>
-                    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                        <mat-label style='display: flex; place-content: space-between;'>
-                            <span class="text-truncate">{{ translationData.lblDescription || 'Description' }}</span>
-                        </mat-label>
-                        <div>
-                            <span style='font-weight: 500!important;'>{{organisationData.description}}.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div fxLayout="row" class="full-width margin-bottom-xlg">
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label><span>{{ translationData.lblStreetName || 'Street Name' }}</span></mat-label>
                         <div>
                             <span style='font-weight: 500!important;'>{{organisationData.addressStreet}}</span>
                         </div>
                     </div>
+                    <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label style='display: flex; place-content: space-between;'>
+                            <span class="text-truncate">{{ translationData.lblDescription || 'Description' }}</span>
+                        </mat-label>
+                        <div>
+                            <span style='font-weight: 500!important;'>{{organisationData.description}}.</span>
+                        </div>
+                    </div> -->
+                </div>
+
+                <div fxLayout="row" class="full-width margin-bottom-xlg">
+                   
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label style='display: flex;'>
                             <span>{{ translationData.lblStreetNumber || 'Street Number' }}</span>
@@ -66,15 +77,16 @@
                             <span style='font-weight: 500!important;'>{{organisationData.postalCode}}</span>
                         </div>
                     </div>
-                </div>
-
-                <div fxLayout="row" class="full-width margin-bottom-xlg">
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label><span>{{ translationData.lblCity || 'City' }}</span></mat-label>
                         <div>
                             <span style='font-weight: 500!important;'>{{organisationData.city}}</span>
                         </div>
                     </div>
+                </div>
+
+                <div fxLayout="row" class="full-width margin-bottom-xlg">
+                    
                     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                         <mat-label style='display: flex;'>
                             <span>{{ translationData.lblCountry || 'Country' }}</span>
@@ -88,7 +100,7 @@
             <div style='padding: 20px; position: relative;'>
                 <mat-divider></mat-divider>
             </div>
-            <div *ngIf="organisationPreferenceData">
+            <div *ngIf="organisationData && (userType == 'Admin#Platform' || userType == 'Admin#Global')">
                 <form [formGroup]="orgDetailsPreferenceForm">
                     <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
@@ -97,22 +109,22 @@
                             </span>
                         </div>
                     </div>
-                    <!-- <div *ngFor="let orgPreferenceData of organisationPreferenceData.organizationPreference"> -->
+                    <!-- <div *ngFor="let orgPreferenceData of organisationData.organizationPreference"> -->
                     <div>
                         <div fxLayout="row" class="full-width margin-bottom-xlg">
                             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                                 <mat-label><span>{{ translationData.lblLanguage || 'Language' }}</span></mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span style='font-weight: 500!important;'>{{organisationPreferenceData.language}}</span>
+                                    <span style='font-weight: 500!important;'>{{organisationData.languageName}}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)"
-                                            placeholder="{{ translationData.lblLanguageENGB || 'English GB' }}"
+                                            placeholder="{{ translationData.lblLanguage || 'Language' }}"
                                             formControlName="language" required>
-                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
-                          {{ rer.name }}
-                        </mat-option> -->
+                                            <mat-option *ngFor="let rer of languageDropdownData" [value]="rer.id">
+                                                {{ rer.value }}
+                                            </mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                     <mat-error *ngIf="orgDetailsPreferenceForm.get('language').hasError('required')">
@@ -126,16 +138,16 @@
                                     <span>{{ translationData.lblTimeZone || 'Time Zone' }}</span>
                                 </mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span class="text-align" style='font-weight: 500!important;'>{{organisationPreferenceData.timezone}}</span>
+                                    <span class="text-align" style='font-weight: 500!important;'>{{organisationData.timezone}}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)"
                                             placeholder="{{ translationData.lblTimeZone || 'Time Zone' }}"
                                             formControlName="timeZone" required>
-                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
-                          {{ rer.name }}
-                        </mat-option> -->
+                                            <mat-option *ngFor="let rer of timezoneDropdownData" [value]="rer.id">
+                                                {{ rer.value }}
+                                            </mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                     <mat-error *ngIf="orgDetailsPreferenceForm.get('timeZone').hasError('required')">
@@ -149,16 +161,16 @@
                                     <span class="text-truncate">{{ translationData.lblUnit || 'Unit' }}</span>
                                 </mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span style='font-weight: 500!important;'>{{organisationPreferenceData.unit}}</span>
+                                    <span style='font-weight: 500!important;'>{{organisationData.unit}}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)"
                                             placeholder="{{ translationData.lblUnit || 'Unit' }}" formControlName="unit"
                                             required>
-                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
-                          {{ rer.name }}
-                        </mat-option> -->
+                                            <mat-option *ngFor="let rer of unitDropdownData" [value]="rer.id">
+                                                {{ rer.value }}
+                                            </mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                     <mat-error *ngIf="orgDetailsPreferenceForm.get('unit').hasError('required')">
@@ -172,16 +184,16 @@
                             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                                 <mat-label><span>{{ translationData.lblCurrency || 'Currency' }}</span></mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span style='font-weight: 500!important;'>{{organisationPreferenceData.currency}}</span>
+                                    <span style='font-weight: 500!important;'>{{organisationData.currency}}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)"
                                             placeholder="{{ translationData.lblCurrency || 'Currency' }}"
                                             formControlName="currency" required>
-                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
-                          {{ rer.name }}
-                        </mat-option> -->
+                                            <mat-option *ngFor="let rer of currencyDropdownData" [value]="rer.id">
+                                                {{ rer.value }}
+                                            </mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                     <mat-error *ngIf="orgDetailsPreferenceForm.get('currency').hasError('required')">
@@ -195,16 +207,16 @@
                                     <span>{{ translationData.lblDateFormat || 'DateFormat' }}</span>
                                 </mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span style='font-weight: 500!important;'>{{organisationPreferenceData.dateFormat}}</span>
+                                    <span style='font-weight: 500!important;'>{{organisationData.dateFormat}}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)"
                                             placeholder="{{ translationData.lblDateFormat || 'DateFormat' }}"
                                             formControlName="dateFormat" required>
-                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
-                          {{ rer.name }}
-                        </mat-option> -->
+                                            <mat-option *ngFor="let rer of dateFormatDropdownData" [value]="rer.id">
+                                                {{ rer.value }}
+                                            </mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                     <mat-error *ngIf="orgDetailsPreferenceForm.get('dateFormat').hasError('required')">
@@ -218,19 +230,19 @@
                                     <span>{{ translationData.lblTimeFormat || 'Time Format' }}</span>
                                 </mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span style='font-weight: 500!important;'>{{organisationPreferenceData.timeFormat}}</span>
+                                    <span style='font-weight: 500!important;'>{{organisationData.timeFormat}}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)"
                                             placeholder="{{ translationData.lblTimeFormat || 'Time Format' }}"
-                                            formControlName="timeformat" required>
-                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
-                          {{ rer.name }}
-                        </mat-option> -->
+                                            formControlName="timeFormat" required>
+                                            <mat-option *ngFor="let rer of timeFormatDropdownData" [value]="rer.id">
+                                                {{ rer.value }}
+                                            </mat-option>
                                         </mat-select>
                                     </mat-form-field>
-                                    <mat-error *ngIf="orgDetailsPreferenceForm.get('timeformat').hasError('required')">
+                                    <mat-error *ngIf="orgDetailsPreferenceForm.get('timeFormat').hasError('required')">
                                         {{ translationData.lblPleasechooseTimeFormat|| 'Please choose Time Format type'
                                         }}
                                     </mat-error>
@@ -243,15 +255,15 @@
                                 <mat-label><span>{{ translationData.lblVehicleDefaultStatus || 'Vehicle Default Status'
                                         }}</span></mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span style='font-weight: 500!important;'>{{organisationPreferenceData.vehicleDefaultStatus}}</span>
+                                    <span style='font-weight: 500!important;'>{{organisationData.vehicleOptIn}}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)" placeholder="{{ translationData.lblVehicleDefaultStatus || 'Vehicle Default Status'
                                 }}" formControlName="vehicleDefaultStatus" required>
-                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
-                          {{ rer.name }}
-                        </mat-option> -->
+                                            <mat-option *ngFor="let rer of vehicleStatusDropdownData" [value]="rer.id">
+                                                {{ rer.value }}
+                                            </mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                     <mat-error
@@ -266,15 +278,15 @@
                                     <span>{{ translationData.lblDriverDefaultStatus || 'Driver Default Status' }}</span>
                                 </mat-label>
                                 <div *ngIf="!editPrefereneceFlag">
-                                    <span style='font-weight: 500!important;'>{{organisationPreferenceData.driverDefaultStatus}}</span>
+                                    <span style='font-weight: 500!important;'>{{organisationData.driverOptIn}}</span>
                                 </div>
                                 <div *ngIf="editPrefereneceFlag">
                                     <mat-form-field appearance="outline" class="full-width">
                                         <mat-select (selectionChange)="languageChange($event)" placeholder="{{ translationData.lblVehicleDefaultStatus || 'Vehicle Default Status'
                                 }}" formControlName="driverDefaultStatus" required>
-                                            <!-- <mat-option *ngFor="let rer of groupTypeList" [value]="rer.value">
-                          {{ rer.name }}
-                        </mat-option> -->
+                                            <mat-option *ngFor="let rer of driverStatusDropdownData" [value]="rer.id">
+                                                {{ rer.value }}
+                                            </mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                     <mat-error
