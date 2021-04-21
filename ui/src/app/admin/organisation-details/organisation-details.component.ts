@@ -48,6 +48,7 @@ export class OrganisationDetailsComponent implements OnInit {
   vehicleOptHolder:string;
   driverOptIn : string;
   vehicleOptIn : string;
+  showLoadingIndicator : boolean = false;
   constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private organizationService: OrganizationService) { 
     this.defaultTranslation();
   }
@@ -170,7 +171,9 @@ export class OrganisationDetailsComponent implements OnInit {
   onPreferenceEdit() {
     this.editPrefereneceFlag = true;
     let languageCode = this.localStLanguage.code;
+    this.showLoadingIndicator = true;
     this.translationService.getPreferences(languageCode).subscribe((data: any) => {
+      this.showLoadingIndicator = false;
       let dropDownData = data;
       this.languageDropdownData = dropDownData.language;
       this.timezoneDropdownData = dropDownData.timezone;
@@ -272,6 +275,7 @@ this.orgDetailsPreferenceForm.controls.timeFormat.setValue(this.organisationData
     this.titleVisible = true;
     this.editPrefereneceFlag = false;
     this.OrgDetailsMsg = msg;
+    this.loadOrganisationdata();
     setTimeout(() => {  
       this.titleVisible = false;
     }, 5000);
