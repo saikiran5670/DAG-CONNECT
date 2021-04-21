@@ -173,7 +173,7 @@ export class CommonImportComponent implements OnInit {
       for (const [key, value] of Object.entries(item)) {
         switch (key) {
           case 'code':{
-            let objData: any = this.codeValidation(value); 
+            let objData: any = this.codeValidation(value,'code'); 
             codeFlag = objData.status;
             if(!codeFlag){
               item.returnMessage = objData.reason;
@@ -300,7 +300,7 @@ export class CommonImportComponent implements OnInit {
     this.showImportStatus = false;
   }
 
-  codeValidation(value: any){
+  codeValidation(value: any,type:any){
     let obj: any = { status: true, reason: 'correct data'};
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
     if(!value || value == '' || value.trim().length == 0){
@@ -311,6 +311,11 @@ export class CommonImportComponent implements OnInit {
     if(!SpecialCharRegex.test(value)){
       obj.status = false;
       obj.reason = this.importTranslationData.specialCharNotAllowedReason;
+      return obj;
+    }
+    if(value.length > 20){
+      obj.status = false;
+      obj.reason = this.getValidateMsg(type, this.importTranslationData.maxAllowedLengthReason, 20) 
       return obj;
     }
     return obj;
