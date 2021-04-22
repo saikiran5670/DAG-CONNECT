@@ -15,7 +15,7 @@ filebeat.inputs:
   ignore_older: 72h  
 
   multiline.type: pattern
-  multiline.pattern: '^\s*-[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}'
+  multiline.pattern: '^\s[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}'
   multiline.negate: true
   multiline.match: after
 
