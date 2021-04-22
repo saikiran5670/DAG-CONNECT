@@ -16,6 +16,7 @@ import { EditViewVehicleComponent } from './vehicle-management/edit-view-vehicle
 import { MatTableExporterModule } from 'mat-table-exporter';
 import { TermsConditionsManagementComponent } from './terms-conditions-management/terms-conditions-management.component';
 import { DtcTranslationComponent } from './dtc-translation/dtc-translation.component';
+import { CreateEditViewPoiComponent } from './landmarks/create-edit-view-poi/create-edit-view-poi.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { DtcTranslationComponent } from './dtc-translation/dtc-translation.compo
     CreateEditViewVehicleGroupComponent,
     EditViewVehicleComponent,
     TermsConditionsManagementComponent,
-    DtcTranslationComponent
+    DtcTranslationComponent,
+    CreateEditViewPoiComponent
   ],
   imports: [
     CommonModule,
