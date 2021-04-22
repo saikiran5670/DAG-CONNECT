@@ -254,7 +254,7 @@ namespace net.atos.daf.ct2.organization.repository
                               a.id,
                               o.id ,
                               o.org_id ,
-                              o.name ,                             
+                              case when o.name is null then 'Unknown' else o.name end as name ,                             
                               o.city ,                             
                               o.street ,
                               o.street_number ,

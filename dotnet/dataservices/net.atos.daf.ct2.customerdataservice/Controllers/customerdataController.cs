@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
 {
     [ApiController]
     [Route("customer-data")]
-    //[Authorize(Policy = AccessPolicies.MainAccessPolicy)]
+    [Authorize(Policy = AccessPolicies.MainAccessPolicy)]
     public class customerdataController : ControllerBase
     {
         private readonly ILogger<customerdataController> logger;
