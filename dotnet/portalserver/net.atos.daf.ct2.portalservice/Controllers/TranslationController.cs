@@ -51,11 +51,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (request.Code == null || request.Type == null)
                 {
-                    return StatusCode(400, "Language code and type required..");
+                    return StatusCode(400, "Language code and type required.");
                 }
                 if (string.IsNullOrEmpty(request.Code) || string.IsNullOrEmpty(request.Type))
                 {
-                    return StatusCode(400, "Language code and type required..");
+                    return StatusCode(400, "Language code and type required.");
                 }
                 if (!string.IsNullOrEmpty(request.Type.Trim()) && request.Type.Trim() != "Menu" )
                 {
@@ -221,15 +221,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (string.IsNullOrEmpty(request.Languagecode.Trim()) || string.IsNullOrEmpty(request.Dropdownname.Trim()))
                 {
-                    return StatusCode(400, "Language code and dropdown  required..");
+                    return StatusCode(400, "Language code and dropdown  required.");
                 }
                 if (request.Languagecode.Any(char.IsDigit))
                 {
-                    return StatusCode(400, "Invalid langauge code..");
+                    return StatusCode(400, "Invalid langauge code.");
                 }
                 if (request.Dropdownname.Any(char.IsDigit))
                 {
-                    return StatusCode(400, "Invalid dropdown name..");
+                    return StatusCode(400, "Invalid dropdown name.");
                 }
                 _logger.Info("Drop down method get" + request.Dropdownname + request.Languagecode);
 
@@ -262,11 +262,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (string.IsNullOrEmpty(request.Languagecode.Trim()))
                 {
-                    return StatusCode(400, "Language code required..");
+                    return StatusCode(400, "Language code required.");
                 }
                 if (request.Languagecode.Any(char.IsDigit))
                 {
-                    return StatusCode(400, "Invalid langauge code..");
+                    return StatusCode(400, "Invalid langauge code.");
                 }
 
                 for (int i = 0; i < request.Dropdownname.Count; i++)
@@ -484,7 +484,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     if (DTCResponse != null
                        && DTCResponse.Message == "There is an error importing dtc Warning Data.")
                     {
-                        return StatusCode(500, "There is an error importing  dtc Warning Data..");
+                        return StatusCode(500, "There is an error importing  dtc Warning Data.");
                     }
                     else if (DTCResponse != null && DTCResponse.Code == Responcecode.Success )
                     {
@@ -579,7 +579,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (DTCResponse != null
                    && DTCResponse.Message == "There is an error updating dtc Warning Data.")
                 {
-                    return StatusCode(500, "There is an error updating  dtc Warning Data..");
+                    return StatusCode(500, "There is an error updating  dtc Warning Data.");
                 }
                 else if (DTCResponse != null && DTCResponse.Code == Responcecode.Success )
                 {
@@ -642,7 +642,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (termsAndCondResponse != null
                    && termsAndCondResponse.Message == "There is an error in Terms And Conditions Data.")
                 {
-                    return StatusCode(500, "There is an error importing Terms And Conditions..");
+                    return StatusCode(500, "There is an error importing Terms And Conditions.");
                 }
                 else if (termsAndCondResponse != null && termsAndCondResponse.Code == Responcecode.Success)
                 {
@@ -964,7 +964,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (DTCResponse != null
                    && DTCResponse.Message == "There is an error updating dtc Warning Icon.")
                 {
-                    return StatusCode(500, "There is an error updating  dtc Warning Icon..");
+                    return StatusCode(500, "There is an error updating  dtc Warning Icon.");
                 }
                 else if (DTCResponse != null && DTCResponse.Code == Responcecode.Success)
                 {
