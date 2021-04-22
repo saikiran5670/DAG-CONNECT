@@ -254,7 +254,7 @@ namespace net.atos.daf.ct2.organization.repository
                               a.id,
                               o.id ,
                               o.org_id ,
-                              o.name ,                             
+                              case when o.name is null then 'Unknown' else o.name end as name ,                             
                               o.city ,                             
                               o.street ,
                               o.street_number ,
@@ -370,32 +370,36 @@ namespace net.atos.daf.ct2.organization.repository
                     Int64 referenceDateTime;
                     var parameterUpdate = new DynamicParameters();
                     parameterUpdate.Add("@org_id", customer.CustomerID);
-                    parameterUpdate.Add("@Name", customer.CustomerName);
-                    if (customer.CompanyType!=null)
+                    //parameterUpdate.Add("@Name", customer.CustomerName);
+                    if ((customer.CustomerName != null) && (customer.CustomerName.Trim().Length > 0))
+                    {
+                        parameterUpdate.Add("@Name", customer.CustomerName);
+                    }
+                    if ((customer.CompanyType!=null) && (customer.CompanyType.Trim().Length>0))
                     {
                         parameterUpdate.Add("@Type", customer.CompanyType);
                     }
-                    if (customer.AddressType!=null)
+                    if ((customer.AddressType!=null) && (customer.AddressType.Trim().Length > 0))
                     {
                         parameterUpdate.Add("@AddressType", customer.AddressType);
                     }
-                    if (customer.Street!=null)
+                    if ((customer.Street!=null) && (customer.Street.Trim().Length > 0))
                     {
                         parameterUpdate.Add("@AddressStreet", customer.Street);
                     }
-                    if (customer.StreetNumber!=null)
+                    if ((customer.StreetNumber!=null) && (customer.StreetNumber.Trim().Length > 0))
                     {
                         parameterUpdate.Add("@AddressStreetNumber", customer.StreetNumber);
                     }
-                    if (customer.PostalCode!=null)
+                    if ((customer.PostalCode!=null) && (customer.PostalCode.Trim().Length > 0))
                     {
                         parameterUpdate.Add("@PostalCode", customer.PostalCode);
                     }
-                    if (customer.City!=null)
+                    if ((customer.City!=null) && (customer.City.Trim().Length > 0))
                     {
                         parameterUpdate.Add("@City", customer.City);
                     }
-                    if (customer.CountryCode != null)
+                    if ((customer.CountryCode != null) && (customer.CountryCode.Trim().Length > 0))
                     {
                         parameterUpdate.Add("@CountryCode", customer.CountryCode);
                     }                                        
@@ -414,32 +418,37 @@ namespace net.atos.daf.ct2.organization.repository
                     // postal_code=@PostalCode, city=@City,country_code=@CountryCode,reference_date=@reference_date                               
                     //                 WHERE org_id = @org_id RETURNING id;";
 
-                    var queryUpdate = @"update master.organization set org_id=@org_id, name=@Name,reference_date=@reference_date";
-                    if (customer.CompanyType!=null)
+                    var queryUpdate = @"update master.organization set org_id=@org_id, reference_date=@reference_date";
+
+                    if ((customer.CustomerName != null) && (customer.CustomerName.Trim().Length > 0))
+                    {
+                        queryUpdate = queryUpdate + @", name = @Name";
+                    }
+                    if ((customer.CompanyType != null) && (customer.CompanyType.Trim().Length > 0))
                     {
                         queryUpdate = queryUpdate + @", type = @Type";
                     }
-                    if (customer.AddressType != null)
+                    if ((customer.AddressType != null) && (customer.AddressType.Trim().Length > 0))
                     {
                         queryUpdate = queryUpdate + @", address_type=@AddressType";
                     }
-                    if (customer.Street != null)
+                    if ((customer.Street != null) && (customer.Street.Trim().Length > 0))
                     {
                         queryUpdate = queryUpdate + @", street=@AddressStreet";
                     }
-                    if (customer.StreetNumber != null)
+                    if ((customer.StreetNumber != null) && (customer.StreetNumber.Trim().Length > 0))
                     {
                         queryUpdate = queryUpdate + @", street_number=@AddressStreetNumber";
                     }
-                    if (customer.PostalCode != null)
+                    if ((customer.PostalCode != null) && (customer.PostalCode.Trim().Length > 0))
                     {
                         queryUpdate = queryUpdate + @", postal_code=@PostalCode";
                     }
-                    if (customer.City != null)
+                    if ((customer.City != null) && (customer.City.Trim().Length > 0))
                     {
                         queryUpdate = queryUpdate + @", city=@City";
                     }
-                    if (customer.CountryCode != null)
+                    if ((customer.CountryCode != null) && (customer.CountryCode.Trim().Length > 0))
                     {
                         queryUpdate = queryUpdate + @", country_code=@CountryCode";
                     }
@@ -506,31 +515,31 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 var parameterOrgUpdate = new DynamicParameters();
                 parameterOrgUpdate.Add("@org_id", keyHandOver.CustomerID);
-                if (keyHandOver.CustomerName != null)
+                if ((keyHandOver.CustomerName != null) && (keyHandOver.CustomerName.Trim().Length>0))
                 {
                     parameterOrgUpdate.Add("@Name", keyHandOver.CustomerName);
                 }
-                if (keyHandOver.Type != null)
+                if ((keyHandOver.Type != null ) && (keyHandOver.Type.Trim().Length > 0))
                 {
                     parameterOrgUpdate.Add("@AddressType", keyHandOver.Type);
                 }
-                if (keyHandOver.Street != null)
+                if ((keyHandOver.Street != null) && (keyHandOver.Street.Trim().Length > 0))
                 {
                     parameterOrgUpdate.Add("@AddressStreet", keyHandOver.Street);
                 }
-                if (keyHandOver.StreetNumber != null)
+                if ((keyHandOver.StreetNumber != null) && (keyHandOver.StreetNumber.Trim().Length > 0))
                 {
                     parameterOrgUpdate.Add("@AddressStreetNumber", keyHandOver.StreetNumber);
                 }
-                if (keyHandOver.PostalCode != null)
+                if ((keyHandOver.PostalCode != null) && (keyHandOver.PostalCode.Trim().Length > 0))
                 {
                     parameterOrgUpdate.Add("@PostalCode", keyHandOver.PostalCode);
                 }
-                if (keyHandOver.City != null)
+                if ((keyHandOver.City != null) && (keyHandOver.City.Trim().Length > 0))
                 {
                     parameterOrgUpdate.Add("@City", keyHandOver.City);
                 }
-                if (keyHandOver.CountryCode != null)
+                if ((keyHandOver.CountryCode != null) && (keyHandOver.CountryCode.Trim().Length > 0))
                 {
                     parameterOrgUpdate.Add("@CountryCode", keyHandOver.CountryCode);
                 }
@@ -540,31 +549,31 @@ namespace net.atos.daf.ct2.organization.repository
                 //              WHERE org_id=@org_id RETURNING id;";
 
                 var queryOrgUpdate = @"update master.organization set org_id=@org_id";
-                if (keyHandOver.CustomerName != null)
+                if ((keyHandOver.CustomerName != null) && (keyHandOver.CustomerName.Trim().Length > 0))
                 {
                     queryOrgUpdate = queryOrgUpdate + @", name=@Name";
                 }
-                if (keyHandOver.Type != null)
+                if ((keyHandOver.Type != null) && (keyHandOver.Type.Trim().Length > 0))
                 {
                     queryOrgUpdate = queryOrgUpdate + @", address_type=@AddressType";
                 }
-                if (keyHandOver.Street != null)
+                if ((keyHandOver.Street != null) && (keyHandOver.Street.Trim().Length > 0))
                 {
                     queryOrgUpdate = queryOrgUpdate + @", street=@AddressStreet";
                 }
-                if (keyHandOver.StreetNumber != null)
+                if ((keyHandOver.StreetNumber != null) && (keyHandOver.StreetNumber.Trim().Length > 0))
                 {
                     queryOrgUpdate = queryOrgUpdate + @", street_number=@AddressStreetNumber";
                 }
-                if (keyHandOver.PostalCode != null)
+                if ((keyHandOver.PostalCode != null) && (keyHandOver.PostalCode.Trim().Length > 0))
                 {
                     queryOrgUpdate = queryOrgUpdate + @", postal_code=@PostalCode";
                 }
-                if (keyHandOver.City != null)
+                if ((keyHandOver.City != null)  && (keyHandOver.City.Trim().Length > 0))
                 {
                     queryOrgUpdate = queryOrgUpdate + @", city=@City";
                 }
-                if (keyHandOver.CountryCode != null)
+                if ((keyHandOver.CountryCode != null) && (keyHandOver.CountryCode.Trim().Length > 0))
                 {
                     queryOrgUpdate = queryOrgUpdate + @", country_code=@CountryCode";
                 }

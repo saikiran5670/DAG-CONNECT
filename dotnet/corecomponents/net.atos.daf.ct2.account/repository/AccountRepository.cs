@@ -1188,7 +1188,7 @@ namespace net.atos.daf.ct2.account
                 if (accountId > 0)
                 {
                     parameter.Add("@account_id", accountId);
-                    query = @"select o.id,o.name from master.organization o inner join master.accountorg ao on o.id=ao.organization_id and ao.state='A' where ao.account_id=@account_id";
+                    query = @"select o.id,case when o.name is null then 'Unknown' else o.name end as name from master.organization o inner join master.accountorg ao on o.id=ao.organization_id and ao.state='A' where ao.account_id=@account_id";
                     IEnumerable<KeyValue> result = await dataAccess.QueryAsync<KeyValue>(query, parameter);
                     keyValueList = result.ToList();
                 }
