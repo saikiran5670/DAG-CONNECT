@@ -140,7 +140,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
 
         public async Task<TermsAndConditions> GetLatestTermCondition(int AccountId, int OrganizationId)
         {
-
+            dynamic result = null;
             var QueryStatement = @"select id
                                     , version_no
                                     , code
@@ -164,7 +164,22 @@ namespace net.atos.daf.ct2.termsandconditions.repository
             var parameter = new DynamicParameters();
             parameter.Add("@account_id", AccountId);
             parameter.Add("@organization_id", OrganizationId);
-            dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            if (((System.Collections.Generic.List<object>)result).Count == 0)
+            {
+                var DefaultQueryStatement = @"select id
+                                    , version_no
+                                    , code
+                                    , description
+                                    , state
+                                    , start_date
+                                    , end_date
+                                    FROM master.termsandcondition 
+                                    where state='A'                                  
+                                    and lower(code)='en'";
+                result = await dataAccess.QueryAsync<dynamic>(DefaultQueryStatement, null);
+            }
+
             TermsAndConditions termsAndConditions = new TermsAndConditions();
             foreach (dynamic record in result)
             {
@@ -173,7 +188,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
             return termsAndConditions;
         }
 
-         async Task<int> GetLevelByRoleId(int orgId, int roleId)
+        async Task<int> GetLevelByRoleId(int orgId, int roleId)
         {
             var parameter = new DynamicParameters();
             parameter.Add("@id", roleId);
@@ -188,8 +203,8 @@ namespace net.atos.daf.ct2.termsandconditions.repository
         public async Task<List<string>> GetAllVersionNo(VersionByID objVersionByID)
         {
             var parameter = new DynamicParameters();
-            string QueryStatement = string.Empty; 
-            
+            string QueryStatement = string.Empty;
+
             switch (objVersionByID.levelCode)
             {
                 case 10:
@@ -373,9 +388,9 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
                                 if (id > 0)
                                 {
                                     objTermsAndConditionResponse.id = descriptionExists.id;
-                                objTermsAndConditionResponse.fileName = item.fileName;
-                                objTermsAndConditionResponse.action = "Updated existing Record.";
-                                objTermsAndConditionResponseList.termsAndConditionDetails.Add(objTermsAndConditionResponse);
+                                    objTermsAndConditionResponse.fileName = item.fileName;
+                                    objTermsAndConditionResponse.action = "Updated existing Record.";
+                                    objTermsAndConditionResponseList.termsAndConditionDetails.Add(objTermsAndConditionResponse);
 
                                 }
                             }
