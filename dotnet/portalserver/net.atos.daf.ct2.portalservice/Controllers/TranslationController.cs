@@ -53,7 +53,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Language code and type required..");
                 }
-                if (string.IsNullOrEmpty(request.Code.Trim()) || string.IsNullOrEmpty(request.Type.Trim()))
+                if (string.IsNullOrEmpty(request.Code) || string.IsNullOrEmpty(request.Type))
                 {
                     return StatusCode(400, "Language code and type required..");
                 }
@@ -76,7 +76,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (translationsResponce != null
                   && translationsResponce.Message == "There is an error In GetTranslation.")
                 {
-                    return StatusCode(500, "There is an error In GetTranslation.");
+                    return StatusCode(400, "There is an error In GetTranslation.");
                 }
                 else if (translationsResponce != null && translationsResponce.Code == Responcecode.Success)
                 {
@@ -84,7 +84,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "GetTranslations Response is null");
+                    return StatusCode(404, "GetTranslations Response is null");
                 }
 
 
@@ -95,7 +95,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, "Internal Server Error.");
             }
         }
-
+        [AllowAnonymous]
         [HttpGet]
         [Route("commontranslations")]
         public async Task<IActionResult> GetCommonTranslations([FromQuery]CodeRequest request)
@@ -118,15 +118,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (CommontranslationResponseList != null
                  && CommontranslationResponseList.Message == "There is an error In GetCommonTranslations.")
                 {
-                    return StatusCode(500, "There is an error In GetCommonTranslations.");
+                    return StatusCode(400, "There is an error In GetCommonTranslations.");
                 }
                 else if (CommontranslationResponseList != null && CommontranslationResponseList.Code == Responcecode.Success)
                 {
-                    return Ok(CommontranslationResponseList.CodeTranslationsList);
+                    if (CommontranslationResponseList.CodeTranslationsList.Count > 0)
+                    {
+                        return Ok(CommontranslationResponseList.CodeTranslationsList);
+                    }
+                    else
+                        return StatusCode(404, "Translations not found for provided details");
+                    
                 }
                 else
                 {
-                    return StatusCode(500, "GetCommonTranslations Response is null");
+                    return StatusCode(404, "Translations not found for provided details");
                 }
             }
             catch (Exception ex)
@@ -152,18 +158,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 KeyResponce KeyResponseList = await _translationServiceClient.GetLangagugeTranslationByKeyAsync(request);
 
 
-                if (KeyResponseList != null
-                 && KeyResponseList.Message == "There is an error In GetLangagugeTranslationByKey.")
+               if (KeyResponseList != null && KeyResponseList.Code == Responcecode.Success)
                 {
-                    return StatusCode(500, "There is an error In GetLangagugeTranslationByKey.");
-                }
-                else if (KeyResponseList != null && KeyResponseList.Code == Responcecode.Success)
-                {
-                    return Ok(KeyResponseList.KeyTranslationsList);
+                    if (KeyResponseList.KeyTranslationsList.Count > 0)
+                    {
+                        return Ok(KeyResponseList.KeyTranslationsList);
+                    }
+                    else
+                    {
+                        return StatusCode(404, "Translations not found for provide key");
+                    }
+                    
                 }
                 else
                 {
-                    return StatusCode(500, "GetLangagugeTranslationByKey Response is null");
+                    _logger.Error(KeyResponseList.Message);
+                    return StatusCode(404, "Translations not found for provide details");
                 }
             }
             catch (Exception ex)
@@ -183,15 +193,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, " Language code and key required..");
                 }
-                _logger.Info("GetKeyTranslationByLanguageCode  method " + request.Key);
-
+                
+                if (request.Languagecode.Any(char.IsDigit))
+                {
+                    return StatusCode(400, "Invalid langauge code..");
+                }
                 KeyCodeResponce CodeResponseList = await _translationServiceClient.GetKeyTranslationByLanguageCodeAsync(request);
 
 
                 if (CodeResponseList != null
                  && CodeResponseList.Message == "There is an error In GetKeyTranslationByLanguageCode.")
                 {
-                    return StatusCode(401, "There is an error In GetKeyTranslationByLanguageCode.");
+                    return StatusCode(400, "There is an error In GetKeyTranslationByLanguageCode.");
                 }
                 else if (CodeResponseList.KeyCodeTranslationsList.Count() > 0 && CodeResponseList.Code == Responcecode.Success)
                 {
@@ -199,7 +212,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(401, "GetKeyTranslationByLanguageCode Response is null");
+                    return StatusCode(404, "Translations not found for provided details");
                 }
             }
             catch (Exception ex)
@@ -220,6 +233,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Language code and dropdown  required..");
                 }
+                if (request.Languagecode.Any(char.IsDigit))
+                {
+                    return StatusCode(400, "Invalid langauge code..");
+                }
+                if (request.Dropdownname.Any(char.IsDigit))
+                {
+                    return StatusCode(400, "Invalid dropdown name..");
+                }
                 _logger.Info("Drop down method get" + request.Dropdownname + request.Languagecode);
 
                 dropdownnameResponce dropdownResponseList = await _translationServiceClient.GetTranslationsForDropDownsAsync(request);
@@ -228,7 +249,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (dropdownResponseList != null
                  && dropdownResponseList.Message == "There is an error In GetKeyTranslationByLanguageCode.")
                 {
-                    return StatusCode(500, "There is an error In GetKeyTranslationByLanguageCode.");
+                    return StatusCode(400, "Translations not found for provided details");
                 }
                 else if (dropdownResponseList.DropdownnameTranslationsList.Count() > 0 && dropdownResponseList.Code == Responcecode.Success)
                 {
@@ -236,7 +257,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "GetKeyTranslationByLanguageCode Response is null");
+                    return StatusCode(404, "Translations not found for provided details");
                 }
             }
             catch (Exception ex)
@@ -256,12 +277,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (string.IsNullOrEmpty(request.Languagecode.Trim()))
                 {
-                    return StatusCode(400, "Language code and dropdown  required..");
+                    return StatusCode(400, "Language code required..");
+                }
+                if (request.Languagecode.Any(char.IsDigit))
+                {
+                    return StatusCode(400, "Invalid langauge code..");
                 }
 
                 for (int i = 0; i < request.Dropdownname.Count; i++)
                 {
                     if (string.IsNullOrEmpty(request.Dropdownname[i].Trim()))
+                    {
+                        return StatusCode(400, "Dropdownname invalid.");
+                    }
+                    if (request.Dropdownname[i].Any(char.IsDigit))
                     {
                         return StatusCode(400, "Dropdownname invalid.");
                     }
@@ -277,15 +306,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (dropdownResponseList != null
                 && dropdownResponseList.Message == "There is an error In GetTranslationsFormultipleDropDowns.")
                 {
-                    return StatusCode(400, "There is an error In GetTranslationsFormultipleDropDowns.");
+                    return StatusCode(404, "Translations not found for provided details");
                 }
-                else if (dropdownResponseList.DropdownnamearrayList.Count() >= 0  && dropdownResponseList.Code == Responcecode.Success)
+                else if (dropdownResponseList.DropdownnamearrayList.Count() > 0  && dropdownResponseList.Code == Responcecode.Success)
                 {
                     return Ok(dropdownResponseList.DropdownnamearrayList);
                 }
                 else
                 {
-                    return StatusCode(400, "Data not found");
+                    return StatusCode(404, "Translations not found for provided details");
                 }
             }
             catch (Exception ex)
@@ -306,10 +335,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Language code required..");
                 }
+                if (request.Languagecode.Any(char.IsDigit))
+                {
+                    return StatusCode(400, "Invalid langauge code..");
+                }
                 PreferenceResponse ResponseList = await _translationServiceClient.GetTranslationsPreferencDropDownsAsync(request);
 
-                
+                if (ResponseList.Code == Responcecode.Success)
+                {
                     return Ok(ResponseList);
+                }
+                else
+                {
+                    return StatusCode(404,"Translations not found for provided details");
+                }
+                
+                
               
 
             }
@@ -332,7 +373,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             if (ResponseList != null
                  && ResponseList.Message == "There is an error In GetAllLanguagecodes.")
             {
-                return StatusCode(500, "There is an error In GetAllLanguagecodes.");
+                return StatusCode(400, "Translations not found for provided details") ;
             }
             else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
             {
@@ -340,7 +381,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             else
             {
-                return StatusCode(500, "GetAllLanguagecodes Response is null");
+                return StatusCode(404, "Translations not found for provided details") ;
             }
         }
 
@@ -349,48 +390,57 @@ namespace net.atos.daf.ct2.portalservice.Controllers
        // [AllowAnonymous]
         public async Task<IActionResult> InsertTranslationFileDetails(FileUploadRequest request)
         {
-            _logger.Info("InsertTranslationFileDetails Method post");
-            if (request.file_name == "" || request.file_name == null || request.file_size <= 0)
+            try
             {
-                return StatusCode(400, "File name and valid file size is required.");
-            }
-            if (request.file.Count()<=0)
-            {
-                return StatusCode(400, "File translations data is required.");
-            }
-            // request.file[0].code
-            for (int i=0 ; i < request.file.Count ; i++)
-            {
-                if (request.file[i].code == null || request.file[i].code == "")
+                _logger.Info("InsertTranslationFileDetails Method post");
+                if (request.file_name == "" || request.file_name == null || request.file_size <= 0)
                 {
-                    return StatusCode(400, "invalid langauge code in file.");
+                    return StatusCode(400, "File name and valid file size is required.");
+                }
+                if (request.file.Count() <= 0)
+                {
+                    return StatusCode(400, "File translations data is required.");
+                }
+                // request.file[0].code
+                for (int i = 0; i < request.file.Count; i++)
+                {
+                    if (request.file[i].code == null || request.file[i].code == "")
+                    {
+                        return StatusCode(400, "invalid langauge code in file.");
+                    }
+                }
+
+                TranslationUploadRequest transupload = new TranslationUploadRequest();
+                transupload = _mapper.MapFileDetailRequest(request);
+
+                TranslationUploadResponse ResponseList = await _translationServiceClient.InsertTranslationFileDetailsAsync(transupload);
+
+                if (ResponseList != null
+                     && ResponseList.Message == "There is an error In InsertTranslationFileDetails.")
+                {
+                    return StatusCode(400, "There is an error In InsertTranslationFileDetails.");
+                }
+                else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
+                {
+                    await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                       "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                       "InsertTranslationFileDetails  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
+                        Request);
+
+
+                    return Ok(ResponseList);
+                }
+                else
+                {
+                    return StatusCode(400, "InsertTranslationFileDetails Response is null");
                 }
             }
-
-            TranslationUploadRequest transupload = new TranslationUploadRequest();
-            transupload = _mapper.MapFileDetailRequest(request);
-
-            TranslationUploadResponse ResponseList = await _translationServiceClient.InsertTranslationFileDetailsAsync(transupload);
-
-            if (ResponseList != null
-                 && ResponseList.Message == "There is an error In InsertTranslationFileDetails.")
+            catch (Exception ex)
             {
-                return StatusCode(500, "There is an error In InsertTranslationFileDetails.");
+                _logger.Error(null, ex);
+                return StatusCode(500, "Internal Server Error.");
             }
-            else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
-            {
-                await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
-                   "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                   "InsertTranslationFileDetails  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
-                    Request);
-
-
-                return Ok(ResponseList);
-            }
-            else
-            {
-                return StatusCode(500, "InsertTranslationFileDetails Response is null");
-            }
+            
 
         }
 
@@ -406,7 +456,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             if (ResponseList != null
                  && ResponseList.Message == "There is an error In GetFileUploadDetails.")
             {
-                return StatusCode(500, "There is an error In GetFileUploadDetails.");
+                return StatusCode(400, "There is an error In GetFileUploadDetails.");
             }
             else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
             {
@@ -418,11 +468,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             else if (ResponseList != null && ResponseList.Code == Responcecode.NotFound)
             {
-                return StatusCode(404, "GetFileUploadDetails not found.");
+                return StatusCode(404, "File Details not found.");
             }
             else
             {
-                return StatusCode(404, "GetFileUploadDetails Response is null");
+                return StatusCode(404, "File Details not found.");
             }
 
         }

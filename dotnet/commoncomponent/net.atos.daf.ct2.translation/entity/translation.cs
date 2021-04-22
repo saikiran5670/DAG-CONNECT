@@ -25,7 +25,8 @@ namespace net.atos.daf.ct2.translation.entity
     { 
         Failed = 0,
         Updated = 1,
-        Added = 2
+        Added = 2,
+        Ignored = 3
         
     }
 }
