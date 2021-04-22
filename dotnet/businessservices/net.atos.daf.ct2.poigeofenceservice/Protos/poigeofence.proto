@@ -6,4 +6,30 @@ option csharp_namespace = "net.atos.daf.ct2.poigeofenceservice";
 package poigeofence;
 
 service PoiGeofenceService{
+rpc GetAllPOI (POIEntityRequest) returns (POIEntityResponceList);
     }
+
+message POIEntityResponce{
+     string poiName = 1;
+    double latitude =2;
+    double longitude=3;
+    string category = 4;
+    string city = 5;
+}
+message POIEntityResponceList  {
+  repeated POIEntityResponce POIList = 1;
+  Responcecode code = 2;
+}
+
+message POIEntityRequest{
+    int32 organization_id =1;
+    int32 category_id = 2;
+    int32 sub_category_id = 3;
+    int32 roleIdlevel =4;
+}
+enum Responcecode{
+  Success = 0;
+  Failed = 1;
+  Conflict = 2;
+  NotFound = 3;
+}
