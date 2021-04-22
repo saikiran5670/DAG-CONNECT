@@ -7,5 +7,7 @@ namespace net.atos.daf.ct2.poigeofence
     public interface IPoiManager
     {
         Task<List<POIEntityResponce>> GetAllPOI(POIEntityRequest objPOIEntityRequest);
+        Task<bool> DeleteGeofence(List<int> geofenceIds, int organizationID);
+       
     }
 }
