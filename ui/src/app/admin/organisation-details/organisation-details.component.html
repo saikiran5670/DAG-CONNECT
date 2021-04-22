@@ -9,6 +9,7 @@
         </div>
     </div>
     <mat-card class='mat-elevation-z'>
+        <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
         <mat-card-content>
 
             <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="start" class='margin-bottom-sm'>

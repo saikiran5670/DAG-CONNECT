@@ -47,7 +47,6 @@ namespace net.atos.daf.ct2.package.test
             {
                 Code = "PKG008",
                 FeatureSetID = 1,
-                Status = "I",
                 Name = "Standard",
                 Type = "O",
                 Description = "Package with default featureset",
@@ -71,7 +70,6 @@ namespace net.atos.daf.ct2.package.test
                 Id = 76,
                 Code = "PKG008",
                 FeatureSetID = 4,
-                Status = "I",
                 State = "A",
                 Name = "Standard Update",
                 Type = "V",
@@ -88,7 +86,7 @@ namespace net.atos.daf.ct2.package.test
         [TestMethod]
         public void GetPackage_Manager()
         {
-            var packageFilter = new PackageFilter() {  Status = "I" };
+            var packageFilter = new PackageFilter() {  State = "I" };
             var result = _packageManager.Get(packageFilter).Result;
             Console.WriteLine(result);
             Assert.IsTrue(result != null);
@@ -117,8 +115,8 @@ namespace net.atos.daf.ct2.package.test
         public void UpdatePackageStatus()
 
         {
-            var package = new Package() {Id=75, Status = "I" };
-            var result = _packageManager.UpdatePackageStatus(package).Result;
+            var package = new Package() {Id=75, State = "I" };
+            var result = _packageManager.UpdatePackageState(package).Result;
             Console.WriteLine(result);
             Assert.IsTrue(result != null);
         }
