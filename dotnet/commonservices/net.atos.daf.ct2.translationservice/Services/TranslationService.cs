@@ -1023,6 +1023,7 @@ namespace net.atos.daf.ct2.translationservice
                         tramcond.Description = ByteString.CopyFrom(result.Description);
                     }
                     tramcond.StartDate = result.StartDate.ToString();
+                    tramcond.State = result.State.ToString();
                     Response.TermCondition.Add(tramcond);
                 }
                 Response.Code = Responcecode.Success;
