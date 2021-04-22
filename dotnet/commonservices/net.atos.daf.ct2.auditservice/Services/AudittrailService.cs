@@ -58,7 +58,7 @@ namespace net.atos.daf.ct2.auditservice.Services
                 logs.Sourceobject_id = request.SourceobjectId;  
                 logs.Targetobject_id = request.TargetobjectId;  
                 logs.Updated_data = request.UpdatedData;     
-                _logger.LogError("Logs running fine");
+                
                 int result = _AuditTrail.AddLogs(logs).Result;
 
                 return await Task.FromResult(new AuditResponce
@@ -68,7 +68,7 @@ namespace net.atos.daf.ct2.auditservice.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Audit Service:Addlogs : " + ex.Message + " " + ex.StackTrace);
+                _logger.LogError(null , ex);
                 return await Task.FromResult(new AuditResponce
                 {
                     Code = Responcecode.Failed,
