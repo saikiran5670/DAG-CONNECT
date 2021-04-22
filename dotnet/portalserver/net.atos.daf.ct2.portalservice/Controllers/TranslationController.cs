@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _Audit = auditHelper;
         }
 
-        [AllowAnonymous]
+        
         [HttpPost]
         [Route("menutranslations")]
         public async Task<IActionResult> GetTranslations(TranslationRequest request)
@@ -76,7 +76,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (translationsResponce != null
                   && translationsResponce.Message == "There is an error In GetTranslation.")
                 {
-                    return StatusCode(400, "There is an error In GetTranslation.");
+                    return StatusCode(500, "There is an error In GetTranslation.");
                 }
                 else if (translationsResponce != null && translationsResponce.Code == Responcecode.Success)
                 {
@@ -95,7 +95,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, "Internal Server Error.");
             }
         }
-        [AllowAnonymous]
+        
         [HttpGet]
         [Route("commontranslations")]
         public async Task<IActionResult> GetCommonTranslations([FromQuery]CodeRequest request)
@@ -118,7 +118,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (CommontranslationResponseList != null
                  && CommontranslationResponseList.Message == "There is an error In GetCommonTranslations.")
                 {
-                    return StatusCode(400, "There is an error In GetCommonTranslations.");
+                    return StatusCode(500, "There is an error In GetCommonTranslations.");
                 }
                 else if (CommontranslationResponseList != null && CommontranslationResponseList.Code == Responcecode.Success)
                 {
@@ -204,7 +204,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (CodeResponseList != null
                  && CodeResponseList.Message == "There is an error In GetKeyTranslationByLanguageCode.")
                 {
-                    return StatusCode(400, "There is an error In GetKeyTranslationByLanguageCode.");
+                    return StatusCode(500, "There is an error In GetKeyTranslationByLanguageCode.");
                 }
                 else if (CodeResponseList.KeyCodeTranslationsList.Count() > 0 && CodeResponseList.Code == Responcecode.Success)
                 {
@@ -249,7 +249,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (dropdownResponseList != null
                  && dropdownResponseList.Message == "There is an error In GetKeyTranslationByLanguageCode.")
                 {
-                    return StatusCode(400, "Translations not found for provided details");
+                    return StatusCode(500, "Translations not found for provided details");
                 }
                 else if (dropdownResponseList.DropdownnameTranslationsList.Count() > 0 && dropdownResponseList.Code == Responcecode.Success)
                 {
@@ -418,7 +418,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (ResponseList != null
                      && ResponseList.Message == "There is an error In InsertTranslationFileDetails.")
                 {
-                    return StatusCode(400, "There is an error In InsertTranslationFileDetails.");
+                    return StatusCode(500, "There is an error In InsertTranslationFileDetails.");
                 }
                 else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
                 {
@@ -456,7 +456,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             if (ResponseList != null
                  && ResponseList.Message == "There is an error In GetFileUploadDetails.")
             {
-                return StatusCode(400, "There is an error In GetFileUploadDetails.");
+                return StatusCode(500, "There is an error In GetFileUploadDetails.");
             }
             else if (ResponseList != null && ResponseList.Code == Responcecode.Success)
             {
