@@ -1,11 +1,11 @@
-﻿using net.atos.daf.ct2.poigeofence.ENUM;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace net.atos.daf.ct2.poigeofence.entity
+namespace net.atos.daf.ct2.portalservice.Entity.POI
 {
-    public class Category
+    public class AddCategoryRequest
     {
         public int Id { get; set; }
         public int Organization_Id { get; set; }
@@ -19,14 +19,18 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public long Modified_At { get; set; }
         public int Modified_By { get; set; }
         public byte[] icon { get; set; }
-
-
     }
 
-    //public class CategoryList
-    //{
-    //    public List<Category> Categories { get; set; }
-    //    public List<SubCategory> SubCategories { get; set; }
-
-    //}
+    public class EditCategoryRequest
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string IconName { get; set; }
+        public int Modified_By { get; set; }
+        public byte[] icon { get; set; }
+    }
+    public class DeleteCategoryRequest
+    {
+        public int Id { get; set; }
+    }
 }

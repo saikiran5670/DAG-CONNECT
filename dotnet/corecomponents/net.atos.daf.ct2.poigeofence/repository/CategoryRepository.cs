@@ -13,16 +13,16 @@ namespace net.atos.daf.ct2.poigeofence.repository
     public class CategoryRepository : ICategoryRepository
     {
         private readonly IDataAccess _dataAccess;
-        private readonly IPoiManager _poiManager;
+        
         private readonly catogoryCoreMapper _catogoryCoreMapper;
         private static readonly log4net.ILog log =
        log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 
-        public CategoryRepository (IDataAccess dataAccess, IPoiManager poiManager)
+        public CategoryRepository (IDataAccess dataAccess)
         {
             _dataAccess = dataAccess;
-            _poiManager = poiManager;
+           
             _catogoryCoreMapper = new catogoryCoreMapper();
 
         }
@@ -32,14 +32,17 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
+
+                var icon_ID = await InsertIcons(category);
+
                 var parameter = new DynamicParameters();
                 var insertCategory  = @"INSERT INTO master.category(
-                                   organization_id, name, icon_id, type, parent_id, state, created_at, created_by, modified_at, modified_by)
-                                  values(@organization_id,@name,@icon_id,@type,@parent_id,@state,@created_at,@created_by,@modified_at,@modified_by) RETURNING id";
+                                   organization_id, name, icon_id, type, parent_id, state, created_at, created_by)
+                                  values(@organization_id,@name,@icon_id,@type,@parent_id,@state,@created_at,@created_by) RETURNING id";
 
                 parameter.Add("@organization_id", category.Organization_Id);
                 parameter.Add("@name", category.Name);
-                parameter.Add("@icon_id", category.Icon_Id);
+                parameter.Add("@icon_id", icon_ID);
                 parameter.Add("@type", category.Type);
                 parameter.Add("@parent_id", category.Parent_Id);
                 parameter.Add("@state", category.State);
@@ -82,21 +85,18 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
+                var icon_ID = await InsertIcons(category);
                 var isCategoryUpdate = CheckCategoryForUpdate(category.Id);
                 if (isCategoryUpdate)
                 {
 
                     var parameter = new DynamicParameters();
                     var Insertcategory = @"UPDATE master.category
-                                   SET organization_id=@organization_id, name=@name, icon_id=@icon_id, type=@type, parent_id=@parent_id, state=@state, modified_at=@modified_at, modified_by=@modified_by
+                                   SET  name=@name, icon_id=@icon_id,  modified_at=@modified_at, modified_by=@modified_by
                                   WHERE id = @ID RETURNING id";
 
-                    parameter.Add("@organization_id", category.Organization_Id);
                     parameter.Add("@name", category.Name);
-                    parameter.Add("@icon_id", category.Icon_Id);
-                    parameter.Add("@type", category.Type);
-                    parameter.Add("@parent_id", category.Parent_Id);
-                    parameter.Add("@state", category.State);
+                    parameter.Add("@icon_id", icon_ID);
                     parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                     parameter.Add("@modified_by", category.Modified_By);
                     parameter.Add("@ID", category.Id);
@@ -119,6 +119,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         private bool CheckCategoryForUpdate(int id)
         {
             CategoryFilter categoryFilter = new CategoryFilter();
+            categoryFilter.CategoryID = id;
 
             var categories = GetCategory(categoryFilter);
 
@@ -150,7 +151,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         getQuery = getQuery + " and id=@id ";
                     }
                     // Category Type Filter
-                    if (categoryFilter.Type.ToString() != null)
+                    if (categoryFilter.Type != null)
                     {
                         parameter.Add("@type", categoryFilter.Type);
                         getQuery = getQuery + " and type= @type ";
@@ -192,5 +193,68 @@ namespace net.atos.daf.ct2.poigeofence.repository
             else
                 return nameExistsForInsert == 0 ? false : true;
         }
+
+        public Task<IEnumerable<Category>> GetCategory()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<int> InsertIcons(Category category)
+        {
+            try
+            {
+                var QueryStatement = @"INSERT INTO master.icon(
+                                     icon, type, name, state, created_at, created_by)  
+                                    VALUES (@icon, @type, @name, @state, @created_at, @created_by)
+                                    RETURNING id;";
+
+                var UpdateQueryStatement = @" UPDATE master.icon
+                                    SET                                
+                                    icon=@icon, 
+                                    modified_at=@modified_at,
+                                    modified_by=@modified_by                                    
+                                    WHERE name=@name 
+                                    and type = @type
+                                    RETURNING id;"; 
+
+
+                int iconId = 0;
+                
+                  
+                    //If name is exist then update
+                    int name_cnt = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT count(*) FROM master.icon where name=@name and type = @type))", new { name = category.IconName , type = category.Type});
+
+                    if (name_cnt > 0)
+                    {
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@icon", category.icon);
+                    parameter.Add("@type", "L");
+                    parameter.Add("@name", category.IconName);
+                    parameter.Add("@state", "A");
+                    parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                    parameter.Add("@modified_by", category.Modified_By);
+                    
+                    iconId = await _dataAccess.ExecuteScalarAsync<int>(UpdateQueryStatement, parameter);
+                    }
+                    else
+                    {
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@icon", category.icon);
+                    parameter.Add("@type", "L");
+                    parameter.Add("@name", category.IconName);
+                    parameter.Add("@state", "A");
+                    parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                    parameter.Add("@created_by", category.Created_By);
+                    iconId = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                    }
+
+                return iconId;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 }

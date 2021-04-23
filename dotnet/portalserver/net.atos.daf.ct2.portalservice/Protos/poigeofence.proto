@@ -1,4 +1,4 @@
-
+/*
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
@@ -93,4 +93,4 @@ message GeofenceResponse{
     repeated NodeRequest NodeRequest=15;
     Responcecode Code=16;
     string message = 17;
-}
+} */
