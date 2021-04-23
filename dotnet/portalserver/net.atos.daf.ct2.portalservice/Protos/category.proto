@@ -1,37 +1,19 @@
 
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
-option csharp_namespace = "net.atos.daf.ct2.poigeofenceservice";
+option csharp_namespace = "net.atos.daf.ct2.poigeofences";
 
-package poigeofence;
+package poigeofences;
 
-service PoiGeofenceService{
-rpc GetAllPOI (POIEntityRequest) returns (POIEntityResponceList);
-rpc DeleteGeofence (DeleteRequest) returns (GeofenceDeleteResponse);
+service CategoryService{
+
 rpc AddCategory (CategoryAddRequest) returns (CategoryAddResponse);
 rpc EditCategory (CategoryEditRequest) returns (CategoryEditResponse);
 rpc DeleteCategory (CategoryDeleteRequest) returns (CategoryDeleteResponse);
 rpc GetCategory (CategoryGetRequest) returns (CategoryGetResponse);
     }
 
-message POIEntityResponce{
-     string poiName = 1;
-    double latitude =2;
-    double longitude=3;
-    string category = 4;
-    string city = 5;
-}
-message POIEntityResponceList  {
-  repeated POIEntityResponce POIList = 1;
-  Responcecode code = 2;
-}
 
-message POIEntityRequest{
-    int32 organization_id =1;
-    int32 category_id = 2;
-    int32 sub_category_id = 3;
-    int32 roleIdlevel =4;
-}
 enum Responcecode{
   Success = 0;
   Failed = 1;
@@ -39,14 +21,7 @@ enum Responcecode{
   NotFound = 3;
 }
 
-message DeleteRequest{
-   repeated int32 GeofenceId=1;
-   int32 organization_id=2;
-}
-message GeofenceDeleteResponse {
-  Responcecode Code=1;
-  string Message = 2;  
-}
+
 message CategoryAddRequest
 {
       int32 Id =1;

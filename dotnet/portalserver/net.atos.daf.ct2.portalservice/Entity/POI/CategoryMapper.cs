@@ -1,5 +1,5 @@
 ﻿using Google.Protobuf;
-using net.atos.daf.ct2.poigeofenceservice;
+using net.atos.daf.ct2.poigeofences;
 using System;
 using System.Collections.Generic;
 using System.Linq;

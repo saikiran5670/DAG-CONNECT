@@ -30,8 +30,8 @@ using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.subscriptionservice;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using net.atos.daf.ct2.poigeofenceservice;
 using net.atos.daf.ct2.geofenceservice;
+using net.atos.daf.ct2.poigeofences;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -164,7 +164,7 @@ namespace net.atos.daf.ct2.portalservice
             {
                 o.Address = new Uri(auditservice);
             });
-            services.AddGrpcClient<PoiGeofenceService.PoiGeofenceServiceClient>(o =>
+            services.AddGrpcClient<CategoryService.CategoryServiceClient>(o =>
             {
                 o.Address = new Uri(poigeofenceservice);
             });
