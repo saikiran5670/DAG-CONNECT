@@ -1,4 +1,4 @@
-﻿using net.atos.daf.ct2.poigeofenceservice;
+﻿using net.atos.daf.ct2.geofenceservice;
 using System;
 using System.Collections.Generic;
 using System.Linq;
