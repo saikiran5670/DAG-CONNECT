@@ -6,7 +6,9 @@ using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.entity;
+using net.atos.daf.ct2.poigeofenceservice;
 using net.atos.daf.ct2.poigeofenceservice.entity;
+
 
 namespace net.atos.daf.ct2.geofenceservice
 {
@@ -83,7 +85,30 @@ namespace net.atos.daf.ct2.geofenceservice
             }
             
         }
-
+        public override async Task<GeofenceEntityResponceList> GetAllGeofence(GeofenceEntityRequest request, ServerCallContext context)
+        {
+            GeofenceEntityResponceList response = new GeofenceEntityResponceList();
+            try
+            {
+                _logger.Info("Get Geofence .");
+                net.atos.daf.ct2.poigeofence.entity.GeofenceEntityRequest objGeofenceRequest = new poigeofence.entity.GeofenceEntityRequest();
+                objGeofenceRequest.organization_id = request.OrganizationId;
+                objGeofenceRequest.category_id = request.CategoryId;
+                objGeofenceRequest.sub_category_id = request.SubCategoryId;
+                var result = await _geofenceManager.GetAllGeofence(objGeofenceRequest);
+                foreach (net.atos.daf.ct2.poigeofence.entity.GeofenceEntityResponce entity in result)
+                {
+                    response.GeofenceList.Add(_mapper.ToGeofenceList(entity));
+                }
+                response.Code = Responcecode.Success;
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+            }
+            return await Task.FromResult(response);
+        }
         #endregion
     }
 }
