@@ -46,5 +46,6 @@ namespace net.atos.daf.ct2.account
         Task<string> GetCodeByPreferenceId(int preferenceId);
         Task<string> GetLanguageCodePreference(string emailId, int? orgId);
         Task<IEnumerable<Account>> GetAccountOfPasswordExpiry(int noOfDays);
+        Task<int> UpdateIsReminderSent(int accountId, bool isReminderSend = true);
     }
 }

@@ -17,9 +17,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             dataAccess = _dataAccess;
         }
-        public async Task<List<POIEntityResponce>> GetAllPOI(POIEntityRequest objPOIEntityRequest)
+        public async Task<List<POIEntityResponse>> GetAllGobalPOI(POIEntityRequest objPOIEntityRequest)
         {
-            //POIEntityRequest objPOIEntityRequestList = new POIEntityRequest();
+            List<POIEntityResponse> objPOIEntityResponceList = new List<POIEntityResponse>();
             try
             {
                 string query = string.Empty;
@@ -31,33 +31,28 @@ namespace net.atos.daf.ct2.poigeofence.repository
                            ,c.name as category
                            ,l.city from MASTER.LANDMARK l
                      LEFT JOIN MASTER.CATEGORY c on l.category_id = c.id
-                     WHERE 1=1";
+                     WHERE l.organization_id=@organization_id";
                 var parameter = new DynamicParameters();
-                if (objPOIEntityRequest.organization_id > 0)
+                parameter.Add("@organization_id", null);
+                if (objPOIEntityRequest.CategoryId > 0)
                 {
-                    parameter.Add("@organization_id", objPOIEntityRequest.organization_id);
-                    query = $"{query} and l.organization_id=@organization_id ";
-
-                    if (objPOIEntityRequest.category_id > 0)
-                    {
-                        parameter.Add("@category_id", objPOIEntityRequest.category_id);
-                        query = $"{query} and l.category_id=@category_id";
-                    }
-
-                    else if (objPOIEntityRequest.sub_category_id > 0)
-                    {
-                        parameter.Add("@sub_category_id", objPOIEntityRequest.sub_category_id);
-                        query = $"{query} and l.sub_category_id=@sub_category_id";
-                    }
+                    parameter.Add("@category_id", objPOIEntityRequest.CategoryId);
+                    query = $"{query} and l.category_id=@category_id";
                 }
-                var data = await dataAccess.QueryAsync<POIEntityResponce>(query, parameter);
-                List<POIEntityResponce> objPOIEntityResponceList = new List<POIEntityResponce>();
-                return objPOIEntityResponceList = data.Cast<POIEntityResponce>().ToList();
+
+                if (objPOIEntityRequest.SubCategoryId > 0)
+                {
+                    parameter.Add("@sub_category_id", objPOIEntityRequest.SubCategoryId);
+                    query = $"{query} and l.sub_category_id=@sub_category_id";
+                }
+
+                var data = await dataAccess.QueryAsync<POIEntityResponse>(query, parameter);
+                return objPOIEntityResponceList = data.Cast<POIEntityResponse>().ToList();
             }
-            catch (System.Exception)
+            catch (Exception ex)
             {
+                throw ex;
             }
-            return null;
         }
         public async Task<List<POI>> GetAllPOI(POI poiFilter)
         {

@@ -1,0 +1,34 @@
+
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+option csharp_namespace = "net.atos.daf.ct2.poigeofenceservice";
+
+package POIGeOfence;
+
+service POIGeOfenceService{
+rpc GetAllGobalPOI (POIEntityRequest) returns (POIEntityResponseList);
+    }
+
+message POIEntityResponse{
+     string POIName = 1;
+    double Latitude =2;
+    double Longitude=3;
+    string Category = 4;
+    string City = 5;
+}
+message POIEntityResponseList  {
+  repeated POIEntityResponse POIList = 1;
+  ResponseCode Code = 2;
+  string Message = 3;
+}
+
+message POIEntityRequest{
+    int32 CategoryId = 1;
+    int32 SubCategoryId = 2;
+}
+enum ResponseCode{
+  Success = 0;
+  Failed = 1;
+  Conflict = 2;
+  NotFound = 3;
+}

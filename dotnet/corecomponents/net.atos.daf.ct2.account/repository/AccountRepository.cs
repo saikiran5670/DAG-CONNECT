@@ -378,11 +378,11 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@modified_at", modifiedAt);
 
                 string query =
-                    @"INSERT INTO master.passwordpolicy (account_id, modified_at)
-                        VALUES(@account_id, @modified_at) 
+                    @"INSERT INTO master.passwordpolicy (account_id, modified_at,is_reminder_sent)
+                        VALUES(@account_id, @modified_at,false) 
                         ON CONFLICT (account_id) 
                         DO 
-                        UPDATE SET modified_at = @modified_at
+                        UPDATE SET modified_at = @modified_at,is_reminder_sent = false
                         RETURNING id";
 
                 return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
@@ -391,6 +391,23 @@ namespace net.atos.daf.ct2.account
             {
                 throw ex;
             }
+        }
+        public async Task<int> UpdateIsReminderSent(int accountId, bool isReminderSent = true)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@account_id", accountId);
+                parameter.Add("@is_reminder_sent", isReminderSent);
+
+                string query = "UPDATE master.passwordpolicy SET is_reminder_sent = @is_reminder_sent where account_id = @account_id RETURNING id";
+                return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }            
         }
 
         public async Task<int> UpsertPasswordPolicyAccount(PasswordPolicyAccount passwordPolicyForAccount)
@@ -407,8 +424,8 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@last_login", passwordPolicyForAccount.LastLogin);
 
                 string query =
-                    @"INSERT INTO master.passwordpolicy (account_id, failed_login_attempts,locked_until,account_lock_attempts,is_blocked,last_login)
-                        VALUES(@account_id, @failed_login_attempts,@locked_until,@account_lock_attempts,@is_blocked,@last_login) 
+                    @"INSERT INTO master.passwordpolicy (account_id, failed_login_attempts,locked_until,account_lock_attempts,is_blocked,last_login,is_reminder_sent)
+                        VALUES(@account_id, @failed_login_attempts,@locked_until,@account_lock_attempts,@is_blocked,@last_login,false) 
                         ON CONFLICT (account_id) 
                         DO 
                         UPDATE SET failed_login_attempts = @failed_login_attempts,
@@ -452,7 +469,7 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@account_id", accountId);
 
                 string query =
-                    @"SELECT account_id as AccountId,failed_login_attempts as FailedLoginAttempts,locked_until as LockedUntil,account_lock_attempts as AccountLockAttempts,is_blocked as IsBlocked,last_login as LastLogin from master.passwordpolicy where account_id = @account_id";
+                    @"SELECT account_id as AccountId,failed_login_attempts as FailedLoginAttempts,locked_until as LockedUntil,account_lock_attempts as AccountLockAttempts,is_blocked as IsBlocked,last_login as LastLogin,is_reminder_sent as IsReminderSent from master.passwordpolicy where account_id = @account_id";
 
                 return await dataAccess.QueryFirstOrDefaultAsync<PasswordPolicyAccount>(query, parameter);                
             }
@@ -541,7 +558,7 @@ namespace net.atos.daf.ct2.account
                 var parameter = new DynamicParameters();
                 parameter.Add("@noOfDays", noOfDays);
 
-                var query = @"Select acc.id as Id, acc.email as EmailId, acc.salutation as Salutation, acc.first_name as FirstName, last_name as LastName from master.account acc inner join master.passwordpolicy pp on acc.id = pp.account_id where State= 'A' and EXTRACT(day FROM(now() - TO_TIMESTAMP(modified_at / 1000))) = @noOfDays";
+                var query = @"Select acc.id as Id, acc.email as EmailId, acc.salutation as Salutation, acc.first_name as FirstName, last_name as LastName from master.account acc inner join master.passwordpolicy pp on acc.id = pp.account_id where pp.is_blocked = false and pp.is_reminder_sent = false and acc.State= 'A' and EXTRACT(day FROM(now() - TO_TIMESTAMP(modified_at / 1000))) >= @noOfDays";
                 return await dataAccess.QueryAsync<Account>(query, parameter);
             }
             catch (Exception ex)
