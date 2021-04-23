@@ -4,19 +4,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.geofenceservice;
 using net.atos.daf.ct2.poigeofence;
+//using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.entity;
 
 namespace net.atos.daf.ct2.poigeofenceservice.entity
 {
     public class Mapper
     {
-        public GeofenceEntityResponce ToGeofenceList(net.atos.daf.ct2.poigeofence.entity.GeofenceEntityResponce request)
+        public net.atos.daf.ct2.geofenceservice.GeofenceEntityResponce ToGeofenceList(net.atos.daf.ct2.poigeofence.entity.GeofenceEntityResponce request)
         {
-            GeofenceEntityResponce objResponse = new GeofenceEntityResponce();
-            //objResponse.CategoryName = request.category;
-            //objResponse.SubCategoryName = request.subCategory;
-            //objResponse.GeofenceName = request.geofenceName;
-            //objResponse.GeofenceId = request.geofenceID;            
+            net.atos.daf.ct2.geofenceservice.GeofenceEntityResponce objResponse = new net.atos.daf.ct2.geofenceservice.GeofenceEntityResponce();
+            objResponse.CategoryName = request.category;
+            objResponse.SubCategoryName = request.subCategory;
+            objResponse.GeofenceName = request.geofenceName;
+            objResponse.GeofenceId = request.geofenceID;
             return objResponse;
         }
 

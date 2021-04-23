@@ -9,6 +9,7 @@ package geofence;
 service GeofenceService{
 rpc DeleteGeofence (DeleteRequest) returns (GeofenceDeleteResponse);
 rpc CreateGeofence (GeofenceRequest) returns (GeofenceResponse);
+rpc GetAllGeofence (GeofenceEntityRequest) returns (GeofenceEntityResponceList);
 }
 
 enum Responcecode{
@@ -74,4 +75,23 @@ message GeofenceResponse{
     repeated NodeRequest NodeRequest=15;
     Responcecode Code=16;
     string message = 17;
+}
+
+message GeofenceEntityRequest{
+    int32 organization_id =1;
+    int32 category_id = 2;
+    int32 sub_category_id = 3;
+    int32 roleIdlevel =4;
+}
+
+message GeofenceEntityResponceList  {
+  repeated GeofenceEntityResponce GeofenceList = 1;
+  Responcecode code = 2;
+}
+message GeofenceEntityResponce{
+    string geofenceName = 1;
+    string categoryName =2;
+    string subCategoryName=3;
+    int32 geofenceId=4;
+
 }
