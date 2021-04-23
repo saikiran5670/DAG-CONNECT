@@ -6,6 +6,8 @@ using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.entity;
+using net.atos.daf.ct2.poigeofenceservice.entity;
+
 
 namespace net.atos.daf.ct2.poigeofenceservice
 {
@@ -13,12 +15,14 @@ namespace net.atos.daf.ct2.poigeofenceservice
     {
         private ILog _logger;
         private readonly IPoiManager _poiManager;
-        private readonly IGeofenceManager _geofenceManager;
-        public PoiGeofenceManagementService(IPoiManager poiManager,IGeofenceManager geofenceManager)
+        private readonly IGeofenceManager geofenceManager;
+        private readonly Mapper _mapper;
+        public PoiGeofenceManagementService(IPoiManager poiManager,IGeofenceManager _geofenceManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _poiManager = poiManager;
-            _geofenceManager = geofenceManager;
+            geofenceManager = _geofenceManager;
+            _mapper = new Mapper();
         }
 
         public override async Task<POIEntityResponceList> GetAllPOI(POIEntityRequest request, ServerCallContext context)
@@ -62,7 +66,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 {
                     lstGeofenceId.Add(item);
                 }
-                bool result = await _geofenceManager.DeleteGeofence(lstGeofenceId, request.OrganizationId);
+                bool result = await geofenceManager.DeleteGeofence(lstGeofenceId, request.OrganizationId);
                 if (result)
                 {
                     response.Message = "Deleted";
@@ -79,6 +83,30 @@ namespace net.atos.daf.ct2.poigeofenceservice
             {
                 _logger.Error(null, ex);
                 //response.Message = "Not Deleted";
+            }
+            return await Task.FromResult(response);
+        }
+        public override async Task<GeofenceEntityResponceList> GetAllGeofence(GeofenceEntityRequest request, ServerCallContext context)
+        {
+            GeofenceEntityResponceList response = new GeofenceEntityResponceList();
+            try
+            {
+                _logger.Info("Get Geofence .");
+                net.atos.daf.ct2.poigeofence.entity.GeofenceEntityRequest objGeofenceRequest = new poigeofence.entity.GeofenceEntityRequest();
+                objGeofenceRequest.organization_id = request.OrganizationId;
+                objGeofenceRequest.category_id = request.CategoryId;
+                objGeofenceRequest.sub_category_id = request.SubCategoryId;
+                var result = await geofenceManager.GetAllGeofence(objGeofenceRequest);
+                foreach (net.atos.daf.ct2.poigeofence.entity.GeofenceEntityResponce entity in result)
+                {
+                    response.GeofenceList.Add(_mapper.ToGeofenceList(entity));
+                }
+                response.Code = Responcecode.Success;                
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
             }
             return await Task.FromResult(response);
         }
