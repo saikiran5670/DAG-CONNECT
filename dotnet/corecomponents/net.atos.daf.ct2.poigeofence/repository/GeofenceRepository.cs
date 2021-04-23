@@ -92,10 +92,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         parameter.Add("@organization_id", organizationID);
                         parameter.Add("@id", item);
                         var queryLandmark = @"update master.landmark set state='D' where id=@id and organization_id=@organization_id";
-                        await _dataAccess.ExecuteScalarAsync<int>(queryLandmark, parameter);
+                        await dataAccess.ExecuteScalarAsync<int>(queryLandmark, parameter);
 
                         var queryNodes = @"update master.nodes set state='D' where landmark_id=@id";
-                        await _dataAccess.ExecuteScalarAsync<int>(queryNodes, parameter);
+                        await dataAccess.ExecuteScalarAsync<int>(queryNodes, parameter);
                     }
                 }
                 return true;

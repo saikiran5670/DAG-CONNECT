@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
         public async Task<List<POIEntityResponce>> GetAllPOI(POIEntityRequest objPOIEntityRequest)
         {
-            log.Info("Subscribe Subscription method called in repository");
+            
             //POIEntityRequest objPOIEntityRequestList = new POIEntityRequest();
             try
             {
@@ -52,7 +52,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         query = $"{query} and l.sub_category_id=@sub_category_id";
                     }
                 }
-                var data = await _dataAccess.QueryAsync<POIEntityResponce>(query, parameter);
+                var data = await dataAccess.QueryAsync<POIEntityResponce>(query, parameter);
                 List<POIEntityResponce> objPOIEntityResponceList = new List<POIEntityResponce>();
                 return objPOIEntityResponceList = data.Cast<POIEntityResponce>().ToList();
                 //Handel Null Exception

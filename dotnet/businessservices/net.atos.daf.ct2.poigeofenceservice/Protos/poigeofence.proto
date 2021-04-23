@@ -49,9 +49,9 @@ message GeofenceDeleteResponse {
 message GeofenceRequest{
     int64 Id =1;
     google.protobuf.Int32Value OrganizationId=2;
-    int32 CategoryId = 2;
-    int32 SubCategoryId = 3;
-    string Name =4;
+    int32 CategoryId = 3;
+    int32 SubCategoryId = 4;
+    string Name =5;
 }
 
 message NodeRequest{
