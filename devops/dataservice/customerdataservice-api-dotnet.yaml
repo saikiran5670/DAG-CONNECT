@@ -34,6 +34,10 @@ variables:
   - group: TEST02-Build-Variables
 - ${{ if eq(parameters.ENV, 'ACC03') }}:
   - group: ACC03-Build-Variables
+- ${{ if eq(parameters.ENV, 'ACC01') }}:
+  - group: ACC01-Build-Variables
+- ${{ if eq(parameters.ENV, 'ACC02') }}:
+  - group: ACC02-Build-Variables
 
 pool: $(PRIVATEAGENT)
 
