@@ -17,14 +17,21 @@ namespace net.atos.daf.ct2.poigeofence
         {
             return await _poiRepository.GetAllPOI(objPOIEntityRequest);
         }
-        public async Task<bool> DeleteGeofence(List<int> geofenceIds, int organizationID)
+        public async Task<List<POI>> GetAllPOI(POI poi)
         {
-            return await _poiRepository.DeleteGeofence(geofenceIds, organizationID);
+            return await _poiRepository.GetAllPOI(poi);
         }
-
-        public async Task<Geofence> CreateGeofence(Geofence geofence)
+        public async Task<POI> CreatePOI(POI poi)
         {
-            return await _poiRepository.CreateGeofence(geofence);
+            return await _poiRepository.CreatePOI(poi);
+        }
+        public async Task<bool> UpdatePOI(POI poi)
+        {
+            return await _poiRepository.UpdatePOI(poi);
+        }
+        public async Task<bool> DeletePOI(int poiId)
+        {
+            return await _poiRepository.DeletePOI(poiId);
         }
     }
 }
