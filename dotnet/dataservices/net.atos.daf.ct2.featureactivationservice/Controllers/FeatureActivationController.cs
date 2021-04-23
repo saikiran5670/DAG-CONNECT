@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     {
 
                         logger.LogInformation($"Not valid date in subcription event - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation.SubscribeEvent)}");
-                        return StatusCode(400, string.Empty); ;
+                        return StatusCode(400, string.Empty);
                     }
 
                     var order = await subscriptionManager.Subscribe(Objsubs);
@@ -113,11 +113,9 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                         {
                             Objunsubs.EndDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                         }
-
                     }
                     catch (Exception)
                     {
-
                         logger.LogInformation($"Not valid date in unsubcription event - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation.SubscribeEvent)}");
                         return StatusCode(400, string.Empty); ;
                     }
@@ -126,7 +124,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     if (orderId == null)
                     {
                         logger.LogInformation($"No Data found for UnSubscription, payload - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation.UnsubscribeEvent)}");
-                        return StatusCode(400, string.Empty);
+                        return StatusCode(404, string.Empty);
                     }
                     logger.LogInformation($"Subscription data has been UnSubscribed, order ID - {orderId}");
                     return Ok(orderId);

@@ -4,22 +4,18 @@ using System.Text;
 
 namespace net.atos.daf.ct2.poigeofence.entity
 {
-    public class POIEntityResponce
+    public class GeofenceEntityResponce
     {
-        public string poiName { get; set; }
-        public double latitude { get; set; }
-        public double longitude { get; set; }
+        public string geofenceName { get; set; }
         public string category { get; set; }
-        public string city { get; set; }
+        public string subCategory { get; set; }
+        public int geofenceID { get; set; }
     }
-
-    public class POIEntityRequest
+    public class GeofenceEntityRequest
     {
         public int organization_id { get; set; }
         public int category_id { get; set; }
         public int sub_category_id { get; set; }
         public int roleIdlevel { get; set; }
-        //public string Category { get; set; }
-        //public string City { get; set; }
     }
 }

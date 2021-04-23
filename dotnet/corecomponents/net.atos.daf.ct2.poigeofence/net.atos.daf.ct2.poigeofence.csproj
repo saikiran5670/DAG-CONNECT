@@ -7,7 +7,6 @@
   <ItemGroup>
     <Folder Include="enum\" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.audit\net.atos.daf.ct2.audit.csproj" />
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.data\net.atos.daf.ct2.data.csproj" />

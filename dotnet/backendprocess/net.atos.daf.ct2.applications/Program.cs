@@ -21,7 +21,7 @@ namespace net.atos.daf.ct2.applications
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                    var connectionString = hostContext.Configuration["Postgresql:ConnectionString"];
+                    var connectionString = hostContext.Configuration["ConnectionStrings:ConnectionString"];
                     IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
                     services.AddSingleton(dataAccess);
                     services.AddSingleton<IAuditTraillib, AuditTraillib>();

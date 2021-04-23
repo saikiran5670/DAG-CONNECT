@@ -191,7 +191,7 @@ namespace net.atos.daf.ct2.driver
                     {
                         var parameter = new DynamicParameters();
                         parameter.Add("@organization_id", orgid);
-                        parameter.Add("@driver_id_ext", item.Driver_id_ext);
+                      //  parameter.Add("@driver_id_ext", item.Driver_id_ext.Substring(0, item.Driver_id_ext.Length - 3));
                         parameter.Add("@first_name", item.first_name);
                         parameter.Add("@last_name", item.last_name);
                         parameter.Add("@email", item.email);
@@ -202,19 +202,24 @@ namespace net.atos.daf.ct2.driver
                         parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(System.DateTime.Now));
 
                         var parameterduplicate = new DynamicParameters();
-                        parameterduplicate.Add("@driver_id_ext", item.Driver_id_ext);
-                        var query = @"SELECT id FROM master.driver where driver_id_ext=@driver_id_ext and state='A' and organization_id=@organization_id";
-                        int ObjDriverExist = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
+                        string newDriverId= item.Driver_id_ext;
+                        string driverID = item.Driver_id_ext;
+                        driverID = driverID.Substring(0, driverID.Length - 3);
+                        parameterduplicate.Add("@driver_id_ext", driverID);
+                        parameterduplicate.Add("@organization_id", orgid);
+
+                        var query = @"SELECT id FROM master.driver where LENGTH(driver_id_ext) =19 and SUBSTRING(driver_id_ext ,0, LENGTH(driver_id_ext) -2)=@driver_id_ext and state='A' and organization_id=@organization_id";
+                        int ObjDriverExist = await dataAccess.ExecuteScalarAsync<int>(query, parameterduplicate);
 
                         if (ObjDriverExist > 0)
                         {
-                            var queryUpdate = @"update master.driver set first_name=@first_name, last_name=@last_name,email=@email,opt_in=@opt_in,modified_at=@modified_by,created_at=@created_at
-                                        WHERE state='A' and driver_id_ext = @driver_id_ext and organization_id=@organization_id RETURNING id;";
-                            var id = await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameter);
-                            // ErrorMessage=item.Driver_id_ext + "Not Updated";
+                            parameter.Add("@oldDriverID", ObjDriverExist);
+                            parameter.Add("@newDriverID", newDriverId);
 
-                            //dicMessage.Add(item.Driver_id_ext,"Updated");
+                            var queryUpdate = @"update master.driver set driver_id_ext=@newDriverID, first_name=@first_name, last_name=@last_name,email=@email,opt_in=@opt_in,modified_at=@modified_by,created_at=@created_at
+                                        WHERE state='A' and id=@oldDriverID and organization_id=@organization_id RETURNING id;";
+                            var id = await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameter);                           
                             if(id > 0)
                             {
                                 objDriver.ReturnMessage = "Updated";
@@ -228,10 +233,9 @@ namespace net.atos.daf.ct2.driver
                         }
                         else
                         {
+                            parameter.Add("@driver_id_ext", item.Driver_id_ext);
                             var queryInsert = @"insert into master.driver(organization_id,driver_id_ext, first_name, last_name,email,status, opt_in,modified_at,modified_by,created_at,state) values(@organization_id,@driver_id_ext, @first_name, @last_name,@email ,@status, @opt_in,@modified_at,@modified_by,@created_at,'A')";
-                            await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
-                            //  ErrorMessage=item.Driver_id_ext + "Not Inserted";
-                            //  dicMessage.Add(item.Driver_id_ext,"Inserted");
+                            await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);                            
                             objDriver.ReturnMessage = "Inserted";
                             objDriver.Status = "PASS";
                         }
@@ -272,9 +276,12 @@ namespace net.atos.daf.ct2.driver
             try
             {
                 var parameterduplicate = new DynamicParameters();
-                parameterduplicate.Add("@driver_id", driver.DriverID);
+                string drvID = driver.DriverID;
+                drvID = drvID.Substring(0, drvID.Length - 3);
+                parameterduplicate.Add("@driver_id", drvID);
                 parameterduplicate.Add("@organization_id", driver.OrganizationId);
-                var query = @"SELECT id FROM master.driver where driver_id=@driver_id and organization_id=@organization_id";
+                
+                var query = @"SELECT id FROM master.driver where LENGTH(driver_id) =19 and SUBSTRING(driver_id ,0, LENGTH(driver_id) -2)=@driver_id and organization_id=@organization_id";
                 int driverDataMartID = await dataMartdataAccess.ExecuteScalarAsync<int>(query, parameterduplicate);
                 var QueryStatement = "";
 
@@ -286,6 +293,8 @@ namespace net.atos.daf.ct2.driver
 
                 if (driverDataMartID == 0)
                 {
+                   // parameter.Add("@driver_id", driver.DriverID);
+
                     QueryStatement = @"INSERT INTO master.driver
                                       (
                                         driver_id
@@ -302,16 +311,22 @@ namespace net.atos.daf.ct2.driver
                 }
                 else if (driverDataMartID >0)
                 {
-                    parameter.Add("@driver_id", driver.DriverID);
+                    parameter.Add("@id", driverDataMartID);
+                    parameter.Add("@newDriverID", driver.DriverID);
+
+                    //string driverIDNew = driver.DriverID;
+                    //driverIDNew = driverIDNew.Substring(0, driverIDNew.Length - 3); 
+                    //parameter.Add("@newDriverID", driverIDNew);
+
                     QueryStatement = @" UPDATE master.driver
-                                    SET                                  
-                                    first_name=@first_name
+                                    SET
+                                     driver_id=@driver_id
+                                    ,first_name=@first_name
                                     ,last_name=@last_name
                                     ,organization_id=@organization_id                                    
-                                     WHERE driver_id = @driver_id
+                                     WHERE id = @id and organization_id=@organization_id
                                      RETURNING id;";
                 }                
-
                 int driverID = await dataMartdataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);               
                 return driver;
             }
