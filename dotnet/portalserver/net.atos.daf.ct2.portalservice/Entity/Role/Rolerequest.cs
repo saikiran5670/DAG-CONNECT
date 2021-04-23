@@ -12,12 +12,12 @@ namespace net.atos.daf.ct2.portalservice.Entity.Role
         public string RoleName { get; set; }
 
         public string  Description { get; set; }
+        [Required(ErrorMessage = "Feature Id's are required")]
         public int[] FeatureIds { get; set; }
         public int Createdby { get; set; }
         [Required]
         public int Level { get; set; }
         public long CreatedAt { get; set; }
-        [Required]
         public string Code { get; set; }
     }
 

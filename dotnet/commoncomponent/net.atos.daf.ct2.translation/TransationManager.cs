@@ -103,7 +103,7 @@ namespace net.atos.daf.ct2.translation
                         TdataStatus.AddCount = TdataStatus.AddCount + 1;
                     else if (TranslationtResult == translationStatus.Updated)
                         TdataStatus.UpdateCount = TdataStatus.UpdateCount + 1;
-                    else
+                    else if (TranslationtResult == translationStatus.Failed)
                         TdataStatus.FailedCount = TdataStatus.FailedCount + 1;
                 }
                 translationupload.added_count = TdataStatus.AddCount;
