@@ -13,8 +13,6 @@ namespace net.atos.daf.ct2.poigeofence.repository
     {
         private readonly IDataAccess dataAccess;
 
-        private static readonly log4net.ILog log =
-      log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public PoiRepository(IDataAccess _dataAccess)
         {
             dataAccess = _dataAccess;
@@ -95,6 +93,41 @@ namespace net.atos.daf.ct2.poigeofence.repository
         }
 
 
+        public async Task<POI> CreatePOI(POI poi)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@organization_id", poi.Id);
+                parameter.Add("@category_id", poi.CategoryId);
+                parameter.Add("@sub_category_id", poi.SubCategoryId);
+                parameter.Add("@name", poi.Name);
+                parameter.Add("@address", poi.Address);
+                parameter.Add("@city", poi.City);
+                parameter.Add("@country", poi.Country);
+                parameter.Add("@zipcode", poi.Zipcode);
+                parameter.Add("@type", poi.Type);
+                parameter.Add("@latitude", poi.Latitude);
+                parameter.Add("@longitude", poi.Longitude);
+                parameter.Add("@distance", poi.Distance);
+                parameter.Add("@trip_id", poi.TripId);
+                parameter.Add("@state", 'A');
+                parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                parameter.Add("@created_by", poi.CreatedBy);
+
+                string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, trip_id, state, created_at, created_by)
+	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @trip_id, @state, @created_at, @created_by) RETURNING id";
+
+                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                poi.Id = id;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return poi;
+        }
+
         #region Geofence
 
         public async Task<Geofence> CreateGeofence(Geofence geofence)
@@ -119,8 +152,22 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 parameter.Add("@created_by", geofence.CreatedBy);
 
-                string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, trip_id, state, created_at, created_by)
-	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @trip_id, @state, @created_at, @created_by) RETURNING id";
+                string query = @"Update master.landmark
+                                SET 	organization_id=@organization_id,
+		                                category_id=@category_id,
+		                                sub_category_id=@sub_category_id, 
+		                                name=@name, 
+		                                address=@address,
+		                                city=@city, 
+		                                country=@country, 
+		                                zipcode=@zipcode, 
+		                                [type]=@type, 
+		                                latitude=@latitude, 
+		                                longitude=@longitude, 
+		                                distance@distance, 
+		                                trip_id=@trip_id, 
+		                                state=@state
+		                                ) RETURNING id;";
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 geofence.Id = id;
@@ -151,7 +198,68 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             return geofence;
         }
-       
+
+        public Task<List<POI>> GetAllPOI(POI poi)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public async Task<bool> UpdatePOI(POI poi)
+        {
+            bool result = false;
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@organization_id", poi.Id);
+                parameter.Add("@category_id", poi.CategoryId);
+                parameter.Add("@sub_category_id", poi.SubCategoryId);
+                parameter.Add("@name", poi.Name);
+                parameter.Add("@address", poi.Address);
+                parameter.Add("@city", poi.City);
+                parameter.Add("@country", poi.Country);
+                parameter.Add("@zipcode", poi.Zipcode);
+                parameter.Add("@type", poi.Type);
+                parameter.Add("@latitude", poi.Latitude);
+                parameter.Add("@longitude", poi.Longitude);
+                parameter.Add("@distance", poi.Distance);
+                parameter.Add("@trip_id", poi.TripId);
+                parameter.Add("@state", 'U');
+
+                string query = @"Update master.landmark
+                                SET 	organization_id=@organization_id,
+		                                category_id=@category_id,
+		                                sub_category_id=@sub_category_id, 
+		                                name=@name, 
+		                                address=@address,
+		                                city=@city, 
+		                                country=@country, 
+		                                zipcode=@zipcode, 
+		                                [type]=@type, 
+		                                latitude=@latitude, 
+		                                longitude=@longitude, 
+		                                distance@distance, 
+		                                trip_id=@trip_id, 
+		                                state=@state
+		                                ) RETURNING id;";
+
+                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                if (id > 0)
+                    result = true;
+                else
+                    result = false;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return await Task.FromResult(result);
+        }
+
+        public Task<bool> DeletePOI(int poiId)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }
