@@ -378,8 +378,8 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@modified_at", modifiedAt);
 
                 string query =
-                    @"INSERT INTO master.passwordpolicy (account_id, modified_at,is_reminder_sent)
-                        VALUES(@account_id, @modified_at,false) 
+                    @"INSERT INTO master.passwordpolicy (account_id, modified_at)
+                        VALUES(@account_id, @modified_at) 
                         ON CONFLICT (account_id) 
                         DO 
                         UPDATE SET modified_at = @modified_at,is_reminder_sent = false
@@ -424,8 +424,8 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@last_login", passwordPolicyForAccount.LastLogin);
 
                 string query =
-                    @"INSERT INTO master.passwordpolicy (account_id, failed_login_attempts,locked_until,account_lock_attempts,is_blocked,last_login,is_reminder_sent)
-                        VALUES(@account_id, @failed_login_attempts,@locked_until,@account_lock_attempts,@is_blocked,@last_login,false) 
+                    @"INSERT INTO master.passwordpolicy (account_id, failed_login_attempts,locked_until,account_lock_attempts,is_blocked,last_login)
+                        VALUES(@account_id, @failed_login_attempts,@locked_until,@account_lock_attempts,@is_blocked,@last_login) 
                         ON CONFLICT (account_id) 
                         DO 
                         UPDATE SET failed_login_attempts = @failed_login_attempts,
