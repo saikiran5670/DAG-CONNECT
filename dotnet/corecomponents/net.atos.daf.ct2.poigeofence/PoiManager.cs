@@ -17,5 +17,6 @@ namespace net.atos.daf.ct2.poigeofence
         {
             return await _poiRepository.GetAllPOI(objPOIEntityRequest);
         }
+  
     }
 }

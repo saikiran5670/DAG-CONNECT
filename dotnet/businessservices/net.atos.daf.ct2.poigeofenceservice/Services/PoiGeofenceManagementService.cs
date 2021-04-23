@@ -49,5 +49,36 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 throw ex;
             }
         }
+        public override async Task<GeofenceDeleteResponse> DeleteGeofence(DeleteRequest request, ServerCallContext context)
+        {
+            GeofenceDeleteResponse response = new GeofenceDeleteResponse();
+            try
+            {              
+                _logger.Info("Delete Geofence .");
+                List<int> lstGeofenceId = new List<int>();
+                foreach (var item in request.GeofenceId)
+                {
+                    lstGeofenceId.Add(item);
+                }
+                bool result = await _poiManager.DeleteGeofence(lstGeofenceId, request.OrganizationId);
+                if (result)
+                {
+                    response.Message = "Deleted";
+                    response.Code = Responcecode.Success;
+                }
+                if (!result)
+                {
+                    response.Message = "Not Deleted";
+                    response.Code = Responcecode.Failed;
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                //response.Message = "Not Deleted";
+            }
+            return await Task.FromResult(response);
+        }
     }
 }
