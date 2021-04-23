@@ -9,8 +9,8 @@ package poigeofence;
 service PoiGeofenceService{
 rpc GetAllPOI (POIEntityRequest) returns (POIEntityResponceList);
 rpc DeleteGeofence (DeleteRequest) returns (GeofenceDeleteResponse);
-rpc CreateGeofence (POIEntityRequest) returns (POIEntityResponceList);
-    }
+rpc CreateGeofence (GeofenceRequest) returns (GeofenceResponse);
+}
 
 message POIEntityResponce{
      string poiName = 1;
@@ -52,8 +52,19 @@ message GeofenceRequest{
     int32 CategoryId = 3;
     int32 SubCategoryId = 4;
     string Name =5;
+    string Type=6;
+    string Address=7;
+    string City=8;
+    string Country=9;
+    string Zipcode=10;
+    float Latitude=11;
+    float Longitude=12;
+    float Distance=13;
+    string State=14;
+    int32 TripId = 15;
+    int32 CreatedBy = 16;
+    repeated NodeRequest NodeRequest=17;
 }
-
 message NodeRequest{
     int64 Id =1;
     int32 LandmarkId = 2;
@@ -62,4 +73,24 @@ message NodeRequest{
     float Longitude =5;
     string State=6;
     int32 CreatedBy = 7;
+}
+
+message GeofenceResponse{
+    int64 Id =1;
+    google.protobuf.Int32Value OrganizationId=2;
+    int32 CategoryId = 3;
+    int32 SubCategoryId = 4;
+    string Name =5;
+    string Type=6;
+    string Address=7;
+    string City=8;
+    string Country=9;
+    string Zipcode=10;
+    float Latitude=11;
+    float Longitude=12;
+    float Distance=13;
+    string State=14;
+    repeated NodeRequest NodeRequest=15;
+    Responcecode Code=16;
+    string message = 17;
 }
