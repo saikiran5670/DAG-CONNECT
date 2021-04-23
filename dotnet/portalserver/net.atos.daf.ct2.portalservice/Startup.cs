@@ -31,6 +31,7 @@ using net.atos.daf.ct2.subscriptionservice;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using net.atos.daf.ct2.poigeofenceservice;
+using net.atos.daf.ct2.geofenceservice;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -174,6 +175,10 @@ namespace net.atos.daf.ct2.portalservice
             services.AddGrpcClient<SubscribeGRPCService.SubscribeGRPCServiceClient>(o =>
             {
                 o.Address = new Uri(subscriptionservice);
+            });
+            services.AddGrpcClient<GeofenceService.GeofenceServiceClient>(o =>
+            {
+                o.Address = new Uri(poigeofenceservice);
             });
             services.AddSwaggerGen(c =>
             {
