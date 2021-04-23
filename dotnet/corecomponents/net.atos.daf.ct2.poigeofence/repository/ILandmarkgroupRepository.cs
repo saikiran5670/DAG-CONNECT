@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.poigeofence.repository
 {
-    interface ILandmarkgroupRepository
+    public interface ILandmarkgroupRepository
     {
         Task<LandmarkGroup> CreateGroup(LandmarkGroup landmarkgroup);
-
         Task<int> AddgroupReference(LandmarkgroupRef landmarkgroupref);
         Task<int> DeleteGroupref(int landmark_group_id);
         Task<LandmarkGroup> UpdateGroup(LandmarkGroup landmarkgroup);
+        Task<int> GetlandmarkGroup(int organizationid, int groupid);
+        Task<int> DeleteGroup(int groupid);
     }
 }

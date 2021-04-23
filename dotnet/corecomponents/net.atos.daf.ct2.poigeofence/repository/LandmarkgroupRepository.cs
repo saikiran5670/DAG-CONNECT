@@ -131,6 +131,61 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
+        public async Task<int> DeleteGroup(int groupid)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@groupid", groupid);
+                parameter.Add("@state", "D");
+
+                string query = @"update master.landmarkgroup set state=@state)
+	                              where id=@groupid RETURNING id";
+                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+
+
+                return id;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<int> GetlandmarkGroup(int organizationid,int groupid)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+               
+
+                string query = @"SELECT id, organization_id, name, icon_id, state, created_at
+                                  from master.landmarkgroup
+	                              where 1=1";
+
+                if (organizationid > 0)
+                {
+                    parameter.Add("@organization_id", organizationid);
+                    query = query + " and organization_id=@organization_id";
+                }
+                else if (groupid > 1)
+                {
+                    parameter.Add("@id", groupid);
+                    query = query + " and id=@id";
+                }
+                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+
+
+                return id;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
 
     }
 }
