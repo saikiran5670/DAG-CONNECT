@@ -1,16 +1,18 @@
-﻿using net.atos.daf.ct2.poigeofence.ENUM;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace net.atos.daf.ct2.poigeofence.entity
+namespace net.atos.daf.ct2.portalservice.Entity.Geofence
 {
-    public class POI
+    public class Geofence
     {
         public int Id { get; set; }
-        public int? OrganizationId { get; set; }
+        public int OrganizationId { get; set; }
         public int CategoryId { get; set; }
         public int SubCategoryId { get; set; }
+        [Required]
         public string Name { get; set; }
         public string Type { get; set; }
         public string Address { get; set; }
@@ -20,11 +22,17 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public decimal Latitude { get; set; }
         public decimal Longitude { get; set; }
         public decimal Distance { get; set; }
-        public string State { get; set; }
         public int TripId { get; set; }
-        public long CreatedAt { get; set; }
         public int CreatedBy { get; set; }
-        public long ModifiedAt { get; set; }
-        public int ModifiedBy { get; set; }
+        public List<Nodes> Nodes { get; set; }
+    }
+    public class Nodes
+    {
+        public int Id { get; set; }
+        public int LandmarkId { get; set; }
+        public int SeqNo { get; set; }
+        public decimal Latitude { get; set; }
+        public decimal Longitude { get; set; }
+        public int CreatedBy { get; set; }
     }
 }

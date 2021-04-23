@@ -11,17 +11,17 @@ using net.atos.daf.ct2.poigeofenceservice.entity;
 
 namespace net.atos.daf.ct2.poigeofenceservice
 {
-    public class PoiGeofenceManagementService:PoiGeofenceService.PoiGeofenceServiceBase
+    public class GeofenceManagementService:PoiGeofenceService.PoiGeofenceServiceBase
     {
         private ILog _logger;
         private readonly IPoiManager _poiManager;
-        private readonly IGeofenceManager geofenceManager;
+        private readonly IGeofenceManager _geofenceManager;
         private readonly Mapper _mapper;
-        public PoiGeofenceManagementService(IPoiManager poiManager,IGeofenceManager _geofenceManager)
+        public GeofenceManagementService(IPoiManager poiManager,IGeofenceManager geofenceManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _poiManager = poiManager;
-            geofenceManager = _geofenceManager;
+            _geofenceManager = geofenceManager;
             _mapper = new Mapper();
         }
 
@@ -55,6 +55,10 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 throw ex;
             }
         }
+        
+        
+        #region Geofence
+
         public override async Task<GeofenceDeleteResponse> DeleteGeofence(DeleteRequest request, ServerCallContext context)
         {
             GeofenceDeleteResponse response = new GeofenceDeleteResponse();
@@ -66,7 +70,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 {
                     lstGeofenceId.Add(item);
                 }
-                bool result = await geofenceManager.DeleteGeofence(lstGeofenceId, request.OrganizationId);
+                bool result = await _geofenceManager.DeleteGeofence(lstGeofenceId, request.OrganizationId);
                 if (result)
                 {
                     response.Message = "Deleted";
@@ -86,29 +90,35 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             return await Task.FromResult(response);
         }
-        public override async Task<GeofenceEntityResponceList> GetAllGeofence(GeofenceEntityRequest request, ServerCallContext context)
+
+        public override async Task<GeofenceResponse> CreateGeofence(GeofenceRequest request, ServerCallContext context)
         {
-            GeofenceEntityResponceList response = new GeofenceEntityResponceList();
+            GeofenceResponse response = new GeofenceResponse();
             try
             {
-                _logger.Info("Get Geofence .");
-                net.atos.daf.ct2.poigeofence.entity.GeofenceEntityRequest objGeofenceRequest = new poigeofence.entity.GeofenceEntityRequest();
-                objGeofenceRequest.organization_id = request.OrganizationId;
-                objGeofenceRequest.category_id = request.CategoryId;
-                objGeofenceRequest.sub_category_id = request.SubCategoryId;
-                var result = await geofenceManager.GetAllGeofence(objGeofenceRequest);
-                foreach (net.atos.daf.ct2.poigeofence.entity.GeofenceEntityResponce entity in result)
+                _logger.Info("Create Geofence.");
+                Geofence geofence = new Geofence();
+                geofence = _mapper.ToGeofenceEntity(request);
+                geofence = await _geofenceManager.CreateGeofence(geofence);
+                return await Task.FromResult(new GeofenceResponse
                 {
-                    response.GeofenceList.Add(_mapper.ToGeofenceList(entity));
-                }
-                response.Code = Responcecode.Success;                
-                return await Task.FromResult(response);
+                    Message = "Geofence created with id:- " + geofence.Id,
+                    Code = Responcecode.Success
+                });
+
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
+                return await Task.FromResult(new GeofenceResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Geofence Creation Faile due to - " + ex.Message,
+                });
             }
-            return await Task.FromResult(response);
+            
         }
+
+        #endregion
     }
 }

@@ -182,21 +182,17 @@ namespace net.atos.daf.ct2.subscription.repository
                     }
                     if (objSubscription.VINs.Count > 0)
                     {
-                        ArrayList objvinList = new ArrayList(); int count = 0;
-                        foreach (var item in objSubscription.VINs)
+                        //Get all vehicle Ids corrosponding to VINs and match count with VINs 
+                        //for checking VINs outside the provided organization
+                        var vehicleIds = await CheckVINsExistInOrg(objSubscription.VINs, orgid);
+                        if(objSubscription.VINs.Count != vehicleIds.Count)
+                            return null;
+
+                        ArrayList objvinList = new ArrayList(); int count = 0;                        
+                        foreach (var vin in objSubscription.VINs)
                         {
-                            int vinexist = 0;
-                            //forgeting vehicle id
-                            var parameterToGetVehicleId = new DynamicParameters();
-                            parameterToGetVehicleId.Add("@vin", item);
-                            vinexist = await dataAccess.ExecuteScalarAsync<int>
-                                (@"SELECT id FROM master.vehicle where vin=@vin", parameterToGetVehicleId);
-                            if (vinexist == 0)
-                            {//return Bad Request if vin does not exits in vehicle table
-                                return null;
-                            }
                             int vinActivated = 0;
-                            var response = await SubscriptionExits(orgid, data.id, vinexist);
+                            var response = await SubscriptionExits(orgid, data.id, vehicleIds[vin]);
                             if (response != null && response.subscription_id !=0 && response.state.ToUpper() == "A")
                             {
                                 return null;
@@ -209,7 +205,7 @@ namespace net.atos.daf.ct2.subscription.repository
                                 parameterStatus.Add("@subscription_id", response.subscription_id);
                                 parameterStatus.Add("@subscription_start_date", objSubscription.StartDateTime);
                                 parameterStatus.Add("@subscription_end_date", null);
-                                parameterStatus.Add("@vehicle_id", vinexist); 
+                                parameterStatus.Add("@vehicle_id", vehicleIds[vin]); 
                                 string queryUpdate = @"update master.subscription set state = @state, subscription_start_date = @subscription_start_date,
                                            subscription_end_date = @subscription_end_date where subscription_id = @subscription_id and vehicle_id=@vehicle_id";
 
@@ -217,13 +213,12 @@ namespace net.atos.daf.ct2.subscription.repository
                                 if (vinActivated > 0)
                                 {
                                     count = ++count;
-                                }
-                                
+                                }                                
                             }
                             //This will get us the list of vins exits on Vehicle Table or Not
                             if (vinActivated == 0)
                             {
-                                objvinList.Add(vinexist);
+                                objvinList.Add(vehicleIds[vin]);
                             }
                             if(response != null && response.subscription_id > 0)
                             objSubscriptionResponse.orderId = response.subscription_id.ToString();
@@ -497,6 +492,27 @@ namespace net.atos.daf.ct2.subscription.repository
                 log.Error(ex.ToString());
                 throw ex;
             }
+        }
+
+        private async Task<Dictionary<string, int>> CheckVINsExistInOrg(List<string> VINs, int orgId)
+        {
+            int vehicleId;
+            DynamicParameters parameters;
+            Dictionary<string, int> vehicleIds = new Dictionary<string, int>();
+            foreach (var item in VINs)
+            {
+                vehicleId = 0;
+                parameters = new DynamicParameters();
+                parameters.Add("@vin", item); 
+                parameters.Add("@orgId", orgId);
+                vehicleId = await dataAccess.ExecuteScalarAsync<int>
+                    (@"SELECT id FROM master.vehicle where vin=@vin and organization_id=@orgId", parameters);
+                if (vehicleId > 0)
+                {
+                    vehicleIds.Add(item, vehicleId);
+                }
+            }
+            return vehicleIds;
         }
     }
 }

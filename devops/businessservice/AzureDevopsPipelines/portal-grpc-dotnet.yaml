@@ -17,6 +17,8 @@ parameters:
   - DEV02
   - TEST01
   - TEST02
+  - ACC01
+  - ACC02
 
 pool: $(PRIVATEAGENT)
 
