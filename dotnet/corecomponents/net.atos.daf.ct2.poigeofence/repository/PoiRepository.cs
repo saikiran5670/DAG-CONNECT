@@ -12,15 +12,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
     public class PoiRepository : IPoiRepository
     {
         private readonly IDataAccess dataAccess;
-
         public PoiRepository(IDataAccess _dataAccess)
         {
             dataAccess = _dataAccess;
         }
-
         public async Task<List<POIEntityResponce>> GetAllPOI(POIEntityRequest objPOIEntityRequest)
         {
-            
             //POIEntityRequest objPOIEntityRequestList = new POIEntityRequest();
             try
             {
@@ -40,7 +37,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     parameter.Add("@organization_id", objPOIEntityRequest.organization_id);
                     query = $"{query} and l.organization_id=@organization_id ";
 
-                    if (objPOIEntityRequest.category_id >0)
+                    if (objPOIEntityRequest.category_id > 0)
                     {
                         parameter.Add("@category_id", objPOIEntityRequest.category_id);
                         query = $"{query} and l.category_id=@category_id";
@@ -55,14 +52,16 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 var data = await dataAccess.QueryAsync<POIEntityResponce>(query, parameter);
                 List<POIEntityResponce> objPOIEntityResponceList = new List<POIEntityResponce>();
                 return objPOIEntityResponceList = data.Cast<POIEntityResponce>().ToList();
-                //Handel Null Exception
             }
             catch (System.Exception)
             {
             }
             return null;
         }
-
+        public Task<List<POI>> GetAllPOI(POI poi)
+        {
+            throw new NotImplementedException();
+        }
         public async Task<POI> CreatePOI(POI poi)
         {
             try
@@ -97,13 +96,6 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             return poi;
         }
-
-
-        public Task<List<POI>> GetAllPOI(POI poi)
-        {
-            throw new NotImplementedException();
-        }
-        
         public async Task<bool> UpdatePOI(POI poi)
         {
             bool result = false;
@@ -123,7 +115,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@longitude", poi.Longitude);
                 parameter.Add("@distance", poi.Distance);
                 parameter.Add("@trip_id", poi.TripId);
-                parameter.Add("@state", 'U');
+                parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                parameter.Add("@modified_by", poi.ModifiedBy);
 
                 string query = @"Update master.landmark
                                 SET 	organization_id=@organization_id,
@@ -139,7 +132,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
 		                                longitude=@longitude, 
 		                                distance@distance, 
 		                                trip_id=@trip_id, 
-		                                state=@state
+		                                state=@state,
+                                        modified_at=@modified_at,
+                                        modified_by=@modified_by
 		                                ) RETURNING id;";
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
@@ -154,12 +149,25 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             return await Task.FromResult(result);
         }
-
-        public Task<bool> DeletePOI(int poiId)
+        public async Task<bool> DeletePOI(int poiId)
         {
-            throw new NotImplementedException();
+            bool result = false;
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", poiId);
+                var query = @"update master.landmark set state='D' where id=@id";
+                int isdelete = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                if (isdelete > 0)
+                    result = true;
+                else
+                    result = false;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return result;
         }
-
-     
     }
 }
