@@ -6,6 +6,7 @@
     <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Protos\geofence.proto" />
     <None Remove="Protos\package.proto" />
   </ItemGroup>
   <ItemGroup>
@@ -26,6 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <Protobuf Include="Protos\account.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\geofence.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\package.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\feature.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\subscribe.proto" GrpcServices="Client" />

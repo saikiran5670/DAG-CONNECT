@@ -8,54 +8,19 @@ using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.poigeofenceservice.entity;
 
-
-namespace net.atos.daf.ct2.poigeofenceservice
+namespace net.atos.daf.ct2.geofenceservice
 {
-    public class GeofenceManagementService:PoiGeofenceService.PoiGeofenceServiceBase
+    public class GeofenceManagementService:GeofenceService.GeofenceServiceBase
     {
         private ILog _logger;
-        private readonly IPoiManager _poiManager;
         private readonly IGeofenceManager _geofenceManager;
         private readonly Mapper _mapper;
-        public GeofenceManagementService(IPoiManager poiManager,IGeofenceManager geofenceManager)
+        public GeofenceManagementService(IGeofenceManager geofenceManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            _poiManager = poiManager;
             _geofenceManager = geofenceManager;
             _mapper = new Mapper();
-        }
-
-        public override async Task<POIEntityResponceList> GetAllPOI(POIEntityRequest request, ServerCallContext context)
-        {
-            try
-            {
-                POIEntityResponceList objPOIEntityResponceList = new POIEntityResponceList();
-                POIEntityResponce objPOIEntityResponce = new POIEntityResponce();
-                net.atos.daf.ct2.poigeofence.entity.POIEntityRequest obj = new poigeofence.entity.POIEntityRequest();
-                obj.category_id = request.CategoryId;
-                obj.organization_id = request.OrganizationId;
-                obj.roleIdlevel = request.RoleIdlevel;
-                obj.sub_category_id = request.SubCategoryId;
-                var data = await _poiManager.GetAllPOI(obj);
-                _logger.Info("GetAllPOI method in POI service called.");
-                foreach (var item in data)
-                {
-                    objPOIEntityResponce.Category = item.category == null? string.Empty:item.category;
-                    objPOIEntityResponce.City = item.city == null ? string.Empty : item.city;
-                    objPOIEntityResponce.Latitude = item.latitude;
-                    objPOIEntityResponce.Longitude = item.longitude;
-                    objPOIEntityResponce.PoiName = item.poiName == null ? string.Empty :item.poiName;
-                    objPOIEntityResponceList.POIList.Add(objPOIEntityResponce);
-                }
-                return objPOIEntityResponceList;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(null, ex);
-                throw ex;
-            }
-        }
-        
+        }        
         
         #region Geofence
 

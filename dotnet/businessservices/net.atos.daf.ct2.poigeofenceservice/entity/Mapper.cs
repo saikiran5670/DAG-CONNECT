@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             return objResponse;
         }
 
-        public Geofence ToGeofenceEntity(GeofenceRequest geofenceRequest)
+        public Geofence ToGeofenceEntity(net.atos.daf.ct2.geofenceservice.GeofenceRequest geofenceRequest)
         {
             Geofence geofence = new Geofence();
             geofence.Id = Convert.ToInt32(geofenceRequest.Id);
