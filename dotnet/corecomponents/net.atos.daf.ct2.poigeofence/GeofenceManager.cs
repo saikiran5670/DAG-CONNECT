@@ -10,6 +10,11 @@ namespace net.atos.daf.ct2.poigeofence
     public class GeofenceManager: IGeofenceManager
     {
         private readonly IGeofenceRepository geofenceRepository;
+
+        public GeofenceManager(IGeofenceRepository _geofenceRepository)
+        {
+            geofenceRepository = _geofenceRepository;
+        }
         public async Task<bool> DeleteGeofence(List<int> geofenceIds, int organizationID)
         {
             return await geofenceRepository.DeleteGeofence(geofenceIds, organizationID);

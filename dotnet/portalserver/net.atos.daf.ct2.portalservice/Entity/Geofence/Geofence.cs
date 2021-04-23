@@ -19,9 +19,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
         public string City { get; set; }
         public string Country { get; set; }
         public string Zipcode { get; set; }
-        public decimal Latitude { get; set; }
-        public decimal Longitude { get; set; }
-        public decimal Distance { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public double Distance { get; set; }
         public int TripId { get; set; }
         public int CreatedBy { get; set; }
         public List<Nodes> Nodes { get; set; }
@@ -31,8 +31,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
         public int Id { get; set; }
         public int LandmarkId { get; set; }
         public int SeqNo { get; set; }
-        public decimal Latitude { get; set; }
-        public decimal Longitude { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
         public int CreatedBy { get; set; }
     }
 }

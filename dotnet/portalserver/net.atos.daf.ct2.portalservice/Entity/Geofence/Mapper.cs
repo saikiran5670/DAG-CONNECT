@@ -20,7 +20,29 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
             geofenceRequest.City = geofence.City;
             geofenceRequest.Country = geofence.Country;
             geofenceRequest.Zipcode = geofence.Zipcode;
+            geofenceRequest.Latitude = geofence.Latitude;
+            geofenceRequest.Longitude = geofence.Longitude;
+            geofenceRequest.Distance = geofence.Distance;
+            geofenceRequest.TripId = geofence.TripId;
+            geofenceRequest.CreatedBy = geofence.CreatedBy;
+            foreach (var item in geofence.Nodes)
+            {
+                geofenceRequest.NodeRequest.Add(ToNodeRequest(item));
+            }
             return geofenceRequest;
+        }
+
+        public NodeRequest ToNodeRequest(Nodes nodes)
+        {
+            NodeRequest nodeRequest = new NodeRequest();
+            nodeRequest.Id = nodes.Id;
+            nodeRequest.LandmarkId = nodes.LandmarkId;
+            nodeRequest.SeqNo = nodes.SeqNo;
+            nodeRequest.Latitude = nodes.Latitude;
+            nodeRequest.Longitude = nodes.Longitude;
+           
+
+            return nodeRequest;
         }
     }
 }

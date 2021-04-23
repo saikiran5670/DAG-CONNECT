@@ -30,8 +30,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region Geofence
 
-        [HttpPut]
-        [Route("geofence/create")]
+        [HttpPost]
+        [Route("create")]
         public async Task<IActionResult> CreateGeofence(Geofence request)
         {
             try
@@ -60,7 +60,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
-                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                   "Create  method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                    Request);
 
@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
-                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Create  method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                   Request);
                 //_logger.Error(null, ex);

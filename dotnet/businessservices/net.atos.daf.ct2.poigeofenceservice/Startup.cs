@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.geofenceservice;
 using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.repository;
 using net.atos.daf.ct2.poigeofenservice;
@@ -42,6 +43,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
             services.AddTransient<IPoiRepository, PoiRepository>();
             services.AddTransient<ICategoryManager, CategoryManager>();
             services.AddTransient<ICategoryRepository, CategoryRepository>();
+            services.AddTransient<IGeofenceManager, GeofenceManager>();
+            services.AddTransient<IGeofenceRepository, GeofenceRepository>();
 
         }
 
@@ -64,6 +67,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 endpoints.MapGrpcService<POIManagementService>().EnableGrpcWeb()
                                                   .RequireCors("AllowAll");
                 endpoints.MapGrpcService<CategoryManagementService>().EnableGrpcWeb()
+                                                  .RequireCors("AllowAll");
+                endpoints.MapGrpcService<GeofenceManagementService>().EnableGrpcWeb()
                                                   .RequireCors("AllowAll");
 
                 endpoints.MapGet("/", async context =>

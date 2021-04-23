@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@organization_id", geofence.Id);
+                parameter.Add("@organization_id", geofence.OrganizationId);
                 parameter.Add("@category_id", geofence.CategoryId);
                 parameter.Add("@sub_category_id", geofence.SubCategoryId);
                 parameter.Add("@name", geofence.Name);

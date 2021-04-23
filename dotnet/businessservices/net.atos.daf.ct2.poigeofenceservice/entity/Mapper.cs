@@ -34,26 +34,29 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                 char type = Convert.ToChar(geofenceRequest.Type);
                 if (type == 'C' || type == 'c')
                 {
-                    geofence.Type = Convert.ToChar(LandmarkType.CircularGeofence);
+                    geofence.Type = ((char)LandmarkType.CircularGeofence).ToString();
                 }
                 else
                 {
-                    geofence.Type = Convert.ToChar(LandmarkType.PolygonGeofence);
+                    geofence.Type = ((char)LandmarkType.PolygonGeofence).ToString();
                 }
             }
             geofence.Address = geofenceRequest.Address;
             geofence.City = geofenceRequest.City;
             geofence.Country = geofenceRequest.Country;
             geofence.Zipcode = geofenceRequest.Zipcode;
-            geofence.Latitude = Convert.ToDecimal(geofenceRequest.Latitude);
-            geofence.Longitude = Convert.ToDecimal(geofenceRequest.Longitude);
-            geofence.Distance = Convert.ToDecimal(geofenceRequest.Distance);
+            geofence.Latitude = geofenceRequest.Latitude;
+            geofence.Longitude = geofenceRequest.Longitude;
+            geofence.Distance = geofenceRequest.Distance;
             //geofence.State = Convert.ToChar(geofenceRequest.State);
             geofence.TripId = geofenceRequest.TripId;
+            geofence.Nodes = new List<Nodes>();
             foreach (var item in geofenceRequest.NodeRequest)
             {
                 if (item != null)
+                {
                     geofence.Nodes.Add(ToNodesEntity(item));
+                }
             }
             geofence.CreatedBy = geofenceRequest.CreatedBy;
             return geofence;
@@ -62,11 +65,13 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
         public Nodes ToNodesEntity(NodeRequest nodeRequest)
         {
             Nodes nodes = new Nodes();
-            nodes.Id = Convert.ToInt32(nodeRequest.Id);
+            if (nodeRequest.Id > 0)
+                nodes.Id = Convert.ToInt32(nodeRequest.Id);
             nodes.LandmarkId = nodeRequest.LandmarkId;
             nodes.SeqNo = nodeRequest.SeqNo;
-            nodes.Latitude = Convert.ToDecimal(nodeRequest.Latitude);
-            nodes.Longitude = Convert.ToDecimal(nodeRequest.Longitude);
+            nodes.Latitude = nodeRequest.Latitude;
+            nodes.Longitude = nodeRequest.Longitude;
+            nodes.State = nodeRequest.State;
             return nodes;
         }
     }
