@@ -7,7 +7,7 @@ package poiservice;
 
 service POIService{
 rpc GetAllGobalPOI (POIEntityRequest) returns (POIEntityResponseList);
-rpc GetAllPOINew (POIRequest) returns (POIResponseList);
+rpc GetAllPOI (POIRequest) returns (POIResponseList);
 rpc CreatePOI (POIRequest) returns (POIResponse);
 rpc UpdatePOI (POIRequest) returns (POIResponse);
 rpc DeletePOI (POIRequest) returns (POIResponse);
@@ -40,7 +40,7 @@ enum Responsecode{
 
 
 message POIRequest{
-    int64 Id =1;
+    int32 Id =1;
     google.protobuf.Int32Value OrganizationId=2;
     int32 CategoryId = 3;
     int32 SubCategoryId = 4;
@@ -50,15 +50,15 @@ message POIRequest{
     string City=8;
     string Country=9;
     string Zipcode=10;
-    float Latitude=11;
-    float Longitude=12;
-    float Distance=13;
+    double Latitude=11;
+    double Longitude=12;
+    double Distance=13;
     string State=14;
     int32 TripId = 15;
     int32 CreatedBy = 16;
 }
 message POIData{
-    int64 Id =1;
+    int32 Id =1;
     google.protobuf.Int32Value OrganizationId=2;
     int32 CategoryId = 3;
     int32 SubCategoryId = 4;
@@ -68,13 +68,13 @@ message POIData{
     string City=8;
     string Country=9;
     string Zipcode=10;
-    float Latitude=11;
-    float Longitude=12;
-    float Distance=13;
+    double Latitude=11;
+    double Longitude=12;
+    double Distance=13;
     string State=14;
 }
 message POIResponse{
-  POIData POIList = 1;
+  POIData POIData = 1;
   Responsecode code = 2;
   string message = 3;
 }

@@ -18,14 +18,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     {
         private readonly GeofenceService.GeofenceServiceClient _GeofenceServiceClient;
         private readonly AuditHelper _auditHelper;
-        private readonly Mapper _mapper;
+        private readonly Entity.Geofence.Mapper _mapper;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         public LandmarkGeofenceController(GeofenceService.GeofenceServiceClient GeofenceServiceClient, AuditHelper auditHelper)
         {
             _GeofenceServiceClient = GeofenceServiceClient;
             _auditHelper = auditHelper;
-            _mapper = new Mapper();
+            _mapper = new Entity.Geofence.Mapper();
         }
 
         #region Geofence
