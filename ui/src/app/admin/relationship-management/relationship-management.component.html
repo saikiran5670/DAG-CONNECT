@@ -40,7 +40,7 @@
             <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
             <div *ngIf='initData.length > 0' fxLayout="row" class='margin-top-xlg' id="relationshipData">
                 <div fxLayout="column" class='full-width'>
-                    <mat-table matTableExporter [dataSource]="dataSource" matSort #exporter="matTableExporter">
+                    <mat-table matTableExporter [dataSource]="dataSource" matSort #exporter="matTableExporter" [hiddenColumns]="[3]">
                         <!-- <ng-container matColumnDef="newTag">
                             <mat-header-cell *matHeaderCellDef></mat-header-cell>
                             <mat-cell *matCellDef="let row">
