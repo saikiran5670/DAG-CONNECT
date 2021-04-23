@@ -37,7 +37,9 @@
     <Protobuf Include="Protos\organization.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\role.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\driver.proto" GrpcServices="Client" />
-    <Protobuf Include="Protos\poigeofence.proto" GrpcServices="Client" />
+    <!--<Protobuf Include="Protos\poigeofence.proto" GrpcServices="Client" />-->
+	<Protobuf Include="Protos\category.proto" GrpcServices="Client" />
+	  
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entity\Role\" />

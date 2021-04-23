@@ -1,0 +1,118 @@
+
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+option csharp_namespace = "net.atos.daf.ct2.poigeofenceservice";
+
+package poigeofence;
+
+service PoiGeofenceService{
+rpc GetAllPOI (POIEntityRequest) returns (POIEntityResponceList);
+rpc DeleteGeofence (DeleteRequest) returns (GeofenceDeleteResponse);
+rpc AddCategory (CategoryAddRequest) returns (CategoryAddResponse);
+rpc EditCategory (CategoryEditRequest) returns (CategoryEditResponse);
+rpc DeleteCategory (CategoryDeleteRequest) returns (CategoryDeleteResponse);
+rpc GetCategory (CategoryGetRequest) returns (CategoryGetResponse);
+    }
+
+message POIEntityResponce{
+     string poiName = 1;
+    double latitude =2;
+    double longitude=3;
+    string category = 4;
+    string city = 5;
+}
+message POIEntityResponceList  {
+  repeated POIEntityResponce POIList = 1;
+  Responcecode code = 2;
+}
+
+message POIEntityRequest{
+    int32 organization_id =1;
+    int32 category_id = 2;
+    int32 sub_category_id = 3;
+    int32 roleIdlevel =4;
+}
+enum Responcecode{
+  Success = 0;
+  Failed = 1;
+  Conflict = 2;
+  NotFound = 3;
+}
+
+message DeleteRequest{
+   repeated int32 GeofenceId=1;
+   int32 organization_id=2;
+}
+message GeofenceDeleteResponse {
+  Responcecode Code=1;
+  string Message = 2;  
+}
+message CategoryAddRequest
+{
+      int32 Id =1;
+      int32 Organization_Id =2;
+      string Name =3;
+      string Icon_Name =4;
+      string Type =5;
+      int32 Parent_Id =6;
+      string State=7;
+      int32 Created_By =9;
+      int32 Modified_By =11;
+      bytes Icon =12;
+
+}
+message CategoryAddResponse
+{
+  Responcecode Code=1;
+  string Message = 2;  
+}
+
+message CategoryEditRequest
+{
+      int32 Id =1;
+      string Name =2;
+      bytes Icon =3;
+      string Icon_Name =4;
+      int32 Modified_By =5;
+
+}
+message CategoryEditResponse
+{
+  Responcecode Code=1;
+  string Message = 2;  
+}
+
+message CategoryDeleteRequest
+{
+      int32 Id =1;
+}
+message CategoryDeleteResponse
+{
+  Responcecode Code=1;
+  string Message = 2;  
+}
+message CategoryGetRequest
+{
+repeated category categories =1;
+}
+message CategoryGetResponse
+{
+repeated category categories =1;
+  Responcecode Code=2;
+  string Message = 3;  
+}
+
+message category{
+
+     int32 Id =1;
+      int32 Organization_Id =2;
+      string Name =3;
+      int32 Icon_Id =4;
+      string Type =5;
+      int32 Parent_Id =6;
+      string State=7;
+      int64 Created_At =8;
+      int32 Created_By =9;
+      int64 Modified_At= 10;
+      int32 Modified_By =11;
+}
