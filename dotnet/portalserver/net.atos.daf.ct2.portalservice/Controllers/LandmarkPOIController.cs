@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using net.atos.daf.ct2.poigeofenceservice;
 using net.atos.daf.ct2.portalservice.Common;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.portalservice.Entity.POI;
@@ -18,14 +17,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     {
         private readonly POIService.POIServiceClient _poiServiceClient;
         private readonly AuditHelper _auditHelper;
-        private readonly Mapper _mapper;
+        private readonly Entity.POI.Mapper _mapper;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper)
         {
             _poiServiceClient = poiServiceClient;
             _auditHelper = auditHelper;
-            _mapper = new Mapper();
+            _mapper = new Entity.POI.Mapper();
         }
 
 
