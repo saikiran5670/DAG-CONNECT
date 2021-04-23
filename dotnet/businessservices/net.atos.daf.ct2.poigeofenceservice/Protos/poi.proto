@@ -1,16 +1,21 @@
 
 syntax = "proto3";
-import "google/protobuf/timestamp.proto";
-option csharp_namespace = "net.atos.daf.ct2.poigeofenceservice";
+import "google/protobuf/wrappers.proto";
+option csharp_namespace = "net.atos.daf.ct2.poiservice";
 
-package POIGeOfence;
+package poiservice;
 
-service POIGeOfenceService{
+service POIService{
 rpc GetAllGobalPOI (POIEntityRequest) returns (POIEntityResponseList);
+rpc GetAllPOINew (POIRequest) returns (POIResponseList);
+rpc CreatePOI (POIRequest) returns (POIResponse);
+rpc UpdatePOI (POIRequest) returns (POIResponse);
+rpc DeletePOI (POIRequest) returns (POIResponse);
+
     }
 
 message POIEntityResponse{
-     string POIName = 1;
+    string POIName = 1;
     double Latitude =2;
     double Longitude=3;
     string Category = 4;
@@ -18,7 +23,7 @@ message POIEntityResponse{
 }
 message POIEntityResponseList  {
   repeated POIEntityResponse POIList = 1;
-  ResponseCode Code = 2;
+  Responsecode Code = 2;
   string Message = 3;
 }
 
@@ -26,9 +31,56 @@ message POIEntityRequest{
     int32 CategoryId = 1;
     int32 SubCategoryId = 2;
 }
-enum ResponseCode{
+enum Responsecode{
   Success = 0;
   Failed = 1;
   Conflict = 2;
   NotFound = 3;
+}
+
+
+message POIRequest{
+    int64 Id =1;
+    google.protobuf.Int32Value OrganizationId=2;
+    int32 CategoryId = 3;
+    int32 SubCategoryId = 4;
+    string Name =5;
+    string Type=6;
+    string Address=7;
+    string City=8;
+    string Country=9;
+    string Zipcode=10;
+    float Latitude=11;
+    float Longitude=12;
+    float Distance=13;
+    string State=14;
+    int32 TripId = 15;
+    int32 CreatedBy = 16;
+}
+message POIData{
+    int64 Id =1;
+    google.protobuf.Int32Value OrganizationId=2;
+    int32 CategoryId = 3;
+    int32 SubCategoryId = 4;
+    string Name =5;
+    string Type=6;
+    string Address=7;
+    string City=8;
+    string Country=9;
+    string Zipcode=10;
+    float Latitude=11;
+    float Longitude=12;
+    float Distance=13;
+    string State=14;
+}
+message POIResponse{
+  POIData POIList = 1;
+  Responsecode code = 2;
+  string message = 3;
+}
+
+message POIResponseList  {
+  repeated POIData POIList = 1;
+  Responsecode code = 2;
+  string message = 3;
 }
