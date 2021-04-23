@@ -108,7 +108,46 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
+        public async Task<IEnumerable<GeofenceEntityResponce>> GetAllGeofence(GeofenceEntityRequest geofenceEntityRequest)
+        {
+            log.Info("Get GetAllGeofence method called in repository");
+            GeofenceEntityRequest geofenceEntityRequestList = new GeofenceEntityRequest();
+            try
+            {
+                string query = string.Empty;
+                query = @"select L.id,
+                                 L.name, 
+                                 case when C.type='p' then C.name end category,
+                                 case when C.type='s' then C.name end subcategory 
+                                 from master.landmark L
+	                             left join master.category C on L.category_id=C.id
+	                             where 1=1 and state='A'";
+                var parameter = new DynamicParameters();
+                if (geofenceEntityRequest.organization_id > 0)
+                {
+                    parameter.Add("@organization_id", geofenceEntityRequest.organization_id);
+                    query = $"{query} and l.organization_id=@organization_id ";
 
+                    if (geofenceEntityRequest.category_id > 0)
+                    {
+                        parameter.Add("@category_id", geofenceEntityRequest.category_id);
+                        query = $"{query} and l.category_id=@category_id";
+                    }
+
+                    if (geofenceEntityRequest.sub_category_id > 0)
+                    {
+                        parameter.Add("@sub_category_id", geofenceEntityRequest.sub_category_id);
+                        query = $"{query} and l.sub_category_id=@sub_category_id";
+                    }
+                    return await dataAccess.QueryAsync<GeofenceEntityResponce>(query, parameter);
+                }
+                //Handel Null Exception
+            }
+            catch (System.Exception)
+            {
+            }
+            return null;
+        }
         #endregion
     }
 

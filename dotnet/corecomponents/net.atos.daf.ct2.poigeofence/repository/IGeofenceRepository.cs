@@ -10,5 +10,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
     {
         Task<bool> DeleteGeofence(List<int> geofenceIds, int organizationID);
         Task<Geofence> CreateGeofence(Geofence geofence);
+        Task<IEnumerable<GeofenceEntityResponce>> GetAllGeofence(GeofenceEntityRequest geofenceEntityRequest);
+
     }
 }

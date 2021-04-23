@@ -18,5 +18,9 @@ namespace net.atos.daf.ct2.poigeofence
         {
             return await geofenceRepository.CreateGeofence(geofence);
         }
+        public async Task<IEnumerable<GeofenceEntityResponce>> GetAllGeofence(GeofenceEntityRequest geofenceEntityRequest)
+        {
+            return await geofenceRepository.GetAllGeofence(geofenceEntityRequest);
+        }
     }
 }
