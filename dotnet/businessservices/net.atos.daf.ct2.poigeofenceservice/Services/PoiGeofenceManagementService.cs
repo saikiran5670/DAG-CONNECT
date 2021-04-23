@@ -12,11 +12,13 @@ namespace net.atos.daf.ct2.poigeofenceservice
     public class PoiGeofenceManagementService:PoiGeofenceService.PoiGeofenceServiceBase
     {
         private ILog _logger;
-        private readonly IPoiManager _poiManager ;
-        public PoiGeofenceManagementService(IPoiManager poiManager)
+        private readonly IPoiManager _poiManager;
+        private readonly IGeofenceManager _geofenceManager;
+        public PoiGeofenceManagementService(IPoiManager poiManager,IGeofenceManager geofenceManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _poiManager = poiManager;
+            _geofenceManager = geofenceManager;
         }
 
         public override async Task<POIEntityResponceList> GetAllPOI(POIEntityRequest request, ServerCallContext context)
@@ -53,14 +55,14 @@ namespace net.atos.daf.ct2.poigeofenceservice
         {
             GeofenceDeleteResponse response = new GeofenceDeleteResponse();
             try
-            {              
+            {
                 _logger.Info("Delete Geofence .");
                 List<int> lstGeofenceId = new List<int>();
                 foreach (var item in request.GeofenceId)
                 {
                     lstGeofenceId.Add(item);
                 }
-                bool result = await _poiManager.DeleteGeofence(lstGeofenceId, request.OrganizationId);
+                bool result = await _geofenceManager.DeleteGeofence(lstGeofenceId, request.OrganizationId);
                 if (result)
                 {
                     response.Message = "Deleted";
@@ -71,7 +73,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     response.Message = "Not Deleted";
                     response.Code = Responcecode.Failed;
                 }
-                
+
             }
             catch (Exception ex)
             {
