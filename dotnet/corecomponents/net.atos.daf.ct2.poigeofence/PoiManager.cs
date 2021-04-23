@@ -17,6 +17,10 @@ namespace net.atos.daf.ct2.poigeofence
         {
             return await _poiRepository.GetAllPOI(objPOIEntityRequest);
         }
+        public async Task<bool> DeleteGeofence(List<int> geofenceIds, int organizationID)
+        {
+            return await _poiRepository.DeleteGeofence(geofenceIds, organizationID);
+        }
 
         public async Task<Geofence> CreateGeofence(Geofence geofence)
         {

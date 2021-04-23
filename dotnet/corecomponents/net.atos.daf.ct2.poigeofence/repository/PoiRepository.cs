@@ -65,6 +65,35 @@ namespace net.atos.daf.ct2.poigeofence.repository
             return null;
         }
 
+        public async Task<bool> DeleteGeofence(List<int> geofenceIds, int organizationID)
+        {
+            log.Info("Delete geofenceIds method called in repository");
+            try
+            {
+                if (geofenceIds.Count > 0)
+                {
+                    foreach (var item in geofenceIds)
+                    {
+                        var parameter = new DynamicParameters();
+                        parameter.Add("@organization_id", organizationID);
+                        parameter.Add("@id", item);
+                        var queryLandmark = @"update master.landmark set state='D' where id=@id and organization_id=@organization_id";
+                        await _dataAccess.ExecuteScalarAsync<int>(queryLandmark, parameter);
+
+                        var queryNodes = @"update master.nodes set state='D' where landmark_id=@id";
+                        await _dataAccess.ExecuteScalarAsync<int>(queryNodes, parameter);
+                    }   
+                }
+                return true;
+            }
+            catch (System.Exception ex)
+            {
+                log.Info("Delete geofenceIds method in repository failed :");
+                log.Error(ex.ToString());
+                throw ex;
+            }           
+        }
+
 
         #region Geofence
 

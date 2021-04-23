@@ -8,6 +8,7 @@ package poigeofence;
 
 service PoiGeofenceService{
 rpc GetAllPOI (POIEntityRequest) returns (POIEntityResponceList);
+rpc DeleteGeofence (DeleteRequest) returns (GeofenceDeleteResponse);
 rpc CreateGeofence (POIEntityRequest) returns (POIEntityResponceList);
     }
 
@@ -34,6 +35,15 @@ enum Responcecode{
   Failed = 1;
   Conflict = 2;
   NotFound = 3;
+}
+
+message DeleteRequest{
+   repeated int32 GeofenceId=1;
+   int32 organization_id=2;
+}
+message GeofenceDeleteResponse {
+  Responcecode Code=1;
+  string Message = 2;  
 }
 
 message GeofenceRequest{
