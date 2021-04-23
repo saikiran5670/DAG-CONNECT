@@ -107,7 +107,7 @@ namespace net.atos.daf.ct2.translationservice
                 return await Task.FromResult(new CodeResponce
                 {
                     Code = Responcecode.Failed,
-                    Message = "GetCommonTranslations Faile due to - " + ex.Message
+                    Message = "GetCommonTranslations Failed due to - " + ex.Message
                 });
 
             }
@@ -1023,6 +1023,7 @@ namespace net.atos.daf.ct2.translationservice
                         tramcond.Description = ByteString.CopyFrom(result.Description);
                     }
                     tramcond.StartDate = result.StartDate.ToString();
+                    tramcond.State = result.State.ToString();
                     Response.TermCondition.Add(tramcond);
                 }
                 Response.Code = Responcecode.Success;

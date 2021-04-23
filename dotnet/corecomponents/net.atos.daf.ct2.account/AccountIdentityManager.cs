@@ -342,8 +342,7 @@ namespace net.atos.daf.ct2.account
                     response.AccountId = item.AccountId;
                 }
                 break;
-            }
-            //check session is available in account session
+            }            //check session is available in account session
             if (accountid > 0)
             {
                 IEnumerable<IdentitySessionComponent.entity.AccountSession> sessionlst = await accountSessionManager.GetAccountSession(accountid);

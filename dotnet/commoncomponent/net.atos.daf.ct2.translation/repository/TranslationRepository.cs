@@ -424,18 +424,27 @@ namespace net.atos.daf.ct2.translation.repository
                     var translationobjdata = translationcodeList.Where(I => I.Name == translationdata.Name && I.Code == translationdata.Code).FirstOrDefault();
                     if (translationobjdata != null)
                     {
-                        parameter = new DynamicParameters();
-                        parameter.Add("@id", translationobjdata.Id);
-                        parameter.Add("@Code", translationobjdata.Code);
-                        parameter.Add("@Type", type == null ? "L" : type);
-                        parameter.Add("@Name", translationobjdata.Name);
-                        parameter.Add("@Value", translationobjdata.Value);
-                        //parameter.Add("@Created_at", translationdata.created_at);
-                        parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-                        query = @"update translation.translation set 
+                        if (translationobjdata.Value == translationdata.Value)
+                        {
+                            // nO need to update the records
+                            return translationStatus.Ignored;
+                        }
+                        else
+                        {
+                            parameter = new DynamicParameters();
+                            parameter.Add("@id", translationobjdata.Id);
+                            parameter.Add("@Code", translationobjdata.Code);
+                            parameter.Add("@Type", type == null ? "L" : type);
+                            parameter.Add("@Name", translationobjdata.Name);
+                            parameter.Add("@Value", translationdata.Value);
+                            //parameter.Add("@Created_at", translationdata.created_at);
+                            parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                            query = @"update translation.translation set 
                                 code= @Code,type= @Type,name= @Name,value = @Value,modified_at = @modified_at Where id=@id RETURNING id";
-                        var translationId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                        return translationStatus.Updated;
+                            var translationId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                            return translationStatus.Updated;
+                        }
+                       
                     }
                     else
                     {
