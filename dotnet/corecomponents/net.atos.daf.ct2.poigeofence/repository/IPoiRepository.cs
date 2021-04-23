@@ -7,5 +7,6 @@ namespace net.atos.daf.ct2.poigeofence.repository
     public interface IPoiRepository
     {
         Task<List<POIEntityResponce>> GetAllPOI(POIEntityRequest objPOIEntityRequest);
+        Task<Geofence> CreateGeofence(Geofence geofence);
     }
 }

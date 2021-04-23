@@ -7,8 +7,8 @@ namespace net.atos.daf.ct2.poigeofence.entity
     public class Nodes
     {
         public int Id { get; set; }
-        public int Landmark_Id { get; set; }
-        public int Seq_No { get; set; }
+        public int LandmarkId { get; set; }
+        public int SeqNo { get; set; }
         public decimal Latitude { get; set; }
         public decimal Longitude { get; set; }
         public char State { get; set; }

@@ -17,5 +17,10 @@ namespace net.atos.daf.ct2.poigeofence
         {
             return await _poiRepository.GetAllPOI(objPOIEntityRequest);
         }
+
+        public async Task<Geofence> CreateGeofence(Geofence geofence)
+        {
+            return await _poiRepository.CreateGeofence(geofence);
+        }
     }
 }
