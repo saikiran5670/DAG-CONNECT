@@ -136,12 +136,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 }
                 if (!string.IsNullOrEmpty(poiFilter.Type) && poiFilter.Type.ToUpper()!="NONE")
                 {
-                    parameter.Add("@type", poiFilter.Type);
+                    parameter.Add("@type", MapLandmarkTypeToChar(poiFilter.Type));
                     query = query + " and l.type = @type";
                 }
                 if (!string.IsNullOrEmpty(poiFilter.State) && poiFilter.State.ToUpper() != "NONE")
                 {
-                    parameter.Add("@state", poiFilter.State );
+                    parameter.Add("@state", MapLandmarkStateToChar(poiFilter.State));
                     query = query + " and l.state = @state";
                 }
                 if (poiFilter.Latitude>0)
@@ -183,7 +183,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@organization_id", poi.Id);
+                parameter.Add("@organization_id", poi.OrganizationId!=null ? poi.OrganizationId : 0);
                 parameter.Add("@category_id", poi.CategoryId);
                 parameter.Add("@sub_category_id", poi.SubCategoryId);
                 parameter.Add("@name", poi.Name);
@@ -218,7 +218,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@organization_id", poi.Id);
+                parameter.Add("@organization_id", poi.OrganizationId != null ? poi.OrganizationId : 0);
                 parameter.Add("@category_id", poi.CategoryId);
                 parameter.Add("@sub_category_id", poi.SubCategoryId);
                 parameter.Add("@name", poi.Name);

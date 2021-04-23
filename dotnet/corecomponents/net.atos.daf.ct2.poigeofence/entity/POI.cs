@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
     public class POI
     {
         public int Id { get; set; }
-        public int OrganizationId { get; set; }
+        public int? OrganizationId { get; set; }
         public int CategoryId { get; set; }
         public int SubCategoryId { get; set; }
         public string Name { get; set; }
