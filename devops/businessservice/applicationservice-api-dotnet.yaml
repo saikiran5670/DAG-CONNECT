@@ -18,6 +18,8 @@ parameters:
   - TEST01
   - TEST02
   - ACC03
+  - ACC01
+  - ACC02
 
 pool: $(PRIVATEAGENT)
 
@@ -34,6 +36,10 @@ variables:
   - group: TEST02-Build-Variables
 - ${{ if eq(parameters.ENV, 'ACC03') }}:
   - group: ACC03-Build-Variables
+- ${{ if eq(parameters.ENV, 'ACC01') }}:
+  - group: ACC01-Build-Variables
+- ${{ if eq(parameters.ENV, 'ACC02') }}:
+  - group: ACC02-Build-Variables
 
 steps:
 - task: Docker@0

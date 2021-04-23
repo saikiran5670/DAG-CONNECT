@@ -6,6 +6,7 @@
     <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Protos\geofence.proto" />
     <None Remove="Protos\package.proto" />
   </ItemGroup>
   <ItemGroup>
@@ -26,6 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <Protobuf Include="Protos\account.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\geofence.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\package.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\feature.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\subscribe.proto" GrpcServices="Client" />
@@ -35,7 +37,9 @@
     <Protobuf Include="Protos\organization.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\role.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\driver.proto" GrpcServices="Client" />
-    <Protobuf Include="Protos\poigeofence.proto" GrpcServices="Client" />
+    <!--<Protobuf Include="Protos\poigeofence.proto" GrpcServices="Client" />-->
+	<Protobuf Include="Protos\category.proto" GrpcServices="Client" />
+	  
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entity\Role\" />

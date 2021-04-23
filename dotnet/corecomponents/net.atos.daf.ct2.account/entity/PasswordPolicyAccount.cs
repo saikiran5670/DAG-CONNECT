@@ -12,5 +12,6 @@ namespace net.atos.daf.ct2.account.entity
         public int AccountLockAttempts { get; set; } = 0;
         public bool IsBlocked { get; set; } = false;
         public long? LastLogin { get; set; } = null;
+        public bool IsReminderSent { get; set; }
     }
 }

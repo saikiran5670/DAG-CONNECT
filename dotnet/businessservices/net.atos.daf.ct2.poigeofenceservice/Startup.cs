@@ -56,8 +56,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
             app.UseEndpoints(endpoints =>
             {
                 
-                endpoints.MapGrpcService<PoiGeofenceManagementService>().EnableGrpcWeb()
-                                                  .RequireCors("AllowAll");
+                //endpoints.MapGrpcService<PoiGeofenceManagementService>().EnableGrpcWeb()
+                //                                  .RequireCors("AllowAll");
 
                 endpoints.MapGet("/", async context =>
                 {
