@@ -13,6 +13,8 @@ parameters:
   - TEST01
   - TEST02
   - ACC03
+  - ACC01
+  - ACC02
 
 variables:
 - ${{ if eq(parameters.ENV, 'DEV0') }}:
