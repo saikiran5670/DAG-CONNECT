@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.repository;
+using net.atos.daf.ct2.poigeofenservice;
 
 namespace net.atos.daf.ct2.poigeofenceservice
 {
@@ -39,7 +40,9 @@ namespace net.atos.daf.ct2.poigeofenceservice
             services.AddSingleton(dataAccess);
             services.AddTransient<IPoiManager, PoiManager>();
             services.AddTransient<IPoiRepository, PoiRepository>();
-           
+            services.AddTransient<ICategoryManager, CategoryManager>();
+            services.AddTransient<ICategoryRepository, CategoryRepository>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -60,6 +63,9 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 //                                  .RequireCors("AllowAll");
                 endpoints.MapGrpcService<POIManagementService>().EnableGrpcWeb()
                                                   .RequireCors("AllowAll");
+                endpoints.MapGrpcService<CategoryManagementService>().EnableGrpcWeb()
+                                                  .RequireCors("AllowAll");
+
                 endpoints.MapGet("/", async context =>
                 {
                     await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");

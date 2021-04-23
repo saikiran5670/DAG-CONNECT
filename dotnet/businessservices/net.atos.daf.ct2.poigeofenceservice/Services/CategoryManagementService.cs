@@ -6,6 +6,7 @@ using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.entity;
+using net.atos.daf.ct2.poigeofences;
 using net.atos.daf.ct2.poigeofenceservice;
 using net.atos.daf.ct2.poigeofenceservice.Entity;
 
