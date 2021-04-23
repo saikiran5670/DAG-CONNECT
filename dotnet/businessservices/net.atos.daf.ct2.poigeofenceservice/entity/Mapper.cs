@@ -69,5 +69,26 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             nodes.Longitude = Convert.ToDecimal(nodeRequest.Longitude);
             return nodes;
         }
+        public POI ToPOIEntity(net.atos.daf.ct2.poiservice.POIRequest poiRequest)
+        {
+            POI poi = new POI();
+            poi.Id = Convert.ToInt32(poiRequest.Id);
+            poi.OrganizationId = Convert.ToInt32(poiRequest.OrganizationId);
+            poi.CategoryId = poiRequest.CategoryId;
+            poi.SubCategoryId = poiRequest.SubCategoryId;
+            poi.Name = poiRequest.Name;
+            poi.Type = poiRequest.Type;
+            poi.Address = poiRequest.Address;
+            poi.City = poiRequest.City;
+            poi.Country = poiRequest.Country;
+            poi.Zipcode = poiRequest.Zipcode;
+            poi.Latitude = Convert.ToDouble(poiRequest.Latitude);
+            poi.Longitude = Convert.ToDouble(poiRequest.Longitude);
+            poi.Distance = Convert.ToDouble(poiRequest.Distance);
+            poi.State = poiRequest.State;
+            poi.TripId = poiRequest.TripId;
+            poi.CreatedBy = poiRequest.CreatedBy;
+            return poi;
+        }
     }
 }
