@@ -373,7 +373,7 @@ namespace net.atos.daf.ct2.account
                             //Update status to Issued
                             await repository.Update(objToken.Id, ResetTokenStatus.Issued);
                         }
-                        else if(eventType == EmailEventType.ResetPassword && !isSent)
+                        else if (eventType == EmailEventType.ResetPassword && !isSent)
                         {
                             identityResult.StatusCode = HttpStatusCode.ExpectationFailed;
                         }
@@ -503,14 +503,14 @@ namespace net.atos.daf.ct2.account
         public async Task<IEnumerable<EmailList>> SendEmailForPasswordExpiry(int noOfDays)
         {
             var emailSendList = new List<EmailList>();
-            
+
             foreach (var account in await repository.GetAccountOfPasswordExpiry(noOfDays))
             {
                 try
-                {
+                {                    
                     var isSuccuss = TriggerSendEmailRequest(account, EmailEventType.PasswordExpiryNotification).Result;
-                                        
-                    emailSendList.Add(new EmailList { Email = account.EmailId, IsSend = isSuccuss });
+
+                    emailSendList.Add(new EmailList { AccountId = account.Id, Email = account.EmailId, IsSend = isSuccuss });
                     await auditlog.AddLogs(new AuditTrail
                     {
                         Created_at = DateTime.Now,
@@ -524,11 +524,11 @@ namespace net.atos.daf.ct2.account
                         Sourceobject_id = 0,
                         Targetobject_id = 0,
                         Updated_data = "EmailNotificationForPasswordExpiry"
-                    });                    
+                    });
                 }
                 catch (Exception ex)
                 {
-                    emailSendList.Add(new EmailList { Email = account.EmailId, IsSend = false });
+                    emailSendList.Add(new EmailList { AccountId = account.Id, Email = account.EmailId, IsSend = false });
                     await auditlog.AddLogs(new AuditTrail
                     {
                         Created_at = DateTime.Now,
@@ -539,6 +539,31 @@ namespace net.atos.daf.ct2.account
                         Event_type = AuditTrailEnum.Event_type.Mail,
                         Event_status = AuditTrailEnum.Event_status.FAILED,
                         Message = $"Email is not send to {account.EmailId} with error as {ex.Message}",
+                        Sourceobject_id = 0,
+                        Targetobject_id = 0,
+                        Updated_data = "EmailNotificationForPasswordExpiry"
+                    });
+                }
+            }
+            foreach (var account in emailSendList)
+            {
+                try
+                {
+                    if (account.IsSend)
+                        await repository.UpdateIsReminderSent(account.AccountId);
+                }
+                catch (Exception ex)
+                {
+                    await auditlog.AddLogs(new AuditTrail
+                    {
+                        Created_at = DateTime.Now,
+                        Performed_at = DateTime.Now,
+                        Performed_by = 2,
+                        Component_name = "Email Notication Pasword Expiry",
+                        Service_name = "Email Component",
+                        Event_type = AuditTrailEnum.Event_type.UPDATE,
+                        Event_status = AuditTrailEnum.Event_status.FAILED,
+                        Message = $"Failed to update ISReminderSend for {account.Email} with error as {ex.Message}",
                         Sourceobject_id = 0,
                         Targetobject_id = 0,
                         Updated_data = "EmailNotificationForPasswordExpiry"

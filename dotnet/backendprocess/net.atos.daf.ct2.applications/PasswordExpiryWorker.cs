@@ -42,9 +42,12 @@ namespace net.atos.daf.ct2.applications
             try
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                var calcDayToSendMail = Convert.ToInt32(_configuration["PasswordExpiryInDays"]) - Convert.ToInt32(_configuration["RemainingDaysToExpire"]);
+                var calcDayToSendMail = Convert.ToInt32(_configuration["PasswordExpiry:NumberOfDays"]) - Convert.ToInt32(_configuration["PasswordExpiry:RemainingDaysToExpire"]);
                 var emailList = await _accountManager.SendEmailForPasswordExpiry(calcDayToSendMail);
-                var isPartial = emailList.Where(w => w.IsSend == false).Count() > 0;
+                var totalCount = emailList.Count();
+                var failurecCount = emailList.Where(w => w.IsSend == false).Count();
+                var isPartial = (failurecCount > 0) && ((totalCount - failurecCount) > 0);
+                var isfailed = (failurecCount > 0) && ((totalCount - failurecCount) == 0);
                 await _auditlog.AddLogs(new AuditTrail
                 {
                     Created_at = DateTime.Now,
@@ -53,8 +56,8 @@ namespace net.atos.daf.ct2.applications
                     Component_name = "Email Notication Pasword Expiry",
                     Service_name = "Backend Process",
                     Event_type = AuditTrailEnum.Event_type.Mail,
-                    Event_status = isPartial ? AuditTrailEnum.Event_status.PARTIAL : AuditTrailEnum.Event_status.SUCCESS,
-                    Message = isPartial ? "Email send was partially successful. Please check audit log for more info." : "Email send process run successfully.",
+                    Event_status = isPartial ? AuditTrailEnum.Event_status.PARTIAL : isfailed ? AuditTrailEnum.Event_status.FAILED : AuditTrailEnum.Event_status.SUCCESS,
+                    Message = isPartial ? "Email send was partially successful. Please check audit log for more info." : isfailed ? "Email send Failed" : $"Email send process run successfully with success count :{totalCount - failurecCount}",
                     Sourceobject_id = 0,
                     Targetobject_id = 0,
                     Updated_data = "EmailNotificationForPasswordExpiry"
