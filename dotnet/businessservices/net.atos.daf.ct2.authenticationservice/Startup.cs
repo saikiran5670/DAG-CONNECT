@@ -16,6 +16,7 @@ using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using AccountComponent = net.atos.daf.ct2.account;
+using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 using Identity = net.atos.daf.ct2.identity;
 using AccountPreferenceComponent = net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.translation.repository;
@@ -58,7 +59,11 @@ namespace net.atos.daf.ct2.authenticationservice
             services.AddTransient<Identity.IAccountAuthenticator,Identity.AccountAuthenticator>();
             
             services.AddTransient<AccountComponent.IAccountIdentityManager,AccountComponent.AccountIdentityManager>();
-            
+            services.AddTransient<IdentitySessionComponent.IAccountSessionManager, IdentitySessionComponent.AccountSessionManager>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
+            services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
+            services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
+
             services.AddTransient<AccountPreferenceComponent.IPreferenceManager,AccountPreferenceComponent.PreferenceManager>();
             services.AddTransient<AccountPreferenceComponent.IAccountPreferenceRepository, AccountPreferenceComponent.AccountPreferenceRepository>();
             

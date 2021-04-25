@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.featureactivationservice
 {
     public class Startup
     {
-        private readonly string swaggerBasePath = "customer-data";
+        private readonly string swaggerBasePath = "featureactivation-data";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -91,7 +91,7 @@ namespace net.atos.daf.ct2.featureactivationservice
             //});
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Customer Data Service", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Feature Activation Data Service", Version = "v1" });
             });
         }
 
