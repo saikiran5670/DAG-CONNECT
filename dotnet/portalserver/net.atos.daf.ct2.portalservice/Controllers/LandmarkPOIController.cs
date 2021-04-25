@@ -7,6 +7,8 @@ using net.atos.daf.ct2.portalservice.Entity.POI;
 using System;
 using net.atos.daf.ct2.poiservice;
 using Newtonsoft.Json;
+using log4net;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -15,6 +17,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class LandmarkPOIController : ControllerBase
     {
+        private ILog _logger;
         private readonly POIService.POIServiceClient _poiServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly Entity.POI.Mapper _mapper;
@@ -22,6 +25,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper)
         {
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _poiServiceClient = poiServiceClient;
             _auditHelper = auditHelper;
             _mapper = new Entity.POI.Mapper();
@@ -31,19 +35,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
       
         [HttpGet]
         [Route("getallglobalpoi")]
+        [AllowAnonymous]
         public async Task<IActionResult> getallglobalpoi([FromQuery] net.atos.daf.ct2.portalservice.Entity.POI.POIEntityRequest request)
         {
             try
             {
-                //_logger.Info("Get method in vehicle API called.");
+                _logger.Info("GetAllGlobalPOI method in POI API called.");
                 net.atos.daf.ct2.poiservice.POIEntityRequest objPOIEntityRequest = new net.atos.daf.ct2.poiservice.POIEntityRequest();
-                if (request.organization_id <= 0)
-                {
-                    return StatusCode(400, string.Empty);
-                }
-                //objPOIEntityRequest.OrganizationId = request.organization_id;
+                objPOIEntityRequest.CategoryId = request.CategoryId;//non mandatory field
+                objPOIEntityRequest.SubCategoryId = request.SubCategoryId;////non mandatory field
                 var data = await _poiServiceClient.GetAllGobalPOIAsync(objPOIEntityRequest);
-                if (data != null)
+                if (data != null && data.Code == net.atos.daf.ct2.poiservice.Responsecode.Success)
                 {
                     if (data.POIList != null && data.POIList.Count > 0)
                     {
@@ -51,19 +53,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(404, string.Empty);
+                        return StatusCode(404, "Global POI details are not found");
                     }
                 }
                 else
                 {
-                    return StatusCode(500, string.Empty);
+                    return StatusCode(500, data.Message);
                 }
 
             }
 
             catch (Exception ex)
             {
-                //_logger.Error(null, ex);
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
