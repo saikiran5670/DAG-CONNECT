@@ -25,15 +25,15 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 string query = string.Empty;
                 query = @"select 
                            l.id
-                           ,l.name
+                           ,l.name as POIName
                            ,l.latitude
                            ,l.longitude
                            ,c.name as category
                            ,l.city from MASTER.LANDMARK l
                      LEFT JOIN MASTER.CATEGORY c on l.category_id = c.id
-                     WHERE l.organization_id=@organization_id";
+                     WHERE l.organization_id is null";
+                
                 var parameter = new DynamicParameters();
-                parameter.Add("@organization_id", null);
                 if (objPOIEntityRequest.CategoryId > 0)
                 {
                     parameter.Add("@category_id", objPOIEntityRequest.CategoryId);
