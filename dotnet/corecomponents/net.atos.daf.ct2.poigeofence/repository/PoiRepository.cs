@@ -24,11 +24,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 string query = string.Empty;
                 query = @"select 
-                           l.id
+                            l.id as GlobalPOIId
                            ,l.name as POIName
                            ,l.latitude
                            ,l.longitude
                            ,c.name as category
+						   ,l.category_id as CategoryId
+						   ,l.sub_category_id as SubCategoryId
                            ,l.city from MASTER.LANDMARK l
                      LEFT JOIN MASTER.CATEGORY c on l.category_id = c.id
                      WHERE l.organization_id is null";

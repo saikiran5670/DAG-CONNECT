@@ -40,6 +40,9 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     objPOIEntityResponse.Latitude = item.Latitude;
                     objPOIEntityResponse.Longitude = item.Longitude;
                     objPOIEntityResponse.POIName = item.POIName == null ? string.Empty : item.POIName;
+                    objPOIEntityResponse.GlobalPOIId = item.GlobalPOIId;
+                    objPOIEntityResponse.CategoryId = item.CategoryId;
+                    objPOIEntityResponse.SubCategoryId = item.SubCategoryId;
                     objPOIEntityResponseList.POIList.Add(objPOIEntityResponse);
                 }
                 objPOIEntityResponseList.Message = "GlobalPOI data retrieved";
