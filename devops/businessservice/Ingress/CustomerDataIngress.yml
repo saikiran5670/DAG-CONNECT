@@ -88,6 +88,10 @@ spec:
           serviceName: vehicledataservice
           servicePort: 80
         path: /vehicle-data
+       - backend:
+          serviceName: vehicledataservice
+          servicePort: 80
+        path: /vehicle
       - backend:
           serviceName: featureactivationservice
           servicePort: 80
