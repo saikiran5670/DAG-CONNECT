@@ -7,7 +7,7 @@ using net.atos.daf.ct2.vehicle.entity;
 //using net.atos.daf.ct2.vehicledataservice.Entity;
 namespace net.atos.daf.ct2.vehicledataservice.Common
 {
-    public class VehicleMileageCSVResult : ContentResult
+    public class VehicleMileageCSVResult : ContentResult //FileResult
     {
         private readonly IEnumerable<VehiclesCSV> _mileageData;
         public VehicleMileageCSVResult(IEnumerable<VehiclesCSV> mileageData) //: base("text/csv") //, string fileDownloadName
