@@ -17,6 +17,10 @@ import { MatTableExporterModule } from 'mat-table-exporter';
 import { TermsConditionsManagementComponent } from './terms-conditions-management/terms-conditions-management.component';
 import { DtcTranslationComponent } from './dtc-translation/dtc-translation.component';
 import { CreateEditViewPoiComponent } from './landmarks/create-edit-view-poi/create-edit-view-poi.component';
+import { ManagePoiGeofenceComponent } from './landmarks/manage-poi-geofence/manage-poi-geofence.component';
+import { ManageGroupComponent } from './landmarks/manage-group/manage-group.component';
+import { ManageCategoryComponent } from './landmarks/manage-category/manage-category.component';
+import { ManageCorridorComponent } from './landmarks/manage-corridor/manage-corridor.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +33,11 @@ import { CreateEditViewPoiComponent } from './landmarks/create-edit-view-poi/cre
     EditViewVehicleComponent,
     TermsConditionsManagementComponent,
     DtcTranslationComponent,
-    CreateEditViewPoiComponent
+    CreateEditViewPoiComponent,
+    ManagePoiGeofenceComponent,
+    ManageGroupComponent,
+    ManageCategoryComponent,
+    ManageCorridorComponent
   ],
   imports: [
     CommonModule,
